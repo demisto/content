@@ -85,12 +85,26 @@ script:
       predefined:
       - dismissed
       - open
+    - name: determination
+      description: Need to check this
+      auto: PREDEFINED
+      predefined:
+      - TRUE_POSITIVE
+      - FALSE_POSITIVE
+      - NONE
+    - name: time_range
+      description: need to check this
+    - name: start
+      description: need to check this
+    - name: end
+      description: need to check this
+    - name: closure_reason
+      description: need to check this
     - description: Comment to include with the operation.
       name: comment
-    - description: Description of the changes done in the workflow state.
-      name: remediation_state
     description: Updates the workflow of a single event.
     name: cb-eedr-alert-workflow-update
+    polling: true
     outputs:
     - contextPath: CarbonBlackEEDR.Alert.AlertID
       description: The alert ID.
@@ -104,9 +118,6 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.LastUpdateTime
       description: Last time the alert was updated.
       type: Date
-    - contextPath: CarbonBlackEEDR.Alert.Remediation
-      description: Description or justification for the change.
-      type: String
     - contextPath: CarbonBlackEEDR.Alert.State
       description: The alert state.
       type: String

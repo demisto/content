@@ -495,7 +495,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     for alert in alerts:
         contents.append({
             'AlertID': alert.get('id'),
-            'CreateTime': alert.get('create_timestamp'),
+            'CreateTime': alert.get('backend_timestamp'),
             'DeviceID': alert.get('device_id'),
             'DeviceName': alert.get('device_name'),
             'DeviceOS': alert.get('device_os'),
@@ -517,12 +517,25 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
 
 
 def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
-    alert_id = args.get('alert_id')
+    
+    if not is_demisto_version_ge('6.2.0'):
+        raise DemistoException('This command is not supported for your server version. Please update your server version to 6.2.0 or later')
+    
+    alert_id = args['alert_id']
     state = args.get('state')
+    if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
+        state = 'CLOSED'
     comment = args.get('comment')
-    remediation_state = args.get('remediation_state')
+    # All of these are added in v7
+    determination = args.get('determination')
+    time_range = args.get('time_range')
+    start = args.get('start')
+    end = args.get('end')
+    closure_reason = args.get('closure_reason')
+    
+    #remediation_state = args.get('remediation_state')  # Changes do to new version of API
 
-    result = client.alert_workflow_update_request(alert_id, state, comment, remediation_state)
+    result = client.alert_workflow_update_request(alert_id, state, comment)
 
     readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result, removeNull=True)
     outputs = {
