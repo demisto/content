@@ -232,8 +232,6 @@ def build_params_dict(tags: List[str], attribute_type: List[str], limit: int, pa
         'limit': limit,
         'page': page
     }
-    if params.get("timestamp"):
-        params['attribute_timestamp'] = params.pop("timestamp")
     if from_timestamp:
         params['attribute_timestamp'] = from_timestamp
     return params
