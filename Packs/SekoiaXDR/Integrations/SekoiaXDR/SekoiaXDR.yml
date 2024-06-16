@@ -642,6 +642,13 @@ script:
     - name: comment
       description: Comment to describe why the alert status has changed.
     description: Command to update the status of a specific Alert by uuid or short_id.
+  - name: sekoia-xdr-await_alert_status
+    polling: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the alert search job
+    description: Polling command to await for query to finish.
   - name: sekoia-xdr-post-comment-alert
     arguments:
     - name: id

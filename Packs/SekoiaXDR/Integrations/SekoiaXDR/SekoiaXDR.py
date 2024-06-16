@@ -1052,6 +1052,39 @@ def search_events_command(args: Dict[str, Any], client: Client) -> PollResult:
     )
 
 
+@polling_function(
+    name="await-alert-status",
+    poll_message="Polling for alert status",
+)
+def await_alert_status_command(args: Dict[str, Any], client: Client) -> PollResult:
+    """
+    Polls for the status of an alert search job.
+
+    Args:
+        args (Dict[str, Any]): The command arguments.
+            - uuid (str): The UUID of the alert search job.
+        client (Client): The SekoiaXDR client.
+
+    Returns:
+        PollResult: The result of the polling.
+            - continue_to_poll (bool): Whether to continue polling.
+            - response (Any): The response from the query.
+
+    """
+    search_job_uuid = args["uuid"]
+    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
+
+    finished_status = query_status["status"] == 2
+
+    if finished_status:
+        return PollResult(
+            continue_to_poll=False,
+            response=query_status["status"],
+        )
+
+    return PollResult(continue_to_poll=True, response=query_status["status"])
+
+
 def update_status_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """Parameters"""
     alert_uuid, updated_status, comment = (
