@@ -26,7 +26,6 @@
 !ciphertrust-external-certificate-delete external_cert_id="id_of_test_external_cert"
 !ciphertrust-external-certificate-update external_ca_id="id_of_test_external_cert" allow_client_authentication=true allow_user_authentication=true
 !ciphertrust-external-certificate-list issuer="/C=FAKE/ST=FAKE/L=FAKE/O=FAKE/OU=FAKE/CN=fake.example.com" serial_number=0 subject="/C=FAKE/ST=FAKE/L=FAKE/O=FAKE/OU=FAKE/CN=fake.example.com"
-
-
+!ciphertrust-csr-generate
 
 

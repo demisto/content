@@ -100,13 +100,13 @@ script:
         secret: false
         default: false
         predefined:
-          - 1024
-          - 2048
-          - 3072
-          - 4096
-          - 256
-          - 384
-          - 521
+          - '1024'
+          - '2048'
+          - '3072'
+          - '4096'
+          - '256'
+          - '384'
+          - '521'
         auto: PREDEFINED
       - name: encryption_password
         isArray: false
@@ -1167,13 +1167,13 @@ script:
       secret: false
       default: false
       predefined:
-        - 256
-        - 384
-        - 521
-        - 1024
-        - 2048
-        - 3072
-        - 4096
+        - '256'
+        - '384'
+        - '521'
+        - '1024'
+        - '2048'
+        - '3072'
+        - '4096'
       auto: PREDEFINED
     outputs:
     - contextPath: InfoFile.Name
