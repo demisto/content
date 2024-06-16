@@ -3,6 +3,8 @@
 import urllib3
 from urllib.parse import quote
 import demistomock as demisto
+import pyminizip
+
 from CommonServerPython import *
 
 from typing import Any
@@ -439,7 +441,6 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> t
 
 
 def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
-    import pyminizip
     pyminizip.compress(input_file_path, None, output_file_path, password, int(5))
 
 
