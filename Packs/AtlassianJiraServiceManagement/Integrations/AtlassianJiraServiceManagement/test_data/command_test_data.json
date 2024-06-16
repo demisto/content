@@ -575,5 +575,31 @@
                 }
             ]
         }
+    },
+    "attachment_list": {
+        "response": [
+            {
+                "id": 7,
+                "author": "JIRAUSER82500",
+                "mimeType": "text/plain",
+                "filename": "test.txt",
+                "filesize": "4 B",
+                "created": "2024-06-16T06:17:54.000Z",
+                "comment": "",
+                "commentOutput": "",
+                "url": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/attachments/7/test.txt"
+            },
+            {
+                "id": 8,
+                "author": "JIRAUSER82500",
+                "mimeType": "text/plain",
+                "filename": "test.txt",
+                "filesize": "4 B",
+                "created": "2024-06-16T06:17:54.000Z",
+                "comment": "",
+                "commentOutput": "",
+                "url": "https://jira-dc-qa.paloaltonetworks.com/rest/insight/1.0/attachments/7/test.txt"
+            }
+        ]
     }
 }

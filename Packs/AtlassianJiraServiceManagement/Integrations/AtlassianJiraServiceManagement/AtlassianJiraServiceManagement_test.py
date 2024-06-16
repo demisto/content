@@ -1,10 +1,12 @@
 import pytest
+from unittest.mock import Mock
 from pytest_mock import MockerFixture
 from typing import Any
 import AtlassianJiraServiceManagement as JSM
 import json
 from requests import Response
-from CommonServerPython import DemistoException
+from CommonServerPython import DemistoException, CommandResults
+import demistomock as demisto
 
 
 def util_load_json(path):
@@ -473,6 +475,40 @@ def test_jira_asset_connected_ticket_list_command(mocker: MockerFixture):
 def test_jira_asset_attachment_add_command(mocker: MockerFixture):
     object_id = '1'
     entry_id = None
+    mocker.patch.object(demisto, 'getFilePath',return_value={'path': 'test_data/test_file.txt'})
+    mocked_client = mocker.patch.object(client, 'send_file', return_value=[{'id': 1}])
     JSM.jira_asset_attachment_add_command(client, {'object_id': object_id, 'entry_id': entry_id})
+    mocked_client.assert_called_with(object_id=object_id, file_path='test_data/test_file.txt')
 
 
+def test_jira_asset_attachment_list_command_no_download(mocker: MockerFixture):
+    object_id = '1'
+    path = f'/attachments/object/{object_id}'
+    mocked_client = mocker.patch.object(client, 'get_object_attachment_list', return_value=[{'id': 1}])
+    JSM.jira_asset_attachment_list_command(client, {'object_id': object_id, 'download_file': 'false'})
+    mocked_client.assert_called_with(path)
+
+
+def test_jira_asset_attachment_list_command_with_download(mocker: MockerFixture):
+    object_id = '1'
+    file_list = command_test_data['attachment_list']['response']
+    path = f'/attachments/object/{object_id}'
+    mocked_client = mocker.patch.object(client, 'get_object_attachment_list', return_value=file_list)
+    mocker.patch.object(client, 'get_file', return_value=Mock(content=b'file content'))
+    mocker.patch('os.remove')
+    mocker.patch('builtins.open', mocker.mock_open())
+    mocker.patch('zipfile.ZipFile')
+    result = JSM.jira_asset_attachment_list_command(client, {'object_id': object_id, 'download_file': 'true'})
+
+    mocked_client.assert_called_with(path)
+    assert isinstance(result, list)
+    assert isinstance(result[0], dict)  # fileResult returns a dict
+    assert result[0]['File'] == 'ObjectAttachments.zip'
+    assert isinstance(result[1], CommandResults)
+
+
+def test_jira_asset_attachment_remove_command(mocker: MockerFixture):
+    file_id = '1'
+    mocked_client = mocker.patch.object(client, 'remove_file', return_value={'id': 1})
+    JSM.jira_asset_attachment_remove_command(client, {'id': file_id})
+    mocked_client.assert_called_with(file_id)

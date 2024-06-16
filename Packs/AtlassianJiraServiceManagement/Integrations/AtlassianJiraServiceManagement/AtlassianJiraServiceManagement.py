@@ -15,10 +15,8 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-CLOUD_URL_STRUCTURE = 'https://api.atlassian.com/jsm/assets/workspace/'
 ON_PREM_URL_STRUCTURE = '{}/rest/assets/1.0/'
 ON_PREM_FILE_URL_PREFIX = 'https://{}.atlassian.net/rest/servicedeskapi/attachments/'
-GETֹֹֹֹ_WORKSPACE_URL_STRUCTURE = 'https://{}.atlassian.net/rest/servicedeskapi/assets/workspace'
 INTEGRATION_OUTPUTS_BASE_PATH = 'JiraAsset'
 
 ''' CLIENT CLASS '''
@@ -146,18 +144,10 @@ class Client(BaseClient):
             url_suffix=f'/object/{object_id}'
         )
 
-    def http_delete(self, url_suffix):
+    def remove_file(self, attachment_id):
         return self._http_request(
             method='DELETE',
-            url_suffix=url_suffix
-        )
-
-    def get_workspace(self, jsm_premium_site_name) -> dict[str, Any]:
-        return self._http_request(
-            auth=(),
-            method='GET',
-            full_url=GETֹֹֹֹ_WORKSPACE_URL_STRUCTURE.format(jsm_premium_site_name),
-            headers={}
+            url_suffix=f'/attachments/{attachment_id}'
         )
 
 
@@ -302,21 +292,6 @@ def test_module(client: Client) -> str:
     return message
 
 
-def jira_asset_get_workspace_command(args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
-    verify_certificate = not params.get('insecure', True)
-    proxy = params.get('proxy', False)
-    api_key = params.get('credentials')
-    jsm_premium_site_name = args.get('jira_site_name', None)
-    client = Client(base_url='dummy.url', verify=verify_certificate, proxy=proxy, api_key=api_key)
-    result = client.get_workspace(jsm_premium_site_name)
-    outputs = {'ID': result.get('values')[0].get('workspaceId')}
-    return CommandResults(
-        outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Workspace',
-        outputs_key_field='ID',
-        outputs=outputs,
-    )
-
-
 def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) -> CommandResults:
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
@@ -372,12 +347,12 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
     # build outputs
     res = client.get_object_type_attributes(
         object_type_id=object_type_id,
-        order_by_name=bool(args.get('order_by_name', False)),
+        order_by_name=argToBoolean(args.get('order_by_name', False)),
         query=args.get('query'),
-        include_value_exist=bool(args.get('include_value_exist', False)),
-        exclude_parent_attributes=bool(args.get('exclude_parent_attributes', False)),
-        include_children=bool(args.get('include_children', False)),
-        order_by_required=bool(args.get('order_by_required', False))
+        include_value_exist=argToBoolean(args.get('include_value_exist', False)),
+        exclude_parent_attributes=argToBoolean(args.get('exclude_parent_attributes', False)),
+        include_children=argToBoolean(args.get('include_children', False)),
+        order_by_required=argToBoolean(args.get('order_by_required', False))
     )
 
     outputs = clean_object_attributes(list(res))
@@ -464,7 +439,7 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
 def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> CommandResults:
     # build request params
     ql_query = args.get('ql_query')
-    include_attributes = bool(args.get('include_attributes', False))
+    include_attributes = argToBoolean(args.get('include_attributes', False))
     page = int(args.get('page', 1))
     page_size = int(args.get('page_size', 50))
     limit = args.get('limit')
@@ -565,8 +540,8 @@ def jira_asset_attachment_add_command(client: Client, args: dict[str, Any]) -> C
 
 def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> List[CommandResults | dict] | CommandResults:
     object_id = args.get('object_id')
-    download_file = args.get('download_file', False)
-    res = list(client.get_object_attachment_list(f'/attachments/object/{object_id}'))
+    download_file = argToBoolean(args.get('download_file', False))
+    res = client.get_object_attachment_list(f'/attachments/object/{object_id}')
     outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     hr_header = ['ID', 'Filename', 'Filesize', 'Comment']
 
@@ -608,7 +583,7 @@ def jira_asset_attachment_remove_command(client: Client, args: dict[str, Any]) -
     attachment_id = args.get('id')
 
     try:
-        res = client.http_delete(f'/attachments/{attachment_id}')
+        res = client.remove_file(attachment_id)
     except DemistoException as e:
         if e.res.status_code == 404:
             return CommandResults(readable_output=f'Attachment with id: {attachment_id} does not exist')
@@ -632,25 +607,13 @@ def main() -> None:
     args = demisto.args()
     params = demisto.params()
     api_key = params.get('credentials', {}).get('password', '')
-    workspace_id = params.get('workspace_id', None)
     server_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     base_url = server_url
 
     try:
-        if server_url == CLOUD_URL_STRUCTURE and workspace_id:
-            base_url = server_url + workspace_id + '/v1/'
-        elif server_url != CLOUD_URL_STRUCTURE:
-            base_url = ON_PREM_URL_STRUCTURE.format(server_url)
-        else:
-            if command == 'jira-asset-get-workspace':
-                return_results(jira_asset_get_workspace_command(args, params))
-            else:
-                raise DemistoException(
-                    'Cloud Jira Asset users must specify workspace id. Please run the jira-asset-get-workspace '
-                    'command to get your workspace id')
-
+        base_url = ON_PREM_URL_STRUCTURE.format(server_url)
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, api_key=api_key)
 
         if command == 'test-module':
