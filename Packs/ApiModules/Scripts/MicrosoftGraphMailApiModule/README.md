@@ -11,4 +11,4 @@ if __name__ in ["builtins", "__main__"]:
     main()
 ```
 
-Then, the `MicrosoftGraphMailClient` will be available for usage. For examples, see the `Microsoft Graph Listener` or `Microsoft Graph Mail` integrations.
+Then, the `MicrosoftGraphClient` will be available for usage. For examples, see the `Microsoft Graph Listener` or `Microsoft Graph Mail` integrations.
