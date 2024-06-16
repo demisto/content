@@ -13,6 +13,8 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
+DATE_FORMAT_NO_MS = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT_HR = '%d %b %Y, %H:%M'
 
 CONTEXT_OUTPUT_PREFIX = "CipherTrust."
 
@@ -104,6 +106,31 @@ PRIVATE_KEY_BYTES = 'private_key_bytes'
 ENCRYPTION_PASSWORD = 'encryption_password'
 PRIVATE_KEY_FILE_PASSWORD = 'private_key_file_password'
 
+GROUP_LIST_KEYS = ['name', 'app_metadata', 'users_count', 'description']
+PENDING_LOCAL_CA_KEYS = ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint',
+                         'sha256Fingerprint', 'sha512Fingerprint']
+LOCAL_CA_KEYS = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'state', 'serialNumber', 'subject', 'issuer',
+                 'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
+GROUP_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name',
+                                   'app_metadata': 'Defined By',
+                                   'users_count': 'No. of members',
+                                   'description': 'Description'}
+GROUP_LIST_KEYS_VALUE_MAPPING = {'app_metadata': lambda x: 'System' if isinstance(x, dict) and x.get(
+    'system') else 'User'}
+
+LOCAL_CA_LIST_ACTIVE_KEYS = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
+                             'purpose_client_authentication', 'purpose_user_authentication']
+LOCAL_CA_LIST_OTHER_KEYS = ['name', 'subject', 'createdAt', 'sha1Fingerprint']
+LOCAL_CA_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name', 'subject': 'Subject', 'serialNumber': 'Serial #', 'notBefore': 'Activation',
+                                      'notAfter': 'Expiration',
+                                      'purpose_client_authentication': 'Client Auth', 'purpose_user_authentication': 'User Auth',
+                                      'createdAt': 'Created',
+                                      'sha1Fingerprint': 'Fingerprint'}
+LOCAL_CA_LIST_KEYS_VALUE_MAPPING = {'notBefore': date_to_markdown,
+                                    'notAfter': date_to_markdown,
+                                    'createdAt': date_to_markdown,
+                                    'purpose_user_authentication': lambda x: 'Enabled' if x else 'Disabled',
+                                    'purpose_client_authentication': lambda x: 'Enabled' if x else 'Disabled'}
 '''CLIENT CLASS'''
 
 
@@ -585,13 +612,13 @@ def date_to_markdown(iso_date: Optional[str], empty_value: str = '') -> str:
     if not iso_date:
         return empty_value
     try:
-        return datetime.strptime(iso_date, DATE_FORMAT).strftime('%d %b %Y, %H:%M')
+        return datetime.strptime(iso_date, DATE_FORMAT).strftime(DATE_FORMAT_HR)
     except ValueError:
-        return datetime.strptime(iso_date, '%Y-%m-%dT%H:%M:%SZ').strftime('%d %b %Y, %H:%M')
+        return datetime.strptime(iso_date, DATE_FORMAT_NO_MS).strftime(DATE_FORMAT_HR)
 
 
-def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_mapping: dict,
-                                                 keys_value_mapping: dict):
+def ciphertrust_table_to_markdown_transform_data(data: dict, keys: list[str], keys_headers_mapping: dict,
+                                                 keys_value_mapping: dict) -> dict:
     """
     Transform the data for the table to markdown function.
     Args:
@@ -604,12 +631,12 @@ def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_
     """
     transformed_data = {}
     for k in keys:
-        v = data.get(k)
+        v = data.get(k, '')
         transform_func = keys_value_mapping.get(k)
         if transform_func:
             transformed_data[k] = transform_func(v)
         if k in keys_headers_mapping:
-            transformed_data[keys_headers_mapping.get(k)] = transformed_data.pop(k, v)
+            transformed_data[keys_headers_mapping.get(k, '')] = transformed_data.pop(k, v)
         else:
             transformed_data[k] = transformed_data.pop(k, v)
     return transformed_data
@@ -635,19 +662,21 @@ def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: lis
                 data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
             transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping)
                                 for d in resources]
+            t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
         else:
-            transformed_data = ciphertrust_table_to_markdown_transform_data(data, keys, keys_headers_mapping, keys_value_mapping)
+            t = tableToMarkdown(title, ciphertrust_table_to_markdown_transform_data(data, keys, keys_headers_mapping,
+                                                                                    keys_value_mapping),
+                                headerTransform=underscoreToCamelCase, sort_headers=False)
     else:
         transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping) for d
                             in data]
-
-    t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
+        t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
     if resources:
         return t + '\n' + skip_limit_total_hr
     return t
 
 
-def hr_local_ca(raw_response):
+def hr_local_ca(raw_response: dict[str, Any]) -> str:
     """
     Create a human-readable string for a local CA.
     Args:
@@ -656,18 +685,13 @@ def hr_local_ca(raw_response):
         The human-readable string.
 
     """
-    if raw_response.get('state') == 'pending':
-        keys = ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint',
-                'sha256Fingerprint', 'sha512Fingerprint']
-    else:
-        keys = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'state', 'serialNumber', 'subject', 'issuer',
-                'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
+    keys = PENDING_LOCAL_CA_KEYS if raw_response.get('state') == 'pending' else LOCAL_CA_KEYS
     # todo: expired keys
     hr_title = raw_response.get('subject', '')
     return ciphertrust_table_to_markdown(hr_title, data=raw_response, keys=keys, keys_headers_mapping={}, keys_value_mapping={})
 
 
-def hr_local_ca_list(raw_response):
+def hr_local_ca_list(raw_response: dict[str, Any]) -> str:
     """
     Create a human-readable string for a list of local CAs.
     Args:
@@ -676,14 +700,6 @@ def hr_local_ca_list(raw_response):
         The human-readable string.
     """
 
-    active_keys = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
-                   'purpose_client_authentication', 'purpose_user_authentication']
-    other_keys = ['name', 'subject', 'createdAt', 'sha1Fingerprint']
-    keys_headers_mapping = {'name': 'Name', 'subject': 'Subject', 'serialNumber': 'Serial #', 'notBefore': 'Activation',
-                            'notAfter': 'Expiration',
-                            'purpose_client_authentication': 'Client Auth', 'purpose_user_authentication': 'User Auth',
-                            'createdAt': 'Created',
-                            'sha1Fingerprint': 'Fingerprint'}
     keys_value_mapping = {'notBefore': date_to_markdown,
                           'notAfter': date_to_markdown,
                           'createdAt': date_to_markdown,
@@ -705,11 +721,14 @@ def hr_local_ca_list(raw_response):
     hr_title = '### Local Certificate Authorities \n'
     hr_skip_limit_title = hr_skip_limit_to_markdown(raw_response.get('skip', 0), raw_response.get('limit', 0),
                                                     raw_response.get('total', 0), 'Local '
-                                                    'CAs')
-    active_cas_hr = ciphertrust_table_to_markdown('Active CAs', active_cas, active_keys, keys_headers_mapping, keys_value_mapping)
-    pending_cas_hr = ciphertrust_table_to_markdown('Pending CAs', pending_cas, other_keys, keys_headers_mapping,
+                                                                                  'CAs')
+    active_cas_hr = ciphertrust_table_to_markdown(
+        'Active CAs', active_cas, LOCAL_CA_LIST_ACTIVE_KEYS, LOCAL_CA_LIST_KEYS_HEADERS_MAPPING, keys_value_mapping)
+    pending_cas_hr = ciphertrust_table_to_markdown('Pending CAs', pending_cas, LOCAL_CA_LIST_OTHER_KEYS,
+                                                   LOCAL_CA_LIST_KEYS_HEADERS_MAPPING,
                                                    keys_value_mapping)
-    expired_cas_hr = ciphertrust_table_to_markdown('Expired CAs', expired_cas, other_keys, keys_headers_mapping,
+    expired_cas_hr = ciphertrust_table_to_markdown('Expired CAs', expired_cas, LOCAL_CA_LIST_OTHER_KEYS,
+                                                   LOCAL_CA_LIST_KEYS_HEADERS_MAPPING,
                                                    keys_value_mapping)
 
     return f'{hr_title}{active_cas_hr}\n{pending_cas_hr}\n{expired_cas_hr}\n{hr_skip_limit_title}'
@@ -748,14 +767,11 @@ def group_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
         clients=args.get(CLIENT_ID)
     )
     raw_response = client.get_group_list(params=params)
+    keys_value_mapping = {'app_metadata': lambda x: 'System' if isinstance(x, dict) and x.get('system') else 'User'}
     hr = ciphertrust_table_to_markdown('Groups', data=raw_response,
-                                       keys=['name', 'app_metadata', 'users_count', 'description'],
-                                       keys_headers_mapping={'name': 'Name',
-                                                             'app_metadata': 'Defined By',
-                                                             'users_count': 'No. of members',
-                                                             'description': 'Description'},
-                                       keys_value_mapping={'app_metadata': lambda x: 'System' if isinstance(x, dict) and x.get(
-                                           'system') else 'User'},
+                                       keys=GROUP_LIST_KEYS,
+                                       keys_headers_mapping=GROUP_LIST_KEYS_HEADERS_MAPPING,
+                                       keys_value_mapping=keys_value_mapping,
                                        )
 
     return CommandResults(
@@ -1352,6 +1368,8 @@ def main():
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
+        else:
+            raise NotImplementedError(f'Command {command} is not implemented.')
 
     except Exception as e:
         msg = f"Exception thrown calling command '{demisto.command()}' {e.__class__.__name__}: {e}"
