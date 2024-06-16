@@ -157,7 +157,7 @@ tasks:
         XDR, the Cortex XSOAR incident is updated accordingly and the default playbook
         reruns. When an incident is updated in Cortex XSOAR, the script will execute
         the xdr-update-incident command and update the incident in Cortex XDR.
-      scriptName: XDRSyncScript
+      scriptName: XDRSyncScriptdsa
       type: regular
       iscommand: false
       brand: ""
