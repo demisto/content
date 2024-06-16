@@ -6952,3 +6952,25 @@ def test_error_handler():
         error_handler(arg_res)
     except DemistoException as e:
         assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'
+
+@pytest.mark.parametrize('Post_Raptor_release, url_suffix', [
+        (True,"alerts/queries/alerts/v2?filter=product:'epp'"),
+         (False, '/detects/queries/detects/v1')])
+def test_get_detection(mocker, Post_Raptor_release, url_suffix):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running get_detection
+    Then:
+        - Validate that the correct url_suffix is used
+            case 1: Post_Raptor_release is True, the url_suffix should be alerts/queries/alerts/v2?filter=product:'epp'
+            case 2: Post_Raptor_release is False, the url_suffix should be /detects/queries/detects/v1
+    """
+    from CrowdStrikeFalcon import get_detections
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    get_detections()
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+        

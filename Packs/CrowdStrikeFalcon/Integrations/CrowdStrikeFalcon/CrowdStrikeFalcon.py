@@ -68,7 +68,7 @@ POST_RAPTOR_RELEASE_DETECTIONS_BASE_KEY_MAP = {
     'device.hostname': 'System',
     'device.cid': 'CustomerID',
     'hostinfo.domain': 'MachineDomain',
-    'composite_id': 'ID',  #TODO should i use the ID instead? shorter
+    'composite_id': 'ID',
     'created_timestamp': 'ProcessStartTime',
     'severity': 'MaxSeverity',
     'show_in_ui': 'ShowInUi',
@@ -1906,7 +1906,8 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     # We do this so show_in_ui value won't contain ""
     data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
                                                                                                '"show_in_ui": true')
-    return http_request('PATCH', '/detects/entities/detects/v2', data=data)
+    url = "/alerts/entities/alerts/v3" if POST_RAPTOR_RELEASE else "/detects/entities/detects/v2"
+    return http_request('PATCH', url, data=data)
 
 
 def resolve_idp_or_mobile_detection(ids, status):
