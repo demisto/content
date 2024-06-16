@@ -39,3 +39,9 @@ def test_basescript_dummy(file_path, expected_output):
     """
     response = extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
     assert set(response.raw_response) == expected_output
+
+
+def test_pptx_issue():
+    file_path = 'test_data/test.pptx'
+    response = extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
+    assert response
