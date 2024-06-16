@@ -71,7 +71,7 @@ script:
       description: The date after which to search for logs in ISO format. For example, 2020-12-24T00:00:00.
     - name: limit
       required: true
-      description: Number of events to fetch
+      description: Number of events to fetch.
       defaultValue: "1"
     - auto: PREDEFINED
       defaultValue: "False"
