@@ -1101,8 +1101,8 @@ def mail_command(client: Client, args: dict, email_from, send_as, subject_prefix
     rendering_body = html_body if body_type == "html" else body
 
     result = client.send_mail(email_to, email_from, send_as, cc, bcc, subject, body, html_body, entry_ids, reply_to,
-                                            attach_names, attach_cids, manual_attach_obj, transient_file, transient_file_content,
-                                            transient_file_cid, additional_headers, template_param, in_reply_to, references)
+                              attach_names, attach_cids, manual_attach_obj, transient_file, transient_file_content,
+                              transient_file_cid, additional_headers, template_param, in_reply_to, references)
     send_mail_result = client.sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, html_body,
                                                  rendering_body, subject)
 

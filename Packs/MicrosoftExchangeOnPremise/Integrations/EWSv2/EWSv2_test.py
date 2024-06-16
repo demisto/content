@@ -468,6 +468,7 @@ def test_send_mail(mocker):
         'from': 'test@gmail.com', 'to': ['test@gmail.com'], 'subject': 'test', 'attachments': []
     }
 
+
 def test_send_mail_with_from_arg(mocker):
     """
     Given -
