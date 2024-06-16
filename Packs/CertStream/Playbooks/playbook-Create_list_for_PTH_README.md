@@ -10,19 +10,19 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* OpenAi ChatGPT v3
+This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * IsIntegrationAvailable
-* CreateArray
+* SetAndHandleEmpty
+* IsListExist
 
 ### Commands
 
-* asm-list-external-websites
 * createList
-* chatgpt-send-prompt
+* asm-list-external-websites
+* gpt-send-message
 
 ## Playbook Inputs
 
@@ -31,8 +31,9 @@ This playbook does not use any sub-playbooks.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | ResultsLimit | Number of websites results to return | 100 | Optional |
-| AuthenticationType | The authentication type of the returned websites. default is all |  | Optional |
+| AuthenticationType | The authentication type of the returned websites. default is all | Form | Optional |
 | LLMHomogrpahEnable | Enable/Disable using LLM \(default to chatGPT\) to generate homographic permutations of the domain to hunt | False | Optional |
+| DomainsListName | The name for the list of domain homographs | DomainsList | Optional |
 
 ## Playbook Outputs
 

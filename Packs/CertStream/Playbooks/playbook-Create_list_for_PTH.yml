@@ -17,129 +17,14 @@ tasks:
       description: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "28"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": -160
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "1":
-    id: "1"
-    taskid: 13686d12-2dfd-4f15-8d6c-3cd04047eaba
-    type: collection
-    task:
-      id: 13686d12-2dfd-4f15-8d6c-3cd04047eaba
-      version: -1
-      name: How would you like to create a list for PTH?
-      description: ''
-      type: collection
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: Who would you like to create a list for PTH?
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: singleSelect
-        options: []
-        optionsarg:
-        - simple: Manual
-        - simple: Xpanse
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: How would you like to create a list for PTH
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: d3220b37-400f-4ae4-8ba9-51b9484c6a90
-    type: condition
-    task:
-      id: d3220b37-400f-4ae4-8ba9-51b9484c6a90
-      version: -1
-      name: Check the answer
-      description: ''
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "15"
-      Manual:
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: Manual
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: How would you like to create a list for PTH.Answers
-                accessor: "0"
-            iscontext: true
-          right:
-            value:
-              simple: manual
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 400
+          "y": -850
         }
       }
     note: false
@@ -151,66 +36,31 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 58b13177-4614-4efc-8bde-8e4f8568df27
-    type: collection
+    taskid: 6e306b51-9434-4e89-87e3-8ca7848f70b2
+    type: title
     task:
-      id: 58b13177-4614-4efc-8bde-8e4f8568df27
+      id: 6e306b51-9434-4e89-87e3-8ca7848f70b2
       version: -1
       name: Add your website manually
-      description: ''
-      type: collection
+      type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "20"
+      - "30"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 130,
-          "y": 570
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    message:
-      to:
-      subject:
-      body:
-      methods: []
-      format: ""
-      bcc:
-      cc:
-      timings:
-        retriescount: 2
-        retriesinterval: 360
-        completeafterreplies: 1
-        completeafterv2: true
-        completeaftersla: false
-    form:
-      questions:
-      - id: "0"
-        label: ""
-        labelarg:
-          simple: 'Add your website manually - use the command delimiter '
-        required: false
-        gridcolumns: []
-        defaultrows: []
-        type: shortText
-        options: []
-        optionsarg: []
-        fieldassociated: ""
-        placeholder: ""
-        tooltip: ""
-        readonly: false
-      title: Add manually your website
-      description: ""
-      sender: ""
-      expired: false
-      totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
@@ -232,7 +82,7 @@ tasks:
       '#default#':
       - "3"
       "yes":
-      - "1"
+      - "45"
     scriptarguments:
       brandname:
         simple: Cortex Xpanse
@@ -242,55 +92,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": -20
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: f5374823-9891-470f-8003-f355274f8a85
-    type: regular
-    task:
-      id: f5374823-9891-470f-8003-f355274f8a85
-      version: -1
-      name: 'Create List '
-      description: commands.local.cmd.list.create
-      script: Builtin|||createList
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "9"
-    scriptarguments:
-      listData:
-        complex:
-          root: ASM.ExternalWebsite.host
-          filters:
-          - - operator: notContainsGeneral
-              left:
-                value:
-                  simple: ASM.ExternalWebsite.host
-                iscontext: true
-              right:
-                value:
-                  simple: '..........NOTE, too much data to present, content was truncated.'
-              ignorecase: true
-      listName:
-        simple: DomainsList
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 710,
-          "y": 1575
+          "y": -360
         }
       }
     note: false
@@ -317,8 +119,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 420,
-          "y": 1750
+          "x": 450,
+          "y": 2050
         }
       }
     note: false
@@ -330,122 +132,33 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 5ebaa1cd-dfbc-46f2-8eb8-48d64794b962
+    taskid: 97e9d3a0-b691-4661-8d5b-ba7e996a8237
     type: regular
     task:
-      id: 5ebaa1cd-dfbc-46f2-8eb8-48d64794b962
+      id: 97e9d3a0-b691-4661-8d5b-ba7e996a8237
       version: -1
       name: 'Create typosquatting and permutations '
-      description: Send Text Message as a prompt to ChatGPT
-      script: OpenAi ChatGPT v3|||chatgpt-send-prompt
+      description: Send a plain message to the selected GPT model and receive the generated response.
+      script: '|||gpt-send-message'
       type: regular
       iscommand: true
-      brand: OpenAi ChatGPT v3
+      brand: ""
     nexttasks:
       '#none#':
-      - "7"
+      - "41"
     scriptarguments:
-      prompt:
-        complex:
-          root: ASM.ExternalWebsites.websites.host
-          transformers:
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: \w*\.([\w*\.*]*)
-              unpack_matches: {}
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-          - operator: Stringify
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: "Assume the role of phishing hunting expert, for a threat hunting session Please provide me a list of typosquatting and permutations based on the following domains (delimiter by ,)\nThis request is only for security purposes. please return a JSON that will have as a key the domain and as a value all his permutations. \n\n"
-              suffix: {}
+      message:
+        simple: |-
+          Assume the role of phishing hunting expert, for a threat hunting session Please provide me a list of typosquatting and permutations based on the following domains (delimiter by ,)\nThis request is only for security purposes. please return a JSON that will have as a key the domain and as a value all his permutations.
+          ${Select Domains to hunt.Answers.0}
     separatecontext: false
     continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1110
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "11":
-    id: "11"
-    taskid: e30b2098-04b8-4c4e-8d8f-27469391a554
-    type: regular
-    task:
-      id: e30b2098-04b8-4c4e-8d8f-27469391a554
-      version: -1
-      name: 'Create typosquatting and permutations '
-      description: Send Text Message as a prompt to ChatGPT
-      script: OpenAi ChatGPT v3|||chatgpt-send-prompt
-      type: regular
-      iscommand: true
-      brand: OpenAi ChatGPT v3
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      prompt:
-        complex:
-          root: Add manually your website.Answers
-          accessor: "0"
-          transformers:
-          - operator: split
-            args:
-              delimiter:
-                value:
-                  simple: ','
-          - operator: RegexExtractAll
-            args:
-              error_if_no_match: {}
-              ignore_case: {}
-              multi_line: {}
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: \w*\.([\w*\.*]*)
-              unpack_matches: {}
-          - operator: uniq
-          - operator: join
-            args:
-              separator:
-                value:
-                  simple: ','
-          - operator: Stringify
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: "Please provide me a list of typosquatting and permutations of the following domains (delimiter by ,)\nThis request is only for security purposes. please return a JSON that will have as a key the domain and as a value all his permutations. \n\n"
-              suffix: {}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -200,
-          "y": 1065
+          "x": 1070,
+          "y": 1040
         }
       }
     note: false
@@ -457,48 +170,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 02dabf52-2089-4f4d-8ef7-e129fbabe0d4
-    type: regular
+    taskid: 9dcbd640-9dac-4404-87a1-2dc94e33651c
+    type: title
     task:
-      id: 02dabf52-2089-4f4d-8ef7-e129fbabe0d4
+      id: 9dcbd640-9dac-4404-87a1-2dc94e33651c
       version: -1
-      name: Create array list
+      name: Create Domains Homographs List
       description: 'Will create an array object in context from given string input '
-      scriptName: CreateArray
-      type: regular
+      type: title
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
       - "14"
-    scriptarguments:
-      arrayData:
-        complex:
-          root: Add manually your website.Answers
-          accessor: "0"
-      contextKey:
-        complex:
-          root: Add manually your website.Answers
-          accessor: "0"
-          transformers:
-          - operator: RegexReplace
-            args:
-              action_dt: {}
-              ignore_case: {}
-              multi_line: {}
-              output_format:
-                value:
-                  simple: \1
-              period_matches_newline: {}
-              regex:
-                value:
-                  simple: (^\S+)\.(com|net|co\.il)
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: DomainsList.
-              suffix: {}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -517,12 +201,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 100cddc4-8f20-4bd7-8458-0cf5c4e05019
+    taskid: 585f5b4b-2ebf-465d-846c-29adf1b2752a
     type: regular
     task:
-      id: 100cddc4-8f20-4bd7-8458-0cf5c4e05019
+      id: 585f5b4b-2ebf-465d-846c-29adf1b2752a
       version: -1
-      name: 'Create List '
+      name: Create List Manually
       description: commands.local.cmd.list.create
       script: Builtin|||createList
       type: regular
@@ -533,16 +217,16 @@ tasks:
       - "9"
     scriptarguments:
       listData:
-        simple: ${DomainsList}
+        simple: ${ListData}
       listName:
-        simple: DomainsList
+        simple: ${inputs.DomainsListName}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 130,
-          "y": 1575
+          "y": 1880
         }
       }
     note: false
@@ -554,10 +238,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 03eaff10-f16c-45ff-8103-c4309934205b
+    taskid: 198862df-328f-45ab-8118-ac4abd68f570
     type: regular
     task:
-      id: 03eaff10-f16c-45ff-8103-c4309934205b
+      id: 198862df-328f-45ab-8118-ac4abd68f570
       version: -1
       name: Get login pages from xpanse
       description: Get external websites assets.
@@ -567,7 +251,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "22"
+      - "37"
     scriptarguments:
       authentication:
         complex:
@@ -580,25 +264,25 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 570
+          "x": 800,
+          "y": 50
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: a44b5181-763a-4acb-8170-e5383a2a1470
+    taskid: 92e8c889-2606-4dc6-878d-f0853e929e31
     type: condition
     task:
-      id: a44b5181-763a-4acb-8170-e5383a2a1470
+      id: 92e8c889-2606-4dc6-878d-f0853e929e31
       version: -1
-      name: Manual\Xpanse permutation
+      name: Generate Homographs using LLM
       description: ''
       type: condition
       iscommand: false
@@ -607,7 +291,7 @@ tasks:
       '#default#':
       - "13"
       Use LLM Permutations:
-      - "11"
+      - "42"
     separatecontext: false
     conditions:
     - label: Use LLM Permutations
@@ -639,12 +323,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 7bbae5e5-bd39-4d9f-8dd2-5fbd6c6826bd
+    taskid: c3e8ca3b-61d6-4376-8c77-cfb23be4f6d1
     type: title
     task:
-      id: 7bbae5e5-bd39-4d9f-8dd2-5fbd6c6826bd
+      id: c3e8ca3b-61d6-4376-8c77-cfb23be4f6d1
       version: -1
-      name: Use LLM Permutations
+      name: Use LLM Homographs
       type: title
       iscommand: false
       brand: ""
@@ -652,59 +336,14 @@ tasks:
     nexttasks:
       '#none#':
       - "19"
+      - "42"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 130,
-          "y": 750
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 33d463ef-b2e8-47e6-80c8-474888850b30
-    type: regular
-    task:
-      id: 33d463ef-b2e8-47e6-80c8-474888850b30
-      version: -1
-      name: Set to Context
-      description: |-
-        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
-
-        This automation runs using the default Limited User role, unless you explicitly change the permissions.
-        For more information, see the section about permissions here:
-        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: SetAndHandleEmpty
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "13"
-    scriptarguments:
-      append:
-        simple: "false"
-      key:
-        simple: Add manually your website.Answers.0
-      value:
-        complex:
-          root: ChatGPTResponse
-          accessor: ChatGPT Response
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -200,
-          "y": 1230
+          "y": 720
         }
       }
     note: false
@@ -716,12 +355,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 11db74ed-76d5-4328-86eb-4d0c697adfcd
+    taskid: 8d4c0b06-4b6f-4df5-838f-5d131004eb94
     type: title
     task:
-      id: 11db74ed-76d5-4328-86eb-4d0c697adfcd
+      id: 8d4c0b06-4b6f-4df5-838f-5d131004eb94
       version: -1
-      name: Use LLM Permutations
+      name: Use LLM Homographs
       type: title
       iscommand: false
       brand: ""
@@ -734,8 +373,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 760
+          "x": 800,
+          "y": 720
         }
       }
     note: false
@@ -747,19 +386,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: a8535e2e-b09f-47d7-8ec5-bc075377a7a7
+    taskid: b7264512-7905-4a24-80cf-c6c42990e27a
     type: condition
     task:
-      id: a8535e2e-b09f-47d7-8ec5-bc075377a7a7
+      id: b7264512-7905-4a24-80cf-c6c42990e27a
       version: -1
-      name: Manual\Xpanse permutation
-      description: ''
+      name: Generate Homographs using LLM
+      description: ""
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       '#default#':
-      - "7"
+      - "38"
       Use LLM Permutations:
       - "10"
     separatecontext: false
@@ -780,8 +419,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 890
+          "x": 800,
+          "y": 870
         }
       }
     note: false
@@ -791,19 +430,865 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 85557240-fe2c-4300-8df3-ea44ca95ecd8
+    type: condition
+    task:
+      id: 85557240-fe2c-4300-8df3-ea44ca95ecd8
+      version: -1
+      name: Is list exist already?
+      description: Check if list exist in demisto lists.
+      scriptName: IsListExist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "44"
+      "No":
+      - "5"
+    scriptarguments:
+      listName:
+        simple: ${inputs.DomainsListName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 7e27f484-a492-4d28-8d28-a47cb89dddb2
+    type: condition
+    task:
+      id: 7e27f484-a492-4d28-8d28-a47cb89dddb2
+      version: -1
+      name: Add single/multiple domain
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Multiple:
+      - "33"
+      Single:
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 130,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: Add single or multiple domain?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Single
+      - Multiple
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 5672824c-759a-4e36-83b0-c564b213fda6
+    type: collection
+    task:
+      id: 5672824c-759a-4e36-83b0-c564b213fda6
+      version: -1
+      name: Add a single domain to hunt
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      extend-context:
+        simple: Answers=.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please provide the primary domain name?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: exampleDomain
+        tooltip: The domain name for which to hunt homographs list. e.g. exampleDomain
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Please provide the list of homographs to match?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: 'Note: If using LLM, this field should be empty. The list of primary
+          domain''s homographs to match. e.g. ```examp1e, ex4mple, exampl3, xample```'
+        readonly: false
+      title: Add a single domain to hunt
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c9a81353-1447-494d-8e8b-2c2701da63e0
+    type: collection
+    task:
+      id: c9a81353-1447-494d-8e8b-2c2701da63e0
+      version: -1
+      name: Add multiple domains to hunt
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      extend-context:
+        simple: ListData=.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Add your website manually - in JSON format (see example above)
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 'List of homographs to hunt. provided in the following format:
+          ```json {   "domain1": [     "domain1_homograph1",     "domain1_homograph2",     "domain1_homograph3"],   "domain2":
+          [     "domain2_homograph1",     "domain2_homograph2",     "domain2_homograph3"   ] } ```'
+        tooltip: 'Note: If using LLM, Please change only the domain names and leave
+          the homographs lists with the examples'
+        readonly: false
+      title: Add multiple domains to hunt
+      description: |-
+        List of homographs to hunt. provided in the following format:
+        ```json
+        {
+          "domain1": [
+            "domain1_homograph1",
+            "domain1_homograph2",
+            "domain1_homograph2"
+          ],
+          "domain2": [
+            "domain2_homograph1",
+            "domain2_homograph2",
+            "domain2_homograph3"
+          ]
+        }
+        ```
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 138e67da-b659-4c8d-8080-158073e0d7ff
+    type: regular
+    task:
+      id: 138e67da-b659-4c8d-8080-158073e0d7ff
+      version: -1
+      name: Set Answers to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ListData
+      value:
+        complex:
+          root: Add a single domain to hunt.Answers
+          accessor: "1"
+          transformers:
+          - operator: splitAndTrim
+            args:
+              delimiter:
+                value:
+                  simple: ','
+          - operator: StringifyArray
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '":'
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: ${Add a single domain to hunt.Answers.0}
+                iscontext: true
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{"'
+              suffix:
+                value:
+                  simple: '}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 340,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: d389df96-65c5-4052-896f-fecceea5e25e
+    type: regular
+    task:
+      id: d389df96-65c5-4052-896f-fecceea5e25e
+      version: -1
+      name: Set Answer to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ListData
+      value:
+        simple: ${Add multiple domains to hunt.Answers.0}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -90,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 62ca251a-b45e-4cf0-8cb7-57f68f20ed78
+    type: collection
+    task:
+      id: 62ca251a-b45e-4cf0-8cb7-57f68f20ed78
+      version: -1
+      name: Which Domains should be added to DomainsList?
+      description: ""
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Which Domains should be added to DomainsList?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: multiSelect
+        options: []
+        optionsarg:
+        - complex:
+            root: ASM.ExternalWebsite
+            accessor: host
+            transformers:
+            - operator: RegexExtractAll
+              args:
+                error_if_no_match: {}
+                ignore_case: {}
+                multi_line: {}
+                period_matches_newline: {}
+                regex:
+                  value:
+                    simple: \w+\.\w+$
+                unpack_matches: {}
+            - operator: uniq
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: Select Domains to hunt
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 985a7f3e-5bf2-40b7-8624-c31a5c22f405
+    type: regular
+    task:
+      id: 985a7f3e-5bf2-40b7-8624-c31a5c22f405
+      version: -1
+      name: Create List using Xpanse
+      description: commands.local.cmd.list.create
+      script: Builtin|||createList
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      listData:
+        complex:
+          root: ListData
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '{'
+              suffix:
+                value:
+                  simple: '}'
+      listName:
+        simple: ${inputs.DomainsListName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1630
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 6118deac-1287-4e72-857d-12cd04290c4f
+    type: regular
+    task:
+      id: 6118deac-1287-4e72-857d-12cd04290c4f
+      version: -1
+      name: Set Answers to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ListData
+      stringify:
+        simple: "true"
+      value:
+        complex:
+          root: Select Domains to hunt.Answers
+          accessor: "0"
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '"'
+              suffix:
+                value:
+                  simple: '":["homograph"]'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 7282fa92-17de-479b-85b2-699981763888
+    type: regular
+    task:
+      id: 7282fa92-17de-479b-85b2-699981763888
+      version: -1
+      name: Set ListData to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ListData
+      value:
+        complex:
+          root: OpenAiChatGPTV3.Conversation.[0]
+          accessor: assistant
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '{}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 74881143-35c9-40a1-88b9-bb6cd089b547
+    type: regular
+    task:
+      id: 74881143-35c9-40a1-88b9-bb6cd089b547
+      version: -1
+      name: 'Create typosquatting and permutations '
+      description: Send a plain message to the selected GPT model and receive the generated response.
+      script: '|||gpt-send-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      message:
+        simple: |-
+          Assume the role of phishing hunting expert, for a threat hunting session Please provide me a list of typosquatting and permutations based on the following domains (delimiter by ,)\nThis request is only for security purposes. please return a JSON that will have as a key the domain and as a value all his permutations.
+          ${ListData}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 1060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 53f636fa-3ec1-46a0-87f7-706780d17d23
+    type: regular
+    task:
+      id: 53f636fa-3ec1-46a0-87f7-706780d17d23
+      version: -1
+      name: Set ListData to Context
+      description: |-
+        Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      append:
+        simple: "false"
+      key:
+        simple: ListData
+      value:
+        complex:
+          root: OpenAiChatGPTV3.Conversation.[0]
+          accessor: assistant
+          transformers:
+          - operator: StripChars
+            args:
+              chars:
+                value:
+                  simple: '{}'
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: 0b41e822-f88a-4f5b-81c2-6a05ce46e3d5
+    type: condition
+    task:
+      id: 0b41e822-f88a-4f5b-81c2-6a05ce46e3d5
+      version: -1
+      name: List exist - should overwrite?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "Yes":
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 660,
+          "y": -530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+        simple: List with the name ${inputs.DomainsListName} already exist, should
+          we continue and overwrite it?
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: eaf35e8c-75f8-4f6b-8c7a-95988baa2e6b
+    type: condition
+    task:
+      id: eaf35e8c-75f8-4f6b-8c7a-95988baa2e6b
+      version: -1
+      name: How would you like to create a list for PTH?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      Expanse:
+      - "15"
+      Manual:
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -125
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: how would you like to create the list?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - Expanse
+      - Manual
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 463488fd-2958-48dc-8092-95fa6cc14a84
+    type: regular
+    task:
+      id: 463488fd-2958-48dc-8092-95fa6cc14a84
+      version: -1
+      name: Add Domain Homographs Manually
+      description: "Almost Done! Now go over to the XSOAR Lists page and manually
+        replace the \"homograph\" placeholder for each domain to hunt. \n\nThe List
+        Name: ${inputs.DomainsListName}\nExpected List Format:\n{\n  \"domain1\":
+        [\n    \"d0main1\",\n    \"doma1n1\",\n    \"domainn1\",\n  ],\n  \"domain2\":
+        [\n    \"dOmain2\",\n    \"domaוm2\",\n    \"6oma!n2\"\n  ]\n}"
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 800,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {
-      "19_11_Use LLM Permutations": 0.59,
+      "19_42_Use LLM Permutations": 0.5,
       "23_10_Use LLM Permutations": 0.5,
-      "2_3_Manual": 0.56
+      "28_44_#default#": 0.59,
+      "28_5_No": 0.4,
+      "30_31_Single": 0.48,
+      "30_33_Multiple": 0.54
     },
     "paper": {
       "dimensions": {
-        "height": 1975,
-        "width": 1290,
-        "x": -200,
-        "y": -160
+        "height": 2965,
+        "width": 1590,
+        "x": -140,
+        "y": -850
       }
     }
   }
@@ -815,7 +1300,8 @@ inputs:
   description: Number of websites results to return
   playbookInputQuery:
 - key: AuthenticationType
-  value: {}
+  value:
+    simple: Form
   required: false
   description: The authentication type of the returned websites. default is all
   playbookInputQuery:
@@ -825,7 +1311,27 @@ inputs:
   required: false
   description: Enable/Disable using LLM (default to chatGPT) to generate homographic permutations of the domain to hunt
   playbookInputQuery:
+- key: DomainsListName
+  value:
+    simple: DomainsList
+  required: false
+  description: The name for the list of domain homographs
+  playbookInputQuery:
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}
+inputSections:
+- inputs:
+  - ResultsLimit
+  - AuthenticationType
+  - LLMHomogrpahEnable
+  - DomainsListName
+  name: General (Inputs group)
+  description: Generic group for inputs
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs

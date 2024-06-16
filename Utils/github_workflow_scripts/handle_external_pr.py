@@ -332,7 +332,7 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
     for pr in all_prs:
         if pr.number == pr_number:  # Exclude current PR
             continue
-        existing_pr_author = get_user_from_pr_body(pr) if pr.user.login == "xsoar-bot" else pr.user.login
+        existing_pr_author = get_user_from_pr_body(pr) if pr.user.login in ["xsoar-bot", "content-bot"] else pr.user.login
         if existing_pr_author == pr_creator:
             similar_prs.append(pr)
     print(f'PR\'s by the same author: {similar_prs}')
@@ -371,7 +371,7 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
     Returns:
     - Reviewer to assign
     """
-    if pr.user.login == "xsoar-bot":
+    if pr.user.login in ["xsoar-bot", "content-bot"]:
         pr_creator = get_user_from_pr_body(pr)
     else:
         pr_creator = pr.user.login
