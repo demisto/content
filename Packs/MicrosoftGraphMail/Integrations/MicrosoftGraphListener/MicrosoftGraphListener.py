@@ -11,6 +11,7 @@ urllib3.disable_warnings()
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 BASE_URL_SUFFIX = 'v1.0/'
 
+
 class MsGraphListenerClient(MsGraphMailBaseClient):
     """
     MsGraphListenerClient enables authorized access to a user's Office 365 mail data in a personal account.
