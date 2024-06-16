@@ -155,7 +155,7 @@ tasks:
       version: -1
       name: Get user details by username
       description: Retrieves detailed information about a user account based on their username.
-      script: Active Directory Query v2|||ad-get-user
+      script: Active Directory Query v21|||ad-get-user
       type: regular
       iscommand: true
       brand: Active Directory Query v2
@@ -195,7 +195,7 @@ tasks:
       version: -1
       name: Get user details by email
       description: Retrieves detailed information about a user account based on their email address.
-      script: Active Directory Query v2|||ad-get-user
+      script: Active Directory Query v2|||ad-get-userd
       type: regular
       iscommand: true
       brand: Active Directory Query v2
