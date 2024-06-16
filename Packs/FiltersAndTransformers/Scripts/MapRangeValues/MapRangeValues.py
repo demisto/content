@@ -18,11 +18,19 @@ class Replace:
     @staticmethod
     def get_typed_value(value: str) -> VALUE_TYPE:
         try:
+            demisto.debug(f'MapRangeValues, get_typed_value {value=}')
             f_value = float(value)
+            demisto.debug(f'MapRangeValues, get_typed_value {f_value=}')
             if f_value % 1 == 0:
-                return int(value)
+                demisto.debug('MapRangeValues, get_typed_value try int()')
+                try:
+                    return int(value)
+                except ValueError:
+                    demisto.debug(f"MapRangeValues, get_typed_value the {value=} isn't int")
+            demisto.debug(f'MapRangeValues, get_typed_value return {f_value=}')
             return f_value
         except ValueError:
+            demisto.debug(f'MapRangeValues, get_typed_value in ValueError {str(value)=}')
             return str(value)
 
 
@@ -33,6 +41,7 @@ class RangeReplace(Replace):
         self.replacement = self.get_typed_value(replacement)
 
     def should_replace(self, value) -> bool:    # pylint: disable=W9014
+        demisto.debug(f'MapRangeValues, RangeReplace class, should_replace {self._start_value=} {value=} {self._end_value=}')
         try:
             return self._start_value <= value <= self._end_value
         except TypeError:
@@ -55,8 +64,10 @@ def replace_values(values: list[str], replace_list: list[Replace]) -> list[VALUE
     replaced_list = []
     for value in map(Replace.get_typed_value, values):
         for replace_obj in replace_list:
+            demisto.debug(f'MapRangeValues {replace_obj.replacement=}')
             if replace_obj.should_replace(value):
                 value = replace_obj.replacement
+                demisto.debug(f'MapRangeValues should_replace {value=}')
                 break
         replaced_list.append(value)
     return replaced_list
