@@ -653,13 +653,6 @@ script:
       - user_agent.original
       description:  "Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter."
       isArray: true
-    - name: interval_in_seconds
-      default: true
-      description: Interval in seconds between each poll.
-      defaultValue: "2"
-    - name: timeout_in_seconds
-      description: Polling timeout in seconds.
-      defaultValue: "60"
     outputs:
     - contextPath: SekoiaXDR.Events.Results
       description: The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results.
@@ -681,6 +674,13 @@ script:
     - name: comment
       description: A comment to describe why the alert status has changed.
     description: Command to update the status of a specific Alert by uuid or short_id.
+  - name: sekoia-xdr-await_alert_status
+    polling: true
+    arguments:
+    - name: uuid
+      required: true
+      description: The UUID of the alert search job
+    description: Polling command to await for query to finish.
   - name: sekoia-xdr-post-comment-alert
     arguments:
     - name: id
@@ -1178,7 +1178,7 @@ script:
       description: Query parameters, i.e. limit -> 10 , match['status_name'] -> Ongoing.
       type: keyValue
     description: Command that performs a HTTP request to Sekoia using the integration authentication configured.
-  dockerimage: demisto/python3:3.10.14.97374
+  dockerimage: demisto/python3:3.10.14.94490
   isfetch: true
   runonce: false
   subtype: python3

@@ -950,8 +950,6 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
     term = args["query"]
     max_last_events = args.get("max_last_events")
     exclude_info_arg = args.get("exclude_info")
-    timeout_in_seconds = int(args["timeout_in_seconds"])
-    exclude_info_arg = args.get("exclude_info")
     exclude_info_param = demisto.params().get("exclude_info_events")
     replace_symbol = demisto.params().get("replace_dots_event")
 
@@ -963,66 +961,45 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
     )
     search_job_uuid = search["uuid"]
 
-    start_time = time.time()
-    bool_flag = True
-    while bool_flag:
-        # Break when the time of the query is bigger than the timeout
-        if time.time() - start_time > timeout_in_seconds:
-            demisto.debug(
-                "The query of the events have timeout without a valid status result."
+    await_alert_status_command(args={"uuid": search_job_uuid}, client=client)
+
+    events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
+    total = max_last_events or events["total"]
+
+    if len(events["items"]) > 0:
+        if exclude_info_arg:
+            headers = exclude_info_events(
+                event_info=events, exclude_info=exclude_info_arg
             )
-            break
-        query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
-        status = query_status["status"]
-
-        if status == 2:
-            events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
-            total = max_last_events or events["total"]
-
-            if len(events["items"]) > 0:
-                if exclude_info_arg:
-                    headers = exclude_info_events(
-                        event_info=events, exclude_info=exclude_info_arg
-                    )
-                    headers = [
-                        header.replace(".", replace_symbol) for header in headers
-                    ]
-                    events_undot = undot(json_data=events)
-                    readable_output = tableToMarkdown(
-                        f"{total} events out of {str(events['total'])} retrieved for the {term}",
-                        events_undot,
-                        headers=headers,
-                    )
-                elif exclude_info_param:
-                    headers = exclude_info_events(
-                        event_info=events, exclude_info=",".join(exclude_info_param)
-                    )
-                    headers = [
-                        header.replace(".", replace_symbol) for header in headers
-                    ]
-                    events_undot = undot(json_data=events)
-                    readable_output = tableToMarkdown(
-                        f"{total} events out of {events['total']} retrieved for the {term}",
-                        events_undot,
-                        headers=headers,
-                    )
-                else:
-                    events_undot = undot(json_data=events)
-                    readable_output = tableToMarkdown(
-                        f"{total} events out of {events['total']} retrieved for the {term}",
-                        events_undot,
-                    )
-            else:
-                readable_output = tableToMarkdown(
-                    f"{total} events out of {events['total']} retrieved for the {term}",
-                    events["items"],
-                )
-            bool_flag = False
-
+            headers = [header.replace(".", replace_symbol) for header in headers]
+            events_undot = undot(json_data=events)
+            readable_output = tableToMarkdown(
+                f"{total} events out of {str(events['total'])} retrieved for the {term}",
+                events_undot,
+                headers=headers,
+            )
+        elif exclude_info_param:
+            headers = exclude_info_events(
+                event_info=events, exclude_info=",".join(exclude_info_param)
+            )
+            headers = [header.replace(".", replace_symbol) for header in headers]
+            events_undot = undot(json_data=events)
+            readable_output = tableToMarkdown(
+                f"{total} events out of {events['total']} retrieved for the {term}",
+                events_undot,
+                headers=headers,
+            )
         else:
-            demisto.debug(f"The query is still running with the status {status}")
-
-        time.sleep(int(args["interval_in_seconds"]))
+            events_undot = undot(json_data=events)
+            readable_output = tableToMarkdown(
+                f"{total} events out of {events['total']} retrieved for the {term}",
+                events_undot,
+            )
+    else:
+        readable_output = tableToMarkdown(
+            f"{total} events out of {events['total']} retrieved for the {term}",
+            events["items"],
+        )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1030,6 +1007,39 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
         outputs_key_field="search_job_uuid",
         outputs=events["items"],
     )
+
+
+@polling_function(
+    name="await-alert-status",
+    poll_message="Polling for alert status",
+)
+def await_alert_status_command(args: Dict[str, Any], client: Client) -> PollResult:
+    """
+    Polls for the status of an alert search job.
+
+    Args:
+        args (Dict[str, Any]): The command arguments.
+            - uuid (str): The UUID of the alert search job.
+        client (Client): The SekoiaXDR client.
+
+    Returns:
+        PollResult: The result of the polling.
+            - continue_to_poll (bool): Whether to continue polling.
+            - response (Any): The response from the query.
+
+    """
+    search_job_uuid = args["uuid"]
+    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
+
+    finished_status = query_status["status"] == 2
+
+    if finished_status:
+        return PollResult(
+            continue_to_poll=False,
+            response=query_status["status"],
+        )
+
+    return PollResult(continue_to_poll=True, response=query_status["status"])
 
 
 def update_status_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1422,6 +1432,8 @@ def main() -> None:
             return_results(retrieve_events_command(client, args))
         elif command == "sekoia-xdr-search-events":
             return_results(search_events_command(client, args))
+        elif command == "sekoia-xdr-await_alert_status":
+            return_results(await_alert_status_command(args, client))
         elif command == "sekoia-xdr-update-status-alert":
             return_results(update_status_alert_command(client, args))
         elif command == "sekoia-xdr-post-comment-alert":
