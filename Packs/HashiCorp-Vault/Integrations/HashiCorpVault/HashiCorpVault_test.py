@@ -147,7 +147,6 @@ def test_generate_role_secret_command(mocker):
         path='/auth/approle/role/test_role/secret-id',
         method='post',
         body={
-            "role_name": 'test_role',
             "metadata": 'test_metadata',
             "ttl": 3600,
             "num_uses": 5
@@ -188,7 +187,7 @@ def test_get_role_id_command(mocker):
     expected_body = {
         'role_name': 'test_role'
     }
-    expected_outputs = '12345'
+    expected_outputs = {'Id': 'role_id', 'Name': 'test_role'}
 
     get_role_id_command()
 

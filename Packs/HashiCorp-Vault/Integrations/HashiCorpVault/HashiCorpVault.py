@@ -54,9 +54,11 @@ def login():  # pragma: no cover
         body = {
             'password': PASSWORD
         }
-
+        
     url = urljoin(SERVER_URL, path)
-    res = requests.request('POST', url, headers=get_headers(), data=json.dumps(body), verify=VERIFY_SSL)
+    payload = json.dumps(body)
+    headers = get_headers()
+    res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
     if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
         try:
             error_body = res.json()
@@ -110,7 +112,6 @@ def generate_role_secret_command():
 
     path = f'/auth/approle/role/{role_name}/secret-id'
     body = {
-        "role_name": role_name,
         "metadata": meta_data,
         "cidr_list": cidr_list,
         "token_bound_cidrs": token_bound_cidrs,
@@ -131,7 +132,7 @@ def get_role_id_command():
     if response:
         role_id = response.get('data', {}).get('role_id', '')
     if role_id:
-        return_results(CommandResults(outputs_prefix='HashiCorp.AppRole', outputs=role_id))
+        return_results(CommandResults(outputs_prefix='HashiCorp.AppRole', outputs={"Id":"role_id", "Name":role_name}))
 
 
 def list_secrets_engines_command():  # pragma: no cover

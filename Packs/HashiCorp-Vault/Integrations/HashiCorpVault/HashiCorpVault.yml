@@ -365,8 +365,11 @@ script:
       required: true
       description: The name of the AppRole.
     outputs:
-    - contextPath: HashiCorp.AppRole
+    - contextPath: HashiCorp.AppRole.Id
       description: AppRole ID.
+      type: string
+    - contextPath: HashiCorp.AppRole.Name
+      description: AppRole Name.
       type: string
   dockerimage: demisto/vendors-sdk:1.0.0.97265
 tests:

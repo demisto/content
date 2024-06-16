@@ -13,3 +13,5 @@
 !hashicorp-list-secrets-engines
 !hashicorp-seal-vault
 !hashicorp-unseal-vault
+!hashicorp-get-role-id role_name=app-read-write
+!hashicorp-generate-role-secret role_name=app-read-write
