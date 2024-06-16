@@ -234,6 +234,7 @@ script:
         required: true
       - description: 'PROVIDE THIS FIELD IF attributes_json IS NOT PROVIDED. A key-value map of object attributes. The structure of the field is: { "attributeId1": [ "value1", "value2"] , "attributeId2":["value1", "value2"] }. You can the command `jira-asset-object-type-attribute-list` to retrieve the list of available attributes.'
         name: attributes
+        type: keyValue
       - description: PROVIDE THIS FIELD IF attributes IS NOT PROVIDED. A json string of object attributes to be added to the new object. Take a look at https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject for the structure of this field. You can use the command `jira-asset-object-type-attribute-list` to retrieve the list of available attributes.
         name: attributes_json
     name: jira-asset-object-create
@@ -275,6 +276,7 @@ script:
         required: true
       - description: 'PROVIDE THIS FIELD IF attributes_json IS NOT PROVIDED. A key-value map of object attributes. The structure of the field is: { "attributeId1": [ "value1", "value2"] , "attributeId2":["value1", "value2"] }. You can use the command `jira-asset-object-type-attribute-list` to retrieve the list of available attributes.'
         name: attributes
+        type: keyValue
       - description: PROVIDE THIS FIELD IF attributes IS NOT PROVIDED. A json string of object attributes to be added to the new object. Take a look at https://docs.atlassian.com/assets/REST/10.7.0/#object-createObject for the structure of this field. You can use the command `jira-asset-object-type-attribute-list` to retrieve the list of available attributes.
         name: attributes_json
     name: jira-asset-object-update

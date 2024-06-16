@@ -309,7 +309,7 @@ def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) 
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Schema',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object Schemas', outputs, headers=hr_headers)
+        readable_output=tableToMarkdown('Object Schemas', outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -335,7 +335,7 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ObjectType',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers)
+        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -366,7 +366,7 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attribute',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers)
+        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -432,7 +432,7 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object', readable_output, headers=hr_headers)
+        readable_output=tableToMarkdown('Object', readable_output, headers=hr_headers, removeNull=True)
     )
 
 
@@ -454,7 +454,7 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object', readable_output, headers=hr_headers)
+        readable_output=tableToMarkdown('Object', readable_output, headers=hr_headers, removeNull=True)
     )
 
 
@@ -503,7 +503,7 @@ def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> Com
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Comment',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Comments', outputs, headers=hr_headers)
+        readable_output=tableToMarkdown('Comments', outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -518,7 +518,7 @@ def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ConnectedTicket',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Connected Tickets', readable_output, headers=hr_headers)
+        readable_output=tableToMarkdown('Connected Tickets', readable_output, headers=hr_headers, removeNull=True)
     )
 
 
@@ -549,7 +549,7 @@ def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> 
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Attachments', outputs, headers=hr_header)
+        readable_output=tableToMarkdown('Attachments', outputs, headers=hr_header, removeNull=True)
     )
 
     if not download_file:
