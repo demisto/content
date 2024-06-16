@@ -53,7 +53,7 @@ def extract_hyperlinks_from_pptx(file_path: str) -> Set:
                     for run in paragraph.runs:
                         if run.hyperlink and run.hyperlink.address:
                             links.add(run.hyperlink.address)
-            if shape.shape_type == MSO_SHAPE_TYPE.GROUP:
+            if shape.shape_type == MSO_SHAPE_TYPE.GROUP:    # pylint: disable=E1101
                 group_shape = shape
                 for s in group_shape.shapes:
                     if s.click_action and s.click_action.hyperlink.address:
