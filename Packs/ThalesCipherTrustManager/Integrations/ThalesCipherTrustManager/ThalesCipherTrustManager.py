@@ -513,18 +513,41 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> t
 
 
 def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
+    """
+    Zip a file with a password.
+    Args:
+        input_file_path: The input file path.
+        password: The password.
+        output_file_path: The output file path.
+    """
     import pyminizip
     pyminizip.compress(input_file_path, None, output_file_path, password, int(5))
 
 
 def create_zip_protected_file(zip_filename: str, filename: str, data: str, password: str):
+    """
+    Create a zip file with a password.
+    Args:
+        zip_filename: The zip file name.
+        filename: The file name.
+        data: The data to write to the file.
+        password: The password.
+    """
     with open(filename, 'wb') as f:
         f.write(data.encode('utf-8'))
     zip_file_with_password(filename, password, zip_filename)
     os.remove(filename)
 
 
-def return_password_protected_zip_file_result(zip_filename: str, filename: str, data: str, password: str) -> None:
+def return_password_protected_zip_file_result(zip_filename: str, filename: str, data: str, password: str):
+    """
+    Return a password protected zip file result to the context.
+    Args:
+        zip_filename: The zip file name.
+        filename: The file name.
+        data: The data to write to the file.
+        password: The password.
+    """
     zip_filename = f'{zip_filename}.zip'
     create_zip_protected_file(zip_filename, filename, data, password)
     with open(zip_filename, 'rb') as f:
@@ -533,6 +556,16 @@ def return_password_protected_zip_file_result(zip_filename: str, filename: str, 
 
 
 def hr_skip_limit_to_markdown(skip: int, limit: int, total: int, name: str) -> str:
+    """
+    Create a human-readable string for the skip, limit, and total values.
+    Args:
+        skip: The skip value.
+        limit: The limit value.
+        total: The total value.
+        name: The name of the resource.
+    Returns:
+        The human-readable string.
+    """
     start = skip + 1
     to_bring = skip + limit
     end = to_bring if to_bring < total else total
@@ -540,6 +573,15 @@ def hr_skip_limit_to_markdown(skip: int, limit: int, total: int, name: str) -> s
 
 
 def date_to_markdown(iso_date: Optional[str], empty_value: str = '') -> str:
+    """
+    Convert an ISO date to a human-readable date string.
+    Args:
+        iso_date: The ISO date.
+        empty_value: The value to return if the date is empty.
+    Returns:
+        The human-readable date string.
+
+    """
     if not iso_date:
         return empty_value
     try:
@@ -550,6 +592,16 @@ def date_to_markdown(iso_date: Optional[str], empty_value: str = '') -> str:
 
 def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_mapping: dict,
                                                  keys_value_mapping: dict):
+    """
+    Transform the data for the table to markdown function.
+    Args:
+        data: The data dictionary.
+        keys: The keys to include.
+        keys_headers_mapping: The keys headers mapping.
+        keys_value_mapping: The keys value mapping.
+    Returns:
+        The transformed data dictionary.
+    """
     transformed_data = {}
     for k in keys:
         v = data.get(k)
@@ -565,6 +617,17 @@ def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_
 
 def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: list[str],
                                   keys_headers_mapping: dict, keys_value_mapping: dict) -> str:
+    """
+    Create a markdown table from the data.
+    Args:
+        title: The title of the table.
+        data: The data dictionary or list of dictionaries.
+        keys: The keys to include.
+        keys_headers_mapping: The keys headers mapping.
+        keys_value_mapping: The keys value mapping.
+    Returns:
+        The markdown table string.
+    """
     resources = []
     if isinstance(data, dict):
         if resources := data.get('resources', []):
@@ -585,6 +648,14 @@ def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: lis
 
 
 def hr_local_ca(raw_response):
+    """
+    Create a human-readable string for a local CA.
+    Args:
+        raw_response: The raw response.
+    Returns:
+        The human-readable string.
+
+    """
     if raw_response.get('state') == 'pending':
         keys = ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint',
                 'sha256Fingerprint', 'sha512Fingerprint']
@@ -597,6 +668,13 @@ def hr_local_ca(raw_response):
 
 
 def hr_local_ca_list(raw_response):
+    """
+    Create a human-readable string for a list of local CAs.
+    Args:
+        raw_response: The raw response.
+    Returns:
+        The human-readable string.
+    """
 
     active_keys = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
                    'purpose_client_authentication', 'purpose_user_authentication']
