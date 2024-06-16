@@ -110,6 +110,7 @@ def main():     # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
     # params related to common instance configuration
+    # TODO - Replace this to be dependent on Environment
     base_url = 'https://graph.microsoft.com/v1.0/'
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
@@ -163,7 +164,6 @@ def main():     # pragma: no cover
         first_fetch_interval=first_fetch_interval,
         emails_fetch_limit=emails_fetch_limit,
         fetch_html_formatting=fetch_html_formatting,
-
         refresh_token=refresh_token,
         auth_code=auth_code,
         private_key=private_key,

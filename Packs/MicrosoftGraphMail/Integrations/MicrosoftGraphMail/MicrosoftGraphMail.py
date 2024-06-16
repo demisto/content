@@ -126,6 +126,8 @@ def main():  # pragma: no cover
         enc_key: str = (params.get('credentials') or {}).get('password', '') or params.get('enc_key', '')
         server = params.get('url', '')
         base_url: str = urljoin(server, '/v1.0')
+        # TODO - Get the endpoint based on the environment parameter
+        # TODO - As well as deprecate this variable usage
         endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
         app_name: str = 'ms-graph-mail'
         ok_codes: tuple = (200, 201, 202, 204)
@@ -173,7 +175,6 @@ def main():  # pragma: no cover
             folder_to_fetch=folder_to_fetch,
             first_fetch_interval=first_fetch_interval,
             emails_fetch_limit=emails_fetch_limit,
-
             timeout=timeout,
             endpoint=endpoint,
             certificate_thumbprint=certificate_thumbprint,
