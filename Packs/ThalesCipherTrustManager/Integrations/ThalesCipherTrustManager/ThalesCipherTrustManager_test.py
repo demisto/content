@@ -3,6 +3,7 @@ from unittest.mock import patch
 import pytest
 import json
 
+
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
 MOCKER_CREATE_AUTH_TOKEN = "ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
 MOCKER_LOAD_CONTENT_FROM_FILE = 'ThalesCipherTrustManager.load_content_from_file'

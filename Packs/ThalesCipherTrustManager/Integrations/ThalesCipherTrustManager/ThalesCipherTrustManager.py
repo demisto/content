@@ -3,7 +3,6 @@
 import urllib3
 from urllib.parse import quote
 import demistomock as demisto
-import pyminizip
 
 from CommonServerPython import *
 
@@ -372,27 +371,65 @@ def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Opt
 
 
 def optional_arg_to_bool(arg: Optional[str]) -> Optional[bool]:
+    """
+    Convert an optional argument string to a boolean value.
+    Args:
+        arg: The argument string.
+    Returns:
+        The boolean value or None if the argument is None.
+    """
     return argToBoolean(arg) if arg is not None else arg
 
 
 def optional_arg_to_datetime_string(arg: Optional[str], date_format: str = DATE_FORMAT) -> Optional[str]:
+    """
+    Convert an optional argument string to a datetime string.
+    Args:
+        arg: The argument string.
+        date_format: The date format to use.
+    Returns:
+        The datetime string or None if the argument is None.
+    """
     datetime_object = arg_to_datetime(arg)
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
 
 def add_empty_date_param(request_data: dict, argument_value: Optional[str], param_name: str,
                          empty_arg_value: str = "empty"):
+    """
+    Add an empty date parameter to the request data if the argument value is the agreed upon empty value.
+    Args:
+        request_data: The request data dictionary.
+        argument_value: The argument value.
+        param_name: The parameter name.
+        empty_arg_value: The value that represents an empty argument.
+    """
     if argument_value is not None:
         request_data[param_name] = "" if argument_value == empty_arg_value else optional_arg_to_datetime_string(argument_value)
 
 
 def add_empty_list_param(request_data: dict, argument_value: Optional[str], param_name: str,
                          empty_arg_value: str = "empty"):
+    """
+    Add an empty list parameter to the request data if the argument value is the agreed upon empty value.
+    Args:
+        request_data: The request data dictionary.
+        argument_value: The argument value.
+        param_name: The parameter name.
+        empty_arg_value: The value that represents an empty argument.
+    """
     if argument_value is not None:
         request_data[param_name] = [] if argument_value == empty_arg_value else argToList(argument_value)
 
 
 def add_login_flags(request_data: dict, argument_value: Optional[bool], flag_name: str):
+    """
+    Add a login flag parameter to the request data in the expected format.
+    Args:
+        request_data: The request data dictionary.
+        argument_value: The argument value.
+        flag_name: The flag name.
+    """
     if argument_value is None:
         return
     if 'login_flags' not in request_data:
@@ -401,6 +438,16 @@ def add_login_flags(request_data: dict, argument_value: Optional[bool], flag_nam
 
 
 def optional_safe_load_json(raw_json_string: Optional[str], json_entry_id: Optional[str]) -> dict:
+    """
+    Load a JSON object from a raw JSON string or a JSON file entry ID.
+    Args:
+        raw_json_string: The raw JSON string.
+        json_entry_id: The JSON file entry ID.
+    Returns:
+        The JSON object.
+    Raises:
+        ValueError: If both the raw JSON string and the JSON file entry ID are provided.
+    """
     if raw_json_string and json_entry_id:
         raise ValueError('Only one of raw json string or json file entry id should be provided.')
     json_object = json_entry_id if json_entry_id else raw_json_string
@@ -410,6 +457,15 @@ def optional_safe_load_json(raw_json_string: Optional[str], json_entry_id: Optio
 
 
 def load_content_from_file(entry_id: str) -> str:
+    """
+    Load the content of a file from the entry ID.
+    Args:
+        entry_id: The entry
+    Returns:
+        The content of the file.
+    Raises:
+        ValueError: If the file could not be loaded.
+    """
     try:
         path = demisto.getFilePath(entry_id)
         with open(path.get('path')) as file:
@@ -419,6 +475,14 @@ def load_content_from_file(entry_id: str) -> str:
 
 
 def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str):
+    """
+    Return the file results to the context.
+    Args:
+        data: The file data.
+        filenames: The file names.
+    Raises:
+        ValueError: If the filenames and data are not of the same type and length.
+    """
     if isinstance(data, list) and isinstance(filenames, list) and len(data) == len(filenames):
         return_results(
             [fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE) for idx, file_data in enumerate(data) if file_data])
@@ -429,6 +493,14 @@ def return_file_results(data: list[str] | str | bytes, filenames: list[str] | st
 
 
 def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> tuple[dict[str, Any], list[str] | str]:
+    """
+    Remove a key or a list of keys from the outputs dictionary.
+    Args:
+        outputs: The outputs dictionary.
+        keys: The key or list of keys to remove.
+    Returns:
+        A tuple of the new outputs dictionary and the removed values.
+    """
     new_outputs = outputs.copy()
     if isinstance(keys, list):
         removed_values = []
@@ -441,6 +513,7 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> t
 
 
 def zip_file_with_password(input_file_path: str, password: str, output_file_path: str):
+    import pyminizip
     pyminizip.compress(input_file_path, None, output_file_path, password, int(5))
 
 
