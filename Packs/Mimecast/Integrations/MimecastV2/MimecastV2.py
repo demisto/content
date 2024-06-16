@@ -3556,25 +3556,22 @@ def create_address_alteration_policy_command(args: dict) -> CommandResults:
     policy_obj, _ = get_arguments_for_policy_command(args)
     # Using dictionary comprehension to filter out keys with None or empty string values
     policy_obj = {k: v for k, v in policy_obj.items() if v is not None and v != ""}
-    folder_id = args.get('folder_id')
+    folder_id = args.get("folder_id")
 
-    data: dict[str, Any] = {
-        'addressAlterationSetId': folder_id,
-        'policy': policy_obj
-    }
+    data: dict[str, Any] = {"addressAlterationSetId": folder_id, "policy": policy_obj}
 
-    payload = {'data': [data]}
-    api_endpoint = '/api/policy/address-alteration/create-policy'
-    response = http_request('POST', api_endpoint, payload)
+    payload = {"data": [data]}
+    api_endpoint = "/api/policy/address-alteration/create-policy"
+    response = http_request("POST", api_endpoint, payload)
 
-    if response.get('fail'):
-        raise Exception(json.dumps(response.get('fail')[0].get('errors')))
+    if response.get("fail"):
+        raise Exception(json.dumps(response.get("fail")[0].get("errors")))
 
     return CommandResults(
-        outputs_prefix='Mimecast.AddressAlterationPolicy',
-        outputs=response.get('data'),
-        readable_output='Address Alteration policy was created successfully',
-        outputs_key_field='id'
+        outputs_prefix="Mimecast.AddressAlterationPolicy",
+        outputs=response.get("data"),
+        readable_output="Address Alteration policy was created successfully",
+        outputs_key_field="id",
     )
 
 
