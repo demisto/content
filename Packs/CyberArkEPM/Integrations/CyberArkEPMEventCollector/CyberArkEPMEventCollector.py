@@ -297,7 +297,7 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH, enable_admin_audits: bool = True) -> tuple[list, dict]:
+def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH, enable_admin_audits: bool = False) -> tuple[list, dict]:
     """ Fetches 3 types of events from CyberArkEPM
         - admin_audits
         - policy_audits
@@ -306,7 +306,7 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH, ena
         client (Client): CyberArkEPM client to use.
         last_run (dict): The last run information.
         max_fetch (int): The max events to return per fetch default is 250.
-        enable_admin_audits (bool): Whether to fetch admin audits events. Defaults is True.
+        enable_admin_audits (bool): Whether to fetch admin audits events. Defaults is False.
     Return:
         (list, dict) A list of events to push to XSIAM, A dict with information for next fetch.
     """
@@ -364,7 +364,7 @@ def main():  # pragma: no cover
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     set_names = argToList(params.get('set_name'))
-    enable_admin_audits = argToBoolean(params.get('enable_admin_audits', True))
+    enable_admin_audits = argToBoolean(params.get('enable_admin_audits', False))
     policy_audits_event_type = argToList(params.get('policy_audits_event_type'))
     raw_events_event_type = argToList(params.get('raw_events_event_type'))
     verify_certificate = not params.get('insecure', False)
