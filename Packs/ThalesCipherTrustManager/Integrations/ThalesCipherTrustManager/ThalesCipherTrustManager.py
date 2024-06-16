@@ -339,7 +339,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-    tuple[int, int]:
+        tuple[int, int]:
     """
     Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
     If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
@@ -465,7 +465,7 @@ def hr_skip_limit_to_markdown(skip: int, limit: int, total: int, name: str) -> s
     return f'{start} to {end} of {total} {name}'
 
 
-def date_to_markdown(iso_date: Optional[str], empty_value: Optional[str] = None) -> str:
+def date_to_markdown(iso_date: Optional[str], empty_value: str = '') -> str:
     if not iso_date:
         return empty_value
     try:
@@ -474,31 +474,30 @@ def date_to_markdown(iso_date: Optional[str], empty_value: Optional[str] = None)
         return datetime.strptime(iso_date, '%Y-%m-%dT%H:%M:%SZ').strftime('%d %b %Y, %H:%M')
 
 
-def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_mapping: Optional[dict] = None,
-                                                 keys_value_mapping: Optional[dict] = None):
+def ciphertrust_table_to_markdown_transform_data(data: dict, keys, keys_headers_mapping: dict,
+                                                 keys_value_mapping: dict):
     transformed_data = {}
     for k in keys:
         v = data.get(k)
-        if keys_value_mapping and k in keys_value_mapping:
-            transformed_data[k] = keys_value_mapping.get(k)(v)
-        if keys_headers_mapping and k in keys_headers_mapping:
+        transform_func = keys_value_mapping.get(k)
+        if transform_func:
+            transformed_data[k] = transform_func(v)
+        if k in keys_headers_mapping:
             transformed_data[keys_headers_mapping.get(k)] = transformed_data.pop(k, v)
         else:
             transformed_data[k] = transformed_data.pop(k, v)
-    print(transformed_data)
     return transformed_data
 
 
-def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: Optional[list[str]],
-                                  keys_headers_mapping: Optional[dict] = None, keys_value_mapping: Optional[dict] = None) -> str:
+def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: list[str],
+                                  keys_headers_mapping: dict, keys_value_mapping: dict) -> str:
     resources = []
     if isinstance(data, dict):
         if resources := data.get('resources', []):
-            skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
-            data = resources
-        if resources:
-            transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping) for d
-                                in data]
+            skip_limit_total_hr = hr_skip_limit_to_markdown(
+                data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
+            transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping)
+                                for d in resources]
         else:
             transformed_data = ciphertrust_table_to_markdown_transform_data(data, keys, keys_headers_mapping, keys_value_mapping)
     else:
@@ -511,7 +510,20 @@ def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: Opt
     return t
 
 
+def hr_local_ca(raw_response):
+    if raw_response.get('state') == 'pending':
+        keys = ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint',
+                'sha256Fingerprint', 'sha512Fingerprint']
+    else:
+        keys = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'state', 'serialNumber', 'subject', 'issuer',
+                'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
+    # todo: expired keys
+    hr_title = raw_response.get('subject', '')
+    return ciphertrust_table_to_markdown(hr_title, data=raw_response, keys=keys, keys_headers_mapping={}, keys_value_mapping={})
+
+
 def hr_local_ca_list(raw_response):
+
     active_keys = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
                    'purpose_client_authentication', 'purpose_user_authentication']
     other_keys = ['name', 'subject', 'createdAt', 'sha1Fingerprint']
@@ -541,7 +553,7 @@ def hr_local_ca_list(raw_response):
     hr_title = '### Local Certificate Authorities \n'
     hr_skip_limit_title = hr_skip_limit_to_markdown(raw_response.get('skip', 0), raw_response.get('limit', 0),
                                                     raw_response.get('total', 0), 'Local '
-                                                                               'CAs')
+                                                    'CAs')
     active_cas_hr = ciphertrust_table_to_markdown('Active CAs', active_cas, active_keys, keys_headers_mapping, keys_value_mapping)
     pending_cas_hr = ciphertrust_table_to_markdown('Pending CAs', pending_cas, other_keys, keys_headers_mapping,
                                                    keys_value_mapping)
@@ -700,9 +712,10 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
                                                              'password_change_required': 'Password Change Required'},
 
                                        keys_value_mapping={'expires_at': lambda x: date_to_markdown(x, 'Never'),
-                                                           'last_login': lambda x: date_to_markdown(x, 'Never Logged In'),
-                                                           'last_failed_login_at': lambda x: date_to_markdown(x,
-                                                                                                              'Never Failed A Login'),
+                                                           'last_login': lambda x: date_to_markdown(x,
+                                                                                                    'Never Logged In'),
+                                                           'last_failed_login_at':
+                                                               lambda x: date_to_markdown(x, 'Never Failed A Login'),
                                                            'password_changed_at': date_to_markdown,
                                                            'created_at': date_to_markdown,
                                                            'updated_at': date_to_markdown,
@@ -818,44 +831,39 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
     if local_ca_id := args.get(
-        LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+            LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
-
-        if raw_response.get('state') == 'pending':
-            keys = ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint',
-                    'sha256Fingerprint', 'sha512Fingerprint']
-        else:
-            keys = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'state', 'size', 'serialNumber', 'subject', 'issuer',
-                    'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
-        hr_title = raw_response.get('resources').get('cn', '')
-        hr = ciphertrust_table_to_markdown(hr_title, data=raw_response, keys=keys)
         outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
         return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
-    else:  # get a list of local CAs with optional filtering
-        skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
-                                                           args.get(PAGE),
-                                                           args.get(PAGE_SIZE))
-        params = assign_params(
-            skip=skip,
-            limit=limit,
-            subject=args.get(SUBJECT),
-            issuer=args.get(ISSUER),
-            state=args.get(STATE),
-            cert=args.get(CERT),
+        return CommandResults(
+            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
+            outputs=outputs,
+            raw_response=raw_response,
+            readable_output=hr_local_ca(raw_response),
         )
-        raw_response = client.get_local_ca_list(params=params)
-        outputs = [remove_key_from_outputs(local_ca_entry, ['csr', 'cert'])[0] for local_ca_entry in
-                   raw_response.get('resources', [])]
-        hr = hr_local_ca_list(raw_response)
+
+    skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
+                                                       args.get(PAGE),
+                                                       args.get(PAGE_SIZE))
+    params = assign_params(
+        skip=skip,
+        limit=limit,
+        subject=args.get(SUBJECT),
+        issuer=args.get(ISSUER),
+        state=args.get(STATE),
+        cert=args.get(CERT),
+    )
+    raw_response = client.get_local_ca_list(params=params)
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
-        outputs=outputs,
+        outputs=[remove_key_from_outputs(local_ca_entry, ['csr', 'cert'])[0] for local_ca_entry in
+                 raw_response.get('resources', [])],
         raw_response=raw_response,
-        readable_output=hr,
+        readable_output=hr_local_ca_list(raw_response),
     )
 
 
@@ -901,7 +909,8 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) 
     return CommandResults(
         outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(LOCAL_CA_ID)} has been self-signed successfully!'
     )
 
 
@@ -920,7 +929,8 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
     return CommandResults(
         outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(LOCAL_CA_ID)} has been installed successfully!'
     )
 
 
@@ -943,7 +953,8 @@ def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(NAME)} has been issued successfully!'
     )
 
 
@@ -1024,7 +1035,8 @@ def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) 
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(NAME)} has been uploaded successfully!'
     )
 
 
@@ -1047,32 +1059,40 @@ def external_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) 
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
-        raw_response=raw_response
+        raw_response=raw_response,
+        readable_output=f'{args.get(EXTERNAL_CA_ID)} has been updated successfully!'
     )
 
 
 def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if external_ca_id := args.get(EXTERNAL_CA_ID):
         raw_response = client.get_external_ca(external_ca_id=external_ca_id)
-        outputs, cert = remove_key_from_outputs(raw_response, 'cert')
+        outputs_single_ca, cert = remove_key_from_outputs(raw_response, 'cert')
         return_file_results(cert, 'Certificate.pem')
-    else:
-        skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
-                                                           args.get(PAGE),
-                                                           args.get(PAGE_SIZE))
-        params = assign_params(
-            skip=skip,
-            limit=limit,
-            subject=args.get(SUBJECT),
-            issuer=args.get(ISSUER),
-            serialNumber=args.get(SERIAL_NUMBER),
-            cert=args.get(CERT),
+        return CommandResults(
+            outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
+            outputs=outputs_single_ca,
+            raw_response=raw_response,
+            readable_output=tableToMarkdown('external certificates',
+                                            outputs_single_ca),
         )
 
-        raw_response = client.get_external_ca_list(params=params)
+    skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
+                                                       args.get(PAGE),
+                                                       args.get(PAGE_SIZE))
+    params = assign_params(
+        skip=skip,
+        limit=limit,
+        subject=args.get(SUBJECT),
+        issuer=args.get(ISSUER),
+        serialNumber=args.get(SERIAL_NUMBER),
+        cert=args.get(CERT),
+    )
 
-        outputs = [remove_key_from_outputs(external_ca_entry, ['cert'])[0] for external_ca_entry in
-                   raw_response.get('resources', [])]
+    raw_response = client.get_external_ca_list(params=params)
+
+    outputs = [remove_key_from_outputs(external_ca_entry, ['cert'])[0] for external_ca_entry in
+                                     raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
