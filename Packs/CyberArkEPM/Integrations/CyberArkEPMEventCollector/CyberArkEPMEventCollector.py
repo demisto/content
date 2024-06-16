@@ -297,7 +297,8 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH, enable_admin_audits: bool = False) -> tuple[list, dict]:
+def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH,
+                 enable_admin_audits: bool = False) -> tuple[list, dict]:
     """ Fetches 3 types of events from CyberArkEPM
         - admin_audits
         - policy_audits
