@@ -1,5 +1,5 @@
 from pathlib import Path
-from itertools import pairwise
+from more_itertools import pairwise
 from typing import List
 import urllib3
 import argparse
