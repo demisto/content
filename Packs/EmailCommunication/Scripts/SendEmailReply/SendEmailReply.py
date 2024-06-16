@@ -278,6 +278,7 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
         msg += f' Cc: {email_cc}'
     if email_bcc:
         msg += f' Bcc: {email_bcc}'
+
     return msg
 
 
