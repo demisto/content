@@ -1,0 +1,3 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Doe to Raptor release, the following outputs of the ***cs-falcon-search-detection*** command - do not exist anymore: ***FirstBehavior***, ***LastBehavior***, ***BehaviorsProcessed***, ***Behavior.ID***, ***last_login_user***, ***last_login_timestamp***"}

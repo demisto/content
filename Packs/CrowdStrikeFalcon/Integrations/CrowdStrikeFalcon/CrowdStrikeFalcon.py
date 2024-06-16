@@ -64,6 +64,18 @@ DETECTIONS_BASE_KEY_MAP = {
     'max_confidence': 'MaxConfidence',
 }
 
+POST_RAPTOR_RELEASE_DETECTIONS_BASE_KEY_MAP = {
+    'device.hostname': 'System',
+    'device.cid': 'CustomerID',
+    'hostinfo.domain': 'MachineDomain',
+    'composite_id': 'ID',  #TODO should i use the ID instead? shorter
+    'created_timestamp': 'ProcessStartTime',
+    'severity': 'MaxSeverity',
+    'show_in_ui': 'ShowInUi',
+    'status': 'Status',
+    'confidence': 'MaxConfidence',
+}
+
 DETECTIONS_BEHAVIORS_KEY_MAP = {
     'filename': 'FileName',
     'scenario': 'Scenario',
@@ -203,6 +215,27 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
     {
         'Path': 'parent_details.parent_process_graph_id',
+        'NewKey': 'ParentProcessID',
+        'Delim': ':',
+        'Index': 2
+    },
+    {
+        'Path': 'triggering_process_graph_id',
+        'NewKey': 'ProcessID',
+        'Delim': ':',
+        'Index': 2
+    },
+]
+
+POST_RAPTOR_RELEASE_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
+    {
+        'Path': 'parent_details.process_graph_id',
+        'NewKey': 'SensorID',
+        'Delim': ':',
+        'Index': 1
+    },
+    {
+        'Path': 'parent_details.process_graph_id',
         'NewKey': 'ParentProcessID',
         'Delim': ':',
         'Index': 2
@@ -1341,12 +1374,13 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         :param filter_arg: 1st priority. The result will be filtered using this argument.
         :return: Response json of the get detection endpoint (IDs of the detections)
     """
-    endpoint_url = '/detects/queries/detects/v1'
+    endpoint_url = '/detects/queries/detects/v1' if not POST_RAPTOR_RELEASE else "alerts/queries/alerts/v2?filter=product:'epp'"
     params = {
         'sort': 'first_behavior.asc'
     }
     if filter_arg:
         params['filter'] = filter_arg
+    #TODO : should be removed after POST_RAPTOR_RELEASE??
     elif behavior_id:
         params['filter'] = f"behaviors.behavior_id:'{behavior_id}'"
     elif last_behavior_time:
@@ -1391,11 +1425,12 @@ def get_detections_entities(detections_ids: list):
         :param detections_ids: IDs of the requested detections.
         :return: Response json of the get detection entities endpoint (detection objects)
     """
-    ids_json = {'ids': detections_ids}
+    ids_json = {'ids': detections_ids} if not POST_RAPTOR_RELEASE else {"composite_ids": detections_ids}
+    url = '/detects/entities/summaries/GET/v1' if not POST_RAPTOR_RELEASE else '/alerts/entities/alerts/v2'
     if detections_ids:
         response = http_request(
             'POST',
-            '/detects/entities/summaries/GET/v1',
+            url,
             data=json.dumps(ids_json)
         )
         return response
@@ -1829,7 +1864,8 @@ def behavior_to_entry_context(behavior):
         :return: Behavior in entry context representation
     """
     raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-    raw_entry.update(extract_transformed_dict_with_split(behavior, DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP))
+    split_key_map = DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP if not POST_RAPTOR_RELEASE else POST_RAPTOR_RELEASE_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
+    raw_entry.update(extract_transformed_dict_with_split(behavior, split_key_map))
     return raw_entry
 
 
@@ -3939,7 +3975,17 @@ def search_detections_command():
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
 
-            for path, new_key in DETECTIONS_BASE_KEY_MAP.items():
+            if POST_RAPTOR_RELEASE:
+                # Modify the detection entry to match the old format
+                behavior = {key: detection.get(key) for key in DETECTIONS_BEHAVIORS_KEY_MAP}
+                behavior.update({
+                    "parent_details": detection.get("parent_details"),
+                    "triggering_process_graph_id": detection.get("triggering_process_graph_id")
+                })
+                detection["behaviors"] = [behavior]
+        
+            for path, new_key in (DETECTIONS_BASE_KEY_MAP.items() if not POST_RAPTOR_RELEASE else
+                                  POST_RAPTOR_RELEASE_DETECTIONS_BASE_KEY_MAP.items()):
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
 
@@ -3949,7 +3995,8 @@ def search_detections_command():
 
             if extended_data:
                 detection_entry['Device'] = demisto.get(detection, 'device')
-                detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
+                if not POST_RAPTOR_RELEASE:     # Raptor release does not have the 'device' key
+                    detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
 
             entries.append(detection_entry)
 

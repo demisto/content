@@ -366,8 +366,8 @@ or by providing the IDs of the detections.
 | CrowdStrike.Detection.Behavior.UserName | String | The user name related to the behavior. | 
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. | 
-| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior. | 
-| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. | 
+| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior. Note: this field dose not exist in the new "post raptor" version| 
+| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. Note: this field dose not exist in the new "post raptor" version| 
 | CrowdStrike.Detection.System | String | The system name of the detection. | 
 | CrowdStrike.Detection.CustomerID | String | The ID of the customer \(CID\). | 
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. | 
