@@ -162,7 +162,7 @@ class TestHelperFunction:
             - Case 5: Should return the now time (freezed as 2023-01-01) + 1 minute.
             """
         from ArmisEventCollector import calculate_fetch_start_time
-        assert calculate_fetch_start_time(last_fetch_time, fetch_start_time_param) == expected_result
+        assert calculate_fetch_start_time(last_fetch_time, fetch_start_time_param, fetch_delay=0) == expected_result
 
     @pytest.mark.parametrize('x, y, expected_result', [(datetime_1, datetime_1, True), (datetime_1, datetime_2, False)])
     def test_are_two_event_time_equal(self, x, y, expected_result):
