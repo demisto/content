@@ -6974,3 +6974,27 @@ def test_get_detection(mocker, Post_Raptor_release, url_suffix):
     get_detections()
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
         
+
+@pytest.mark.parametrize('Post_Raptor_release, url_suffix, data', [
+        (True,"/alerts/entities/alerts/v3",
+         '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}], "composite_ids": ["123"]}'),
+         (False, '/detects/entities/detects/v2',
+          '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')])
+def test_resolve_detection(mocker, Post_Raptor_release, url_suffix, data):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running resolve_detection
+    Then:
+        - Validate that the correct url_suffix is used
+            case 1: Post_Raptor_release is True, the url_suffix should be alerts/entities/alerts/v2
+            case 2: Post_Raptor_release is False, the url_suffix should be /detects/entities/detects/v1
+    """
+    from CrowdStrikeFalcon import resolve_detection
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    resolve_detection(ids=["123"],status= "resolved", assigned_to_uuid="123",show_in_ui="True",comment="comment")
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+    assert http_request_mocker.call_args_list[0][1]["data"] == data

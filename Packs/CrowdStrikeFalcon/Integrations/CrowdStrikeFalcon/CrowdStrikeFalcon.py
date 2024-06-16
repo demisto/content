@@ -1903,9 +1903,18 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
         payload['show_in_ui'] = show_in_ui
     if comment:
         payload['comment'] = comment
-    # We do this so show_in_ui value won't contain ""
-    data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
-                                                                                               '"show_in_ui": true')
+    if POST_RAPTOR_RELEASE:
+        # modify the payload to match the new API
+        ids = payload.pop('ids')
+        payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
+        payload["update_status"] = payload.pop("status") if "status" in payload else None
+        payload["append_comment"] = payload.pop("comment") if "comment" in payload else None
+
+        data = json.dumps(resolve_detections_prepare_body_request(ids, payload))
+    else:
+        # We do this so show_in_ui value won't contain ""
+        data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
+                                                                           '"show_in_ui": true')
     url = "/alerts/entities/alerts/v3" if POST_RAPTOR_RELEASE else "/detects/entities/detects/v2"
     return http_request('PATCH', url, data=data)
 
