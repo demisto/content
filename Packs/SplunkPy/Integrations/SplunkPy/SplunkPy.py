@@ -963,7 +963,6 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
     """
     searchable_search: list = []
     start = 0
-    add_backslash = False
 
     for match in re.finditer(DRILLDOWN_REGEX, search):
         groups = match.groups()
@@ -977,8 +976,9 @@ def build_drilldown_search(notable_data, search, raw_dict, is_query_name=False):
 
         if prefix:
             if field in USER_RELATED_FIELDS:
-                add_backslash = True
-            replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash)
+                replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict, add_backslash=True)
+            else:
+                replacement = get_fields_query_part(notable_data, prefix, [field], raw_dict)
 
         elif field in USER_RELATED_FIELDS:
             # User fields usually contains backslashes - to pass a literal backslash in an argument to Splunk we must escape
