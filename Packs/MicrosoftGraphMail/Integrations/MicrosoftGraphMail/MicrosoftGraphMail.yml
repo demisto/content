@@ -12,6 +12,20 @@ configuration:
   required: true
   type: 0
   section: Connect
+- display: Azure Cloud
+  name: azure_cloud
+  required: false
+  defaultvalue: Worldwide
+  options:
+    - Worldwide
+    - US GCC
+    - US GCC-High
+    - DoD
+    - Germany
+    - China
+  section: Connect
+  advanced: true
+  additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
   hiddenusername: true

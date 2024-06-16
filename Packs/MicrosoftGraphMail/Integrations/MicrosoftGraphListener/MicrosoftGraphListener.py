@@ -9,7 +9,7 @@ from MicrosoftGraphMailApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-
+BASE_URL_SUFFIX = 'v1.0/'
 
 class MsGraphListenerClient(MsGraphMailBaseClient):
     """
@@ -110,8 +110,9 @@ def main():     # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
     # params related to common instance configuration
-    # TODO - Replace this to be dependent on Environment
-    base_url = 'https://graph.microsoft.com/v1.0/'
+
+    azure_cloud = get_azure_cloud(params, "Microsoft Graph Mail Single User")
+    base_url = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, BASE_URL_SUFFIX)
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     ok_codes = (200, 201, 202)
@@ -171,7 +172,8 @@ def main():     # pragma: no cover
         mark_fetched_read=mark_fetched_read,
         redirect_uri=params.get('redirect_uri', ''),
         certificate_thumbprint=certificate_thumbprint,
-        managed_identities_client_id=managed_identities_client_id)
+        managed_identities_client_id=managed_identities_client_id,
+        azure_cloud=azure_cloud)
     try:
         args = demisto.args()
         command = demisto.command()

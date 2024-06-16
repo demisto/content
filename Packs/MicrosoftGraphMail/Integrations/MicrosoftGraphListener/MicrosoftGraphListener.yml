@@ -12,6 +12,20 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+- display: Azure Cloud
+  name: azure_cloud
+  required: false
+  defaultvalue: Worldwide
+  options:
+    - Worldwide
+    - US GCC
+    - US GCC-High
+    - DoD
+    - Germany
+    - China
+  section: Connect
+  advanced: true
+  additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - name: creds_refresh_token
   type: 9
   displaypassword: Token or Tenant ID
