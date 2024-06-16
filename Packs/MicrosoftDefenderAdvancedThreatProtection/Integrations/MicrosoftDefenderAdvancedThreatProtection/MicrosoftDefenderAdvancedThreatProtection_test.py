@@ -108,10 +108,10 @@ def test_get_machine_by_ip_with_limit(mocker, params, ip, timestamp, expected):
     """
     from MicrosoftDefenderAdvancedThreatProtection import MsClient
     raw_response = {'value': [{'a':'b'}, {'c':'d'}, {'e':'f'}]}
-    mock_get_machines_v2 = mocker.patch.object(MsClient, 'get_machines_v2', return_value=raw_response)
+    mock_get_machines_for_get_machine_by_ip_command = mocker.patch.object(MsClient, 'get_machines_for_get_machine_by_ip_command', return_value=raw_response)
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     get_machine_by_ip_command(client_mocker, params)
-    assert mock_get_machines_v2.call_args.args[0] == f"(ip='{ip}',timestamp={timestamp})"
+    assert mock_get_machines_for_get_machine_by_ip_command.call_args.args[0] == f"(ip='{ip}',timestamp={timestamp})"
     assert mock_handle_machines.call_args.args[0] == expected
     
 

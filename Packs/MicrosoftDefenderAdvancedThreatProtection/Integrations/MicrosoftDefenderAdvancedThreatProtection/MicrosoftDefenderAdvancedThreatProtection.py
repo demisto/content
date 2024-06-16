@@ -1274,7 +1274,7 @@ class MsClient:
             dict: Machines info
         """
         demisto.debug(f'current request is: api/machines/findbyip{filter_req}')
-        cmd_url = 'api/machines/findbyip'+filter_req
+        cmd_url = 'machines/findbyip'+filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
         
 
