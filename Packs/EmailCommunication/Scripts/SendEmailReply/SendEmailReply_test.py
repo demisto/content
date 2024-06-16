@@ -95,7 +95,7 @@ def test_validate_email_sent(email_cc, email_bcc, expected_result, mocker):
         '12345678',
         'test.onmicrosoft.com'
     )
-    assert result[0] == expected_result
+    assert result == expected_result
 
 
 def test_validate_email_sent_fails(mocker):
