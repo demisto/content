@@ -1,0 +1,18 @@
+{
+  "rule_id": "Indicator_Feed_layout_rule1",
+  "layout_id": "Indicator Feed",
+  "description": "",
+  "rule_name": "Indicator Feed Layout Rule1",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Indicator Feed"
+        }
+      ]
+    }
+  },
+  "fromVersion": "6.10.0"
+}

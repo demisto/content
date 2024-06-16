@@ -1,0 +1,117 @@
+{
+    "id": "new layout incident upload - yuval",
+    "version": -1,
+    "name": "new layout incident upload - yuval",
+    "system": false,
+    "group": "case",
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "overview",
+                "name": "Overview",
+                "type": "overview"
+            },
+            {
+                "id": "assets_and_artifacts",
+                "name": "Key Assets \u0026 Artifacts",
+                "type": "assets_and_artifacts"
+            },
+            {
+                "id": "alerts_and_insights",
+                "name": "Alerts \u0026 Insights",
+                "type": "alerts_and_insights"
+            },
+            {
+                "hidden": false,
+                "id": "vhgtqxgoq5",
+                "name": "lilya severity",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "vhgtqxgoq5-wux2im05rv-659e1b50-219c-11ef-9a93-49af7f2f98a8",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "severity",
+                                "height": 26,
+                                "id": "69173c80-219c-11ef-9a93-49af7f2f98a8",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "singleselect",
+                                "height": 26,
+                                "id": "e5ae9260-219d-11ef-9a93-49af7f2f98a8",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "assigned_user",
+                                "height": 26,
+                                "id": "76fa8b90-23c7-11ef-b364-41e288ee80cd",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            },
+            {
+                "id": "timeline",
+                "name": "Timeline",
+                "type": "timeline"
+            },
+            {
+                "id": "war_room",
+                "name": "Incident War Room",
+                "type": "war_room"
+            },
+            {
+                "id": "executions",
+                "name": "Executions",
+                "type": "executions"
+            },
+            {
+                "hidden": false,
+                "id": "sdzykttody",
+                "name": "New tab",
+                "sections": [
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "sdzykttody-e8264f50-2662-11ef-aeb6-779b64578cf5",
+                        "items": [],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "New Section",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "fromVersion": "8.7.0",
+    "description": ""
+}

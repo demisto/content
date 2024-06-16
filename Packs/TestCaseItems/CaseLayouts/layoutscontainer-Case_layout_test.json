@@ -1,0 +1,33 @@
+{
+    "detailsV2": {
+        "tabs": [
+            {
+                "id": "overview",
+                "name": "Overview",
+                "type": "overview"
+            },
+            {
+                "id": "alerts_and_insights",
+                "name": "Alerts \u0026 Insights",
+                "type": "alertInsights"
+            },
+            {
+                "id": "timeline",
+                "name": "Timeline",
+                "type": "timeline"
+            },
+            {
+                "id": "executions",
+                "name": "Executions",
+                "type": "executions"
+            }
+        ]
+    },
+    "group": "case",
+    "id": "Case_Layout_from_pack",
+    "name": "Case_Layout_from_pack",
+    "system": false,
+    "version": -1,
+    "fromVersion": "8.7.0",
+    "description": ""
+}
