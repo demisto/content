@@ -5,7 +5,7 @@ def main():
     ...
 
 
-from MicrosoftApiModule import *  # noqa: E402
+from MicrosoftGraphMailApiModule import *
 
 if __name__ in ["builtins", "__main__"]:
     main()
