@@ -670,3 +670,26 @@ def test_fetch_incidents(
 
     assert results[0]["last_fetch"]
     assert len(results[1]) == 2
+
+
+def test_update_remote_system_command(client, requests_mock):
+    mock_response = util_load_json("test_data/SekoiaXDR_get_alert_workflow.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json=mock_response
+    )
+    requests_mock.patch(MOCK_URL + "/v1/sic/alerts/ALWVYiP2Msz4/workflow", json={})
+
+    args = {
+        "data": {
+            "xsoar_id": "15",
+        },
+        "incidentChanged": True,
+        "remoteId": "ALWVYiP2Msz4",
+        "delta": {
+            "status": "Closed",
+        },
+    }
+    result = SekoiaXDR.update_remote_system_command(client=client, args=args)
+
+    assert result == "ALWVYiP2Msz4"
+    
