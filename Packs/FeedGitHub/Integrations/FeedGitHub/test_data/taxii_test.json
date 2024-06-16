@@ -1,0 +1,401 @@
+[
+    {
+        "objects": [
+            {
+                "id": "indicator--abcd1234-5678-90ef-ghij-klmnopqrstuv",
+                "pattern": "[ipv4-addr:value = '8.8.8.8' AND ipv4-addr:value = '8.8.4.4']",
+                "confidence": 10,
+                "lang": "fr",
+                "type": "alert",
+                "created": "2021-01-01T12:00:00.000Z",
+                "modified": "2021-01-02T12:00:00.000Z",
+                "name": "example_name: disrupted_data",
+                "description": "TS ID: 123456789; iType: example_type; Date First: 2021-01-01T12:00:00.000Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-01-01T12:00:00.000Z",
+                "pattern_type": "snort",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "high"
+                ],
+                "indicator_types": [
+                    "malicious-activity"
+                ],
+                "pattern_version": "1.0",
+                "spec_version": "2.0"
+            },
+            {
+                "id": "indicator--678912b1-5a2e-4dc1-9b3f-7fe9102c3d48",
+                "pattern": "[ipv4-addr:value = '99.99.99.99' OR ipv4-addr:value = '3.3.3.3']",
+                "confidence": 70,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-11-10T12:14:52.501Z",
+                "modified": "2021-11-10T12:14:52.501Z",
+                "name": "example_ip: 99.99.99.99",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-11-02T07:26:06.274Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-11-10T12:00:33.722754Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "medium"
+                ],
+                "indicator_types": [
+                    "malicious-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--abcdefgh-ijkl-mnop-qrst-uvwxyz123456",
+                "pattern": "[ipv4-addr:value = '111.222.333.444' FOLLOWEDBY ipv4-addr:value = '5.5.5.5']",
+                "confidence": 25,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:14:54.684Z",
+                "modified": "2021-12-20T01:14:54.684Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:17.907Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.775627Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "high"
+                ],
+                "indicator_types": [
+                    "malicious-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--lmnopqrs-tuvw-xyz1-2345-6789abcdef01",
+                "pattern": "[ipv4-addr:value = '1.1.1.1']",
+                "confidence": 25,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:14:19.858Z",
+                "modified": "2021-12-20T01:14:19.858Z",
+                "name": "example_ip: 1.1.1.1",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:46.206Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.731573Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "medium"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--abcdef12-3456-789a-bcde-f123456789ab",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 25,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:14:10.753Z",
+                "modified": "2021-12-20T01:14:10.753Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:17.178Z; State: inactive; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.808281Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "medium"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--ghijklmn-opqr-stuv-wxyz-1234567890ab",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 25,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:14:15.950Z",
+                "modified": "2021-12-20T01:14:15.950Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:01.051Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.818576Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "low"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--abcdefghijklm-1234-5678-abcd-ef1234567890",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 75,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:15:00.764Z",
+                "modified": "2021-12-20T01:15:00.764Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:22.790Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.791474Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "high"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--nopqrstuvwxyz-5678-9abcd-ef12-34567890abcd",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 75,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:14:39.995Z",
+                "modified": "2021-12-20T01:14:39.995Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:13.398Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.766866Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "low"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--qrstuvwx-yz12-3456-789a-bcdef123456",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 90,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:15:01.999Z",
+                "modified": "2021-12-20T01:15:01.999Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:32.478Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.781286Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "medium"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--abcdefghijklm-1234-5678-abcd-ef1234567890",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 75,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:15:00.764Z",
+                "modified": "2021-12-20T01:15:00.764Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:22.790Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.791474Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "high"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--nopqrstuvwxyz-5678-9abcd-ef12-34567890abcd",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 75,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:14:39.995Z",
+                "modified": "2021-12-20T01:14:39.995Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:13.398Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.766866Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "low"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--qrstuvwx-yz12-3456-789a-bcdef123456",
+                "pattern": "[ipv4-addr:value = '111.222.333.444']",
+                "confidence": 90,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-12-20T01:15:01.999Z",
+                "modified": "2021-12-20T01:15:01.999Z",
+                "name": "example_ip: 111.222.333.444",
+                "description": "TS ID: 12345678910; iType: example_type; Date First: 2021-12-02T07:26:32.478Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-12-20T01:00:33.781286Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--1234abcd-5678-efgh-ijkl-mnopqrstuv"
+                ],
+                "labels": [
+                    "medium"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--abcdef12-3456-7890-abcdef123456",
+                "pattern": "[ipv4-addr:value = '111.111.111.111']",
+                "confidence": 75,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-01-01T01:01:01.000Z",
+                "modified": "2021-01-01T01:01:01.000Z",
+                "name": "example_ip: 111.111.111.111",
+                "description": "TS ID: 1234567890; iType: example_type; Date First: 2021-01-01T01:01:01.000Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-01-01T01:01:01.000Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--abcdef12-3456-7890-abcdef123456"
+                ],
+                "labels": [
+                    "high"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--bcdef123-4567-890a-bcde-f1234567890",
+                "pattern": "[ipv4-addr:value = '111.111.111.111']",
+                "confidence": 75,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-01-01T01:01:01.000Z",
+                "modified": "2021-01-01T01:01:01.000Z",
+                "name": "example_ip: 111.111.111.111",
+                "description": "TS ID: 1234567890; iType: example_type; Date First: 2021-01-01T01:01:01.000Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-01-01T01:01:01.000Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--abcdef12-3456-7890-abcdef123456"
+                ],
+                "labels": [
+                    "low"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--cdef1234-5678-90ab-cdef-1234567890a",
+                "pattern": "[ipv4-addr:value = '111.111.111.111']",
+                "confidence": 90,
+                "lang": "fr",
+                "type": "indicator",
+                "created": "2021-01-01T01:01:01.000Z",
+                "modified": "2021-01-01T01:01:01.000Z",
+                "name": "example_ip: 111.111.111.111",
+                "description": "TS ID: 1234567890; iType: example_type; Date First: 2021-01-01T01:01:01.000Z; State: inactive; Org: Example Org; Source: Example Source; MoreDetail: example detail",
+                "valid_from": "2021-01-01T01:01:01.000Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--abcdef12-3456-7890-abcdef123456"
+                ],
+                "labels": [
+                    "medium"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "3.0",
+                "spec_version": "2.2"
+            },
+            {
+                "id": "indicator--ac4a9ca5-9f6e-4072-b568-46dbb03a3ace",
+                "pattern": "[ipv4-addr:value = '45.143.220.246']",
+                "confidence": 50,
+                "lang": "en",
+                "type": "indicator",
+                "created": "2020-06-10T01:15:10.905Z",
+                "modified": "2020-06-10T01:15:10.905Z",
+                "name": "bot_ip: 45.143.220.246",
+                "description": "TS ID: 55691320117; iType: bot_ip; Date First: 2020-06-04T10:32:46.584Z; State: active; Source: Emerging Threats - Compromised; MoreDetail: imported by user 668",
+                "valid_from": "2020-06-10T01:00:33.752185Z",
+                "pattern_type": "stix",
+                "object_marking_refs": [
+                    "marking-definition--abcdef12-3456-7890-abcdef123456"
+                ],
+                "labels": [
+                    "high"
+                ],
+                "indicator_types": [
+                    "anomalous-activity"
+                ],
+                "pattern_version": "2.1",
+                "spec_version": "2.1"
+            },
+            {
+                "id": "marking-definition--f88d31f6-486f-44da-b317-01333bde0b82",
+                "created": "2017-01-20T00:00:00.000Z",
+                "definition_type": "tlp",
+                "definition": {
+                    "tlp": "red"
+                },
+                "type": "marking-definition",
+                "spec_version": "2.1"
+            }
+        ],
+        "more": false
+    }
+]
