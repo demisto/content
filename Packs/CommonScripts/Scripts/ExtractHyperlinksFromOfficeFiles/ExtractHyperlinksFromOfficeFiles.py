@@ -9,7 +9,6 @@ import pandas as pd
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 
 
-
 def extract_hyperlinks_from_xlsx(file_path: str) -> Set:
     with zipfile.ZipFile(file_path, "r") as zf:
         xmls = [zf.read(fn) for fn in zf.infolist()
