@@ -596,7 +596,10 @@ def test_module(client: Client) -> str:     # pragma: no cover
     :rtype: ``str``
     """
     try:
-        client.server_online()
+        demisto.debug(f"sending request with url: {client.apiurl + '/v2/server/online'}")
+        result = client._post(client.apiurl + '/v2/server/online', data={'apikey': client.apikey})
+        res = client._raise_or_extract(result)
+        # client.server_online()
     except Exception as e:
         if isinstance(e, jbxapi.ApiError):
             match API_ERRORS.get(e.code):
@@ -607,7 +610,7 @@ def test_module(client: Client) -> str:     # pragma: no cover
                 case 'ServerOfflineError' | 'InternalServerError':
                     return "Server error, please verify the Server URL or check if the server is offline"
         else:
-            return "Server error, please verify the server url or check if the server is online"
+            return f"Server error, please verify the server url or check if the server is online, exact error: {e}"
     return 'ok'
 
 
@@ -897,7 +900,7 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
     api_key = demisto.get(demisto.params(), 'credentials.password')
-    base_url = demisto.params().get('url')
+    base_url = urljoin(demisto.params().get('url'), 'api/')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     reliability = demisto.params().get('Reliability', DBotScoreReliability.C)
