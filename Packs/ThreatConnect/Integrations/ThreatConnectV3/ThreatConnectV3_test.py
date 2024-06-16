@@ -12,7 +12,7 @@ def load_mock_response(file_name: str) -> str:
         return mock_file.read()
 
 
-@freeze_time('2020-04-20')
+@freeze_time('2020-04-20 00:00:00')
 def test_create_header():
     assert client.create_header('test', Method.GET) == {
         'Authorization': 'TC test:p5a/YiTRs7sNMp/PEDgZxky8lJDRLbza1pi8erjURrU=',
