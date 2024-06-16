@@ -476,7 +476,7 @@ def test_send_new_email(test_args, expected_result, expected_message, mocker):
                                                        return_value=[{'Contents': 'Success', 'Type': 1}])
     message = send_new_email(*test_args)
     send_new_mail_request_args = send_new_mail_request_mocker.call_args
-    assert message[0] == expected_message
+    assert message == expected_message
     assert send_new_mail_request_args.args == expected_result
 
 
