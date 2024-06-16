@@ -23,6 +23,7 @@ FIELDS_TO_EXCLUDE = [
     'file_artifacts'
 ]
 
+
 XDR_INCIDENT_FIELDS = {
     "status": {"description": "Current status of the incident: \"new\",\"under_"
                               "investigation\",\"resolved_known_issue\","
