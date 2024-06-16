@@ -126,11 +126,7 @@ LOCAL_CA_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name', 'subject': 'Subject', 'ser
                                       'purpose_client_authentication': 'Client Auth', 'purpose_user_authentication': 'User Auth',
                                       'createdAt': 'Created',
                                       'sha1Fingerprint': 'Fingerprint'}
-LOCAL_CA_LIST_KEYS_VALUE_MAPPING = {'notBefore': date_to_markdown,
-                                    'notAfter': date_to_markdown,
-                                    'createdAt': date_to_markdown,
-                                    'purpose_user_authentication': lambda x: 'Enabled' if x else 'Disabled',
-                                    'purpose_client_authentication': lambda x: 'Enabled' if x else 'Disabled'}
+
 '''CLIENT CLASS'''
 
 
