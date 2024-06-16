@@ -273,17 +273,12 @@ def send_new_email(incident_id, email_subject, subject_include_incident_id, emai
     if is_error(email_result):
         return_error(f'Error:\n {get_error(email_result)}')
 
-    result_array = []
-    for result in email_result:
-        if result.get('FileID'):
-            result_array.append(result)
     msg = f'Mail sent successfully. To: {email_to}'
     if email_cc:
         msg += f' Cc: {email_cc}'
     if email_bcc:
         msg += f' Bcc: {email_bcc}'
-    result_array.append(msg)
-    return result_array
+    return msg
 
 
 def send_new_mail_request(incident_id, email_subject, subject_include_incident_id, email_to, email_body, service_mail,
