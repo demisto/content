@@ -62,6 +62,15 @@ def test_parse_rules(filename, expected_rules):
                         name="related-to"))
 ])
 def test_build_relationships(indicator, response, expected_results):
+    """
+    Given:
+        - A YARA Rule indicator with indicator strings in its metadata
+    When:
+        - Parsing the YARA Rule indicator to be created in XSOAR
+    Then:
+        - Ensure that the correct relationships are created.
+    """
+
     with patch.object(demisto, 'executeCommand', return_value=response):
         relationships = build_relationships(indicator)
         assert relationships[0].to_context() == expected_results.to_context()
