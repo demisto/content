@@ -308,7 +308,7 @@ tasks:
       key:
         simple: severity_high_int
       value:
-        simple: "3"
+        simple: "3.0"
     separatecontext: false
     continueonerrortype: ""
     view: |-

@@ -23,10 +23,7 @@ class Replace:
             demisto.debug(f'MapRangeValues, get_typed_value {f_value=}')
             if f_value % 1 == 0:
                 demisto.debug('MapRangeValues, get_typed_value try int()')
-                try:
-                    return int(value)
-                except ValueError:
-                    demisto.debug(f"MapRangeValues, get_typed_value the {value=} isn't int")
+                return int(f_value)
             demisto.debug(f'MapRangeValues, get_typed_value return {f_value=}')
             return f_value
         except ValueError:
