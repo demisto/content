@@ -57,9 +57,9 @@ configuration:
 - section: Collect
   advanced: true
   display: Minutes to delay
-  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay), default is 0.
+  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). Default is 10 minutes but note a higher value might be needed for users with heavier traffic.
   name: fetch_delay
-  defaultvalue: "0"
+  defaultvalue: "10"
   type: 0
   required: false
 - section: Collect

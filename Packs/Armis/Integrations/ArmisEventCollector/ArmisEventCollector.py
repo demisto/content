@@ -33,7 +33,7 @@ VENDOR = 'armis'
 PRODUCT = 'security'
 API_V1_ENDPOINT = '/api/v1'
 DEFAULT_MAX_FETCH = 5000
-DEFAULT_FETCH_DELAY = 0
+DEFAULT_FETCH_DELAY = 10
 DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
     'Alerts': EVENT_TYPE(unique_id_key='alertId', aql_query=f'in:{EVENT_TYPE_ALERTS}', type=EVENT_TYPE_ALERTS, order_by='time',
