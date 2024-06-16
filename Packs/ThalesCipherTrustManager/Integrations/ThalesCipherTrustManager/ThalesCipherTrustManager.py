@@ -1092,7 +1092,7 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
     raw_response = client.get_external_ca_list(params=params)
 
     outputs = [remove_key_from_outputs(external_ca_entry, ['cert'])[0] for external_ca_entry in
-                                     raw_response.get('resources', [])]
+               raw_response.get('resources', [])]
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
