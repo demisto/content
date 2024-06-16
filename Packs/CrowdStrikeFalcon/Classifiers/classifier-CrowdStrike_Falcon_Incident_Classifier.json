@@ -6,7 +6,7 @@
 	"version": -1,
 	"defaultIncidentType": "CrowdStrike Falcon Incident",
 	"keyTypeMap": {
-		"detection": "CrowdStrike Falcon Detection",
+		"detection": "CrowdStrike Falcon Detectiona",
 		"incident": "CrowdStrike Falcon Incident",
 		"IDP detection": "CrowdStrike Falcon IDP Detection",
 		"iom_configurations": "CrowdStrike Falcon IOM Event",

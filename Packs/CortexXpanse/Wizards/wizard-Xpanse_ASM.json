@@ -50,12 +50,12 @@
         ],
         "set_playbook": [
             {
-                "name": "Xpanse - Alert Handler"
+                "name": "Xpanse - Alert Handlerdas"
             }
         ],
         "supporting_integrations": [
             {
-                "name": "nmap",
+                "name": "nmapaa",
                 "action": {
                     "existing": "Configure 'Nmap' to enable network discovery information.",
                     "new": "Configure 'Nmap' to enable network discovery information."
