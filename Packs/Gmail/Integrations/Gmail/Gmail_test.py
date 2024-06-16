@@ -948,16 +948,11 @@ def test_handle_html_image_with_new_line(mocker):
                              'cid': 'image0.png@11111111_11111111',
                              'ID': 'image0.png@11111111_11111111'}]
     expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>"""  # noqa: E501
-    expected_file = [{'Contents': '',
-                      'ContentsFormat': 'text',
-                      'Type': 3, 'File': 'image0.png@11111111_11111111-imageName:image0.png',
-                      'FileID': '1234567'}]
 
-    cleanBody, attachments, file_results = Gmail.handle_html(htmlBody)
+    cleanBody, attachments = Gmail.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
-    assert expected_file == file_results
 
 
 part_test1 = [{

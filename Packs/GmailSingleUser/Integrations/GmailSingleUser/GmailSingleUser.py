@@ -761,7 +761,6 @@ class Client:
         We might not have Beautiful Soup so just do regex search
         """
         attachments = []
-        file_results = []
         cleanBody = ''
         lastIndex = 0
         for i, m in enumerate(
@@ -780,10 +779,9 @@ class Client:
             attachments.append(attachment)
             cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
             lastIndex = m.end() - 1
-            file_results.append(fileResult(attachment['name'], attachment['data']))
 
         cleanBody += htmlBody[lastIndex:]
-        return cleanBody, attachments, file_results
+        return cleanBody, attachments
 
     def collect_inline_attachments(self, attach_cids):
         """
@@ -983,15 +981,13 @@ class Client:
         if references:
             message['References'] = self.header(' '.join(references))
 
-        file_results = []
         # if there are any attachments to the mail or both body and htmlBody were given
         if entry_ids or file_names or attach_cid or manualAttachObj or (body and htmlBody):
             htmlAttachments = []  # type: list
             inlineAttachments = []  # type: list
 
             if htmlBody:
-                # htmlBody, htmlAttachments = handle_html(htmlBody)
-                htmlBody, htmlAttachments, file_results = self.handle_html(htmlBody)
+                htmlBody, htmlAttachments = self.handle_html(htmlBody)
                 msg = MIMEText(htmlBody, 'html', 'utf-8')
                 attach_body_to.attach(msg)  # type: ignore
                 if attach_cid:
@@ -1018,7 +1014,7 @@ class Client:
         command_args = {'raw': encoded_message.decode()}
         emailfrom = emailfrom or EMAIL
 
-        return self.send_email_request(email_from=emailfrom, body=command_args), file_results
+        return self.send_email_request(email_from=emailfrom, body=command_args)
 
     def send_email_request(self, email_from: str, body: dict) -> dict:
         """
@@ -1104,28 +1100,20 @@ def mail_command(client: Client, args: dict, email_from, send_as, subject_prefix
 
     rendering_body = html_body if body_type == "html" else body
 
-    result, file_results = client.send_mail(email_to, email_from, send_as, cc, bcc, subject, body, html_body, entry_ids, reply_to,
+    result = client.send_mail(email_to, email_from, send_as, cc, bcc, subject, body, html_body, entry_ids, reply_to,
                                             attach_names, attach_cids, manual_attach_obj, transient_file, transient_file_content,
                                             transient_file_cid, additional_headers, template_param, in_reply_to, references)
     send_mail_result = client.sent_mail_to_entry('Email sent:', [result], email_to, email_from, cc, bcc, html_body,
                                                  rendering_body, subject)
 
-    temp_array = []
-    temp_array.append(send_mail_result)
     if render_body:
         html_result = {
             'Type': entryTypes['note'],
             'ContentsFormat': formats['html'],
             'Contents': html_body
         }
-        if file_results:
-            temp_array.append(html_result)
-            temp_array += file_results
-            return temp_array
+
         return [send_mail_result, html_result]
-    if file_results:
-        temp_array += file_results
-        return temp_array
     return send_mail_result
 
 

@@ -1923,7 +1923,6 @@ def handle_html(htmlBody):
     Due to security implications, we support only images here
     We might not have Beautiful Soup so just do regex search
     """
-    file_results = []
     attachments = []
     cleanBody = ''
     lastIndex = 0
@@ -1948,10 +1947,9 @@ def handle_html(htmlBody):
         attachments.append(attachment)
         cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
         lastIndex = m.end() - 1
-        file_results.append(fileResult(attachment['name'], attachment['data']))
 
     cleanBody += htmlBody[lastIndex:]
-    return cleanBody, attachments, file_results
+    return cleanBody, attachments
 
 
 def collect_inline_attachments(attach_cids):
@@ -2161,7 +2159,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
         inlineAttachments = []  # type: list
 
         if htmlBody:
-            htmlBody, htmlAttachments, file_results = handle_html(htmlBody)
+            htmlBody, htmlAttachments = handle_html(htmlBody)
             msg = MIMEText(htmlBody, 'html', 'utf-8')
             attach_body_to.attach(msg)  # type: ignore
             if attach_cid:
@@ -2196,7 +2194,7 @@ def send_mail(emailto, emailfrom, subject, body, entry_ids, cc, bcc, htmlBody, r
                                                             'https://www.googleapis.com/auth/gmail.send'],
                           delegated_user=emailfrom)
     result = service.users().messages().send(**command_args).execute()
-    return result, file_results
+    return result
 
 
 def send_mail_command():
@@ -2226,7 +2224,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
     render_body = argToBoolean(args.get('renderBody', False))
     body_type = args.get('bodyType', 'Text').lower()
 
-    result, file_results = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
+    result = send_mail(email_to, email_from, subject, body, entry_ids, cc, bcc, html_body, reply_to, attach_names,
                                      attach_cids, transient_file, transient_file_content, transient_file_cid, manual_attach_obj,
                                      additional_headers, template_param, in_reply_to, references, force_handle_htmlBody)
     rendering_body = html_body if body_type == "html" else body
@@ -2239,12 +2237,7 @@ def mail_command(args, subject_prefix='', in_reply_to=None, references=None):
             content_format=EntryFormat.HTML,
             raw_response=html_body,
         )
-
-        if file_results:
-            return [send_mail_result, html_result, file_results]
         return [send_mail_result, html_result]
-    if file_results:
-        return [send_mail_result, file_results]
     return send_mail_result
 
 

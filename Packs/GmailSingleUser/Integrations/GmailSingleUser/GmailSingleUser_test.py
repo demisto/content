@@ -460,25 +460,10 @@ def test_handle_html(mocker):
          }
     ]
     expected_cleanBody = '<html>\n                        <body>\n                            <img src="cid:image0.png@11111111_11111111"/>\n                            <img src="cid:image1.jpeg@11111111_11111111"/>\n                        </body>\n                      </html>'  # noqa: E501
-    expected_file_results = [
-        {'Contents': '',
-         'ContentsFormat': 'text',
-         'Type': 3,
-         'File': 'image0.png@11111111_11111111-imageName:image0.png',
-         'FileID': '1234567'
-         },
-        {'Contents': '',
-         'ContentsFormat': 'text',
-         'Type': 3,
-         'File': 'image1.jpeg@11111111_11111111-imageName:image1.jpeg',
-         'FileID': '1234567'
-         }
-    ]
-    cleanBody, attachments, file_results = client.handle_html(htmlBody)
+    cleanBody, attachments = client.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
-    assert expected_file_results == file_results
 
 
 def test_handle_html_image_with_new_line(mocker):
@@ -509,18 +494,12 @@ def test_handle_html_image_with_new_line(mocker):
          'cid': 'image0.png@11111111_11111111',
          'ID': 'image0.png@11111111_11111111'}
     ]
-    expected_file_results = [{'Contents': '',
-                              'ContentsFormat': 'text',
-                              'Type': 3,
-                              'File': 'image0.png@11111111_11111111-imageName:image0.png',
-                              'FileID': '1234567'}]
     expected_cleanBody = '\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>'  # noqa: E501
 
-    cleanBody, attachments, file_results = client.handle_html(htmlBody)
+    cleanBody, attachments = client.handle_html(htmlBody)
 
     assert expected_cleanBody == cleanBody
     assert expected_attachments == attachments
-    assert expected_file_results == file_results
 
 
 part_test1 = [{
