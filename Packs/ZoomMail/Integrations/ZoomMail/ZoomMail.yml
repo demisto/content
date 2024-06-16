@@ -134,6 +134,75 @@ script:
     - contextPath: ZoomMail.Email.resultSizeEstimate
       description: The estimated amount of messages found.
       type: number
+    - contextPath: ZoomMail.Email.messages.id
+      description: The ID of the email message.
+      type: string
+    - contextPath: ZoomMail.Email.messages.threadId
+      description: The ID of the email thread.
+      type: string
+    - contextPath: ZoomMail.Email.resultSizeEstimate
+      description: The estimated amount of messages found.
+      type: number
+    - contextPath: ZoomMail.Email.messages.labelIds
+      description: The labels assigned to the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.snippet
+      description: A snippet of the email content.
+      type: string
+    - contextPath: ZoomMail.Email.messages.historyId
+      description: The history ID of the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.internalDate
+      description: The internal date of the email.
+      type: date
+    - contextPath: ZoomMail.Email.messages.expiration
+      description: The expiration time of the email.
+      type: number
+    - contextPath: ZoomMail.Email.messages.lastMoved
+      description: The last moved timestamp of the email.
+      type: date
+    - contextPath: ZoomMail.Email.messages.sendTime
+      description: The send time of the email.
+      type: date
+    - contextPath: ZoomMail.Email.messages.userScheduled
+      description: Indicates if the email was user scheduled.
+      type: boolean
+    - contextPath: ZoomMail.Email.messages.manifest
+      description: The manifest of the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.originalMime
+      description: The original MIME of the email.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.partId
+      description: The part ID of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.mimeType
+      description: The MIME type of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.filename
+      description: The filename of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.headers
+      description: The headers of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.body.attachmentId
+      description: The attachment ID of the email body.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.body.size
+      description: The size of the email body.
+      type: number
+    - contextPath: ZoomMail.Email.messages.payload.body.data
+      description: The data of the email body.
+      type: string
+    - contextPath: ZoomMail.Email.messages.payload.parts
+      description: The parts of the email payload.
+      type: string
+    - contextPath: ZoomMail.Email.sizeEstimate
+      description: The size estimate of the email.
+      type: number
+    - contextPath: ZoomMail.Email.raw
+      description: The raw content of the email.
+      type: string
   - name: zoom-mail-thread-list
     arguments:
     - name: email
