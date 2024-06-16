@@ -82,7 +82,6 @@ configuration:
 - display: Event types to fetch
   name: event_types_to_fetch
   section: Collect
-  required: true
   type: 16
   defaultvalue: Alerts,Admin activities,Login activities
   options:
