@@ -37,6 +37,7 @@ script:
           - "true"
           - "false"
     name: jira-asset-object-schema-list
+    description: List all object schemas.
     outputs:
       - contextPath: JiraAsset.Schema.ID
         description: The id of the object schema
@@ -79,6 +80,7 @@ script:
           - "true"
           - "false"
     name: jira-asset-object-type-list
+    description: List all object types.
     outputs:
       - contextPath: JiraAsset.ObjectType.ID
         description: The id of the object type
@@ -170,6 +172,7 @@ script:
           - "true"
           - "false"
     name: jira-asset-object-type-attribute-list
+    description: List all attributes for an object type.
     outputs:
       - contextPath: JiraAsset.Attribute.ID
         description: The id of the attribute.
@@ -346,6 +349,7 @@ script:
     - description: Use this argument or a combination of page and page_size, but not both. Limit the number of entries returned by the command.
       name: limit
     name: jira-asset-object-search
+    description: Searches for objects of the specified object type.
     outputs:
       - contextPath: JiraAsset.Object.ID
         description: Id of the retrieved object.
@@ -412,6 +416,7 @@ script:
           - "true"
           - "false"
     name: jira-asset-attribute-json-create
+    description: Utility command used to create a json file with all attributes of the specified object type. All that is left is to fill in the values of each attribute.
     outputs:
       - contextPath: InfoFile.Name
         description: FileName
@@ -436,6 +441,7 @@ script:
       name: comment
       required: true
     name: jira-asset-comment-create
+    description: Creates a comment for the specified object.
     outputs:
       - contextPath: JiraAsset.Comment.Created
         description: The date in which this comment was created.
@@ -487,6 +493,7 @@ script:
       name: object_id
       required: true
     name: jira-asset-connected-ticket-list
+    description: Returns a list of all connected tickets for the specified object.
     outputs:
       - contextPath: JiraAsset.ConnectedTicket.Tickets.Key
         description: Key for the connected ticket.
@@ -535,6 +542,7 @@ script:
       name: object_id
       required: true
     name: jira-asset-comment-list
+    description: Returns a list of comments for the specified object.
     outputs:
       - contextPath: JiraAsset.Comment.Created
         description: The date in which this comment was created.
@@ -570,6 +578,7 @@ script:
         name: entry_id
         required: true
     name: jira-asset-attachment-add
+    description: Uploads a file attachment to the specified object.
     outputs:
       - contextPath: JiraAsset.Attachment.ID
         description: Id of the attachment.
@@ -609,6 +618,7 @@ script:
           - "true"
           - "false"
     name: jira-asset-attachment-list
+    description: Returns a list of attachments for the specified object. You can also download the files in a zipped format.
     outputs:
       - contextPath: JiraAsset.Attachment.ID
         description: Id of the attachment.
@@ -642,6 +652,7 @@ script:
         name: id
         required: true
     name: jira-asset-attachment-remove
+    description: Removes an attachment from a specific object.
     outputs:
       - contextPath: JiraAsset.Attachment.ID
         description: Id of the attachment that was deleted.
