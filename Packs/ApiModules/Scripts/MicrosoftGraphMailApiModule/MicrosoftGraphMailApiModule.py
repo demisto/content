@@ -753,7 +753,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 chunk_data=chunk_data,
                 attachment_size=attachment_size
             )
-            
+
             if response.status_code not in (201, 200):
                 raise Exception(f'{response.json()}')
 
