@@ -674,7 +674,7 @@ tasks:
       version: -1
       name: Rapid Breach Response - Set Incident Info
       description: This playbook is responsible for setting up the Rapid Breach Response Incident Info tab in the layout.
-      playbookName: Rapid Breach Response - Set Incident Infoaaa
+      playbookName: Rapid Breach Response - Set Incident Info
       type: playbook
       iscommand: false
       brand: ""
