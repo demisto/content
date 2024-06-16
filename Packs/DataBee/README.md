@@ -1,6 +1,6 @@
 # DataBee Pack Overview
 
-The DataBee content pack enables the retrieval of information from DataBee, including findings, users, and devices.
+Engineered with an open architecture and flexibility to future-proof your technology stack, DataBee is a cloud-native security, risk and compliance data fabric platform that delivers the connected data and deep insights that security and GRC teams need to address security and compliance gaps faster and more affordably. The DataBee XSOAR content pack enables the retrieval of information from DataBee, including findings, users, and devices. The content pack enables analysts to leverage DataBee security threat analytics and enrich all their security findings with user and device context pulled from all sources across their enterprise. (edited)
 
 ## Capabilities of the DataBee Pack
 

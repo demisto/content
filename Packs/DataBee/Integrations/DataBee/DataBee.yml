@@ -8,6 +8,12 @@ configuration:
     required: true
     type: 0
     section: Connect
+  - display: Incident type
+    name: incidentType
+    type: 13
+    defaultvalue: DataBee Finding
+    section: Connect
+    required: false
   - name: credentials
     display: Username
     displaypassword: Password
