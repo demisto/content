@@ -1392,7 +1392,7 @@ def rule_assignments_remove_command(
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-policy-rule-install",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Policy installation request is executing",
@@ -1413,11 +1413,11 @@ def rule_policy_install_command(args: dict[str, Any], client: Client) -> PollRes
         response = client.rule_policy_install(rule_id)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-policy-rule-install")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-policy-rule-modifications-get",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Fetch rule modifications request is executing",
@@ -1436,11 +1436,11 @@ def rule_modifications_get_command(args: dict[str, Any], client: Client) -> Poll
     """
     if not args.get("job_id"):
         rule_id = args.get("rule_id", "")
-        SCHEDULED_COMMANDS_MAPPER[demisto.command()].message.format(id=rule_id)
+        SCHEDULED_COMMANDS_MAPPER["harmony-ep-policy-rule-modifications-get"].message.format(id=rule_id)
         response = client.rule_modifications_get(rule_id=rule_id)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-policy-rule-modifications-get")
 
 
 def rule_metadata_list_command(args: dict[str, Any], client: Client) -> CommandResults:
@@ -1491,7 +1491,7 @@ def rule_metadata_list_command(args: dict[str, Any], client: Client) -> CommandR
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-push-operation-status-list",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Fetch remediation status list request is executing",
@@ -1518,11 +1518,11 @@ def push_operation_status_list_command(
         )
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-push-operation-status-list")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-push-operation-get",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Fetch remediation request is executing",
@@ -1552,11 +1552,11 @@ def push_operation_get_command(args: dict[str, Any], client: Client) -> PollResu
         )
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-push-operation-get")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-push-operation-abort",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Remediation operation abort request is executing",
@@ -1576,7 +1576,7 @@ def push_operation_abort_command(args: dict[str, Any], client: Client) -> PollRe
     """
     if not args.get("job_id"):
         remediation_operation_id = args.get("remediation_operation_id", "")
-        SCHEDULED_COMMANDS_MAPPER[demisto.command()].message = (
+        SCHEDULED_COMMANDS_MAPPER["harmony-ep-push-operation-abort"].message = (
             f"Remediation operation {remediation_operation_id} was aborted successfully."
         )
 
@@ -1585,11 +1585,11 @@ def push_operation_abort_command(args: dict[str, Any], client: Client) -> PollRe
         )
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-push-operation-abort")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-anti-malware-scan",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Anti malware scan request is executing",
@@ -1611,11 +1611,11 @@ def anti_malware_scan_command(args: dict[str, Any], client: Client) -> PollResul
         response = client.anti_malware_scan(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-anti-malware-scan")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-anti-malware-update",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Anti malware update request is executing",
@@ -1641,11 +1641,11 @@ def anti_malware_update_command(args: dict[str, Any], client: Client) -> PollRes
         response = client.anti_malware_update(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-anti-malware-update")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-anti-malware-restore",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Anti malware restore request is executing",
@@ -1668,11 +1668,11 @@ def anti_malware_restore_command(args: dict[str, Any], client: Client) -> PollRe
         response = client.anti_malware_restore(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-anti-malware-restore")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-forensics-indicator-analyze",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Indicator analyze request is executing",
@@ -1703,11 +1703,11 @@ def indicator_analyze_command(args: dict[str, Any], client: Client) -> PollResul
         )
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-forensics-indicator-analyze")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-forensics-file-quarantine",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="File quarantine request is executing",
@@ -1735,11 +1735,11 @@ def file_quarantine_command(args: dict[str, Any], client: Client) -> PollResult:
         response = client.file_quarantine(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-forensics-file-quarantine")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-forensics-file-restore",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="File restore request is executing",
@@ -1767,11 +1767,11 @@ def file_restore_command(args: dict[str, Any], client: Client) -> PollResult:
         response = client.file_restore(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-forensics-file-restore")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-remediation-computer-isolate",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Computer isolate request is executing",
@@ -1794,11 +1794,11 @@ def remediation_computer_isolate_command(
         response = client.remediation_computer_isolate(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-remediation-computer-isolate")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-remediation-computer-deisolate",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Computer de-isolate request is executing",
@@ -1821,11 +1821,11 @@ def remediation_computer_deisolate_command(
         response = client.remediation_computer_deisolate(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-remediation-computer-deisolate")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-computer-reset",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Computer restart request is executing",
@@ -1849,11 +1849,11 @@ def computer_restart_command(args: dict[str, Any], client: Client) -> PollResult
         response = client.computer_restart(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-computer-reset")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-computer-shutdown",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Computer shutdown request is executing",
@@ -1877,11 +1877,11 @@ def computer_shutdown_command(args: dict[str, Any], client: Client) -> PollResul
         response = client.computer_shutdown(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-computer-shutdown")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-computer-repair",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Computer repair request is executing",
@@ -1902,11 +1902,11 @@ def computer_repair_command(args: dict[str, Any], client: Client) -> PollResult:
         response = client.computer_repair(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-computer-repair")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-computer-list",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Computer list fetch request is executing",
@@ -1933,11 +1933,11 @@ def computer_list_command(args: dict[str, Any], client: Client) -> PollResult:
         response = client.computer_list(updated_request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-computer-list")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-process-information-get",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Process information fetch request is executing",
@@ -1962,11 +1962,11 @@ def process_information_get_command(args: dict[str, Any], client: Client) -> Pol
         response = client.process_information_get(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-process-information-get")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-process-terminate",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Process terminate request is executing",
@@ -1992,11 +1992,11 @@ def process_terminate_command(args: dict[str, Any], client: Client) -> PollResul
         response = client.process_terminate(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-process-terminate")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-registry-key-add",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Registry key add request is executing",
@@ -2025,11 +2025,11 @@ def agent_registry_key_add_command(args: dict[str, Any], client: Client) -> Poll
         response = client.agent_registry_key_add(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-registry-key-add")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-registry-key-delete",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Registry key remove request is executing",
@@ -2058,11 +2058,11 @@ def agent_registry_key_delete_command(
         response = client.agent_registry_key_delete(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-registry-key-delete")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-file-copy",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="File copy request is executing",
@@ -2088,11 +2088,11 @@ def agent_file_copy_command(args: dict[str, Any], client: Client) -> PollResult:
 
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-file-copy")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-file-move",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="File move request is executing",
@@ -2117,11 +2117,11 @@ def agent_file_move_command(args: dict[str, Any], client: Client) -> PollResult:
         response = client.agent_file_move(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-file-move")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-file-delete",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="File delete request is executing",
@@ -2147,11 +2147,11 @@ def agent_file_delete_command(args: dict[str, Any], client: Client) -> PollResul
         response = client.agent_file_delete(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-file-delete")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-vpn-site-add",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Add VPN Site's configuration request is executing",
@@ -2180,11 +2180,11 @@ def agent_vpn_site_add_command(args: dict[str, Any], client: Client) -> PollResu
         response = client.agent_vpn_site_add(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-vpn-site-add")
 
 
 @polling_function(
-    name=demisto.command(),
+    name="harmony-ep-agent-vpn-site-remove",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Remove VPN Site's configuration request is executing",
@@ -2208,7 +2208,7 @@ def agent_vpn_site_remove_command(args: dict[str, Any], client: Client) -> PollR
         response = client.agent_vpn_site_remove(remove_empty_elements(request_body))
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, demisto.command())
+    return schedule_command(args, client, "harmony-ep-agent-vpn-site-remove")
 
 
 def test_module(client: Client) -> str:
@@ -2534,7 +2534,7 @@ def get_pagination_args(args: dict[str, Any]) -> tuple:
     new_page = 0
     new_page_size = limit
 
-    if page is not None and page_size:
+    if page and page_size:
         new_page_size = page_size
         new_page = page - 1
 

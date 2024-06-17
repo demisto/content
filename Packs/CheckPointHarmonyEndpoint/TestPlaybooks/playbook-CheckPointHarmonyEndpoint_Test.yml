@@ -1,6 +1,5 @@
 id: CheckPointHarmonyEndpoint
-version: 12
-vcShouldKeepItemLegacyProdMachine: false
+version: -1
 name: CheckPointHarmonyEndpoint
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -2890,6 +2890,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2920,3 +2921,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 6.10.0
+description: Check Point Harmony Endpoint

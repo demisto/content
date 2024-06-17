@@ -23,7 +23,7 @@ configuration:
   type: 8
   defaultvalue: 'false'
 description: Checkpoint Harmony Endpoint provides a complete endpoint security solution built to protect organizations and the remote workforce from today's complex threat landscape.
-display: CheckPoint Harmony Endpoint
+display: Check Point Harmony Endpoint
 name: CheckPointHarmonyEndpoint
 script:
   commands:

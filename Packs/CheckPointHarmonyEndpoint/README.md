@@ -1,4 +1,4 @@
-Cortex XSOAR interfaces with CheckPoint Harmony Endpoint to help protect organizations with security solutions and IT operations.
+Cortex XSOAR interfaces with Check Point Harmony Endpoint to help protect organizations with security solutions and IT operations.
 
 # What does this pack do?
 
