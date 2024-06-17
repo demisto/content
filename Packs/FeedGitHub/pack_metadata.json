@@ -14,6 +14,12 @@
         "Plug & Fetch",
         "Generic Feed"
     ],
+    "dependencies": {
+        "Yara": {
+            "mandatory": false,
+            "display_name": "Yara"
+        }
+    },
     "useCases": [],
     "keywords": [
         "YARA"
