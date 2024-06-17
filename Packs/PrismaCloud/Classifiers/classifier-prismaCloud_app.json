@@ -113,5 +113,8 @@
 		},
 		"simple": ""
 	},
+    "marketplaces": [
+        "xsoar"
+    ],
 	"version": -1
 }

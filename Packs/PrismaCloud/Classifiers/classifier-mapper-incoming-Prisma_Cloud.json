@@ -2661,5 +2661,8 @@
 		}
 	},
 	"version": -1,
+    "marketplaces": [
+        "xsoar"
+    ],
 	"fromVersion": "6.0.0"
 }
