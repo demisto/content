@@ -297,7 +297,8 @@ def get_events_command(client: Client, event_type: str, last_run: dict, limit: i
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
 
 
-def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> tuple[list, dict]:
+def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH,
+                 enable_admin_audits: bool = False) -> tuple[list, dict]:
     """ Fetches 3 types of events from CyberArkEPM
         - admin_audits
         - policy_audits
@@ -306,16 +307,18 @@ def fetch_events(client: Client, last_run: dict, max_fetch: int = MAX_FETCH) -> 
         client (Client): CyberArkEPM client to use.
         last_run (dict): The last run information.
         max_fetch (int): The max events to return per fetch default is 250.
+        enable_admin_audits (bool): Whether to fetch admin audits events. Defaults is False.
     Return:
         (list, dict) A list of events to push to XSIAM, A dict with information for next fetch.
     """
     events: list = []
     demisto.info(f'Start fetching last run: {last_run}')
 
-    for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
-        if admin_audits:
-            last_run[set_id]['admin_audits']['from_date'] = prepare_datetime(admin_audits[-1].get('EventTime'), increase=True)
-            events.extend(admin_audits)
+    if enable_admin_audits:
+        for set_id, admin_audits in get_admin_audits(client, last_run, max_fetch).items():
+            if admin_audits:
+                last_run[set_id]['admin_audits']['from_date'] = prepare_datetime(admin_audits[-1].get('EventTime'), increase=True)
+                events.extend(admin_audits)
 
     for set_id, policy_audits_last_run in get_events(client.get_policy_audits, 'policy_audits', last_run, max_fetch).items():
         if policy_audits := policy_audits_last_run.get('events', []):
@@ -362,6 +365,7 @@ def main():  # pragma: no cover
     username = params.get('credentials').get('identifier')
     password = params.get('credentials').get('password')
     set_names = argToList(params.get('set_name'))
+    enable_admin_audits = argToBoolean(params.get('enable_admin_audits', False))
     policy_audits_event_type = argToList(params.get('policy_audits_event_type'))
     raw_events_event_type = argToList(params.get('raw_events_event_type'))
     verify_certificate = not params.get('insecure', False)
@@ -420,7 +424,7 @@ def main():  # pragma: no cover
             return_results(command_result)
 
         elif command in 'fetch-events':
-            events, next_run = fetch_events(client, last_run, max_fetch)  # type: ignore
+            events, next_run = fetch_events(client, last_run, max_fetch, enable_admin_audits)  # type: ignore
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)
 
