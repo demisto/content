@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 
 from CommonServerUserPython import *  # noqa
 from abc import ABC
-from typing import Any
+from typing import Any, NamedTuple
 from collections.abc import Callable
 
 from enum import Enum
@@ -20,12 +20,25 @@ import urllib3
 # Disable insecure warnings
 urllib3.disable_warnings()
 
+
+class EventFilter(NamedTuple):
+    ui_name: str
+    name: str
+    attributes: dict
+
+
+ALERTS_FILTER = EventFilter('Alerts', 'alerts', {'type': 'alerts', 'filters': {}})
+ADMIN_ACTIVITIES_FILTER = EventFilter('Admin activities', 'activities_admin', {
+                                      'type': 'activities', 'filters': {"activity.type": {"eq": True}}})
+LOGIN_ACTIVITIES_FILTER = EventFilter('Login activities', 'activities_login', {'type': 'activities', 'filters': {
+    "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}})
+
+ALL_EVENT_FILTERS: list[EventFilter] = [ALERTS_FILTER, ADMIN_ACTIVITIES_FILTER, LOGIN_ACTIVITIES_FILTER]
+
+UI_NAME_TO_EVENT_FILTERS = {event_filter.ui_name: event_filter for event_filter in ALL_EVENT_FILTERS}
+
 ''' CONSTANTS '''
 AUTH_ERROR_MSG = 'Authorization Error: make sure tenant id, client id and client secret is correctly set'
-TYPES_TO_RETRIEVE = {'alerts': {'type': 'alerts', 'filters': {}},
-                     'activities_admin': {'type': 'activities', 'filters': {"activity.type": {"eq": True}}},
-                     'activities_login': {'type': 'activities', 'filters': {
-                         "activity.eventType": {"eq": ["EVENT_CATEGORY_LOGIN", "EVENT_CATEGORY_FAILED_LOGIN"]}}}}
 VENDOR = "Microsoft"
 PRODUCT = "defender_cloud_apps"
 
@@ -153,10 +166,14 @@ class IntegrationEventsClient(ABC):
 
 class IntegrationGetEvents(ABC):
     def __init__(
-            self, client: IntegrationEventsClient, options: IntegrationOptions
+        self, client: IntegrationEventsClient, options: IntegrationOptions, event_filters: list[EventFilter]
     ) -> None:
         self.client = client
         self.options = options
+        self.filter_name_to_attributes = {
+            event_filter.name: event_filter.attributes
+            for event_filter in event_filters
+        }
 
     def run(self):
         stored = []
@@ -281,8 +298,7 @@ class DefenderGetEvents(IntegrationGetEvents):
         # - activities with filter to get the admin events
         # - activities with different filter to get the login events
         # - alerts with no filter
-        # TYPES_TO_RETRIEVE dictionary contains the filters and the endpoint according to the event type.
-        for event_type_name, endpoint_details in TYPES_TO_RETRIEVE.items():
+        for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
             self.client.request.params.pop('filters', None)
             self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
@@ -385,6 +401,12 @@ def main(command: str, demisto_params: dict):
         demisto_params['client_secret'] = demisto_params['credentials']['password']
         push_to_xsiam = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
+        if user_requested_event_types := argToList(demisto_params.get('event_types_to_fetch', [])):
+            event_filters: list[EventFilter] = [event_filter for ui_name, event_filter in UI_NAME_TO_EVENT_FILTERS.items()
+                                                if ui_name in user_requested_event_types]
+        else:
+            event_filters = ALL_EVENT_FILTERS
+
         after = demisto_params.get('after')
         if after and not isinstance(after, int):
             timestamp = dateparser.parse(after)  # type: ignore
@@ -396,7 +418,7 @@ def main(command: str, demisto_params: dict):
 
         client = DefenderClient(request=request, options=options, authenticator=authenticator,
                                 after=after)
-        get_events = DefenderGetEvents(client=client, options=options)
+        get_events = DefenderGetEvents(client=client, options=options, event_filters=event_filters)
 
         if command == 'test-module':
             return_results(module_test(get_events=get_events))
