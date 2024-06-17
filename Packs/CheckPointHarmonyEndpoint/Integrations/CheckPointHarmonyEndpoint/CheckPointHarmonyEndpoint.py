@@ -444,9 +444,9 @@ class Client(BaseClient):
         try:
             response = self._http_request(
                 method="POST",
-                url_suffix=f"/session/login/cloud",
+                url_suffix="/session/login/cloud",
             )
-            self._headers["x-mgmt-api-token"] = response["apiToken"]          
+            self._headers["x-mgmt-api-token"] = response["apiToken"]
 
         except DemistoException as exc:
             if (
@@ -653,7 +653,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            (f"/policy/{rule_id}/install" if rule_id else f"/policy/install"),
+            (f"/policy/{rule_id}/install" if rule_id else "/policy/install"),
         )
 
     def rule_modifications_get(
@@ -699,7 +699,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "GET",
-            (f"/policy/{rule_id}/metadata" if rule_id else f"/policy/metadata"),
+            (f"/policy/{rule_id}/metadata" if rule_id else "/policy/metadata"),
             params=params,
         )
 

@@ -36,7 +36,7 @@ def mock_client() -> CheckPointHarmonyEndpoint.Client:
         Client: Mock connection to client.
     """
     return CheckPointHarmonyEndpoint.Client(
-        base_url=BASE_URL,
+        base_url=API_URL,
         client_id="test",
         client_secret="test",
         verify_certificate=False,
@@ -235,7 +235,7 @@ def test_ioc_create_command(
             {"ids": None, "delete_all": True},
             "ioc/delete/all",
             "ioc_delete.json",
-            "All IOCs was deleted successfully.",
+            "All IOCs were deleted successfully.",
         ),
     ],
 )
@@ -722,7 +722,7 @@ def test_schedule_command(
             "remediation/de-isolate",
         ),
         (
-            "harmony-ep-agent-computer-restart",
+            "harmony-ep-agent-computer-reset",
             "POST",
             CheckPointHarmonyEndpoint.computer_restart_command,
             {
