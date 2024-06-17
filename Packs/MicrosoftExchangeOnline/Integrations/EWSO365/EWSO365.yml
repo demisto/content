@@ -966,4 +966,4 @@ script:
   type: python
 tests:
 - EWS search-mailbox test
-fromversion: 5.0.0
+fromversion: 7.9.9
