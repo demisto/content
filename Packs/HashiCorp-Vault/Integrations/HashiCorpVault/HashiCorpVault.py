@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 import hcl
 from CommonServerPython import *  # noqa: F401
+import hvac
 
 ''' GLOBAL VARIABLES '''
 
@@ -44,36 +45,40 @@ def get_headers():
 
 def login():  # pragma: no cover
     if USE_APPROLE_AUTH_METHOD:
-        path = 'auth/approle/login'
-        body = {
-            'role_id': USERNAME,
-            'secret_id': PASSWORD,
-        }
+        client = hvac.Client(namespace=NAMESPACE, url=BASE_URL, verify=VERIFY_SSL)
+        try:
+            res = client.auth.approle.login(
+                role_id=USERNAME,
+                secret_id=PASSWORD,
+            )
+            return res['auth']['client_token']
+        except Exception as e:
+            return_error(f"Could not authenticate user: {str(e)}")
     else:
         path = 'auth/userpass/login/' + USERNAME  # type: ignore
         body = {
             'password': PASSWORD
         }
-        
-    url = urljoin(SERVER_URL, path)
-    payload = json.dumps(body)
-    headers = get_headers()
-    res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
-    if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
-        try:
-            error_body = res.json()
-            if 'errors' in error_body and isinstance(error_body['errors'], list):
-                error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
-        except Exception as ex:
-            demisto.error(f"Error in login (parsing error msg): {ex}")
-            error_body = res.content
-        return_error(f'Login failed. Status code: {str(res.status_code)}, details: {error_body}')
+        url = urljoin(SERVER_URL, path)
+        payload = json.dumps(body)
+        headers = get_headers()
 
-    auth_res = res.json()
-    if not auth_res or 'auth' not in auth_res or 'client_token' not in auth_res['auth']:
-        return_error('Could not authenticate user')
+        res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
+        if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
+            try:
+                error_body = res.json()
+                if 'errors' in error_body and isinstance(error_body['errors'], list):
+                    error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
+            except Exception as ex:
+                demisto.error(f"Error in login (parsing error msg): {ex}")
+                error_body = res.content
+            return_error(f'Login failed. Status code: {str(res.status_code)}, details: {error_body}')
 
-    return auth_res['auth']['client_token']
+        auth_res = res.json()
+        if not auth_res or 'auth' not in auth_res or 'client_token' not in auth_res['auth']:
+            return_error('Could not authenticate user')
+
+        return auth_res['auth']['client_token']
 
 
 def send_request(path, method='get', body=None, params=None, headers=None):
@@ -132,7 +137,7 @@ def get_role_id_command():
     if response:
         role_id = response.get('data', {}).get('role_id', '')
     if role_id:
-        return_results(CommandResults(outputs_prefix='HashiCorp.AppRole', outputs={"Id":"role_id", "Name":role_name}))
+        return_results(CommandResults(outputs_prefix='HashiCorp.AppRole', outputs={"Id": role_id, "Name": role_name}))
 
 
 def list_secrets_engines_command():  # pragma: no cover

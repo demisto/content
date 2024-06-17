@@ -429,7 +429,7 @@ There is no context output for this command.
 ```!hashicorp-generate-role-secret role_name=my-role```
 
 #### Human Readable Output
-SecretID:123
+>SecretID:123
 
 
 
@@ -455,6 +455,14 @@ Retrieves the AppRole ID for a specified role.
 | --- | --- | --- |
 | HashiCorp.AppRole.Id | string | AppRole ID. | 
 | HashiCorp.AppRole.Name | string | AppRole Name. | 
+
+#### Command example
+```!hashicorp-get-role-id role_name=my-role```
+
+#### Human Readable Output
+|Id|Name|
+|---|---|
+|role_id|role_name|
 
 
 ## Additional Information

@@ -187,7 +187,7 @@ def test_get_role_id_command(mocker):
     expected_body = {
         'role_name': 'test_role'
     }
-    expected_outputs = {'Id': 'role_id', 'Name': 'test_role'}
+    expected_outputs = {'Id': '12345', 'Name': 'test_role'}
 
     get_role_id_command()
 
