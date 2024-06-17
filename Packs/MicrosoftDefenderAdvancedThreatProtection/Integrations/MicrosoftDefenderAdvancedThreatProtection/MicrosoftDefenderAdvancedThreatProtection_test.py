@@ -90,9 +90,9 @@ def test_third_fetch_incidents(mocker):
 
 test_get_machine_by_ip_data = [
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'all_results': 'True'},  # case no limit and all_results is True
-     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a':'b'}, {'c':'d'}, {'e':'f'}]),  # expected two machines
+     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]),  # expected two machines
     ({'ip': '8.8.8.8', 'timestamp': '2024-05-19T01:00:05Z', 'limit': '1'},  # case with limit
-     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a':'b'}])  # expected only 1 machine
+     '8.8.8.8', '2024-05-19T01:00:05Z', [{'a': 'b'}])  # expected only 1 machine
 ]
 
 
@@ -107,13 +107,14 @@ def test_get_machine_by_ip_with_limit(mocker, params, ip, timestamp, expected):
         -The number of machines returned is not grater than the limit and http request is called with the right args.
     """
     from MicrosoftDefenderAdvancedThreatProtection import MsClient
-    raw_response = {'value': [{'a':'b'}, {'c':'d'}, {'e':'f'}]}
-    mock_get_machines_for_get_machine_by_ip_command = mocker.patch.object(MsClient, 'get_machines_for_get_machine_by_ip_command', return_value=raw_response)
+    raw_response = {'value': [{'a': 'b'}, {'c': 'd'}, {'e': 'f'}]}
+    mock_get_machines = mocker.patch.object(
+        MsClient, 'get_machines_for_get_machine_by_ip_command', return_value=raw_response)
     mock_handle_machines = mocker.patch("MicrosoftDefenderAdvancedThreatProtection.handle_machines")
     get_machine_by_ip_command(client_mocker, params)
-    assert mock_get_machines_for_get_machine_by_ip_command.call_args.args[0] == f"(ip='{ip}',timestamp={timestamp})"
+    assert mock_get_machines.call_args.args[0] == f"(ip='{ip}',timestamp={timestamp})"
     assert mock_handle_machines.call_args.args[0] == expected
-    
+
 
 def test_get_alert_related_ips_command(mocker):
     from MicrosoftDefenderAdvancedThreatProtection import get_alert_related_ips_command

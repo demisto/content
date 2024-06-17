@@ -1262,7 +1262,7 @@ class MsClient:
             params['$top'] = str(page_size)
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
-    
+
     def get_machines_for_get_machine_by_ip_command(self, filter_req):
         """
 
@@ -1274,9 +1274,8 @@ class MsClient:
             dict: Machines info
         """
         demisto.debug(f'current request is: api/machines/findbyip{filter_req}')
-        cmd_url = 'machines/findbyip'+filter_req
+        cmd_url = 'machines/findbyip' + filter_req
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
-        
 
     def get_file_related_machines(self, file):
         """Retrieves a collection of Machines related to a given file hash.
@@ -5095,7 +5094,7 @@ def validate_args_endpoint_command(hostnames, ips, ids):
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
 
-def handle_machines(machines_response: list) ->list[CommandResults]:
+def handle_machines(machines_response: list) -> list[CommandResults]:
     """Converts the raw response of the API to a CommandResults list with relevant keys.
     Args:
         The raw API response, a list of machines.
@@ -5103,7 +5102,7 @@ def handle_machines(machines_response: list) ->list[CommandResults]:
         CommandResults list.
     """
 
-    headers = ['ID', 'Hostname','OS', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
+    headers = ['ID', 'Hostname', 'OS', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
 
     machines_outputs = []
 
@@ -5149,7 +5148,7 @@ def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResul
 
     machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
     machines_response = machines_response.get('value', [])
-    
+
     demisto.debug(f'limit is set to: {limit}')
     limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
 
