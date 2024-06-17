@@ -147,7 +147,7 @@ def test_parse_response():
         type=SearchTypes.DEVICE,
         data=json_data["results"],
         keys=SEARCH_CONFIGURATIONS[SearchTypes.DEVICE].output_keys,
-        additional_context=[]
+        additional_context=[],
     )
     assert "name" in list(result[0].keys())
 
@@ -288,7 +288,9 @@ def test_create_query(
                 "risk_level": "test",
                 "severity": "test",
             },
-            "analytic.name in (test) and confidence contains test and device.environment in (test) and device.risk_level in (test) and impact contains test and risk_level contains test and severity contains test and metadata.product.name in databee",
+            "analytic.name in (test) and confidence contains test and device.environment in (test) and device.risk_level "
+            + "in (test) and impact contains test and risk_level contains test and severity contains test and "
+            + "metadata.product.name in databee",
         ),
     ),
 )
@@ -345,7 +347,7 @@ def test_get_pagination_args(page: str, limit: str, page_size: str, excepted: tu
                 "first_fetch": "2023-03-19T06:06:08.488Z",
                 "max_fetch": "2",
             },
-            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee"
+            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee",
         ),
         (
             {
@@ -354,7 +356,7 @@ def test_get_pagination_args(page: str, limit: str, page_size: str, excepted: tu
                 "severity": "high",
                 "impact": "low",
             },
-            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee+and+severity+contains+high+and+impact+contains+low"
+            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee+and+severity+contains+high+and+impact+contains+low",
         ),
     ),
 )
