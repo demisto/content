@@ -53,17 +53,6 @@ MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 
-try:
-    if 'ExecutedCommands' in demisto.callingContext['context'] \
-            and demisto.callingContext['context']['ExecutedCommands'] is not None \
-            and len(demisto.callingContext['context']['ExecutedCommands']) > 0 \
-            and 'name' in demisto.callingContext['context']['ExecutedCommands'][0]:
-        context_executed_commands_name = demisto.callingContext['context']['ExecutedCommands'][0]['name']
-        with open('script_info.txt', 'w') as file_demisto_info:
-            file_demisto_info.write(context_executed_commands_name)
-except Exception as exc_script_info:
-    demisto.info('failed to save the script info.\nError: {}'.format(exc_script_info))
-
 
 def register_module_line(module_name, start_end, line, wrapper=0):
     """
