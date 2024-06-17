@@ -647,7 +647,7 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: The UUID of the alert search job
+      description: The UUID of the alert search job.
     description: Polling command to await for query to finish.
   - name: sekoia-xdr-post-comment-alert
     arguments:
