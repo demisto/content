@@ -454,7 +454,7 @@ Deletes a group given the group name.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_name | Name of the group. | Required | 
-| force | When set to true, groupmaps within this group will be deleted. | Optional | 
+| force | When set to true, groupmaps within this group will be deleted. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -493,6 +493,117 @@ Returns a list of group  Command arguments can be used to filter the results. Gr
 | CipherTrust.Group.description | String | Description of the group. | 
 | CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
 
+#### Command example
+```!ciphertrust-group-list page=1 page_size=10```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "Group": [
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:17.977229Z",
+                "name": "admin",
+                "updated_at": "2024-05-15T10:26:18.343973Z",
+                "users_count": 1
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:18.069026Z",
+                "name": "All Clients",
+                "updated_at": "2024-05-15T10:23:48.598464Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:18.221758Z",
+                "name": "Application Data Protection Admins",
+                "updated_at": "2024-02-14T10:08:18.221758Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:18.247687Z",
+                "name": "Application Data Protection Clients",
+                "updated_at": "2024-02-14T10:08:18.247687Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:17.935614Z",
+                "name": "Audit Admins",
+                "updated_at": "2024-02-14T10:08:17.935614Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:18.935864Z",
+                "name": "Backup Admins",
+                "updated_at": "2024-02-14T10:08:18.935864Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:17.850879Z",
+                "name": "CA Admins",
+                "updated_at": "2024-02-14T10:08:17.850879Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:18.277244Z",
+                "name": "CCKM Admins",
+                "updated_at": "2024-02-14T10:08:18.277244Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:18.307685Z",
+                "name": "CCKM Users",
+                "updated_at": "2024-02-14T10:08:18.307685Z"
+            },
+            {
+                "app_metadata": {
+                    "system": true
+                },
+                "created_at": "2024-02-14T10:08:18.766834Z",
+                "name": "Client Admins",
+                "updated_at": "2024-02-14T10:08:18.766834Z"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Groups
+>|Name|Defined By|No. Of Members|Description|
+>|---|---|---|---|
+>| admin | System | 1 |  |
+>| All Clients | System |  |  |
+>| Application Data Protection Admins | System |  |  |
+>| Application Data Protection Clients | System |  |  |
+>| Audit Admins | System |  |  |
+>| Backup Admins | System |  |  |
+>| CA Admins | System |  |  |
+>| CCKM Admins | System |  |  |
+>| CCKM Users | System |  |  |
+>| Client Admins | System |  |  |
+>
+>1 to 10 of 59 Groups
+
 ### ciphertrust-group-update
 
 ***
@@ -522,6 +633,26 @@ Update the properties of a group given the group name.
 | CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. | 
 | CipherTrust.Group.description | String | The description of the group. | 
 | CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
+
+#### Command example
+```!ciphertrust-group-update group_name="example_group" description="this is a modified description"```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "Group": {
+            "created_at": "2024-06-17T13:38:14.41779Z",
+            "description": "this is a modified description",
+            "name": "example_group",
+            "updated_at": "2024-06-17T13:38:18.129891Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>example_group has been updated successfully!
 
 ### ciphertrust-local-ca-create
 
@@ -689,69 +820,6 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 | CipherTrust.LocalCA.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. | 
 | CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
 
-#### Command example
-```!ciphertrust-local-ca-list state=pending subject="/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc."```
-#### Human Readable Output
-
->### Local Certificate Authorities 
->### Active CAs
->**No entries.**
->
->### Pending CAs
->**No entries.**
->
->### Expired CAs
->**No entries.**
->
->1 to 0 of 0 Local CAs
-
-#### Command example
-```!ciphertrust-local-ca-list local_ca_id="test_local_ca" chained=true```
-#### Context Example
-```json
-{
-    "CipherTrust": {
-        "LocalCA": {
-            "account": "kylo:kylo:admin:accounts:kylo",
-            "createdAt": "2024-06-02T14:32:09.832603Z",
-            "id": "c344cb9e-7607-47ac-968a-d6bba7cbd74c",
-            "issuer": "/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com",
-            "name": "test_local_ca",
-            "notAfter": "2025-06-04T14:10:29Z",
-            "notBefore": "2024-06-03T14:10:29Z",
-            "purpose": {
-                "client_authentication": "Enabled",
-                "user_authentication": "Enabled"
-            },
-            "serialNumber": "226220228835411560013591369440322067707",
-            "sha1Fingerprint": "57A5557A19DABE380C560E9696ADC95085317476",
-            "sha256Fingerprint": "559AEF7C71DF2A7EF81704A31C6550E0781C42B6237A2171A8B73F4D17FA3FAB",
-            "sha512Fingerprint": "1A1CBCA18131894851D9C956BDC0754218E5AEE37CE0E15180B8101F6072E9DF37062CB0B04DCAA220E943C9D2B7DA62730116B5D26E8A363B0C62E6BCFB242C",
-            "state": "active",
-            "subject": "/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com",
-            "updatedAt": "2024-06-17T06:00:07.302444Z",
-            "uri": "kylo:kylo:naboo:localca:c344cb9e-7607-47ac-968a-d6bba7cbd74c"
-        }
-    },
-    "InfoFile": {
-        "EntryID": "1786@a48e3cfd-a079-4895-89a7-4fac11b8143d",
-        "Extension": "pem",
-        "Info": "application/x-x509-ca-cert",
-        "Name": "Certificate.pem",
-        "Size": 1533,
-        "Type": "PEM certificate"
-    }
-}
-```
-
-#### Human Readable Output
-
->### /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com
->|Id|Uri|Createdat|Updatedat|Name|State|Serialnumber|Subject|Issuer|Notbefore|Notafter|Sha1Fingerprint|Sha256Fingerprint|Sha512Fingerprint|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| c344cb9e-7607-47ac-968a-d6bba7cbd74c | kylo:kylo:naboo:localca:c344cb9e-7607-47ac-968a-d6bba7cbd74c | 2024-06-02T14:32:09.832603Z | 2024-06-17T06:00:07.302444Z | test_local_ca | active | 226220228835411560013591369440322067707 | /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com | /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com | 2024-06-03T14:10:29Z | 2025-06-04T14:10:29Z | 57A5557A19DABE380C560E9696ADC95085317476 | 559AEF7C71DF2A7EF81704A31C6550E0781C42B6237A2171A8B73F4D17FA3FAB | 1A1CBCA18131894851D9C956BDC0754218E5AEE37CE0E15180B8101F6072E9DF37062CB0B04DCAA220E943C9D2B7DA62730116B5D26E8A363B0C62E6BCFB242C |
-
-
 ### ciphertrust-local-ca-self-sign
 
 ***
@@ -844,49 +912,6 @@ Update a local CA.
 | CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. | 
 | CipherTrust.LocalCA.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. | 
 | CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
-
-#### Command example
-```!ciphertrust-local-ca-update local_ca_id="test_local_ca" allow_client_authentication=true allow_user_authentication=true```
-#### Context Example
-```json
-{
-    "CipherTrust": {
-        "LocalCA": {
-            "account": "kylo:kylo:admin:accounts:kylo",
-            "createdAt": "2024-06-02T14:32:09.832603Z",
-            "id": "c344cb9e-7607-47ac-968a-d6bba7cbd74c",
-            "issuer": "/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com",
-            "name": "test_local_ca",
-            "notAfter": "2025-06-04T14:10:29Z",
-            "notBefore": "2024-06-03T14:10:29Z",
-            "purpose": {
-                "client_authentication": "Enabled",
-                "user_authentication": "Enabled"
-            },
-            "serialNumber": "226220228835411560013591369440322067707",
-            "sha1Fingerprint": "57A5557A19DABE380C560E9696ADC95085317476",
-            "sha256Fingerprint": "559AEF7C71DF2A7EF81704A31C6550E0781C42B6237A2171A8B73F4D17FA3FAB",
-            "sha512Fingerprint": "1A1CBCA18131894851D9C956BDC0754218E5AEE37CE0E15180B8101F6072E9DF37062CB0B04DCAA220E943C9D2B7DA62730116B5D26E8A363B0C62E6BCFB242C",
-            "state": "active",
-            "subject": "/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com",
-            "updatedAt": "2024-06-17T10:08:38.116763789Z",
-            "uri": "kylo:kylo:naboo:localca:c344cb9e-7607-47ac-968a-d6bba7cbd74c"
-        }
-    },
-    "InfoFile": {
-        "EntryID": "1791@a48e3cfd-a079-4895-89a7-4fac11b8143d",
-        "Extension": "pem",
-        "Info": "application/x-x509-ca-cert",
-        "Name": "Certificate.pem",
-        "Size": 1533,
-        "Type": "PEM certificate"
-    }
-}
-```
-
-#### Human Readable Output
-
->test_local_ca has been updated successfully!
 
 ### ciphertrust-local-certificate-delete
 
@@ -1179,11 +1204,164 @@ Returns a list of user  Command arguments can be used to filter the results. The
 | CipherTrust.Users.auth_domain_name | String | Name of the authentication domain | 
 
 #### Command example
-```!ciphertrust-users-list exclude_groups="group_to_exclude1,group_to_exclude2" account_expired=true allowed_client_types="confidential,public" allowed_auth_methods="user_certificate,password"```
+```!ciphertrust-users-list limit=10```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "Users": [
+            {
+                "account_lockout_at": null,
+                "allowed_auth_methods": [
+                    "password"
+                ],
+                "allowed_client_types": [
+                    "unregistered",
+                    "public",
+                    "confidential"
+                ],
+                "auth_domain": "00000000-0000-0000-0000-000000000000",
+                "auth_domain_name": "root",
+                "certificate_subject_dn": "",
+                "created_at": "2024-02-14T10:08:19.228482Z",
+                "email": "admin@local",
+                "enable_cert_auth": false,
+                "failed_logins_count": 0,
+                "failed_logins_initial_attempt_at": null,
+                "last_failed_login_at": "2024-06-13T07:53:10.344208Z",
+                "last_login": "2024-06-17T13:44:56.075123Z",
+                "login_flags": {
+                    "prevent_ui_login": false
+                },
+                "logins_count": 1492,
+                "name": "admin",
+                "nickname": "admin",
+                "password_change_required": false,
+                "password_changed_at": "2024-02-14T11:36:13.102117Z",
+                "updated_at": "2024-06-17T13:44:56.075335Z",
+                "user_id": "local|1e83aa21-0141-458a-8d77-e7d21192a82f",
+                "user_metadata": {
+                    "current_domain": {
+                        "id": "00000000-0000-0000-0000-000000000000",
+                        "name": "root"
+                    },
+                    "persistedData": {
+                        "00000000-0000-0000-0000-000000000000": {}
+                    }
+                },
+                "username": "admin"
+            },
+            {
+                "account_lockout_at": null,
+                "allowed_auth_methods": [
+                    "password",
+                    "user_certificate"
+                ],
+                "allowed_client_types": [],
+                "auth_domain": "00000000-0000-0000-0000-000000000000",
+                "auth_domain_name": "root",
+                "certificate_subject_dn": "C=country,ST=state,L=location,O=organization,OU=organization unit",
+                "created_at": "2024-06-17T13:38:32.460042Z",
+                "email": "example_user@local",
+                "enable_cert_auth": true,
+                "failed_logins_count": 1,
+                "failed_logins_initial_attempt_at": "2024-06-17T13:42:24.885225Z",
+                "last_failed_login_at": "2024-06-17T13:42:24.885225Z",
+                "last_login": "2024-06-17T13:38:39.190704Z",
+                "login_flags": {
+                    "prevent_ui_login": false
+                },
+                "logins_count": 1,
+                "name": "example_user",
+                "nickname": "example_user",
+                "password_change_required": false,
+                "password_changed_at": "2024-06-17T13:38:39.254151Z",
+                "updated_at": "2024-06-17T13:42:24.885225Z",
+                "user_id": "local|bc117808-bf6c-4229-a877-f91c0c6e95d4",
+                "username": "example_user"
+            },
+            {
+                "account_lockout_at": null,
+                "allowed_auth_methods": [
+                    "password"
+                ],
+                "allowed_client_types": [
+                    "unregistered",
+                    "public",
+                    "confidential"
+                ],
+                "auth_domain": "00000000-0000-0000-0000-000000000000",
+                "auth_domain_name": "root",
+                "certificate_subject_dn": "",
+                "created_at": "2024-06-13T07:45:25.006675Z",
+                "email": "test_user@local",
+                "enable_cert_auth": false,
+                "expires_at": "2025-06-13T12:06:45.370974Z",
+                "failed_logins_count": 3,
+                "failed_logins_initial_attempt_at": "2024-06-16T10:47:22.433357Z",
+                "last_failed_login_at": "2024-06-17T10:08:19.683975Z",
+                "last_login": null,
+                "login_flags": {
+                    "prevent_ui_login": false
+                },
+                "logins_count": 0,
+                "name": "new_test_user",
+                "nickname": "test_user",
+                "password_change_required": false,
+                "password_changed_at": "2024-06-13T07:45:24.999078Z",
+                "updated_at": "2024-06-17T10:08:19.683975Z",
+                "user_id": "local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c",
+                "username": "test_user"
+            },
+            {
+                "account_lockout_at": null,
+                "allowed_auth_methods": [
+                    "password"
+                ],
+                "allowed_client_types": [
+                    "unregistered",
+                    "public",
+                    "confidential"
+                ],
+                "auth_domain": "00000000-0000-0000-0000-000000000000",
+                "auth_domain_name": "root",
+                "certificate_subject_dn": "",
+                "created_at": "2024-06-13T12:30:36.870178Z",
+                "email": "test_ui_create@local",
+                "enable_cert_auth": false,
+                "failed_logins_count": 0,
+                "failed_logins_initial_attempt_at": null,
+                "last_failed_login_at": null,
+                "last_login": null,
+                "login_flags": {
+                    "prevent_ui_login": false
+                },
+                "logins_count": 0,
+                "name": "test_ui_create",
+                "nickname": "test_ui_create",
+                "password_change_required": false,
+                "password_changed_at": "2024-06-13T12:30:36.860143Z",
+                "password_policy": "global",
+                "updated_at": "2024-06-13T12:30:36.870178Z",
+                "user_id": "local|ba75d58e-c8de-40fa-bb93-008a7263d59e",
+                "user_metadata": {
+                    "connection": "local_account"
+                },
+                "username": "test_ui_create"
+            }
+        ]
+    }
+}
+```
+
 #### Human Readable Output
 
 >### Users
 >|Username|Full Name|Email|Created|Updated|Expires|Id|Last Login|Logins|Last Failed Login|Password Changed|Password Change Required|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  |  |  |  | Never |  | Never Logged In |  | Never Failed A Login |  |  |
-
+>| admin | admin | admin@local | 14 Feb 2024, 10:08 | 17 Jun 2024, 13:44 | Never | local\|1e83aa21-0141-458a-8d77-e7d21192a82f | 17 Jun 2024, 13:44 | 1492 | 13 Jun 2024, 07:53 | 14 Feb 2024, 11:36 | false |
+>| example_user | example_user | example_user@local | 17 Jun 2024, 13:38 | 17 Jun 2024, 13:42 | Never | local\|bc117808-bf6c-4229-a877-f91c0c6e95d4 | 17 Jun 2024, 13:38 | 1 | 17 Jun 2024, 13:42 | 17 Jun 2024, 13:38 | false |
+>| test_user | new_test_user | test_user@local | 13 Jun 2024, 07:45 | 17 Jun 2024, 10:08 | 13 Jun 2025, 12:06 | local\|9a1769b4-86e0-4e24-8316-ea4e7b76c23c | Never Logged In | 0 | 17 Jun 2024, 10:08 | 13 Jun 2024, 07:45 | false |
+>| test_ui_create | test_ui_create | test_ui_create@local | 13 Jun 2024, 12:30 | 13 Jun 2024, 12:30 | Never | local\|ba75d58e-c8de-40fa-bb93-008a7263d59e | Never Logged In | 0 | Never Failed A Login | 13 Jun 2024, 12:30 | false |
+>
+>1 to 4 of 4 Users

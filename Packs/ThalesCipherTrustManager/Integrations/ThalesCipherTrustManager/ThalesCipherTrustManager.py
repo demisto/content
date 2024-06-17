@@ -839,7 +839,7 @@ def group_create_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
 
 
 def group_delete_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
-    request_data = assign_params(force=args.get(FORCE))
+    request_data = assign_params(force=optional_arg_to_bool(args.get(FORCE)))
     client.delete_group(group_name=args.get(GROUP_NAME, ''),
                         request_data=request_data)
     return CommandResults(
