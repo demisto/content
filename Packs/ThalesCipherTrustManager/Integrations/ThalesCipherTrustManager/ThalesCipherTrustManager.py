@@ -3,6 +3,7 @@
 import urllib3
 from urllib.parse import quote
 import demistomock as demisto
+import pyzipper
 
 from CommonServerPython import *
 
@@ -559,8 +560,13 @@ def zip_file_with_password(input_file_path: str, password: str, output_file_path
         password: The password.
         output_file_path: The output file path.
     """
-    import pyminizip
-    pyminizip.compress(input_file_path, None, output_file_path, password, int(5))
+    compression = pyzipper.ZIP_DEFLATED
+    encryption = pyzipper.WZ_AES
+    with pyzipper.AESZipFile(output_file_path, mode='w', compression=compression, encryption=encryption) as zf:
+        zf.pwd = bytes(password, 'utf-8')
+        zf.write(output_file_path)
+    zf.close()
+
 
 
 def create_zip_protected_file(zip_filename: str, filename: str, data: str, password: str):
@@ -697,8 +703,11 @@ def hr_local_ca(raw_response: dict[str, Any]) -> str:
         The human-readable string.
 
     """
-    keys = PENDING_LOCAL_CA_KEYS if raw_response.get('state') == 'pending' else LOCAL_CA_KEYS
-    # todo: expired keys
+    state = raw_response.get('state', '')
+    keys = {
+        'active': LOCAL_CA_KEYS,
+        'pending': PENDING_LOCAL_CA_KEYS
+    }.get(state, LOCAL_CA_LIST_OTHER_KEYS)
     hr_title = raw_response.get('subject', '')
     return ciphertrust_table_to_markdown(hr_title, data=raw_response, keys=keys, keys_headers_mapping={}, keys_value_mapping={})
 
