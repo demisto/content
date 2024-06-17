@@ -71,18 +71,25 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def alert_workflow_update_request(self, alert_id: str = None, state: str = None, comment: str = None,
-                                      determination, time_range, start, end, closure_reason) -> dict:
+    def alert_workfloe_update_request_v2(self, request_id: str) -> dict:
+        suffix_url = f'jobs/v1/orgs/{self.cb_org_key}/jobs/{request_id}'
+        response = self._http_request('GET', suffix_url)
+        return {response}
+        
+        
+    def alert_workflow_update_request(self, alert_id: str, state: str = None, comment: str = None,
+                                      determination: str = None, time_range: str = None, start: str = None,
+                                      end: str = None, closure_reason: str = None) -> dict:
         suffix_url = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/workflow'
         body = assign_params(
-            criteria={'id': [alert_id]},
-            state=state,
-            comment=comment,
+            criteria= assign_params(id=[alert_id]),
+            status=state,
+            note=comment,
             closure_reason=closure_reason,
-            
         )
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        response = self._http_request('POST', suffix_url, json_data=body)
+        return response
 
     def devices_list_request(self, device_id: list = None, status: list = None, device_os: list = None,
                              last_contact_time: dict[str, Any | None] = None, ad_group_id: list = None,
@@ -527,7 +534,7 @@ def run_polling_command(args: dict, cmd: str, search_function, results_function)
         request_id = outputs.get('request_id')
         if outputs.get('status') != 'COMPLETED':
             polling_args = {
-                'af_cookie': af_cookie,
+                'request_id': request_id,
                 'interval_in_seconds': interval_in_secs,
                 'polling': True,
                 **args
@@ -539,14 +546,76 @@ def run_polling_command(args: dict, cmd: str, search_function, results_function)
                 timeout_in_seconds=600
             )
             return command_results
+        else:
+            args['request_id'] = request_id  # for the next time calling the API
+            
+    command_results, status = results_function(args)  # get the current status of the command running (while calling the API2)
+    if status != 'COMPLETED':
+        # schedule next poll
+        polling_args = {
+            'request_id': args.get('request_id'),
+            'interval_in_seconds': interval_in_secs,
+            'polling': True,
+            **args
+        }
+        scheduled_command = ScheduledCommand(
+            command=cmd,
+            next_run_in_seconds=interval_in_secs,  # type: ignore
+            args=polling_args,
+            timeout_in_seconds=600)
+
+        # result with scheduled_command only - no update to the war room
+        command_results = CommandResults(scheduled_command=scheduled_command)
+    return command_results
 
 
+# The second API, called again and again until the results appear
+def alert_workflow_update_command_with_results(client: Client, args: dict):
+    request_id = args['request_id']
+    response = client.alert_workfloe_update_request_v2(request_id)
+    status = response['status']
+    alert_id = args['alert_id']
+    if status == 'COMPLETED':
+        readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', response, removeNull=True)
+        outputs = {
+            'AlertID': args['alert_id'],
+            'State': response.get('userWorkflowDto').get(),
+            'Remediation': response.get('remediation'),
+            'LastUpdateTime': response.get('last_update_time'),
+            'Comment': response.get('comment'),
+            'ChangedBy': response.get('changed_by')
+        }
+        return None, status # need to change to - CommandResults(...)
+    return None status
 
+    #af_cookie = args.get('af_cookie')
+    #results, status = get_search_results('samples', af_cookie)
+    #files = get_files_data_from_results(results)
+    hr = ''
+    if not results or len(results) == 0:
+        hr = 'No entries found that match the query' if status == 'complete' else f'Search Sessions Results is {status}'
+    context = {
+        'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
+        'AutoFocus.SamplesSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
+        outputPaths['file']: files
+    }
+    if not results:
+        return_outputs(readable_output=hr, outputs=context, raw_response={})
+    else:
+        # for each result a new entry will be set with two tables, one of the result and one of its artifacts
+        for result in results:
+            if 'Artifact' in result:
+                hr = samples_search_result_hr(result, status)
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+            else:
+                hr = tableToMarkdown(f'Search Samples Result is {status}', result)
+                hr += tableToMarkdown('Artifacts for Sample: ', [])
+                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+    return None, status
+
+#The first time the API is called
 def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
         
-    if not is_demisto_version_ge('6.2.0'):
-        raise DemistoException('This command is not supported for your server version. Please update your server version to 6.2.0 or later')
-    
     alert_id = args['alert_id']
     state = args.get('state')
     if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
@@ -563,7 +632,9 @@ def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
 
     result = client.alert_workflow_update_request(alert_id, state, comment, determination, time_range, start, end, closure_reason)
 
-    readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result, removeNull=True)
+
+    # we are erasing this because this command will always be called with polling
+    """readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result, removeNull=True)
     outputs = {
         'AlertID': alert_id,
         'State': result.get('state'),
@@ -571,13 +642,9 @@ def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
         'LastUpdateTime': result.get('last_update_time'),
         'Comment': result.get('comment'),
         'ChangedBy': result.get('changed_by')
-    }
+    }"""
 
     results = CommandResults(
-        outputs_prefix='CarbonBlackEEDR.Alert',
-        outputs_key_field='AlertID',
-        outputs=outputs,
-        readable_output=readable_output,
         raw_response=result
     )
     return results
