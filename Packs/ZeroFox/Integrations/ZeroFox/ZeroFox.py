@@ -183,7 +183,7 @@ class ZFClient(BaseClient):
         response_content = self.api_request("GET", url_suffix)
         return response_content
 
-    def list_alerts(self, params: dict[str, Any]) -> dict[str, Any]:
+    def list_alerts(self, params: dict[str, Any]) -> list[dict[str, Any]]:
         """
         Gets the JSON contents of the /alerts/ endpoint
         according to the parameters provided
@@ -202,7 +202,7 @@ class ZFClient(BaseClient):
         )
         return response_content.get("alerts", [])
 
-    def get_alerts(self, filter_by: dict[str, Any] = None, sort_by: str = None, **kwargs) -> dict[str, Any]:
+    def get_alerts(self, filter_by: dict[str, Any] = None, sort_by: str = None, **kwargs) -> list[dict[str, Any]]:
         """
         Fetches a list of all alerts obtained from the pages in the /alerts/ endpoint,
           considering ordering and filters.
@@ -636,6 +636,11 @@ class AlertToIncident:
         self.integration_instance = demisto.integrationInstance()
 
     def map(self, alert: dict[str, Any]) -> dict[str, Any]:
+        """
+        Converts an alert to an incident dictionary object
+        :param alert: dictionary representing a zerofox alert
+        :return: A dict representing an incident
+        """
         alert_id = str(alert.get("id", ""))
         alert["mirror_direction"] = "In"
         alert["mirror_instance"] = self.integration_instance
@@ -644,26 +649,12 @@ class AlertToIncident:
             "name": f"ZeroFox Alert {alert_id}",
             "dbotMirrorId": alert_id,
             "occurred": alert.get("timestamp", ""),
-            "details": ""  # TODO
+            "details": f"A ZeroFox Alert with Id {alert.get('id', '')} has been raised.\
+            It compromises entity {alert.get('entity', {}).get('name', '')},\
+              it was found on {alert.get('network', '')}\
+                  and was triggered by rule {alert.get('rule_name', '')}."
         }
         return incident
-
-
-def alert_to_incident(alert: dict[str, Any]) -> dict[str, str]:
-    """
-    transforms an alert to incident convention
-    :param alert: alert is a dictionary
-    :return: Incident - dictionary
-    """
-    alert_id = str(alert.get("id", ""))
-    incident = {
-        "rawJSON": json.dumps(alert),
-        "name": f"ZeroFox Alert {alert_id}",
-        "dbotMirrorId": str(alert_id),
-        "occurred": alert.get("timestamp", ""),
-        "details": ""  # TODO
-    }
-    return incident
 
 
 def parse_dict_values_to_integer(
