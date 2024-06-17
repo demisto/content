@@ -2918,7 +2918,7 @@ script:
     name: cve
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -5032,7 +5032,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.97242
+  dockerimage: demisto/py3-tools:1.0.0.98401
   isfetch: true
   ismappable: true
   isremotesyncin: true
