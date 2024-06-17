@@ -297,6 +297,7 @@ def get_protocols_command(client: Client, args: dict[str, Any]) -> CommandResult
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Protocols", t=result),
         outputs_prefix="JizoM.Protocols",
+        outputs_key_field='data',
         outputs=result,
     )
 
@@ -309,6 +310,7 @@ def get_peers_command(client: Client, args: dict[str, Any]) -> CommandResults:
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Peers", t=result),
         outputs_prefix="JizoM.Peers",
+        outputs_key_field='data',
         outputs=result,
     )
 
@@ -321,6 +323,7 @@ def get_query_records_command(client: Client, args: dict[str, Any]) -> CommandRe
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Query Records", t=result),
         outputs_prefix="JizoM.QueryRecords",
+        outputs_key_field='data',
         outputs=result,
     )
 
@@ -333,6 +336,7 @@ def get_alert_rules_command(client: Client, args: dict[str, Any]) -> CommandResu
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Alert Rules", t=result),
         outputs_prefix="JizoM.AlertRules",
+        outputs_key_field='data',
         outputs=result,
     )
 
@@ -345,6 +349,7 @@ def get_device_records_command(client: Client, args: dict[str, Any]) -> CommandR
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Device Records", t=result),
         outputs_prefix="JizoM.Device.Records",
+        outputs_key_field='data',
         outputs=result,
     )
 
@@ -357,6 +362,7 @@ def get_device_alerts_command(client: Client, args: dict[str, Any]) -> CommandRe
     return CommandResults(
         readable_output=tableToMarkdown(name="Jizo Device Alerts", t=result),
         outputs_prefix="JizoM.Device.Alerts",
+        outputs_key_field='data',
         outputs=result,
     )
 
