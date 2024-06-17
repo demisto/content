@@ -25,7 +25,7 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned in the result. This means that both the CSR and the private key must be stored securely on the client side. The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
+    description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned in the result. This means that both the CSR and the private key must be stored securely on the client side. The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted. 
     name: ciphertrust-csr-generate
     arguments:
       - name: cn

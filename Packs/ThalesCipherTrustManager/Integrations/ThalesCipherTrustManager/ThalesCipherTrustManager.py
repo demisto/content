@@ -1321,7 +1321,7 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
 
 def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> CommandResults:
     if not args.get(ENCRYPTION_PASSWORD) and not args.get(PRIVATE_KEY_FILE_PASSWORD):
-        raise ValueError('Either the "password" or "private_key_file_password" argument must be provided. '
+        raise ValueError('Either the "encryption_password" or "private_key_file_password" argument must be provided. '
                          'The private key must be stored securely on the client side')
     request_data = assign_params(
         cn=args.get(CN),
