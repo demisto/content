@@ -170,7 +170,7 @@ def options_handler():
 
 
 def main():
-    print("This file has been deprecated and relocated to the contribution/utils directory.")
+    print("This file has been deprecated and relocated to the contribution/utils directory")
     options = options_handler()
     output_path = options.output_path
     packs = options.packs or ''
