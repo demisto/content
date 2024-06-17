@@ -440,7 +440,7 @@ class Client(BaseClient):
         self._session.cookies.clear()
         self._headers["Authorization"] = f"Bearer {self.token}"
         self._base_url = urljoin(self.base_url, self.URL_PREFIX)
-    
+
         try:
             response = self._http_request(
                 method="POST",
@@ -1436,7 +1436,9 @@ def rule_modifications_get_command(args: dict[str, Any], client: Client) -> Poll
     """
     if not args.get("job_id"):
         rule_id = args.get("rule_id", "")
-        SCHEDULED_COMMANDS_MAPPER["harmony-ep-policy-rule-modifications-get"].message.format(id=rule_id)
+        SCHEDULED_COMMANDS_MAPPER[
+            "harmony-ep-policy-rule-modifications-get"
+        ].message.format(id=rule_id)
         response = client.rule_modifications_get(rule_id=rule_id)
         args["job_id"] = response.get("jobId")
 
