@@ -2751,20 +2751,26 @@ def get_observed_attack_techniques(
     # Check if an error occurred during rest call
     if _is_pytmv1_error(resp.result_code):
         err: pytmv1.Error = unwrap(resp.error)
-        return_error(message=f"{err.message}", error=str(err))
+        raise Exception(f"{err.message}", str(err))
     resp_type: pytmv1.ListOatsResp = unwrap(resp.response)
     if resp_type.total_count > 50:
-        return_error("Please refine search, this query returns more than 50 results.")
+        raise Exception(
+            "Please refine search, this query returns more than 50 results."
+        )
+
     # Add results to message to be sent to the War Room
     message: list[dict[str, Any]] = []
     for item in resp_type.items:
+        _detail = item.detail.model_dump()
+        _filters = [item.model_dump() for item in item.filters]
+        _endpoint = item.endpoint.model_dump() if item.endpoint is not None else ""
         message.append(
             {
                 "id": item.uuid,
                 "source": item.source,
-                "detail": item.detail,
-                "filters": item.filters,
-                "endpoint": item.endpoint,
+                "detail": _detail,
+                "filters": _filters,
+                "endpoint": _endpoint,
                 "entity_name": item.entity_name,
                 "entity_type": item.entity_type,
                 "detected_date_time": item.detected_date_time,

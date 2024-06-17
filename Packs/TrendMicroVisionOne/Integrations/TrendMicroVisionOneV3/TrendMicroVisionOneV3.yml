@@ -64,7 +64,7 @@ configuration:
   type: 15
   required: false
 - additionalinfo: Severity of the incident being fetched.
-  defaultvalue: high
+  defaultvalue: any
   display: Severity
   name: incident_severity
   options:
@@ -1352,7 +1352,7 @@ script:
       type: string
     description: Displays a list of Observed Attack Techniques events that match the specified criteria.
     name: trendmicro-visionone-get-observed-attack-techniques
-  dockerimage: devtesting/pytmv1:0.8.3.1715976040
+  dockerimage: demisto/pytmv1:0.8.3.98410
   isFetchSamples: true
   isfetch: true
   script: ''
