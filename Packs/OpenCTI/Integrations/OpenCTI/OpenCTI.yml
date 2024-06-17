@@ -26,7 +26,7 @@ configuration:
   type: 8
   additionalinfo: Used for troubleshooting purposes.
   required: false
-description: Manages indicators from OpenCTI. Compatible with OpenCTI 4.X API and OpenCTI 5.X API versions.
+description: Manages indicators from OpenCTI. Compatible with OpenCTI 5.12.17 API version.
 display: OpenCTI
 name: OpenCTI
 script:
@@ -293,7 +293,7 @@ script:
     - contextPath: OpenCTI.MarkingDefinitions.markingsLastRun
       description: The last ID of the previous fetch to use for pagination.
       type: String
-  dockerimage: demisto/vendors-sdk:1.0.0.76365
+  dockerimage: demisto/vendors-sdk:1.0.0.92984
   runonce: false
   script: '-'
   subtype: python3
@@ -301,3 +301,4 @@ script:
 tests:
 - OpenCTI Test
 fromversion: 5.0.0
+autoUpdateDockerImage : false

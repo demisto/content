@@ -4,12 +4,19 @@ commonfields:
   version: -1
 configuration:
 - display: API Username
+  name: credentials
+  type: 9
+  required: false
+  displaypassword: API Key
+- display: API Username
   name: username
-  required: true
+  required: false
+  hidden: true
   type: 0
 - display: API Key
   name: apikey
-  required: true
+  required: false
+  hidden: true
   type: 4
 - display: High-Risk Threshold
   name: risk_threshold
@@ -2403,7 +2410,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.92984
   runonce: false
   script: '-'
   type: python
