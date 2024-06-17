@@ -48,6 +48,16 @@ client = JSM.Client(base_url='https://url.com', verify=False, proxy=False, api_k
     ],
 )
 def test_convert_keys_to_pascal(objects, key_mapping, expected_result):
+    """
+    Given:
+        - A list of objects to convert to pascal case.
+        - A key mapping to apply to the keys.
+        - The expected result of the conversion.
+    When:
+        - Calling the convert_keys_to_pascal function.
+    Then:
+        - The function should return the expected result.
+    """
     result = JSM.convert_keys_to_pascal(objects, key_mapping)
     assert result == expected_result
 
@@ -80,8 +90,14 @@ def test_get_object_outputs():
 
 
 @pytest.mark.parametrize("attributes, expected", [
-    ([{'id': 1, 'name': 'Test', 'type': 0, 'defaultType': {'name': 'Text'}}], [{'ID': 1, 'Name': 'Test', 'Type': 'Text'}]),
-    ([{'id': 2, 'value': 'Hello', 'type': 1}], [{'ID': 2, 'Value': 'Hello', 'Type': 'Object Reference'}]),
+    (
+        [{'id': 1, 'name': 'Test', 'type': 0, 'defaultType': {'name': 'Text'}}],
+        [{'ID': 1, 'Name': 'Test', 'Type': 'Text', 'DefaultType': {'name': 'Text'}}]
+    ),
+    (
+        [{'id': 2, 'value': 'Hello', 'type': 1}],
+        [{'ID': 2, 'Value': 'Hello', 'Type': 'Object Reference'}]
+    ),
     ([], []),
 ])
 def test_clean_object_attributes(attributes, expected):
@@ -467,7 +483,7 @@ def test_jira_asset_connected_ticket_list_command(mocker: MockerFixture):
     Then: The client's get_object_connected_tickets function is called with the object_id
     """
     object_id = '1'
-    mocked_client = mocker.patch.object(client, 'get_object_connected_tickets', return_value={'id': 1})
+    mocked_client = mocker.patch.object(client, 'get_object_connected_tickets', return_value={'tickets': [{'id': 1}]})
     JSM.jira_asset_connected_ticket_list_command(client, {'object_id': object_id})
     mocked_client.assert_called_with(object_id)
 
@@ -475,7 +491,7 @@ def test_jira_asset_connected_ticket_list_command(mocker: MockerFixture):
 def test_jira_asset_attachment_add_command(mocker: MockerFixture):
     object_id = '1'
     entry_id = None
-    mocker.patch.object(demisto, 'getFilePath',return_value={'path': 'test_data/test_file.txt'})
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/test_file.txt'})
     mocked_client = mocker.patch.object(client, 'send_file', return_value=[{'id': 1}])
     JSM.jira_asset_attachment_add_command(client, {'object_id': object_id, 'entry_id': entry_id})
     mocked_client.assert_called_with(object_id=object_id, file_path='test_data/test_file.txt')

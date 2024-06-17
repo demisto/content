@@ -623,8 +623,8 @@ def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any
     res = client.get_object_connected_tickets(object_id)
     outputs = convert_keys_to_pascal(list(res.get('tickets')), {'id': 'ID'})
     hr_headers = ['ID', 'Title', 'Status', 'Type']
-    readable_output = [{'Status': output.get('Status').get('name'), 'Type': output.get('Type').get('name'),
-                        'Title': output.get('Title')} for output in outputs]
+    readable_output = [{'Status': output.get('Status', {}).get('name'), 'Type': output.get('Type', {}).get('name'),
+                        'Title': output.get('Title', {})} for output in outputs]
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ConnectedTicket',
         outputs_key_field='ID',

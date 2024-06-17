@@ -1,0 +1,52 @@
+{
+  "attributes": [
+    {
+      "objectTypeAttributeId": 1,
+      "objectAttributeValues": [
+        {
+          "value": ""
+        }
+      ]
+    },
+    {
+      "objectTypeAttributeId": 2,
+      "objectAttributeValues": [
+        {
+          "value": ""
+        }
+      ]
+    },
+    {
+      "objectTypeAttributeId": 3,
+      "objectAttributeValues": [
+        {
+          "value": ""
+        }
+      ]
+    },
+    {
+      "objectTypeAttributeId": 4,
+      "objectAttributeValues": [
+        {
+          "value": ""
+        }
+      ]
+    },
+    {
+      "objectTypeAttributeId": 9,
+      "objectAttributeValues": [
+        {
+          "value": ""
+        }
+      ]
+    },
+    {
+      "objectTypeAttributeId": 10,
+      "objectAttributeValues": [
+        {
+          "value": ""
+        }
+      ]
+    }
+  ]
+}
