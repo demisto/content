@@ -9,7 +9,6 @@ from MicrosoftGraphMailApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-API_VERSION = 'v1.0'
 
 
 class MsGraphListenerClient(MsGraphMailBaseClient):
