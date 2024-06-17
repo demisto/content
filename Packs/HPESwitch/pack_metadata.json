@@ -6,9 +6,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
-    "categories": ["Analytics & SIEM", "Network Security"],
+    "categories": ["Network Security"],
     "tags": ["Network"],
-    "useCases": ["Analytics & SIEM", "Network Security"],
+    "useCases": [],
     "keywords": ["HP", "HPE", "Switch", "Aruba", "Aruba Networking", "Hewlett Packard Enterprise"],
     "marketplaces": [
         "marketplacev2"
