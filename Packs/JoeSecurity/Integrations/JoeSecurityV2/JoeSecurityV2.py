@@ -22,8 +22,7 @@ class Client(jbxapi.JoeSandbox):
         self.reliability = reliability
         self.create_relationships = create_relationships
         self.on_premise = on_premise
-        if proxy:
-            proxies = handle_proxy()
+        proxies = handle_proxy()
         super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxies)
 
     def analysis_info_list(self, web_ids: List[str]) -> List[Dict[str, Any]]:
