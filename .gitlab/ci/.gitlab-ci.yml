@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: fix_cleanup_machine_2
+  CURRENT_BRANCH_NAME: cleanup-machines
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: fix_cleanup_machine_2
+    ref: cleanup-machines
     project: "${CI_PROJECT_NAMESPACE}/infra"
