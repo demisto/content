@@ -596,9 +596,7 @@ def test_module(client: Client) -> str:     # pragma: no cover
     """
     try:
         demisto.debug(f"sending request with url: {client.apiurl + '/v2/server/online'}")
-        result = client._post(client.apiurl + '/v2/server/online', data={'apikey': client.apikey})
-        res = client._raise_or_extract(result)
-        # client.server_online()
+        client.server_online()
     except Exception as e:
         if isinstance(e, jbxapi.ApiError):
             match API_ERRORS.get(e.code):
