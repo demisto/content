@@ -91,7 +91,7 @@ def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
         - fork owner that is being delivered to the Checkout branch is correct.
     """
     from github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
-    from Utils.github_workflow_scripts.utils import ChangeCWD
+    from github_workflow_scripts.utils import ChangeCWD
 
     checkout_mocker = mocker.patch.object(Checkout, '__init__', return_value=None)
     mocker.patch.object(Checkout, '__enter__', return_value=None)
@@ -118,7 +118,7 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
         - make sure correct support label is still returned.
     """
     from github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
-    from Utils.github_workflow_scripts.utils import ChangeCWD
+    from github_workflow_scripts.utils import ChangeCWD
 
     mocker.patch.object(Checkout, '__init__', return_value=Exception('Error'))
 
