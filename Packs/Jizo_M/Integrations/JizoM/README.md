@@ -1,10 +1,10 @@
 This integration ensures interaction with the JizoM API.
-This integration was integrated and tested with version 12.3 of JizoM.
+This integration was integrated and tested with version xx of JizoM.
 
-## Configure JizoM (Partner Contribution) on Cortex XSOAR
+## Configure JizoM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for JizoM (Partner Contribution).
+2. Search for JizoM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -27,14 +27,14 @@ This integration was integrated and tested with version 12.3 of JizoM.
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### jizo-protocols-get
+### jizo-m-protocols-get
 
 ***
-Get jizo protocols
+Get jizo protocols.
 
 #### Base Command
 
-`jizo-protocols-get`
+`jizo-m-protocols-get`
 
 #### Input
 
@@ -42,8 +42,8 @@ Get jizo protocols
 | --- | --- | --- |
 | ip_src | Ipv4 or Ipv6 of the source. | Optional | 
 | ip_dest | Ipv4 or Ipv6 of the destination. | Optional | 
-| datetime_from | The default value is 7 days ago. | Optional | 
-| datetime_to | The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of protocols to display per alert. | Optional | 
@@ -62,14 +62,14 @@ Get jizo protocols
 | JizoM.Protocols.alerts_usecase.data | String | The details of alerts. | 
 | JizoM.Protocols.alerts_usecase.total | Number | The total number of alerts. | 
 
-### jizo-peers-get
+### jizo-m-peers-get
 
 ***
-Get jizo peers
+Get jizo peers.
 
 #### Base Command
 
-`jizo-peers-get`
+`jizo-m-peers-get`
 
 #### Input
 
@@ -77,8 +77,8 @@ Get jizo peers
 | --- | --- | --- |
 | ip_src | Ipv4 or Ipv6 of the source. | Optional | 
 | ip_dest | Ipv4 or Ipv6 of the destination. | Optional | 
-| datetime_from | The default value is 7 days ago. | Optional | 
-| datetime_to | The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of samples to display per alert. | Optional | 
@@ -97,14 +97,14 @@ Get jizo peers
 | JizoM.Peers.alerts_usecase.data | String | The details of alerts. | 
 | JizoM.Peers.alerts_usecase.total | Number | The total number of alerts. | 
 
-### jizo-query-records-get
+### jizo-m-query-records-get
 
 ***
-Get jizo query records
+Get jizo query records.
 
 #### Base Command
 
-`jizo-query-records-get`
+`jizo-m-query-records-get`
 
 #### Input
 
@@ -120,8 +120,8 @@ Get jizo query records
 | sid | The id if the rule. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | port | The alert port. | Optional | 
-| datetime_from | The default value is 7 days ago. | Optional | 
-| datetime_to | The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of samples to display per alert. | Optional | 
 
@@ -139,14 +139,14 @@ Get jizo query records
 | JizoM.QueryRecords.alerts_usecase.data | String | The details of alerts. | 
 | JizoM.QueryRecords.alerts_usecase.total | Number | The total number of alerts. | 
 
-### jizo-alert-rules-get
+### jizo-m-alert-rules-get
 
 ***
-Get jizo alerts rules
+Get jizo alerts rules.
 
 #### Base Command
 
-`jizo-alert-rules-get`
+`jizo-m-alert-rules-get`
 
 #### Input
 
@@ -156,8 +156,8 @@ Get jizo alerts rules
 | sid | The id if the rule. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | port | The alert port. | Optional | 
-| datetime_from | The default value is 7 days ago. | Optional | 
-| datetime_to | The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
 | severity | Relevance/importance of alert varies from 1-4. | Optional | 
 | category | The alert category (e.g., Fraud, Abusive Content). | Optional | 
 | type_data | The data type (default IDS). | Optional | 
@@ -178,14 +178,14 @@ Get jizo alerts rules
 | JizoM.AlertRules.alerts_usecase.data | String | The details of alerts. | 
 | JizoM.AlertRules.alerts_usecase.total | Number | The total number of alerts. | 
 
-### jizo-device-records-get
+### jizo-m-device-records-get
 
 ***
-Get jizo device records
+Get jizo device records.
 
 #### Base Command
 
-`jizo-device-records-get`
+`jizo-m-device-records-get`
 
 #### Input
 
@@ -196,8 +196,8 @@ Get jizo device records
 | hostname | The name of the device. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | port | The alert port. | Optional | 
-| datetime_from | The default value is 7 days ago. | Optional | 
-| datetime_to | The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of samples to display per alert. | Optional | 
 
@@ -215,14 +215,14 @@ Get jizo device records
 | JizoM.Device.Records.alerts_usecase.data | String | The details of alerts. | 
 | JizoM.Device.Records.alerts_usecase.total | Number | The total number of alerts. | 
 
-### jizo-device-alerts-get
+### jizo-m-device-alerts-get
 
 ***
-Get jizo device alerts
+Get jizo device alerts.
 
 #### Base Command
 
-`jizo-device-alerts-get`
+`jizo-m-device-alerts-get`
 
 #### Input
 
@@ -234,8 +234,8 @@ Get jizo device alerts
 | port_dest | The destination port. | Optional | 
 | probe_name | The name of the jizo probe. | Optional | 
 | port | The alert port. | Optional | 
-| datetime_from | The default value is 7 days ago. | Optional | 
-| datetime_to | The default is now. | Optional | 
+| datetime_from | Get the alerts that were occurred from this date. The default value is 7 days ago. | Optional | 
+| datetime_to | Get the alerts that were occurred up to this date. The default is now. | Optional | 
 | page | A page number for pagination. | Optional | 
 | limit | The maximum number of samples to display per alert. | Optional | 
 

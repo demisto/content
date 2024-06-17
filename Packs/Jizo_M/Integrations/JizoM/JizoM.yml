@@ -62,7 +62,7 @@ configuration:
 script:
   type: python
   commands:
-  - name: jizo-protocols-get
+  - name: jizo-m-protocols-get
     arguments:
     - name: ip_src
       description: Ipv4 or Ipv6 of the source.
@@ -71,10 +71,10 @@ script:
       description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: datetime_from
-      description: The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: The default is now.
+      description: Get the alerts that were occurred up to this date. The default is now.
       type: textArea
     - name: probe_name
       description: The name of the jizo probe.
@@ -114,7 +114,7 @@ script:
       description: The total number of alerts.
       type: Number
     description: Get jizo protocols.
-  - name: jizo-peers-get
+  - name: jizo-m-peers-get
     arguments:
     - name: ip_src
       description: Ipv4 or Ipv6 of the source.
@@ -123,10 +123,10 @@ script:
       description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: datetime_from
-      description: The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: The default is now.
+      description: Get the alerts that were occurred up to this date. The default is now.
       type: textArea
     - name: probe_name
       description: The name of the jizo probe.
@@ -166,7 +166,7 @@ script:
       description: The total number of alerts.
       type: Number
     description: Get jizo peers.
-  - name: jizo-query-records-get
+  - name: jizo-m-query-records-get
     arguments:
     - name: ip_src
       description: Ipv4 or Ipv6 of the source.
@@ -199,10 +199,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: The default is now.
+      description: Get the alerts that were occurred up to this date. The default is now.
       type: textArea
     - name: page
       description: A page number for pagination.
@@ -239,7 +239,7 @@ script:
       description: The total number of alerts.
       type: Number
     description: Get jizo query records.
-  - name: jizo-alert-rules-get
+  - name: jizo-m-alert-rules-get
     arguments:
     - name: flow_id
       description: The id of the flow.
@@ -254,10 +254,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: The default is now.
+      description: Get the alerts that were occurred up to this date. The default is now.
       type: textArea
     - name: severity
       description: Relevance/importance of alert varies from 1-4.
@@ -303,7 +303,7 @@ script:
       description: The total number of alerts.
       type: Number
     description: Get jizo alerts rules.
-  - name: jizo-device-records-get
+  - name: jizo-m-device-records-get
     arguments:
     - name: flow_id
       description: The id of the flow.
@@ -321,10 +321,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: The default is now.
+      description: Get the alerts that were occurred up to this date. The default is now.
       type: textArea
     - name: page
       description: A page number for pagination.
@@ -361,7 +361,7 @@ script:
       description: The total number of alerts.
       type: Number
     description: Get jizo device records.
-  - name: jizo-device-alerts-get
+  - name: jizo-m-device-alerts-get
     arguments:
     - name: ip_src
       description: Ipv4 or Ipv6 of the source.
@@ -382,10 +382,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: The default is now.
+      description: Get the alerts that were occurred up to this date. The default is now.
       type: textArea
     - name: page
       description: A page number for pagination.
