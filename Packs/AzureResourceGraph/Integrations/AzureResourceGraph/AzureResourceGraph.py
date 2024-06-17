@@ -197,14 +197,26 @@ def pagination(response, page_size, page_number):
     return response[starting_index:ending_index]
 
 
+def validate_connection_params(tenant: str = None, auth_and_token_url:str = None, is_self_deployed: bool = False, enc_key: str = None, certificate_thumbprint: str = None, private_key: str = None, subscription_id: str = None) -> None:
+    if not tenant or not auth_and_token_url:
+        raise DemistoException('Token and ID must be provided.')
+    
+    if not is_self_deployed and not enc_key:
+        raise DemistoException('Key must be provided. For further information see '
+                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    elif not enc_key and not (certificate_thumbprint and private_key):
+        raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+    if not subscription_id:
+       raise DemistoException('A subscription ID must be provided.')
+
+
 def main():
     params: dict = demisto.params()
     args = demisto.args()
     server = params.get('host', 'https://management.azure.com').rstrip('/')
     tenant = params.get('cred_token', {}).get('password') or params.get('tenant_id')
     auth_and_token_url = params.get('cred_auth_id', {}).get('password') or params.get('auth_id')
-    if not tenant or not auth_and_token_url:
-        return_error('Token and ID must be provided.')
     enc_key = params.get('cred_enc_key', {}).get('password') or params.get('enc_key')
     certificate_thumbprint = params.get('cred_certificate_thumbprint', {}).get(
         'password') or params.get('certificate_thumbprint')
@@ -214,12 +226,10 @@ def main():
         'cred_subscription_id', {}).get('password') or params.get('subscription_id')
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
-    if not self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    elif not enc_key and not (certificate_thumbprint and private_key):
-        raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+
+    validate_connection_params(tenant, auth_and_token_url, self_deployed, enc_key,
+                               certificate_thumbprint, private_key, subscription_id)
+    
     ok_codes = (200, 201, 202, 204)
 
     commands_without_args: Dict[Any, Any] = {
@@ -261,9 +271,10 @@ def main():
 
         elif command in commands_with_args_and_params:
             return_results(commands_with_args_and_params[command](client, args, params))
-
+        else:
+            raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
-        return_error(e)
+        return_error(f'Failed to execute {command} command. Error: {str(e)}')
 
 
 if __name__ in ['__main__', 'builtin', 'builtins']:

@@ -3,10 +3,8 @@ Azure Resource Graph is an Azure service designed to extend Azure Resource Manag
 Full documentation for this integration is available in the [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-resource-graph).
 
 
-## Authorize Cortex XSOAR for Azure Log Analytics - Self-Deployed Configuration
+## Authorize Cortex XSOAR for Azure Resource Graph - Self-Deployed Configuration
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, go to the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-
-### Required permissions
 
 ---
 

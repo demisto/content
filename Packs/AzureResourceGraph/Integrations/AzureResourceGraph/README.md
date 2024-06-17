@@ -7,7 +7,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 ## Authentication
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-- After authorizing the XSOAR App or the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
+- After authorizing the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
 - In order to assign a role to the application after consent was given:
   - Go to the Azure Portal UI. 
   - Go to **Subscriptions**, and then **Access Control (IAM)**. 
