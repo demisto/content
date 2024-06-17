@@ -5,18 +5,18 @@ from FormatURLApiModule import *  # noqa: E402
 
 
 def main():
-    raw_urls = argToList(demisto.args().get('input'), separator='|')
+    the_raw_input = demisto.args().get('input')
+    raw_urls = argToList(the_raw_input, separator='|')
     try:
         formatted_urls = format_urls(raw_urls)
-        output = [{
+        demisto.info(f'{the_raw_input=}, {raw_urls=}, {formatted_urls=}')
+
+        demisto.results({
             'Type': entryTypes['note'],
             'ContentsFormat': formats['json'],
-            'Contents': [urls],
-            'EntryContext': {'URL': urls},
-        } for urls in formatted_urls]
-
-        for url in output:
-            demisto.results(url)
+            'Contents': formatted_urls,
+            'EntryContext': {'URL': formatted_urls},
+        })
 
     except Exception as e:
         return_error(
