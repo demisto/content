@@ -124,11 +124,11 @@ def main():  # pragma: no cover
             or params.get('_auth_id', '') \
             or params.get('auth_id', '')
         enc_key: str = (params.get('credentials') or {}).get('password', '') or params.get('enc_key', '')
+        azure_cloud = get_azure_cloud(params, 'MicrosoftGraphMail')
+        # >> Deprecated section - keeping for backwards compatability.
         server = params.get('url', '')
         base_url: str = urljoin(server, '/v1.0')
-        # TODO - Get the endpoint based on the environment parameter
-        # TODO - As well as deprecate this variable usage
-        endpoint = GRAPH_BASE_ENDPOINTS.get(server, 'com')
+        # <<
         app_name: str = 'ms-graph-mail'
         ok_codes: tuple = (200, 201, 202, 204)
         use_ssl: bool = not argToBoolean(params.get('insecure', False))
@@ -176,13 +176,13 @@ def main():  # pragma: no cover
             first_fetch_interval=first_fetch_interval,
             emails_fetch_limit=emails_fetch_limit,
             timeout=timeout,
-            endpoint=endpoint,
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             display_full_email_body=display_full_email_body,
             mark_fetched_read=mark_fetched_read,
             look_back=look_back,
-            managed_identities_client_id=managed_identities_client_id)
+            managed_identities_client_id=managed_identities_client_id,
+            azure_cloud=azure_cloud)
 
         command = demisto.command()
         LOG(f'Command being called is {command}')

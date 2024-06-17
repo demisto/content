@@ -79,10 +79,11 @@ def test_params_working(mocker, params, expected_results):
                                                       ok_codes=(200, 201, 202, 204),
                                                       mailbox_to_fetch='', folder_to_fetch='Inbox',
                                                       first_fetch_interval='15 minutes',
-                                                      emails_fetch_limit=50, timeout=10, endpoint='com',
+                                                      emails_fetch_limit=50, timeout=10,
                                                       certificate_thumbprint='', private_key='',
                                                       display_full_email_body=False, mark_fetched_read=False, look_back=0,
-                                                      managed_identities_client_id=None)
+                                                      managed_identities_client_id=None,
+                                                      azure_cloud=AZURE_WORLDWIDE_CLOUD)
 
 
 def test_build_mail_object():
