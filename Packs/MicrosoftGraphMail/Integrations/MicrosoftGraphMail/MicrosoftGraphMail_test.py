@@ -74,7 +74,7 @@ def test_params_working(mocker, params, expected_results):
                                                       auth_id=expected_results[1],
                                                       enc_key=expected_results[2],
                                                       app_name='ms-graph-mail',
-                                                      base_url='/v1.0',
+                                                      base_url='https://graph.microsoft.com/v1.0',
                                                       verify=True, proxy=False,
                                                       ok_codes=(200, 201, 202, 204),
                                                       mailbox_to_fetch='', folder_to_fetch='Inbox',
@@ -392,7 +392,6 @@ def test_fetch_incidents(client, email_content_html, email_content_text, mocker,
 
 
 class TestFetchIncidentsWithLookBack:
-
     FREEZE_TIMESTAMP = '2022-07-28T12:09:17Z'
 
     @staticmethod
@@ -403,7 +402,6 @@ class TestFetchIncidentsWithLookBack:
         return datetime.now()
 
     def create_incidents_queue(self):
-
         first_email = {
             'id': '1',
             'subject': 'email-1',
@@ -894,7 +892,6 @@ def test_send_mail_command(mocker, client, args):
 
 
 class TestCommandsWithLargeAttachments:
-
     SEND_MAIL_WITH_LARGE_ATTACHMENTS_COMMAND_ARGS = [
         (
             self_deployed_client(),
@@ -976,7 +973,7 @@ class TestCommandsWithLargeAttachments:
             ]:
                 yield header
         else:
-            for header in [   # testing on the test.pdf
+            for header in [  # testing on the test.pdf
                 {'Content-Length': '3145728', 'Content-Range': 'bytes 0-3145727/4512758',
                  'Content-Type': 'application/octet-stream'},
                 {'Content-Length': '1367030', 'Content-Range': 'bytes 3145728-4512757/4512758',

@@ -6,12 +6,13 @@ commonfields:
   id: MicrosoftGraphMail
   version: -1
 configuration:
-- defaultvalue: https://graph.microsoft.com
-  display: Server URL
+- display: Server URL
   name: url
-  required: true
+  defaultvalue: https://graph.microsoft.com
+  required: false
   type: 0
   section: Connect
+  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - display: Azure Cloud
   name: azure_cloud
   type: 15
@@ -24,9 +25,10 @@ configuration:
     - DoD
     - Germany
     - China
+    - Custom
   section: Connect
   advanced: true
-  additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
   hiddenusername: true

@@ -125,10 +125,7 @@ def main():  # pragma: no cover
             or params.get('auth_id', '')
         enc_key: str = (params.get('credentials') or {}).get('password', '') or params.get('enc_key', '')
         azure_cloud = get_azure_cloud(params, 'MicrosoftGraphMail')
-        # >> Deprecated section - keeping for backwards compatability.
-        server = params.get('url', '')
-        base_url: str = urljoin(server, API_VERSION)
-        # <<
+        base_url: str = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, API_VERSION)
         app_name: str = 'ms-graph-mail'
         ok_codes: tuple = (200, 201, 202, 204)
         use_ssl: bool = not argToBoolean(params.get('insecure', False))
