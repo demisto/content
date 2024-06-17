@@ -1,7 +1,6 @@
 from CommonServerPython import *
 ''' IMPORTS '''
 
-from typing import List
 import json
 import requests
 import urllib3
@@ -105,7 +104,7 @@ def get_alert_detail_request(alert_id, base_url):
 
 
 def get_all_active_issues(per_page, sort_by, base_url):
-    issues: List[dict] = []
+    issues: list[dict] = []
     # The service endpoint to request from
     endpoint_url = 'issues'
     # Dictionary of params for the request
@@ -209,7 +208,7 @@ def get_alert_info(base_url):
     if 'alert_blocks' in human_format:
         n = human_format['alert_blocks']
         if isinstance(n, list):
-            bodies: List[str] = []
+            bodies: list[str] = []
             for a in n:
                 body = a.get('body', None)
                 if body:
@@ -224,7 +223,7 @@ def get_alert_info(base_url):
         'ContentsFormat': formats['json'],
         'Contents': alert_response,
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Alert ID {}'.format(alert_id), human_format, removeNull=True),
+        'HumanReadable': tableToMarkdown(f'Alert ID {alert_id}', human_format, removeNull=True),
         'EntryContext': ec
     })
 
