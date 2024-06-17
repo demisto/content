@@ -9,7 +9,7 @@ from MicrosoftGraphMailApiModule import *  # noqa: E402
 urllib3.disable_warnings()
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-BASE_URL_SUFFIX = '/v1.0'
+API_VERSION = 'v1.0'
 
 
 class MsGraphListenerClient(MsGraphMailBaseClient):
@@ -113,7 +113,7 @@ def main():     # pragma: no cover
     # params related to common instance configuration
 
     azure_cloud = get_azure_cloud(params, "Microsoft Graph Mail Single User")
-    base_url = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, BASE_URL_SUFFIX)
+    base_url = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, API_VERSION)
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     ok_codes = (200, 201, 202)
