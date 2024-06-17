@@ -42,7 +42,7 @@ class Client(BaseClient):
         """
 
         integration_context = get_integration_context()
-        if token := integration_context.get('tok2en'):
+        if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
             if expires_date and not self.is_token_expired(expires_date):
                 return token
