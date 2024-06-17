@@ -6,6 +6,7 @@ from typing import Any
 import requests
 import dateparser
 import urllib3
+import pytz
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -14,6 +15,7 @@ urllib3.disable_warnings()
 TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
+DEFAULT_LIMIT = "50"
 
 
 class Client(BaseClient):
@@ -1184,6 +1186,15 @@ def convert_all_unix_keys_to_date(incident: dict) -> dict:
     return incident
 
 
+def convert_all_unix_keys_to_date_user(incident: dict) -> dict:
+    keys = ['firstSeen', 'lastSeen', 'lastActivityTime', 'endTime', 'startTime']
+    if 'user' in incident:
+        for key in keys:
+            if key in incident['user']:
+                incident['user'][key] = convert_unix_to_date(incident['user'][key]).split('.')[0] + 'Z'
+    return incident
+
+
 def build_incident_response_query_params(query: str | None,
                                          incident_type: str | None,
                                          priority: str | None,
@@ -2085,9 +2096,15 @@ def list_incidents(client: Client, args: dict[str, str]):
 
 
 def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
-    look_back = arg_to_number(args.get('look_back', '1'))
-    last_run = demisto.getLastRun()
+    look_back = arg_to_number(args.get('look_back')) or 1
+    last_run: dict[str, Any] = demisto.getLastRun()
     demisto.debug(f"Last run before the fetch run: {last_run}")
+    incidents: list[dict] = []
+
+    if args.get('is_fetch_notable_users', False):
+        incidents, last_run_notable_users = fetch_notable_users(client, args, last_run.get('notable_users', {}))
+        demisto.debug(f'After fetch notable users, there are {len(incidents)} incidents')
+
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
         first_fetch=args.get('first_fetch', '3 days'),
@@ -2135,7 +2152,6 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     )
     demisto.debug(f'After filtering, there are {len(incidents_filtered)} incidents')
 
-    incidents: list[dict] = []
     for incident in incidents_filtered:
         incident['createdAt'] = datetime.fromtimestamp(
             incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
@@ -2158,8 +2174,70 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
         date_format=DATETIME_FORMAT_MILISECONDS,
         increase_last_run_time=True
     )
+    last_run['notable_users'] = last_run_notable_users
     demisto.debug(f"Last run after the fetch run: {last_run}")
     return incidents, last_run
+
+
+def fetch_notable_users(client: Client, args: dict[str, str], last_run_notable_users: dict[str,str]) -> tuple[list, dict]:
+    current_time = datetime.now(pytz.utc)
+    # look_back = arg_to_number(args.get("look_back", "1"))
+
+    if last_run := last_run_notable_users.get("last_run", ""):
+        fetch_interval = arg_to_number(args.get("notable_users_fetch_interval")) or 60
+        last_run_time = datetime.fromisoformat(last_run).astimezone(pytz.utc)
+
+        difference = current_time - last_run_time
+        if difference.total_seconds() / 60 <= fetch_interval:
+            return [], last_run_notable_users
+        
+        else:
+            time_period = fetch_interval
+            
+    else: # on the first run
+        time_period = args.get("notable_users_first_fetch", "3 days")
+
+
+    # TODO:  last_run.get("limit") or
+    limit = args.get("max_fetch_users") or DEFAULT_LIMIT
+    demisto.debug(f"params for request {time_period=} {limit=}")
+
+    # TODO: add look_back
+    args_notable_users = {
+        "limit": limit,
+        "time_period": time_period
+    }
+
+    _, _, raw_users = get_notable_users(client, args_notable_users)
+    users = raw_users.get("users", [])
+    demisto.debug(f"Got {len(users)} users from the API, before filtering")
+
+    minimum_risks = arg_to_number(args.get("minimum_risk_score_to_fetch_users"))
+    cache = get_integration_context()
+    existing_users = cache.get("usernames", set())
+    new_risky_users = set()
+    for user in users:
+        user_details = user.get("user", {})
+        username, risk_score = user_details.get("username", ""), user_details.get("riskScore", -1)
+        if risk_score >= minimum_risks and username not in existing_users:
+            new_risky_users.add(user)
+
+    demisto.debug(f"After filtering, there are {len(new_risky_users)} new risky users")
+    set_integration_context(existing_users.add(new_risky_users))
+
+    incidents: list[dict] = []
+    for incident in new_risky_users:
+        incident = convert_all_unix_keys_to_date_user(incident)
+        incidents.append(
+            {
+                "Name": incident.get("name"),
+                "rawJSON": json.dumps(incident),
+            }
+        )
+
+    last_run_notable_users["last_run"] = current_time.strftime(DATETIME_FORMAT_MILISECONDS)
+    demisto.debug(f"Last run notable users after the fetch run: {last_run_notable_users}")
+    return incidents, last_run_notable_users
 
 
 def main():  # pragma: no cover

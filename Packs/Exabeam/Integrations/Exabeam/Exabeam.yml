@@ -145,7 +145,7 @@ configuration:
   advanced: true
   defaultvalue: 90
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam - dev
+display: Exabeam Advanced Analytics - dev
 name: Exabeam - dev
 script:
   commands:
