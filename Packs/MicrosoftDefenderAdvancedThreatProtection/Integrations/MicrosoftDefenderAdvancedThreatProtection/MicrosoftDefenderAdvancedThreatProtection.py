@@ -5153,7 +5153,7 @@ def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResul
     demisto.debug(f'limit is set to: {limit}')
     limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
 
-    demisto.debug('Colling handle_machines function to convert raw response to CommandResults list')
+    demisto.debug('Calling handle_machines function to convert raw response to CommandResults list')
     return handle_machines(limited_machines_response)
 
 
