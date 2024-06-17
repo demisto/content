@@ -23,7 +23,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
     @staticmethod
     def _get_next_run_time(fetched_emails, start_time):
         """
-        Returns received time of last email if exist, else utc time that was passed as start_time.
+        Returns received time of last email if exists, else utc time that was passed as start_time.
 
         The elements in fetched emails are ordered by modified time in ascending order,
         meaning the last element has the latest received time.
@@ -42,7 +42,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
     @logger
     def fetch_incidents(self, last_run):
         """
-        Fetches emails from office 365 mailbox and creates incidents of parsed emails.
+        Fetches emails from Office 365 mailbox and creates incidents of parsed emails.
 
         :type last_run: ``dict``
         :param last_run:
