@@ -1,5 +1,5 @@
 category: Authentication & Identity Management
-description: Manage Secrets and Protect Sensitive Data through Thales CipherTrust security platform.
+description: Manage secrets and protect sensitive data through Thales CipherTrust security platform.
 commonfields:
   id: CipherTrust
   version: -1
@@ -18,7 +18,6 @@ configuration:
   name: insecure
   type: 8
   required: false
-
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -26,7 +25,7 @@ configuration:
 script:
   commands:
   - deprecated: false
-    description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned back in the result. This means that both the CSR and the private key must be stored securely on the client side.The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
+    description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned in the result. This means that both the CSR and the private key must be stored securely on the client side. The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
     name: ciphertrust-csr-generate
     arguments:
       - name: cn
@@ -37,7 +36,7 @@ script:
         default: false
       - name: algorithm
         isArray: false
-        description: RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
+        description: RSA or ECDSA (default) algorithms are supported. A signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
         required: false
         secret: false
         default: false
@@ -47,31 +46,31 @@ script:
         auto: PREDEFINED
       - name: dns_names
         isArray: true
-        description: Subject Alternative Names (SAN) values (comma seperated string)
+        description: A comma-separated list of Subject Alternative Names (SAN) values.
         required: false
         secret: false
         default: false
       - name: email
         isArray: true
-        description: E-mail addresses (comma seperated string)
+        description: A comma-separated list of e-mail addresses.
         required: false
         secret: false
         default: false
       - name: ip
         isArray: true
-        description: IP addresses (comma seperated string)
+        description: A comma-separated list of IP addresses.
         required: false
         secret: false
         default: false
       - name: name
         isArray: false
-        description: A unique name of CSR.
+        description: A unique name of the CSR.
         required: false
         secret: false
         default: false
       - name: encryption_algo
         isArray: false
-        description: Private key encryption algorithm. AES256 (default), AES192, AES128, TDES.
+        description: Private key encryption algorithm.
         required: false
         secret: false
         default: false
@@ -89,7 +88,7 @@ script:
         default: false
       - name: name_fields_json_entry_id
         isArray: false
-        description: Entry Id of the file that contains JSON representation of the name_fields_raw_json
+        description: Entry ID of the file that contains the JSON representation of the name_fields_raw_json
         required: false
         secret: false
         default: false
@@ -122,28 +121,28 @@ script:
         default: false
       - name: private_key_bytes
         isArray: false
-        description: Private Key bytes of the key which is to be used while creating CSR (Algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size.
+        description: Private Key bytes of the key which is to be used while creating CSR. (The algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size.
         required: false
         secret: false
         default: false
     outputs:
       - contextPath: InfoFile.Name
-        description: FileName
+        description: File name.
         type: string
       - contextPath: InfoFile.EntryID
-        description: The EntryID of the report
+        description: The entry ID of the report.
         type: string
       - contextPath: InfoFile.Size
-        description: File Size
+        description: File size.
         type: number
       - contextPath: InfoFile.Type
-        description: File type e.g. "PE"
+        description: File type, e.g., "PE".
         type: string
       - contextPath: InfoFile.Info
-        description: Basic information of the file
+        description: Basic information of the file.
         type: string
       - contextPath: InfoFile.Extension
-        description: File extension
+        description: File extension.
         type: string
   - deprecated: false
     description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
@@ -151,19 +150,19 @@ script:
     arguments:
     - name: ca_id
       isArray: false
-      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
     - name: csr_entry_id
       isArray: false
-      description: The entry ID of the file to upload that contains CSR in PEM format
+      description: The entry ID of the file to upload that contains CSR in PEM format.
       required: true
       secret: false
       default: false
     - name: purpose
       isArray: false
-      description: 'Purpose of the certificate. Possible values: server, client or ca'
+      description: Purpose of the certificate.
       required: true
       secret: false
       default: false
@@ -181,40 +180,40 @@ script:
       defaultValue : 365
     - name: name
       isArray: false
-      description: A unique name of Certificate, if not provided, will be set to cert-<id>.
+      description: A unique name of the certificate. If not provided, will be set to cert-<id>.
       required: false
       secret: false
       default: false
     - name: not_after
       isArray: false
-      description: End date of certificate. Either not_after date or duration must be specified. notAfter overrides duration if both are given.
+      description: End date of certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
       required: false
       secret: false
       default: false
     - name: not_before
       isArray: false
-      description: Start date of certificate.
+      description: Start date of the certificate.
       required: false
       secret: false
       default: false
     outputs:
       - contextPath: InfoFile.Name
-        description: FileName
+        description: File name.
         type: string
       - contextPath: InfoFile.EntryID
-        description: The EntryID of the report
+        description: The entry ID of the report.
         type: string
       - contextPath: InfoFile.Size
-        description: File Size
+        description: File size.
         type: number
       - contextPath: InfoFile.Type
-        description: File type e.g. "PE"
+        description: File type, e.g., "PE".
         type: string
       - contextPath: InfoFile.Info
-        description: Basic information of the file
+        description: Basic information of the file.
         type: string
       - contextPath: InfoFile.Extension
-        description: File extension
+        description: File extension.
         type: string
       - contextPath: CipherTrust.CACertificate.id
         description: A unique identifier for the certificate authority (CA).
@@ -259,13 +258,13 @@ script:
         description: Revocation timestamp.
         type: String
       - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA-1 fingerprint of the certificate.
+        description: SHA1 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA-256 fingerprint of the certificate.
+        description: SHA256 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA-512 fingerprint of the certificate.
+        description: SHA512 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.notBefore
         description: Timestamp of when the certificate is valid from.
@@ -285,25 +284,25 @@ script:
       default: false
     - name: subject
       isArray: false
-      description: Filter by the subject
+      description: Filter by the subject.
       required: false
       secret: false
       default: false
     - name: issuer
       isArray: false
-      description: Filter by the issuer
+      description: Filter by the issuer.
       required: false
       secret: false
       default: false
     - name: cert
       isArray: false
-      description: Filter by the cert
+      description: Filter by the cert.
       required: false
       secret: false
       default: false
     - name: id
       isArray: false
-      description: Filter by ID or URI
+      description: Filter by ID or URI.
       required: false
       secret: false
       default: false
@@ -315,13 +314,13 @@ script:
       default: false
     - name: page_size
       isArray: false
-      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return.
+      description: The maximum number of entries to return.
       required: false
       secret: false
       default: false
@@ -358,13 +357,13 @@ script:
         description: Revocation timestamp.
         type: String
       - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA-1 fingerprint of the certificate.
+        description: SHA1 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA-256 fingerprint of the certificate.
+        description: SHA256 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA-512 fingerprint of the certificate.
+        description: SHA512 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.serialNumber
         description: Serial number of the certificate.
@@ -399,22 +398,22 @@ script:
         default: false
     outputs:
       - contextPath: InfoFile.Name
-        description: FileName
+        description: File name.
         type: string
       - contextPath: InfoFile.EntryID
-        description: The EntryID of the report
+        description: The entry ID of the report.
         type: string
       - contextPath: InfoFile.Size
-        description: File Size
+        description: File size.
         type: number
       - contextPath: InfoFile.Type
-        description: File type e.g. "PE"
+        description: File type, e.g., "PE".
         type: string
       - contextPath: InfoFile.Info
-        description: Basic information of the file
+        description: Basic information of the file.
         type: string
       - contextPath: InfoFile.Extension
-        description: File extension
+        description: File extension.
         type: string
       - contextPath: CipherTrust.CACertificate.name
         description: The name of the certificate.
@@ -450,13 +449,13 @@ script:
         description: Current state of the certificate (e.g., active, revoked).
         type: String
       - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA-1 fingerprint of the certificate.
+        description: SHA1 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA-256 fingerprint of the certificate.
+        description: SHA256 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA-512 fingerprint of the certificate.
+        description: SHA512 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.serialNumber
         description: Serial number of the certificate.
@@ -491,7 +490,7 @@ script:
       default: false
     - name: reason
       isArray: false
-      description: 'Specify one of the reason. Reasons to revoke a certificate according to RFC 5280 '
+      description: Specify one of the reasons to revoke a certificate according to RFC 5280.
       required: true
       secret: false
       default: false
@@ -509,22 +508,22 @@ script:
       auto: PREDEFINED
     outputs:
       - contextPath: InfoFile.Name
-        description: FileName
+        description: File name.
         type: string
       - contextPath: InfoFile.EntryID
-        description: The EntryID of the report
+        description: The entry ID of the report.
         type: string
       - contextPath: InfoFile.Size
-        description: File Size
+        description: File size.
         type: number
       - contextPath: InfoFile.Type
-        description: File type e.g. "PE"
+        description: File type, e.g., "PE".
         type: string
       - contextPath: InfoFile.Info
-        description: Basic information of the file
+        description: Basic information of the file.
         type: string
       - contextPath: InfoFile.Extension
-        description: File extension
+        description: File extension.
         type: string
       - contextPath: CipherTrust.CACertificate.name
         description: The name of the certificate.
@@ -563,13 +562,13 @@ script:
         description: Current state of the certificate (e.g., active, revoked).
         type: String
       - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA-1 fingerprint of the certificate.
+        description: SHA1 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA-256 fingerprint of the certificate.
+        description: SHA256 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA-512 fingerprint of the certificate.
+        description: SHA512 fingerprint of the certificate.
         type: String
       - contextPath: CipherTrust.CACertificate.serialNumber
         description: Serial number of the certificate.
@@ -603,31 +602,31 @@ script:
     arguments:
     - name: external_ca_id
       isArray: false
-      description: An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI).
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: false
       secret: false
       default: false
     - name: subject
       isArray: false
-      description: Filter by the subject
+      description: Filter by the subject.
       required: false
       secret: false
       default: false
     - name: issuer
       isArray: false
-      description: Filter by the issuer
+      description: Filter by the issuer.
       required: false
       secret: false
       default: false
     - name: serial_number
       isArray: false
-      description: Filter by the serial number
+      description: Filter by the serial number.
       required: false
       secret: false
       default: false
     - name: cert
       isArray: false
-      description: Filter by the cert
+      description: Filter by the cert.
       required: false
       secret: false
       default: false
@@ -639,35 +638,35 @@ script:
       default: false
     - name: page_size
       isArray: false
-      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return.
+      description: The maximum number of entries to return.
       required: false
       secret: false
       default: false
       defaultValue: 50
     outputs:
       - contextPath: InfoFile.Name
-        description: FileName
+        description: File name.
         type: string
       - contextPath: InfoFile.EntryID
-        description: The EntryID of the report
+        description: The entry ID of the report.
         type: string
       - contextPath: InfoFile.Size
-        description: File Size
+        description: File size.
         type: number
       - contextPath: InfoFile.Type
-        description: File type e.g. "PE"
+        description: File type, e.g. ,"PE".
         type: string
       - contextPath: InfoFile.Info
-        description: Basic information of the file
+        description: Basic information of the file.
         type: string
       - contextPath: InfoFile.Extension
-        description: File extension
+        description: File extension.
         type: string
       - contextPath: CipherTrust.ExternalCA.id
         description: A unique identifier for the certificate authority (CA) certificate.
@@ -694,10 +693,10 @@ script:
         description: Name of the CA certificate.
         type: String
       - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
-        description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
+        description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
         type: String
       - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
-        description: If set to Enabled, the certificates signed by the specified CA can be used for user authentication.
+        description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
         type: String
       - contextPath: CipherTrust.ExternalCA.serialNumber
         description: Serial number of the CA certificate.
@@ -715,13 +714,13 @@ script:
         description: Timestamp of when the CA certificate is valid until.
         type: Date
       - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
-        description: SHA-1 fingerprint of the CA certificate.
+        description: SHA1 fingerprint of the CA certificate.
         type: String
       - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
-        description: SHA-256 fingerprint of the CA certificate.
+        description: SHA256 fingerprint of the CA certificate.
         type: String
       - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
-        description: SHA-512 fingerprint of the CA certificate.
+        description: SHA512 fingerprint of the CA certificate.
         type: String
   - deprecated: false
     description: Update an external CA.
@@ -729,7 +728,7 @@ script:
     arguments:
     - name: external_ca_id
       isArray: false
-      description: An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI).
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
@@ -755,22 +754,22 @@ script:
       auto: PREDEFINED
     outputs:
       - contextPath: InfoFile.Name
-        description: FileName
+        description: File name.
         type: string
       - contextPath: InfoFile.EntryID
-        description: The EntryID of the report
+        description: The entry ID of the report.
         type: string
       - contextPath: InfoFile.Size
-        description: File Size
+        description: File size.
         type: number
       - contextPath: InfoFile.Type
-        description: File type e.g. "PE"
+        description: File type, e.g., "PE".
         type: string
       - contextPath: InfoFile.Info
-        description: Basic information of the file
+        description: Basic information of the file.
         type: string
       - contextPath: InfoFile.Extension
-        description: File extension
+        description: File extension.
         type: string
       - contextPath: CipherTrust.ExternalCA.id
         description: A unique identifier for the certificate authority (CA) certificate.
@@ -797,10 +796,10 @@ script:
         description: Name of the CA certificate.
         type: String
       - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
-        description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
+        description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
         type: String
       - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
-        description: If set to Enabled, the certificates signed by the specified CA can be used for user authentication.
+        description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
         type: String
       - contextPath: CipherTrust.ExternalCA.serialNumber
         description: Serial number of the CA certificate.
@@ -818,13 +817,13 @@ script:
         description: Timestamp of when the CA certificate is valid until.
         type: Date
       - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
-        description: SHA-1 fingerprint of the CA certificate.
+        description: SHA1 fingerprint of the CA certificate.
         type: String
       - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
-        description: SHA-256 fingerprint of the CA certificate.
+        description: SHA256 fingerprint of the CA certificate.
         type: String
       - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
-        description: SHA-512 fingerprint of the CA certificate.
+        description: SHA512 fingerprint of the CA certificate.
         type: String
   - deprecated: false
     description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.
@@ -832,13 +831,13 @@ script:
     arguments:
     - name: cert_entry_id
       isArray: false
-      description: The entry ID of the file to upload that contains the external CA certificate in PEM format
+      description: The entry ID of the file to upload that contains the external CA certificate in PEM format.
       required: true
       secret: false
       default: false
     - name: name
       isArray: false
-      description: A unique name of CA, if not provided, will be set to externalca-<id>.
+      description: A unique name of the CA. If not provided, will be set to externalca-<id>.
       required: false
       secret: false
       default: false
@@ -850,22 +849,22 @@ script:
       default: false
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
-      description: File Size
+      description: File size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension
+      description: File extension.
       type: string
     - contextPath: CipherTrust.ExternalCA.id
       description: A unique identifier for the certificate authority (CA) certificate.
@@ -892,10 +891,10 @@ script:
       description: Name of the CA certificate.
       type: String
     - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
-      description: If set to Enabled, the certificates signed by the specified CA can be used for client authentication.
+      description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
       type: String
     - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
-      description: If set to Enabled, the certificates signed by the specified CA can be used for user authentication.
+      description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
       type: String
     - contextPath: CipherTrust.ExternalCA.serialNumber
       description: Serial number of the CA certificate.
@@ -968,19 +967,19 @@ script:
     arguments:
     - name: group_name
       isArray: false
-      description: Name of the group
+      description: Name of the group.
       required: true
       secret: false
       default: false
     - name: force
       isArray: false
-      description: When set to true, groupmaps within this group will be deleted
+      description: When set to true, groupmaps within this group will be deleted.
       required: false
       secret: false
       default: false
     outputs: []
   - deprecated: false
-    description: Returns a list of group  Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
+    description: Returns a list of group  Command arguments can be used to filter the results. Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
     name: ciphertrust-group-list
     arguments:
     - name: group_name
@@ -991,7 +990,7 @@ script:
       default: false
     - name: user_id
       isArray: false
-      description: Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only user id. Using '-' at the beginning of user_id will return groups that the user is not part of.
+      description: Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only a user ID. Using '-' at the beginning of user_id will return groups that the user is not part of.
       required: false
       secret: false
       default: false
@@ -1003,7 +1002,7 @@ script:
       default: false
     - name: client_id
       isArray: false
-      description: Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client id will return groups that the client is not part of.
+      description: Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client_id will return groups that the client is not part of.
       required: false
       secret: false
       default: false
@@ -1021,14 +1020,14 @@ script:
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return.
+      description: The maximum number of entries to return.
       required: false
       secret: false
       default: false
       defaultValue: 50
     outputs:
     - contextPath: CipherTrust.Group.name
-      description: name of the group
+      description: Name of the group.
       type: String
     - contextPath: CipherTrust.Group.created_at
       description: The time the group was created.
@@ -1046,10 +1045,10 @@ script:
       description: A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences.
       type: Unknown
     - contextPath: CipherTrust.Group.description
-      description: description of the group
+      description: Description of the group.
       type: String
     - contextPath: CipherTrust.Group.users_count
-      description: It returns the total user count associated with the group
+      description: The total user count associated with the group.
       type: Number
   - deprecated: false
     description: Update the properties of a group given the group name.
@@ -1104,7 +1103,7 @@ script:
     arguments:
     - name: cn
       isArray: false
-      description: Common name
+      description: Common name.
       required: true
       secret: false
       default: false
@@ -1120,31 +1119,31 @@ script:
       auto: PREDEFINED
     - name: copy_from_ca
       isArray: false
-      description: ID of any Local CA. If given, the csr properties are copied from the given CA.
+      description: ID of any local CA. If given, the CSR properties are copied from the given CA.
       required: false
       secret: false
       default: false
     - name: dns_names
       isArray: true
-      description: Subject Alternative Names (SAN) values (comma seperated string)
+      description: A comma-separated list of Subject Alternative Names (SAN) values.
       required: false
       secret: false
       default: false
     - name: email
       isArray: true
-      description: E-mail addresses (comma seperated string)
+      description: A comma-separated list of e-mail addresses.
       required: false
       secret: false
       default: false
     - name: ip
       isArray: true
-      description: IP addresses (comma seperated string)
+      description: A comma-separated list of IP addresses.
       required: false
       secret: false
       default: false
     - name: name
       isArray: false
-      description: A unique name of CA, if not provided, will be set to localca-<id>.
+      description: A unique name of the CA. If not provided, will be set to localca-<id>.
       required: false
       secret: false
       default: false
@@ -1156,7 +1155,7 @@ script:
       default: false
     - name: name_fields_json_entry_id
       isArray: false
-      description: Entry Id of the file that contains JSON representation of the name_fields_raw_json
+      description: Entry ID of the file that contains JSON representation of the name_fields_raw_json.
       required: false
       secret: false
       default: false
@@ -1177,22 +1176,22 @@ script:
       auto: PREDEFINED
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
-      description: File Size
+      description: File size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension
+      description: File extension.
       type: string
     - contextPath: CipherTrust.LocalCA.id
       description: Unique identifier for the CA.
@@ -1231,13 +1230,13 @@ script:
       description: Timestamp after which the certificate is not valid.
       type: Date
     - contextPath: CipherTrust.LocalCA.sha1Fingerprint
-      description: SHA-1 fingerprint of the CA certificate.
+      description: SHA1 fingerprint of the CA certificate.
       type: String
     - contextPath: CipherTrust.LocalCA.sha256Fingerprint
-      description: SHA-256 fingerprint of the CA certificate.
+      description: SHA256 fingerprint of the CA certificate.
       type: String
     - contextPath: CipherTrust.LocalCA.sha512Fingerprint
-      description: SHA-512 fingerprint of the CA certificate.
+      description: SHA512 fingerprint of the CA certificate.
       type: String
   - deprecated: false
     description: Deletes a local CA certificate.
@@ -1245,7 +1244,7 @@ script:
     arguments:
     - name: local_ca_id
       isArray: false
-      description: An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
@@ -1256,13 +1255,13 @@ script:
     arguments:
     - name: local_ca_id
       isArray: false
-      description: An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
+      description: An identifier of the resource. This can be either the ID (a UUIDv4),the name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false
     - name: cert_entry_id
       isArray: false
-      description: The entry ID of the file to upload that contains the signed certificate in PEM format to install as a local CA
+      description: The entry ID of the file to upload that contains the signed certificate in PEM format to install as a local CA.
       required: true
       secret: false
       default: false
@@ -1274,22 +1273,22 @@ script:
       default: false
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
-      description: File Size
+      description: File size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension
+      description: File extension.
       type: string
     - contextPath: CipherTrust.CAInstall.id
       description: A unique identifier for the certificate authority (CA).
@@ -1349,24 +1348,24 @@ script:
       description: Indicates if user authentication is enabled for the CA.
       type: String
   - deprecated: false
-    description: Returns a list of local CA certificates. The results can be filtered, using the command arguments. If local_ca_id is provided, a single local CA certificate is returned and the rest of the filters are ignored. Chained parameter is used to return the full CA chain with the certificate and can be used only if local_ca_id is provided.
+    description: Returns a list of local CA certificates. The results can be filtered, using the command arguments. If local_ca_id is provided, a single local CA certificate is returned and the rest of the filters are ignored. A chained parameter is used to return the full CA chain with the certificate and can be used only if local_ca_id is provided.
     name: ciphertrust-local-ca-list
     arguments:
     - name: subject
       isArray: false
-      description: Filter by subject
+      description: Filter by subject.
       required: false
       secret: false
       default: false
     - name: local_ca_id
       isArray: false
-      description: An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: false
       secret: false
       default: false
     - name: chained
       isArray: false
-      description: When set to ‘true’ the full CA chain is returned with the certificate.Must be used with the local CA ID.
+      description: When set to ‘true’ the full CA chain is returned with the certificate. Must be used with the local CA ID.
       required: false
       secret: false
       default: false
@@ -1376,13 +1375,13 @@ script:
       auto: PREDEFINED
     - name: issuer
       isArray: false
-      description: Filter by issuer
+      description: Filter by issuer.
       required: false
       secret: false
       default: false
     - name: state
       isArray: false
-      description: Filter by state
+      description: Filter by state.
       required: false
       secret: false
       default: false
@@ -1392,7 +1391,7 @@ script:
       auto: PREDEFINED
     - name: cert
       isArray: false
-      description: Filter by cert
+      description: Filter by cert.
       required: false
       secret: false
       default: false
@@ -1404,35 +1403,35 @@ script:
       default: false
     - name: page_size
       isArray: false
-      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
       required: false
       secret: false
       default: false
     - name: limit
       isArray: false
-      description: The max number of entries to return.
+      description: The maximum number of entries to return.
       required: false
       secret: false
       default: false
       defaultValue: 50
     outputs:
     - contextPath: InfoFile.Name
-      description: FileName
+      description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The EntryID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
-      description: File Size
+      description: File size.
       type: number
     - contextPath: InfoFile.Type
-      description: File type e.g. "PE"
+      description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
       description: Basic information of the file
       type: string
     - contextPath: InfoFile.Extension
-      description: File extension
+      description: File extension.
       type: string
     - contextPath: CipherTrust.LocalCA.id
       description: A unique identifier for the certificate authority (CA).
@@ -1491,7 +1490,7 @@ script:
     arguments:
     - name: local_ca_id
       isArray: false
-      description: An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI).
+      description: An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
       required: true
       secret: false
       default: false

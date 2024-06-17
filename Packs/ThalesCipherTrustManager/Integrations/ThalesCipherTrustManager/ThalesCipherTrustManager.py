@@ -568,7 +568,6 @@ def zip_file_with_password(input_file_path: str, password: str, output_file_path
     zf.close()
 
 
-
 def create_zip_protected_file(zip_filename: str, filename: str, data: str, password: str):
     """
     Create a zip file with a password.

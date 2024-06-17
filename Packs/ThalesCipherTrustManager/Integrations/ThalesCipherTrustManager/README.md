@@ -1,4 +1,4 @@
-Manage Secrets and Protect Sensitive Data through Thales CipherTrust security platform.
+Manage secrets and protect sensitive data through Thales CipherTrust security platform.
 This integration was integrated and tested with version xx of CipherTrust.
 
 ## Configure Thales CipherTrust Manager on Cortex XSOAR
@@ -25,7 +25,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### ciphertrust-csr-generate
 
 ***
-Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned back in the result. This means that both the CSR and the private key must be stored securely on the client side.The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
+Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned in the result. This means that both the CSR and the private key must be stored securely on the client side. The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
 
 #### Base Command
 
@@ -36,29 +36,29 @@ Creates a Certificate Signing Request (CSR) and its corresponding private key. T
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cn | Common Name. | Required | 
-| algorithm | RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size. Possible values are: RSA, ECDSA. | Optional | 
-| dns_names | Subject Alternative Names (SAN) values (comma seperated string). | Optional | 
-| email | E-mail addresses (comma seperated string). | Optional | 
-| ip | IP addresses (comma seperated string). | Optional | 
-| name | A unique name of CSR. | Optional | 
-| encryption_algo | Private key encryption algorithm. AES256 (default), AES192, AES128, TDES. Possible values are: AES256, AES192, AES128, TDES. | Optional | 
+| algorithm | RSA or ECDSA (default) algorithms are supported. A signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size. Possible values are: RSA, ECDSA. | Optional | 
+| dns_names | A comma-separated list of Subject Alternative Names (SAN) values. | Optional | 
+| email | A comma-separated list of e-mail addresses. | Optional | 
+| ip | A comma-separated list of IP addresses. | Optional | 
+| name | A unique name of the CSR. | Optional | 
+| encryption_algo | Private key encryption algorithm. Possible values are: AES256, AES192, AES128, TDES. | Optional | 
 | name_fields_raw_json | Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]". | Optional | 
-| name_fields_json_entry_id | Entry Id of the file that contains JSON representation of the name_fields_raw_json. | Optional | 
+| name_fields_json_entry_id | Entry ID of the file that contains the JSON representation of the name_fields_raw_json. | Optional | 
 | key_size | Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521. Possible values are: 1024, 2048, 3072, 4096, 256, 384, 521. | Optional | 
 | encryption_password | Password to PEM-encrypt the private key. If not specified, the private key is not encrypted in return. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory. | Optional | 
 | private_key_file_password | Password to encrypt the private key file. It is strongly recommended to encrypt the private key. If not specified, the private key is encrypted with the password which must be provided. | Optional | 
-| private_key_bytes | Private Key bytes of the key which is to be used while creating CSR (Algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size. | Optional | 
+| private_key_bytes | Private Key bytes of the key which is to be used while creating CSR. (The algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 
 ### ciphertrust-certificate-issue
 
@@ -73,24 +73,24 @@ Issues a certificate by signing the provided CSR with the CA. This is typically 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI). | Required | 
+| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
 | csr_entry_id | The entry ID of the file to upload that contains CSR in PEM format. | Required | 
-| purpose | Purpose of the certificate. Possible values: server, client or ca. Possible values are: server, client, ca. | Required | 
+| purpose | Purpose of the certificate. Possible values are: server, client, ca. | Required | 
 | duration | Duration in days of certificate. Either duration or not_after date must be specified. Default is 365. | Optional | 
-| name | A unique name of Certificate, if not provided, will be set to cert-&lt;id&gt;. | Optional | 
-| not_after | End date of certificate. Either not_after date or duration must be specified. notAfter overrides duration if both are given. | Optional | 
-| not_before | Start date of certificate. | Optional | 
+| name | A unique name of the certificate. If not provided, will be set to cert-&lt;id&gt;. | Optional | 
+| not_after | End date of certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given. | Optional | 
+| not_before | Start date of the certificate. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.CACertificate.id | String | A unique identifier for the certificate authority \(CA\). | 
 | CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the CA. | 
 | CipherTrust.CACertificate.account | String | Account associated with the CA. | 
@@ -105,9 +105,9 @@ Issues a certificate by signing the provided CSR with the CA. This is typically 
 | CipherTrust.CACertificate.issuer | String | Issuer of the CA's certificate. | 
 | CipherTrust.CACertificate.ca | String | Certificate authority. | 
 | CipherTrust.CACertificate.revoked_at | String | Revocation timestamp. | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA-1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA-256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA-512 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
 | CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. | 
 | CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
 
@@ -131,7 +131,7 @@ Returns a list of certificates issued by the specified CA. The results can be fi
 | id | Filter by ID or URI. | Optional | 
 | page | Page to return. | Optional | 
 | page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The max number of entries to return. Default is 50. | Optional | 
+| limit | The maximum number of entries to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -147,9 +147,9 @@ Returns a list of certificates issued by the specified CA. The results can be fi
 | CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the certificate. | 
 | CipherTrust.CACertificate.ca | String | Certificate authority. | 
 | CipherTrust.CACertificate.revoked_at | String | Revocation timestamp. | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA-1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA-256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA-512 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
 | CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. | 
 | CipherTrust.CACertificate.subject | String | Subject of the certificate. | 
 | CipherTrust.CACertificate.issuer | String | Issuer of the certificate. | 
@@ -176,12 +176,12 @@ Certificate can be resumed only if it is revoked with reason certificateHold.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.CACertificate.name | String | The name of the certificate. | 
 | CipherTrust.CACertificate.id | String | A unique identifier for the certificate. | 
 | CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. | 
@@ -193,9 +193,9 @@ Certificate can be resumed only if it is revoked with reason certificateHold.
 | CipherTrust.CACertificate.ca | String | Certificate authority. | 
 | CipherTrust.CACertificate.revoked_at | Date | Revocation timestamp. | 
 | CipherTrust.CACertificate.state | String | Current state of the certificate \(e.g., active, revoked\). | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA-1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA-256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA-512 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
 | CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. | 
 | CipherTrust.CACertificate.subject | String | Subject of the certificate. | 
 | CipherTrust.CACertificate.issuer | String | Issuer of the certificate. | 
@@ -217,18 +217,18 @@ Revoke certificate with a given specific reason.
 | --- | --- | --- |
 | ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
 | cert_id | An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI). | Required | 
-| reason | Specify one of the reason. Reasons to revoke a certificate according to RFC 5280 . Possible values are: unspecified, keyCompromise, cACompromise, affiliationChanged, superseded, cessationOfOperation, certificateHold, removeFromCRL, privilegeWithdrawn, aACompromise. | Required | 
+| reason | Specify one of the reasons to revoke a certificate according to RFC 5280. Possible values are: unspecified, keyCompromise, cACompromise, affiliationChanged, superseded, cessationOfOperation, certificateHold, removeFromCRL, privilegeWithdrawn, aACompromise. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.CACertificate.name | String | The name of the certificate. | 
 | CipherTrust.CACertificate.id | String | A unique identifier for the certificate. | 
 | CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. | 
@@ -241,9 +241,9 @@ Revoke certificate with a given specific reason.
 | CipherTrust.CACertificate.revoked_at | Date | Revocation timestamp. | 
 | CipherTrust.CACertificate.revoked_reason | String | Reason for revocation. | 
 | CipherTrust.CACertificate.state | String | Current state of the certificate \(e.g., active, revoked\). | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA-1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA-256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA-512 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
 | CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. | 
 | CipherTrust.CACertificate.subject | String | Subject of the certificate. | 
 | CipherTrust.CACertificate.issuer | String | Issuer of the certificate. | 
@@ -281,25 +281,25 @@ Returns a list of external CA certificates. The results can be filtered, using t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI). | Optional | 
+| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Optional | 
 | subject | Filter by the subject. | Optional | 
 | issuer | Filter by the issuer. | Optional | 
 | serial_number | Filter by the serial number. | Optional | 
 | cert | Filter by the cert. | Optional | 
 | page | Page to return. | Optional | 
 | page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The max number of entries to return. Default is 50. | Optional | 
+| limit | The maximum number of entries to return. Default is 50. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g. ,"PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. | 
 | CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. | 
 | CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. | 
@@ -308,16 +308,16 @@ Returns a list of external CA certificates. The results can be filtered, using t
 | CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. | 
 | CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. | 
 | CipherTrust.ExternalCA.name | String | Name of the CA certificate. | 
-| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to Enabled, the certificates signed by the specified CA can be used for client authentication. | 
-| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to Enabled, the certificates signed by the specified CA can be used for user authentication. | 
+| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. | 
+| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. | 
 | CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. | 
 | CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. | 
 | CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. | 
 | CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. | 
 | CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. | 
-| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA-1 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA-256 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA-512 fingerprint of the CA certificate. | 
+| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. | 
+| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
+| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
 
 ### ciphertrust-external-ca-update
 
@@ -332,7 +332,7 @@ Update an external CA.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI). | Required | 
+| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
 | allow_client_authentication | If set to true, the certificates signed by the specified CA can be used for client authentication. Possible values are: true, false. | Optional | 
 | allow_user_authentication | If set to true, the certificates signed by the specified CA can be used for user authentication. Possible values are: true, false. | Optional | 
 
@@ -340,12 +340,12 @@ Update an external CA.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. | 
 | CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. | 
 | CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. | 
@@ -354,16 +354,16 @@ Update an external CA.
 | CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. | 
 | CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. | 
 | CipherTrust.ExternalCA.name | String | Name of the CA certificate. | 
-| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to Enabled, the certificates signed by the specified CA can be used for client authentication. | 
-| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to Enabled, the certificates signed by the specified CA can be used for user authentication. | 
+| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. | 
+| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. | 
 | CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. | 
 | CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. | 
 | CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. | 
 | CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. | 
 | CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. | 
-| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA-1 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA-256 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA-512 fingerprint of the CA certificate. | 
+| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. | 
+| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
+| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
 
 ### ciphertrust-external-ca-upload
 
@@ -379,19 +379,19 @@ Uploads an external CA certificate. These certificates can later be trusted by s
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cert_entry_id | The entry ID of the file to upload that contains the external CA certificate in PEM format. | Required | 
-| name | A unique name of CA, if not provided, will be set to externalca-&lt;id&gt;. | Optional | 
+| name | A unique name of the CA. If not provided, will be set to externalca-&lt;id&gt;. | Optional | 
 | parent | URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. | 
 | CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. | 
 | CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. | 
@@ -400,8 +400,8 @@ Uploads an external CA certificate. These certificates can later be trusted by s
 | CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. | 
 | CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. | 
 | CipherTrust.ExternalCA.name | String | Name of the CA certificate. | 
-| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to Enabled, the certificates signed by the specified CA can be used for client authentication. | 
-| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to Enabled, the certificates signed by the specified CA can be used for user authentication. | 
+| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. | 
+| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. | 
 | CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. | 
 | CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. | 
 | CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. | 
@@ -462,7 +462,7 @@ There is no context output for this command.
 ### ciphertrust-group-list
 
 ***
-Returns a list of group  Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
+Returns a list of group  Command arguments can be used to filter the results. Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
 
 #### Base Command
 
@@ -473,25 +473,25 @@ Returns a list of group  Command arguments can be used to filter the results.Gro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | group_name | Filter by group name. | Optional | 
-| user_id | Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only user id. Using '-' at the beginning of user_id will return groups that the user is not part of. | Optional | 
+| user_id | Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only a user ID. Using '-' at the beginning of user_id will return groups that the user is not part of. | Optional | 
 | connection | Filter by connection name or ID. | Optional | 
-| client_id | Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client id will return groups that the client is not part of. | Optional | 
+| client_id | Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client_id will return groups that the client is not part of. | Optional | 
 | page | Page to return. | Optional | 
 | page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The max number of entries to return. Default is 50. | Optional | 
+| limit | The maximum number of entries to return. Default is 50. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Group.name | String | name of the group | 
+| CipherTrust.Group.name | String | Name of the group. | 
 | CipherTrust.Group.created_at | Date | The time the group was created. | 
 | CipherTrust.Group.updated_at | Date | The time the group was last updated. | 
 | CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
 | CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
 | CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. | 
-| CipherTrust.Group.description | String | description of the group | 
-| CipherTrust.Group.users_count | Number | It returns the total user count associated with the group | 
+| CipherTrust.Group.description | String | Description of the group. | 
+| CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
 
 ### ciphertrust-group-update
 
@@ -538,25 +538,25 @@ Creates a pending local CA. This operation returns a CSR that either can be self
 | --- | --- | --- |
 | cn | Common name. | Required | 
 | algorithm | RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size. Possible values are: RSA, ECDSA. | Optional | 
-| copy_from_ca | ID of any Local CA. If given, the csr properties are copied from the given CA. | Optional | 
-| dns_names | Subject Alternative Names (SAN) values (comma seperated string). | Optional | 
-| email | E-mail addresses (comma seperated string). | Optional | 
-| ip | IP addresses (comma seperated string). | Optional | 
-| name | A unique name of CA, if not provided, will be set to localca-&lt;id&gt;. | Optional | 
+| copy_from_ca | ID of any local CA. If given, the CSR properties are copied from the given CA. | Optional | 
+| dns_names | A comma-separated list of Subject Alternative Names (SAN) values. | Optional | 
+| email | A comma-separated list of e-mail addresses. | Optional | 
+| ip | A comma-separated list of IP addresses. | Optional | 
+| name | A unique name of the CA. If not provided, will be set to localca-&lt;id&gt;. | Optional | 
 | name_fields_raw_json | Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]". | Optional | 
-| name_fields_json_entry_id | Entry Id of the file that contains JSON representation of the name_fields_raw_json. | Optional | 
+| name_fields_json_entry_id | Entry ID of the file that contains JSON representation of the name_fields_raw_json. | Optional | 
 | size | Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521. Possible values are: 256, 384, 521, 1024, 2048, 3072, 4096. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.LocalCA.id | String | Unique identifier for the CA. | 
 | CipherTrust.LocalCA.uri | String | Uniform Resource Identifier for the CA. | 
 | CipherTrust.LocalCA.account | String | Account associated with the CA. | 
@@ -569,9 +569,9 @@ Creates a pending local CA. This operation returns a CSR that either can be self
 | CipherTrust.LocalCA.subject | String | Distinguished Name \(DN\) of the CA subject. | 
 | CipherTrust.LocalCA.notBefore | Date | Timestamp before which the certificate is not valid. | 
 | CipherTrust.LocalCA.notAfter | Date | Timestamp after which the certificate is not valid. | 
-| CipherTrust.LocalCA.sha1Fingerprint | String | SHA-1 fingerprint of the CA certificate. | 
-| CipherTrust.LocalCA.sha256Fingerprint | String | SHA-256 fingerprint of the CA certificate. | 
-| CipherTrust.LocalCA.sha512Fingerprint | String | SHA-512 fingerprint of the CA certificate. | 
+| CipherTrust.LocalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. | 
+| CipherTrust.LocalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
+| CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
 
 ### ciphertrust-local-ca-delete
 
@@ -586,7 +586,7 @@ Deletes a local CA certificate.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI). | Required | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
 
 #### Context Output
 
@@ -604,7 +604,7 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI). | Required | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4),the name, the URI, or the slug (which is the last component of the URI). | Required | 
 | cert_entry_id | The entry ID of the file to upload that contains the signed certificate in PEM format to install as a local CA. | Required | 
 | parent_id | An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI. | Required | 
 
@@ -612,12 +612,12 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
+| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.CAInstall.id | String | A unique identifier for the certificate authority \(CA\). | 
 | CipherTrust.CAInstall.uri | String | Uniform Resource Identifier associated with the CA. | 
 | CipherTrust.CAInstall.account | String | Account associated with the CA. | 
@@ -641,7 +641,7 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 ### ciphertrust-local-ca-list
 
 ***
-Returns a list of local CA certificates. The results can be filtered, using the command arguments. If local_ca_id is provided, a single local CA certificate is returned and the rest of the filters are ignored. Chained parameter is used to return the full CA chain with the certificate and can be used only if local_ca_id is provided.
+Returns a list of local CA certificates. The results can be filtered, using the command arguments. If local_ca_id is provided, a single local CA certificate is returned and the rest of the filters are ignored. A chained parameter is used to return the full CA chain with the certificate and can be used only if local_ca_id is provided.
 
 #### Base Command
 
@@ -652,25 +652,25 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | subject | Filter by subject. | Optional | 
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI). | Optional | 
-| chained | When set to ‘true’ the full CA chain is returned with the certificate.Must be used with the local CA ID. Possible values are: true, false. | Optional | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Optional | 
+| chained | When set to ‘true’ the full CA chain is returned with the certificate. Must be used with the local CA ID. Possible values are: true, false. | Optional | 
 | issuer | Filter by issuer. | Optional | 
 | state | Filter by state. Possible values are: pending, active. | Optional | 
 | cert | Filter by cert. | Optional | 
 | page | Page to return. | Optional | 
 | page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The max number of entries to return. Default is 50. | Optional | 
+| limit | The maximum number of entries to return. Default is 50. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName | 
-| InfoFile.EntryID | string | The EntryID of the report | 
-| InfoFile.Size | number | File Size | 
-| InfoFile.Type | string | File type e.g. "PE" | 
+| InfoFile.Name | string | File name. | 
+| InfoFile.EntryID | string | The entry ID of the report. | 
+| InfoFile.Size | number | File size. | 
+| InfoFile.Type | string | File type, e.g., "PE". | 
 | InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension | 
+| InfoFile.Extension | string | File extension. | 
 | CipherTrust.LocalCA.id | String | A unique identifier for the certificate authority \(CA\). | 
 | CipherTrust.LocalCA.uri | String | Uniform Resource Identifier associated with the CA. | 
 | CipherTrust.LocalCA.account | String | Account associated with the CA. | 
@@ -729,12 +729,12 @@ Returns a list of local CA certificates. The results can be filtered, using the 
             "sha512Fingerprint": "1A1CBCA18131894851D9C956BDC0754218E5AEE37CE0E15180B8101F6072E9DF37062CB0B04DCAA220E943C9D2B7DA62730116B5D26E8A363B0C62E6BCFB242C",
             "state": "active",
             "subject": "/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com",
-            "updatedAt": "2024-06-16T10:47:38.00552Z",
+            "updatedAt": "2024-06-17T06:00:07.302444Z",
             "uri": "kylo:kylo:naboo:localca:c344cb9e-7607-47ac-968a-d6bba7cbd74c"
         }
     },
     "InfoFile": {
-        "EntryID": "1637@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+        "EntryID": "1786@a48e3cfd-a079-4895-89a7-4fac11b8143d",
         "Extension": "pem",
         "Info": "application/x-x509-ca-cert",
         "Name": "Certificate.pem",
@@ -749,7 +749,7 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 >### /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com
 >|Id|Uri|Createdat|Updatedat|Name|State|Serialnumber|Subject|Issuer|Notbefore|Notafter|Sha1Fingerprint|Sha256Fingerprint|Sha512Fingerprint|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| c344cb9e-7607-47ac-968a-d6bba7cbd74c | kylo:kylo:naboo:localca:c344cb9e-7607-47ac-968a-d6bba7cbd74c | 2024-06-02T14:32:09.832603Z | 2024-06-16T10:47:38.00552Z | test_local_ca | active | 226220228835411560013591369440322067707 | /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com | /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com | 2024-06-03T14:10:29Z | 2025-06-04T14:10:29Z | 57A5557A19DABE380C560E9696ADC95085317476 | 559AEF7C71DF2A7EF81704A31C6550E0781C42B6237A2171A8B73F4D17FA3FAB | 1A1CBCA18131894851D9C956BDC0754218E5AEE37CE0E15180B8101F6072E9DF37062CB0B04DCAA220E943C9D2B7DA62730116B5D26E8A363B0C62E6BCFB242C |
+>| c344cb9e-7607-47ac-968a-d6bba7cbd74c | kylo:kylo:naboo:localca:c344cb9e-7607-47ac-968a-d6bba7cbd74c | 2024-06-02T14:32:09.832603Z | 2024-06-17T06:00:07.302444Z | test_local_ca | active | 226220228835411560013591369440322067707 | /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com | /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com | 2024-06-03T14:10:29Z | 2025-06-04T14:10:29Z | 57A5557A19DABE380C560E9696ADC95085317476 | 559AEF7C71DF2A7EF81704A31C6550E0781C42B6237A2171A8B73F4D17FA3FAB | 1A1CBCA18131894851D9C956BDC0754218E5AEE37CE0E15180B8101F6072E9DF37062CB0B04DCAA220E943C9D2B7DA62730116B5D26E8A363B0C62E6BCFB242C |
 
 
 ### ciphertrust-local-ca-self-sign
@@ -765,7 +765,7 @@ Self-sign a local CA certificate. This is used to create a root CA. Either durat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4),the Name, the URI, or the slug (which is the last component of the URI). | Required | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
 | duration | The duration of the certificate in days. Either not_after date or duration must be specified. not_after overrides duration if both are given. Default is 365. | Optional | 
 | not_after | End date of certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given. | Optional | 
 | not_before | Start date of certificate. | Optional | 
@@ -869,12 +869,12 @@ Update a local CA.
             "sha512Fingerprint": "1A1CBCA18131894851D9C956BDC0754218E5AEE37CE0E15180B8101F6072E9DF37062CB0B04DCAA220E943C9D2B7DA62730116B5D26E8A363B0C62E6BCFB242C",
             "state": "active",
             "subject": "/C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com",
-            "updatedAt": "2024-06-16T10:52:39.351625398Z",
+            "updatedAt": "2024-06-17T10:08:38.116763789Z",
             "uri": "kylo:kylo:naboo:localca:c344cb9e-7607-47ac-968a-d6bba7cbd74c"
         }
     },
     "InfoFile": {
-        "EntryID": "1642@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+        "EntryID": "1791@a48e3cfd-a079-4895-89a7-4fac11b8143d",
         "Extension": "pem",
         "Info": "application/x-x509-ca-cert",
         "Name": "Certificate.pem",
