@@ -61,7 +61,7 @@ class Client(BaseClient):
             ok_codes=(200,201,422)
         )
 
-    def get_event_status(self, job_id: int, event_id: str, retries=10, seconds_per_retry=3) -> Dict[str, Any]:
+    def get_event_status(self, job_id: int, event_id: str) -> Dict[str, Any]:
         return self._http_request(
             method="GET",
             url_suffix=f"/api/v1/events/{job_id}/{event_id}",
@@ -265,7 +265,6 @@ def main() -> None:
 	# get the service API url
 	base_url = urljoin(demisto.params()['url'])
 	verify_certificate = demisto.params().get('ssl_verification', False)
-	close_reasons = demisto.params().get('close_reasons')
 	proxy = demisto.params().get('proxy', False)
 	default_job_id = int(demisto.params().get('default_job_id', 1201))
 	demisto.debug(f'Command being called is {demisto.command()}')
@@ -285,7 +284,7 @@ def main() -> None:
 
 		if demisto.command() == 'test-module':
 			# This is the call made when pressing the integration Test button.
-			result_test = test_module(client, close_reasons)
+			result_test = test_module(client)
 			return_results(result_test)
 		elif demisto.command() == "arcanna-get-jobs":
 			result_get_jobs = get_jobs(client)
@@ -306,7 +305,7 @@ def main() -> None:
 			result_get_event = get_event_status(client, default_job_id, demisto.args())
 			return_results(result_get_event)
 		elif demisto.command() == "arcanna-send-event-feedback":
-			result_send_feedback = send_event_feedback(client, default_job_id, close_reasons, demisto.args())
+			result_send_feedback = send_event_feedback(client, default_job_id, demisto.args())
 			return_results(result_send_feedback)
 		elif demisto.command() == "arcanna-get-feedback-field":
 			result_feedback_field = get_feedback_field(demisto.params())

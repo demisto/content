@@ -1,10 +1,12 @@
-Takes incident data and sends it to Arcanna.Ai for ML inference and automated decision
+Playbook takes incident data and sends it to Arcanna.Ai for ML inference and automated decision. Once decision is retrieved, manual input ( in this case )
+from analyst is added in as feedback and sent back to Arcanna.ai. Once Feedback is provided in the final steps of the playbook, an automated AI Training
+is triggered and finally the full record, that contains all Arcanna.ai added metadata, is retrieved back into the context
 
 ## Dependencies
 There are no dependencies on other playbooks
 
 ### Sub-playbooks
-
+GenericPolling
 
 ### Integrations
 This playbook uses ArcannaAi integration
@@ -13,8 +15,13 @@ This playbook uses ArcannaAi integration
 * PrepareArcannaRawJson
 
 ### Commands
+* arcanna-get-jobs
 * arcanna-send-event
 * arcanna-get-event-status
+* arcanna-get-decision
+* arcanna-send-event-feedback
+* arcanna-trigger-train
+* arcanna-export-event
 
 ## Playbook Inputs
 ---
@@ -29,4 +36,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Arcanna-Generic-Investigation](https://user-images.githubusercontent.com/6702878/124025997-cdeede80-d9f9-11eb-8faa-e297c7cd3ca7.png)
+![Arcanna-Generic-Investigation](https://github.com/demisto/content/assets/24822739/96220ef5-a3af-4ff7-bd0f-29336f8e1e02)

@@ -145,12 +145,6 @@ script:
     - name: event_id
       required: true
       description: Arcanna generated unique event id.
-    - name: retry_count
-      required: true
-      description: How many times command should be re-run in case of failure
-    - name: seconds_per_retry
-      required: true
-      description: Seconds to wait between retries
     outputs:
     - contextPath: Arcanna.Event.event_id
       description: Arcanna event id
