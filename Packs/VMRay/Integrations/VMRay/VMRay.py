@@ -477,7 +477,7 @@ def upload_sample_command():
     file_name = encode_file_name(file_obj['name'])
     file_path = file_obj['path']
     with open(file_path, 'rb') as f:
-        f.read()  # Load the file to memory, so large files can be uploaded
+        f.read()  # Load the file to memory, so large files could be uploaded
         files = {'sample_file': (file_name, f)}
         # Request call
         raw_response = submit(params, files=files)
