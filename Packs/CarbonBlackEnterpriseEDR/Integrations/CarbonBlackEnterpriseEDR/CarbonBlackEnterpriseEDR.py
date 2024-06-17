@@ -72,12 +72,14 @@ class Client(BaseClient):
         return self._http_request('POST', suffix_url, json_data=body)
 
     def alert_workflow_update_request(self, alert_id: str = None, state: str = None, comment: str = None,
-                                      remediation_state: str = None) -> dict:
-        suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/{alert_id}/workflow'
+                                      determination, time_range, start, end, closure_reason) -> dict:
+        suffix_url = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/workflow'
         body = assign_params(
+            criteria={'id': [alert_id]},
             state=state,
             comment=comment,
-            remediation_state=remediation_state
+            closure_reason=closure_reason,
+            
         )
 
         return self._http_request('POST', suffix_url, json_data=body)
@@ -441,7 +443,7 @@ class Client(BaseClient):
         suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
 
         return self._http_request('GET', suffix_url)
-
+    
 
 def test_module(client):
     """
@@ -516,8 +518,32 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     return results
 
 
+def run_polling_command(args: dict, cmd: str, search_function, results_function):
+    interval_in_secs = 60 # should  we get input from user?
+    if 'request_id' not in args:
+        # this is the first time
+        command_results = search_function(args)
+        outputs = command_results.outputs
+        request_id = outputs.get('request_id')
+        if outputs.get('status') != 'COMPLETED':
+            polling_args = {
+                'af_cookie': af_cookie,
+                'interval_in_seconds': interval_in_secs,
+                'polling': True,
+                **args
+            }
+            command_results.scheduled_command = ScheduledCommand(
+                command=cmd,
+                next_run_in_seconds=interval_in_secs,  # type: ignore
+                args=polling_args,
+                timeout_in_seconds=600
+            )
+            return command_results
+
+
+
 def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
-    
+        
     if not is_demisto_version_ge('6.2.0'):
         raise DemistoException('This command is not supported for your server version. Please update your server version to 6.2.0 or later')
     
@@ -535,7 +561,7 @@ def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
     
     #remediation_state = args.get('remediation_state')  # Changes do to new version of API
 
-    result = client.alert_workflow_update_request(alert_id, state, comment)
+    result = client.alert_workflow_update_request(alert_id, state, comment, determination, time_range, start, end, closure_reason)
 
     readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result, removeNull=True)
     outputs = {
