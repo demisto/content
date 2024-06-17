@@ -116,7 +116,7 @@ def main():  # pragma: no cover
         """ COMMANDS MANAGER / SWITCH PANEL """
         args: dict = demisto.args()
         params: dict = demisto.params()
-        # There're several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
+        # There are several options for tenant_id & auth_and_token_url due to the recent credentials set supoort enhancment.
         tenant_id: str = params.get('creds_tenant_id', {}).get('password', '') \
             or params.get('_tenant_id', '') \
             or params.get('tenant_id', '')
