@@ -25,7 +25,7 @@ def main():
     github_token = args.github_token
 
     print(
-        f"args received in Utils/update_contribution_pack_in_base_branch.py script: {pr_number=}, {username=}, {repo=}, {branch=}"
+        f"args received in .circleci/update_contribution_pack_in_base_branch.py script: {pr_number=}, {username=}, {repo=}, {branch=}"
     )
 
     packs_dir_names = get_files_from_github(
