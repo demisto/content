@@ -700,10 +700,10 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    SetSearch([string]$search_name, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$add_exchange_location,
-              [string[]]$add_exchange_location_exclusion, [string[]]$add_public_folder_location, [string[]]$add_share_point_location, [string[]]$add_share_point_location_exclusion,
-              [string[]]$remove_exchange_location, [string[]]$remove_exchange_location_exclusion, [string[]]$remove_public_folder_location, [string[]]$remove_share_point_location,
-              [string[]]$remove_share_point_location_exclusion) {
+    SetSearch([string]$search_name, [string]$kql, [string]$description, [bool]$allow_not_found_exchange_locations, [string[]]$exchange_location_add,
+              [string[]]$exchange_location_exclusion_add, [string[]]$public_folder_location_add, [string[]]$share_point_location_add, [string[]]$share_point_location_exclusion_add,
+              [string[]]$exchange_location_remove, [string[]]$exchange_location_exclusion_remove, [string[]]$public_folder_location_remove, [string[]]$share_point_location_remove,
+              [string[]]$share_point_location_exclusion_remove) {
 
         # Establish session to remote
         $this.CreateDelegatedSession("Set-ComplianceSearch")
@@ -713,16 +713,16 @@ class SecurityAndComplianceClient {
             "ContentMatchQuery" = $kql
             "Description" = $description
             "AllowNotFoundExchangeLocationsEnabled" = $allow_not_found_exchange_locations
-            "AddExchangeLocation" = $add_exchange_location
-            "AddExchangeLocationExclusion" = $add_exchange_location_exclusion
-            "PublicFolderLocation" = $add_public_folder_location
-            "AddSharePointLocation" = $add_share_point_location
-            "AddSharePointLocationExclusion" = $add_share_point_location_exclusion
-            "RemoveExchangeLocation" = $remove_exchange_location
-            "RemoveExchangeLocationExclusion" = $remove_exchange_location_exclusion
-            "RemovePublicFolderLocation" = $remove_public_folder_location
-            "RemoveSharePointLocation" = $remove_share_point_location
-            "RemoveSharePointLocationExclusion" = $remove_share_point_location_exclusion
+            "AddExchangeLocation" = $exchange_location_add
+            "AddExchangeLocationExclusion" = $exchange_location_exclusion_add
+            "PublicFolderLocation" = $public_folder_location_add
+            "AddSharePointLocation" = $share_point_location_add
+            "AddSharePointLocationExclusion" = $share_point_location_exclusion_add
+            "RemoveExchangeLocation" = $exchange_location_remove
+            "RemoveExchangeLocationExclusion" = $exchange_location_exclusion_remove
+            "RemovePublicFolderLocation" = $public_folder_location_remove
+            "RemoveSharePointLocation" = $share_point_location_remove
+            "RemoveSharePointLocationExclusion" = $share_point_location_exclusion_remove
         }
         Set-ComplianceSearch @cmd_params
         # Close session to remote
@@ -743,34 +743,34 @@ class SecurityAndComplianceClient {
             .PARAMETER allow_not_found_exchange_locations
             Whether to include mailboxes other than regular user mailboxes in the compliance search.
 
-            .PARAMETER add_exchange_location
+            .PARAMETER exchange_location_add
             Add mailboxes to include.
 
-            .PARAMETER add_exchange_location_exclusion
+            .PARAMETER exchange_location_exclusion_add
             Add mailboxes to exclude when you use the value "All" for the exchange_location parameter.
 
-            .PARAMETER add_public_folder_location
+            .PARAMETER public_folder_location_add
             Add public folders to include.
 
-            .PARAMETER add_share_point_location
+            .PARAMETER share_point_location_add
             Add sharePoint online sites to include. You identify the site by its URL value.
 
-            .PARAMETER add_share_point_location_exclusion
+            .PARAMETER share_point_location_exclusion_add
             Add sharePoint online sites to exclude when you use the value "All" for the SharePointLocation parameter. You identify the site by its URL value.
 
-            .PARAMETER remove_exchange_location
+            .PARAMETER exchange_location_remove
             Remove mailboxes to include.
 
-            .PARAMETER remove_exchange_location_exclusion
+            .PARAMETER exchange_location_exclusion_remove
             Remove mailboxes to exclude when you use the value "All" for the exchange_location parameter.
 
-            .PARAMETER remove_public_folder_location
+            .PARAMETER public_folder_location_remove
             Remove public folders to include.
 
-            .PARAMETER remove_share_point_location
+            .PARAMETER share_point_location_remove
             Remove sharePoint online sites to include. You identify the site by its URL value.
 
-            .PARAMETER remove_share_point_location_exclusion
+            .PARAMETER share_point_location_exclusion_remove
             Remove sharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or share_point_location argument. You identify the site by its URL value.
 
             .EXAMPLE
@@ -1328,19 +1328,19 @@ class SecurityAndComplianceClient {
     }
 
 
-    CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
-        [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
+    CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$exchange_locations_add, [string[]] $sharepoint_locations_add, [string[]]$public_locations_add,
+        [string[]]$exchange_locations_remove, [string[]]$sharepoint_locations_remove, [string[]]$public_locations_remove, [string]$comment){
         $this.CreateDelegatedSession("Set-CaseHoldPolicy")
       $cmd_params = @{}
   
       if ($identity) { $cmd_params.Identity = $identity }
       if ($enabled) { $cmd_params.Enabled = $enabled }
-      if ($add_exchange_locations) { $cmd_params.AddExchangeLocation = $add_exchange_locations }
-      if ($add_sharepoint_locations) { $cmd_params.AddSharePointLocation = $add_sharepoint_locations }
-      if ($add_public_locations) { $cmd_params.AddPublicFolderLocation = $add_public_locations }
-      if ($remove_exchange_locations) { $cmd_params.RemoveExchangeLocation = $remove_exchange_locations }
-      if ($remove_sharepoint_locations) { $cmd_params.RemoveSharePointLocation = $remove_sharepoint_locations }
-      if ($remove_public_locations) { $cmd_params.RemovePublicFolderLocation = $remove_public_locations }
+      if ($exchange_locations_add) { $cmd_params.AddExchangeLocation = $exchange_locations_add }
+      if ($sharepoint_locations_add) { $cmd_params.AddSharePointLocation = $sharepoint_locations_add }
+      if ($public_locations_add) { $cmd_params.AddPublicFolderLocation = $public_locations_add }
+      if ($exchange_locations_remove) { $cmd_params.RemoveExchangeLocation = $exchange_locations_remove }
+      if ($sharepoint_locations_remove) { $cmd_params.RemoveSharePointLocation = $sharepoint_locations_remove }
+      if ($public_locations_remove) { $cmd_params.RemovePublicFolderLocation = $public_locations_remove }
       if ($comment) { $cmd_params.Comment = $comment }
 
         Set-CaseHoldPolicy @cmd_params
@@ -1544,20 +1544,20 @@ function SetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
     if ($kwargs.allow_not_found_exchange_locations) {
         $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
     }
-    $add_exchange_location = ArgToList $kwargs.add_exchange_location
-    $add_exchange_location_exclusion = ArgToList $kwargs.add_exchange_location_exclusion
-    $add_public_folder_location = ArgToList $kwargs.add_public_folder_location
-    $add_share_point_location = ArgToList $kwargs.add_share_point_location
-    $add_share_point_location_exclusion = ArgToList $kwargs.add_share_point_location_exclusion
-    $remove_exchange_location = ArgToList $kwargs.remove_exchange_location
-    $remove_exchange_location_exclusion = ArgToList $kwargs.remove_exchange_location_exclusion
-    $remove_public_folder_location = ArgToList $kwargs.remove_public_folder_location
-    $remove_share_point_location = ArgToList $kwargs.remove_share_point_location
-    $remove_share_point_location_exclusion = ArgToList $kwargs.remove_share_point_location_exclusion
+    $exchange_location_add = ArgToList $kwargs.exchange_location_add
+    $exchange_location_exclusion_add = ArgToList $kwargs.exchange_location_exclusion_add
+    $public_folder_location_add = ArgToList $kwargs.public_folder_location_add
+    $share_point_location_add = ArgToList $kwargs.share_point_location_add
+    $share_point_location_exclusion_add = ArgToList $kwargs.share_point_location_exclusion_add
+    $exchange_location_remove = ArgToList $kwargs.exchange_location_remove
+    $exchange_location_exclusion_remove = ArgToList $kwargs.exchange_location_exclusion_remove
+    $public_folder_location_remove = ArgToList $kwargs.public_folder_location_remove
+    $share_point_location_remove = ArgToList $kwargs.share_point_location_remove
+    $share_point_location_exclusion_remove = ArgToList $kwargs.share_point_location_exclusion_remove
     # Set operation doesn't return any output
     $client.SetSearch($kwargs.search_name, $kwargs.kql, $kwargs.description, $allow_not_found_exchange_locations,
-                      $add_exchange_location, $add_exchange_location_exclusion, $add_public_folder_location, $add_share_point_location, $add_share_point_location_exclusion,
-                      $remove_exchange_location, $remove_exchange_location_exclusion, $remove_public_folder_location, $remove_share_point_location, $remove_share_point_location_exclusion)
+                      $exchange_location_add, $exchange_location_exclusion_add, $public_folder_location_add, $share_point_location_add, $share_point_location_exclusion_add,
+                      $exchange_location_remove, $exchange_location_exclusion_remove, $public_folder_location_remove, $share_point_location_remove, $share_point_location_exclusion_remove)
     # Raw response
     $raw_response = @{}
     # Human readable
@@ -1866,16 +1866,16 @@ function CaseHoldRuleDeleteCommand([SecurityAndComplianceClient]$client, [hashta
 
 function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs){
     $enabled = ConvertTo-Boolean $kwargs.enabled
-    $add_exchange_locations = ArgToList $kwargs.add_exchange_locations
-    $add_sharepoint_locations = ArgToList $kwargs.add_sharepoint_locations
-    $add_public_locations = ArgToList $kwargs.add_public_locations
-    $remove_exchange_locations = ArgToList $kwargs.remove_exchange_locations
-    $remove_sharepoint_locations = ArgToList $kwargs.remove_sharepoint_locations
-    $remove_public_locations = ArgToList $kwargs.remove_public_locations
+    $exchange_locations_add = ArgToList $kwargs.exchange_locations_add
+    $sharepoint_locations_add = ArgToList $kwargs.sharepoint_locations_add
+    $public_locations_add = ArgToList $kwargs.public_locations_add
+    $exchange_locations_remove = ArgToList $kwargs.exchange_locations_remove
+    $sharepoint_locations_remove = ArgToList $kwargs.sharepoint_locations_remove
+    $public_locations_remove = ArgToList $kwargs.public_locations_remove
 
-    $client.CaseHoldPolicySet($kwargs.identity, $enabled, $add_exchange_locations,
-                                $add_sharepoint_locations, $add_public_locations, $remove_exchange_locations,
-                                $remove_sharepoint_locations, $remove_public_locations, $kwargs.comment)
+    $client.CaseHoldPolicySet($kwargs.identity, $enabled, $exchange_locations_add,
+                                $sharepoint_locations_add, $public_locations_add, $exchange_locations_remove,
+                                $sharepoint_locations_remove, $public_locations_remove, $kwargs.comment)
 
     $raw_response = @{}
     # Human readable
