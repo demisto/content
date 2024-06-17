@@ -2,7 +2,7 @@
     "name": "VMRay Analyzer",
     "description": "Analyze files and URLs using the VMRay Platform for accurate threat intelligence and high-quality IOCs.",
     "support": "partner",
-    "currentVersion": "1.1.15",
+    "currentVersion": "1.1.16",
     "author": "VMRay",
     "url": "https://www.vmray.com/",
     "email": "support@vmray.com",
