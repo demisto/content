@@ -707,19 +707,20 @@ def get_events_command(
         start_date_arg=start_date,
         end_date_arg=end_date
     )
-    events_with_time = {event_type: add_time_field(events) for event_type, events in event_result.as_dict().items() if events}
+    events_with_time = {event_type: add_time_field(events[:limit])
+                        for event_type, events in event_result.as_dict().items() if events}
 
     results = [
         CommandResults(
             readable_output=tableToMarkdown(f"Jamf Protect {event_type} Events", events),
-            raw_response=events[:limit]
+            raw_response=events
         )
         for event_type, events in events_with_time.items()
     ]
     combined_events = (
-        events_with_time['Alert']
-        + events_with_time['Audit']
-        + events_with_time['Computer']
+        events_with_time.get('Alert', [])
+        + events_with_time.get('Audit', [])
+        + events_with_time.get('Computer', [])
     )
     if combined_events:
         return combined_events, results
