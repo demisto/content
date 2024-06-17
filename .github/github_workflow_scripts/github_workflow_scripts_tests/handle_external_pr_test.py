@@ -98,7 +98,7 @@ def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
     mocker.patch.object(Checkout, '__exit__', return_value=None)
     mocker.patch.object(os, 'getenv', return_value=fork_owner)
 
-    with ChangeCWD('Utils/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
+    with ChangeCWD('.github/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
         assert get_packs_support_level_label(
             file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
         ) == 'Xsoar Support Level'
@@ -122,7 +122,7 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
 
     mocker.patch.object(Checkout, '__init__', return_value=Exception('Error'))
 
-    with ChangeCWD('Utils/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
+    with ChangeCWD('.github/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
         assert get_packs_support_level_label(
             file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
         ) == 'Xsoar Support Level'
