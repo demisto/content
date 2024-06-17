@@ -186,7 +186,7 @@ script:
       default: false
     - name: not_after
       isArray: false
-      description: End date of certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
+      description: End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
       required: false
       secret: false
       default: false
