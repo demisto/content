@@ -61,5 +61,5 @@ jobs:
           CORTEX_XSOAR_SLACK_TOKEN: ${{ secrets.CORTEX_XSOAR_SLACK_TOKEN }}
         run: |
           echo "Sending notification about External PR ${{ github.event.pull_request.html_url }}"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run ./send_slack_message.py
