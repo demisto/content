@@ -52,7 +52,7 @@ def test_fetch_when_last_run_is_time(mocker):
         RedCanary, "get_unacknowledged_detections", return_value=data["data"]
     )
     mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
-    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict, 2)
 
     assert len(incidents) == number_of_incidents
     assert last_run["time"] == latest_time_of_occurrence_of_incidents1
@@ -256,17 +256,17 @@ def test_fetch_multiple_times_when_already_fetched_incident_keep(mocker):
     mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
 
     # fetching for the first time
-    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict, 2)
     assert len(incidents) == 3
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
     # fetching for the second time
-    last_run, incidents = RedCanary.fetch_incidents(last_run)
+    last_run, incidents = RedCanary.fetch_incidents(last_run, 2)
     assert len(incidents) == 0
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
     # fetching for the third time
-    last_run, incidents = RedCanary.fetch_incidents(last_run)
+    last_run, incidents = RedCanary.fetch_incidents(last_run, 2)
     assert len(incidents) == 0
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
@@ -292,13 +292,13 @@ def test_fetch_multiple_times_with_new_incidents(mocker):
     mocker.patch.object(RedCanary, "get_full_timeline", return_value=None)
 
     # fetching for the first time
-    last_run, incidents = RedCanary.fetch_incidents(last_run_dict)
+    last_run, incidents = RedCanary.fetch_incidents(last_run_dict, 2)
     assert len(incidents) == 3
     assert last_run["time"] == "2019-12-30T22:00:50Z"
 
     # fetching for the second time
     mocker.patch.object(RedCanary, "get_unacknowledged_detections", return_value=data2["data"])
-    last_run, incidents = RedCanary.fetch_incidents(last_run)
+    last_run, incidents = RedCanary.fetch_incidents(last_run, 2)
     # only one incidents is being created out of the 2 that were fetched
     assert len(incidents) == 1
     assert last_run["time"] == latest_time_of_occurrence_of_incidents2

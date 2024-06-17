@@ -48,8 +48,8 @@ def test_aws_secrets_manager_secret_list_command(mocker):
     aws_client = create_client()
     mocker.patch.object(AWSClient, "aws_session", return_value=Boto3Client())
     mocker.patch.object(Boto3Client, 'list_secrets',
-                        return_value={'SecretList': [{'ARN': 'arn:aws:secretsmanager:eu-central-1:654338056632:secret:'
-                                                             'test_for_moishy-fVYXb6', 'Name': 'test_for_moishy',
+                        return_value={'SecretList': [{'ARN': 'arn:aws:secretsmanager:eu-central-1:123456789012:secret:'
+                                                             'test_account', 'Name': 'test_for_moishy',
                                                       'Description': 'new description', 'LastChangedDate': None,
                                                       'Tags': [], 'SecretVersionsToStages':
                                                           {'01cba660-28be-45d7-8597-d1ab295b0f35': ['AWSCURRENT'],

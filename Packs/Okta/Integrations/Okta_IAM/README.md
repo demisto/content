@@ -423,6 +423,7 @@ Gets logs by providing optional filters.
 | since | Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
 | until | Filters the upper time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z. | Optional | 
 | sortOrder | The order of the returned events. Can be "ASCENDING" or "DESCENDING". The default is "ASCENDING". Possible values are: ASCENDING, DESCENDING. Default is ASCENDING. | Optional | 
+| limit | The maximum number of results to return. The default and maximum is 100. | Optional | 
 
 
 #### Context Output

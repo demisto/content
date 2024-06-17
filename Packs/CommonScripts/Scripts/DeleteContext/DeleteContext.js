@@ -95,7 +95,7 @@ if (shouldDeleteAll) {
     return {
         Type: entryTypes.note,
         Contents: message,
-        ContentsFormat: formats.json,
+        ContentsFormat: formats.text,
         HumanReadable: message,
         ReadableContentsFormat: formats.markdown,
         EntryContext: keysToKeepObj
@@ -146,7 +146,7 @@ if (shouldDeleteAll) {
     return {
         Type: entryTypes.note,
         Contents: message,
-        ContentsFormat: formats.json,
+        ContentsFormat: formats.text,
         HumanReadable: message,
         ReadableContentsFormat: formats.markdown,
         EntryContext: keysToKeepObj

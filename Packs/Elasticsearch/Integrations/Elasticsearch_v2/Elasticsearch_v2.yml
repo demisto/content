@@ -59,6 +59,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
 - display: Raw Query
   name: raw_query
   type: 12
@@ -388,6 +389,7 @@ script:
   subtype: python3
   type: python
   ismappable: true
+autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
 tests:

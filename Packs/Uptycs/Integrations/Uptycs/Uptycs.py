@@ -12,7 +12,6 @@ import jwt
 from datetime import datetime, timedelta
 import requests
 from urllib.parse import unquote
-from typing import List
 from signal import signal, SIGPIPE, SIG_DFL  # type: ignore[no-redef]
 signal(SIGPIPE, SIG_DFL)  # type: ignore[operator]
 
