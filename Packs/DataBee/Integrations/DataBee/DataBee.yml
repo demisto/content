@@ -662,7 +662,7 @@ script:
 
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.98471
   isfetch: true
   script: ""
 defaultmapperin: DataBee - Incoming Mapper
