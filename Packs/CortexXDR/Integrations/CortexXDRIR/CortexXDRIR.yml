@@ -3079,9 +3079,9 @@ script:
       description: The last page from which we bring the alerts.
       isArray: true
       name: limit
-    - description: Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
+    - description: Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
       name: start_time
-    - description: Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z).
+    - description: Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss).
       name: end_time
     - auto: PREDEFINED
       description: Whether the alert is starred or not.
