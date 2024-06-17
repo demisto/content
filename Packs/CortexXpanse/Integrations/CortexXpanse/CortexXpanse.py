@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 
 
 from typing import Any, cast
+from datetime import datetime, timedelta
 
 import urllib3
 
@@ -317,6 +318,35 @@ class Client(BaseClient):
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def is_timestamp_within_days(timestamp, days: int):
+    """_summary_
+
+    Args:
+        timestamp (_type_): _description_
+        days (int): _description_
+        debug_msg (str): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    timestamp = timestamp.replace(" ", "").replace("Z", "")
+    date_part, time_part = timestamp.split('T')
+    main_time, fractional_seconds = time_part.split('.')
+    fractional_seconds = fractional_seconds[:6]
+    timestamp = f"{date_part}T{main_time}.{fractional_seconds}"
+    target_time = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
+    
+    current_time = datetime.now()
+    time_difference = current_time - target_time
+    
+    if time_difference >= timedelta(days=days):
+        demisto.debug(f"The timestamp was not within the last {days} days.")
+        return False
+    else:
+        demisto.debug(f"The timestamp was within the last {days} days.")
+        return True
 
 
 def append_search_param(search_params, field, operator, value):
@@ -1363,16 +1393,50 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
 
     domain_data_list: list[dict[str, Any]] = []
     command_results = []
-    for domain in domains:
-        search_params = [{"field": "name", "operator": "eq", "value": domain}]
-        domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
-        formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
-        if len(formatted_response) > 0:
-            formatted_response = formatted_response[0]
-        else:
-            continue
+    is_xsoar_timestamp_within_three_days = None
+    markdown = None
+    xsoar_indicators = []
 
-        formatted_response['domain'] = domain
+    for domain in domains:
+        search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:Domain")
+        xsoar_indicators = search_xsoar_indicator_results.get('iocs')
+        xsoar_domains_of_indicators = [entry['value'] for entry in xsoar_indicators if 'value' in entry]
+        
+        if isinstance(xsoar_indicators, list) and domain in xsoar_domains_of_indicators:
+            xsoar_indicators = [entry for entry in xsoar_indicators if entry.get('value') == domain]
+            if len(xsoar_indicators) == 1:
+                indicator_timestamp = xsoar_indicators[0].get('insightCache').get('modified')
+                is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
+        elif isinstance(xsoar_indicators, dict) and xsoar_indicators.get('value') == domain:
+            indicator_timestamp = xsoar_indicators.get('insightCache').get('modified')
+            is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
+
+        print(f"check for timestamp: {not is_xsoar_timestamp_within_three_days}")
+
+        if is_xsoar_timestamp_within_three_days or not xsoar_indicators:
+            if isinstance(xsoar_indicators, list):
+                indicator_data = xsoar_indicators[0].get('insightCache')
+            else:
+                indicator_data = xsoar_indicators.get('insightCache')
+            domain_data_list.append(indicator_data)
+            print("using demisto search indicators")
+            markdown = tableToMarkdown("Existing domain indicator was found", {"Domain": domain})
+        elif not is_xsoar_timestamp_within_three_days:
+            print("Making API call")
+            search_params = [{"field": "name", "operator": "eq", "value": domain}]
+            domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
+            formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
+            if len(formatted_response) > 0:
+                formatted_response = formatted_response[0]
+            else:
+                continue
+
+            formatted_response['domain'] = domain
+            
+            domain_data_list.append({
+                k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
+            })
+            markdown = tableToMarkdown("New Domain indicator was found", {"Domain": domain})
 
         if domain.startswith('*.'):
             indicator_type = DBotScoreType.DOMAINGLOB
@@ -1390,13 +1454,9 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             )
         )
         command_results.append(CommandResults(
-            readable_output=tableToMarkdown("New Domain indicator was found", {"Domain": domain}),
+            readable_output=markdown,
             indicator=domain_standard_context
         ))
-
-        domain_data_list.append({
-            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
-        })
 
     readable_output = tableToMarkdown(
         'Xpanse Domain List', domain_data_list) if len(domain_data_list) > 0 else "## No Domains found"
