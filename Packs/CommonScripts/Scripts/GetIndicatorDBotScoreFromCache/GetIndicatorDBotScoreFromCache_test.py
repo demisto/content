@@ -1,5 +1,6 @@
 import GetIndicatorDBotScoreFromCache
 import demistomock as demisto
+import pytest
 
 
 def prepare_mocks(mocker, values, cache):
@@ -160,6 +161,25 @@ def test_query_values(mocker):
     ]
 
 
+def test_query_values_escape_chars(mocker):
+    """
+    Given:
+        An array of indicator value with special chars that need escape
+    When:
+        Running GetIndicatorDBotScoreFromCache script.
+    Then:
+        Ensure all values in the query to demisto.searchIndicators are correct.
+    """
+    mocker.patch.object(demisto, "args", return_value={"value": ["\nhello\rhow\tare"]})
+    mocker.patch.object(demisto, "searchIndicators")
+    GetIndicatorDBotScoreFromCache.main()
+    args_list = demisto.searchIndicators.call_args_list
+    call_query = args_list[0][1]['query']
+    assert call_query in [
+        'value:("\\nhello\\rhow\\tare")'
+    ]
+
+
 def test_no_iocs_returned_from_search_indicators(mocker):
     """
     Given:
@@ -179,3 +199,24 @@ def test_no_iocs_returned_from_search_indicators(mocker):
     expected_result = set()
     indicators_results = return_results_calls[0][1]
     assert {i["Indicator"] for i in indicators_results} == expected_result
+
+
+@pytest.mark.parametrize('input, expected_res', [("hello\nhow", "hello\\nhow"),
+                                                 ('a', 'a'),
+                                                 ('', ''),
+                                                 ('\t\r\n', '\\t\\r\\n'),
+                                                 ('([', '\(\['),
+                                                 ('^ASDF:', '\^ASDF\:'),
+                                                 ('aaa\gg123:', r'aaa\\gg123\:'),
+                                                 ('"', '\\"')])
+def test_escape_special_characters(input, expected_res):
+    """
+    Given:
+        A string value.
+    When:
+        parsing the indicator value
+    Then:
+        Ensure a backslash is added for the chars \n, \t, \r.
+    """
+    from GetIndicatorDBotScoreFromCache import escape_special_characters
+    assert expected_res == escape_special_characters(input)
