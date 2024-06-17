@@ -1879,7 +1879,7 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
 
     $raw_response = @{}
     # Human readable
-    $human_readable = "$script:INTEGRATION_NAME - case hold policy  **$($kwargs.Identity)** modified!"
+    $human_readable = "$script:INTEGRATION_NAME - case hold policy  **$($kwargs.identity)** modified!"
     # Entry context
     $entry_context = @{}
 
