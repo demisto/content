@@ -7998,6 +7998,7 @@ def string_to_table_header(string):
       :return: The converted string
       :rtype: ``str``
     """
+    a=5
     if isinstance(string, STRING_OBJ_TYPES):
         return " ".join(word.capitalize() for word in string.replace("_", " ").split())
     else:
