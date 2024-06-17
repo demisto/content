@@ -120,6 +120,10 @@ script:
       name: page_size
     - description: The page number to return.
       name: page
+    - name: management_groups
+      description: "Azure management groups against which to execute the query. Example: 'mg1, mg2'"
+    - name: subscriptions
+      description: "Azure subscriptions against which to execute the query. Example: 'sub1, sub2'"
     - name: query
       required: true
       description: 'The query for the Azure Resource Graph to execute. The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/'

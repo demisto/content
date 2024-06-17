@@ -34,8 +34,15 @@ class AzureResourceGraphClient:
             params=self.default_params,
         )
 
-    def query_resources(self, query: str, paging_options: dict):
+    def query_resources(self, query: str, paging_options: dict, subscriptions: list, management_groups: list):
         request_data = {"query": query, "options": paging_options}
+        
+        if subscriptions:
+            request_data["subscriptions"] = subscriptions
+        
+        if management_groups:
+            request_data["managementGroups"] = management_groups
+
         return self.ms_client.http_request(
             method='POST',
             full_url=f"{self.server}/providers/Microsoft.ResourceGraph/resources",
@@ -48,7 +55,19 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     limit = arg_to_number(args.get('limit'))
     page_size = arg_to_number(args.get('page_size'))
     page_number = arg_to_number(args.get('page'))
+    management_groups = args.get('management_groups')
+    subscriptions = args.get('subscriptions')
+
+    if not isinstance(subscriptions, list):
+        subscriptions = subscriptions.split(',')
+        subscriptions = [sub_id.strip() for sub_id in subscriptions]
+
+    if not isinstance(management_groups, list):
+        management_groups = management_groups.split(',')
+        management_groups = [management_group_id.strip() for management_group_id in management_groups]
+
     query = args.get('query')
+
     list_of_query_results = []
     total_records = 0
     
@@ -74,7 +93,10 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
             else:
                 params = {}
             
-            response = client.query_resources(query=query, paging_options=params)
+            response = client.query_resources(query=query,
+                                              paging_options=params,
+                                              management_groups=management_groups,
+                                              subscriptions=subscriptions)
 
             list_of_query_results = response.get('data')
             query_results.extend(list_of_query_results)
