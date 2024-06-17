@@ -7,7 +7,7 @@ from itertools import zip_longest
 
 from CoreIRApiModule import *
 
-# Disable insecure warnings
+# Disable insecure warnings test
 urllib3.disable_warnings()
 
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"

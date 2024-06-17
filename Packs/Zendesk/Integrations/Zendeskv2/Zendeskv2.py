@@ -950,7 +950,7 @@ class ZendeskClient(BaseClient):
         """
 
         Args:
-            ticket (dict): The fsssetched ticket.
+            ticket (dict): The fetched ticket.
 
         Returns (list): all the attachment ids for a ticket
 
