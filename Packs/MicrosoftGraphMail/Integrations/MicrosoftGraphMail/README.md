@@ -41,14 +41,18 @@ This is the default integration for this content pack when configured by the Dat
 
 4. Azure cloud options
 
-    | Azure Cloud | Description                                                              |
-    |-------------|--------------------------------------------------------------------------|
-    | Worldwide   | The publicly accessible Azure Cloud                                      |
-    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)                 |
-    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High)       |
-    | DoD         | Azure cloud for the USA Department of Defense (DoD)                      |
-    | Germany     | Azure cloud for the German Government                                    |
-    | China       | Azure cloud for the Chinese Government                                   |
+    | Azure Cloud | Description                                                        |
+    |-------------|--------------------------------------------------------------------|
+    | Worldwide   | The publicly accessible Azure Cloud                                |
+    | US GCC      | Azure cloud for the USA Government Cloud Community (GCC)           |
+    | US GCC-High | Azure cloud for the USA Government Cloud Community High (GCC-High) |
+    | DoD         | Azure cloud for the USA Department of Defense (DoD)                |
+    | Germany     | Azure cloud for the German Government                              |
+    | China       | Azure cloud for the Chinese Government                             |
+    | Custom      | Custom endpoint configuration to the Azure cloud. See note below.  |
+
+   - Note: In most cases, setting Azure cloud is preferred to setting Azure AD endpoint. Only use it in cases where a custom URL is required for accessing a national cloud.
+
 
 5. Click **Test** to validate the URLs, token, and connection.
 
