@@ -2101,6 +2101,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     demisto.debug(f"Last run before the fetch run: {last_run}")
     incidents: list[dict] = []
 
+    last_run_notable_users = {}
     if args.get('is_fetch_notable_users', False):
         incidents, last_run_notable_users = fetch_notable_users(client, args, last_run.get('notable_users', {}))
         demisto.debug(f'After fetch notable users, there are {len(incidents)} incidents')
