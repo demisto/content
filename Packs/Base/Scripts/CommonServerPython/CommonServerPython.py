@@ -200,6 +200,7 @@ logging.raiseExceptions = False
 try:
     import requests
     from requests.adapters import HTTPAdapter
+    from requests.models import RequestEncodingMixin
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set, cast
 
@@ -9053,6 +9054,10 @@ if 'requests' in sys.modules:
                     timeout = self.timeout
                 if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
+
+                # Need to read the files (f.read()) to be able to send large files
+                # without getting a timeout error
+                RequestEncodingMixin._encode_files(files, {})
 
                 # Execute
                 res = self._session.request(
