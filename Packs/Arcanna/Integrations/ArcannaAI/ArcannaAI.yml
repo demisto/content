@@ -9,7 +9,7 @@ configuration:
   type: 0
   required: true
   additionalinfo: URL for Arcanna REST API
-- display: ""
+- display: "Authentication"
   name: credentials
   type: 9
   required: false
@@ -21,11 +21,18 @@ configuration:
   required: false
   hidden: true
   type: 4
+  deprecated: true
 - display: SSL Certificate verification
   name: ssl_verification
   defaultvalue: "false"
   type: 8
   required: false
+- display: Insecure connection
+  name: insecure
+  defaultvalue: "true"
+  type: 8
+  hidden: true
+  deprecated: true
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -35,12 +42,14 @@ configuration:
   type: 12
   required: false
   hidden: true
+  deprecated: true
   defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
 - display: Alert closing reason
   name: closing_reason_field
   type: 0
   required: false
   hidden: true
+  deprecated: true
   defaultvalue: closeReason
   additionalinfo: ( Deprecated )This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
 - display: Default Arcanna Job Id

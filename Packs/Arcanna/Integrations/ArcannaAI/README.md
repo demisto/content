@@ -126,6 +126,118 @@ Sends a raw event to Arcanna
 
 >## {'event_id': '12023636421762', 'job_id': 1202, 'ingest_timestamp': '2021-09-02T09:46:22.363642Z', 'status': 'Pending inference', 'error_message': ''}
 
+
+### arcanna-trigger-train
+***
+Trigger AI Train for specified Arcanna.ai Job.
+
+#### Base Command
+
+`arcanna-trigger-train`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Job ID to trigger train for. | Required |
+| username | Username for audit. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.Train.status | String | Action status. |
+| Arcanna.Train.error_message | String | Message in case of error. |
+
+#### Command Example
+```!arcanna-trigger-train job_id="1201" username="admin"```
+
+#### Context Example
+```json
+{
+  "status": "OK",
+  "error_message": ""
+}
+```
+#### Human Readable Output
+
+> ## Arcanna trigger train results: {'status': 'OK', 'error_message': ''}
+
+
+### arcanna-get-decision-set
+***
+Retrieve avaiable decision points for specified AI Job.
+
+#### Base Command
+
+`arcanna-get-decision-set`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Job ID to use for exporting event. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.Event.decision_set | List | Available decisions for specified AI Job. |
+
+#### Command Example
+```!arcanna-get-decision-set job_id="1201"```
+
+#### Context Example
+```json
+{
+  "decision_set": ["Drop", "Escalate"]
+}
+```
+#### Human Readable Output
+
+> ## Arcanna get decision set results: {'decision_set': ['Drop','Escalate']}
+
+
+
+### arcanna-export-event
+***
+Export full event with metadata from Arcanna.ai based on specified Job ID and Event ID.
+
+
+#### Base Command
+
+`arcanna-export-event`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Job ID to use for exporting event. | Required |
+| event_id | Event ID to use for exporting event. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Arcanna.Event.arcanna_event | unknown | Full export for specified event. |
+
+#### Command Example
+```!arcanna-export-event job_id="1201" event_id="12011938471583"```
+
+#### Context Example
+```json
+{
+  "result": "Escalate with Priority",
+  "metadata": {
+    "id": "12011938471583",
+    ...
+  }
+  ... 
+}
+```
+
+#### Human Readable Output
+
+> ## Arcanna export event results: {'result': 'Escalate with Priority', 'metadata': {'id': '12011938471583', .. }, ..}
+
+
 ### arcanna-get-event-status
 ***
 Retrieves Arcanna Inference result.
@@ -153,7 +265,7 @@ Retrieves Arcanna Inference result.
 | Arcanna.Event.status | String | Arcanna event status. | 
 | Arcanna.Event.result_label | String | Arcanna event result label |
 | Arcanna.Event.is_duplicated | boolean | Deprecated. Arcanna signalling if event is duplicated by another alert. |
-| Arcanna.Event.confidence_level | Number | Deprecated. Arcanna ML confidence_level |  
+| Arcanna.Event.confidence_level | Number | Deprecated. Arcanna ML confidence_level |
 | Arcanna.Event.confidence_score | Number | Arcanna ML confidence_score |
 | Arcanna.Event.bucket_state | String | Flag to indicate the current event's state in the AI Model |
 | Arcanna.Event.outlier | boolean | Arcanna signalling if event is an outlier based on historical data | 

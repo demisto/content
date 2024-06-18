@@ -303,7 +303,7 @@ tasks:
       version: -1
       name: arcanna-get-decision-set
       script: Arcanna.AI|||arcanna-get-decision-set
-      description: 
+      description: "" 
       type: regular
       iscommand: true
       brand: Arcanna.AI
