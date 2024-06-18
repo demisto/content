@@ -67,7 +67,7 @@ Creates a Certificate Signing Request (CSR) and its corresponding private key. T
 {
     "InfoFile": [
         {
-            "EntryID": "2158@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+            "EntryID": "2187@a48e3cfd-a079-4895-89a7-4fac11b8143d",
             "Extension": "pem",
             "Info": "application/x-x509-ca-cert",
             "Name": "CSR.pem",
@@ -75,7 +75,7 @@ Creates a Certificate Signing Request (CSR) and its corresponding private key. T
             "Type": "PEM certificate request"
         },
         {
-            "EntryID": "2159@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+            "EntryID": "2188@a48e3cfd-a079-4895-89a7-4fac11b8143d",
             "Extension": "zip",
             "Info": "application/zip",
             "Name": "privateKey.zip",
@@ -513,6 +513,152 @@ Returns a list of external CA certificates. The results can be filtered, using t
 | CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
 | CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
 
+#### Command example
+```!ciphertrust-external-ca-list```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "ExternalCA": [
+            {
+                "account": "kylo:kylo:admin:accounts:kylo",
+                "createdAt": "2024-06-13T16:26:17.877709Z",
+                "id": "123e0a83-63d3-4632-925b-e78ddbfc7774",
+                "issuer": "/CN=ui_test",
+                "name": "test_ui",
+                "notAfter": "2025-06-13T16:20:50Z",
+                "notBefore": "2024-06-13T16:20:50Z",
+                "purpose": {
+                    "client_authentication": "Disabled",
+                    "user_authentication": "Disabled"
+                },
+                "serialNumber": "22416116914186521030446027138329400040",
+                "sha1Fingerprint": "999F0159EB3ADB9E2C2591BE19DF0964075ECB77",
+                "sha256Fingerprint": "17E54883786AD97D5BFD962F39B9A5CA254E34CAE6012541D606808E4CCA76A0",
+                "sha512Fingerprint": "BD052596815129BD78732ADF87265A64534A553F8AFBBAD19EF908FDD68373475D74DD159A112D4AF9DB7E5730064BF23BECDB33DBEE53FBD220F095B8ECF66F",
+                "subject": "/CN=ui_test",
+                "updatedAt": "2024-06-18T09:09:09.100327Z",
+                "uri": "kylo:kylo:naboo:external_ca:123e0a83-63d3-4632-925b-e78ddbfc7774"
+            },
+            {
+                "account": "kylo:kylo:admin:accounts:kylo",
+                "createdAt": "2024-06-02T14:32:54.433033Z",
+                "id": "2936eece-2e14-4ad2-96a4-98113920d5fd",
+                "issuer": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "name": "test_external_cert",
+                "notAfter": "2047-07-26T22:42:23Z",
+                "notBefore": "2017-08-02T22:42:23Z",
+                "purpose": {
+                    "client_authentication": "Enabled",
+                    "user_authentication": "Enabled"
+                },
+                "serialNumber": "0",
+                "sha1Fingerprint": "47E47FADCE48664689AD46275EE63168CC4CE809",
+                "sha256Fingerprint": "197EC3BB1827EFEE9A3FD6CF25A7C88E4C86E25D356D00F84EC3E8FE5B943564",
+                "sha512Fingerprint": "C09A87FA4A95F94BED0F005E687FEA097B5F8A2F5670C814B7C887301AD6F7A0CA167E0D3234AA60977A4F46F3884838F255766FCCC24990572F4BD2A769027A",
+                "subject": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "updatedAt": "2024-06-02T14:32:54.433033Z",
+                "uri": "kylo:kylo:naboo:external_ca:2936eece-2e14-4ad2-96a4-98113920d5fd"
+            },
+            {
+                "account": "kylo:kylo:admin:accounts:kylo",
+                "createdAt": "2024-06-02T11:36:48.983514Z",
+                "id": "d532cf16-5618-4080-86a2-9b4f59b3352a",
+                "issuer": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "name": "sample-ex-CA",
+                "notAfter": "2047-07-26T22:42:23Z",
+                "notBefore": "2017-08-02T22:42:23Z",
+                "purpose": {
+                    "client_authentication": "Enabled",
+                    "user_authentication": "Enabled"
+                },
+                "serialNumber": "0",
+                "sha1Fingerprint": "47E47FADCE48664689AD46275EE63168CC4CE809",
+                "sha256Fingerprint": "197EC3BB1827EFEE9A3FD6CF25A7C88E4C86E25D356D00F84EC3E8FE5B943564",
+                "sha512Fingerprint": "C09A87FA4A95F94BED0F005E687FEA097B5F8A2F5670C814B7C887301AD6F7A0CA167E0D3234AA60977A4F46F3884838F255766FCCC24990572F4BD2A769027A",
+                "subject": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "updatedAt": "2024-06-02T11:43:10.668463Z",
+                "uri": "kylo:kylo:naboo:external_ca:d532cf16-5618-4080-86a2-9b4f59b3352a"
+            },
+            {
+                "account": "kylo:kylo:admin:accounts:kylo",
+                "createdAt": "2024-06-02T11:09:49.290572Z",
+                "id": "5304de93-6939-4a26-bdb4-5e3d0b2fdb38",
+                "issuer": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "name": "externalca-5304de93-6939-4a26-bdb4-5e3d0b2fdb38",
+                "notAfter": "2047-07-26T22:42:23Z",
+                "notBefore": "2017-08-02T22:42:23Z",
+                "purpose": {
+                    "client_authentication": "Enabled",
+                    "user_authentication": "Enabled"
+                },
+                "serialNumber": "0",
+                "sha1Fingerprint": "47E47FADCE48664689AD46275EE63168CC4CE809",
+                "sha256Fingerprint": "197EC3BB1827EFEE9A3FD6CF25A7C88E4C86E25D356D00F84EC3E8FE5B943564",
+                "sha512Fingerprint": "C09A87FA4A95F94BED0F005E687FEA097B5F8A2F5670C814B7C887301AD6F7A0CA167E0D3234AA60977A4F46F3884838F255766FCCC24990572F4BD2A769027A",
+                "subject": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "updatedAt": "2024-06-02T11:09:49.290572Z",
+                "uri": "kylo:kylo:naboo:external_ca:5304de93-6939-4a26-bdb4-5e3d0b2fdb38"
+            },
+            {
+                "account": "kylo:kylo:admin:accounts:kylo",
+                "createdAt": "2024-06-02T11:09:49.267786Z",
+                "id": "208d8f42-1af3-4039-8b02-5e38fb4723f4",
+                "issuer": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "name": "externalca-208d8f42-1af3-4039-8b02-5e38fb4723f4",
+                "notAfter": "2047-07-26T22:42:23Z",
+                "notBefore": "2017-08-02T22:42:23Z",
+                "purpose": {
+                    "client_authentication": "Enabled",
+                    "user_authentication": "Enabled"
+                },
+                "serialNumber": "0",
+                "sha1Fingerprint": "47E47FADCE48664689AD46275EE63168CC4CE809",
+                "sha256Fingerprint": "197EC3BB1827EFEE9A3FD6CF25A7C88E4C86E25D356D00F84EC3E8FE5B943564",
+                "sha512Fingerprint": "C09A87FA4A95F94BED0F005E687FEA097B5F8A2F5670C814B7C887301AD6F7A0CA167E0D3234AA60977A4F46F3884838F255766FCCC24990572F4BD2A769027A",
+                "subject": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "updatedAt": "2024-06-02T11:09:49.267786Z",
+                "uri": "kylo:kylo:naboo:external_ca:208d8f42-1af3-4039-8b02-5e38fb4723f4"
+            },
+            {
+                "account": "kylo:kylo:admin:accounts:kylo",
+                "createdAt": "2024-06-02T11:04:22.586313Z",
+                "id": "ef6daa19-6235-4d7a-8a19-86f950836545",
+                "issuer": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "name": "sample-ex-CA1",
+                "notAfter": "2047-07-26T22:42:23Z",
+                "notBefore": "2017-08-02T22:42:23Z",
+                "purpose": {
+                    "client_authentication": "Enabled",
+                    "user_authentication": "Enabled"
+                },
+                "serialNumber": "0",
+                "sha1Fingerprint": "47E47FADCE48664689AD46275EE63168CC4CE809",
+                "sha256Fingerprint": "197EC3BB1827EFEE9A3FD6CF25A7C88E4C86E25D356D00F84EC3E8FE5B943564",
+                "sha512Fingerprint": "C09A87FA4A95F94BED0F005E687FEA097B5F8A2F5670C814B7C887301AD6F7A0CA167E0D3234AA60977A4F46F3884838F255766FCCC24990572F4BD2A769027A",
+                "subject": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com",
+                "updatedAt": "2024-06-02T11:04:22.586313Z",
+                "uri": "kylo:kylo:naboo:external_ca:ef6daa19-6235-4d7a-8a19-86f950836545"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### External Certificate Authorities
+>|Name|Subject|Serial #|Activation|Expiration|Client Auth|User Auth|
+>|---|---|---|---|---|---|---|
+>| test_ui | /CN=ui_test | 22416116914186521030446027138329400040 | 13 Jun 2024, 16:20 | 13 Jun 2025, 16:20 | Disabled | Disabled |
+>| test_external_cert | /C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com | 0 | 02 Aug 2017, 22:42 | 26 Jul 2047, 22:42 | Disabled | Disabled |
+>| sample-ex-CA | /C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com | 0 | 02 Aug 2017, 22:42 | 26 Jul 2047, 22:42 | Disabled | Disabled |
+>| externalca-5304de93-6939-4a26-bdb4-5e3d0b2fdb38 | /C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com | 0 | 02 Aug 2017, 22:42 | 26 Jul 2047, 22:42 | Disabled | Disabled |
+>| externalca-208d8f42-1af3-4039-8b02-5e38fb4723f4 | /C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com | 0 | 02 Aug 2017, 22:42 | 26 Jul 2047, 22:42 | Disabled | Disabled |
+>| sample-ex-CA1 | /C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com | 0 | 02 Aug 2017, 22:42 | 26 Jul 2047, 22:42 | Disabled | Disabled |
+>
+>1 to 6 of 6 External Certificate Authorities
+
 ### ciphertrust-external-ca-update
 
 ***
@@ -558,6 +704,48 @@ Update an external CA.
 | CipherTrust.ExternalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. | 
 | CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
 | CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
+
+#### Command example
+```!ciphertrust-external-ca-update external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774" allow_client_authentication=true allow_user_authentication=true```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "ExternalCA": {
+            "account": "kylo:kylo:admin:accounts:kylo",
+            "createdAt": "2024-06-13T16:26:17.877709Z",
+            "id": "123e0a83-63d3-4632-925b-e78ddbfc7774",
+            "issuer": "/CN=ui_test",
+            "name": "test_ui",
+            "notAfter": "2025-06-13T16:20:50Z",
+            "notBefore": "2024-06-13T16:20:50Z",
+            "purpose": {
+                "client_authentication": "Enabled",
+                "user_authentication": "Enabled"
+            },
+            "serialNumber": "22416116914186521030446027138329400040",
+            "sha1Fingerprint": "999F0159EB3ADB9E2C2591BE19DF0964075ECB77",
+            "sha256Fingerprint": "17E54883786AD97D5BFD962F39B9A5CA254E34CAE6012541D606808E4CCA76A0",
+            "sha512Fingerprint": "BD052596815129BD78732ADF87265A64534A553F8AFBBAD19EF908FDD68373475D74DD159A112D4AF9DB7E5730064BF23BECDB33DBEE53FBD220F095B8ECF66F",
+            "subject": "/CN=ui_test",
+            "updatedAt": "2024-06-18T11:21:16.173139941Z",
+            "uri": "kylo:kylo:naboo:external_ca:123e0a83-63d3-4632-925b-e78ddbfc7774"
+        }
+    },
+    "InfoFile": {
+        "EntryID": "2178@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+        "Extension": "pem",
+        "Info": "application/x-x509-ca-cert",
+        "Name": "Certificate.pem",
+        "Size": 627,
+        "Type": "PEM certificate"
+    }
+}
+```
+
+#### Human Readable Output
+
+>123e0a83-63d3-4632-925b-e78ddbfc7774 has been updated successfully!
 
 ### ciphertrust-external-ca-upload
 
