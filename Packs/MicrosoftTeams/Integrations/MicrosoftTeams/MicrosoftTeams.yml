@@ -91,6 +91,8 @@ configuration:
   - High
   - Critical
   required: false
+  hidden:
+    - marketplacev2
 - display: Disable Automatic Notifications
   name: auto_notifications
   type: 8
