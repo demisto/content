@@ -93,7 +93,6 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
             + " "
             + instance_info_dict.get("PlatformName", "")
         )
-        # if os not in asm_rule_package_dict.get(asm_rule_id).keys():
         if os not in asm_rule_package_dict.get(asm_rule_id, {}).keys():
             output_run_command_dict["run_command_flag"] = False
             output_run_command_dict["run_command_output"] = (
