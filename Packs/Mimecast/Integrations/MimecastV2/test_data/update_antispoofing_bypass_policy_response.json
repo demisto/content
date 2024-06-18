@@ -1,0 +1,33 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "option": "disable_bypass",
+            "id": "eNo1jr0OgjAYAN-ls0OhBdH",
+            "policy": {
+                "description": "test",
+                "fromPart": "both",
+                "from": {
+                    "type": "everyone"
+                },
+                "to": {
+                    "type": "everyone"
+                },
+                "fromType": "everyone",
+                "toType": "everyone",
+                "fromDate": "2024-05-25T13:13:01+0000",
+                "toDate": "2024-05-26T13:13:03+0000",
+                "override": false,
+                "bidirectional": false,
+                "conditions": {},
+                "enabled": true,
+                "enforced": false,
+                "createTime": "2024-05-06T13:48:16+0000",
+                "lastUpdated": "2024-05-26T13:13:21+0000"
+            }
+        }
+    ],
+    "fail": []
+}
