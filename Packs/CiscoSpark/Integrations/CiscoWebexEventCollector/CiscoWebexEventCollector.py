@@ -22,6 +22,17 @@ DEFAULT_MAX_FETCH = 200
 ''' HELPER FUNCTIONS '''
 
 
+def remove_integration_context_for_user(user: str):
+    """
+    Remove integration context for a user
+    Args:
+        user: The user to remove the integration context for.
+    """
+    integration_context = get_integration_context()
+    integration_context[user] = {}
+    set_integration_context(integration_context)
+
+
 def date_time_to_iso_format(date_time: datetime) -> str:
     """
     Gets a datetime object and returns s string represents a datetime is ISO format.
@@ -488,6 +499,7 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == 'cisco-webex-oauth-start':
             client = admin_client if args.get('user') == 'admin' else compliance_officer_client
+            remove_integration_context_for_user(client.user)
             result = oauth_start(client)
             return_results(result)
 
