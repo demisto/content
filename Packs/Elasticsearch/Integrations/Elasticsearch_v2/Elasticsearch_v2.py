@@ -22,7 +22,7 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
 else:
-    from elasticsearch import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch import Elasticsearch, NotFoundError, TransportError, ApiError
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -30,11 +30,11 @@ ES_DEFAULT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSSSS'
 PYTHON_DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
 API_KEY_PREFIX = '_api_key_id:'
 SERVER = demisto.params().get('url', '').rstrip('/')
-USERNAME = demisto.params().get('credentials', {}).get('identifier')
-PASSWORD = demisto.params().get('credentials', {}).get('password')
+USERNAME: str = demisto.params().get('credentials', {}).get('identifier')
+PASSWORD: str = demisto.params().get('credentials', {}).get('password')
 API_KEY_ID = USERNAME[len(API_KEY_PREFIX):] if USERNAME and USERNAME.startswith(API_KEY_PREFIX) else None
 if API_KEY_ID:
-    USERNAME = None
+    USERNAME = ""
     API_KEY = (API_KEY_ID, PASSWORD)
 PROXY = demisto.params().get('proxy')
 HTTP_ERRORS = {
@@ -145,23 +145,28 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    connection_args = {
-        "hosts": [SERVER],
-        "connection_class": RequestsHttpConnection,
-        "proxies": proxies,
-        "verify_certs": INSECURE,
-        "timeout": TIMEOUT,
-    }
-    if API_KEY_ID:
-        connection_args["api_key"] = API_KEY
-    elif USERNAME:
-        connection_args["http_auth"] = (USERNAME, PASSWORD)
+    # connection_args = {
+    #     "hosts": [SERVER],
+    #     "connection_class": RequestsHttpConnection,
+    #     "proxies": proxies,
+    #     "verify_certs": INSECURE,
+    #     "timeout": TIMEOUT,
+    # }
+    # if API_KEY_ID:
+    #     connection_args["api_key"] = API_KEY
+    # elif USERNAME:
+    #     connection_args["http_auth"] = (USERNAME, PASSWORD)
 
-    es = Elasticsearch(**connection_args)
-    # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-    if API_KEY_ID and hasattr(es, 'transport'):
-        es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
+    # es = Elasticsearch(**connection_args)
+    # # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+    # if API_KEY_ID and hasattr(es, 'transport'):
+    #     es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
 
+    es = Elasticsearch(
+        SERVER,
+        verify_certs=INSECURE,
+        basic_auth=(USERNAME, PASSWORD))
+    
     return es
 
 
@@ -889,37 +894,50 @@ def index_document(args, proxies):
         response = es.index(index=index, id=doc_id, body=doc)
     else:
         response = es.index(index=index, body=doc)
+    # if doc_id:
+    #     response = es.index(index=index, id=doc_id, document=doc)
+    # else:
+    #     response = es.index(index=index, document=doc)
+    demisto.debug(f"index response is: {response}")
     return response
-
 
 def index_document_command(args, proxies):
     resp = index_document(args, proxies)
+    # resp = {'_index': 'test', '_id': '1243', '_version': 1, 'result': 'created',
+    #         '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 11, '_primary_term': 1}
+    demisto.debug(f"resp is: {resp}")
     index_context = {
         'id': resp.get('_id', ''),
         'index': resp.get('_index', ''),
         'version': resp.get('_version', ''),
         'result': resp.get('result', '')
     }
+    demisto.debug(f"index_context is: {index_context}")
     human_readable = {
         'ID': index_context.get('id'),
         'Index name': index_context.get('index'),
         'Version': index_context.get('version'),
         'Result': index_context.get('result')
     }
+    demisto.debug(f"human_readable is: {human_readable}")
     headers = [str(k) for k in human_readable]
+    demisto.debug(f"headers are: {headers}")
     readable_output = tableToMarkdown(
         name="Indexed document",
         t=human_readable,
         removeNull=True,
         headers=headers
     )
-    return CommandResults(
+    demisto.debug(f"readable_output is: {readable_output}")
+    result = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Elasticsearch.Index',
         outputs=index_context,
         raw_response=resp,
         outputs_key_field='id'
     )
+    demisto.debug(f"result is: {result}")
+    return result
 
 
 def main():
@@ -945,11 +963,11 @@ def main():
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
                          'Please try using the Open Search client in the instance configuration.'
-                         '\nError message: {}'.format(demisto.command(), str(e)), error=e)
+                         '\nError message: {}'.format(demisto.command(), str(e)), error=str(e))
         if 'failed to parse date field' in str(e):
             return_error(f'Failed to execute the {demisto.command()} command. Make sure the `Time field type` is correctly set.',
-                         error=e)
-        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=e)
+                         error=str(e))
+        return_error(f"Failed executing {demisto.command()}.\nError message: {e}", error=str(e))
 
 
 if __name__ in ('__main__', 'builtin', 'builtins'):
