@@ -185,7 +185,8 @@ class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-in
                  synapse_analytics_resource_id=None,
                  attestation_resource_id=None,
                  portal=None,
-                 keyvault=None):
+                 keyvault=None,
+                 exchange_online=None):
         # Attribute names are significant. They are used when storing/retrieving clouds from config
         self.management = management
         self.resource_manager = resource_manager
@@ -207,6 +208,7 @@ class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-in
         self.attestation_resource_id = attestation_resource_id
         self.portal = portal
         self.keyvault = keyvault
+        self.exchange_online = exchange_online
 
     def has_endpoint_set(self, endpoint_name):
         try:
@@ -304,6 +306,7 @@ AZURE_WORLDWIDE_CLOUD = AzureCloud(
         attestation_resource_id='https://attest.azure.net',
         portal='https://portal.azure.com',
         keyvault='https://vault.azure.net',
+        exchange_online='https://outlook.office365.com'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.windows.net',
@@ -343,6 +346,7 @@ AZURE_US_GCC_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.com'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -379,6 +383,7 @@ AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.us'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -415,6 +420,8 @@ AZURE_DOD_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
         portal='https://portal.azure.us',
         keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook-dod.office365.us'
+
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.usgovcloudapi.net',
@@ -447,7 +454,8 @@ AZURE_GERMAN_CLOUD = AzureCloud(
         media_resource_id='https://rest.media.cloudapi.de',
         ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
         portal='https://portal.microsoftazure.de',
-        keyvault='https://vault.microsoftazure.de'
+        keyvault='https://vault.microsoftazure.de',
+        exchange_online='https://outlook.office.de'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.cloudapi.de',
@@ -481,6 +489,7 @@ AZURE_CHINA_CLOUD = AzureCloud(
         synapse_analytics_resource_id='https://dev.azuresynapse.azure.cn',
         portal='https://portal.azure.cn',
         keyvault='https://vault.azure.cn',
+        exchange_online='https://partner.outlook.cn'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.chinacloudapi.cn',

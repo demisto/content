@@ -61,7 +61,7 @@ from MicrosoftApiModule import *
 warnings.filterwarnings("ignore")
 
 """ Constants """
-
+INTEGRATION_NAME = get_integration_name()
 APP_NAME = "ms-ews-o365"
 FOLDER_ID_LEN = 120
 MAX_INCIDENTS_PER_FETCH = 200
@@ -127,6 +127,31 @@ UTF_8 = 'utf-8'
 """ Classes """
 
 
+class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
+    def __init__(self, azure_cloud: AzureCloud, **kwargs):
+        self.ad_base_url = azure_cloud.endpoints.active_directory or 'https://login.microsoftonline.com'
+        self.exchange_online_scope = azure_cloud.endpoints.exchange_online or 'https://outlook.office365.com'
+        super().__init__(**kwargs)
+
+    @property
+    def token_url(self):
+        """
+            The URL to request tokens from.
+            Overrides the token_url property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        # We may not know (or need) the Microsoft tenant ID. If not, use common/ to let Microsoft select the appropriate
+        # tenant for the provided authorization code or refresh token.
+        return f"{self.ad_base_url}/{self.tenant_id or 'common'}/oauth2/v2.0/token"  # nosec
+
+    @property
+    def scope(self):
+        """
+            The scope we ask for the token to have
+            Overrides the scope property to specify custom token retrieval endpoints for different authority's cloud env.
+        """
+        return [f"{self.exchange_online_scope}/.default"]
+
+
 class ProxyAdapter(requests.adapters.HTTPAdapter):
     """
     Proxy Adapter used to add PROXY to requests
@@ -186,7 +211,8 @@ class EWSClient:
             raise Exception('Token / Tenant ID must be provided.')
 
         BaseProtocol.TIMEOUT = int(request_timeout)
-        self.ews_server = "https://outlook.office365.com/EWS/Exchange.asmx/"
+        azure_cloud = get_azure_cloud(kwargs, INTEGRATION_NAME)
+        self.ews_server = f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx/"
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id,
             auth_id=client_id,
@@ -196,7 +222,7 @@ class EWSClient:
             verify=not insecure,
             proxy=proxy,
             self_deployed=self_deployed,
-            scope="https://outlook.office.com/.default",
+            scope=f"{azure_cloud.endpoints.exchange_online}/.default",
             command_prefix="ews",
         )
         self.folder_name = folder
@@ -220,7 +246,7 @@ class EWSClient:
         BaseProtocol.HTTP_ADAPTER_CLS = InsecureProxyAdapter if insecure else ProxyAdapter
         access_token = self.ms_client.get_access_token()
         oauth2_token = OAuth2Token({"access_token": access_token})
-        self.credentials = credentials = OAuth2AuthorizationCodeCredentials(
+        self.credentials = credentials = CustomDomainOAuth2Credentials(
             client_id=self.client_id,
             client_secret=self.client_secret,
             access_token=oauth2_token,
@@ -2670,7 +2696,7 @@ def process_main():
 
 
 def main():  # pragma: no cover
-    # When running big queries, like 'ews-search-mailbox' the memory might not freed by the garbage
+    # When running big queries, like 'ews-search-mailbox' the memory might not be freed by the garbage
     # collector. `separate_process` flag will run the integration on a separate process that will prevent
     # memory leakage.
     separate_process = demisto.params().get("separate_process", False)
