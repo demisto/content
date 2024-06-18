@@ -67,15 +67,15 @@ Creates a Certificate Signing Request (CSR) and its corresponding private key. T
 {
     "InfoFile": [
         {
-            "EntryID": "2187@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+            "EntryID": "2201@a48e3cfd-a079-4895-89a7-4fac11b8143d",
             "Extension": "pem",
             "Info": "application/x-x509-ca-cert",
             "Name": "CSR.pem",
-            "Size": 359,
+            "Size": 355,
             "Type": "PEM certificate request"
         },
         {
-            "EntryID": "2188@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+            "EntryID": "2202@a48e3cfd-a079-4895-89a7-4fac11b8143d",
             "Extension": "zip",
             "Info": "application/zip",
             "Name": "privateKey.zip",
@@ -462,6 +462,12 @@ Deletes an external CA certificate.
 #### Context Output
 
 There is no context output for this command.
+#### Command example
+```!ciphertrust-external-ca-delete external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774"```
+#### Human Readable Output
+
+>123e0a83-63d3-4632-925b-e78ddbfc7774 has been deleted successfully!
+
 ### ciphertrust-external-ca-list
 
 ***
