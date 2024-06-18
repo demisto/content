@@ -1287,7 +1287,7 @@ def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) 
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=f'{args.get(NAME)} has been uploaded successfully!'
+        readable_output=f'{raw_response.get(NAME)} has been uploaded successfully!'
     )
 
 

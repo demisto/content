@@ -841,6 +841,29 @@ Uploads an external CA certificate. These certificates can later be trusted by s
 | CipherTrust.ExternalCA.sha256Fingerprint | String | SHA-256 fingerprint of the CA certificate. | 
 | CipherTrust.ExternalCA.sha512Fingerprint | String | SHA-512 fingerprint of the CA certificate. | 
 
+#### Command example
+```"!ciphertrust-external-ca-upload cert_entry_id=2327@a48e3cfd-a079-4895-89a7-4fac11b8143d#### Context Example"```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "ExternalCA": {"id": "34c27997-4d5d-4bd3-9ee6-c93ee9abbc7f", "uri": "kylo:kylo:naboo:external_ca:34c27997-4d5d-4bd3-9ee6-c93ee9abbc7f", "account": "kylo:kylo:admin:accounts:kylo", "createdAt": "2024-06-18T16:38:57.598523Z", "updatedAt": "2024-06-18T16:38:57.598523Z", "name": "externalca-34c27997-4d5d-4bd3-9ee6-c93ee9abbc7f", "purpose": {"client_authentication": "Enabled", "user_authentication": "Enabled"}, "serialNumber": "0", "subject": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com", "issuer": "/C=US/ST=TX/L=Austin/O=Gemalto/OU=RnD/CN=ca.kylo.gemalto.com", "notBefore": "2017-08-02T22:42:23Z", "notAfter": "2047-07-26T22:42:23Z", "sha1Fingerprint": "47E47FADCE48664689AD46275EE63168CC4CE809", "sha256Fingerprint": "197EC3BB1827EFEE9A3FD6CF25A7C88E4C86E25D356D00F84EC3E8FE5B943564", "sha512Fingerprint": "C09A87FA4A95F94BED0F005E687FEA097B5F8A2F5670C814B7C887301AD6F7A0CA167E0D3234AA60977A4F46F3884838F255766FCCC24990572F4BD2A769027A"}
+    },
+    "InfoFile": {
+        "EntryID": "2178@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+        "Extension": "pem",
+        "Info": "application/x-x509-ca-cert",
+        "Name": "Certificate.pem",
+        "Size": 627,
+        "Type": "PEM certificate"
+    }
+}
+```
+
+#### Human Readable Output
+
+>externalca-34c27997-4d5d-4bd3-9ee6-c93ee9abbc7f has been uploaded successfully!
+
 ### ciphertrust-group-create
 
 ***
@@ -1267,6 +1290,26 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 | CipherTrust.CAInstall.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. | 
 | CipherTrust.CAInstall.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. | 
 | CipherTrust.CAInstall.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
+
+#### Command example
+```!ciphertrust-group-create name="example_group" description="this is an example group"```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "Group": {
+            "created_at": "2024-06-18T09:16:04.419126Z",
+            "description": "this is an example group",
+            "name": "example_group",
+            "updated_at": "2024-06-18T09:16:04.419126Z"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>example_group has been created successfully!
 
 ### ciphertrust-local-ca-list
 
