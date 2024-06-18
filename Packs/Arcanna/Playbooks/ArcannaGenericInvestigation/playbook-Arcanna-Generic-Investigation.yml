@@ -1,6 +1,5 @@
 id: Arcanna-Generic-Investigation
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Arcanna-Generic-Investigation
 description: |-
   Playbook takes incident data and sends it to Arcanna.Ai for ML inference and automated decision. Once decision is retrieved, manual input ( in this case )
@@ -16,6 +15,7 @@ tasks:
       id: a8581242-fbdd-4b93-8ea6-c61a0ef0ba2d
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
     nexttasks:
@@ -174,6 +174,7 @@ tasks:
       id: a197a05c-ecfd-4d7f-83bc-ce48c70db205
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
@@ -367,6 +368,7 @@ tasks:
       id: 44f90572-7536-408d-8d95-7a8f9420d81f
       version: -1
       name: Get Analyst Input and add Closing Information
+      description: ""
       type: collection
       iscommand: false
       brand: ""
@@ -429,6 +431,7 @@ tasks:
       id: 0ea58fcb-b4f4-4773-8a31-54657afa5fc0
       version: -1
       name: arcanna-export-event
+      description: ""
       script: Arcanna.AI|||arcanna-export-event
       type: regular
       iscommand: true
@@ -559,9 +562,7 @@ view: |-
     }
   }
 inputs: []
-outputs:
-- contextPath: incident
-  type: unknown
+outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 5.5.0
