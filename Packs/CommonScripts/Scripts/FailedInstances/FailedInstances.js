@@ -18,7 +18,7 @@ Object.keys(all).forEach(function(m) {
 
         var res =  executeCommand(cmd, {});
         var content = res[0].Contents
-        var result = content.includes("Test button cannot be used");
+        var result = content.includes("Test button cannot be used") && all[m].brand === "ServiceNow v2";
         if (result === true) {
             cmd = 'servicenow-oauth-test'
             res =  executeCommand(cmd, {});
