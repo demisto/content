@@ -328,16 +328,16 @@ Modifies non-running compliance searches in the Security & Compliance Center.
 | kql | Modify the text search string or a query that is formatted using the Keyword Query Language (KQL). | Optional |
 | description | Modify the description for the compliance search. | Optional |
 | allow_not_found_exchange_locations | Whether to include mailboxes other than regular user mailboxes in the compliance search. | Optional |
-| exchange_location_add | Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes. | Optional |
-| exchange_location_exclusion_add | Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the exchange_location_add argument. | Optional |
-| public_folder_location_add | Comma-separated list of added public folders to include, or you can use the value "All" to include all. | Optional |
-| share_point_location_add | Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites. | Optional |
-| share_point_location_exclusion_add | Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. | Optional |
-| exchange_location_remove | Comma-separated list of removed mailboxes/distribution group to include. | Optional |
-| exchange_location_exclusion_remove | Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the exchange_location_add argument. | Optional |
-| public_folder_location_remove | Comma-separated list of removed public folders to include. | Optional |
-| share_point_location_remove | Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value. | Optional |
-| share_point_location_exclusion_remove | Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. | Optional |
+| add_exchange_location | Comma-separated list of added mailboxes/distribution groups to include, or you can use the value "All" to include all mailboxes. | Optional |
+| add_exchange_location_exclusion | Comma-separated list of added mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location (used in create new compliance search) or the add_exchange_location argument. | Optional |
+| add_public_folder_location | Comma-separated list of added public folders to include, or you can use the value "All" to include all. | Optional |
+| add_share_point_location | Comma-separated list of added SharePoint online sites to include. You identify the sites by their URL value, or you can use the value "All" to include all sites. | Optional |
+| add_share_point_location_exclusion | Comma-separated list of added SharePoint online sites to exclude when you use the value "All" for the exchange_location (used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. | Optional |
+| remove_exchange_location | Comma-separated list of removed mailboxes/distribution group to include. | Optional |
+| remove_exchange_location_exclusion | Comma-separated list of removed mailboxes/distribution group to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) or the add_exchange_location argument. | Optional |
+| remove_public_folder_location | Comma-separated list of removed public folders to include. | Optional |
+| remove_share_point_location | Comma-separated list of removed SharePoint online sites to include. You can identify the sites by their URL value. | Optional |
+| remove_share_point_location_exclusion | Comma-separated list of removed SharePoint online sites to exclude when you use the value "All" for the exchange_location (Used in create new compliance search) argument or the share_point_location argument. You can identify the sites by their URL value. | Optional |
 
 
 #### Context Output
@@ -345,7 +345,7 @@ Modifies non-running compliance searches in the Security & Compliance Center.
 There is no context output for this command.
 
 #### Command Example
-```!o365-sc-set-search search_name="example" exchange_location_remove="test2@demistodev.onmicrosoft.com"```
+```!o365-sc-set-search search_name="example" remove_exchange_location="test2@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
 
@@ -1384,12 +1384,12 @@ Update inputs for case hold policies
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | identity | Identity of the policy to update. | Required | 
-| exchange_locations_add | Exchange locations to add to the policy. | Optional | 
-| sharepoint_locations_add | Sharepoint locations to add to the policy. | Optional | 
-| public_locations_add | Public locations to add to the policy. | Optional | 
-| exchange_locations_remove | Exchange locations to remove from the policy. | Optional | 
-| sharepoint_locations_remove | Sharepoint locations to remove from the policy. | Optional | 
-| public_locations_remove | Public locations to remove from the policy. | Optional | 
+| add_exchange_locations | Exchange locations to add to the policy. | Optional | 
+| add_sharepoint_locations | Sharepoint locations to add to the policy. | Optional | 
+| add_public_locations | Public locations to add to the policy. | Optional | 
+| remove_exchange_locations | Exchange locations to remove from the policy. | Optional | 
+| remove_sharepoint_locations | Sharepoint locations to remove from the policy. | Optional | 
+| remove_public_locations | Public locations to remove from the policy. | Optional | 
 | comment | Add a comment to existing policy. | Optional | 
 | enabled | Enable or disable the policy. Possible values are: true, false. Default is true. | Optional | 
 
