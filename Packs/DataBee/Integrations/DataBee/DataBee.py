@@ -50,7 +50,7 @@ SEARCH_CONFIGURATIONS: dict[SearchTypes, SearchConfiguration] = {
         output_keys=["uid", "type", "name", "start_time", "end_time", "modified_time"],
     ),
     SearchTypes.DEVICE: SearchConfiguration(
-        filters=[("hostname", "hostname"), ("mac", "mac"), ("name", "name"), ("ip", "ip"), ("id", "uid")],
+        filters=[("hostname", "hostname"), ("mac", "mac"), ("name", "name"), ("ip", "ip"), ("id", "uid"), ("uid", "uid")],
         type=SearchTypes.DEVICE,
         headers=[
             "uid",
