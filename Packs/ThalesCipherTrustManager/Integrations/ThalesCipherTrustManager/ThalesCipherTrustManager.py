@@ -514,7 +514,25 @@ def load_content_from_file(entry_id: str) -> str:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
 
-def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str):
+def format_pem_string(pem_str: str | bytes):
+    """
+    Format a PEM certificate string by ensuring each line ends with a newline character.
+
+    Args:
+    pem_str (str): A PEM formatted certificate string without explicit newlines.
+
+    Returns:
+    str: A properly formatted PEM certificate with newlines.
+    """
+    # lines = pem_str.split('\n')
+    # formatted_pem = '\n'.join(line for line in lines if line) + '\n'
+    # print
+    #
+    # return formatted_pem
+    return pem_str
+
+
+def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str, is_pem=True):
     """
     Return the file results to the context.
     Args:
@@ -524,10 +542,18 @@ def return_file_results(data: list[str] | str | bytes, filenames: list[str] | st
         ValueError: If the filenames and data are not of the same type and length.
     """
     if isinstance(data, list) and isinstance(filenames, list) and len(data) == len(filenames):
-        return_results(
-            [fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE) for idx, file_data in enumerate(data) if file_data])
+        file_results = []
+        for idx, file_data in enumerate(data):
+            if not file_data:
+                continue
+            if is_pem:
+                file_data = format_pem_string(file_data)
+                print(file_data)
+            file_results.append(fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE))
+        return_results(file_results)
+
     elif isinstance(data, str) or isinstance(data, bytes) and isinstance(filenames, str):
-        return_results(fileResult(filenames, data, EntryType.ENTRY_INFO_FILE))
+        return_results(fileResult(filenames, format_pem_string(data) if is_pem else data, EntryType.ENTRY_INFO_FILE))
     else:
         raise ValueError('filenames and data should be of the same type and length.')
 
@@ -1130,7 +1156,7 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
     cert = load_content_from_file(args.get(CERT_ENTRY_ID, ''))
     request_data = assign_params(
         cert=cert,
-        parent_id=args.get(PARENT_ID),
+        parentId=args.get(PARENT_ID),
     )
     raw_response = client.install_local_ca(
         local_ca_id=args.get(LOCAL_CA_ID, ''),
@@ -1186,8 +1212,13 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
     )
     raw_response = client.get_certificates_list(ca_id=args.get(CA_ID, ''),
                                                 params=params)
-    outputs = [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
-               raw_response.get('resources', [])]
+    if args.get(ID):
+        issued_certificate_dict = raw_response.get('resources', [])[0] if raw_response.get('resources', []) else {}
+        outputs, removed_values = remove_key_from_outputs(issued_certificate_dict, ['csr', 'cert'])
+        return_file_results(removed_values[1], 'Certificate.pem')
+    else:
+        outputs = [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
+                   raw_response.get('resources', [])]
 
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
