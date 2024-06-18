@@ -1,6 +1,7 @@
 commonfields:
   id: Arcanna.AI
   version: -1
+category: Data Enrichment & Threat Intelligence
 configuration:
 - display: Server URL (e.g. https://<your arcanna ai api>/ )
   name: url
