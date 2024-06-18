@@ -143,7 +143,7 @@ tasks:
     skipunavailable: false
     task:
       brand: Hurukai
-      description: Start a job to get the entine RAM from a host (Windows / Linux)
+      description: Start a job to get the entire RAM from a host (Windows / Linux)
       id: dbd59e2d-288a-44c2-8e99-73ddbd1e325b
       iscommand: true
       name: harfanglab-job-artifact-ramdump

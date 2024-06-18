@@ -96,3 +96,17 @@ Make sure you run the ***!export-indicators-list-update*** command for the first
 ### Important Notes:
 - If constantly using different queries for the same EDL instance through the *q* inline argument, it is recommended to use different instances of the EDL (one for each query), and set each one with a default query for better performance.
 - When using the *q* inline argument, the number of exported indicators is limited to 100,000 due to performance reasons. To export more than 100,000 indicators, create a new instance of the integration with the desired Indicator Query and List Size.
+
+## Troubleshoot
+
+To view logs concerning the creation of the indicator list and its current status add the `/log` suffix to the list URL.
+
+<~XSOAR_SAAS>
+`https://ext-<cortex-xsoar-address>/xsoar/instance/execute/<instance-name>/log`
+</~XSOAR_SAAS>
+<~XSOAR_ON_PREM>
+`https://*<xsoar_address>*/instance/execute/*<instance_name>*/log`
+</~XSOAR_ON_PREM>
+<~XSIAM>
+`https://edl-<cortex-xsiam-address>/xsoar/instance/execute/<instance-name>/log`
+</~XSIAM>

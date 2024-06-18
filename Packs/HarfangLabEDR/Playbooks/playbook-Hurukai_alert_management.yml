@@ -631,7 +631,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Should I collect raw forensics artifacts ?
+        simple: Should we perform advanced forensics ?
       methods: []
       format: ''
       bcc:
@@ -1351,7 +1351,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Should I collect raw forensics artifacts ?
+        simple: Was it a false positive ?
       methods: []
       format: ''
       bcc:
@@ -1437,7 +1437,7 @@ tasks:
       to:
       subject:
       body:
-        simple: Should I collect raw forensics artifacts ?
+        simple: Should I isolate the endpoint ?
       methods: []
       format: ''
       bcc:

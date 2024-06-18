@@ -1,20 +1,9 @@
-SafeBreach has an extensive Hacker’s Playbook of breach and attack simulations that enables you to test your security controls against known attacks with the latest indicators of compromise (IOCs) and behavioral indicators of compromise (BIOCs).   IOCs that are proven capable - through simulation results - of breaching your enterprise are fetched from SafeBreach into Cortex XSOAR playbooks to fully automate updates to your endpoint and network security controls.
+SafeBreach is a platform designed to simulate cyber attacks against an organization's network. This platform allows companies to test their security posture and validate the effectiveness of their security controls. By continuously running simulations that mimic a wide array of attack techniques, SafeBreach helps identify vulnerabilities, misconfigurations, and other issues that could potentially be exploited by actual attackers. The SafeBreach platform employs a variety of simulators and collectors to execute and monitor simulated attacks across the entire digital environment, including networks, endpoints, cloud, and email systems. It incorporates insights from real-world threat intelligence and uses the MITRE ATT&CK framework to provide comprehensive and realistic simulation scenarios.
 
-The integration with Cortex XSOAR enables a fully automated, closed-loop process to ensure your security defenses will prevent the latest indicators from breaching your defenses.
-Enable the "SafeBreach - Breach and Attack Simulation platform" integration with Cortex XSOAR and benefit from **closed-loop automated security control remediation of IOCs:**
-
-- Discover security gaps through continuous breach & attack simulation
-- Automatically remediate and validate missed IOCs
-- Maximize the effectiveness and value of your existing security controls
-
-**What does this pack do?**
-
-- Integrates with SafeBreach Insights, fetching multiple indicators that were not blocked in your environment (files, domains, urls, commands, ports, protocols, etc.)
-- Processes non-behavioral indicators, automatically remediating and validating them by rerunning related simulations
-- Extends the existing XSOAR indicator types with additional custom SafeBreach indicator types
+For enterprises using SafeBreach and XSOAR, integrating this package streamlines operations by allowing you to operate SafeBreach through XSOAR, making SafeBreach an integral part of the enterprise workflows. This integration includes commands for managing tests, Insight indicators, simulators and deployments, users, API keys, integration issues, and more.
 
 **How to enable it?**
 
-1. Enable and configure SafeBreach v2 integration
-2. Create a Feed triggered job that will be triggered for SafeBreach indicators
-3. Assign the playbook for the job - "SafeBreach - Process Non-Behavioral Insights Feed"
+1. Enable and configure SafeBreach (Partner Contribution) integration.
+1. Provide your SafeBreach API key and Account info
+1. Utilize the supported commands to interact with the SafeBreach platform or create your own playbooks based on the provided commands.
