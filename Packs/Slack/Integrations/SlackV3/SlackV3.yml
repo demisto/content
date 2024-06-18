@@ -100,6 +100,7 @@ configuration:
   advanced: true
   additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
@@ -112,6 +113,7 @@ configuration:
   required: false
   additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
