@@ -1,4 +1,4 @@
 {
   "breakingChanges":true,
-  "breakingChangesNotes":"Updated the parameter 'Minimum incident severity to send notifications to Teams by', since it is not supported by XSIAM."
+  "breakingChangesNotes":"Hid the `Minimum incident severity to send notifications to Teams by` parameter, since it is not supported on XSIAM."
 }
