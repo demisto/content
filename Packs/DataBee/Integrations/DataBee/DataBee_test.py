@@ -386,8 +386,8 @@ def test_get_pagination_args(page: str, limit: str, page_size: str, excepted: tu
                 "severity": "high",
                 "impact": "low",
             },
-            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee+\
-                and+severity+contains+high+and+impact+contains+low",
+            "?query=start_time+between+03%2F19%2F2023+06%3A06%2C01%2F01%2F2024+00%3A00+and+metadata.product.name+in+databee+"
+            + "and+severity+contains+high+and+impact+contains+low",
         ),
     ),
 )
