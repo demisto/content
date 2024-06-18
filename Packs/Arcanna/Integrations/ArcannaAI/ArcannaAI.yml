@@ -1,55 +1,51 @@
+category: Data Enrichment & Threat Intelligence
 commonfields:
   id: Arcanna.AI
   version: -1
-category: Data Enrichment & Threat Intelligence
 configuration:
-- display: Server URL (e.g. https://<your arcanna ai api>/ )
-  name: url
+- additionalinfo: URL for Arcanna REST API
   defaultvalue: https://arcanna.ai/
-  type: 0
+  display: Server URL (e.g. https://<your arcanna ai api>/ )
+  name: url
   required: true
-  additionalinfo: URL for Arcanna REST API
-- display: "Authentication"
-  name: credentials
-  type: 9
-  required: false
-  hiddenusername: true
-  additionalinfo: Api Key for Arcanna API
+  type: 0
 - additionalinfo: Api Key for Arcanna API
-  display: API Key ( Deprecated )
-  name: apikey
+  display: "Authentication"
+  name: credentials
   required: false
-  hidden: true
+  type: 9
+  hiddenusername: true
+- display: API Key ( Deprecated )
+  name: apikey
   type: 4
-  deprecated: true
+  required: false
+  additionalinfo: Api Key for Arcanna API
+  hidden: true
 - display: SSL Certificate verification
   name: ssl_verification
-  defaultvalue: "false"
   type: 8
   required: false
-- display: Insecure connection
+  defaultvalue: "false"
+- defaultvalue: "true"
+  display: Trust any certificate (not secure)
   name: insecure
-  defaultvalue: "true"
   type: 8
   hidden: true
-  deprecated: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-- display: A closing reason to Arcanna labels (deprecated).
+- defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
+  display: A closing reason to Arcanna labels (deprecated).
   name: feature_mapping
   type: 12
   required: false
   hidden: true
-  deprecated: true
-  defaultvalue: '"False Positive"="drop_alert", "Resolved"="escalate_alert","Other"="escalate_alert","Duplicate"="escalate_alert"'
 - display: Alert closing reason
   name: closing_reason_field
   type: 0
   required: false
   hidden: true
-  deprecated: true
   defaultvalue: closeReason
   additionalinfo: ( Deprecated )This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
 - display: Default Arcanna Job Id
@@ -62,8 +58,8 @@ display: Arcanna.AI
 name: Arcanna.AI
 script:
   commands:
-  - name: arcanna-get-jobs
-    arguments: []
+  - description: Get jobs list.
+    name: arcanna-get-jobs
     outputs:
     - contextPath: Arcanna.Jobs.job_id
       description: Arcanna Job id.
@@ -80,27 +76,28 @@ script:
     - contextPath: Arcanna.Jobs.data_type
       description: Arcanna.ai Job type.
       type: String
-    description: Get jobs list.
-  - name: arcanna-export-event
+    arguments: []
+  - arguments:
+    - description: Job ID to use for exporting event.
+      name: job_id
+      required: true
+    - description: Event ID to use for exporting event.
+      name: event_id
+      required: true
     description: Export full event with metadata from Arcanna.ai based on specified Job ID and Event ID.
-    arguments:
-    - name: job_id
-      required: true
-      description: Job ID to use for exporting event.
-    - name: event_id
-      required: true
-      description: Event ID to use for exporting event.
+    name: arcanna-export-event
     outputs:
     - contextPath: Arcanna.Event.arcanna_event
       description: Full export for specified event.
-  - name: arcanna-trigger-train
-    arguments:
-    - name: job_id
+  - arguments:
+    - description: Job ID for which training will be triggered.
+      name: job_id
       required: true
-      description: Job ID for which training will be triggered.
-    - name: username
+    - description: Username that will be assigned for train.
+      name: username
       required: true
-      description: Username that will be assigned for train.
+    description: Trigger AI Train for specified Arcanna.ai Job.
+    name: arcanna-trigger-train
     outputs:
     - contextPath: Arcanna.Train.status
       description: Status of request ( OK if successful ).
@@ -108,21 +105,19 @@ script:
     - contextPath: Arcanna.Train.error_message
       description: Details if error on request.
       type: String
-    description: Trigger AI Train for specified Arcanna.ai Job.
-  - name: arcanna-get-decision-set
-    arguments:
-    - name: job_id
-      required: true
-      description: Job ID for which to get decision labels set.
+  - description: Retrieve avaiable decision points for specified AI Job.
+    name: arcanna-get-decision-set
     outputs:
     - contextPath: Arcanna.Event.decision_set
       description: List of available labels for specified AI Job.
       type: List
-    description: Retrieve avaiable decision points for specified AI Job.
-  - name: arcanna-send-event
     arguments:
     - name: job_id
-      description: An Arcanna running job_id.
+      required: true
+      description: Job ID for which to get decision labels set.
+  - arguments:
+    - description: An Arcanna running job_id.
+      name: job_id
     - name: event_json
       required: true
       description: json event for arcanna to inference.
@@ -133,6 +128,8 @@ script:
       description: event severity.
     - name: id_value
       description: Value to use for ID Reference.
+    description: Sends a raw event to Arcanna.
+    name: arcanna-send-event
     outputs:
     - contextPath: Arcanna.Event.event_id
       description: Arcanna event id.
@@ -149,14 +146,14 @@ script:
     - contextPath: Arcanna.Event.job_id
       description: An Arcanna Job id used for sending.
       type: Number
-    description: Sends a raw event to Arcanna.
-  - name: arcanna-get-event-status
-    arguments:
-    - name: job_id
-      description: Arcanna Job Id.
-    - name: event_id
+  - arguments:
+    - description: Arcanna Job Id.
+      name: job_id
+    - description: Arcanna generated unique event id.
+      name: event_id
       required: true
-      description: Arcanna generated unique event id.
+    description: Retrieves Arcanna Inference result.
+    name: arcanna-get-event-status
     outputs:
     - contextPath: Arcanna.Event.event_id
       description: Arcanna event id.
@@ -194,14 +191,12 @@ script:
     - contextPath: Arcanna.Event.bucket_state
       description: Flag to indicate the current event's state in the AI Model.
       type: String
-    description: Retrieves Arcanna Inference result.
-  - name: arcanna-send-event-feedback
-    arguments:
-    - name: job_id
-      description: An Arcanna job id.
-    - name: event_id
+  - arguments:
+    - description: An Arcanna job id.
+      name: job_id
+    - description: An Arcanna event id.
+      name: event_id
       required: true
-      description: An Arcanna event id.
     - name: feedback
       required: true
       description: Provided feedback from analyst.
@@ -212,13 +207,13 @@ script:
       required: true
       description: A username providing the feedback.
     - name: indicators
-      description: Cortex Indicator if any as a dict containing 3 keys (type, value,
-        source) as mandatory.
+      description: Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
+    description: Send Arcanna feedback for a previous inferred event.
+    name: arcanna-send-event-feedback
     outputs:
     - contextPath: Arcanna.Event.feedback_status
       description: An Arcanna feedback status response.
       type: String
-    description: Send Arcanna feedback for a previous inferred event.
   dockerimage: demisto/python3:3.10.14.95956
   runonce: false
   script: '-'
