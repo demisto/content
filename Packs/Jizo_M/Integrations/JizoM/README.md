@@ -1,5 +1,5 @@
 This integration ensures interaction with the JizoM API.
-This integration was integrated and tested with version xx of JizoM.
+This integration was integrated and tested with version 12.3 of JizoM.
 
 ## Configure JizoM on Cortex XSOAR
 
