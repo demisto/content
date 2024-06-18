@@ -4,7 +4,7 @@
 4. API Key: Enter the API key.
 
 ## Access and Security
-You request access through the CSC service team.  The service team will gather the details for the service account that will be used to access the API, and the API administrator(s) (one or more authorized client users) who will manage the credentials through the CSCDomainManagerSM web portal.
+You request access through the CSC service team. The service team will gather the details for the service account that will be used to access the API, and the API administrator(s) (one or more authorized client users) who will manage the credentials through the CSCDomainManagerSM web portal.
  
 Please see attached API guide for reference.
  

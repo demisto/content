@@ -86,7 +86,7 @@ class Client(BaseClient):
     For this  implementation, no special attributes defined
     """
 
-    def __init__(self, base_url, verify: bool, token: str, apikey: str):
+    def __init__(self, base_url, verify: bool, token: str = "", apikey: str = ""):
         headers = {
             'Authorization': BEARER_PREFIX + token,
             'apikey': apikey,
