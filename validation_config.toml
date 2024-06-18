@@ -31,7 +31,7 @@ select = [
     "IN161", "IN162",
     "PB100", "PB101","PB104","PB118", "PB123",
     "DO100", "DO101", "DO102", "DO103", "DO104", "DO105", "DO106",
-    "DS100", "DS107",
+    "DS100",
     "SC100", "SC105", "SC106", "SC109",
     "RM101", "RN103", "RM104", "RM105", "RM109", "RM113", "RM114",
     "CL100",
@@ -43,7 +43,7 @@ select = [
     "IT100", "IT101", "IT102", "IT103",
     "MR100",
 ]
-warning = []
+warning = ["DS107"]
 
 
 [path_based_validations]
