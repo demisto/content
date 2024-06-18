@@ -1614,7 +1614,11 @@
             "fromversion": "4.5.0",
             "memory_threshold": 150
         },
-
+        {
+            "integrations": "EWS v2",
+            "playbookID": "get_original_email_-_ews-_test",
+            "instance_names": "ewv2_regular"
+        },
         {
             "integrations": [
                 "EWSO365",
@@ -1854,7 +1858,12 @@
             "instance_names": "ewv2_regular",
             "memory_threshold": 100
         },
-
+        {
+            "integrations": "EWS v2",
+            "playbookID": "EWS Public Folders Test",
+            "instance_names": "ewv2_regular",
+            "is_mockable": false
+        },
         {
             "integrations": "EWS v2",
             "playbookID": "EWS V2 Send Mail Test",
@@ -2071,7 +2080,13 @@
             "playbookID": "urlscan_malicious_Test",
             "timeout": 500
         },
-
+        {
+            "integrations": "EWS v2",
+            "playbookID": "pyEWS_Test",
+            "instance_names": "ewv2_regular",
+            "is_mockable": false,
+            "timeout": 500
+        },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
@@ -3299,7 +3314,14 @@
         {
             "playbookID": "ExtractFQDNFromUrlAndEmail-Test"
         },
-
+        {
+            "integrations": "EWS v2",
+            "playbookID": "Get EWS Folder Test",
+            "fromversion": "4.5.0",
+            "instance_names": "ewv2_regular",
+            "memory_threshold": 120,
+            "timeout": 1200
+        },
         {
             "integrations": "EWSO365",
             "instance_names": "ewso365_dev_team",
