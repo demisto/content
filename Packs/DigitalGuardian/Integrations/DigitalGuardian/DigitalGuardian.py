@@ -38,7 +38,7 @@ def request_api_token():
     r = requests.post(url=AUTH_URL, headers=AUTH_HEADERS, data=payload, verify=VERIFY_CERT)
     response_json = r.json()
     if 200 <= r.status_code <= 299:
-        api_key = response_json['access_token']
+        api_key = response_json.get('access_token')
         CLIENT_HEADERS['Authorization'] = 'Bearer ' + api_key
     else:
         return_error(f'Error in request_api_token [{r.status_code}] - {r.reason}')
@@ -91,8 +91,8 @@ def get_list_id(list_name: str, list_type: str) -> str:
     list_id = None
     if 200 <= r.status_code <= 299:
         for jText in json_text:
-            if str(jText['name']).lower() == list_name.lower():
-                list_id = jText['id']
+            if str(jText.get('name')).lower() == list_name.lower():
+                list_id = jText.get('id')
     else:
         return_error(f'Error retrieving list_id for {list_name}, {r.status_code}: {r.text}')
 
@@ -125,8 +125,8 @@ def get_watchlist_entry_id(watchlist_name: str, watchlist_entry: str) -> str:
         if r.status_code != requests.codes.ok:
             return_error('Unable to retrieve watchlist entries')
         for jText in json_text:
-            if str(jText['value_name']).lower() == watchlist_entry.lower():
-                watchlist_entry_id = jText['value_id']
+            if str(jText.get('value_name')).lower() == watchlist_entry.lower():
+                watchlist_entry_id = jText.get('value_id')
 
     return str(watchlist_entry_id)
 
@@ -180,8 +180,8 @@ def check_componentlist_entry():
 
         if 200 <= r.status_code <= 299:
             for jText in json_text:
-                if str(jText['content_value']).lower() == componentlist_entry.lower():
-                    componentlist = jText['content_value']
+                if str(jText.get('content_value')).lower() == componentlist_entry.lower():
+                    componentlist = jText.get('content_value')
         else:
             return_error(f'Unable to find componentlist named {componentlist_name}, {r.status_code}')
 
