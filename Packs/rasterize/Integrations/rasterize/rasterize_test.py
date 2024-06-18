@@ -611,9 +611,9 @@ def test_delete_row_with_old_chrome_configurations_from_info_file():
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
 
-    expected_mock_file_content_edited = """2222\t22222222-2222-2222-2222-222222222222\tchrome_options2
+    expected_mock_file_content = """2222\t22222222-2222-2222-2222-222222222222\tchrome_options2
     3333\t33333333-3333-3333-3333-333333333333\tchrome_options3
     4444\t44444444-4444-4444-4444-444444444444\tchrome_options4
     """.strip()
 
-    assert expected_mock_file_content_edited == mock_file_content_edited
+    assert expected_mock_file_content == mock_file_content_edited

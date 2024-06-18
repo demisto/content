@@ -495,20 +495,6 @@ def get_instance_id_and_chrome_options():
     return instance_id, chrome_options
 
 
-def fetch_instances_id_and_chromes_options_from_chrome_instances_contents(chrome_instances_contents):
-    splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
-    _, instances_id_tuple, chromes_options_tuple = zip(
-        *[line.strip().split('\t') for line in splitted_chrome_instances_contents])
-    instances_id = list(instances_id_tuple) if instances_id_tuple else []
-    chromes_options = list(chromes_options_tuple) if chromes_options_tuple else []
-
-    if instances_id and not chromes_options:
-        chromes_options.append('None')
-
-    demisto.debug(f"Chrome instances contents: {instances_id=}, {chromes_options=}")
-    return instances_id, chromes_options
-
-
 def get_chrome_instances_contents_dictionaries(chrome_instances_contents):
     instance_id_to_chrome_options = {}
     chrome_options_to_port = {}
@@ -523,6 +509,20 @@ def get_chrome_instances_contents_dictionaries(chrome_instances_contents):
             instance_id_to_port[instance_id] = port
 
     return instance_id_to_chrome_options, chrome_options_to_port, instance_id_to_port
+
+
+def fetch_instances_id_and_chromes_options_from_chrome_instances_contents(chrome_instances_contents):
+    splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
+    _, instances_id_tuple, chromes_options_tuple = zip(
+        *[line.strip().split('\t') for line in splitted_chrome_instances_contents])
+    instances_id = list(instances_id_tuple) if instances_id_tuple else []
+    chromes_options = list(chromes_options_tuple) if chromes_options_tuple else []
+
+    if instances_id and not chromes_options:
+        chromes_options.append('None')
+
+    demisto.debug(f"Chrome instances contents: {instances_id=}, {chromes_options=}")
+    return instances_id, chromes_options
 
 
 def generate_new_chrome_instance(instance_id, chrome_options):
