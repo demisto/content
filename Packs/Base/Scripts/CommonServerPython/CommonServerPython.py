@@ -9057,7 +9057,8 @@ if 'requests' in sys.modules:
 
                 # Need to read the files (f.read()) to be able to send large files
                 # without getting a timeout error
-                RequestEncodingMixin._encode_files(files, {})
+                if files:
+                    RequestEncodingMixin._encode_files(files, {})
 
                 # Execute
                 res = self._session.request(
