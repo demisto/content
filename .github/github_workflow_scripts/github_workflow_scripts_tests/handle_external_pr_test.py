@@ -1,7 +1,7 @@
 import os
 import pytest
 from typing import Final
-from Utils.github_workflow_scripts.handle_external_pr import is_requires_security_reviewer, get_location_of_reviewer
+from github_workflow_scripts.handle_external_pr import is_requires_security_reviewer, get_location_of_reviewer
 
 
 INTEGRATION_PATH: Final[str] = 'Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py'
@@ -68,7 +68,7 @@ def test_get_highest_support_label(support_levels, expected_support_level):
     Then:
         - make sure the highest support level is always returned
     """
-    from Utils.github_workflow_scripts.handle_external_pr import get_highest_support_label
+    from github_workflow_scripts.handle_external_pr import get_highest_support_label
     assert get_highest_support_label(support_levels) == expected_support_level
 
 
@@ -90,15 +90,15 @@ def test_get_packs_support_level_label(mocker, fork_owner, expected_fork_owner):
         - make sure correct support label is returned.
         - fork owner that is being delivered to the Checkout branch is correct.
     """
-    from Utils.github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
-    from Utils.github_workflow_scripts.utils import ChangeCWD
+    from github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
+    from github_workflow_scripts.utils import ChangeCWD
 
     checkout_mocker = mocker.patch.object(Checkout, '__init__', return_value=None)
     mocker.patch.object(Checkout, '__enter__', return_value=None)
     mocker.patch.object(Checkout, '__exit__', return_value=None)
     mocker.patch.object(os, 'getenv', return_value=fork_owner)
 
-    with ChangeCWD('Utils/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
+    with ChangeCWD('.github/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
         assert get_packs_support_level_label(
             file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
         ) == 'Xsoar Support Level'
@@ -117,12 +117,12 @@ def test_get_packs_support_level_label_checkout_failed(mocker):
     Then:
         - make sure correct support label is still returned.
     """
-    from Utils.github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
-    from Utils.github_workflow_scripts.utils import ChangeCWD
+    from github_workflow_scripts.handle_external_pr import get_packs_support_level_label, Checkout
+    from github_workflow_scripts.utils import ChangeCWD
 
     mocker.patch.object(Checkout, '__init__', return_value=Exception('Error'))
 
-    with ChangeCWD('Utils/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
+    with ChangeCWD('.github/github_workflow_scripts/github_workflow_scripts_tests/test_files'):
         assert get_packs_support_level_label(
             file_paths=['Packs/Pack1/pack_metadata.json'], external_pr_branch='test'
         ) == 'Xsoar Support Level'
