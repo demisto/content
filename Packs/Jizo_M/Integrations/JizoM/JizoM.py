@@ -492,22 +492,22 @@ def main() -> None:  # pragma: no cover
             # saves next_run for the time fetch-incidents is invoked
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == "jizo-protocols-get":
+        elif command == "jizo-m-protocols-get":
             return_results(get_protocols_command(client, args))
 
-        elif command == "jizo-peers-get":
+        elif command == "jizo-m-peers-get":
             return_results(get_peers_command(client, args))
 
-        elif command == "jizo-query-records-get":
+        elif command == "jizo-m-query-records-get":
             return_results(get_query_records_command(client, args))
 
-        elif command == "jizo-alert-rules-get":
+        elif command == "jizo-m-alert-rules-get":
             return_results(get_alert_rules_command(client, args))
 
-        elif command == "jizo-device-records-get":
+        elif command == "jizo-m-device-records-get":
             return_results(get_device_records_command(client, args))
 
-        elif command == "jizo-device-alerts-get":
+        elif command == "jizo-m-device-alerts-get":
             return_results(get_device_alerts_command(client, args))
 
         else:
