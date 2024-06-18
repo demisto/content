@@ -1,6 +1,6 @@
 import pytest
 
-from Utils.github_workflow_scripts.jira_integration_scripts import link_pr_to_jira_issue
+from github_workflow_scripts.jira_integration_scripts import link_pr_to_jira_issue
 
 PR_WITH_ONLY_FIXES_WITH_SPACE = """This pr is dummy
 fixes: https://jira-hq.paloaltonetworks.local/browse/CIAC-3473 somthing

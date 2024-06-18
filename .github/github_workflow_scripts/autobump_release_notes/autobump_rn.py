@@ -8,11 +8,11 @@ from github import Github
 from github.PullRequest import PullRequest
 from github.Repository import Repository
 import sys
-from Utils.github_workflow_scripts.autobump_release_notes.skip_conditions import MetadataCondition, \
+from skip_conditions import MetadataCondition, \
     LastModifiedCondition, LabelCondition, AddedRNFilesCondition, HasConflictOnAllowedFilesCondition, \
     PackSupportCondition, MajorChangeCondition, MaxVersionCondition, OnlyVersionChangedCondition, \
     OnlyOneRNPerPackCondition, SameRNMetadataVersionCondition, AllowedBumpCondition, UpdateType
-from Utils.github_workflow_scripts.utils import timestamped_print, Checkout
+from utils import timestamped_print, Checkout
 from git import Repo
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
 import os
