@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: add_verbose_to_pre_commit_all
+  CURRENT_BRANCH_NAME: $INFRA_BRANCH
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: add_verbose_to_pre_commit_all
+    ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
