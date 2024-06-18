@@ -302,6 +302,7 @@ tasks:
       version: -1
       name: arcanna-get-decision-set
       script: Arcanna.AI|||arcanna-get-decision-set
+      description: 
       type: regular
       iscommand: true
       brand: Arcanna.AI
@@ -561,5 +562,7 @@ inputs: []
 outputs:
 - contextPath: incident
   type: unknown
-sourceplaybookid: 4fa25abd-678b-4f1d-836e-cf568eb27ace
+tests:
+- No tests (auto formatted)
+fromversion: 5.5.0
 
