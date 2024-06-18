@@ -49,7 +49,7 @@ configuration:
   type: 15
   additionalinfo: |
     Predefined list of indicator types:
-    - YARA: Parses YARA rules from the feed.
+    - YARA: Parses YARA rules from the feed. The "Yara" pack is required for this type.
     - STIX: Parses STIX data from the feed.
     - IOCs: Parses Indicators of Compromise (IOCs) using regex patterns.
   section: Collect
