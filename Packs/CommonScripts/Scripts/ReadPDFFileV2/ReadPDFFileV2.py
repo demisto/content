@@ -240,9 +240,9 @@ def get_pdf_htmls_content(pdf_path: str, output_folder: str, unescape_url: bool 
     html_file_names = get_files_names_in_path(output_folder, "*.html")
     html_content = ""
     for file_name in html_file_names:
-        with open(file_name) as f:
+        with open(file_name, "rb") as f:
             for line in f:
-                html_content += html.unescape(line) if unescape_url else line
+                html_content += html.unescape(str(line)) if unescape_url else str(line)
     return html_content
 
 
