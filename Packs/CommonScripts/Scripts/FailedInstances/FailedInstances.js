@@ -20,7 +20,7 @@ Object.keys(all).forEach(function(m) {
         var content = res[0].Contents
         var result = content.includes("Test button cannot be used");
         if (result === true) {
-            cmd = m.replace(/\s/g,'_') + '-oauth-test'
+            cmd = 'servicenow-oauth-test'
             res =  executeCommand(cmd, {});
         }
         executeCommand("addEntries", {"entries": JSON.stringify([{
