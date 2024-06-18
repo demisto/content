@@ -2180,7 +2180,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     return incidents, last_run
 
 
-def fetch_notable_users(client: Client, args: dict[str, str], last_run_notable_users: dict[str,str]) -> tuple[list, dict]:
+def fetch_notable_users(client: Client, args: dict[str, str], last_run_notable_users: dict[str, str]) -> tuple[list, dict]:
     current_time = datetime.now(pytz.utc)
     # look_back = arg_to_number(args.get("look_back", "1"))
 
@@ -2191,13 +2191,12 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_notable_u
         difference = current_time - last_run_time
         if difference.total_seconds() / 60 <= fetch_interval:
             return [], last_run_notable_users
-        
+
         else:
             time_period = fetch_interval
-            
-    else: # on the first run
-        time_period = args.get("notable_users_first_fetch", "3 days")
 
+    else:  # on the first run
+        time_period = args.get("notable_users_first_fetch", "3 days")
 
     # TODO:  last_run.get("limit") or
     limit = args.get("max_fetch_users") or DEFAULT_LIMIT
