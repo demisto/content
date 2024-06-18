@@ -13,7 +13,7 @@ def handle_calling_context(mocker):
     mocker.patch.object(demisto, 'callingContext', {'context': {'IntegrationBrand': INTEGRATION_NAME}})
 
 
-with open("test_data/args.json", "r") as f:
+with open("test_data/args.json") as f:
     data = json.load(f)
     MOCKED_CLIENT_KWARGS = data["client_kwargs"]
     MOCKED_UPLOAD_FILE_ARGS = data["upload_file_args"]
@@ -21,22 +21,22 @@ with open("test_data/args.json", "r") as f:
     MOCKED_ANALYSIS_INFO_ARGS = data["analysis_info_args"]
     MOCKED_FILE_ARGS = data["file_args"]
 
-with open("test_data/get_report.json", "r") as f:
+with open("test_data/get_report.json") as f:
     MOCKED_REPORT = json.load(f)
 
-with open("test_data/get_result.json", "r") as f:
+with open("test_data/get_result.json") as f:
     MOCKED_REPORT_RESULT = json.load(f)
 
-with open("test_data/get_file_reputation.json", "r") as f:
+with open("test_data/get_file_reputation.json") as f:
     MOCKED_FILE_REPUTATION_DATA = json.load(f)
 
-with open("test_data/upload.json", "r") as f:
+with open("test_data/upload.json") as f:
     MOCKED_UPLOAD_DATA = json.load(f)
 
-with open("test_data/get_analysis_info.json", "r") as f:
+with open("test_data/get_analysis_info.json") as f:
     MOCKED_ANALYSIS_INFO_DATA = json.load(f)
 
-with open("test_data/results.json", "r") as f:
+with open("test_data/results.json") as f:
     data = json.load(f)
     MOCKED_UPLOAD_FILE_RESULTS = data["upload_file_results"]
     MOCKED_UPLOAD_URL_RESULTS = data["upload_url_results"]
