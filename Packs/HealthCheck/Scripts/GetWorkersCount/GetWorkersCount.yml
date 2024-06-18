@@ -19,6 +19,5 @@ tags:
 - widget
 type: python
 fromversion: 6.10.0
-toVersion: 6.99.0
 tests:
 - No tests (auto formatted)
