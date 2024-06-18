@@ -112,7 +112,7 @@ class Client(BaseClient):
         )
         events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
         last_item = events.pop()
-        demisto.debug(f"[test] popped last_item: {last_item=}")
+        demisto.debug(f"[test] popped last_item: {last_item=} and {len(events)} new events.")
         offset = last_item.get("offset")
         return events, offset
 
@@ -491,7 +491,9 @@ def main():
             ):
                 demisto.debug(f"Sending {len(events)} events to xsiam.")
                 send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
+                demisto.debug(f"Sent events to xsiam, setting context with: {offset=}")
                 set_integration_context({"offset": offset})
+            demisto.debug(f"update module health with {total_events_count=}")
             demisto.updateModuleHealth({'eventsPulled': total_events_count})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
