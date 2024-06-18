@@ -124,7 +124,7 @@ class Client(BaseClient):
             client_secret=self.client_secret,
             redirect_uri=self.redirect_uri,
         )
-        return self._http_request(method='POST', url_suffix='access_token', headers=headers, params=params)
+        return self._http_request(method='POST', url_suffix='access_token', headers=headers, data=params)
 
     def save_tokens_to_integration_context(self, result: dict):
         """
