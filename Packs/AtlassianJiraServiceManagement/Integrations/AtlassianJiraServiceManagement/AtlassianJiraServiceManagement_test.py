@@ -19,45 +19,64 @@ command_test_data = util_load_json('./test_data/command_test_data.json')
 client = JSM.Client(base_url='https://url.com', verify=False, proxy=False, api_key='key123')
 
 
-@pytest.mark.parametrize(
-    "objects, key_mapping, expected_result",
-    [
-        ([], None, []),
-        (
-            [
-                {"key1": "value1", "key2": "value2"},
-                {"key3": "value3", "key4": "value4"},
-            ],
-            None,
-            [
-                {"Key1": "value1", "Key2": "value2"},
-                {"Key3": "value3", "Key4": "value4"},
-            ],
-        ),
-        (
-            [
-                {"key1": "value1", "key2": "value2"},
-                {"key3": "value3", "key4": "value4"},
-            ],
-            {"key1": "MappedKey1", "key4": "MappedKey4"},
-            [
-                {"MappedKey1": "value1", "Key2": "value2"},
-                {"Key3": "value3", "MappedKey4": "value4"},
-            ],
-        ),
-    ],
-)
-def test_convert_keys_to_pascal(objects, key_mapping, expected_result):
+def test_convert_keys_to_pascal_empty_list():
     """
     Given:
-        - A list of objects to convert to pascal case.
-        - A key mapping to apply to the keys.
-        - The expected result of the conversion.
+        - An empty list of objects to convert to pascal case.
     When:
         - Calling the convert_keys_to_pascal function.
     Then:
-        - The function should return the expected result.
+        - The function should return an empty list.
     """
+    objects = []
+    key_mapping = None
+    expected_result = []
+    result = JSM.convert_keys_to_pascal(objects, key_mapping)
+    assert result == expected_result
+
+
+def test_convert_keys_to_pascal_list_with_keys():
+    """
+    Given:
+        - A list of objects with keys to convert to pascal case.
+    When:
+        - Calling the convert_keys_to_pascal function.
+    Then:
+        - The function should return the list with keys converted to pascal case.
+    """
+    objects = [
+        {"key1": "value1", "key2": "value2"},
+        {"key3": "value3", "key4": "value4"},
+    ]
+    key_mapping = None
+    expected_result = [
+        {"Key1": "value1", "Key2": "value2"},
+        {"Key3": "value3", "Key4": "value4"},
+    ]
+    result = JSM.convert_keys_to_pascal(objects, key_mapping)
+    assert result == expected_result
+
+
+def test_convert_keys_to_pascal_list_with_keys_and_mapping():
+    """
+    Given:
+        - A list of objects with keys to convert to pascal case.
+        - A key mapping to apply to the keys.
+    When:
+        - Calling the convert_keys_to_pascal function.
+    Then:
+        - The function should return the list with keys converted to pascal case
+          and mapping applied where specified.
+    """
+    objects = [
+        {"key1": "value1", "key2": "value2"},
+        {"key3": "value3", "key4": "value4"},
+    ]
+    key_mapping = {"key1": "MappedKey1", "key4": "MappedKey4"}
+    expected_result = [
+        {"MappedKey1": "value1", "Key2": "value2"},
+        {"Key3": "value3", "MappedKey4": "value4"},
+    ]
     result = JSM.convert_keys_to_pascal(objects, key_mapping)
     assert result == expected_result
 
@@ -89,34 +108,96 @@ def test_get_object_outputs():
     assert JSM.get_object_outputs(objects) == expected_output
 
 
-@pytest.mark.parametrize("attributes, expected", [
-    (
-        [{'id': 1, 'name': 'Test', 'type': 0, 'defaultType': {'name': 'Text'}}],
-        [{'ID': 1, 'Name': 'Test', 'Type': 'Text', 'DefaultType': {'name': 'Text'}}]
-    ),
-    (
-        [{'id': 2, 'value': 'Hello', 'type': 1}],
-        [{'ID': 2, 'Value': 'Hello', 'Type': 'Object Reference'}]
-    ),
-    ([], []),
-])
-def test_clean_object_attributes(attributes, expected):
+def test_clean_object_attributes_with_type_and_default_type():
+    """
+    Given:
+        - An object with 'id', 'name', 'type', and 'defaultType' fields.
+    When:
+        - Cleaning the object attributes to match a certain format.
+    Then:
+        - The cleaned attributes should match the expected format with 'type' replaced by its string representation and keys in PascalCase.
+    """
+    attributes = [{'id': 1, 'name': 'Test', 'type': 0, 'defaultType': {'name': 'Text'}}]
+    expected = [{'ID': 1, 'Name': 'Test', 'Type': 'Text', 'DefaultType': {'name': 'Text'}}]
     result = JSM.clean_object_attributes(attributes)
     assert result == expected
 
 
-@pytest.mark.parametrize("attributes, expected", [
-    ({"attr1": ["value1", "value2"]},
-     [{"objectTypeAttributeId": "attr1", "objectAttributeValues": [{"value": "value1"}, {"value": "value2"}]}]),
-    ({"attr2": ["hello"]}, [{"objectTypeAttributeId": "attr2", "objectAttributeValues": [{"value": "hello"}]}]),
-    ({}, []),
-])
-def test_convert_attributes(attributes, expected):
+def test_clean_object_attributes_with_type():
     """
-    Given: A dictionary of attribute IDs and their corresponding values
-    When: The convert_attributes function is called with the dictionary
-    Then: The function should return a list of dictionaries with the correct structure
+    Given:
+        - An object with 'id', 'value', and 'type' fields.
+    When:
+        - Cleaning the object attributes to match a certain format.
+    Then:
+        - The cleaned attributes should match the expected format with 'type' replaced by its string representation and keys in PascalCase.
     """
+    attributes = [{'id': 2, 'value': 'Hello', 'type': 1}]
+    expected = [{'ID': 2, 'Value': 'Hello', 'Type': 'Object Reference'}]
+    result = JSM.clean_object_attributes(attributes)
+    assert result == expected
+
+
+def test_clean_object_attributes_empty():
+    """
+    Given:
+        - An empty list of object attributes.
+    When:
+        - Cleaning the object attributes to match a certain format.
+    Then:
+        - The function should return an empty list as no attributes are present to clean.
+    """
+    attributes = []
+    expected = []
+    result = JSM.clean_object_attributes(attributes)
+    assert result == expected
+
+
+def test_convert_attributes_multiple_values():
+    """
+    Given:
+        - A dictionary with one attribute having multiple values.
+    When:
+        - The convert_attributes function is called with the dictionary.
+    Then:
+        - The function should return a list with a dictionary containing 'objectTypeAttributeId' set to the attribute ID and 'objectAttributeValues' as a list of dictionaries with 'value' keys.
+    """
+    attributes = {"attr1": ["value1", "value2"]}
+    expected = [
+        {"objectTypeAttributeId": "attr1", "objectAttributeValues": [{"value": "value1"}, {"value": "value2"}]}
+    ]
+    result = JSM.convert_attributes(attributes)
+    assert result == expected
+
+
+def test_convert_attributes_single_value():
+    """
+    Given:
+        - A dictionary with one attribute having a single value.
+    When:
+        - The convert_attributes function is called with the dictionary.
+    Then:
+        - The function should return a list with a dictionary containing 'objectTypeAttributeId' set to the attribute ID and 'objectAttributeValues' as a list with a single dictionary with the 'value' key.
+    """
+    attributes = {"attr2": ["hello"]}
+    expected = [
+        {"objectTypeAttributeId": "attr2", "objectAttributeValues": [{"value": "hello"}]}
+    ]
+    result = JSM.convert_attributes(attributes)
+    assert result == expected
+
+
+def test_convert_attributes_empty():
+    """
+    Given:
+        - An empty dictionary of attributes.
+    When:
+        - The convert_attributes function is called with the dictionary.
+    Then:
+        - The function should return an empty list as there are no attributes to convert.
+    """
+    attributes = {}
+    expected = []
     result = JSM.convert_attributes(attributes)
     assert result == expected
 
@@ -256,17 +337,17 @@ def test_parse_object_results_empty():
     assert JSM.parse_object_results(res) == expected_output
 
 
-@pytest.mark.parametrize("args, expected_len", [
-    ({'limit': '2'}, 2),
-    ({'all_results': 'true'}, 3),
-    ({'all_results': 'true', 'limit': 2}, 3),
-])
-def test_jira_asset_object_schema_list_command(mocker: MockerFixture, args: dict[str, Any], expected_len: int):
+def test_jira_asset_object_schema_list_command_with_limit(mocker: MockerFixture):
     """
-    Given: An args dict with limit and/or all_results
-    When: Calling the jira_asset_object_schema_list_command with the args dict
-    Then: The command returns results, taking into account the limit, only if all_results is false
+    Given:
+        - An args dict with a 'limit' argument.
+    When:
+        - Calling the jira_asset_object_schema_list_command with the args dict.
+    Then:
+        - The command returns a limited number of results as specified by the 'limit' argument.
     """
+    args = {'limit': '2'}
+    expected_len = 2
     mocked_return_value = command_test_data['object_schema_list']['response']
     mocked_client = mocker.patch.object(client, 'get_schema_list', return_value=mocked_return_value)
     command_results = JSM.jira_asset_object_schema_list_command(client, args)
@@ -274,22 +355,111 @@ def test_jira_asset_object_schema_list_command(mocker: MockerFixture, args: dict
     assert len(command_results.outputs) == expected_len
 
 
-@pytest.mark.parametrize("args, expected_len", [
-    ({'limit': '2', 'schema_id': '1'}, 2),
-    ({'limit': '4', 'schema_id': '1'}, 4),
-    ({'all_results': 'true', 'schema_id': '1'}, 5),
-    ({'all_results': 'true', 'limit': 2, 'schema_id': '1'}, 5),
-])
-def test_jira_asset_object_type_list_command(mocker: MockerFixture, args: dict[str, Any], expected_len: int):
+def test_jira_asset_object_schema_list_command_all_results(mocker: MockerFixture):
     """
-    Given: An args dict with limit and/or all_results
-    When: Calling the jira_asset_object_type_list_command with the args dict
-    Then: The command returns results, taking into account the limit, only if all_results is false
+    Given:
+        - An args dict with 'all_results' set to 'true'.
+    When:
+        - Calling the jira_asset_object_schema_list_command with the args dict.
+    Then:
+        - The command returns all results, ignoring any 'limit' argument.
     """
+    args = {'all_results': 'true'}
+    expected_len = 3
+    mocked_return_value = command_test_data['object_schema_list']['response']
+    mocked_client = mocker.patch.object(client, 'get_schema_list', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_schema_list_command(client, args)
+    mocked_client.assert_called()
+    assert len(command_results.outputs) == expected_len
+
+
+def test_jira_asset_object_schema_list_command_all_results_with_limit(mocker: MockerFixture):
+    """
+    Given:
+        - An args dict with 'all_results' set to 'true' and a 'limit' argument.
+    When:
+        - Calling the jira_asset_object_schema_list_command with the args dict.
+    Then:
+        - The command returns all results, taking into account the 'limit' only if 'all_results' is false.
+    """
+    args = {'all_results': 'true', 'limit': 2}
+    expected_len = 3
+    mocked_return_value = command_test_data['object_schema_list']['response']
+    mocked_client = mocker.patch.object(client, 'get_schema_list', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_schema_list_command(client, args)
+    mocked_client.assert_called()
+    assert len(command_results.outputs) == expected_len
+
+
+def test_jira_asset_object_type_list_command_with_limit_2(mocker: MockerFixture):
+    """
+    Given:
+        - An arguments dictionary with 'limit' set to '2' and 'schema_id' set to '1'.
+    When:
+        - Calling the jira_asset_object_type_list_command with the given arguments.
+    Then:
+        - The command should return exactly 2 results as specified by the 'limit' argument.
+    """
+    args = {'limit': '2', 'schema_id': '1'}
+    expected_len = 2
     mocked_return_value = command_test_data['object_type_list']['response']
     mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
     command_results = JSM.jira_asset_object_type_list_command(client, args)
-    mocked_client.assert_called_with(args['schema_id'], None, None)
+    mocked_client.assert_called_with('1', None, None)
+    assert len(command_results.outputs) == expected_len
+
+
+def test_jira_asset_object_type_list_command_with_limit_4(mocker: MockerFixture):
+    """
+    Given:
+        - An arguments dictionary with 'limit' set to '4' and 'schema_id' set to '1'.
+    When:
+        - Calling the jira_asset_object_type_list_command with the given arguments.
+    Then:
+        - The command should return exactly 4 results as specified by the 'limit' argument.
+    """
+    args = {'limit': '4', 'schema_id': '1'}
+    expected_len = 4
+    mocked_return_value = command_test_data['object_type_list']['response']
+    mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_type_list_command(client, args)
+    mocked_client.assert_called_with('1', None, None)
+    assert len(command_results.outputs) == expected_len
+
+
+def test_jira_asset_object_type_list_command_all_results(mocker: MockerFixture):
+    """
+    Given:
+        - An arguments dictionary with 'all_results' set to 'true' and 'schema_id' set to '1'.
+    When:
+        - Calling the jira_asset_object_type_list_command with the given arguments.
+    Then:
+        - The command should return all available results, ignoring the 'limit' argument.
+    """
+    args = {'all_results': 'true', 'schema_id': '1'}
+    expected_len = 5
+    mocked_return_value = command_test_data['object_type_list']['response']
+    mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_type_list_command(client, args)
+    mocked_client.assert_called_with('1', None, None)
+    assert len(command_results.outputs) == expected_len
+
+
+def test_jira_asset_object_type_list_command_all_results_with_limit(mocker: MockerFixture):
+    """
+    Given:
+        - An arguments dictionary with 'all_results' set to 'true', a 'limit' of 2, and 'schema_id' set to '1'.
+    When:
+        - Calling the jira_asset_object_type_list_command with the given arguments.
+    Then:
+        - The command should return all available results, as 'all_results' takes precedence over the 'limit'.
+    """
+    args = {'all_results': 'true', 'limit': 2, 'schema_id': '1'}
+    expected_len = 5
+    mocked_return_value = command_test_data['object_type_list']['response']
+    mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
+    command_results = JSM.jira_asset_object_type_list_command(client, args)
+    mocked_client.assert_called_with('1', None, None)
     assert len(command_results.outputs) == expected_len
 
 
