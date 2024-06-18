@@ -303,15 +303,15 @@ def get_items_request():
     if r.status_code == 200:
         header_field = []
 
-        for field in json_text['fields']:
-            header_field.append(field['name'])
+        for field in json_text.get('fields'):
+            header_field.append(field.get('name'))
         exportdata = []
-        if json_text['total_hits'] == 0:
+        if json_text.get('total_hits') == 0:
             DEBUG('found no data')
         else:
             DEBUG('found data')
 
-            for data in json_text['data']:
+            for data in json_text.get('data'):
                 entry_line = {}
                 header_position = 0
 
@@ -321,11 +321,11 @@ def get_items_request():
                 exportdata.append(entry_line)
 
             for items in exportdata:
-                if not (items['dg_alert.dg_detection_source']) == 'alert' and items['dg_tags']:
-                    comm = items['dg_alarm_name'].find(',')
+                if not (items.get('dg_alert.dg_detection_source')) == 'alert' and items.get('dg_tags'):
+                    comm = items.get('dg_alarm_name').find(',')
                     if comm == -1:
                         comm = 100
-                    name = '{alarm_name}-{id}'.format(alarm_name=items['dg_alarm_name'][0:comm], id=items['dg_guid'])
+                    name = '{alarm_name}-{id}'.format(alarm_name=items.get('dg_alarm_name')[0:comm], id=items.get('dg_guid'))
                     DEBUG(name + " != " + oldname)
                     if name != oldname:
                         DEBUG("create_artifacts...")
@@ -463,8 +463,8 @@ def create_artifacts(alert):
         cef_types = {}
         cef['Vendor ID'] = 'DG'
         cef['Vendor Product'] = 'Digital Guardian'
-        cef['severity'] = convert_to_demisto_severity(alert['dg_alarm_sev'])
-        cef['sensitivity'] = convert_to_demisto_sensitivity(alert['dg_class.dg_name'])
+        cef['severity'] = convert_to_demisto_severity(alert.get('dg_alarm_sev'))
+        cef['sensitivity'] = convert_to_demisto_sensitivity(alert.get('dg_class.dg_name'))
 
         DEBUG("cef: " + json.dumps(cef))
         for artifact_key, artifact_tuple in specific_alert_mapping.get(CATEGORY).items():  # type: ignore
@@ -472,13 +472,13 @@ def create_artifacts(alert):
                 cef[artifact_key] = alert[artifact_tuple[0]]
                 cef_types[artifact_key] = artifact_tuple[1]
         if cef:
-            comm = alert['dg_alarm_name'].find(',')
+            comm = alert.get('dg_alarm_name').find(',')
             if comm == -1:
                 comm = 100
-            name = '{alarm_name}-{id}'.format(alarm_name=alert['dg_alarm_name'][0:comm], id=alert['dg_guid'])
+            name = '{alarm_name}-{id}'.format(alarm_name=alert.get('dg_alarm_name')[0:comm], id=alert.get('dg_guid'))
             temp_dict['name'] = name
-            temp_dict['severity'] = convert_to_demisto_severity(alert['dg_alarm_sev'])
-            temp_dict['type'] = alert['dg_tags']
+            temp_dict['severity'] = convert_to_demisto_severity(alert.get('dg_alarm_sev'))
+            temp_dict['type'] = alert.get('dg_tags')
             temp_dict['occurred'] = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')
             temp_dict['rawJSON'] = json.dumps(cef)
             artifacts_list.update(temp_dict)
