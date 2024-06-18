@@ -41,7 +41,7 @@ configuration:
   type: 0
   required: false
   hidden: false
-  defaultValue: closeReason
+  defaultvalue: closeReason
   additionalinfo: This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
 - display: Default Arcanna Job Id
   name: default_job_id
@@ -73,6 +73,7 @@ script:
       type: String
     description: Get jobs list
   - name: arcanna-export-event
+    description: Export full event with metadata from Arcanna.ai based on specified Job ID and Event ID
     arguments:
     - name: job_id
       required: true
@@ -108,6 +109,7 @@ script:
     - contextPath: Arcanna.Event.decision_set
       description: List of available labels for specified AI Job
       type: List
+    description: Retrieve avaiable decision points for specified AI Job
   - name: arcanna-send-event
     arguments:
     - name: job_id
