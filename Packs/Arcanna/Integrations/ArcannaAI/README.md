@@ -152,6 +152,8 @@ Retrieves Arcanna Inference result.
 | Arcanna.Event.error_message | String | Arcanna error message if any. | 
 | Arcanna.Event.status | String | Arcanna event status. | 
 | Arcanna.Event.result_label | String | Arcanna event result label |
+| Arcanna.Event.is_duplicated | boolean | Deprecated. Arcanna signalling if event is duplicated by another alert. |
+| Arcnana.Event.confidence_level | Number | Deprecated. Arcanna ML confidence_level |  
 | Arcanna.Event.confidence_score | Number | Arcanna ML confidence_score |
 | Arcanna.Event.bucket_state | String | Flag to indicate the current event's state in the AI Model |
 | Arcanna.Event.outlier | boolean | Arcanna signalling if event is an outlier based on historical data | 

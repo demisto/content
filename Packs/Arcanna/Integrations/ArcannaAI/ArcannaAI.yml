@@ -159,10 +159,10 @@ script:
       description: Arcanna ML confidence_score.
       type: Number
     - contextPath: Arcanna.Event.is_duplicated
-      description: Arcanna signalling if event is duplicated by another alert.
+      description: Deprecated. Arcanna signalling if event is duplicated by another alert.
       type: boolean
-    - contextPath: Arcanna.Event.confidence_score
-      description: Arcanna ML confidence_score.
+    - contextPath: Arcanna.Event.confidence_level
+      description: Deprecated. Arcanna ML confidence_level.
       type: Number
     - contextPath: Arcanna.Event.result
       description: Arcanna event  result
