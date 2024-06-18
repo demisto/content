@@ -18,11 +18,15 @@ class Replace:
     @staticmethod
     def get_typed_value(value: str) -> VALUE_TYPE:
         try:
+            demisto.debug(f'MapRangeValues, get_typed_value, the initial {value=}')
             f_value = float(value)
             if f_value % 1 == 0:
-                return int(value)
+                demisto.debug(f'MapRangeValues, get_typed_value, casting {f_value=} to int')
+                return int(f_value)
+            demisto.debug(f'MapRangeValues, get_typed_value, return float {f_value=}')
             return f_value
         except ValueError:
+            demisto.debug(f'MapRangeValues, get_typed_value, in ValueError {value=}')
             return str(value)
 
 
@@ -33,6 +37,7 @@ class RangeReplace(Replace):
         self.replacement = self.get_typed_value(replacement)
 
     def should_replace(self, value) -> bool:    # pylint: disable=W9014
+        demisto.debug(f'MapRangeValues, RangeReplace class, should_replace {self._start_value=} {value=} {self._end_value=}')
         try:
             return self._start_value <= value <= self._end_value
         except TypeError:
