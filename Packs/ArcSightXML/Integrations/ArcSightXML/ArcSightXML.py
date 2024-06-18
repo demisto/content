@@ -156,4 +156,3 @@ elif demisto.command() == 'fetch-incidents' or demisto.command() == 'arcsight-fe
 
 elif demisto.command() == 'arcsight-update-case':
     update_case()
-
