@@ -66,25 +66,6 @@ configuration:
   - mentionOld
   advanced: true
   additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
-  hidden:
-  - marketplacev2
-- display: Types of Notifications to Send.
-  name: permitted_notifications
-  type: 16
-  section: Collect
-  required: false
-  hidden:
-  - xsoar
-  options:
-  - investigationClosed
-  - investigationDeleted
-  - alertReminderSLA
-  - taskCompleted
-  - failedFetchAlerts
-  - mentionNew
-  - mentionOld
-  advanced: true
-  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13
@@ -119,6 +100,7 @@ configuration:
   advanced: true
   additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
@@ -131,6 +113,7 @@ configuration:
   required: false
   additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
 - defaultvalue: 'true'
+  defaultvalue:xpanse: 'false'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
@@ -523,6 +506,7 @@ script:
   script: '-'
   subtype: python3
   type: python
+  isFetchSamples: true
 fromversion: 5.5.0
 tests:
 - SlackV3 TestPB
