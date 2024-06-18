@@ -209,8 +209,7 @@ def test_oauth_complete(client):
 
     with requests_mock.Mocker() as m:
         m.post(
-            'https://url.com/access_token?grant_type=authorization_code&code=123456&client_id=1&client_secret=1'
-            '&redirect_uri=https%3A%2F%2Fredirect.com',
+            'https://url.com/access_token',
             json=mock_get_access_token()
         )
         results = oauth_complete(client, {'code': '123456'})
