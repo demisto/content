@@ -897,7 +897,9 @@ def main() -> None:  # pragma: no cover
     :rtype:
     """
     api_key = demisto.get(demisto.params(), 'credentials.password')
-    base_url = urljoin(demisto.params().get('url'), 'api/')
+    base_url = demisto.params().get('url')
+    if 'api' not in base_url:
+        base_url = urljoin(base_url, 'api/')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     reliability = demisto.params().get('Reliability', DBotScoreReliability.C)
