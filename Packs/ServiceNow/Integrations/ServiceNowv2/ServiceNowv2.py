@@ -2439,13 +2439,10 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]
     Test the instance configurations when using basic authorization.
     """
     if client.use_oauth:
-        context = get_integration_context()
         # servicenow-oauth-login command was never executed, and refresh_token was not stored in integration context.
-        if not context.get('refresh_token'):
-            raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
-                            'command followed by the !servicenow-oauth-test command to test the instance.')
+        raise Exception('Test button cannot be used when using OAuth 2.0. Please use the !servicenow-oauth-login '
+                        'command followed by the !servicenow-oauth-test command to test the instance.')
 
-        test_instance(client)
 
     if client._version == 'v2' and client.get_attachments:
         raise DemistoException('Retrieving incident attachments is not supported when using the V2 API.')
