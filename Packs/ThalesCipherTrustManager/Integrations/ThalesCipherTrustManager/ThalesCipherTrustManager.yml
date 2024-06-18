@@ -1758,7 +1758,7 @@ script:
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: "List of client types that can authenticate using the user's credentials. Default value - \"unregistered,public,confidential\" i.e. all clients can authenticate the user using user's credentials. Setting it to empty, \"empty\", authenticate the user using user's credentials. Setting it to empty, \"empty\", means no client can authenticate this user, which effectively means no one can login into this user. Valid values in the array are: unregistered public confidential This property does not control login behavior for users in admin group."
+      description: "A comma-separated list of client types that can authenticate using the user's credentials. Default value - \"unregistered,public,confidential\" i.e., all clients can authenticate the user using user's credentials. Setting it to empty, \"empty\", authenticate the user using user's credentials. Setting it to empty, \"empty\", means no client can authenticate this user, which effectively means no one can login into this user. Valid values in the array are: unregistered public confidential This property does not control login behavior for users in admin group."
       required: false
       secret: false
       default: false
@@ -1852,16 +1852,16 @@ script:
       description: A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles.
       type: Unknown
     - contextPath: CipherTrust.Users.logins_count
-      description: Count for the number of logins
+      description: The number of logins.
       type: Number
     - contextPath: CipherTrust.Users.last_login
-      description: Timestamp of last login
+      description: Timestamp of the last login.
       type: Date
     - contextPath: CipherTrust.Users.created_at
-      description: Timestamp of when user was created
+      description: Timestamp of when user was created.
       type: Date
     - contextPath: CipherTrust.Users.updated_at
-      description: Timestamp of last update of the user
+      description: Timestamp of last update of the user.
       type: Date
     - contextPath: CipherTrust.Users.allowed_auth_methods
       description: List of login authentication methods allowed to the user.
@@ -1876,31 +1876,31 @@ script:
       description: List of client types allowed to the user.
       type: Unknown
     - contextPath: CipherTrust.Users.nickname
-      description: Nickname of the user
+      description: Nickname of the user.
       type: String
     - contextPath: CipherTrust.Users.failed_logins_count
-      description: Count of failed login attempts
+      description: Number of failed login attempts.
       type: Number
     - contextPath: CipherTrust.Users.account_lockout_at
-      description: Timestamp when the account was locked out
+      description: Timestamp when the account was locked out.
       type: Date
     - contextPath: CipherTrust.Users.failed_logins_initial_attempt_at
-      description: Timestamp of the initial failed login attempt
+      description: Timestamp of the initial failed login attempt.
       type: Date
     - contextPath: CipherTrust.Users.last_failed_login_at
-      description: Timestamp of the last failed login attempt
+      description: Timestamp of the last failed login attempt.
       type: Date
     - contextPath: CipherTrust.Users.password_changed_at
-      description: Timestamp of when the password was last changed
+      description: Timestamp of when the password was last changed.
       type: Date
     - contextPath: CipherTrust.Users.password_change_required
-      description: Indicates if a password change is required
+      description: Indicates if a password change is required.
       type: Boolean
     - contextPath: CipherTrust.Users.auth_domain
-      description: Authentication domain of the user
+      description: Authentication domain of the user.
       type: String
     - contextPath: CipherTrust.Users.login_flags
-      description: Flags related to login permissions
+      description: Flags related to login permissions.
       type: Unknown
   - deprecated: false
     description: Deletes a user given the user's user ID. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to.
@@ -2047,7 +2047,7 @@ script:
       auto: PREDEFINED
     - name: allowed_auth_methods
       isArray: true
-      description: 'List of login authentication methods allowed to the user. Setting it to empty, i.e "empty", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. Valid values in the array are: password user_certificate password_with_user_certificate This property does not control login behavior for users in admin group.'
+      description: 'List of login authentication methods allowed to the user. Setting it to empty, i.e., "empty", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. Valid values in the array are: password user_certificate password_with_user_certificate This property does not control login behavior for users in admin group.'
       required: false
       secret: false
       default: false
@@ -2059,7 +2059,7 @@ script:
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: "List of client types that can authenticate using the user's credentials. Setting it to empty, i.e \"empty\", means no client can authenticate this user, which effectively means no one can login into this user. Valid values in the array are: unregistered public confidential This property does not control login behavior for users in admin group."
+      description: "A comma-separated list of client types that can authenticate using the user's credentials. Setting it to empty, i.e., \"empty\", means no client can authenticate this user, which effectively means no one can login into this user. Valid values in the array are: unregistered public confidential This property does not control login behavior for users in admin group."
       required: false
       secret: false
       default: false
