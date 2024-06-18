@@ -71,6 +71,7 @@ class Client(BaseClient):
 
         param_string: str = '&'.join([f'{key}={value}' for key, value in params.items()])
         param_string = param_string.replace('noRejected=None', 'noRejected')
+        param_string = param_string.replace('hasKev=True', 'hasKev')
 
         for value in self.cvssv3severity:
             param_string += f'&cvssV3Severity={value}'
@@ -350,7 +351,7 @@ def retrieve_cves(client, start_date: Any, end_date: Any, publish_date: bool):
         param['lastModEndDate'] = end_date.strftime(DATE_FORMAT)
 
     if client.has_kev:
-        url_suffix += '&hasKev'
+        param['hasKev'] = True
 
     if client.keyword_search:
         param['keywordSearch'] = client.keyword_search
