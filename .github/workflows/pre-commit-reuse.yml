@@ -42,9 +42,16 @@ jobs:
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        BRANCH_NAME: ${{ github.head_ref }}
       run: |
         source .venv/bin/activate
-        demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+        if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
+          echo "In docker auto update branch, pre commit on docker_autoupdate mode."
+          demisto-sdk pre-commit -g --mode=docker_autoupdate --show-diff-on-failure --verbose
+        else
+          echo "Not in docker auto update branch, pre commit on CI mode."
+          demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+        fi
 
     - name: "Check coverage.xml exists"
       if: always()
@@ -61,7 +68,7 @@ jobs:
         files: ".report_pytest.xml"
 
     - name: Create pack-wise pytest report
-      run: poetry run python Utils/github_workflow_scripts/parse_junit_per_pack.py
+      run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 

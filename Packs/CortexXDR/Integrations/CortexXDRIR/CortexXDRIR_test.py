@@ -1506,3 +1506,20 @@ def test_update_alerts_in_xdr_command():
     with pytest.raises(DemistoException) as e:
         update_alerts_in_xdr_command(client, args)
     assert e.value.message == "Can not find a field to update for alerts ['1'], please fill in severity/status/comment."
+
+
+def test_main(mocker):
+    """
+    Given:
+        - Only the required params in the configuration.
+    When:
+        - Running a command.
+    Then:
+        - Validate that the code executes gracefully.
+    """
+    from CortexXDRIR import main
+    mocker.patch.object(demisto, 'params', return_value={'url': 'test_url'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mock_client = mocker.patch('CortexXDRIR.Client', autospec=True)
+    mock_client.test_module.return_value = 'ok'
+    main()

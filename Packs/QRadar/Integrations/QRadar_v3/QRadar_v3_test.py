@@ -41,6 +41,7 @@ from QRadar_v3 import get_time_parameter, add_iso_entries_to_dict, build_final_o
     qradar_log_source_languages_list_command, qradar_log_source_groups_list_command, qradar_log_source_create_command, \
     qradar_log_source_delete_command, qradar_log_source_update_command, convert_dict_to_actual_values, \
     enrich_offense_with_events, perform_long_running_loop, validate_integration_context, convert_list_to_actual_values, \
+    qradar_search_cancel_command, \
     MIRRORED_OFFENSES_FETCHED_CTX_KEY, FetchMode, IndicatorsSearcher
 
 from CommonServerPython import DemistoException, set_integration_context, CommandResults, \
@@ -846,6 +847,7 @@ def test_outputs_enriches(mocker, enrich_func, mock_func_name, args, mock_respon
                              (qradar_search_create_command, 'search_create'),
                              (qradar_search_status_get_command, 'search_status_get'),
                              (qradar_search_results_get_command, 'search_results_get'),
+                             (qradar_search_cancel_command, 'search_cancel'),
                              (qradar_reference_sets_list_command, 'reference_sets_list'),
                              (qradar_reference_set_create_command, 'reference_set_create'),
                              (qradar_reference_set_delete_command, 'reference_set_delete'),

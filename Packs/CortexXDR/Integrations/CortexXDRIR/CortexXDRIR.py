@@ -987,10 +987,13 @@ def update_remote_system_command(client, args):
             update_args['incident_id'] = remote_args.remote_incident_id
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"Before checking status {update_args=}")
+            current_remote_status = remote_args.data.get('status') if remote_args.data else None
             is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
                          or update_args.get('resolve_comment') or update_args.get('closingUserId'))
             closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
-            if is_closed and closed_without_status:
+            remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
+            demisto.debug(f"{remote_is_already_closed=}")
+            if is_closed and closed_without_status and not remote_is_already_closed:
                 update_args['status'] = XSOAR_RESOLVED_STATUS_TO_XDR.get('Other')
             demisto.debug(f"After checking status {update_args=}")
             update_incident_command(client, update_args)
@@ -998,6 +1001,8 @@ def update_remote_system_command(client, args):
             close_alerts_in_xdr = argToBoolean(client._params.get("close_alerts_in_xdr", False))
             # Check all relevant fields for an incident being closed in XSOAR UI
             demisto.debug(f"Defining whether to close related alerts by: {is_closed=} {close_alerts_in_xdr=}")
+            if is_closed and closed_without_status and remote_is_already_closed:
+                update_args['status'] = current_remote_status
             if close_alerts_in_xdr and is_closed:
                 update_related_alerts(client, update_args)
 
@@ -1267,7 +1272,7 @@ def main():  # pragma: no cover
     statuses = params.get('status')
     starred = True if params.get('starred') else None
     starred_incidents_fetch_window = params.get('starred_incidents_fetch_window', '3 days')
-    exclude_artifacts = argToBoolean(params.get('exclude_fields'))
+    exclude_artifacts = argToBoolean(params.get('exclude_fields', True))
 
     try:
         timeout = int(params.get('timeout', 120))

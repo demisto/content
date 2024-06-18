@@ -1,12 +1,12 @@
-Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection,
+Microsoft Defender XDR is a unified pre- and post-breach enterprise defense suite that natively coordinates detection,
 prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated
 protection against sophisticated attacks.
 
 ## Authentication Using the Device Code Flow
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
-to link Microsoft 365 Defender with Cortex XSOAR.
+to link Microsoft Defender XDR with Cortex XSOAR.
 
-To connect to the Microsoft 365 Defender:
+To connect to the Microsoft Defender XDR:
 1. Fill in the required parameters.
 2. Run the ***!microsoft-365-defender-auth-start*** command. 
 3. Follow the instructions that appear.
@@ -45,10 +45,10 @@ Follow these steps for a self-deployed configuration:
  * AdvancedHunting.Read.All - Application
  * Incident.ReadWrite.All - Application
 
-## Configure Microsoft 365 Defender on Cortex XSOAR
+## Configure Microsoft Defender XDR on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Microsoft 365 Defender.
+2. Search for Microsoft Defender XDR.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -166,7 +166,7 @@ There is no context output for this command.
 
 ### microsoft-365-defender-auth-test
 ***
-Tests the connectivity to the Microsoft 365 Defender.
+Tests the connectivity to the Microsoft Defender XDR.
 
 
 #### Base Command
@@ -320,7 +320,7 @@ Update the incident with the given ID.
 
 ### microsoft-365-defender-advanced-hunting
 ***
-Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft 365 Defender.
+Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Defender XDR.
 Details on how to write queries you can find [here](https://docs.microsoft.com/en-us/microsoft-365/security/defender/advanced-hunting-query-language?view=o365-worldwide).
 
 #### Base Command
