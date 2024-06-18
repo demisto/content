@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: test_autopep8_vs_download_packs
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: test_autopep8_vs_download_packs
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
