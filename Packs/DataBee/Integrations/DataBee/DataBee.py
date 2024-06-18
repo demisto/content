@@ -50,7 +50,7 @@ SEARCH_CONFIGURATIONS: dict[SearchTypes, SearchConfiguration] = {
         output_keys=["uid", "type", "name", "start_time", "end_time", "modified_time"],
     ),
     SearchTypes.DEVICE: SearchConfiguration(
-        filters=[("hostname", "hostname"), ("mac", "mac"), ("name", "name"), ("ip", "ip")],
+        filters=[("hostname", "hostname"), ("mac", "mac"), ("name", "name"), ("ip", "ip"), ("id", "uid")],
         type=SearchTypes.DEVICE,
         headers=[
             "uid",
@@ -397,13 +397,11 @@ def build_full_query(search_type: SearchTypes, args: dict[str, Any]) -> str:
             create_query(operator=search_operator, key=databee_key, value=args.get(xsoar_key))
         )
     query = remove_empty_elements(query)
-
     if len(query) == 0:
         raise ValueError("You have to provide at least one filter or use the query argument.")
 
     if search_type == SearchTypes.FINDING:
         query.append("metadata.product.name in databee")
-
     return (" and ").join(query)
 
 
@@ -482,15 +480,13 @@ def get_endpoint_command(
     client: Client,
     args: dict[str, Any],
 ) -> list[CommandResults]:
-    if hostname := args.get("hostname"):
-        pass
+    hostname = args.get("hostname")
+    ip = args.get("ip")
+    id = args.get("id")
 
-    if ip := args.get("ip"):
-        pass
-
-    if not ip and not hostname:
+    if not ip and not hostname and not id:
         # in order not to return all the devices
-        raise ValueError("Please add a filter argument - ip or hostname.")
+        raise ValueError("Please add a filter argument - ip, hostname ot id.")
 
     # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
     raw_res = client.search(

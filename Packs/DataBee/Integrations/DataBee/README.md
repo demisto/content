@@ -861,6 +861,7 @@ Returns information about an endpoint.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+| id | The endpoint ID. | Optional | 
 | ip | The endpoint IP address. | Optional | 
 | hostname | The endpoint hostname. | Optional | 
 

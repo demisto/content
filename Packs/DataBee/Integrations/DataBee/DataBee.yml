@@ -664,6 +664,8 @@ script:
           type: Unkonwn
     - name: endpoint
       arguments:
+        - description: The endpoint ID.
+          name: id
         - default: true
           description: The endpoint IP address.
           name: ip
