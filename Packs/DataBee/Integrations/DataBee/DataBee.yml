@@ -669,11 +669,14 @@ script:
       arguments:
         - description: The endpoint ID.
           name: id
+          isArray: true
         - default: true
           description: The endpoint IP address.
           name: ip
+          isArray: true
         - description: The endpoint hostname.
           name: hostname
+          isArray: true
       description: Returns information about an endpoint.
       outputs:
         - contextPath: Endpoint.Hostname
