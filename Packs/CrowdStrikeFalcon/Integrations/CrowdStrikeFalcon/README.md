@@ -366,7 +366,7 @@ or by providing the IDs of the detections.
 | CrowdStrike.Detection.Behavior.UserName | String | The user name related to the behavior. | 
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. | 
-| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior. Note: this field dose not exist in the new "post raptor" version| 
+| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior.| 
 | CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. Note: this field dose not exist in the new "post raptor" version| 
 | CrowdStrike.Detection.System | String | The system name of the detection. | 
 | CrowdStrike.Detection.CustomerID | String | The ID of the customer \(CID\). | 
@@ -1969,7 +1969,7 @@ Lists detection summaries.
 | --- | --- | --- |
 | CrowdStrike.Detections.cid | String | The organization's customer ID \(CID\). | 
 | CrowdStrike.Detections.created_timestamp | Date | The datetime the detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.Detections.detection_id | String | The ID of the detection. | 
+| CrowdStrike.Detections.detection_id | String | The ID of the detection.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.device.device_id | String | The device ID as seen by CrowdStrike Falcon. | 
 | CrowdStrike.Detections.device.cid | String | The CrowdStrike Customer ID \(CID\) to which the device belongs. | 
 | CrowdStrike.Detections.device.agent_load_flags | String | The CrowdStrike Falcon agent load flags. | 
@@ -1998,7 +1998,7 @@ Lists detection summaries.
 | CrowdStrike.Detections.device.modified_timestamp | Date | The datetime the device was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.Detections.behaviors.device_id | String | The ID of the device associated with the behavior. | 
 | CrowdStrike.Detections.behaviors.timestamp | Date | The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.Detections.behaviors.behavior_id | String | The ID of the behavior. | 
+| CrowdStrike.Detections.behaviors.behavior_id | String | The ID of the behavior.  Note: This output does not exist in the 'post raptor' version.| 
 | CrowdStrike.Detections.behaviors.filename | String | The file name of the triggering process. | 
 | CrowdStrike.Detections.behaviors.alleged_filetype | String | The file extension of the behavior's filename. | 
 | CrowdStrike.Detections.behaviors.cmdline | String | The command line of the triggering process. | 
@@ -2010,18 +2010,18 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.confidence | Number | The true positive confidence rating for the behavior. The value can be any integer between 1-100. | 
 | CrowdStrike.Detections.behaviors.ioc_type | String | The type of the triggering IOC. Possible values are: "hash_sha256", "hash_md5", "domain", "filename", "registry_key", "command_line", and "behavior". | 
 | CrowdStrike.Detections.behaviors.ioc_value | String | The IOC value. | 
-| CrowdStrike.Detections.behaviors.ioc_source | String | The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". | 
-| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description. | 
+| CrowdStrike.Detections.behaviors.ioc_source | String | The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.behaviors.user_name | String | The user name. | 
 | CrowdStrike.Detections.behaviors.user_id | String | The Security Identifier \(SID\) of the user in Windows. | 
 | CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. | 
 | CrowdStrike.Detections.behaviors.triggering_process_graph_id | String | The ID of the process that triggered the behavior detection. | 
 | CrowdStrike.Detections.behaviors.sha256 | String | The SHA256 of the triggering process. | 
 | CrowdStrike.Detections.behaviors.md5 | String | The MD5 of the triggering process. | 
-| CrowdStrike.Detections.behaviors.parent_details.parent_sha256 | String | The SHA256 hash of the parent process. | 
-| CrowdStrike.Detections.behaviors.parent_details.parent_md5 | String | The MD5 hash of the parent process. | 
-| CrowdStrike.Detections.behaviors.parent_details.parent_cmdline | String | The command line of the parent process. | 
-| CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id | String | The process graph ID of the parent process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_sha256 | String | The SHA256 hash of the parent process.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.behaviors.parent_details.parent_md5 | String | The MD5 hash of the parent process.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.behaviors.parent_details.parent_cmdline | String | The command line of the parent process.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id | String | The process graph ID of the parent process.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.behaviors.pattern_disposition | Number | The pattern associated with the action performed on the behavior. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.indicator | Boolean | Whether the detection behavior is similar to an indicator. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.detect | Boolean | Whether this behavior is detected. | 
@@ -2038,11 +2038,11 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.process_blocked | Boolean | Whether the process is blocked. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation is blocked. | 
 | CrowdStrike.Detections.email_sent | Boolean | Whether an email is sent about this detection. | 
-| CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior. | 
+| CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior. | 
-| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100. | 
+| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100. | 
-| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". | 
+| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.show_in_ui | Boolean | Whether the detection displays in the UI. | 
 | CrowdStrike.Detections.status | String | The status of the detection. | 
 | CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned. | 

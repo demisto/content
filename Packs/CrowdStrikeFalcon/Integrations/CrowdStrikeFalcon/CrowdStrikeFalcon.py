@@ -1399,7 +1399,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
-    endpoint_url = '/detects/queries/detects/v1'
+    endpoint_url = '/detects/queries/detects/v1' if not POST_RAPTOR_RELEASE else "/alerts/queries/alerts/v2?filter=product:'epp'"
     params = {
         'sort': 'first_behavior.asc',
         'offset': offset,
@@ -4736,8 +4736,10 @@ def detections_to_human_readable(detections):
     detections_readable_outputs = []
     for detection in detections:
         readable_output = assign_params(status=detection.get('status'),
-                                        max_severity=detection.get('max_severity_displayname'),
-                                        detection_id=detection.get('detection_id'),
+                                        max_severity=detection.get('max_severity_displayname') if not POST_RAPTOR_RELEASE else\
+                                            detection.get('severity_name'),
+                                        detection_id=detection.get('detection_id') if not POST_RAPTOR_RELEASE else\
+                                            detection.get("composite_id"),
                                         created_time=detection.get('created_timestamp'))
         detections_readable_outputs.append(readable_output)
     headers = ['detection_id', 'created_time', 'status', 'max_severity']
@@ -4759,12 +4761,18 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
     detections = list(detections_response_data.get('resources')) if detections_response_data else []
+    # modify the "post raptor" outputs to match the old format for backward compatibility
+    if POST_RAPTOR_RELEASE:
+        for detection in detections:
+            pattern_details = detection.pop("pattern_disposition_details", None)
+            if pattern_details:
+                detection["behaviors"] = {"pattern_disposition_details": pattern_details}
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(
         readable_output=detections_human_readable,
         outputs_prefix='CrowdStrike.Detections',
-        outputs_key_field='detection_id',
+        outputs_key_field='detection_id' if not POST_RAPTOR_RELEASE else 'composite_id',
         outputs=detections
     )
 

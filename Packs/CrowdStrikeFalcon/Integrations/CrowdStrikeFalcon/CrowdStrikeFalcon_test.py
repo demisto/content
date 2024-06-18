@@ -6998,3 +6998,71 @@ def test_resolve_detection(mocker, Post_Raptor_release, url_suffix, data):
     resolve_detection(ids=["123"],status= "resolved", assigned_to_uuid="123",show_in_ui="True",comment="comment")
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
+
+
+@pytest.mark.parametrize('Post_Raptor_release, url_suffix', [
+        (True, "/alerts/queries/alerts/v2?filter=product:'epp'"),
+         (False, '/detects/queries/detects/v1')])
+def test_get_fetch_detections(mocker, Post_Raptor_release, url_suffix):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running get_fetch_detections
+    Then:
+        - Validate that the correct url_suffix is used
+            case 1: Post_Raptor_release is True, the url_suffix should be /alerts/queries/alerts/v2?filter=product:'epp'
+            case 2: Post_Raptor_release is False, the url_suffix should be /detects/queries/detects/v1
+    """
+    from CrowdStrikeFalcon import get_fetch_detections
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+    
+    get_fetch_detections()
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+
+
+@pytest.mark.parametrize('Post_Raptor_release, expected_output', [
+        (True, [{'status': 'open', 'max_severity': 'critical', 'detection_id': '456', 'created_time': '2022-01-01T00:00:00Z'}]),
+         (False, [{'status': 'open', 'max_severity': 'high', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}])])
+def test_detections_to_human_readable(mocker, expected_output, Post_Raptor_release):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running detections_to_human_readable
+    Then:
+        - Validate that the correct output is returned based on the Post_Raptor_release flag
+    """
+    from CrowdStrikeFalcon import detections_to_human_readable
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    mock_table_to_markdown =  mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
+    input = {'status': 'open','max_severity_displayname': 'high','detection_id': '123',
+                 'created_timestamp': '2022-01-01T00:00:00Z','severity_name': 'critical','composite_id': '456'},
+    detections_to_human_readable(input)
+    
+    assert mock_table_to_markdown.call_args[0][1] == expected_output
+    
+    
+def test_list_detection_summaries_command(mocker):
+    """
+    Given:
+        - A Post_Raptor_release flag
+    When:
+        - Running list_detection_summaries_command
+    Then:
+        - Validate that the outputs are modified to avoid breaking changes with the old version
+
+    """
+    from CrowdStrikeFalcon import list_detection_summaries_command
+    mocker.patch.object(demisto, 'args')
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', True)
+    mocker.patch('CrowdStrikeFalcon.get_fetch_detections')
+    mocker.patch('CrowdStrikeFalcon.demisto.get')
+    mocker.patch('CrowdStrikeFalcon.detections_to_human_readable')
+    mocker_CommandResults = mocker.patch('CrowdStrikeFalcon.CommandResults', return_value='results')
+    mocker.patch('CrowdStrikeFalcon.get_detections_entities',
+                return_value={'resources': [{"pattern_disposition_details": "detection1"}]})
+    
+    list_detection_summaries_command()
+    assert mocker_CommandResults.call_args[1]["outputs"][0] == {'behaviors': {'pattern_disposition_details': 'detection1'}}

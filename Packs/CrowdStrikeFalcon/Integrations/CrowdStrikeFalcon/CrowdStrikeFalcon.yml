@@ -351,7 +351,7 @@ script:
       description: The ID of the parent process.
       type: String
     - contextPath: CrowdStrike.Behavior.ProcessID
-      description: 'The process ID of the behavior.  Note: this field dose not exist in the new "post raptor" version.'
+      description: The process ID of the behavior.
       type: String
     - contextPath: CrowdStrike.Behavior.ID
       description: 'The ID of the behavior.  Note: this field dose not exist in the new "post raptor" version.'
@@ -1779,7 +1779,7 @@ script:
       description: 'The datetime the detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.detection_id
-      description: The ID of the detection.
+      description: 'The ID of the detection.  Note: This output does not exist in the post raptor version.'
       type: String
     - contextPath: CrowdStrike.Detections.device.device_id
       description: The device ID as seen by CrowdStrike Falcon.
@@ -1902,10 +1902,10 @@ script:
       description: The IOC value.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".'
+      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".  Note: This output does not exist in the post raptor version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_description
-      description: The IOC description.
+      description: "The IOC description.  Note: This output does not exist in the post raptor version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.user_name
       description: The user name.
@@ -1926,16 +1926,16 @@ script:
       description: The MD5 of the triggering process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_sha256
-      description: The SHA256 hash of the parent process.
+      description: "The SHA256 hash of the parent process.  Note: This output does not exist in the post raptor version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_md5
-      description: The MD5 hash of the parent process.
+      description: "The MD5 hash of the parent process.  Note: This output does not exist in the post raptor version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_cmdline
-      description: The command line of the parent process.
+      description: 'The command line of the parent process.  Note: This output does not exist in the post raptor version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id
-      description: The process graph ID of the parent process.
+      description: "The process graph ID of the parent process.  Note: This output does not exist in the post raptor version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition
       description: The pattern associated with the action performed on the behavior.
@@ -1986,19 +1986,19 @@ script:
       description: Whether an email is sent about this detection.
       type: Boolean
     - contextPath: CrowdStrike.Detections.first_behavior
-      description: The datetime of the first behavior.
+      description: 'The datetime of the first behavior.  Note: This output does not exist in the post raptor version.'
       type: Date
     - contextPath: CrowdStrike.Detections.last_behavior
       description: The datetime of the last behavior.
       type: Date
     - contextPath: CrowdStrike.Detections.max_confidence
-      description: The highest confidence value of all behaviors. The value can be any integer between 1-100.
+      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity
       description: The highest severity value of all behaviors. Value can be any integer between 1-100.
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".'
+      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output does not exist in the post raptor version.'
       type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
