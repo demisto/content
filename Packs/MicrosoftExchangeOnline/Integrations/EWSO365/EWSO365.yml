@@ -18,7 +18,6 @@ configuration:
     - DoD
     - Germany
     - China
-    - Custom
   section: Connect
   advanced: true
   additionalinfo: More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
