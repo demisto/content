@@ -75,7 +75,7 @@ class Client:  # pragma: no cover
                     out = re.sub(pattern_to_keep, '', pre_out, count=len(re.findall(pattern_to_keep, pre_out))).strip()
 
                     c = {"Hostname": self.hostname, "DateTimeUTC": datetime.utcnow().isoformat(), "Command": cmd,
-                         "Output": f"{out}"}
+                         "Output": f"{prompt} {out}"}
                     output['Commands'].append(c)
 
         except Exception as err:
