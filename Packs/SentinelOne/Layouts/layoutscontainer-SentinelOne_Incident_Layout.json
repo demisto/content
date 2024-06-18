@@ -1069,7 +1069,7 @@
 								"id": "72ef46a0-1cef-11ef-a286-5514d85dec6e",
 								"index": 10,
 								"listId": "caseinfoid-5a8fe730-18cc-11ef-ab74-d74e442a39cc",
-								"name": "sentinelone Move Agent",
+								"name": "sentinelOne Move Agent",
 								"scriptId": "SentinelOne V2|||sentinelone-move-agent",
 								"sectionItemType": "button",
 								"startCol": 0
