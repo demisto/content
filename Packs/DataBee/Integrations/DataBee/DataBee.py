@@ -83,6 +83,7 @@ SEARCH_CONFIGURATIONS: dict[SearchTypes, SearchConfiguration] = {
             "start_time",
             "end_time",
             "modified_time",
+            "mac",
         ],
     ),
     SearchTypes.FINDING: SearchConfiguration(
@@ -213,7 +214,7 @@ class Client(BaseClient):
         self,
         table: str,
         query: str,
-        limit: int,
+        limit: int | None = None,
         offset: int = 0,
     ) -> Response:
         """Search data in DataBee.
@@ -221,8 +222,8 @@ class Client(BaseClient):
         Args:
             table (str): Table (to search for) name.
             query (str): Query.
-            limit (int): Response limit.
-            offset (int): Offset.
+            limit (int | None): Response limit. Defaults to None.
+            offset (int): Offset. Defaults to 0.
 
         Returns:
             Response: API response from DataBee.
@@ -231,11 +232,13 @@ class Client(BaseClient):
         return self._http_request(
             method="GET",
             url_suffix=f"/search/{table}",
-            params={
-                "query": query,
-                "offset": offset,
-                "limit": limit,
-            },
+            params=remove_empty_elements(
+                {
+                    "query": query,
+                    "offset": offset,
+                    "limit": limit,
+                }
+            ),
             resp_type="response",
         )
 
@@ -400,6 +403,7 @@ def build_full_query(search_type: SearchTypes, args: dict[str, Any]) -> str:
 
     if search_type == SearchTypes.FINDING:
         query.append("metadata.product.name in databee")
+
     return (" and ").join(query)
 
 
@@ -472,6 +476,57 @@ def search_command(
         ),
         raw_response=response,
     )
+
+
+def get_endpoint_command(
+    client: Client,
+    args: dict[str, Any],
+) -> list[CommandResults]:
+    if hostname := args.get("hostname"):
+        pass
+
+    if ip := args.get("ip"):
+        pass
+
+    if not ip and not hostname:
+        # in order not to return all the devices
+        raise ValueError("Please add a filter argument - ip or hostname.")
+
+    # use OR operator between filters (https://github.com/demisto/etc/issues/46353)
+    raw_res = client.search(
+        table=SEARCH_CONFIGURATIONS[SearchTypes.DEVICE].type,
+        query=build_full_query(
+            search_type=SEARCH_CONFIGURATIONS[SearchTypes.DEVICE].type,
+            args=(args | {"search_operator": "in"}),
+        ),
+    ).json()
+
+    devices = raw_res.get("results", [])
+    if not devices:
+        raise ValueError("No devices was found")
+
+    standard_endpoints = []
+    for single_device in devices:
+        endpoint = Common.Endpoint(
+            id=single_device.get("uid"),
+            hostname=single_device.get("hostname"),
+            ip_address=single_device.get("ip"),
+            os=dict_safe_get(single_device, ["os", "type"]),
+            os_version=dict_safe_get(single_device, ["os", "version"]),
+            mac_address=single_device.get("mac"),
+            vendor=INTEGRATION_PREFIX,
+        )
+        standard_endpoints.append(endpoint)
+
+    command_results = []
+    for endpoint in standard_endpoints:
+        endpoint_context = endpoint.to_context().get(Common.Endpoint.CONTEXT_PATH)
+        hr = tableToMarkdown("DataBee Endpoint", endpoint_context)
+
+        command_results.append(
+            CommandResults(readable_output=hr, raw_response=raw_res, indicator=endpoint)
+        )
+    return command_results
 
 
 def normalize_finding(data: dict[str, Any], additional_context: list[AdditionalContext]):
@@ -774,6 +829,8 @@ def main() -> None:
             )
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
+        elif command == "endpoint":
+            return_results(get_endpoint_command(client, args))
 
         else:
             raise NotImplementedError(f"{command} command is not implemented.")

@@ -103,6 +103,36 @@ def test_search_command(
     assert len(result.outputs) <= 50 if result.outputs else True
 
 
+def test_get_endpoint_command(
+    requests_mock,
+    mock_client: Client,
+):
+    """
+    Scenario: Search endpoints.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - endpint
+    Then:
+     - Ensure that output prefix correct.
+     - Ensure that output key field correct.
+     - Ensure that outputs type is list.
+    """
+    from DataBee import get_endpoint_command
+
+    json_response = load_mock_response("search_device.json")
+    url = urljoin(
+        mock_client._base_url,
+        "/search/device",
+    )
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = get_endpoint_command(mock_client, {"ip": "1.2.3.4"})
+    assert isinstance(result, list)
+    assert len(result) == 2
+    assert isinstance(result[0].indicator, Common.Endpoint)
+    assert result[0].indicator.os == "Android"
+
+
 def test_generate_command_results():
     """
     Scenario: Generate command results.

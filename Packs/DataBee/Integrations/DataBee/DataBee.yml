@@ -136,6 +136,9 @@ script:
         - contextPath: DataBee.Device.ip
           description: The device IP address, in either IPv4 or IPv6 format.
           type: String
+        - contextPath: DataBee.Device.mac
+          description: The device MAC address.
+          type: String
         - contextPath: DataBee.Device.interface_uid
           description: The unique identifier of the network interface.
           type: String
@@ -659,6 +662,36 @@ script:
         - contextPath: DataBee.Finding.User
           description: Information about the user associated with the finding, if applicable.
           type: Unkonwn
+    - name: endpoint
+      arguments:
+        - default: true
+          description: The endpoint IP address.
+          name: ip
+        - description: The endpoint hostname.
+          name: hostname
+      description: Returns information about an endpoint.
+      outputs:
+        - contextPath: Endpoint.Hostname
+          description: The endpoint's hostname.
+          type: String
+        - contextPath: Endpoint.OS
+          description: The endpoint's operation system.
+          type: String
+        - contextPath: Endpoint.IPAddress
+          description: The endpoint's IP address.
+          type: String
+        - contextPath: Endpoint.ID
+          description: The endpoint's ID.
+          type: String
+        - contextPath: Endpoint.MACAddress
+          description: The endpoint's MAC address.
+          type: String
+        - contextPath: Endpoint.Vendor
+          description: The integration name of the endpoint vendor.
+          type: String
+        - contextPath: Endpoint.OSVersion
+          description: The endpoint's operation system version.
+          type: String
 
   type: python
   subtype: python3
