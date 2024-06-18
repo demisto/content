@@ -20,11 +20,11 @@
 !ciphertrust-local-ca-delete local_ca_id="example_local_ca"
 !ciphertrust-external-ca-list
 !ciphertrust-external-ca-update external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774" allow_client_authentication=true allow_user_authentication=true
-!ciphertrust-external-ca-delete external_cert_id="123e0a83-63d3-4632-925b-e78ddbfc7774"
+!ciphertrust-external-ca-delete external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774"
 !ciphertrust-csr-generate cn="example_csr" private_key_file_password=123
 !ciphertrust-certificate-issue ca_id="ca_to_issue" csr_entry_id=715@9511b703-23e9-4b5b-82d1-70611060b629 purpose=server duration=365
 !ciphertrust-local-ca-install local_ca_id="local_ca_to_install" cert_entry_id=715@9511b703-23e9-4b5b-82d1-70611060b629  parent_id=59428dfa-cde9-4f68-907b-e7c0b61bfa4c
-!ciphertrust-external-ca-upload cert_entry_id=766@9511b703-23e9-4b5b-82d1-70611060b629 name="test_external_cert"
+!ciphertrust-external-ca-upload ca_entry_id=766@9511b703-23e9-4b5b-82d1-70611060b629 name="test_external_cert"
 
 
 

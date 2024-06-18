@@ -141,6 +141,48 @@ Issues a certificate by signing the provided CSR with the CA. This is typically 
 | CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. | 
 | CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
 
+#### Command example
+```!ciphertrust-certificate-issue ca_id="example_local_ca" csr_entry_id="2234@a48e3cfd-a079-4895-89a7-4fac11b8143d" purpose=server duration=365```
+#### Context Example
+```json
+{
+    "CipherTrust": {
+        "CACertificate": {
+    "id": "d897c45c-30c7-4681-825d-4598e1234ddf",
+    "uri": "kylo:kylo:naboo:certs:d897c45c-30c7-4681-825d-4598e1234ddf",
+    "account": "kylo:kylo:admin:accounts:kylo",
+    "createdAt": "2024-06-18T13:05:41.144324Z",
+    "updatedAt": "2024-06-18T13:05:41.144324Z",
+    "name": "cert-d897c45c-30c7-4681-825d-4598e1234ddf",
+    "ca": "kylo:kylo:naboo:localca:9ccf5388-eb33-4b5d-b3bb-6060ab98c1d5",
+    "revoked_at": "0001-01-01T00:00:00Z",
+    "state": "active",
+    "sha1Fingerprint": "F4EE1A03FB77FE935CED90453BEA48CEA534452F",
+    "sha256Fingerprint": "8419720D5B65C2502132F5E7BCE735F7CF9EE800E9AF227783C7EA1390A79F90",
+    "sha512Fingerprint": "5FFED62F81B2F31163C571535690258D509D00B089FE12FA1E629CEF96F0DEFC442095EBDB276862877F335AC18888AF6E04DA94634B1919CC8B2C99D84808B2",
+    "serialNumber": "203857676859724655622907570743915678825",
+    "subject": "/CN=my cert",
+    "issuer": "/C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/CN=kylo.com",
+    "notBefore": "2024-06-17T13:05:41Z",
+    "notAfter": "2025-06-18T13:05:41Z"
+  }, 
+         "InfoFile": {
+        "EntryID": "2139@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+        "Extension": "pem",
+        "Info": "application/x-x509-ca-cert",
+        "Name": "Certificate.pem",
+        "Size": 761,
+        "Type": "PEM certificate"
+    }
+    }
+}
+```
+
+#### Human Readable Output
+
+>cert-d897c45c-30c7-4681-825d-4598e1234ddf has been issued successfully!
+
+
 ### ciphertrust-certificate-list
 
 ***

@@ -509,7 +509,7 @@ def load_content_from_file(entry_id: str) -> str:
     try:
         path = demisto.getFilePath(entry_id)
         with open(path.get('path')) as file:
-            return file.read()
+            return file.read().replace('\\n', '\n')
     except Exception as e:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
@@ -1138,6 +1138,8 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
     outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
     return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
 
+    print(f'{args.get(LOCAL_CA_ID)} has been installed successfully!')
+    print(outputs)
     return CommandResults(
         outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -1166,7 +1168,7 @@ def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=f'{args.get(NAME)} has been issued successfully!'
+        readable_output=f'{raw_response.get(NAME)} has been issued successfully!'
     )
 
 
@@ -1248,6 +1250,8 @@ def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) 
     raw_response = client.upload_external_ca(request_data=request_data)
     outputs, cert = remove_key_from_outputs(raw_response, 'cert')
     return_file_results(cert, 'Certificate.pem')
+    print(f'{args.get(NAME)} has been uploaded successfully!')
+    print(outputs)
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
