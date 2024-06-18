@@ -1155,22 +1155,22 @@ script:
       required: true
     - description: Exchange locations to add to the policy.
       isArray: true
-      name: exchange_locations_add
+      name: add_exchange_locations
     - description: Sharepoint locations to add to the policy.
       isArray: true
-      name: sharepoint_locations_add
+      name: add_sharepoint_locations
     - description: Public locations to add to the policy.
       isArray: true
-      name: public_locations_add
+      name: add_public_locations
     - description: Exchange locations to remove from the policy.
       isArray: true
-      name: exchange_locations_remove
+      name: remove_exchange_locations
     - description: Sharepoint locations to remove from the policy.
       isArray: true
-      name: sharepoint_locations_remove
+      name: remove_sharepoint_locations
     - description: Public locations to remove from the policy.
       isArray: true
-      name: public_locations_remove
+      name: remove_public_locations
     - description: Add a comment to existing policy.
       name: comment
     - auto: PREDEFINED
