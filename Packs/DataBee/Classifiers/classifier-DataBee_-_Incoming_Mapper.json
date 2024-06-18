@@ -9,23 +9,6 @@
                 "Alert Source": {
                     "simple": "data_sources"
                 },
-                "DataBee - Device": {
-                    "complex": {
-                        "filters": [],
-                        "root": "device",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "headers": {},
-                                    "is_auto_json_transform": {},
-                                    "json_transform_properties": {},
-                                    "title": {}
-                                },
-                                "operator": "JsonToTable"
-                            }
-                        ]
-                    }
-                },
                 "DataBee Analytic": {
                     "complex": {
                         "filters": [],
