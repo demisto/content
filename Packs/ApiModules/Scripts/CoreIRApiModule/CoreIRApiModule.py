@@ -225,7 +225,7 @@ class CoreClient(BaseClient):
         )
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
-        return json.loads(response['data'])
+        return response['reply'].get('data', {})
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
