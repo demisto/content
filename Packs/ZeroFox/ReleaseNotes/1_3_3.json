@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Removed fetch_limit integration parameter for improved incident fetch"
+}
