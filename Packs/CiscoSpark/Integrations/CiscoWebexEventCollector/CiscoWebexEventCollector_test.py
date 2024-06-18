@@ -4,8 +4,6 @@ import pytest
 import requests_mock
 from freezegun import freeze_time
 
-from Packs.CiscoSpark.Integrations.CiscoWebexEventCollector import CiscoWebexEventCollector
-
 """ UTILS """
 
 
@@ -73,14 +71,14 @@ def mock_set_integration_context(context: dict = None) -> dict | None:
 
 
 def test_remove_integration_context_for_user(mocker):
-    from CiscoWebexEventCollector import remove_integration_context_for_user
+    import CiscoWebexEventCollector
 
     mock_integration_context = {'test_user': {'context_key': 'context_value'}}
     mocker.patch.object(CiscoWebexEventCollector, 'get_integration_context', return_value=mock_integration_context)
     mock_context = mocker.patch('CiscoWebexEventCollector.set_integration_context', side_effect=mock_set_integration_context)
 
     assert CiscoWebexEventCollector.get_integration_context() == mock_integration_context
-    remove_integration_context_for_user('test_user')
+    CiscoWebexEventCollector.remove_integration_context_for_user('test_user')
     assert mock_context.call_args.args[0] == {'test_user': {}}
 
 
