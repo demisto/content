@@ -88,7 +88,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url, verify: bool, token: str = "", apikey: str = ""):
         headers = {
-            'Authorization': BEARER_PREFIX + token,
+            'Authorization': f'{BEARER_PREFIX}{token}',
             'apikey': apikey,
             'Accept': ACCEPT_VAL
         }
