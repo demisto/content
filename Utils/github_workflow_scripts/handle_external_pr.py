@@ -491,6 +491,8 @@ def main():
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
     remote_repo = pr.head.repo.full_name.split('/')[0]
+    print(f'the remote repo is {pr.head.repo.full_name.split("/")[0]}')
+    print(f'the remote repo 2 is {remote_repo}')
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
     #if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
     if support_label := get_packs_support_level_label(pr_files, pr.head.ref, remote_repo):
