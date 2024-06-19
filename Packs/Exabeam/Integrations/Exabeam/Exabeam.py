@@ -2204,9 +2204,7 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
     else:  # In the first run
         time_period = args.get("notable_users_first_fetch", "3 months")
 
-    # TODO:  last_run.get("limit") or
     limit = args.get("max_fetch_users") or DEFAULT_LIMIT
-    # TODO: add look_back
     args_notable_users = {"limit": limit, "time_period": time_period}
     demisto.debug(f"Before the request args notable users, limit: {limit}, time period: {time_period}")
     _, _, res = get_notable_users(client, args_notable_users)
