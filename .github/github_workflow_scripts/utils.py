@@ -16,6 +16,8 @@ CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 TIM_REVIEWER_KEY = "TIM_REVIEWER"
 
+CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))
+CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
 CONTENT_ROLES_BLOB_MASTER_URL = "https://raw.githubusercontent.com/demisto/content/master/.github/content_roles.json"
 
 # override print so we have a timestamp with each print
@@ -249,23 +251,46 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     return reviewer
 
 
-def get_content_roles() -> dict[str, Any]:
+def get_content_roles_from_blob() -> dict[str, Any] | None:
     """
-    Helper method to retrieve the content roles config.
+    Helper method to retrieve the 'content_roles.json` from
+    the `demisto/content` master blob.
 
     Returns:
     - `dict[str, Any]` representing the content roles. See `.github/content_roles.json` for
-    the expected structure.
+    the expected structure. If there's any failure getting/reading the resource,
+    we return `None`.
     """
 
-    print(f"Attempting to get {CONTENT_ROLES_BLOB_MASTER_URL}...")
+    roles = None
 
     try:
         response = requests.get(CONTENT_ROLES_BLOB_MASTER_URL)
         response.raise_for_status()  # Raise an error for bad status codes
         json_data = response.json()
-        print("Successfully retrieved content_roles.json")
-        return json_data
+        print("Successfully retrieved content_roles.json from blob")
+        roles = json_data
     except (requests.RequestException, requests.HTTPError, json.JSONDecodeError, TypeError) as e:
-        print(f"{e.__class__.__name__} getting content_roles.json: {e}")
-        return {}
+        print(f"{e.__class__.__name__} getting content_roles.json from blob: {e}.")
+    finally:
+        return roles
+
+
+def get_content_roles(res_path: Path = CONTENT_ROLES_PATH) -> dict[str, Any] | None:
+    """
+    Helper method to retrieve the content roles config.
+    We first attempt to retrieve the content roles from `demisto/content` master blob.
+    If this attempt fails, we attempt to retrieve it from the filesystem. 
+
+    Returns:
+    - `dict[str, Any]` representing the content roles.
+    """
+
+    print(f"Attempting to retrieve 'content_roles.json' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
+    roles = get_content_roles_from_blob()
+
+    if not roles:
+        print("Unable to retrieve 'content_roles.json' from blob. Attempting to retrieve from the filesystem...")
+        roles = load_json(res_path)
+
+    return roles

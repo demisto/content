@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
+import json
+from pathlib import Path
 import pytest
+from pytest_mock import MockerFixture
 import requests_mock
 from typing import Any
 from utils import (
@@ -331,17 +334,20 @@ class TestGetContentRoles:
             json=self.content_roles
         )
 
-        content_roles = get_content_roles()
-        assert CONTRIBUTION_REVIEWERS_KEY in content_roles
-        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in content_roles
-        assert TIM_REVIEWER_KEY in content_roles
+        actual_content_roles = get_content_roles()
+        assert actual_content_roles
+        assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
+        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
+        assert TIM_REVIEWER_KEY in actual_content_roles
 
-    def test_get_content_roles_fail(
+    def test_get_content_roles_fail_blob(
         self,
-        requests_mock: requests_mock.Mocker
+        requests_mock: requests_mock.Mocker,
+        tmp_path: Path
     ):
         """
-        Test failure to retrieve content_roles.json.
+        Test failure to retrieve the content_roles.json blob
+        and successful retrieval from the filesystem.
 
         Given:
         - A content_roles.json
@@ -350,22 +356,35 @@ class TestGetContentRoles:
         - The request to retrieve content_roles.json is fails.
 
         Then:
-        - get_content_roles returns an empty dict.
+        - get_content_roles returns a populated dict.
         """
 
+        # Mock failed request
         requests_mock.get(
             CONTENT_ROLES_BLOB_MASTER_URL,
             status_code=404
         )
 
-        assert not get_content_roles()
+        # Create content_roles in fs
+        content_roles_path = tmp_path / "content_roles.json"
+        content_roles_path.touch()
+        content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
 
-    def test_get_content_roles_invalid_json(
+        actual_content_roles = get_content_roles(content_roles_path)
+
+        assert actual_content_roles
+        assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
+        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
+        assert TIM_REVIEWER_KEY in actual_content_roles
+
+    def test_get_content_roles_invalid_json_blob(
         self,
-        requests_mock: requests_mock.Mocker
+        requests_mock: requests_mock.Mocker,
+        tmp_path: Path
     ):
         """
-        Test failure to retrieve content_roles.json.
+        Test failure to retrieve content_roles.json
+        and successful retrieval from the filesystem.
 
         Given:
         - A content_roles.json
@@ -374,7 +393,7 @@ class TestGetContentRoles:
         - The content_roles.json is invalid.
 
         Then:
-        - get_content_roles returns an empty dict.
+        - get_content_roles returns a populated dict.
         """
 
         requests_mock.get(
@@ -382,4 +401,48 @@ class TestGetContentRoles:
             json={"only_key"}
         )
 
-        assert not get_content_roles()
+        # Create content_roles in fs
+        content_roles_path = tmp_path / "content_roles.json"
+        content_roles_path.touch()
+        content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
+
+        actual_content_roles = get_content_roles(content_roles_path)
+
+        assert actual_content_roles
+        assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
+        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
+        assert TIM_REVIEWER_KEY in actual_content_roles
+
+    def test_get_content_roles_invalid_json_blob_and_fs(
+        self,
+        requests_mock: requests_mock.Mocker,
+        tmp_path: Path
+    ):
+        """
+        Test failure to retrieve content_roles.json
+        from the blob and from the filesystem.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The content_roles.json is invalid in blob.
+        - The content_roles.json is invalid in filesystem.
+
+        Then:
+        - get_content_roles returns nothing.
+        """
+
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            json={"only_key"}
+        )
+
+        # Create content_roles in fs
+        content_roles_path = tmp_path / "content_roles.json"
+        content_roles_path.touch()
+        content_roles_path.write_text("{\"only_key\"}")
+
+        actual_content_roles = get_content_roles(content_roles_path)
+
+        assert not actual_content_roles
