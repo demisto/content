@@ -453,7 +453,7 @@ def csc_domains_availability_check_command(client: Client, args) -> CommandResul
     params = f'qualifiedDomainNames={domain_names}'
     available_domains_results = client.get_available_domains(params).get('results')
     if isinstance(available_domains_results, CommandResults):
-            return available_domains_results
+        return available_domains_results
 
     hr_output = get_domains_availability_check_hr_fields(available_domains_results)
 
@@ -489,7 +489,7 @@ def csc_domains_configuration_search_command(client: Client, args) -> CommandRes
     params_results = create_params_string(args_copy)
     configurations_results = client.get_configurations(params_results)
     if isinstance(configurations_results, CommandResults):
-            return configurations_results
+        return configurations_results
 
     configurations_list = configurations_results.get('configurations', [])
     configurations_with_required_fields = get_domains_configurations_hr_fields(configurations_list)
