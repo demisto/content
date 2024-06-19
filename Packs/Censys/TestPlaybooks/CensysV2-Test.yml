@@ -335,7 +335,7 @@ tasks:
       limit:
         simple: "1"
       query:
-        simple: 'parsed.iser.common_name: \"Let''s Encrypt\"'
+        simple: 'parsed.issuer.common_name: \"Let''s Encrypt\"'
     separatecontext: false
     view: |-
       {
@@ -481,7 +481,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Censys.IP.locationnnn
+              simple: Censys.IP.location
             iscontext: true
     continueonerrortype: ""
     view: |-
