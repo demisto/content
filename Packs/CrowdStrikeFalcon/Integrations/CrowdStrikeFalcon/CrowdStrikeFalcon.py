@@ -1374,19 +1374,26 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         :param filter_arg: 1st priority. The result will be filtered using this argument.
         :return: Response json of the get detection endpoint (IDs of the detections)
     """
-    endpoint_url = '/detects/queries/detects/v1' if not POST_RAPTOR_RELEASE else "alerts/queries/alerts/v2?filter=product:'epp'"
-    params = {
-        'sort': 'first_behavior.asc'
-    }
-    if filter_arg:
-        params['filter'] = filter_arg
-    #TODO : should be removed after POST_RAPTOR_RELEASE??
-    elif behavior_id:
-        params['filter'] = f"behaviors.behavior_id:'{behavior_id}'"
-    elif last_behavior_time:
-        params['filter'] = f"first_behavior:>'{last_behavior_time}'"
+    if not POST_RAPTOR_RELEASE:
+        endpoint_url = '/detects/queries/detects/v1'
+        params = {
+            'sort': 'first_behavior.asc'
+        }
+        if filter_arg:
+            params['filter'] = filter_arg
+            
+        elif behavior_id:
+            params['filter'] = f"behaviors.behavior_id:'{behavior_id}'"
+        elif last_behavior_time:
+            params['filter'] = f"first_behavior:>'{last_behavior_time}'"
 
-    response = http_request('GET', endpoint_url, params)
+        response = http_request('GET', endpoint_url, params)
+    else:
+        endpoint_url = "alerts/queries/alerts/v2?filter=product:'epp'"
+    if filter_arg:
+        endpoint_url += urllib.parse.quote_plus(f"+{filter_arg}")
+        
+    response = http_request('GET', endpoint_url)
     return response
 
 
@@ -1399,7 +1406,6 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     Returns:
         Response json of the get detection endpoint (IDs of the detections)
     """
-    endpoint_url = '/detects/queries/detects/v1' if not POST_RAPTOR_RELEASE else "/alerts/queries/alerts/v2?filter=product:'epp'"
     params = {
         'sort': 'first_behavior.asc',
         'offset': offset,
@@ -1414,7 +1420,17 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     elif last_updated_timestamp:
         params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
 
-    response = http_request('GET', endpoint_url, params)
+    if not POST_RAPTOR_RELEASE:
+        endpoint_url = '/detects/queries/detects/v1'
+        response = http_request('GET', endpoint_url, params)
+    else:
+        endpoint_url = "/alerts/queries/alerts/v2?filter=product:'epp'"
+        if params.get('filter'):
+            endpoint_url += urllib.parse.quote_plus(f"+{params.get('filter')}")
+        if params.get('limit'):
+            raptor_params={'limit': params.get('limit')}
+        response = http_request('GET', endpoint_url, raptor_params)
+        
     demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
     return response
 
