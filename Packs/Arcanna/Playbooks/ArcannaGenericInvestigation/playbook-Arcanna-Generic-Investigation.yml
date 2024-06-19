@@ -148,9 +148,7 @@ tasks:
       job_id:
         simple: ${Arcanna.Jobs.job_id}
       label:
-        simple: ${Arcanna.DecisionSet}
-      labels:
-        simple: ${Arcanna.Event.decision_set}
+        simple: 'Deprecated'
       username:
         simple: ${Closure_Reason_Survey.Answers.name}
     separatecontext: false
