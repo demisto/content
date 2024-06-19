@@ -14,7 +14,7 @@ def load_mock_response(file_name: str) -> str:
     Returns:
         str: XML String containing the entire contents of the file.
     """
-    with open(f'test_data/{file_name}', mode='r', encoding='utf-8') as xml_file:
+    with open(f'test_data/{file_name}', encoding='utf-8') as xml_file:
         return xml_file.read()
 
 
