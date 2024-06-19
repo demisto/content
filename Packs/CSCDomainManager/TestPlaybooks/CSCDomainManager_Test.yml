@@ -1,5 +1,6 @@
 id: CSCDomainManager_Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: CSCDomainManager_Test
 starttaskid: "0"
 tasks:
@@ -13,7 +14,6 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -469,74 +469,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "15":
-    id: "15"
-    taskid: 38019ae6-cd98-432d-8f9f-d8c41bfe82e4
-    type: regular
-    task:
-      id: 38019ae6-cd98-432d-8f9f-d8c41bfe82e4
-      version: -1
-      name: print domain
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      value:
-        complex:
-          root: CSCDomainManager.Domain
-          accessor: qualifiedDomainName
-          transformers:
-          - operator: FirstArrayElement
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 920,
-          "y": 1925
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "16":
-    id: "16"
-    taskid: 14e91596-34e7-4d1b-86a7-ac3dd96796ad
-    type: regular
-    task:
-      id: 14e91596-34e7-4d1b-86a7-ac3dd96796ad
-      version: -1
-      name: print indicator
-      description: Prints text to war room (Markdown supported)
-      scriptName: Print
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      value:
-        simple: ${CSCDomainManager.Domain.DBotScore(val.Indicator && val.Indicator == obj.Indicator && val.Vendor == obj.Vendor && val.Type == obj.Type).Indicator}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1390,
-          "y": 1925
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "17":
     id: "17"
     taskid: 53ef4bdd-a77a-4923-8540-52b03d493362
@@ -614,7 +546,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2425,
-        "width": 1290,
+        "width": 380,
         "x": 480,
         "y": -20
       }
@@ -622,5 +554,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
-description: ''
