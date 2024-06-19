@@ -4071,10 +4071,10 @@ def test_http_request_demisto_call(mocker):
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
     mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                                            'status': 200,
-                                                           'data': '{"reply":[{"container": ["1.1.1.1"]}]}'})
+                                                           'reply': {"data": {"container": ["1.1.1.1"]}}})
     res = client._http_request(method="POST",
                                url_suffix="/distributions/get_versions/")
-    assert res == {"reply": [{"container": ["1.1.1.1"]}]}
+    assert res == {"container": ["1.1.1.1"]}
 
 
 def test_http_request_base_client(mocker):
@@ -4091,7 +4091,7 @@ def test_http_request_base_client(mocker):
         base_url=f'{Core_URL}/public_api/v1', headers={}
     )
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=False)
-    mocker.patch.object(BaseClient, "_http_request", return_value={'data': {"reply": [{"container": ["1.1.1.1"]}]}})
+    mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"data": {"container": ["1.1.1.1"]}}})
     res = client._http_request(method="POST",
                                url_suffix="/distributions/get_versions/")
-    assert res['data'] == {"reply": [{"container": ["1.1.1.1"]}]}
+    assert res['reply'] == {"data": {"container": ["1.1.1.1"]}}

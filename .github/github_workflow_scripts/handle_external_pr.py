@@ -15,7 +15,7 @@ from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
 from random import randint
 import re
 
-from Utils.github_workflow_scripts.utils import (
+from utils import (
     get_env_var,
     timestamped_print,
     Checkout,

@@ -7,7 +7,7 @@ from blessings import Terminal
 from github import Github
 from handle_external_pr import EXTERNAL_LABEL
 
-from Utils.github_workflow_scripts.utils import (
+from utils import (
     get_env_var,
     timestamped_print,
     load_json,
