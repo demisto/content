@@ -260,7 +260,9 @@ script:
       required: true
       description: A username providing the feedback.
     - name: indicators
-      description: Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
+      description: Deprecated. Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
+    - name: closing_notes
+      description: Deprecated. Closing notes for audit.
     description: Send Arcanna feedback for a previous inferred event.
     name: arcanna-send-event-feedback
     outputs:
