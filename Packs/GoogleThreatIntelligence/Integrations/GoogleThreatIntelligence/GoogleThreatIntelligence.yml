@@ -2192,6 +2192,117 @@ script:
     - contextPath: GoogleThreatIntelligence.URL.links.self
       description: Link to the response.
       type: String
+  - name: gti-curated-campaigns-get
+    description: Retrieves GTI curated campaigns for a given resource.
+    arguments:
+    - name: resource
+      required: true
+      description: The file hash (MD5, SHA1, or SHA256), Domain, URL or IP.
+    - name: resource_type
+      description: The type of the resource. If not supplied, will determine it's a file.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - file
+      - hash
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Collection.id
+      description: ID that contains the assessment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.id
+      description: ID of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.name
+      description: Name of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.description
+      description: Description of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date
+      description: Last modification date of the curated campaign.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions
+      description: Targeted regions of the curated campaign.
+      type: list
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
+      description: Targeted industries of the curated campaign.
+      type: list
+  - name: gti-curated-malware-families-get
+    description: Retrieves GTI curated malware families for a given resource.
+    arguments:
+    - name: resource
+      required: true
+      description: The file hash (MD5, SHA1, or SHA256), Domain, URL or IP.
+    - name: resource_type
+      description: The type of the resource. If not supplied, will determine it's a file.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - file
+      - hash
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Collection.id
+      description: ID that contains the assessment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.id
+      description: ID of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.name
+      description: Name of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.description
+      description: Description of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date
+      description: Last modification date of the curated malware families.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions
+      description: Targeted regions of the curated malware families.
+      type: list
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
+      description: Targeted industries of the curated malware families.
+      type: list
+  - name: gti-curated-threat-actors-get
+    description: Retrieves GTI curated threat actors for a given resource.
+    arguments:
+    - name: resource
+      required: true
+      description: The file hash (MD5, SHA1, or SHA256), Domain, URL or IP.
+    - name: resource_type
+      description: The type of the resource. If not supplied, will determine it's a file.
+      auto: PREDEFINED
+      predefined:
+      - ip
+      - url
+      - domain
+      - file
+      - hash
+    outputs:
+    - contextPath: GoogleThreatIntelligence.Collection.id
+      description: ID that contains the assessment (the given hash, domain, url, or ip).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.id
+      description: ID of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.name
+      description: Name of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.description
+      description: Description of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date
+      description: Last modification date of the curated threat actors.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions
+      description: Targeted regions of the curated threat actors.
+      type: list
+    - contextPath: GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries
+      description: Targeted industries of the curated threat actors.
+      type: list
   dockerimage: demisto/python3:3.10.14.95956
 tests:
 - GoogleThreatIntelligence-test

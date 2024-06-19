@@ -37,6 +37,15 @@ VERDICTS = {
     'VERDICT_MALICIOUS': 'MALICIOUS',
 }
 
+TYPE_TO_ENDPOINT = {
+    'file': 'files',
+    'hash': 'files',
+    'domain': 'domains',
+    'url': 'urls',
+    'ip': 'ip_addresses',
+    'ip_address': 'ip_addresses',
+}
+
 
 """RELATIONSHIP TYPE"""
 RELATIONSHIP_TYPE = {
@@ -464,6 +473,29 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file_hash}/sigma_analysis',
+        )
+
+    def curated_collections(self, resource_id: str, resource_type: str, collection_type: str) -> dict:
+        """Returns curated collections."""
+        if resource_type not in TYPE_TO_ENDPOINT:
+            raise DemistoException(f'Could not find resource type of "{resource_type}"')
+        if collection_type not in ('campaign', 'malware-family', 'threat-actor'):
+            raise DemistoException(f'Could not find collection type of "{collection_type}"')
+
+        if resource_type == 'url':
+            resource_id = encode_url_to_base64(resource_id)
+
+        collection_type_filter = f'collection_type:{collection_type}'
+        if collection_type == 'malware-family':
+            collection_type_filter = f'({collection_type_filter} OR collection_type:software-tookit)'
+
+        return self._http_request(
+            'GET',
+            f'{TYPE_TO_ENDPOINT[resource_type]}/{resource_id}/collections',
+            params={
+                'filter': f'owner:Mandiant {collection_type_filter}'
+            },
+            ok_codes=(404, 429, 200)
         )
 
 
@@ -2578,7 +2610,6 @@ def get_assessment_command(client: Client, score_calculator: ScoreCalculator, ar
     """Get Google Threat Intelligence assessment for a given resource."""
     resource = args['resource']
     resource_type = args.get('resource_type', 'file').lower()
-    # Will find if there's one and only one True in the list.
     if resource_type in ('hash', 'file'):
         raise_if_hash_not_valid(resource)
         raw_response = client.file(resource)
@@ -2643,6 +2674,68 @@ def get_assessment_command(client: Client, score_calculator: ScoreCalculator, ar
         outputs=data,
         raw_response=raw_response,
     )
+
+
+def _get_curated_collections_command(client: Client, args: dict, collection_type: str) -> CommandResults:
+    """Get Google Threat Intelligence collections for a given resource."""
+    resource = args['resource']
+    resource_type = args.get('resource_type', 'file').lower()
+    if resource_type not in ('file', 'hash', 'ip', 'url', 'domain'):
+        raise DemistoException(f'Could not find resource type of "{resource_type}"')
+    raw_response = client.curated_collections(resource, resource_type, collection_type)
+
+    data = raw_response.get('data', [])
+    collections = []
+    for collection in data:
+        attributes = collection.get('attributes', {})
+        collections.append({
+            'name': attributes.get('name'),
+            'last_modification_date': epoch_to_timestamp(attributes.get('last_modification_date')),
+            'targeted_regions': ', '.join(attributes.get('targeted_regions', [])),
+            'targeted_industries': ', '.join(attributes.get('targeted_industries', [])),
+            'link': f'https://www.virustotal.com/gui/collection/{collection["id"]}'
+        })
+
+    type_str = collection_type.replace('-', ' ')
+    type_context = type_str.title().replace(' ', '')
+    type_title = f'{type_str[:-1]}ies' if type_str.endswith('y') else f'{type_str}s'
+
+    return CommandResults(
+        f'{INTEGRATION_ENTRY_CONTEXT}.{type_context}',
+        'id',
+        readable_output=tableToMarkdown(
+            f'Curated {type_title} of {resource_type}: "{resource}"',
+            collections,
+            headers=[
+                'name',
+                'last_modification_date',
+                'targeted_regions',
+                'targeted_industries',
+                'link',
+            ],
+            headerTransform=string_to_table_header,
+        ),
+        outputs={
+            'id': resource,
+            'collections': data,
+        },
+        raw_response=raw_response,
+    )
+
+
+def get_curated_campaigns_command(client: Client, args: dict) -> CommandResults:
+    """Get Google Threat Intelligence campaigns for a given resource."""
+    return _get_curated_collections_command(client, args, 'campaign')
+
+
+def get_curated_malware_families_command(client: Client, args: dict) -> CommandResults:
+    """Get Google Threat Intelligence malware families for a given resource."""
+    return _get_curated_collections_command(client, args, 'malware-family')
+
+
+def get_curated_threat_actors_command(client: Client, args: dict) -> CommandResults:
+    """Get Google Threat Intelligence threat actors for a given resource."""
+    return _get_curated_collections_command(client, args, 'threat-actor')
 
 
 def arg_to_relationships(arg):
@@ -2714,6 +2807,12 @@ def main(params: dict, args: dict, command: str):
         results = private_file_scan_and_get_analysis(client, args)
     elif command == f'{COMMAND_PREFIX}-url-scan-and-analysis-get':
         results = url_scan_and_get_analysis(client, score_calculator, args, url_relationships)
+    elif command == f'{COMMAND_PREFIX}-curated-campaigns-get':
+        results = get_curated_campaigns_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-curated-malware-families-get':
+        results = get_curated_malware_families_command(client, args)
+    elif command == f'{COMMAND_PREFIX}-curated-threat-actors-get':
+        results = get_curated_threat_actors_command(client, args)
     else:
         raise NotImplementedError(f'Command {command} not implemented')
     return_results(results)
