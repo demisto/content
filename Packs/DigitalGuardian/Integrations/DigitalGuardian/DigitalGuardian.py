@@ -2,7 +2,7 @@ from CommonServerPython import *
 import json
 import requests
 import urllib3
-from typing import Dict, Any, Union
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -233,7 +233,7 @@ def add_entry_to_watchlist():
     r = requests.post(url=full_url + watchlist_id + '/values/', data=watchlist_entry_json,
                       headers=CLIENT_HEADERS, verify=VERIFY_CERT)
     if 200 <= r.status_code <= 299:
-        demisto.results('added watchlist entry ({}) to watchlist name ({})'.format(watchlist_entry, watchlist_name))
+        demisto.results(f'added watchlist entry ({watchlist_entry}) to watchlist name ({watchlist_name})')
     else:
         return_error(
             'Failed to add watchlist entry({}) to watchlist name ({}). The response failed with status code {}. '
@@ -277,7 +277,7 @@ def rm_entry_from_watchlist():
                         headers=CLIENT_HEADERS, verify=VERIFY_CERT)
     if 200 <= r.status_code <= 299:
         demisto.results(
-            'removed watchlist entry ({}) from watchlist name ({})'.format(watchlist_entry, watchlist_name))
+            f'removed watchlist entry ({watchlist_entry}) from watchlist name ({watchlist_name})')
     else:
         return_error(
             'Failed to remove watchlist entry({}) from watchlist name ({}). The response failed with status code {}. '
@@ -308,6 +308,7 @@ def get_items_request():
         exportdata = []
         if json_text.get('total_hits') == 0:
             DEBUG('found no data')
+            return None
         else:
             DEBUG('found data')
 
@@ -321,11 +322,11 @@ def get_items_request():
                 exportdata.append(entry_line)
 
             for items in exportdata:
-                if not (items.get('dg_alert.dg_detection_source')) == 'alert' and items.get('dg_tags'):
-                    comm = items.get('dg_alarm_name').find(',')
+                if items.get('dg_alert.dg_detection_source') != 'alert' and items.get('dg_tags'):
+                    comm = items.get('dg_alarm_name', "").find(',')
                     if comm == -1:
                         comm = 100
-                    name = '{alarm_name}-{id}'.format(alarm_name=items.get('dg_alarm_name')[0:comm], id=items.get('dg_guid'))
+                    name = '{alarm_name}-{id}'.format(alarm_name=items.get('dg_alarm_name', "")[0:comm], id=items.get('dg_guid'))
                     DEBUG(name + " != " + oldname)
                     if name != oldname:
                         DEBUG("create_artifacts...")
@@ -338,6 +339,7 @@ def get_items_request():
         return_error('DigitalGuardian ARC Export Failed '
                      'Please check authentication related parameters. ' + json.dumps(r.json(), indent=4,
                                                                                      sort_keys=True))
+        return None
 
 
 def convert_to_demisto_severity(dg_severity: str) -> int:
@@ -458,8 +460,8 @@ def create_artifacts(alert):
     DEBUG("before alert")
     DEBUG(json.dumps(alert))
     if CATEGORY in specific_alert_mapping:
-        temp_dict: Dict[Union[str, Any], Union[Union[str, int], Any]] = {}
-        cef: Dict[Union[str, Any], Union[Union[str, int], Any]] = {}
+        temp_dict: dict[str | Any, str | int | Any] = {}
+        cef: dict[str | Any, str | int | Any] = {}
         cef_types = {}
         cef['Vendor ID'] = 'DG'
         cef['Vendor Product'] = 'Digital Guardian'
