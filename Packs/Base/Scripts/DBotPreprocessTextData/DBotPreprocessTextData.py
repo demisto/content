@@ -239,7 +239,7 @@ def read_file(input_data, input_type):
             return_error("Entry {} not found".format(input_data))
         file_path = res['path']
         if input_type.startswith('json'):
-            with open(file_path, 'r') as f:
+            with open(file_path) as f:
                 file_content = f.read()
     if input_type.startswith('csv'):
         return pd.read_csv(file_path).fillna('').to_dict(orient='records')
