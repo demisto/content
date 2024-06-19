@@ -247,27 +247,27 @@ script:
   - arguments:
     - description: An Arcanna job id.
       name: job_id
+      required: true
     - description: An Arcanna event id.
       name: event_id
       required: true
     - name: feedback
-      required: true
       description: Provided feedback from analyst.
+      required: true
     - name: decision_set
-      required: true
       description: Valid candidates for feedback based on Arcanna.ai job configuration.
-    - name: username
       required: true
+    - name: username
       description: A username providing the feedback.
+      required: true
     - name: label
       description: Deprecated. Replaced by parameter feedback.
-      required: false
+      required: true
+      default: "deprecated"
     - name: indicators
       description: Deprecated. Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
-      required: false
     - name: closing_notes
       description: Deprecated. Closing notes for audit.
-      required: false
     description: Send Arcanna feedback for a previous inferred event.
     name: arcanna-send-event-feedback
     outputs:
