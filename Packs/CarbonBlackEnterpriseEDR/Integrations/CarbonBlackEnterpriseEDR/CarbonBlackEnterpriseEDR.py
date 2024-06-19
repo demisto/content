@@ -71,10 +71,10 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def alert_workfloe_update_request_v2(self, request_id: str) -> dict:
+    def alert_workflow_update_request_v2(self, request_id: str) -> dict:
         suffix_url = f'jobs/v1/orgs/{self.cb_org_key}/jobs/{request_id}'
         response = self._http_request('GET', suffix_url)
-        return {response}
+        return response
         
         
     def alert_workflow_update_request(self, alert_id: str, state: str = None, comment: str = None,
@@ -525,12 +525,12 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     return results
 
 
-def run_polling_command(args: dict, cmd: str, search_function, results_function):
+def run_polling_command(client: Client, args: dict, cmd: str, search_function, results_function):
     interval_in_secs = 60 # should  we get input from user?
     if 'request_id' not in args:
         # this is the first time
-        command_results = search_function(args)
-        outputs = command_results.outputs
+        command_results = search_function(client, args)
+        outputs = command_results.raw_response
         request_id = outputs.get('request_id')
         if outputs.get('status') != 'COMPLETED':
             polling_args = {
@@ -549,7 +549,7 @@ def run_polling_command(args: dict, cmd: str, search_function, results_function)
         else:
             args['request_id'] = request_id  # for the next time calling the API
             
-    command_results, status = results_function(args)  # get the current status of the command running (while calling the API2)
+    command_results, status = results_function(client, args)  # get the current status of the command running (while calling the API2)
     if status != 'COMPLETED':
         # schedule next poll
         polling_args = {
@@ -572,46 +572,24 @@ def run_polling_command(args: dict, cmd: str, search_function, results_function)
 # The second API, called again and again until the results appear
 def alert_workflow_update_command_with_results(client: Client, args: dict):
     request_id = args['request_id']
-    response = client.alert_workfloe_update_request_v2(request_id)
+    response = client.alert_workflow_update_request_v2(request_id)
     status = response['status']
     alert_id = args['alert_id']
     if status == 'COMPLETED':
-        readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', response, removeNull=True)
-        outputs = {
+        readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', {
             'AlertID': args['alert_id'],
-            'State': response.get('userWorkflowDto').get(),
-            'Remediation': response.get('remediation'),
+            #'State': response['userWorkflowDto'].get('status'),
             'LastUpdateTime': response.get('last_update_time'),
-            'Comment': response.get('comment'),
-            'ChangedBy': response.get('changed_by')
-        }
-        return None, status # need to change to - CommandResults(...)
-    return None status
-
-    #af_cookie = args.get('af_cookie')
-    #results, status = get_search_results('samples', af_cookie)
-    #files = get_files_data_from_results(results)
-    hr = ''
-    if not results or len(results) == 0:
-        hr = 'No entries found that match the query' if status == 'complete' else f'Search Sessions Results is {status}'
-    context = {
-        'AutoFocus.SamplesResults(val.ID === obj.ID)': results,
-        'AutoFocus.SamplesSearch(val.AFCookie === obj.AFCookie)': {'Status': status, 'AFCookie': af_cookie},
-        outputPaths['file']: files
-    }
-    if not results:
-        return_outputs(readable_output=hr, outputs=context, raw_response={})
-    else:
-        # for each result a new entry will be set with two tables, one of the result and one of its artifacts
-        for result in results:
-            if 'Artifact' in result:
-                hr = samples_search_result_hr(result, status)
-                return_outputs(readable_output=hr, outputs=context, raw_response=results)
-            else:
-                hr = tableToMarkdown(f'Search Samples Result is {status}', result)
-                hr += tableToMarkdown('Artifacts for Sample: ', [])
-                return_outputs(readable_output=hr, outputs=context, raw_response=results)
+            'Comment': args.get('comment'),
+            #'ChangedBy': response['userWorkflowDto'].get('changed_by')
+        } , removeNull=True)
+        return CommandResults( outputs_prefix='CarbonBlackEEDR.Alert',
+                                readable_output=readable_output,
+                                outputs_key_field='',
+                                outputs=response,
+                                raw_response=response) , status
     return None, status
+
 
 #The first time the API is called
 def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
@@ -631,18 +609,6 @@ def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
     #remediation_state = args.get('remediation_state')  # Changes do to new version of API
 
     result = client.alert_workflow_update_request(alert_id, state, comment, determination, time_range, start, end, closure_reason)
-
-
-    # we are erasing this because this command will always be called with polling
-    """readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result, removeNull=True)
-    outputs = {
-        'AlertID': alert_id,
-        'State': result.get('state'),
-        'Remediation': result.get('remediation'),
-        'LastUpdateTime': result.get('last_update_time'),
-        'Comment': result.get('comment'),
-        'ChangedBy': result.get('changed_by')
-    }"""
 
     results = CommandResults(
         raw_response=result
@@ -1549,7 +1515,8 @@ def main():
             return_results(alert_list_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
-            return_results(alert_workflow_update_command(client, demisto.args()))
+            #return_results(alert_workflow_update_command_with_results(client, demisto.args()))
+            return_results(run_polling_command(client, demisto.args(), 'cb-eedr-alert-workflow-update', alert_workflow_update_command, alert_workflow_update_command_with_results))
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))
