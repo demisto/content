@@ -37,7 +37,7 @@ def load_oob_model():
     if is_error(res):
         return_error(get_error(res))
 
-    with open(EVALUATION_PATH, 'r') as json_file:
+    with open(EVALUATION_PATH) as json_file:
         data = json.load(json_file)
     y_test = data['YTrue']
     y_pred = data['YPred']
