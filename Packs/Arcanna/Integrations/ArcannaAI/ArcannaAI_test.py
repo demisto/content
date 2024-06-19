@@ -72,13 +72,13 @@ def test_arcanna_send_event_command(mocker):
     mocker.patch.object(client, "send_raw_event", return_value=arcanna_ingest_response)
     command_args = {
         "job_id": 10,
-        "event_json": "{\"offset\": 1739561255, \"destination\": \"127.0.0.1\"}",
+        "raw_body": "{\"offset\": 1739561255, \"destination\": \"127.0.0.1\"}",
         "severity": 3,
         "title": "Incident id #20198",
         "id_value": "20198"
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_result = post_event(client, command_args)
+    command_result = post_event(client, 1201, command_args)
 
     assert command_result.outputs_prefix == "Arcanna.Event"
     assert command_result.raw_response['event_id'] == "20198"
@@ -92,9 +92,11 @@ def test_arcanna_get_decision_set(mocker):
         "job_id": 10
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
+    command_results = get_decision_set(client, 1201, command_args)
     assert command_result.outputs_prefix == "Arcanna.Event"
     assert command_result.outputs_key_field == "decision_set"
     assert isinstance(command_result.raw_response['decision_set'], list)
+
 
 def test_arcanna_trigger_train(mocker):
     mocker.patch.object(client, "trigger_training", return_value=arcanna_trigger_train_response)
@@ -102,11 +104,13 @@ def test_arcanna_trigger_train(mocker):
        "job_id": 10,
        "username": "myusername"
     }
-    mocker.patch.object(demisto, 'args', return_value=command_args)
+    mocker.patch.object(demisto, 'args',return_value=command_args)
+    command_result = trigger_training(client, 1201, command_args)
     assert command_result.outputs_prefix == "Arcanna.Training"
     assert command_result.outputs_key_field == "result"
     assert command_result.raw_response["status"] == "OK"
     assert command_result.raw_response["error_message"] == ""
+
 
 def test_arcanna_get_event_status_command(mocker):
     mocker.patch.object(client, "get_event_status", return_value=arcanna_inference_response)
@@ -115,7 +119,7 @@ def test_arcanna_get_event_status_command(mocker):
         "event_id": "11013867751676"
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_result = get_event_status(client, command_args)
+    command_result = get_event_status(client, 1201, command_args)
     assert command_result.outputs_prefix == "Arcanna.Event"
     assert command_result.outputs_key_field == "event_id"
     assert command_result.raw_response['status'] == "OK"
@@ -132,7 +136,7 @@ def test_arcanna_send_event_feedback_command(mocker):
         "username": "dbot"
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_result = send_event_feedback(client=client, 1201, args=command_args)
+    command_result = send_event_feedback(client=client, default_job_id=1201, args=command_args)
 
     assert command_result.outputs_prefix == "Arcanna.Event"
     assert command_result.raw_response['status'] == "updated"
