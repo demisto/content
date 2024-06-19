@@ -9406,8 +9406,7 @@ def generic_http_request(method,
 
     if files:
         """
-        Need to load the files to memory by read the files (f.read())
-            to be able to send large files without getting a timeout error.
+        To prevent timeout errors when sending large files, it is necessary to load the files into memory by reading them using the command f.read().
         """
         RequestEncodingMixin._encode_files(files=files, data={})
 
