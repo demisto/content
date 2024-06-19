@@ -233,11 +233,11 @@ class EWSClient:
         self.client_id = client_id
         self.client_secret = client_secret
         self.account_email = default_target_mailbox
-        self.config = self.__prepare(insecure)
+        self.config = self.__prepare(azure_cloud, insecure)
         self.protocol = BaseProtocol(self.config)
         self.mark_as_read = kwargs.get('mark_as_read', False)
 
-    def __prepare(self, insecure):  # pragma: no cover
+    def __prepare(self, azure_cloud: AzureCloud, insecure: bool):  # pragma: no cover
         """
         Prepares the client PROTOCOL, CREDENTIALS and CONFIGURATION
         :param insecure: Trust any certificate (not secure)
@@ -247,6 +247,7 @@ class EWSClient:
         access_token = self.ms_client.get_access_token()
         oauth2_token = OAuth2Token({"access_token": access_token})
         self.credentials = credentials = CustomDomainOAuth2Credentials(
+            azure_cloud=azure_cloud,
             client_id=self.client_id,
             client_secret=self.client_secret,
             access_token=oauth2_token,
@@ -257,7 +258,7 @@ class EWSClient:
             "credentials": credentials,
             "auth_type": OAUTH2,
             "version": Version(EXCHANGE_O365),
-            "service_endpoint": "https://outlook.office365.com/EWS/Exchange.asmx",
+            "service_endpoint": f"{azure_cloud.endpoints.exchange_online}/EWS/Exchange.asmx",
         }
 
         return Configuration(**config_args)
