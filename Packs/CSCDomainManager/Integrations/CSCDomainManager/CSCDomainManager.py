@@ -1,4 +1,5 @@
 import copy
+from functools import partial
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
@@ -332,24 +333,25 @@ def create_common_domain(domain_json, dbot_score):
         A Common.Domain object
     """
     whois_contacts = domain_json.get('whoisContacts')
+    get_contact_fields = partial(get_whois_contacts_fields_for_domain, whois_contacts)
     domain_context = Common.Domain(
         domain=domain_json.get('domain'),
         creation_date=domain_json.get('registrationDate'),
         domain_idn_name=domain_json.get('idn'),
         expiration_date=domain_json.get('registryExpiryDate'),
         name_servers=domain_json.get('nameServers'),
-        registrant_name=get_whois_contacts_fields_for_domain(whois_contacts, ['firstName', 'lastName'], 'REGISTRANT'),
-        registrant_email=get_whois_contacts_fields_for_domain(whois_contacts, ['email'], 'REGISTRANT'),
-        registrant_phone=get_whois_contacts_fields_for_domain(whois_contacts, ['phone'], 'REGISTRANT'),
-        registrant_country=get_whois_contacts_fields_for_domain(whois_contacts, ['country'], 'REGISTRANT'),
-        admin_name=get_whois_contacts_fields_for_domain(whois_contacts, ['firstName', 'lastName'], 'ADMINISTRATIVE'),
-        admin_email=get_whois_contacts_fields_for_domain(whois_contacts, ['email'], 'ADMINISTRATIVE'),
-        admin_phone=get_whois_contacts_fields_for_domain(whois_contacts, ['phone'], 'ADMINISTRATIVE'),
-        admin_country=get_whois_contacts_fields_for_domain(whois_contacts, ['country'], 'ADMINISTRATIVE'),
-        tech_country=get_whois_contacts_fields_for_domain(whois_contacts, ['country'], 'TECHNICAL'),
-        tech_name=get_whois_contacts_fields_for_domain(whois_contacts, ['firstName', 'lastName'], 'TECHNICAL'),
-        tech_organization=get_whois_contacts_fields_for_domain(whois_contacts, ['organization'], 'TECHNICAL'),
-        tech_email=get_whois_contacts_fields_for_domain(whois_contacts, ['email'], 'TECHNICAL'),
+        registrant_name=get_contact_fields(['firstName', 'lastName'], 'REGISTRANT'),
+        registrant_email=get_contact_fields(['email'], 'REGISTRANT'),
+        registrant_phone=get_contact_fields(['phone'], 'REGISTRANT'),
+        registrant_country=get_contact_fields(['country'], 'REGISTRANT'),
+        admin_name=get_contact_fields(['firstName', 'lastName'], 'ADMINISTRATIVE'),
+        admin_email=get_contact_fields(['email'], 'ADMINISTRATIVE'),
+        admin_phone=get_contact_fields(['phone'], 'ADMINISTRATIVE'),
+        admin_country=get_contact_fields(['country'], 'ADMINISTRATIVE'),
+        tech_country=get_contact_fields(['country'], 'TECHNICAL'),
+        tech_name=get_contact_fields(['firstName', 'lastName'], 'TECHNICAL'),
+        tech_organization=get_contact_fields(['organization'], 'TECHNICAL'),
+        tech_email=get_contact_fields(['email'], 'TECHNICAL'),
         dbot_score=dbot_score
     )
 
@@ -419,6 +421,8 @@ def csc_domains_search_command(client: Client, args) -> CommandResults:
 
         params_results = create_params_string(args_copy)
         domains_results = client.get_domains(params_results)
+        if isinstance(domains_results, CommandResults):
+            return domains_results
         domains_list = domains_results.get('domains', [])
 
     domains_with_required_fields = get_domains_search_hr_fields(domains_list)
@@ -448,6 +452,8 @@ def csc_domains_availability_check_command(client: Client, args) -> CommandResul
     domain_names = args.get('domain_name')
     params = f'qualifiedDomainNames={domain_names}'
     available_domains_results = client.get_available_domains(params).get('results')
+    if isinstance(available_domains_results, CommandResults):
+            return available_domains_results
 
     hr_output = get_domains_availability_check_hr_fields(available_domains_results)
 
@@ -482,6 +488,8 @@ def csc_domains_configuration_search_command(client: Client, args) -> CommandRes
 
     params_results = create_params_string(args_copy)
     configurations_results = client.get_configurations(params_results)
+    if isinstance(configurations_results, CommandResults):
+            return configurations_results
 
     configurations_list = configurations_results.get('configurations', [])
     configurations_with_required_fields = get_domains_configurations_hr_fields(configurations_list)
