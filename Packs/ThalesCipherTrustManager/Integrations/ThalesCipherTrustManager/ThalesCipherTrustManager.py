@@ -1204,11 +1204,10 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
                                                           keys_value_mapping={}),
         )
 
-
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs= [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
-                   raw_response.get('resources', [])],
+        outputs=[remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
+                 raw_response.get('resources', [])],
         raw_response=raw_response,
         readable_output=ciphertrust_table_to_markdown(title=f'Certificates issued by {args.get(CA_ID, "")}',
                                                       data=raw_response,
