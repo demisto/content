@@ -132,6 +132,7 @@ def startServer():
     global SERVER_OBJECT
     SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
     # Start the web server
+    demisto.debug(f"starting markdown server on port {MD_HTTP_PORT}")
     SERVER_OBJECT.serve_forever()
 
 
