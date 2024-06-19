@@ -1535,19 +1535,21 @@ def test_core_http_request(mocker):
         - Should fail since command '_apiCall' is not available via engine.
     """
     from CortexXDRIR import Client
+    from CommonServerPython import BaseClient
     base_url = urljoin("dummy_url", '/public_api/v1')
-    proxy = demisto.params().get('proxy')
-    verify_cert = not demisto.params().get('insecure', False)
     client = Client(
         base_url=base_url,
-        proxy=proxy,
-        verify=verify_cert,
+        proxy=False,
+        verify=False,
         timeout=120,
-        params=demisto.params()
+        params=False
     )
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
-    mocker.patch.object(demisto, 'params', return_value={'url': 'test_url'})
+    mocker.patch.object(demisto, 'params', return_value={'url': 'test_url',
+                                                         "custom_xsoar_to_xdr_close_reason_mapping": False,
+                                                         "custom_xdr_to_xsoar_close_reason_mapping": False})
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(demisto, "_apiCall", return_value= Exception("command '_apiCall' is not available via engine (85)"))
+    mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"data": { "incidents": [{"incident": {"incident_id": "1"}}]}}})
     res = client.test_module(first_fetch_time='3 month')
     assert res == 'ok'
