@@ -173,6 +173,7 @@ CHUNK_SIZE = 5000
 ASSETS_NUMBER = 50
 MAX_CHUNKS_PER_FETCH = 10
 ASSETS_FETCH_FROM = '90 days'
+VULNS_FETCH_FROM = '7 days'
 MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = '404'
 
@@ -255,6 +256,7 @@ class Client(BaseClient):
         Returns: The UUID of the vulnerabilities export job.
 
         """
+        demisto.debug(f"last found is: {last_found}")
         payload: dict[str, Any] = {
             "filters":
                 {
@@ -262,7 +264,7 @@ class Client(BaseClient):
                 },
             "num_assets": num_assets
         }
-
+        demisto.debug(f"my payload is: {payload}")
         res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
         return res.get('export_uuid', '')
 
@@ -609,7 +611,7 @@ def generate_export_uuid(client: Client, last_run):
         last_run: last run object.
     """
     demisto.info("Getting vulnerabilities export uuid for report.")
-    last_found: float = get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))   # type: ignore
+    last_found: float = get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))   # type: ignore
 
     export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER, last_found=last_found)
 
@@ -693,7 +695,7 @@ def handle_vulns_chunks(client: Client, assets_last_run):   # pragma: no cover
             demisto.info("generating new export uuid to start new fetch due to 404 error.")
 
             export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
-                                                      last_found=round(get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM))))
+                                                      last_found=round(get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))))
             assets_last_run.update({'vuln_export_uuid': export_uuid})
             assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
             assets_last_run.pop('vulns_available_chunks', None)
@@ -743,6 +745,7 @@ def get_vulnerabilities_export_status(client: Client, assets_last_run):
     status, chunks_available = client.get_vuln_export_status(export_uuid=assets_last_run.get("vuln_export_uuid"))
     demisto.info(f'Report status is {status}, and number of available chunks is {chunks_available}')
     if status == 'FINISHED':
+        demisto.debug(f"returned {len(chunks_available)} vulns chunks")
         assets_last_run.update({'vulns_available_chunks': chunks_available})
 
     return status
@@ -1834,7 +1837,7 @@ def fetch_vulnerabilities(client: Client, assets_last_run: dict):     # pragma: 
             assets, assets_last_run = handle_vulns_chunks(client, assets_last_run)
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
-                                                      last_found=get_timestamp(arg_to_datetime(ASSETS_FETCH_FROM)))
+                                                      last_found=get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
             assets_last_run.update({'vuln_export_uuid': export_uuid})
             assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
 
@@ -1867,6 +1870,46 @@ def util_load_json(file_path):
     with open(file_path, encoding='utf-8') as f:
         return json.loads(f.read())
 
+
+# def generate_vulns():
+#     import json
+#     import random
+#
+#     # Set the number of objects in the list
+#     num_objects = 8000000  # Change this value as needed. 10K is 4MB
+#
+#     # Template for the JSON object
+#     json_template = {
+#         "AcceptedCount": 0,
+#         "CountsBySeverity": [
+#             {
+#                 "count": 2,
+#                 "value": 0
+#             }
+#         ],
+#         "Family": "Service detection",
+#         "Id": None,  # Placeholder for the random Id
+#         "Name": "Service Detection",
+#         "RecastedCount": 0,
+#         "Severity": "None",
+#         "VulnerabilityOccurences": 2,
+#         "VulnerabilityState": "Active"
+#     }
+#
+#     # Create a list to hold all the JSON objects
+#     json_list = []
+#
+#     # Generate each object with a unique Id and add it to the list
+#     for _ in range(num_objects):
+#         obj = json_template.copy()
+#         obj["Id"] = random.randint(1000000000, 9999999999)  # Generate a random 6-digit number
+#         json_list.append(obj)
+#
+#     return json_list
+#     # # Convert the list to a JSON string
+#     # json_string = json.dumps(json_list, indent=4)
+#     # return json_string
+#     # Use the json_string in send_events_to_xsiam
 
 def main():  # pragma: no cover
     """main function, parses params and runs command functions
@@ -1968,439 +2011,12 @@ def main():  # pragma: no cover
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (assets_export_uuid -> continue prev fetch, or, no vuln_export_uuid -> new fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('vuln_export_uuid'):
-                # assets = run_assets_fetch(client, assets_last_run)
-                assets = []
+                assets = run_assets_fetch(client, assets_last_run)
+                # assets = []
             # Fetch Vulnerabilities
             if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('assets_export_uuid'):
-                # vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
-                # vulnerabilities = util_load_json('test_data/test_vulns.json')
-                vulnerabilities = [
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 2,
-                "value": 0
-            }
-        ],
-        "Family": "Service detection",
-        "Id": 22964,
-        "Name": "Service Detection",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 2,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 166602,
-        "Name": "Asset Attribute: Fully Qualified Domain Name (FQDN)",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Settings",
-        "Id": 19506,
-        "Name": "Nessus Scan Information",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 1
-            }
-        ],
-        "CvssBaseScore": 2.6,
-        "Family": "Misc.",
-        "Id": 71049,
-        "Name": "SSH Weak MAC Algorithms Enabled",
-        "RecastedCount": 0,
-        "Severity": "Low",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 39520,
-        "Name": "Backported Security Patch Detection (SSH)",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Misc.",
-        "Id": 70657,
-        "Name": "SSH Algorithms and Languages Supported",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 66293,
-        "Name": "Unix Operating System on Extended Support",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 54615,
-        "Name": "Device Type",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Service detection",
-        "Id": 149334,
-        "Name": "SSH Password Authentication Accepted",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Misc.",
-        "Id": 153588,
-        "Name": "SSH SHA-1 HMAC Algorithms Enabled",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 10287,
-        "Name": "Traceroute Information",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Settings",
-        "Id": 117886,
-        "Name": "OS Security Patch Assessment Not Available",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 10881,
-        "Name": "SSH Protocol Versions Supported",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Resurfaced"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Service detection",
-        "Id": 10884,
-        "Name": "Network Time Protocol (NTP) Server Detection",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 2
-            }
-        ],
-        "CvssBaseScore": 4.3,
-        "Family": "Misc.",
-        "Id": 90317,
-        "Name": "SSH Weak Algorithms Supported",
-        "RecastedCount": 0,
-        "Severity": "Medium",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 45590,
-        "Name": "Common Platform Enumeration (CPE)",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 1
-            }
-        ],
-        "Cvss3BaseScore": 3.7,
-        "CvssBaseScore": 2.6,
-        "Family": "Misc.",
-        "Id": 70658,
-        "Name": "SSH Server CBC Mode Ciphers Enabled",
-        "RecastedCount": 0,
-        "Severity": "Low",
-        "VprScore": 3.6,
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 25220,
-        "Name": "TCP/IP Timestamps Supported",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Web Servers",
-        "Id": 18261,
-        "Name": "Apache Banner Linux Distribution Disclosure",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "CvssBaseScore": 2.1,
-        "Family": "General",
-        "Id": 10114,
-        "Name": "ICMP Timestamp Request Remote Date Disclosure",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VprScore": 4.2,
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 12053,
-        "Name": "Host Fully Qualified Domain Name (FQDN) Resolution",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 10919,
-        "Name": "Open Port Re-check",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "General",
-        "Id": 11936,
-        "Name": "OS Identification",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 1
-            }
-        ],
-        "Cvss3BaseScore": 3.7,
-        "CvssBaseScore": 2.6,
-        "Family": "Misc.",
-        "Id": 153953,
-        "Name": "SSH Weak Key Exchange Algorithms Enabled",
-        "RecastedCount": 0,
-        "Severity": "Low",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Settings",
-        "Id": 110723,
-        "Name": "Target Credential Status by Authentication Protocol - No Credentials Provided",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    },
-    {
-        "AcceptedCount": 0,
-        "CountsBySeverity": [
-            {
-                "count": 1,
-                "value": 0
-            }
-        ],
-        "Family": "Service detection",
-        "Id": 10267,
-        "Name": "SSH Server Type and Version Information",
-        "RecastedCount": 0,
-        "Severity": "None",
-        "VulnerabilityOccurences": 1,
-        "VulnerabilityState": "Active"
-    }
-]
+                vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
+                # vulnerabilities = generate_vulns()
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
 
@@ -2408,6 +2024,7 @@ def main():  # pragma: no cover
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
             if vulnerabilities:
+                # demisto.debug(f"first vuln: {vulnerabilities[0]}")
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
