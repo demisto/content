@@ -14,10 +14,28 @@ import http
 import tempfile
 from http.server import HTTPServer
 
+
+def find_unused_port() -> int:
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind(('localhost', 0))  # tries to bind any available port on the os
+        return sock.getsockname()[1]
+    except Exception:
+        start_port, end_port = 10000, 30000
+        for port in range(start_port, end_port + 1):
+            is_connection_success = sock.connect_ex(('localhost', port))
+            if is_connection_success == 0:
+                demisto.debug(f'Port {port} is already used')
+            else:
+                demisto.debug(f'Port {port} is free')
+                return port
+    finally:
+        sock.close()
+
 WORKING_DIR = Path("/app")
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 MD_IMAGE_PATH = '/markdown/image'
-MD_HTTP_PORT = 10888
+MD_HTTP_PORT = find_unused_port()
 SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
@@ -111,7 +129,8 @@ def startServer():
                 self.send_response(404)
                 self.flush_headers()
     # Create server object listening the port 10888
-    global SERVER_OBJECT
+    global SERVER_OBJECT, MD_HTTP_PORT
+
     SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
     # Start the web server
     SERVER_OBJECT.serve_forever()
