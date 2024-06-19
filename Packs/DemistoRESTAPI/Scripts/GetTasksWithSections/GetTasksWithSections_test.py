@@ -3,7 +3,7 @@ from GetTasksWithSections import traverse_tasks, find_start_task, get_tasks_and_
 
 
 def load_json(file):
-    with open(file, 'r') as f:
+    with open(file) as f:
         return json.load(f)
 
 
