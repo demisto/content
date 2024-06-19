@@ -514,25 +514,8 @@ def load_content_from_file(entry_id: str) -> str:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
 
-def format_pem_string(pem_str: str | bytes):
-    """
-    Format a PEM certificate string by ensuring each line ends with a newline character.
 
-    Args:
-    pem_str (str): A PEM formatted certificate string without explicit newlines.
-
-    Returns:
-    str: A properly formatted PEM certificate with newlines.
-    """
-    # lines = pem_str.split('\n')
-    # formatted_pem = '\n'.join(line for line in lines if line) + '\n'
-    # print
-    #
-    # return formatted_pem
-    return pem_str
-
-
-def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str, is_pem=True):
+def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str):
     """
     Return the file results to the context.
     Args:
@@ -546,13 +529,11 @@ def return_file_results(data: list[str] | str | bytes, filenames: list[str] | st
         for idx, file_data in enumerate(data):
             if not file_data:
                 continue
-            if is_pem:
-                file_data = format_pem_string(file_data)
             file_results.append(fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE))
         return_results(file_results)
 
     elif isinstance(data, str) or isinstance(data, bytes) and isinstance(filenames, str):
-        return_results(fileResult(filenames, format_pem_string(data) if is_pem else data, EntryType.ENTRY_INFO_FILE))
+        return_results(fileResult(filenames, data, EntryType.ENTRY_INFO_FILE))
     else:
         raise ValueError('filenames and data should be of the same type and length.')
 
