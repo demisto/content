@@ -66,6 +66,46 @@ display: Arcanna.AI
 name: Arcanna.AI
 script:
   commands:
+  - description: Retrieves Arcanna Default Job id.
+    name: arcanna-get-default-job-id
+    outputs:
+    - contextPath: Arcanna.Default_Job_Id
+      description: Arcanna Default Job id.
+      type: String
+    deprecated: true
+  - arguments:
+    - description: job_id.
+      name: job_id
+      required: true
+    description: Sets Arcanna Default Job id.
+    name: arcanna-set-default-job-id
+    outputs:
+    - contextPath: Arcanna.Default_Job_Id
+      description: An Arcanna  job id used as default(if not specified, default job_id will be used).
+      type: String
+    deprecated: true
+  - arguments:
+    - description: An Arcanna job id.
+      name: job_id
+      required: true
+    - description: A comma-separated list of Arcanna evens ids to be sent.
+      isArray: true
+      name: events
+      required: true
+    description: Send to Arcanna a bulk of events as a dict encoded JSON string filled with XSOAR fields.
+    name: arcanna-send-bulk-events
+    outputs:
+    - contextPath: Arcanna.Bulk.status
+      description: Arcanna response status for bulk events indexing.
+      type: String
+    deprecated: true
+ - description: Returns the Feedback field set on integration.
+    name: arcanna-get-feedback-field
+    outputs:
+    - contextPath: Arcanna.FeedbackField
+      description: XSOAR field used to signal feedback/label for Arcanna.
+      type: String
+    deprecated: true
   - description: Get jobs list.
     name: arcanna-get-jobs
     outputs:
