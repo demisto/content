@@ -548,7 +548,6 @@ def return_file_results(data: list[str] | str | bytes, filenames: list[str] | st
                 continue
             if is_pem:
                 file_data = format_pem_string(file_data)
-                print(file_data)
             file_results.append(fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE))
         return_results(file_results)
 
@@ -1164,8 +1163,6 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
     outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
     return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
 
-    print(f'{args.get(LOCAL_CA_ID)} has been installed successfully!')
-    print(outputs)
     return CommandResults(
         outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,

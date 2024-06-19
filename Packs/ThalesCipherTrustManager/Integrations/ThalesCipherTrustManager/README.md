@@ -1292,24 +1292,29 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 | CipherTrust.CAInstall.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
 
 #### Command example
-```!ciphertrust-group-create name="example_group" description="this is an example group"```
+```!ciphertrust-local-ca-install cert_entry_id=2412@a48e3cfd-a079-4895-89a7-4fac11b8143d local_ca_id=7951163f-a91d-4b29-91f7-b8175d732fc2 parent_id=b8f345ba-cd21-41ad-8184-56e6442bc52b"```
 #### Context Example
 ```json
 {
     "CipherTrust": {
-        "Group": {
-            "created_at": "2024-06-18T09:16:04.419126Z",
-            "description": "this is an example group",
-            "name": "example_group",
-            "updated_at": "2024-06-18T09:16:04.419126Z"
-        }
+        "CAInstall": {"id": "7951163f-a91d-4b29-91f7-b8175d732fc2", "uri": "kylo:kylo:naboo:localca:7951163f-a91d-4b29-91f7-b8175d732fc2", "account": "kylo:kylo:admin:accounts:kylo", "createdAt": "2024-06-19T12:01:11.978136Z", "updatedAt": "2024-06-19T12:03:11.738936809Z", "name": "localca-7951163f-a91d-4b29-91f7-b8175d732fc2", "state": "active", "parent": "kylo:kylo:naboo:localca:b8f345ba-cd21-41ad-8184-56e6442bc52b", "serialNumber": "104862149230168133443259457904971639639", "subject": "/CN=test_install_xsoar3", "issuer": "/CN=test_install_xsoar", "notBefore": "2024-06-18T12:01:47Z", "notAfter": "2025-06-19T09:09:09Z", "sha1Fingerprint": "DD65DC5FEDF16974AEAE5E3E5A82685E6CCA0441", "sha256Fingerprint": "32522F9E95722699AD4F23E7ADBD224397A1D7ECDFE1357764B86F6965130741", "sha512Fingerprint": "108CB8FB382A18C431DF02B98BAB70DD6B7BCD88350FE2BB74100F0BCE13C2B131AF3B26E9A5095C4791B168F723A239081B6A846DEA21A073D0288E22E28866", "purpose": {"client_authentication": "Enabled", "user_authentication": "Enabled"}}
+
+    } , 
+    "InfoFile": {
+        "EntryID": "2116@a48e3cfd-a079-4895-89a7-4fac11b8143d",
+        "Extension": "pem",
+        "Info": "application/x-x509-ca-cert",
+        "Name": "Certificate.pem",
+        "Size": 1533,
+        "Type": "PEM certificate"
     }
 }
 ```
 
 #### Human Readable Output
 
->example_group has been created successfully!
+>7951163f-a91d-4b29-91f7-b8175d732fc2 has been installed successfully!
+
 
 ### ciphertrust-local-ca-list
 
