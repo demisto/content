@@ -167,19 +167,21 @@ def create_events_for_push(event_list: list, last_time: str, id_list: list, limi
     event_list_for_push = []
     demisto.debug('Checking duplications and creating events for pushing to XSIAM')
     for event in event_list:
+        inc_time = event.get("inc_mtime")
         if last_time:
             last_time_date = arg_to_datetime(arg=last_time, required=True).date()   # type: ignore[union-attr]
-            event_date = arg_to_datetime(arg=event.get("inc_mtime"), required=True).date()   # type: ignore[union-attr]
-            if event.get("inc_mtime") < last_time or event.get("dg_guid") in id_list:
+            event_date = arg_to_datetime(arg=inc_time, required=True).date() if inc_time else None   # type: ignore[union-attr]
+            if (inc_time and inc_time < last_time) or event.get("dg_guid") in id_list:
                 continue
-            if last_time_date == event_date:
+            if last_time_date == event_date and event.get("dg_guid"):
                 id_list.append(event.get("dg_guid"))
-            else:
+            elif event.get("dg_guid"):
                 id_list = [event.get("dg_guid")]
         else:
-            id_list.append(event.get("dg_guid"))
+            if event.get("dg_guid"):
+                id_list.append(event.get("dg_guid"))
         event_list_for_push.append(event)
-        last_time = event.get("inc_mtime")
+        last_time = inc_time if inc_time else last_time
         index += 1
         if index == limit:
             break
@@ -220,7 +222,7 @@ def add_time_to_events(events: list[dict]) -> None:
     """
     if events:
         for event in events:
-            create_time = arg_to_datetime(arg=event.get('inc_mtime'))
+            create_time = arg_to_datetime(arg=event.get('inc_mtime')) if event.get('inc_mtime') else None
             event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 

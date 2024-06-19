@@ -66,6 +66,14 @@
         },
         {
             "array": false,
+            "name": "dg_guid",
+            "type": "string",
+            "display_name": "Unique ID",
+            "tags": [],
+            "encrypt": false
+        },
+        {
+            "array": false,
             "name": "inc_sev",
             "type": "int",
             "display_name": "Severity",
@@ -98,7 +106,8 @@
             "This file outlook.exe was going to [demo.digitalg@gmail.com]",
             "230523-WIQHA",
             "-",
-            "2023-05-23 06:56:39",
+            "",
+            "1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e",
             "Critical",
             "Incident",
             "279b59f3-02f3-44ea-a7c3-9bac2eb0224d"
@@ -112,6 +121,7 @@
             "230523-RG0AB",
             "-",
             "2023-05-23 11:53:11",
+            "",
             "Critical",
             "Incident",
             "279b59f3-02f3-44ea-a7c3-9bac2eb0224d"
