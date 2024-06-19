@@ -46,7 +46,7 @@ def get_file_content(file_entry_id):
     if file_entry_id:
         res = execute_command('getFilePath', {'id': file_entry_id})
         file_path = res.get('path')
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             file_content = f.read()
         return file_content
 
