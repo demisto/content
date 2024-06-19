@@ -129,8 +129,7 @@ def startServer():
                 self.send_response(404)
                 self.flush_headers()
     # Create server object listening the port 10888
-    global SERVER_OBJECT, MD_HTTP_PORT
-
+    global SERVER_OBJECT
     SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
     # Start the web server
     SERVER_OBJECT.serve_forever()
