@@ -1525,7 +1525,7 @@ def test_main(mocker):
     main()
 
 @freeze_time("1993-06-17 11:00:00 GMT")
-def test_core_http_request(mocker):
+def test_core_http_request_xsiam_tenant(mocker):
     """
     Given:
         - Only the required params in the configuration.
@@ -1545,11 +1545,7 @@ def test_core_http_request(mocker):
         params=False
     )
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
-    mocker.patch.object(demisto, 'params', return_value={'url': 'test_url',
-                                                         "custom_xsoar_to_xdr_close_reason_mapping": False,
-                                                         "custom_xdr_to_xsoar_close_reason_mapping": False})
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, "_apiCall", return_value= Exception("command '_apiCall' is not available via engine (85)"))
-    mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"data": { "incidents": [{"incident": {"incident_id": "1"}}]}}})
-    res = client.test_module(first_fetch_time='3 month')
-    assert res == 'ok'
+    mocker.patch("demisto._apiCall", return_value=Exception("command '_apiCall' is not available via engine (85)"))
+    mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"incidents": [{"incident": {"incident_id": "1"}}]}})
+    res = client.get_incidents(incident_id_list=['1'])
+    assert res == [{'incident': {'incident_id': '1'}}]
