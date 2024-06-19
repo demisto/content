@@ -256,16 +256,16 @@ script:
     - name: decision_set
       description: Valid candidates for feedback based on Arcanna.ai job configuration.
       required: true
-    - name: username
-      description: A username providing the feedback.
+    - description: An Arcanna feedback label.
+      name: label
       required: true
-    - name: label
-      description: Deprecated. Replaced by parameter feedback.
+    - description: A username providing the feedback.
+      name: username
       required: true
-    - name: indicators
-      description: Deprecated. Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
-    - name: closing_notes
-      description: Deprecated. Closing notes for audit.
+    - description: Cortex closing notes if any.
+      name: closing_notes
+    - description: Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
+      name: indicators
     description: Send Arcanna feedback for a previous inferred event.
     name: arcanna-send-event-feedback
     outputs:
