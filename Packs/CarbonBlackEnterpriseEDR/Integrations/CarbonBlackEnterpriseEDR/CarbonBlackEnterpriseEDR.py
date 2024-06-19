@@ -524,7 +524,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     )
     return results
 
-
+"""
 def run_polling_command(client: Client, args: dict, cmd: str, search_function, results_function):
     interval_in_secs = 60 # should  we get input from user?
     if 'request_id' not in args:
@@ -569,7 +569,6 @@ def run_polling_command(client: Client, args: dict, cmd: str, search_function, r
         command_results = CommandResults(scheduled_command=scheduled_command)
     return command_results
 
-
 # The second API, called again and again until the results appear
 def alert_workflow_update_command_with_results(client: Client, args: dict):
     request_id = args['request_id']
@@ -590,8 +589,9 @@ def alert_workflow_update_command_with_results(client: Client, args: dict):
                                 outputs=response,
                                 raw_response=response) , status
     return None, status
+"""
 
-@polling_function(name='cb-eedr-alert-workflow-update', interval=300, requires_polling_arg=False)
+@polling_function(name='cb-eedr-alert-workflow-update', interval=1000, requires_polling_arg=False)
 def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
     request_id = arg_to_number(args.get('request_id'))
     alert_id = args['alert_id']
@@ -638,7 +638,7 @@ def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
         continue_to_poll=False)
 
 
-
+"""
 #The first time the API is called
 def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
         
@@ -662,7 +662,7 @@ def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
         raw_response=result
     )
     return results
-
+"""
 
 def list_devices_command(client: Client, args: dict) -> CommandResults | str:
     device_id = argToList(args.get('device_id'))
