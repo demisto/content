@@ -58,7 +58,7 @@ class Client(CoreClient):
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> dict:
         if FORWARD_USER_RUN_RBAC:
-            return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs)
+            return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs, is_core_pack=True)
         if requests_kwargs is None:
             requests_kwargs = {}
         res = requests.post(url=self._base_url + url_suffix,
