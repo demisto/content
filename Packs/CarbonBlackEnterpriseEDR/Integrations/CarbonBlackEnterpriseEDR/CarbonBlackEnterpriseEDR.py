@@ -529,6 +529,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, search_function, r
     interval_in_secs = 60 # should  we get input from user?
     if 'request_id' not in args:
         # this is the first time
+        demisto.debug('bla bla')
         command_results = search_function(client, args)
         outputs = command_results.raw_response
         request_id = outputs.get('request_id')
@@ -548,7 +549,7 @@ def run_polling_command(client: Client, args: dict, cmd: str, search_function, r
             return command_results
         else:
             args['request_id'] = request_id  # for the next time calling the API
-            
+    demisto.debug('second call')
     command_results, status = results_function(client, args)  # get the current status of the command running (while calling the API2)
     if status != 'COMPLETED':
         # schedule next poll
@@ -589,6 +590,53 @@ def alert_workflow_update_command_with_results(client: Client, args: dict):
                                 outputs=response,
                                 raw_response=response) , status
     return None, status
+
+@polling_function(name='cb-eedr-alert-workflow-update', interval=300, requires_polling_arg=False)
+def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
+    request_id = arg_to_number(args.get('request_id'))
+    alert_id = args['alert_id']
+
+    if not request_id: #if this is the first time
+        state = args.get('state')
+        if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
+            state = 'CLOSED'
+        comment = args.get('comment')
+        # All of these are added in v7
+        determination = args.get('determination')
+        time_range = args.get('time_range')
+        start = args.get('start')
+        end = args.get('end')
+        closure_reason = args.get('closure_reason')
+        
+        response = client.alert_workflow_update_request(
+            alert_id, state, comment, determination, time_range, start, end, closure_reason)
+        
+        request_id = response['request_id']
+        if request_id:
+            args["request_id"] = request_id
+        else:
+            raise DemistoException("Failed to update workflow for alert")
+        
+        
+    # The second API call
+    response = client.alert_workflow_update_request_v2(request_id)  #There for sure will be a request id once we get here
+    status = response['status']
+    if status != 'COMPLETED':
+        message = CommandResults(
+            readable_output="Checking again in 60 seconds...")
+        return PollResult(
+            partial_result=message,
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"request_id": request_id,
+                               **args})
+
+    message = CommandResults(
+        readable_output='The alert workflow has been updated successfully')
+    return PollResult(
+        response=message,
+        continue_to_poll=False)
+
 
 
 #The first time the API is called
@@ -1516,7 +1564,7 @@ def main():
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
             #return_results(alert_workflow_update_command_with_results(client, demisto.args()))
-            return_results(run_polling_command(client, demisto.args(), 'cb-eedr-alert-workflow-update', alert_workflow_update_command, alert_workflow_update_command_with_results))
+            return_results(alert_workflow_update_command_v2(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))
