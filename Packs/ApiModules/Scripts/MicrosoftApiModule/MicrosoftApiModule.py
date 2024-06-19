@@ -455,7 +455,6 @@ AZURE_GERMAN_CLOUD = AzureCloud(
         ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
         portal='https://portal.microsoftazure.de',
         keyvault='https://vault.microsoftazure.de',
-        exchange_online='https://outlook.office.de'
     ),
     suffixes=AzureCloudSuffixes(
         storage_endpoint='core.cloudapi.de',
