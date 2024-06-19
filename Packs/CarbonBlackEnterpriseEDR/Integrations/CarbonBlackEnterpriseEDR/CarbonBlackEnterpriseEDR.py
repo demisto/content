@@ -1337,7 +1337,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             # got an alert we already fetched, skipping it
             continue
 
-        alert_create_date = alert.get('create_timestamp')
+        alert_create_date = alert.get('backend_timestamp')
         incident = {
             'name': f'Carbon Black Enterprise EDR alert {alert_id}',
             'occurred': alert_create_date,
