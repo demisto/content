@@ -9,9 +9,9 @@
             "Rule_id": 6568,
             "probe_name": "Probe_01",
             "port": 0,
-            "src_ip": "29.19.7.78",
+            "src_ip": "29",
             "src_port": 708,
-            "dest_ip": "18.80.47.93",
+            "dest_ip": "18",
             "dest_port": 265
           }
         ]
@@ -31,9 +31,9 @@
             "Rule_id": 34416,
             "probe_name": "Probe_02",
             "port": 0,
-            "src_ip": "15.43.71.25",
+            "src_ip": "154",
             "src_port": 147,
-            "dest_ip": "96.38.0.89",
+            "dest_ip": "969",
             "dest_port": 439
           }
         ]
@@ -53,9 +53,9 @@
               "Rule_id": 8542,
               "probe_name": "Probe_02",
               "port": 0,
-              "src_ip": "11.38.58.77",
+              "src_ip": "11",
               "src_port": 98,
-              "dest_ip": "18.61.51.73",
+              "dest_ip": "18",
               "dest_port": 118
             }
           ],
@@ -66,9 +66,9 @@
               "Rule_id": 8468,
               "probe_name": "Probe_01",
               "port": 0,
-              "src_ip": "19.10.95.45",
+              "src_ip": "19",
               "src_port": 408,
-              "dest_ip": "68.17.84.67",
+              "dest_ip": "68",
               "dest_port": 849
             }
           ]
