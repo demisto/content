@@ -99,7 +99,7 @@ script:
       description: Arcanna response status for bulk events indexing.
       type: String
     deprecated: true
- - description: Returns the Feedback field set on integration.
+  - description: Returns the Feedback field set on integration.
     name: arcanna-get-feedback-field
     outputs:
     - contextPath: Arcanna.FeedbackField
