@@ -490,9 +490,10 @@ def main():
 
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
-    print(f'pr branch is: {pr.head.repo.full_name}')
+    remote_repo = pr.head.repo.full_name.split('/')[0]
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
-    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
+    #if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
+    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, remote_repo):
         labels_to_add.append(support_label)
 
     # Add the initial labels to PR:
