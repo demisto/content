@@ -169,7 +169,7 @@ def packs_to_check_in_pr(file_paths: list[str]) -> set:
     return pack_dirs_to_check
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, repo_name: str = 'content') -> str:
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, repo_name: str = 'content', remote_repo: str) -> str:
     """
     Get The contributions' support level label.
 
@@ -205,7 +205,8 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            #fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            fork_owner=remote_repo if remote_repo != 'xsoar-bot' else 'xsoar-contrib',
             repo_name=repo_name
         ):
             packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
@@ -491,11 +492,9 @@ def main():
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
     remote_repo = pr.head.repo.full_name.split('/')[0]
-    print(f'the remote repo is {pr.head.repo.full_name.split("/")[0]}')
-    print(f'the remote repo 2 is {remote_repo}')
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
     #if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
-    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, remote_repo):
+    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name, remote_repo):
         labels_to_add.append(support_label)
 
     # Add the initial labels to PR:
