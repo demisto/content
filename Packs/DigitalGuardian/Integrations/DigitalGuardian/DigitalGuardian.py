@@ -70,7 +70,7 @@ def get_watchlist_id(watchlist_name: str) -> str:
     list_id = None
     if 200 <= r.status_code <= 299:
         for item in json_text:
-            if item.get('display_name').lower() == watchlist_name.lower():
+            if item.get('display_name', '').lower() == watchlist_name.lower():
                 list_id = item.get('name')
     else:
         return_error(f'Error retrieving watchlist_id for {watchlist_name}, {r.status_code}: {r.text}')
@@ -91,7 +91,7 @@ def get_list_id(list_name: str, list_type: str) -> str:
     list_id = None
     if 200 <= r.status_code <= 299:
         for jText in json_text:
-            if str(jText.get('name')).lower() == list_name.lower():
+            if str(jText.get('name', '')).lower() == list_name.lower():
                 list_id = jText.get('id')
     else:
         return_error(f'Error retrieving list_id for {list_name}, {r.status_code}: {r.text}')
@@ -125,7 +125,7 @@ def get_watchlist_entry_id(watchlist_name: str, watchlist_entry: str) -> str:
         if r.status_code != requests.codes.ok:
             return_error('Unable to retrieve watchlist entries')
         for jText in json_text:
-            if str(jText.get('value_name')).lower() == watchlist_entry.lower():
+            if str(jText.get('value_name', '')).lower() == watchlist_entry.lower():
                 watchlist_entry_id = jText.get('value_id')
 
     return str(watchlist_entry_id)
@@ -166,9 +166,9 @@ def check_componentlist_entry():
 
     Sets DigitalGuardian.Componentlist.Found flag.
     """
-    componentlist_name = demisto.args().get('componentlist_name', None)
-    componentlist_entry = demisto.args().get('componentlist_entry', None)
-    if componentlist_name is None or componentlist_entry is None:
+    componentlist_name = demisto.args().get('componentlist_name', '')
+    componentlist_entry = demisto.args().get('componentlist_entry', '')
+    if not componentlist_name or not componentlist_entry:
         return_error('Please provide both componentlist_name and componentlist_entry')
 
     componentlist = None
@@ -180,7 +180,7 @@ def check_componentlist_entry():
 
         if 200 <= r.status_code <= 299:
             for jText in json_text:
-                if str(jText.get('content_value')).lower() == componentlist_entry.lower():
+                if str(jText.get('content_value', '')).lower() == componentlist_entry.lower():
                     componentlist = jText.get('content_value')
         else:
             return_error(f'Unable to find componentlist named {componentlist_name}, {r.status_code}')
