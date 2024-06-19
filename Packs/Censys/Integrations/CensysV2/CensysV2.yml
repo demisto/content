@@ -34,6 +34,15 @@ configuration:
   additionalinfo: |-
     Censys API provides reputation data exclusively to paid subscribers. 
     When set to True, the integration will use labels to determine the IP score. 
+- display: Determine IP score by labels (for paid subscribers)
+  name: premium_accessss
+  type: 8
+  required: false
+  section: Collect
+  advanced: true
+  additionalinfo: |-
+    Censys API provides reputation data exclusively to paid subscribers. 
+    When set to True, the integration will use labels to determine the IP score. 
 - display: IP Malicious labels
   name: malicious_labels
   type: 16
