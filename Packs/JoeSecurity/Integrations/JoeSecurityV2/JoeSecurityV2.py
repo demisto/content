@@ -24,6 +24,8 @@ class Client(jbxapi.JoeSandbox):
         self.on_premise = on_premise
         if not proxy:
             demisto.debug("removing proxy system variables")
+        else:
+            demisto.debug("handling proxy..")
         proxies = handle_proxy()
         super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxies)
 
