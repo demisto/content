@@ -29,8 +29,10 @@ def find_unused_port() -> int:
             else:
                 demisto.debug(f'Port {port} is free')
                 return port
+        raise RuntimeError("Could not find available ports")
     finally:
         sock.close()
+
 
 WORKING_DIR = Path("/app")
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
