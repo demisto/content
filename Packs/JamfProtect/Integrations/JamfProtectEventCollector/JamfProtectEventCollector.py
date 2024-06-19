@@ -16,7 +16,7 @@ DEFAULT_MAX_FETCH_AUDIT = 20000
 DEFAULT_MAX_FETCH_COMPUTER = 1000
 DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 
 
 class EventResult(NamedTuple):
@@ -205,7 +205,7 @@ class Client(BaseClient):
                 input: {
                     filter: {
                         created: {
-                            greaterThanOrEqual: $created
+                            greaterThan: $created
                         }
                     },
                     pageSize: $page_size,
@@ -250,7 +250,7 @@ class Client(BaseClient):
             listComputers( input: {
                 filter: {
                     created: {
-                        greaterThanOrEqual: $created
+                        greaterThan: $created
                         }
                     }
                     pageSize: $page_size  next: $next
