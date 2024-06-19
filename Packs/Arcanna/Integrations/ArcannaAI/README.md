@@ -313,7 +313,7 @@ Send Arcanna feedback for a previous inferred event.
 | username | A username providing the feedback. | Required | 
 | decision_set | List of possible decisions to be used as feedback values. | Required | 
 | closing_notes | Deprecated. Prior used for audit. | Optional |
-| label | Deprecated. Replaced by `feedback`. | Optional |
+| label | Deprecated. Replaced by `feedback`. | Required |
 | indicators | Deprecated. Prior used for metadata. | Optional |
 
 #### Context Output

@@ -247,7 +247,6 @@ script:
   - arguments:
     - description: An Arcanna job id.
       name: job_id
-      required: true
     - description: An Arcanna event id.
       name: event_id
       required: true
@@ -261,6 +260,7 @@ script:
       description: A username providing the feedback.
       required: true
     - name: label
+      type: String
       description: Deprecated. Replaced by parameter feedback.
       required: true
       default: "deprecated"
