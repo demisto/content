@@ -138,7 +138,8 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incident_id = demisto.incident()['id']
         incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
         incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
-        context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain'}
+        incidents_df['removedfromcampaigns'] = incidents_df['removedfromcampaigns'].apply(lambda x: [] if pd.isna(x) else x)
+        context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain', 'removedfromcampaigns'}
         invalid_context_keys = set()
         if additional_context_fields is not None:
             for key in additional_context_fields:
@@ -402,7 +403,6 @@ def return_campaign_details_entry(incidents_df, fields_to_display):
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
     context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
     hr = '\n'.join([hr_campaign_details, hr_email_summary])
-
     vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
     demisto.executeCommand('setIncident',
                            {'emailcampaignsummary': f"{vertical_hr_campaign_details}",
@@ -554,12 +554,12 @@ def main():
         fields_to_display = get_comma_sep_list(fields_to_display)
     else:
         fields_to_display = []
-    res = demisto.executeCommand('FindDuplicateEmailIncidents', input_args)
+    res = demisto.executeCommand('FindDuplicateEmailIncidents-try', input_args)
     if is_error(res):
         return_error(get_error(res))
     res = res[-1]
     incidents = json.loads(res['Contents'])
-
+    # return_results(CommandResults(readable_output=tableToMarkdown("incidents",incidents)))
     if is_number_of_incidents_too_low(res, incidents):
         return
     if is_number_of_unique_recipients_is_too_low(incidents):
