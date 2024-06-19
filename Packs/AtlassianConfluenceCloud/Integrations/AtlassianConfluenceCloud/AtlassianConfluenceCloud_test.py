@@ -100,7 +100,7 @@ def test_confluence_cloud_group_list_command_when_valid_response_is_returned(req
     requests_mock.get(BASE_URL + URL_SUFFIX["GROUP"], json=expected_response)
     expected_context_output = util_load_json(os.path.join("test_data", "group/group_list_command_context.json"))
 
-    with open(os.path.join("test_data", "group/group_list_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "group/group_list_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -231,7 +231,7 @@ def test_confluence_cloud_content_create_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_command_context.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -282,7 +282,7 @@ def test_confluence_cloud_content_create_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_object_not_present.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -315,7 +315,7 @@ def test_confluence_cloud_comment_create_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "comment_create"
                                                                        "/comment_create_command_context.json"))
 
-    with open(os.path.join("test_data", "comment_create/comment_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "comment_create/comment_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -364,7 +364,7 @@ def test_confluence_cloud_user_list_command_when_valid_response_is_returned(requ
     requests_mock.get(BASE_URL + URL_SUFFIX["USER"], json=expected_response, status_code=200)
     expected_context_output = util_load_json("test_data/User/user_list_command_context.json")
 
-    with open("test_data/User/user_list_command.md", 'r') as f:
+    with open("test_data/User/user_list_command.md") as f:
         expected_readable_output = f.read()
 
     args = {
@@ -433,7 +433,7 @@ def test_confluence_cloud_content_search_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "content_search/"
                                                                        "content_search_command_context.json"))
 
-    with open(os.path.join("test_data", "content_search/content_search_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_search/content_search_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -529,7 +529,7 @@ def test_confluence_cloud_content_list_command_when_valid_response_is_returned(r
     expected_context_output = util_load_json(os.path.join("test_data", "content_list/"
                                                                        "content_list_command_context.json"))
 
-    with open(os.path.join("test_data", "content_list/content_list_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_list/content_list_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -606,7 +606,7 @@ def test_confluence_cloud_space_create_command_when_valid_response_is_returned(r
     expected_context_output = util_load_json(os.path.join("test_data", "space_create"
                                                                        "/space_create_command_context.json"))
 
-    with open(os.path.join("test_data", "space_create/space_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "space_create/space_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -693,7 +693,7 @@ def test_confluence_cloud_space_list_command_when_valid_response_is_returned(req
     requests_mock.get(BASE_URL + URL_SUFFIX["SPACE"], json=expected_response)
     expected_context_output = util_load_json(os.path.join("test_data", "space_list/space_list_command_context.json"))
 
-    with open(os.path.join("test_data", "space_list/space_list_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "space_list/space_list_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -767,7 +767,7 @@ def test_confluence_cloud_content_update_command_when_valid_response_is_returned
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_command_context.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_command.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_command.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -820,7 +820,7 @@ def test_confluence_cloud_content_update_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "content_create"
                                                                        "/content_create_object_not_present.json"))
 
-    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_create/content_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -855,7 +855,7 @@ def test_confluence_cloud_comment_create_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "comment_create"
                                                                        "/comment_create_object_not_present.json"))
 
-    with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "comment_create/comment_create_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -890,7 +890,7 @@ def test_confluence_cloud_space_list_command_when_key_not_present(requests_mock)
                                                                        "/space_list_command_key_not_present_context"
                                                                        ".json"))
 
-    with open(os.path.join("test_data", "space_list/space_list_command_key_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "space_list/space_list_command_key_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -925,7 +925,7 @@ def test_confluence_cloud_content_search_command_when_object_not_present(request
     expected_context_output = util_load_json(os.path.join("test_data", "content_search"
                                                                        "/content_search_object_not_present_context.json"))
 
-    with open(os.path.join("test_data", "content_search/content_search_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_search/content_search_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
@@ -957,7 +957,7 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
     expected_context_output = util_load_json(os.path.join("test_data", "content_list/"
                                                                        "content_list_object_not_present_context.json"))
 
-    with open(os.path.join("test_data", "content_list/content_list_object_not_present.md"), 'r') as f:
+    with open(os.path.join("test_data", "content_list/content_list_object_not_present.md")) as f:
         expected_readable_output = f.read()
 
     args = {
