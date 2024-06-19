@@ -136,7 +136,7 @@ def startServer():
     SERVER_OBJECT.serve_forever()
 
 
-def main():
+def main():  # pragma: no cover
     try:
         sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
             'utf-8')
