@@ -1381,7 +1381,6 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         }
         if filter_arg:
             params['filter'] = filter_arg
-            
         elif behavior_id:
             params['filter'] = f"behaviors.behavior_id:'{behavior_id}'"
         elif last_behavior_time:
