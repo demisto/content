@@ -1079,12 +1079,12 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                         label_attachment_id_type = 'attachmentItemsId'
 
                         # save the attachment
-                        if hasattr(attachment, 'item') and attachment.item.mime_content:
+                        if hasattr(attachment, 'item') and (attachment_content := attachment.item.mime_content):
                             # Some items arrive with bytes attachemnt
-                            if isinstance(attachment.item.mime_content, bytes):
-                                attached_email = email.message_from_bytes(attachment.item.mime_content)
+                            if isinstance(attachment_content, bytes):
+                                attached_email = email.message_from_bytes(attachment_content)
                             else:
-                                attached_email = email.message_from_string(attachment.item.mime_content)
+                                attached_email = email.message_from_string(attachment_content)
                             if attachment.item.headers:
                                 attached_email_headers = []
                                 for h, v in list(attached_email.items()):
@@ -1103,8 +1103,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                             and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
-                            file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
-                                                     attached_email.as_string())
+                            file_result = fileResult(get_attachment_name(attachment.name) + ".eml", attachment_content)
 
                         if file_result:
                             # check for error
