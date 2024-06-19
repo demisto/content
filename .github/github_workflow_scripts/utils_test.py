@@ -15,7 +15,8 @@ from utils import (
     DOC_REVIEWER_KEY,
     get_doc_reviewer,
     CONTENT_ROLES_BLOB_MASTER_URL,
-    get_content_roles
+    get_content_roles,
+    CONTENT_ROLES_FILENAME
 )
 
 
@@ -366,7 +367,7 @@ class TestGetContentRoles:
         )
 
         # Create content_roles in fs
-        content_roles_path = tmp_path / "content_roles.json"
+        content_roles_path = tmp_path / CONTENT_ROLES_FILENAME
         content_roles_path.touch()
         content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
 
@@ -402,7 +403,7 @@ class TestGetContentRoles:
         )
 
         # Create content_roles in fs
-        content_roles_path = tmp_path / "content_roles.json"
+        content_roles_path = tmp_path / CONTENT_ROLES_FILENAME
         content_roles_path.touch()
         content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
 
@@ -439,7 +440,7 @@ class TestGetContentRoles:
         )
 
         # Create content_roles in fs
-        content_roles_path = tmp_path / "content_roles.json"
+        content_roles_path = tmp_path / CONTENT_ROLES_FILENAME
         content_roles_path.touch()
         content_roles_path.write_text("{\"only_key\"}")
 

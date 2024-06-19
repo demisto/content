@@ -11,15 +11,16 @@ from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
 from git import Repo
 
-CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))
-CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
+CONTENT_ROLES_FILENAME = "content_roles.json"
+CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
+CONTENT_ROLES_PATH = Path(CONTENT_ROOT_PATH, ".github", CONTENT_ROLES_FILENAME)
 
 DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 TIM_REVIEWER_KEY = "TIM_REVIEWER"
 
-CONTENT_ROLES_BLOB_MASTER_URL = "https://raw.githubusercontent.com/demisto/content/master/.github/content_roles.json"
+CONTENT_ROLES_BLOB_MASTER_URL = f"https://raw.githubusercontent.com/demisto/content/master/.github/{CONTENT_ROLES_FILENAME}"
 
 # override print so we have a timestamp with each print
 org_print = print
@@ -269,10 +270,10 @@ def get_content_roles_from_blob() -> dict[str, Any] | None:
         response = requests.get(CONTENT_ROLES_BLOB_MASTER_URL)
         response.raise_for_status()  # Raise an error for bad status codes
         json_data = response.json()
-        print("Successfully retrieved content_roles.json from blob")
+        print(f"Successfully retrieved {CONTENT_ROLES_FILENAME} from blob")
         roles = json_data
     except (requests.RequestException, requests.HTTPError, json.JSONDecodeError, TypeError) as e:
-        print(f"{e.__class__.__name__} getting content_roles.json from blob: {e}.")
+        print(f"{e.__class__.__name__} getting {CONTENT_ROLES_FILENAME} from blob: {e}.")
     finally:
         return roles
 
@@ -287,11 +288,11 @@ def get_content_roles(res_path: Path = CONTENT_ROLES_PATH) -> dict[str, Any] | N
     - `dict[str, Any]` representing the content roles.
     """
 
-    print(f"Attempting to retrieve 'content_roles.json' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
+    print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
     roles = get_content_roles_from_blob()
 
     if not roles:
-        print("Unable to retrieve 'content_roles.json' from blob. Attempting to retrieve from the filesystem...")
+        print("Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")
         roles = load_json(res_path)
 
     return roles
