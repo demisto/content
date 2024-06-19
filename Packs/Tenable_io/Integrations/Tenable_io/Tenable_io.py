@@ -172,6 +172,7 @@ PRODUCT = 'io'
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 50
 MAX_CHUNKS_PER_FETCH = 10
+MAX_VULNS_CHUNKS_PER_FETCH = 1
 ASSETS_FETCH_FROM = '90 days'
 VULNS_FETCH_FROM = '7 days'
 MIN_ASSETS_INTERVAL = 60
@@ -689,7 +690,7 @@ def handle_vulns_chunks(client: Client, assets_last_run):   # pragma: no cover
     updated_stored_chunks = stored_chunks.copy()
     export_uuid = assets_last_run.get('vuln_export_uuid')
     vulnerabilities = []
-    for chunk_id in stored_chunks[:MAX_CHUNKS_PER_FETCH]:
+    for chunk_id in stored_chunks[:MAX_VULNS_CHUNKS_PER_FETCH]:
         result = client.download_vulnerabilities_chunk(export_uuid=export_uuid, chunk_id=chunk_id)
         if result == NOT_FOUND_ERROR:
             demisto.info("generating new export uuid to start new fetch due to 404 error.")
