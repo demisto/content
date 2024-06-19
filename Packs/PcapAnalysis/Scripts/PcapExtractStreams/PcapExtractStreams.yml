@@ -67,7 +67,7 @@ comment: 'Extract payloads of each stream from a pcap.
 
   - incoming_text
 
-  - incoming_base64'
+  - incoming_base64.'
 commonfields:
   id: PcapExtractStreams
   version: -1
