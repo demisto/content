@@ -165,7 +165,6 @@ script:
       predefined:
       - 'true'
       - 'false'
-      defaultvalue: 'false'
     description: Retrieves Arcanna Inference result.
     name: arcanna-get-event-status
     outputs:

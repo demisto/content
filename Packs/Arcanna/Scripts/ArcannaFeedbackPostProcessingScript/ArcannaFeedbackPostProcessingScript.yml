@@ -31,6 +31,6 @@ dependson:
   should:
   - Arcanna.AI|||arcanna-send-event
   - Arcanna.AI|||arcanna-get-event-status
-fromversion: 5.5.0
+fromversion: 6.2.0
 tests:
 - No tests (auto formatted)
