@@ -3,21 +3,22 @@
 import os
 import sys
 import json
+import requests
 from datetime import datetime
 from typing import Any
 from collections.abc import Generator, Iterable
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
-import requests
 from git import Repo
+
+CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))
+CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
 
 DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 TIM_REVIEWER_KEY = "TIM_REVIEWER"
 
-CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))
-CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
 CONTENT_ROLES_BLOB_MASTER_URL = "https://raw.githubusercontent.com/demisto/content/master/.github/content_roles.json"
 
 # override print so we have a timestamp with each print
