@@ -1177,9 +1177,6 @@ def _build_incidents_given_last_fetch(
 
     parsed_last_alert_timestamp = __compute_latest_timestamp(
         alerts, "last_modified")
-
-    # add 1 millisecond to last alert timestamp,
-    # in order to prevent duplicated alerts
     if parsed_last_alert_timestamp is None:
         raise ValueError(
             "Incorrect timestamp in last alert of fetch-incidents")
