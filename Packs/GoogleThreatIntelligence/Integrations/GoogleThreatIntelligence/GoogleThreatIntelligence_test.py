@@ -1317,7 +1317,7 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
             else:
                 filter_query += f'collection_type%3A{collection_type}'
             requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections'
-                            f'?filter={filter_query}', json=data_json)
+                              f'?filter={filter_query}', json=data_json)
 
             # Run command and collect result array
             results = func(client=client, args=demisto.args())
