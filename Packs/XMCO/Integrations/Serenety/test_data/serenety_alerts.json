@@ -1,0 +1,273 @@
+{
+    "total": 5,
+    "page": 1,
+    "size": 50,
+    "pages": 1,
+    "items": [
+        {
+            "_id": "65bb9add203e28d7166f565e",
+            "created_at": "2024-02-01T14:21:33.100000",
+            "ref_id": 1083041,
+            "type": "serenety",
+            "action": "new",
+            "company": "65e83a75cba69ffd2d9384bf",
+            "scope": "65e83a81cba69ffd2d9384c0",
+            "data": {
+                "_id": "65bb9addcba69f54a467b5e6",
+                "_created": "2024-02-01 14:21:33.030142+01:00",
+                "_updated": "2024-02-01 14:21:33.032736+01:00",
+                "_deleted": false,
+                "_etag": "60cf9210-1c97-440d-8b3c-b47134cabe1b",
+                "_version": 1,
+                "_latest_version": 1,
+                "owner": "65e83a8ecba69ffd2d9384c1",
+                "users": [
+                    "65e83a8ecba69ffd2d9384c1"
+                ],
+                "company": "65e83a75cba69ffd2d9384bf",
+                "scope": "65e83a81cba69ffd2d9384c0",
+                "assets": [
+                    "65e83ab9cba69ffd2d9384c3"
+                ],
+                "revision": 0,
+                "journals": [],
+                "title": "Test Ticketor 01",
+                "description": "Test Ticketor description 01",
+                "description_format": "text",
+                "type": "serenety_action_ticket",
+                "status": "new",
+                "severity": "medium",
+                "quickwin": false,
+                "assignee": "65e83a8ecba69ffd2d9384c1",
+                "certified": false,
+                "impact": 0.0,
+                "custom_fields": {
+                    "category": "image_and_reputation",
+                    "subcategory": "image_and_reputation_suspicious_domain",
+                    "scope": "out_of_scope",
+                    "identification": "manual",
+                    "not_concerned": false,
+                    "observables": null,
+                    "events_id": null
+                },
+                "tracker": "65e83aa2cba69ffd2d9384c2",
+                "ref_id": 1083041,
+                "is_open": true
+            },
+            "last_sync": "2024-03-05T13:38:25.027000",
+            "synced": true
+        },
+        {
+            "_id": "65bb9b52203e28d7166f565f",
+            "created_at": "2024-02-01T14:23:30.053000",
+            "ref_id": 1083043,
+            "type": "serenety",
+            "action": "new",
+            "company": "65e83a75cba69ffd2d9384bf",
+            "scope": "65e83a81cba69ffd2d9384c0",
+            "data": {
+                "_id": "65bb9b51cba69f55499aadc4",
+                "_created": "2024-02-01 14:23:29.981525+01:00",
+                "_updated": "2024-02-01 14:23:29.984033+01:00",
+                "_deleted": false,
+                "_etag": "a5dedc43-2db8-4da9-9611-feda8f50d6cf",
+                "_version": 1,
+                "_latest_version": 1,
+                "owner": "65e83a8ecba69ffd2d9384c1",
+                "users": [
+                    "65e83a8ecba69ffd2d9384c1"
+                ],
+                "company": "65e83a75cba69ffd2d9384bf",
+                "scope": "65e83a81cba69ffd2d9384c0",
+                "assets": [
+                    "65e83ab9cba69ffd2d9384c3"
+                ],
+                "revision": 0,
+                "journals": [],
+                "title": "Test Ticketor 02",
+                "description": "Test Ticketor description 02",
+                "description_format": "text",
+                "type": "serenety_action_ticket",
+                "status": "new",
+                "severity": "medium",
+                "quickwin": false,
+                "assignee": "65e83a8ecba69ffd2d9384c1",
+                "certified": false,
+                "impact": 0.0,
+                "custom_fields": {
+                    "category": "image_and_reputation",
+                    "subcategory": "image_and_reputation_suspicious_domain",
+                    "scope": "out_of_scope",
+                    "identification": "manual",
+                    "not_concerned": false,
+                    "observables": null,
+                    "events_id": null
+                },
+                "tracker": "65e83aa2cba69ffd2d9384c2",
+                "ref_id": 1083043,
+                "is_open": true
+            },
+            "last_sync": "2024-03-05T13:38:25.027000",
+            "synced": true
+        },
+        {
+            "_id": "65bb9ba6203e28d7166f5660",
+            "created_at": "2024-02-01T14:24:54.966000",
+            "ref_id": 1083045,
+            "type": "serenety",
+            "action": "new",
+            "company": "65e83a75cba69ffd2d9384bf",
+            "scope": "65e83a81cba69ffd2d9384c0",
+            "data": {
+                "_id": "65bb9ba6cba69f5577454035",
+                "_created": "2024-02-01 14:24:54.881137+01:00",
+                "_updated": "2024-02-01 14:24:54.885140+01:00",
+                "_deleted": false,
+                "_etag": "31d9c6e2-93c1-4bf4-9177-384169d08ee4",
+                "_version": 1,
+                "_latest_version": 1,
+                "owner": "65e83a8ecba69ffd2d9384c1",
+                "users": [
+                    "65e83a8ecba69ffd2d9384c1"
+                ],
+                "company": "65e83a75cba69ffd2d9384bf",
+                "scope": "65e83a81cba69ffd2d9384c0",
+                "assets": [
+                    "65e83ab9cba69ffd2d9384c3"
+                ],
+                "revision": 0,
+                "journals": [],
+                "title": "Test Ticketor 03",
+                "description": "Test Ticketor description 03",
+                "description_format": "text",
+                "type": "serenety_action_ticket",
+                "status": "new",
+                "severity": "medium",
+                "quickwin": false,
+                "assignee": "65e83a8ecba69ffd2d9384c1",
+                "certified": false,
+                "impact": 0.0,
+                "custom_fields": {
+                    "category": "image_and_reputation",
+                    "subcategory": "image_and_reputation_suspicious_domain",
+                    "scope": "out_of_scope",
+                    "identification": "manual",
+                    "not_concerned": false,
+                    "observables": null,
+                    "events_id": null
+                },
+                "tracker": "65e83aa2cba69ffd2d9384c2",
+                "ref_id": 1083045,
+                "is_open": true
+            },
+            "last_sync": "2024-03-05T13:38:25.028000",
+            "synced": true
+        },
+        {
+            "_id": "65bb9c47203e28d7166f5661",
+            "created_at": "2024-02-01T14:27:35.866000",
+            "ref_id": 1083047,
+            "type": "serenety",
+            "action": "new",
+            "company": "65e83a75cba69ffd2d9384bf",
+            "scope": "65e83a81cba69ffd2d9384c1",
+            "data": {
+                "_id": "65bb9c47cba69f55918f5a86",
+                "_created": "2024-02-01 14:27:35.788563+01:00",
+                "_updated": "2024-02-01 14:27:35.791301+01:00",
+                "_deleted": false,
+                "_etag": "a8f330a9-cba5-4698-835c-4c08be026d13",
+                "_version": 1,
+                "_latest_version": 1,
+                "owner": "65e83a8ecba69ffd2d9384c1",
+                "users": [
+                    "65e83a8ecba69ffd2d9384c1"
+                ],
+                "company": "65e83a75cba69ffd2d9384bf",
+                "scope": "65e83a81cba69ffd2d9384c0",
+                "assets": [
+                    "65e83ab9cba69ffd2d9384c3"
+                ],
+                "revision": 0,
+                "journals": [],
+                "title": "Test Ticketor 04",
+                "description": "Test Ticketor description 04",
+                "description_format": "text",
+                "type": "serenety_action_ticket",
+                "status": "new",
+                "severity": "medium",
+                "quickwin": false,
+                "assignee": "65e83a8ecba69ffd2d9384c1",
+                "certified": false,
+                "impact": 0.0,
+                "custom_fields": {
+                    "category": "image_and_reputation",
+                    "subcategory": "image_and_reputation_suspicious_domain",
+                    "scope": "out_of_scope",
+                    "identification": "manual",
+                    "not_concerned": false,
+                    "observables": null,
+                    "events_id": null
+                },
+                "tracker": "65e83aa2cba69ffd2d9384c2",
+                "ref_id": 1083047,
+                "is_open": true
+            },
+            "last_sync": "2024-03-05T13:38:25.028000",
+            "synced": true
+        },
+        {
+            "_id": "65bbbc1d898ffd6befadad6d",
+            "created_at": "2024-02-01T16:43:25.122000",
+            "ref_id": 1083061,
+            "type": "serenety",
+            "action": "new",
+            "company": "65e83a75cba69ffd2d9384bf",
+            "scope": "65e83a81cba69ffd2d9384c1",
+            "data": {
+                "_id": "65bbbc1dcba69f6141d84f58",
+                "_created": "2024-02-01 16:43:25.019927+01:00",
+                "_updated": "2024-02-01 16:43:25.023564+01:00",
+                "_deleted": false,
+                "_etag": "797a0c62-e5f6-46d3-b4ef-d0f9fe76206c",
+                "_version": 1,
+                "_latest_version": 1,
+                "owner": "65e83a8ecba69ffd2d9384c1",
+                "users": [
+                    "65e83a8ecba69ffd2d9384c1"
+                ],
+                "company": "65e83a75cba69ffd2d9384bf",
+                "scope": "65e83a81cba69ffd2d9384c1",
+                "assets": [
+                    "65e83ab9cba69ffd2d9384c3"
+                ],
+                "revision": 0,
+                "journals": [],
+                "title": "Test Ticketor 05",
+                "description": "Test Ticketor description 05",
+                "description_format": "text",
+                "type": "serenety_action_ticket",
+                "status": "new",
+                "severity": "medium",
+                "quickwin": false,
+                "assignee": "65e83a8ecba69ffd2d9384c1",
+                "certified": false,
+                "impact": 0.0,
+                "custom_fields": {
+                    "category": "image_and_reputation",
+                    "subcategory": "image_and_reputation_suspicious_domain",
+                    "scope": "out_of_scope",
+                    "identification": "manual",
+                    "not_concerned": false,
+                    "observables": null,
+                    "events_id": null
+                },
+                "tracker": "65e83aa2cba69ffd2d9384c2",
+                "ref_id": 1083061,
+                "is_open": true
+            },
+            "last_sync": "2024-03-05T13:38:25.028000",
+            "synced": true
+        }
+    ]
+}
