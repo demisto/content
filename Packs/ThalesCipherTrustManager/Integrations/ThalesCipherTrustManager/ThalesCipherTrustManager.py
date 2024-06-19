@@ -514,7 +514,6 @@ def load_content_from_file(entry_id: str) -> str:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
 
-
 def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str):
     """
     Return the file results to the context.
@@ -1194,13 +1193,22 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
         issued_certificate_dict = raw_response.get('resources', [])[0] if raw_response.get('resources', []) else {}
         outputs, removed_values = remove_key_from_outputs(issued_certificate_dict, ['csr', 'cert'])
         return_file_results(removed_values[1], 'Certificate.pem')
-    else:
-        outputs = [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
-                   raw_response.get('resources', [])]
+        return CommandResults(
+            outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
+            outputs=outputs,
+            raw_response=raw_response,
+            readable_output=ciphertrust_table_to_markdown(title=f'Certificates issued by {args.get(CA_ID, "")}',
+                                                          data=raw_response,
+                                                          keys=CERTIFICATE_LIST_KEYS,
+                                                          keys_headers_mapping={},
+                                                          keys_value_mapping={}),
+        )
+
 
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=outputs,
+        outputs= [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
+                   raw_response.get('resources', [])],
         raw_response=raw_response,
         readable_output=ciphertrust_table_to_markdown(title=f'Certificates issued by {args.get(CA_ID, "")}',
                                                       data=raw_response,
@@ -1259,8 +1267,6 @@ def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) 
     raw_response = client.upload_external_ca(request_data=request_data)
     outputs, cert = remove_key_from_outputs(raw_response, 'cert')
     return_file_results(cert, 'Certificate.pem')
-    print(f'{args.get(NAME)} has been uploaded successfully!')
-    print(outputs)
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
