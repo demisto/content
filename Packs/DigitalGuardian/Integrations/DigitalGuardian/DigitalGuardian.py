@@ -474,7 +474,7 @@ def create_artifacts(alert):
                 cef[artifact_key] = alert[artifact_tuple[0]]
                 cef_types[artifact_key] = artifact_tuple[1]
         if cef:
-            comm = alert.get('dg_alarm_name').find(',')
+            comm = alert.get('dg_alarm_name', '').find(',')
             if comm == -1:
                 comm = 100
             name = '{alarm_name}-{id}'.format(alarm_name=alert.get('dg_alarm_name')[0:comm], id=alert.get('dg_guid'))
