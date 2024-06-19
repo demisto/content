@@ -282,7 +282,7 @@ def get_content_roles(res_path: Path = CONTENT_ROLES_PATH) -> dict[str, Any] | N
     """
     Helper method to retrieve the content roles config.
     We first attempt to retrieve the content roles from `demisto/content` master blob.
-    If this attempt fails, we attempt to retrieve it from the filesystem. 
+    If this attempt fails, we attempt to retrieve it from the filesystem.
 
     Returns:
     - `dict[str, Any]` representing the content roles.

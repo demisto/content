@@ -2,7 +2,6 @@
 import json
 from pathlib import Path
 import pytest
-from pytest_mock import MockerFixture
 import requests_mock
 from typing import Any
 from utils import (
