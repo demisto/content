@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import pytest
+import requests_mock
 from typing import Any
 from utils import (
     get_env_var,
@@ -9,7 +10,9 @@ from utils import (
     CONTRIBUTION_SECURITY_REVIEWER_KEY,
     TIM_REVIEWER_KEY,
     DOC_REVIEWER_KEY,
-    get_doc_reviewer
+    get_doc_reviewer,
+    CONTENT_ROLES_BLOB_MASTER_URL,
+    get_content_roles
 )
 
 
@@ -293,3 +296,90 @@ def test_exit_get_doc_reviewer(
     with pytest.raises(ValueError) as e:
         get_doc_reviewer(content_roles)
         assert e.type == ValueError
+
+
+class TestGetContentRoles:
+
+    content_roles: dict[str, Any] = {
+        'CONTRIBUTION_REVIEWERS': ['prr1', 'prr2', 'prr3'],
+        'CONTRIBUTION_TL': 'tl1',
+        'CONTRIBUTION_SECURITY_REVIEWER': 'sr1',
+        'ON_CALL_DEVS': ['ocd1', 'ocd2'],
+        'DOC_REVIEWER': 'dr1',
+        'TIM_REVIEWER': 'tr1'
+    }
+
+    def test_get_content_roles_success(
+        self,
+        requests_mock: requests_mock.Mocker
+    ):
+        """
+        Test successful retrieval of content_roles.json.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The request to retrieve content_roles.json is successful.
+
+        Then:
+        - The response includes the expected content role keys.
+        """
+
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            json=self.content_roles
+        )
+
+        content_roles = get_content_roles()
+        assert CONTRIBUTION_REVIEWERS_KEY in content_roles
+        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in content_roles
+        assert TIM_REVIEWER_KEY in content_roles
+
+    def test_get_content_roles_fail(
+        self,
+        requests_mock: requests_mock.Mocker
+    ):
+        """
+        Test failure to retrieve content_roles.json.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The request to retrieve content_roles.json is fails.
+
+        Then:
+        - get_content_roles returns an empty dict.
+        """
+
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            status_code=404
+        )
+
+        assert not get_content_roles()
+
+    def test_get_content_roles_invalid_json(
+        self,
+        requests_mock: requests_mock.Mocker
+    ):
+        """
+        Test failure to retrieve content_roles.json.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The content_roles.json is invalid.
+
+        Then:
+        - get_content_roles returns an empty dict.
+        """
+
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            json={"only_key"}
+        )
+
+        assert not get_content_roles()

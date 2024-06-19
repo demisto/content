@@ -8,16 +8,15 @@ from typing import Any
 from collections.abc import Generator, Iterable
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_metadata
-
+import requests
 from git import Repo
-
-CONTENT_ROOT_PATH = os.path.abspath(os.path.join(__file__, '../../..'))  # full path to content root repo
-CONTENT_ROLES_PATH = Path(os.path.join(CONTENT_ROOT_PATH, ".github", "content_roles.json"))
 
 DOC_REVIEWER_KEY = "DOC_REVIEWER"
 CONTRIBUTION_REVIEWERS_KEY = "CONTRIBUTION_REVIEWERS"
 CONTRIBUTION_SECURITY_REVIEWER_KEY = "CONTRIBUTION_SECURITY_REVIEWER"
 TIM_REVIEWER_KEY = "TIM_REVIEWER"
+
+CONTENT_ROLES_BLOB_MASTER_URL = "https://raw.githubusercontent.com/demisto/content/master/.github/content_roles.json"
 
 # override print so we have a timestamp with each print
 org_print = print
@@ -248,3 +247,25 @@ def get_doc_reviewer(content_roles: dict[str, Any]) -> str:
     if not (reviewer := content_roles.get(DOC_REVIEWER_KEY)):
         raise ValueError("Cannot get doc reviewer")
     return reviewer
+
+
+def get_content_roles() -> dict[str, Any]:
+    """
+    Helper method to retrieve the content roles config.
+
+    Returns:
+    - `dict[str, Any]` representing the content roles. See `.github/content_roles.json` for
+    the expected structure.
+    """
+
+    print(f"Attempting to get {CONTENT_ROLES_BLOB_MASTER_URL}...")
+
+    try:
+        response = requests.get(CONTENT_ROLES_BLOB_MASTER_URL)
+        response.raise_for_status()  # Raise an error for bad status codes
+        json_data = response.json()
+        print("Successfully retrieved content_roles.json")
+        return json_data
+    except (requests.RequestException, requests.HTTPError, json.JSONDecodeError, TypeError) as e:
+        print(f"{e.__class__.__name__} getting content_roles.json: {e}")
+        return {}
