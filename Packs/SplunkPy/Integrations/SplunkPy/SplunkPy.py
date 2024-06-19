@@ -1527,7 +1527,8 @@ def get_remote_data_command(service: client.Service, args: dict,
              f'| where rule_id="{notable_id}" ' \
              f'| where last_modified_timestamp>{last_update_splunk_timestamp} ' \
              '| fields - time ' \
-             '| map search=" search `notable_by_id($rule_id$)`"'
+             '| map search=" search `notable_by_id($rule_id$)`"' \
+             '| expandtoken'
 
     demisto.debug(f'Performing get-remote-data command with query: {search}')
 
