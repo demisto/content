@@ -1,12 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+### custom from pack version: 1.1.9
 import json
 import logging
 import time
 
 import urllib3
 
+
 import resilient
+
 
 ''' IMPORTS '''
 logging.basicConfig()
@@ -44,6 +47,11 @@ TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 if FETCH_TIME:
     if FETCH_TIME[-1] != 'Z':
         FETCH_TIME = FETCH_TIME + 'Z'
+
+TIMESTAMP_FIELD = DEMISTO_PARAMS.get('timestamp_field', "create_date")
+FETCH_LIMIT = int(DEMISTO_PARAMS.get('fetch_limit', 10))+1
+VERBOSITY_LEVEL = DEMISTO_PARAMS.get('verbosity_level')
+CLEAR_VALUE = DEMISTO_PARAMS.get('clear_value')
 
 INCIDENT_TYPE_DICT = {
     'CommunicationError': 17,
@@ -184,7 +192,7 @@ def search_incidents_command(client, args):
         ec = {
             'Resilient.Incidents(val.Id && val.Id === obj.Id)': result_incidents
         }
-        title = 'Resilient Systems Incidents'
+        title = 'IBM QRadar SOAR Incidents'
         entry = {
             'Type': entryTypes['note'],
             'Contents': incidents,
@@ -229,6 +237,13 @@ def search_incidents(client, args):
         value = date_to_timestamp(args['date-created-after'], date_format='%Y-%m-%dT%H:%M:%SZ')
         conditions.append({
             'field_name': 'create_date',
+            'method': 'gte',
+            'value': value
+        })
+    elif 'date-for-fetch' in args:
+        value = date_to_timestamp(args['date-for-fetch'], date_format='%Y-%m-%dT%H:%M:%SZ')
+        conditions.append({
+            'field_name': TIMESTAMP_FIELD,
             'method': 'gte',
             'value': value
         })
@@ -336,12 +351,30 @@ def search_incidents(client, args):
                 'method': 'gte',
                 'value': now * 1000
             }))
+
+    if "limit" in args:
+        limit = int(args['limit'])
+    else: limit = FETCH_LIMIT
+
+
     data = {
         'filters': [{
             'conditions': conditions
-        }]
+        }],
+        'start':0,
+        'length': limit,
+        'sorts': [
+                {
+                    'field_name': TIMESTAMP_FIELD,
+                    'type': 'asc'
+                }
+            ]
     }
-    response = client.post('/incidents/query', data)
+
+    parameters = f"?return_level={VERBOSITY_LEVEL}"
+    if CLEAR_VALUE:
+       parameters += "&handle_format=names"
+    response = client.post('/incidents/query_paged'+parameters, data)["data"]
     return response
 
 
@@ -543,7 +576,7 @@ def get_incident_command(client, incident_id):
         for vector in hr_incident[0].get('NistAttackVectors', []):
             nist_vectors_str += vector + '\n'
         hr_incident[0]['NistAttackVectors'] = nist_vectors_str
-    title = 'IBM Resilient Systems incident ID ' + str(incident_id)
+    title = 'IBM Security QRadar SOAR incident ID ' + str(incident_id)
     entry = {
         'Type': entryTypes['note'],
         'Contents': incident,
@@ -562,8 +595,10 @@ def get_incident_command(client, incident_id):
 
 def get_incident(client, incident_id, content_format=False):
     url = '/incidents/' + str(incident_id)
+    if CLEAR_VALUE:
+        url += "?handle_format=names"
     if content_format:
-        url += '?text_content_output_format=objects_convert_html'
+        url += '&text_content_output_format=objects_convert_html'
     response = client.get(url)
     return response
 
@@ -622,7 +657,7 @@ def get_users_command(client):
             'Email': user['email']
         })
 
-    title = 'IBM Resilient Systems Users'
+    title = 'IBM Security QRadar SOAR Users'
     entry = {
         'Type': entryTypes['note'],
         'Contents': users,
@@ -1029,24 +1064,24 @@ def add_artifact_command(client, incident_id, artifact_type, artifact_value, art
 
     return entry
 
-
 def fetch_incidents(client):
     last_run = demisto.getLastRun() and demisto.getLastRun().get('time')
     if not last_run:
         last_run = date_to_timestamp(FETCH_TIME, date_format='%Y-%m-%dT%H:%M:%SZ')
-        args = {'date-created-after': FETCH_TIME}
+        args = {'date-for-fetch': FETCH_TIME}
     else:
-        args = {'date-created-after': normalize_timestamp(last_run)}
+        args = {'date-for-fetch': normalize_timestamp(last_run)}
 
     resilient_incidents = search_incidents(client, args)
     incidents = []
 
     if resilient_incidents:
-        last_incident_creation_time = resilient_incidents[0].get('create_date')  # the first incident's creation time
+        last_retrieved_incident = resilient_incidents[0].get(TIMESTAMP_FIELD)
 
         for incident in resilient_incidents:
-            incident_creation_time = incident.get('create_date')
-            if incident_creation_time > last_run:  # timestamp in milliseconds
+
+            incident_last_date = incident.get(TIMESTAMP_FIELD)
+            if incident_last_date > last_run:  # timestamp in milliseconds
                 artifacts = incident_artifacts(client, str(incident.get('id', '')))
                 if artifacts:
                     incident['artifacts'] = artifacts
@@ -1057,7 +1092,7 @@ def fetch_incidents(client):
                     incident['description'] = incident['description'].replace('<div>', '').replace('</div>', '')
 
                 incident['discovered_date'] = normalize_timestamp(incident.get('discovered_date'))
-                incident['create_date'] = normalize_timestamp(incident_creation_time)
+                incident['create_date'] = normalize_timestamp(incident.get('create_date'))
 
                 demisto_incident = dict()  # type: dict
 
@@ -1068,10 +1103,10 @@ def fetch_incidents(client):
                 incidents.append(demisto_incident)
 
                 # updating last creation time if needed
-                if incident_creation_time > last_incident_creation_time:
-                    last_incident_creation_time = incident_creation_time
+                if incident_last_date > last_retrieved_incident:
+                    last_retrieved_incident = incident_last_date
 
-        demisto.setLastRun({'time': last_incident_creation_time})
+        demisto.setLastRun({'time': last_retrieved_incident})
     demisto.incidents(incidents)
 
 
@@ -1122,7 +1157,7 @@ def main():
     client = get_client()
 
     # Disable SDK logging warning messages
-    integration_logger = logging.getLogger('resilient')  # type: logging.Logger
+    integration_logger = logging.getLogger('IBM Security QRadar SOAR')  # type: logging.Logger
     integration_logger.propagate = False
 
     LOG('command is %s' % (demisto.command(),))
@@ -1171,3 +1206,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+

@@ -35,6 +35,12 @@ configuration:
   name: fetch_time
   type: 0
   required: false
+- display: Issue Field to fetch by
+  name: timestamp_field
+  type: 0
+  required: false
+  additionalinfo: 'This is how the field (e.g, create_date) is applied to the query: create_date >= {create_date in last run} ORDER BY create_date ASC. May not work if verbosity level is not set to full. Default is create_date'
+  defaultvalue: create_date
 - display: API key ID
   name: api_key_id
   type: 4
@@ -43,14 +49,40 @@ configuration:
 - display: API key secret
   name: api_key_secret
   type: 4
+  required: false
   hidden: true
-  required: false
 - display: API key ID
-  name: credentials_api_key
-  type: 9
   displaypassword: API key secret
-  section: Connect
+  name: credentials_api_key
   required: false
+  section: Connect
+  type: 9
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- additionalinfo: Default value is 10
+  defaultvalue: '10'
+  display: Incident fetch limit
+  name: fetch_limit
+  required: false
+  type: 0
+- additionalinfo: Choose to retrieve all fields or just some
+  defaultvalue: partial
+  display: Verbosity level
+  name: verbosity_level
+  options:
+  - partial
+  - full
+  required: false
+  type: 15
+- additionalinfo: Get clear value instead of ID
+  defaultvalue: 'true'
+  display: Get clear value
+  name: clear_value
+  required: false
+  type: 8
 description: Case management that enables visibility across your tools for continual IR improvement.
 display: IBM Resilient Systems
 name: IBM Resilient Systems
@@ -121,7 +153,9 @@ script:
       - Closed
     - description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
       name: due-in
-    description: Query for incidents
+    - description: Limit of incidents to retrieve. Default value is integration configuration.
+      name: limit
+    description: Query for incidents.
     name: rs-search-incidents
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
@@ -156,7 +190,7 @@ script:
       - Low
       - Medium
       - High
-    - description: User full name to set as incident owner, e.g., Steve Jobs
+    - description: User full name to set as incident owner, e.g., Steve Jobs.
       name: owner
     - auto: PREDEFINED
       description: Incident type (added to the current incident types list).
@@ -293,6 +327,7 @@ script:
     name: rs-incidents-update-member
   - description: Gets a list of all users in the system.
     name: rs-get-users
+    arguments: []
   - arguments:
     - default: true
       description: ID of the incident to close.
@@ -735,10 +770,10 @@ script:
     - contextPath: Resilient.IncidentArtifact.ip.destination
       description: Whether the IP address is a destination.
       type: Boolean
-  dockerimage: demisto/resilient:2.0.0.86430
+  dockerimage: demisto/resilient:2.0.0.98756
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0

@@ -6,32 +6,41 @@ Case management that enables visibility across your tools for continual IR impro
 2. Search for IBM Resilient Systems.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. 192.168.0.1) | True |
-    | Credentials | False |
-    | Password | False |
-    | Organization name | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z | False |
-    | API key ID | False |
-    | API key secret | False |
+    | **Parameter** | **Description** | **Required** |
+    | --- | --- | --- |
+    | Server URL (e.g. 192.168.0.1) |  | True |
+    | Credentials |  | False |
+    | Password |  | False |
+    | Organization name |  | True |
+    | Trust any certificate (not secure) |  | False |
+    | Use system proxy settings |  | False |
+    | Fetch incidents |  | False |
+    | Incident type |  | False |
+    | First fetch timestamp (YYYY-MM-DDTHH:MM:SSZ). For example: 2020-02-02T19:00:00Z |  | False |
+    | Issue Field to fetch by | This is how the field \(e.g, create_date\) is applied to the query: create_date &gt;= \{create_date in last run\} ORDER BY create_date ASC. May not work if verbosity level is not set to full. Default is create_date | False |
+    | API key ID |  | False |
+    | API key secret |  | False |
+    | API key ID |  | False |
+    | API key secret |  | False |
+    | Incidents Fetch Interval |  | False |
+    | Incident fetch limit | Default value is 10 | False |
+    | Verbosity level | Choose to retrieve all fields or just some | False |
+    | Get clear value | Get clear value instead of ID | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### rs-search-incidents
+
 ***
 Query for incidents
-
 
 #### Base Command
 
 `rs-search-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,7 +57,7 @@ Query for incidents
 | nist | NIST Attack Vectors. Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web". Possible values are: Attrition, E-mail, External/RemovableMedia, Impersonation, ImproperUsage, Loss/TheftOfEquipment, Other, Web. | Optional | 
 | status | Incident status. Possible values: "Active" and "Closed". Possible values are: Active, Closed. | Optional | 
 | due-in | Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument. | Optional | 
-
+| limit | Limit of incidents to retrieve. Default value is integration configuration. | Optional | 
 
 #### Context Output
 
@@ -61,6 +70,7 @@ Query for incidents
 | Resilient.Incidents.Phase | string | Incident Phase. | 
 | Resilient.Incidents.Severity | string | Incident severity. | 
 | Resilient.Incidents.Description | string | Incident description. | 
+
 
 
 #### Command Example
@@ -313,6 +323,23 @@ There is no context output for this command.
 >| example@example.com | example | 2 | example |  | 10 |
 
 
+### rs-get-users
+
+***
+Gets a list of all users in the system.
+
+#### Base Command
+
+`rs-get-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.
 ### rs-get-users
 ***
 Gets a list of all users in the system.
