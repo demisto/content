@@ -135,7 +135,7 @@ class Client(CoreClient):
         if not params:
             params = {}
         self._params = params
-        super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout)
+        super().__init__(base_url=base_url, proxy=proxy, verify=verify, headers=self.headers, timeout=timeout, is_core_pack=False)
 
     @property
     def headers(self):
