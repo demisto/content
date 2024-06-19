@@ -211,7 +211,7 @@ def load_mock_response(file_name: str) -> str | io.TextIOWrapper:
     Returns:
         str: Mock file content.
     """
-    with open(f'test_data/{file_name}', mode='r') as mock_file:
+    with open(f'test_data/{file_name}') as mock_file:
         return json.loads(mock_file.read())
 
 
