@@ -15,7 +15,7 @@ import tempfile
 from http.server import HTTPServer
 
 
-def find_unused_port() -> int:
+def find_unused_port() -> int:  # pragma: no cover
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
         sock.bind(('localhost', 0))  # tries to bind any available port on the os
@@ -64,7 +64,7 @@ def find_zombie_processes():
     return zombies, ps_out
 
 
-def quit_driver_and_reap_children(killMarkdownServer):
+def quit_driver_and_reap_children(killMarkdownServer):  # pragma: no cover
     try:
         if killMarkdownServer:
             # Kill Markdown artifacts server
@@ -86,7 +86,7 @@ def quit_driver_and_reap_children(killMarkdownServer):
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
-def startServer():
+def startServer():  # pragma: no cover
     class fileHandler(http.server.BaseHTTPRequestHandler):
         # See: https://docs.python.org/3/library/http.server.html#http.server.BaseHTTPRequestHandler.log_message
         # Need to override otherwise messages are logged to stderr
