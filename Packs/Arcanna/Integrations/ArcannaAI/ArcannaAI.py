@@ -197,17 +197,36 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
     )
 
 
-def get_event_status(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
-    job_id = args.get("job_id", default_job_id)
-
+@polling_function('get_polling_event_status')
+def get_polling_event_status_command(args: Dict[str, Any], client: Client) -> CommandResults:
+    job_id = args.get("job_id", args.get("default_job_id"))
     event_id = args.get("event_id")
     result = client.get_event_status(job_id, event_id)
+    successful_response = result.status != 'pending_inference'
+
+    if successful_response:
+        success_return = result
+        return PollResult(success_return)
+    else:
+        error_response = CommandResults(raw_response=result, readable_output='Decision not ready', entry_type=entryTypes['error'])
+        return PollResult(continue_to_poll=True, response=error_response)
+
+
+def get_event_status(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
+    args["default_job_id"] = default_job_id
+    job_id = args.get("job_id", default_job_id)
+    event_id = args.get("event_id")
+    polling = args.get("polling", 'false')
+    result = None
+    if polling == 'false':
+        result = client.get_event_status(job_id, event_id)
+    else:
+        result = get_polling_event_status_command(args, client)
 
     headers = ["event_id", "ingest_timestamp", "status",
-               "error_message", "bucket_state", "result",
-               "confidence_score", "outlier", "arcanna_label"]
+               "error_message", "bucket_state", "result", "confidence_score", "outlier", "arcanna_label"]
 
-    readable_output = tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result, removeNull=True)
+    readable_output = tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result)
 
     outputs = {
         'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)

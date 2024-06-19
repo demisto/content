@@ -459,64 +459,6 @@ tasks:
     quietmode: 0
   "28":
     id: "28"
-    taskid: a02b646f-eca6-4508-83dc-d939be6861d0
-    type: playbook
-    task:
-      id: a02b646f-eca6-4508-83dc-d939be6861d0
-      version: -1
-      name: GenericPolling
-      description: |-
-        Use this playbook as a sub-playbook to block execution of the master playbook until a remote action is complete.
-        This playbook implements polling by continuously running the command in Step \#2 until the operation completes.
-        The remote action should have the following structure:
-
-        1. Initiate the operation.
-        2. Poll to check if the operation completed.
-        3. (optional) Get the results of the operation.
-      playbookName: GenericPolling
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      AdditionalPollingCommandArgNames:
-        simple: job_id
-      AdditionalPollingCommandArgValues:
-        simple: ${Arcanna.Event.job_id}
-      Ids:
-        simple: ${Arcanna.Event.event_id}
-      Interval:
-        simple: "1"
-      PollingCommandArgName:
-        simple: event_id
-      PollingCommandName:
-        simple: arcanna-get-event-status
-      Timeout:
-        simple: "10"
-      dt:
-        simple: Arcanna.Event(val.status!=='pending_inference').event_id
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 10
-      max: 3
-    view: |-
-      {
-        "position": {
-          "x": 70,
-          "y": 240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-  "29":
-    id: "29"
     taskid: 68db7d25-a9e8-4deb-8ce1-6bbef756a45c
     type: regular
     task:
@@ -536,6 +478,8 @@ tasks:
         simple: ${Arcanna.Event.event_id}
       job_id:
         simple: ${Arcanna.Event.job_id}
+      polling:
+        simple: 'true'
     separatecontext: false
     view: |-
       {

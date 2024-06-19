@@ -152,6 +152,12 @@ script:
     - description: Arcanna generated unique event id.
       name: event_id
       required: true
+    - name: polling
+      description: Run until specified or until result is valid.
+      predefined:
+      - 'true'
+      - 'false'
+      defaultvalue: 'false'
     description: Retrieves Arcanna Inference result.
     name: arcanna-get-event-status
     outputs:
@@ -222,4 +228,4 @@ script:
 tests:
 - No tests (auto formatted)
 defaultclassifier: 'null'
-fromversion: 5.5.0
+fromversion: 6.2.0
