@@ -1632,7 +1632,7 @@ def main():  # pragma: no cover
         raise Exception('You must enter iocXml or entry_id of the Indicator.')
     elif entry_id:
         file_path = demisto.getFilePath(entry_id).get('path')
-        with open(file_path, 'r') as f:
+        with open(file_path) as f:
             indicator_txt = f.read()
 
     if stix2 := convert_to_json(indicator_txt):
