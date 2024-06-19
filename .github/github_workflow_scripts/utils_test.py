@@ -304,12 +304,12 @@ def test_exit_get_doc_reviewer(
 class TestGetContentRoles:
 
     content_roles: dict[str, Any] = {
-        'CONTRIBUTION_REVIEWERS': ['prr1', 'prr2', 'prr3'],
+        CONTRIBUTION_REVIEWERS_KEY: ['prr1', 'prr2', 'prr3'],
         'CONTRIBUTION_TL': 'tl1',
-        'CONTRIBUTION_SECURITY_REVIEWER': 'sr1',
+        CONTRIBUTION_SECURITY_REVIEWER_KEY: 'sr1',
         'ON_CALL_DEVS': ['ocd1', 'ocd2'],
-        'DOC_REVIEWER': 'dr1',
-        'TIM_REVIEWER': 'tr1'
+        DOC_REVIEWER_KEY: 'dr1',
+        TIM_REVIEWER_KEY: 'tr1'
     }
 
     def test_get_content_roles_success(
