@@ -123,7 +123,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: pcap
+                  simple: pcapsa
             - operator: isEqualString
               left:
                 value:
