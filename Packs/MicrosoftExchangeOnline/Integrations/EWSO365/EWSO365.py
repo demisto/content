@@ -141,7 +141,7 @@ class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
         """
         # We may not know (or need) the Microsoft tenant ID. If not, use common/ to let Microsoft select the appropriate
         # tenant for the provided authorization code or refresh token.
-        return f"{self.ad_base_url}/{self.tenant_id or 'common'}/oauth2/v2.0/token"  # nosec
+        return f"{self.ad_base_url}/{self.tenant_id or 'common'}/oauth2/v2.0/token"
 
     @property
     def scope(self):
