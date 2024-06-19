@@ -1,6 +1,5 @@
 id: CSCDomainManager_Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: CSCDomainManager_Test
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -554,3 +554,5 @@ view: |-
   }
 inputs: []
 outputs: []
+fromversion: 5.0.0
+description: ''
