@@ -20,7 +20,9 @@ configuration:
   type: 4
   required: false
   additionalinfo: Api Key for Arcanna API
-  hidden: true
+  hidden:
+    - xsoar
+    - marketplacev2
 - display: SSL Certificate verification
   name: ssl_verification
   type: 8
@@ -30,7 +32,9 @@ configuration:
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  hidden: true
+  hidden:
+    - xsoar
+    - marketplacev2
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -40,12 +44,16 @@ configuration:
   name: feature_mapping
   type: 12
   required: false
-  hidden: true
+  hidden:
+    - xsoar
+    - marketplacev2
 - display: Alert closing reason
   name: closing_reason_field
   type: 0
   required: false
-  hidden: true
+  hidden:
+    - xsoar
+    - marketplacev2
   defaultvalue: closeReason
   additionalinfo: ( Deprecated )This field use to signal to Arcanna the status for closing an alert or marking feedback for Arcanna
 - display: Default Arcanna Job Id
