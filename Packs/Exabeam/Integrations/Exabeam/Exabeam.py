@@ -2201,41 +2201,38 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
         else:
             time_period = "1 hours"
 
-    else:  # on the first run
+    else:  # In the first run
         time_period = args.get("notable_users_first_fetch", "3 months")
 
     # TODO:  last_run.get("limit") or
     limit = args.get("max_fetch_users") or DEFAULT_LIMIT
     # TODO: add look_back
-    args_notable_users = {
-        "limit": limit,
-        "time_period": time_period
-    }
-    demisto.debug(f"Before the request the limit: {limit}, time_period: {time_period}")
+    args_notable_users = {"limit": limit, "time_period": time_period}
+    demisto.debug(f"Before the request args notable users, limit: {limit}, time period: {time_period}")
     _, _, res = get_notable_users(client, args_notable_users)
     users = res.get("users", [])
     demisto.debug(f"Got {len(users)} users from the API, before filtering")
 
     minimum_risks = arg_to_number(args.get("minimum_risk_score_to_fetch_users"))
 
-    cache = get_integration_context()
-    existing_usernames: set = cache.get("usernames", set()) if cache else set()
+    existing_usernames: list[str] = get_integration_context().get("usernames", [])
     demisto.debug(f"Existing {len(existing_usernames)} usernames in context")
 
     new_risky_users = []
-    new_usernames = set()
+    new_usernames = []
     for user in users:
         user_details = user.get("user", {})
         username, risk_score = user_details.get("username", ""), user_details.get("riskScore", -1)
         if risk_score >= minimum_risks and username not in existing_usernames:
             new_risky_users.append(user)
-            new_usernames.add(username)
+            new_usernames.append(username)
 
     demisto.debug(f"After filtering, there are {len(new_risky_users)} new risky users, and {len(new_usernames)} new usernames")
 
-    existing_usernames.update(new_usernames)
-    set_integration_context(existing_usernames)
-    demisto.debug(f"After the added context contain {len(existing_usernames)} users")
+    usernames_to_context = existing_usernames + new_usernames
+    context = {"usernames": usernames_to_context}
+    set_integration_context(context)
+    demisto.debug(f"After the added context contain {len(usernames_to_context)} users")
 
     incidents: list[dict] = []
     for incident in new_risky_users:
@@ -2248,7 +2245,6 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
         )
 
     last_run = current_time.strftime(DATETIME_FORMAT_MILISECONDS)
-    demisto.debug(f"After the run fetch notable users have {len(incidents)} incidents")
     demisto.debug(f"Last run notable users after the fetch run: {last_run}")
     return incidents, last_run
 
