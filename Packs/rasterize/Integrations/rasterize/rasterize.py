@@ -387,7 +387,7 @@ def terminate_chrome(chrome_port='', killall=False):
     processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
     # identifiers the relevant chrome processes
     chrome_renderer_identifiers = ["--type=renderer"]
-    chrome_identifiers = ["chrom", "headless", f"--remote-debugging-port={chrome_port}"]
+    chrome_identifiers = ["chrome", "headless", f"--remote-debugging-port={chrome_port}"]
     # filter by the identifiers the relevant processes and get it as list
     process_in_list = [process for process in processes
                        if all(identifier in process for identifier in chrome_identifiers)
@@ -427,8 +427,7 @@ def chrome_manager():
         instances_id, chromes_options = fetch_instances_id_and_chromes_options_from_chrome_instances_contents(
             chrome_instances_contents)
 
-    if not chrome_instances_contents or (chrome_options in chromes_options and instance_id not in instances_id) or (
-        chrome_options not in chromes_options and instance_id not in instances_id):
+    if not chrome_instances_contents or instance_id not in instances_id:
         """
         When:
             case 1: file is empty, that means no chrome open on the machine
