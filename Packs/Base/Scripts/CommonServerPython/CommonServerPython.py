@@ -9055,11 +9055,6 @@ if 'requests' in sys.modules:
                 if IS_PY3 and params_parser:  # The `quote_via` parameter is supported only in python3.
                     params = urllib.parse.urlencode(params, quote_via=params_parser)
 
-                # Need to read the files (f.read()) to be able to send large files
-                # without getting a timeout error
-                if files:
-                    RequestEncodingMixin._encode_files(files, {})
-
                 # Execute
                 res = self._session.request(
                     method,
@@ -9408,6 +9403,13 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
+
+    if files:
+        """
+        Need to load the files to memory by read the files (f.read())
+            to be able to send large files without getting a timeout error.
+        """
+        RequestEncodingMixin._encode_files(files=files, data={})
 
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
