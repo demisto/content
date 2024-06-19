@@ -17,7 +17,10 @@
         "marketplacev2"
     ],
     "devEmail": [
-        "factory@xmco.fr"
+        "factory@xmco.fr",
+        "palberteau@xmco.fr"
     ],
-    "githubUser": []
+    "githubUser": [
+        "pal-xmco"
+    ]
 }
