@@ -28,7 +28,7 @@ name: CheckPointHarmonyEndpoint
 script:
   commands:
   - name: harmony-ep-job-status-get
-    description: Retrieves the status and result (if any) of a given asynchronous operation. A Job is a way to monitor the progress of an asynchronous operation whilst avoiding issues that may manifest during long synchronous waits.
+    description: Retrieves the status and result (if any) of a given asynchronous operation. A job is a way to monitor the progress of an asynchronous operation while avoiding issues that may manifest during long synchronous waits.
     arguments:
     - name: job_id
       description: The ID of the operation to query the status of. Job ID will returned from most of the commands in this integration. It can be found in the context path.
@@ -45,7 +45,7 @@ script:
     description: Gets a list of all Indicators of Compromise. Use the filter parameters to fetch specific IOCs.
     arguments:
     - name: filter
-      description: The indicator value or comment to search for. The filter functions as a case-insensitive 'Contains'. For example i.e. filter 'efg will match IoCs 'abcdEFG', 'efGGG', and 'yEfG'.
+      description: The indicator value or comment to search for. The filter is case-insensitive. For example, filter 'efg will match IoCs 'abcdEFG', 'efGGG', and 'yEfG'.
     - name: field
       description: The Indicator of Compromise field to search by.
       defaultValue: iocValue
@@ -54,7 +54,7 @@ script:
       - iocValue
       - iocComment
     - name: sort_direction
-      description: The ways in which to sort the results.
+      description: The way to sort the results.
       defaultValue: DESC
       auto: PREDEFINED
       predefined:
@@ -72,7 +72,7 @@ script:
       description: The IOC comment.
       type: String
     - contextPath: HarmonyEP.IOC.modifiedOn
-      description: The time the IOC modify on.
+      description: The time the IOC was modified.
       type: Number
     - contextPath: HarmonyEP.IOC.value
       description: The IOC value.
@@ -87,7 +87,7 @@ script:
     description: Updates the given Indicators of Compromise with the given parameters.
     arguments:
     - name: ioc_id
-      description: The ID of the IOC to update. Use harmony-ep-ioc-list command to get all IOCs IDs.
+      description: The ID of the IOC to update. Use harmony-ep-ioc-list command to get all IOC IDs.
       required: true
       default: true
     - name: comment
@@ -111,7 +111,7 @@ script:
       description: The IOC comment.
       type: String
     - contextPath: HarmonyEP.IOC.modifiedOn
-      description: The time the IOC modified on.
+      description: The time the IOC was modified.
       type: Number
     - contextPath: HarmonyEP.IOC.value
       description: The IOC value.
@@ -129,7 +129,7 @@ script:
       description: The IOC comment.
       required: true
     - name: value
-      description: The IOC value. For example 8.8.8.8 for IP or example.com for Domain.
+      description: The IOC value. For example, 8.8.8.8 for IP or example.com for Domain.
       required: true
     - name: type
       description: The IOC type.
@@ -145,7 +145,7 @@ script:
     description: Deletes the given Indicators of Compromise by their ID.
     arguments:
     - name: ids
-      description: IOCs IDs list to delete.  Use harmony-ep-ioc-list command to get all IOCs IDs.
+      description: A A comma-separated list of list of IOC IDs to delete. Use harmony-ep-ioc-list command to get all IOC IDs.
       isArray: true
     - name: delete_all
       description: Whether to delete all IOCs. This action permanently deletes all Indicators of Compromise and cannot be undone.
@@ -177,7 +177,7 @@ script:
       description: The ID of the rule to add assignments to. Use harmony-ep-rule-metadata-list command to get all rule IDs.
       required: true
     - name: entities_ids
-      description: The entities IDs to assign.
+      description: The entity IDs to assign.
       required: true
       isArray: true
   - name: harmony-ep-policy-rule-assignments-remove
@@ -188,7 +188,7 @@ script:
       required: true
       default: true
     - name: entities_ids
-      description: The entities IDs to remove.
+      description: The entity IDs to remove.
       required: true
       isArray: true
   - name: harmony-ep-policy-rule-install
@@ -197,10 +197,10 @@ script:
     - name: rule_id
       description: The ID of the rule. Use harmony-ep-rule-metadata-list command to get all rule IDs.
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -211,17 +211,17 @@ script:
       description: The job ID of the policy installation.
       type: String
   - name: harmony-ep-policy-rule-modifications-get
-    description: Gets information on modifications to a given rule (modifications are the addition or removal of assignments on a rule since it was last installed).
+    description: Gets information on modifications to a given rule. (Modifications are the additions or removal of assignments on a rule since it was last installed).
     arguments:
     - name: rule_id
       description: The ID of the rule to get the modifications of. Use harmony-ep-rule-metadata-list command to get all rule IDs.
       required: true
       default: true
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -235,7 +235,7 @@ script:
       description: Rule order.
       type: Number
     - contextPath: HarmonyEP.Rule.isDefaultRule
-      description: Whether or not the rule is default.
+      description: Whether or not the rule is the default.
       type: Boolean
     - contextPath: HarmonyEP.Rule.family
       description: A family in the rule-base (legacy and unified).
@@ -265,12 +265,12 @@ script:
       description: Rule policy orientation.
       type: String
   - name: harmony-ep-policy-rule-metadata-list
-    description: Gets the metadata of all rules or the given rule's metadata (Metadata refers to all information relating to the rule except it's actual settings).
+    description: Gets the metadata of all rules or the given rule's metadata. (Metadata refers to all information relating to the rule except it's actual settings).
     arguments:
     - name: rule_id
       description: The ID of the rule to get the metadata.
     - name: rule_family
-      description: An optional 'Rule Family' filter. Used to filter the results to only the selected capability family (e.g. only 'Threat Prevention').
+      description: An optional 'Rule Family' filter. Used to filter the results to only the selected rule family (e.g., only 'Threat Prevention').
       auto: PREDEFINED
       predefined:
       - General Settings
@@ -283,17 +283,17 @@ script:
       - Access
       - Agent Settings
     - name: connection_state
-      description: An optional 'Connection State' filter. Used to filter the results to only the selected Connection State (e.g. only rules pertaining to policies for connected clients).
+      description: An optional 'Connection State' filter. Used to filter the results to only the selected Connection State (e.g., only rules pertaining to policies for connected clients).
       auto: PREDEFINED
       predefined:
       - CONNECTED
       - DISCONNECTED
       - RESTRICTED
     - name: limit
-      description: The maximum number of IP lists to return. Default value is 50.
+      description: The maximum number of IP lists to return.
       defaultValue: '50'
     - name: all_results
-      description: Whether to return all of the results or not. Default value is False.
+      description: Whether to return all of the results or not.
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
@@ -304,7 +304,7 @@ script:
       description: Rule order.
       type: Number
     - contextPath: HarmonyEP.Rule.isDefaultRule
-      description: Whether or not the rule is default.
+      description: Whether or not the rule is the default.
       type: Boolean
     - contextPath: HarmonyEP.Rule.family
       description: A family in the rule-base (legacy and unified).
@@ -340,10 +340,10 @@ script:
     - name: remediation_operation_id
       description: Remediation operations ID.
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -359,7 +359,7 @@ script:
       description: Indicated whether the operation was aborted by an administrator.
       type: Boolean
     - contextPath: HarmonyEP.PushOperation.remainingTimeoutSeconds
-      description: The time, in seconds, the operation will remain active. When elapsed, no more entities will be affected.
+      description: The amount of time, in seconds, the operation will remain active. When elapsed, no more entities will be affected.
       type: Number
     - contextPath: HarmonyEP.PushOperation.createdOn
       description: The date and time the operation was created.
@@ -368,7 +368,7 @@ script:
       description: Remediation operation type.
       type: String
     - contextPath: HarmonyEP.PushOperation.comment
-      description: A comment that provided during the operation's creation.
+      description: A comment that was provided during the operation's creation.
       type: String
     - contextPath: HarmonyEP.PushOperation.id
       description: The operation's ID.
@@ -380,7 +380,7 @@ script:
       description: The total number of entities affected by the operation.
       type: Number
   - name: harmony-ep-push-operation-get
-    description: Gets the results of a given Remediation Operation. Remediation Operations may produce results such a Forensics Report or yield status updates such as an Anti-Malware scan progress.
+    description: Gets the results of a given Remediation Operation. Remediation Operations may produce results such a Forensics Report or yield status updates such as an anti-malware scan progress.
     arguments:
     - name: remediation_operation_id
       description: Remediation operation ID. Use the harmony-ep-remediation-status-list command to get all remediation operation IDs.
@@ -396,10 +396,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -410,7 +410,7 @@ script:
       description: The job ID of the remediation operation.
       type: String
     - contextPath: HarmonyEP.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.PushOperation.response.status
       description: Push operation response status.
@@ -419,7 +419,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.PushOperation.machine.name
       description: The client device's name.
@@ -428,17 +428,17 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-push-operation-abort
-    description: Aborts the given Remediation Operation. Aborting an operation prevents it from being sent to further Harmony Endpoint Clients. Clients that have already received the operation are not affected.
+    description: Aborts the given remediation operation. Aborting an operation prevents it from being sent to further Harmony Endpoint Clients. Clients that have already received the operation are not affected.
     arguments:
     - name: remediation_operation_id
-      description: Remediation operation ID. Use the harmony-ep-remidiation-status-list command to get all remediation operation IDs.
+      description: Remediation operation ID. Use the harmony-ep-remediation-status-list command to get all remediation operation IDs.
       required: true
       default: true
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -449,28 +449,28 @@ script:
       description: The job ID of the remediation operation.
       type: String
   - name: harmony-ep-anti-malware-scan
-    description: 'Performs an Anti-Malware scan on computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. '
+    description: 'Performs an anti-malware scan on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. '
     arguments:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -481,7 +481,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -502,16 +502,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -535,10 +535,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -552,7 +552,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.AntiMalwareScan.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.AntiMalwareScan.PushOperation.response.status
       description: Push operation response status.
@@ -561,7 +561,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.AntiMalwareScan.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.AntiMalwareScan.PushOperation.machine.name
       description: The client device's name.
@@ -570,28 +570,28 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-anti-malware-update
-    description: 'Updates the Anti-Malware Signature Database on computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. '
+    description: 'Updates the anti-malware Signature Database on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. '
     arguments:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -602,7 +602,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -623,16 +623,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -670,10 +670,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -687,7 +687,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.AntiMalwareUpdate.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.AntiMalwareUpdate.PushOperation.response.status
       description: Push operation response status.
@@ -696,7 +696,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.AntiMalwareUpdate.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.AntiMalwareUpdate.PushOperation.machine.name
       description: The client device's name.
@@ -705,7 +705,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-anti-malware-restore
-    description: "Restores a file that was previously quarantined by the Harmony Endpoint Client's Anti-Malware capability. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Restores a file that was previously quarantined by the Harmony Endpoint Client's anti-malware capability. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: files
       description: A list of file paths to restore.
@@ -714,23 +714,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -741,7 +741,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -762,16 +762,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -795,10 +795,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -812,7 +812,7 @@ script:
       description: The job ID of the remediation operation.
       type: String
     - contextPath: HarmonyEP.AntiMalwareRestore.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.AntiMalwareRestore.PushOperation.response.status
       description: Push operation response status.
@@ -821,7 +821,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.AntiMalwareRestore.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.AntiMalwareRestore.PushOperation.machine.name
       description: The client device's name.
@@ -830,7 +830,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-forensics-indicator-analyze
-    description: "Collects forensics data whenever a computer that matches the given query accesses or executes the given IP, URL, file name, MD5 or path. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Collects forensics data whenever a computer that matches the given query accesses or executes the given IP, URL, file name, MD5 or path. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: indicator_type
       description: The indictor type to analyze.
@@ -848,23 +848,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -875,7 +875,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -896,16 +896,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -936,10 +936,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -953,7 +953,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.IndicatorAnalyze.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.IndicatorAnalyze.PushOperation.response.status
       description: Push operation response status.
@@ -962,7 +962,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.IndicatorAnalyze.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.IndicatorAnalyze.PushOperation.machine.name
       description: The client device's name.
@@ -971,7 +971,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-forensics-file-quarantine
-    description: "Quarantines files given by path or MD5 or detections relating to a forensic incident. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Quarantines files given by path or MD5 or detections relating to a forensic incident. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: file_type
       description: The forensics quarantine item type.
@@ -987,23 +987,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1014,7 +1014,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1035,16 +1035,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -1068,10 +1068,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1085,7 +1085,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.FileQuarantine.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.FileQuarantine.PushOperation.response.status
       description: Push operation response status.
@@ -1094,7 +1094,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.FileQuarantine.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.FileQuarantine.PushOperation.machine.name
       description: The client device's name.
@@ -1103,7 +1103,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-forensics-file-restore
-    description: "Restores previously quarantined files given by path or MD5 or detections relating to a forensic incident. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Restores previously quarantined files given by path or MD5 or detections relating to a forensic incident. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: file_type
       description: The forensics quarantine item type.
@@ -1119,23 +1119,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1146,7 +1146,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1167,16 +1167,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -1200,10 +1200,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1217,7 +1217,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.FileRestore.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.FileRestore.PushOperation.response.status
       description: Push operation response status.
@@ -1226,7 +1226,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.FileRestore.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.FileRestore.PushOperation.machine.name
       description: The client device's name.
@@ -1235,28 +1235,28 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-remediation-computer-isolate
-    description: "Isolates the computers matching the given query. Isolation is the act of denying all network access from a given computer. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Isolates the computers matching the given query. Isolation is the act of denying all network access from a given computer. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1267,7 +1267,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1288,16 +1288,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: page
       description: 'Page number of paginated results. Minimum value: 1.'
@@ -1307,10 +1307,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1324,7 +1324,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.ComputerIsolate.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.ComputerIsolate.PushOperation.response.status
       description: Push operation response status.
@@ -1333,7 +1333,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.ComputerIsolate.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.ComputerIsolate.PushOperation.machine.name
       description: The client device's name.
@@ -1342,28 +1342,28 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-remediation-computer-deisolate
-    description: "De-Isolates the computers matching the given query. De-isolating a computer restores its access to network resources. Affects only isolated computers. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "De-Isolates the computers matching the given query. De-isolating a computer restores its access to network resources. Affects only isolated computers. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1374,7 +1374,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1395,16 +1395,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: page
       description: 'Page number of paginated results. Minimum value: 1.'
@@ -1414,10 +1414,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1431,7 +1431,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.ComputerDeisolate.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.ComputerDeisolate.PushOperation.response.status
       description: Push operation response status.
@@ -1440,7 +1440,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.ComputerDeisolate.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.ComputerDeisolate.PushOperation.machine.name
       description: The client device's name.
@@ -1449,28 +1449,28 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-computer-restart
-    description: "Restarts computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Restarts computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1481,7 +1481,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1502,16 +1502,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -1542,10 +1542,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1559,7 +1559,7 @@ script:
       description: The job ID of the remediation operation.
       type: String
     - contextPath: HarmonyEP.ComputerRestart.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.ComputerRestart.PushOperation.response.status
       description: Push operation response status.
@@ -1568,7 +1568,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.ComputerRestart.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.ComputerRestart.PushOperation.machine.name
       description: The client device's name.
@@ -1577,28 +1577,28 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-computer-shutdown
-    description: "Shuts-down computers match the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Shuts-down computers match the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1609,7 +1609,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1630,16 +1630,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -1670,10 +1670,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1687,7 +1687,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.ComputerShutdown.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.ComputerShutdown.PushOperation.response.status
       description: Push operation response status.
@@ -1696,7 +1696,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.ComputerShutdown.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.ComputerShutdown.PushOperation.machine.name
       description: The client device's name.
@@ -1705,28 +1705,28 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-computer-repair
-    description: "Repairs the Harmony Endpoint Client installation on computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Repairs the Harmony Endpoint Client installation on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1737,7 +1737,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1758,16 +1758,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -1791,10 +1791,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1808,7 +1808,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.ComputerRepair.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.ComputerRepair.PushOperation.response.status
       description: Push operation response status.
@@ -1817,7 +1817,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.ComputerRepair.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.ComputerRepair.PushOperation.machine.name
       description: The client device's name.
@@ -1826,22 +1826,22 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-computer-list
-    description: "Gets a list of computers matching the given filters. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Gets a list of computers matching the given filters. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1852,7 +1852,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -1873,7 +1873,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: page
       description: 'Page number of paginated results. Minimum value: 1.'
@@ -1883,10 +1883,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -1948,7 +1948,7 @@ script:
       description: The computer's unique ID.
       type: String
   - name: harmony-ep-agent-process-information-get
-    description: "Collects information about processes on computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Collects information about processes on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: process_name
       description: The name of the process to collect information on. If not provided, all running processes will be collected.
@@ -2016,23 +2016,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2043,7 +2043,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2064,16 +2064,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -2097,10 +2097,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -2114,7 +2114,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.ProcessInformation.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.ProcessInformation.PushOperation.response.status
       description: Push operation response status.
@@ -2123,7 +2123,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.ProcessInformation.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.ProcessInformation.PushOperation.machine.name
       description: The client device's name.
@@ -2132,7 +2132,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-process-terminate
-    description: "Terminates the given process on computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Terminates the given process on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: terminate_all_instances
       description: Indicates whether to terminate all processes matching the given name. If set to true while a non-zero pid is given, only a single process with the given name AND PID may be matched. If set to false or not provided, will terminate only the first matching process.
@@ -2150,23 +2150,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2177,7 +2177,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2198,16 +2198,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -2231,10 +2231,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -2248,7 +2248,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.ProcessTerminate.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.ProcessTerminate.PushOperation.response.status
       description: Push operation response status.
@@ -2257,7 +2257,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.ProcessTerminate.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.ProcessTerminate.PushOperation.machine.name
       description: The client device's name.
@@ -2266,7 +2266,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-registry-key-add
-    description: "Adds a given registry key and/or value to the registry of computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Adds a given registry key and/or value to the registry of computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: is_redirected
       description: Determines if the key should reside under WOW6432Node. Keys intended for 64bit versions of Windows may target 32bit versions by using setting 'true' here. Thus specifying that the registry key/value be added under under the WOW6432Node.
@@ -2303,23 +2303,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2330,7 +2330,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2351,16 +2351,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -2384,10 +2384,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -2401,7 +2401,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.RegistryKeyAdd.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.RegistryKeyAdd.PushOperation.response.status
       description: Push operation response status.
@@ -2410,7 +2410,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.RegistryKeyAdd.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.RegistryKeyAdd.PushOperation.machine.name
       description: The client device's name.
@@ -2419,7 +2419,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-registry-key-delete
-    description: "Removes the given registry key or value to the registry of computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Removes the given registry key or value to the registry of computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: is_redirected
       description: Determines if the key should reside under WOW6432Node. Keys intended for 64bit versions of Windows may target 32bit versions by using setting 'true' here. Thus specifying that the registry key/value be removed under the WOW6432Node.
@@ -2445,23 +2445,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2472,7 +2472,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2493,16 +2493,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -2526,10 +2526,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -2543,7 +2543,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.RegistryKeyDelete.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.RegistryKeyDelete.PushOperation.response.status
       description: Push operation response status.
@@ -2552,7 +2552,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.RegistryKeyDelete.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.RegistryKeyDelete.PushOperation.machine.name
       description: The client device's name.
@@ -2561,34 +2561,34 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-file-copy
-    description: "Copies the given file from the given source to the given destination on computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Copies the given file from the given source to the given destination on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: destination_absolute_path
-      description: The absolute, full destination path. Note, The provided path must include the target file's name (e.g. c:\backup\backup1.txt).
+      description: The absolute, full destination path. Note, The provided path must include the target file's name (e.g., c:\backup\backup1.txt).
       required: true
     - name: source_absolute_path
-      description: The absolute, full source path (e.g. c:\backup\backup1.txt).
+      description: The absolute, full source path (e.g., c:\backup\backup1.txt).
       required: true
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2599,7 +2599,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2620,16 +2620,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -2653,10 +2653,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -2670,7 +2670,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.FileCopy.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.FileCopy.PushOperation.response.status
       description: Push operation response status.
@@ -2679,7 +2679,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.FileCopy.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.FileCopy.PushOperation.machine.name
       description: The client device's name.
@@ -2688,34 +2688,34 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-file-move
-    description: "Moves the given file from the given source to the given destination on computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Moves the given file from the given source to the given destination on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: destination_absolute_path
-      description: The absolute, full destination path. Note, The provided path must include the target file's name (e.g. c:\backup\backup1.txt).
+      description: The absolute, full destination path. Note, The provided path must include the target file's name (e.g., c:\backup\backup1.txt).
       required: true
     - name: source_absolute_path
-      description: The absolute, full source path (e.g. c:\backup\backup1.txt).
+      description: The absolute, full source path (e.g., c:\backup\backup1.txt).
       required: true
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2726,7 +2726,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2747,16 +2747,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -2780,10 +2780,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -2797,7 +2797,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.FileMove.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.FileMove.PushOperation.response.status
       description: Push operation response status.
@@ -2806,7 +2806,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.FileMove.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.FileMove.PushOperation.machine.name
       description: The client device's name.
@@ -2815,7 +2815,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-file-delete
-    description: "Deletes the given file from the given source on computers matching the given query. This operation is risky! Use with caution as it allows you to change Harmony Endpoint protected files or registry entries that are in use by your operating system. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Deletes the given file from the given source on computers matching the given query. This operation is risky! Use with caution as it allows you to change Harmony Endpoint protected files or registry entries that are in use by your operating system. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: target_absolute_path
       description: The absolute, full path of the file to remove.
@@ -2823,23 +2823,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2850,7 +2850,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2871,16 +2871,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -2904,10 +2904,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -2921,7 +2921,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.FileDelete.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.FileDelete.PushOperation.response.status
       description: Push operation response status.
@@ -2930,7 +2930,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.FileDelete.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.FileDelete.PushOperation.machine.name
       description: The client device's name.
@@ -2939,7 +2939,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-vpn-site-add
-    description: "Adds the given VPN Site's configuration to computers matching the given query Adding a VPN Site allows Harmony Endpoint Clients to connect to it. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Adds the given VPN Site's configuration to computers matching the given query Adding a VPN Site allows Harmony Endpoint Clients to connect to it. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: remote_access_gateway_name
       description: The remote gateway's name.
@@ -2967,23 +2967,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -2994,7 +2994,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -3015,16 +3015,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -3048,10 +3048,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -3065,7 +3065,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationAdd.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationAdd.PushOperation.response.status
       description: Push operation response status.
@@ -3074,7 +3074,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationAdd.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationAdd.PushOperation.machine.name
       description: The client device's name.
@@ -3083,7 +3083,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-vpn-site-remove
-    description: "Removes the given VPN Site's configuration to computers matching the given query. Please note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Removes the given VPN Site's configuration to computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: display_name
       description: The Display Name of the VPN Site to remove. If a Display Name was not provided during the site's creation, the host name/IP should be used instead.
@@ -3092,23 +3092,23 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example “2024-04-12 03:59”.
+      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
-      description: The time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more client If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
+      description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
-      description: Comma-separated computer IDs to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       required: false
       isArray: true
     - name: computer_names
-      description: Comma-separated computer names to include in the operation.
+      description: A comma-separated list of computer names to include in the operation.
       required: false
       isArray: true
     - name: computer_ips
-      description: Comma-separated computer IPs to include in the operation.
+      description: A comma-separated list of computer IPs to include in the operation.
       required: false
       isArray: true
     - name: computer_types
-      description: Comma-separated computer types to include in the operation.
+      description: A comma-separated list of computer types to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -3119,7 +3119,7 @@ script:
       - Domain Controller
       - Server
     - name: computer_deployment_statuses
-      description: Comma-separated computer deployment statuses to include in the operation.
+      description: A comma-separated list of computer deployment statuses to include in the operation.
       required: false
       isArray: true
       auto: PREDEFINED
@@ -3140,16 +3140,16 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "Comma-separated list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, please visit https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
-      description: IDs of groups to exclude from the operation.
+      description: A comma-separated list of group IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_exclude
-      description: IDs of computers to exclude from the operation.
+      description: A comma-separated list of computer IDs to exclude from the operation.
       isArray: true
     - name: computers_ids_to_include
-      description: IDs of computers to include in the operation.
+      description: A comma-separated list of computer IDs to include in the operation.
       isArray: true
     - name: inform_user
       description: Determines whether to inform the user, via a UserCheck (popup) message, that the operation is taking place.
@@ -3173,10 +3173,10 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Min value is `10`. Default is `30`.
+      description: The interval between each poll in seconds. Minimum value is `10`. 
       defaultValue: '30'
     - name: timeout
-      description: The timeout for the polling in seconds. Default is `600`.
+      description: The timeout for the polling in seconds.
       defaultValue: '600'
     - name: job_id
       description: The job ID to fetch data for. Hidden argument.
@@ -3190,7 +3190,7 @@ script:
       description: The remediation operation ID.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationRemove.PushOperation.status
-      description: Describes possible states in which a Push Operation may be in regards to a specific device.
+      description: Describes possible states in which a push operation may be in regards to a specific device.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationRemove.PushOperation.response.status
       description: Push operation response status.
@@ -3199,7 +3199,7 @@ script:
       description: Push operation response output.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationRemove.PushOperation.machine.ipAddress
-      description: The client device's IPv4 Address.
+      description: The client device's IPv4 address.
       type: String
     - contextPath: HarmonyEP.VPNsiteConfigurationRemove.PushOperation.machine.name
       description: The client device's name.
