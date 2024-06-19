@@ -259,6 +259,8 @@ script:
     - name: username
       required: true
       description: A username providing the feedback.
+    - name: label
+      description: Deprecated. Replaced by parameter feedback.
     - name: indicators
       description: Deprecated. Cortex Indicator if any as a dict containing 3 keys (type, value, source) as mandatory.
     - name: closing_notes
