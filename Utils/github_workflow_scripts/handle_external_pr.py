@@ -255,7 +255,7 @@ def is_requires_security_reviewer(pr_files: list[str]) -> bool:
     return False
 
 
-def check_if_item_is_tim(content_object: dict) -> bool:
+def check_if_item_is_tim(content_object: BaseContent | None) -> bool:
     """
     Checks whether a given object (graph object) is a feed or related to TIM
 
@@ -308,7 +308,7 @@ def check_files_of_pr_manually(pr_files: list[str]) -> bool:
     return False
 
 
-def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
+def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
     """
     Checks if tim reviewer needed, if the pack is new and not part of Master.
     First the remote branch is going to be checked out and then verified for the data
@@ -334,7 +334,7 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
                 if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
-                is_tim_needed = is_tim_content(content_object)
+                is_tim_needed = check_if_item_is_tim(content_object)
                 if is_tim_needed:
                     return True
     except Exception as er:
@@ -342,34 +342,6 @@ def check_new_pack_metadata(pr_files: list[str], external_pr_branch: str, repo_n
         # if the checkout didn't work for any reason, will try to go over files manually
         return check_files_of_pr_manually(pr_files)
     return False
-
-
-def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
-    """
-    This is where the actual search for feed:True or relevant tags or categories are being searched
-    according to the login in is_tim_reviewer_needed.
-    It also taking into account if the pack exist in Master or it is new and need to checkout remote branch
-
-    Arguments:
-    - pr_files: List[str] The list of files changed in the Pull Request.
-    - 'external_pr_branch' (str) : name of the external branch to checkout
-    - 'repo_name' (str) : name of the external repository
-
-    Returns: returns True or False if tim reviewer needed
-    """
-    is_tim = False
-    for file in pr_files:
-        if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
-            continue
-        content_object = BaseContent.from_path(CONTENT_PATH / file)
-        if not content_object:
-            # This means we were not able to find the file in content repo, and the contribution is new
-            print(f'for file {file}, the pack doesn\'t exist in Master and going to be searched in the remote branch')
-            is_tim = check_new_pack_metadata(pr_files, external_pr_branch, repo_name)
-            break
-        else:
-            is_tim = check_if_item_is_tim(content_object)
-    return is_tim
 
 
 def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
