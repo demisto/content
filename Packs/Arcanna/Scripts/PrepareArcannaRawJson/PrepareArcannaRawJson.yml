@@ -3,7 +3,7 @@ args:
   description: Input string to transform to JSON escaped object.
   name: input
   required: true
-comment: Loads a json from string input, and returns a json escaped result.
+comment: Deprecated. NOT_USED No available replacement.
 commonfields:
   id: PrepareArcannaRawJson
   version: -1
