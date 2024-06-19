@@ -281,7 +281,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
             demisto.debug("log capture:" + tmp.read())
 
             all_outputs = []
-            with open(json_output_path, 'r') as json_outputs:
+            with open(json_output_path) as json_outputs:
                 outputs_as_json = json.load(json_outputs)
                 if outputs_as_json:
                     if type(outputs_as_json) == list:
@@ -289,7 +289,7 @@ def validate_content(filename: str, data: bytes, tmp_directory: str) -> List:
                     else:
                         all_outputs.append(outputs_as_json)
 
-            with open(lint_output_path, 'r') as json_outputs:
+            with open(lint_output_path) as json_outputs:
                 outputs_as_json = json.load(json_outputs)
                 if outputs_as_json:
                     if type(outputs_as_json) == list:
