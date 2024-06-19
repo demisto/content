@@ -68,7 +68,7 @@ def check_memory(target_mem: str, check_type: str) -> str:
                     ' cgroup files found, verify cgroups is enabled.')
 
         try:
-            with open(cgroup_file, "r") as f:
+            with open(cgroup_file) as f:
                 mem_bytes = int(f.read().strip())
                 if mem_bytes > size:
                     return (f'According to memory cgroup configuration at: {cgroup_file}'
