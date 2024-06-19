@@ -1313,7 +1313,7 @@ def test_gti_curated_collections_commands(mocker, requests_mock):
             endpoint_resource = encode_url_to_base64(resource) if resource_type == 'url' else resource
             filter_query = 'owner%3AMandiant%20'
             if collection_type == 'malware-family':
-                filter_query +='%28collection_type%3Amalware-family%20OR%20collection_type%3Asoftware-tookit%29'
+                filter_query += '%28collection_type%3Amalware-family%20OR%20collection_type%3Asoftware-tookit%29'
             else:
                 filter_query += f'collection_type%3A{collection_type}'
             requests_mock.get(f'https://www.virustotal.com/api/v3/{endpoint}/{endpoint_resource}/collections'
