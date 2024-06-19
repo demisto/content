@@ -1523,3 +1523,31 @@ def test_main(mocker):
     mock_client = mocker.patch('CortexXDRIR.Client', autospec=True)
     mock_client.test_module.return_value = 'ok'
     main()
+
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_core_http_request(mocker):
+    """
+    Given:
+        - Only the required params in the configuration.
+    When:
+        - Running a test_module to test the http_request function in CoreIRApiModule.
+    Then:
+        - Should fail since command '_apiCall' is not available via engine.
+    """
+    from CortexXDRIR import Client
+    base_url = urljoin("dummy_url", '/public_api/v1')
+    proxy = demisto.params().get('proxy')
+    verify_cert = not demisto.params().get('insecure', False)
+    client = Client(
+        base_url=base_url,
+        proxy=proxy,
+        verify=verify_cert,
+        timeout=120,
+        params=demisto.params()
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, 'params', return_value={'url': 'test_url'})
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, "_apiCall", return_value= Exception("command '_apiCall' is not available via engine (85)"))
+    res = client.test_module(first_fetch_time='3 month')
+    assert res == 'ok'
