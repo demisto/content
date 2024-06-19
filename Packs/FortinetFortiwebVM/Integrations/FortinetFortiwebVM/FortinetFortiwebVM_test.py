@@ -20,7 +20,7 @@ def load_mock_response(file_name: str) -> str:
         str: Mock file content.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
