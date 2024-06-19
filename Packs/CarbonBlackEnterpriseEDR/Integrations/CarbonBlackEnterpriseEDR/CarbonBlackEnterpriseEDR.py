@@ -593,10 +593,14 @@ def alert_workflow_update_command_with_results(client: Client, args: dict):
 
 @polling_function(name='cb-eedr-alert-workflow-update', interval=1000, requires_polling_arg=False)
 def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
+    demisto.debug('trying to get request_id')
     request_id = arg_to_number(args.get('request_id'))
+    demisto.debug('trying to get alert_id')
     alert_id = args['alert_id']
 
     if not request_id: #if this is the first time
+        demisto.debug('no request id was found in args')
+        demisto.debug('trying to get all relevant args for first run')
         state = args.get('state')
         if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
             state = 'CLOSED'
@@ -608,31 +612,38 @@ def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
         end = args.get('end')
         closure_reason = args.get('closure_reason')
         
+        demisto.debug('calling alert_workflow_update_request function')
         response = client.alert_workflow_update_request(
             alert_id, state, comment, determination, time_range, start, end, closure_reason)
-        
+        if response:
+            demisto.debug('a response has received')
+        demisto.debug('trying to get request_id after getting the first response')
         request_id = response['request_id']
         if request_id:
             args["request_id"] = request_id
+            demisto.debug('there is a request id!!')
         else:
             raise DemistoException("Failed to update workflow for alert")
         
-        
+    demisto.debug('now calling the second API')
     # The second API call
     response = client.alert_workflow_update_request_v2(request_id)  #There for sure will be a request id once we get here
     status = response['status']
     if status != 'COMPLETED':
+        demisto.debug('status is not completed')
         message = CommandResults(
             readable_output="Checking again in 60 seconds...")
+        demisto.debug('returning PollResult with continue_to_poll=True')
         return PollResult(
             partial_result=message,
             response=None,
             continue_to_poll=True,
             args_for_next_run={"request_id": request_id,
                                **args})
-
+    demisto.debug('status is COMPLETED')
     message = CommandResults(
         readable_output='The alert workflow has been updated successfully')
+    demisto.debug('returning PollResult with continue_to_poll=False')
     return PollResult(
         response=message,
         continue_to_poll=False)
