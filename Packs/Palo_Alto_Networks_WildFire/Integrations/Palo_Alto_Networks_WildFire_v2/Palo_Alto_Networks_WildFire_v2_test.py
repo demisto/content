@@ -801,26 +801,35 @@ def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     mock_get_license.assert_called()
 
 
-def test_empty_api_token_with_get_license_test_for_test(mocker: MockerFixture, platform: str):
+def test_invalid_argument_res_test(mocker):
     """
     Given:
-        - command, params, platform
+     - hash of a file pending to be constructed.
+
     When:
-        - run main function
+     - Running report command with Invalid argument error message.
+
     Then:
-        - Ensure that `Tim license` supported for the integration for all platforms.
+     - Assert Exception occurred.
+     - Assert error entry created with the error message from the response.
     """
-    mocker.patch.object(demisto, 'command', return_value='test-module')
-    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': ''})
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.get_demisto_version", return_value={"platform": platform})
-    mock_get_license = mocker.patch.object(
-        demisto,
-        'getLicenseCustomField',
-        return_value="".join(["X" for i in range(32)])
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "SomeURL")
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 421
+    get_sample_response._content = b'<?xml version="1.0" encoding="UTF-8"?><error><error-message>' \
+                                   b'Invalid argument</error-message></error>'
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
     )
-
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
-    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module")
-    main()
-
-    mock_get_license.assert_called()
+    try:
+        wildfire_get_file_report(file_hash='some_hash',
+                                 args={'extended_data': 'false',
+                                       'format': 'xml',
+                                       'verbose': 'false'})
+    except Exception as e:
+        assert e.message == 'Error while trying to get the report from the API.'
+        assert demisto.results.call_count == 1
+        assert demisto.results.call_args[0][0]['Type'] == 4
+        assert demisto.results.call_args[0][0]['Contents'] == 'Invalid argument'
