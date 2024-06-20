@@ -92,11 +92,11 @@ def get_default_job_id(client: Client) -> CommandResults:
 
 
 def set_default_job_id(client: Client, args: dict[str, Any]) -> CommandResults:
-    job_id = 1201
     return get_default_job_id(client)
 
 
 def send_bulk_events(client: Client, feature_mapping_field: str, args: dict[str, Any]) -> CommandResults:
+    response = "mock"
     readable_output = f' ## Arcanna send bulk results: {response}'
 
     return CommandResults(
@@ -122,10 +122,10 @@ def test_module(client: Client) -> str:
     try:
         response = client.test_arcanna()
         demisto.info(f'test_module response={response}')
-        if "connected" not in response:
-            return "Authentication Error. Please check the API Key you provided."
-        else:
+        if "status" in response and response.get("status", False):
             return "ok"
+        else:
+            return "Authentication Error. Please check the API Key you provided."
     except DemistoException as e:
         raise e
 
@@ -149,7 +149,7 @@ def get_jobs(client: Client) -> CommandResults:
 
 def export_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", default_job_id)
-    event_id = args.get("event_id")
+    event_id = str(args.get("event_id"))
     result = client.export_event(job_id=job_id, event_id=event_id)
     headers = ["arcanna_event", "status", "ingest_timestamp", "event_id", "error_message"]
     readable_output = tableToMarkdown(name="Arcanna Event", headers=headers, t=result, removeNull=True)
@@ -235,46 +235,27 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
     )
 
 
-@polling_function('get_polling_event_status')
-def get_polling_event_status_command(args: Dict[str, Any], client: Client) -> PollResult:
-    job_id = args.get("job_id", args.get("default_job_id"))
-    event_id = str(args.get("event_id"))
-    result = client.get_event_status(job_id, event_id)
-    successful_response = result.json().get("status", 'pending_inference') != 'pending_inference'
-
-    if successful_response:
-        response = show_successful_response(result)
-        return PollResult(response)
-    else:
-        error_response = CommandResults(raw_response=result, readable_output='Decision not ready', entry_type=entryTypes['error'])
-        return PollResult(continue_to_poll=True, response=error_response)
-
-
-def get_event_status(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
-    args["default_job_id"] = default_job_id
+@polling_function(name='arcanna-get-event-status', timeout=arg_to_number(demisto.args().get('timeout', 120)),
+                           interval=arg_to_number(demisto.args().get('interval',15)))
+def get_event_status(args: Dict[str, Any], client: Client, default_job_id) -> CommandResults:
     job_id = args.get("job_id", default_job_id)
-    event_id = str(args.get("event_id"))
-    polling = args.get("polling", 'false')
-    result = None
-    if polling == 'false':
-        result = client.get_event_status(job_id, event_id)
-    else:
-        result = get_polling_event_status_command(args, client)
-
-    headers = ["event_id", "ingest_timestamp", "status",
-               "error_message", "bucket_state", "result", "confidence_score", "outlier", "arcanna_label"]
-
-    readable_output = tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result)
-
+    event_id = args.get("event_id")
+    result = client.get_event_status(job_id, event_id)
+    polling = args.get("polling")
+    successful_response = result.get("status", "pending_inference") != 'pending_inference'
     outputs = {
-        'Arcanna.Event(val.job_id && val.job_id === obj.job_id)': createContext(result)
-    }
-
-    return CommandResults(
-        readable_output=readable_output,
+            'Arcanna.Event': createContext(result)
+        }
+    headers = ["event_id", "ingest_timestamp", "status", "error_message","bucket_state", "result", "confidence_score", "outlier", "arcanna_label"]
+    return_data = CommandResults(
+        outputs_prefix='Arcanna.Event',
         outputs=outputs,
-        raw_response=result
+        readable_output = tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result)
     )
+    if successful_response or polling == 'false':
+        return PollResult(response=return_data, continue_to_poll=False)
+    else:
+        return PollResult(continue_to_poll=True, response=return_data)
 
 
 def map_to_arcanna_label(arcanna_label, username):

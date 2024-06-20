@@ -205,8 +205,13 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: interval
+      description: Polling interval.
+    - name: timeout
+      description: Total time allowed for polling.
     description: Retrieves Arcanna Inference result.
     name: arcanna-get-event-status
+    polling: true
     outputs:
     - contextPath: Arcanna.Event.event_id
       description: Arcanna event id.

@@ -478,6 +478,10 @@ tasks:
         simple: ${Arcanna.Event.job_id}
       polling:
         simple: 'true'
+      interval:
+        simple: 10
+      timeout:
+        simple: 60
     separatecontext: false
     view: |-
       {
