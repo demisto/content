@@ -110,6 +110,8 @@ class Client(BaseClient):
                     outputs=None,
                     raw_response=None,
                 )
+            else:
+                return return_error(e)
         return results
 
     def get_qualified_domain_name(self, qualified_domain_name):
