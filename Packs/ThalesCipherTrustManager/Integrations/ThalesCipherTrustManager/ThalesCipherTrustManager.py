@@ -1191,8 +1191,8 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
     raw_response = client.get_certificates_list(ca_id=args.get(CA_ID, ''),
                                                 params=params)
     if args.get(ID):
-        issued_certificate_dict = raw_response.get('resources', [])[0] if raw_response.get('resources', []) else {}
-        outputs, removed_values = remove_key_from_outputs(issued_certificate_dict, ['csr', 'cert'])
+        issued_crtfct_dict = raw_response.get('resources', [])[0] if raw_response.get('resources', []) else {}
+        outputs, removed_values = remove_key_from_outputs(issued_crtfct_dict, ['csr', 'cert'])
         return_file_results(removed_values[1], 'Certificate.pem')
         outputs = [outputs]
 
