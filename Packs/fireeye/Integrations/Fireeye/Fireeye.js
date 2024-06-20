@@ -346,7 +346,7 @@ switch (command) {
                 logDebug("DEBUG: the response.Body" + response.Body)
                 logDebug("DEBUG: We got an error during JSON.parse: " + e)
             }
-            logDebug("DEBUG: The result after parsing: " + parsed_response_body)
+            result = JSON.parse(response.Body);
         }
         if (contentType && contentType.indexOf('application/xml') !== -1) {
             try {
