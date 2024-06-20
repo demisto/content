@@ -3,16 +3,16 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    users = []
-    users_res_for_chart = []
     most_attacked_user_list = demisto.executeCommand('proofpoint-list-most-attacked-users', {'window': 14})
     results = most_attacked_user_list[0].get('Contents', {})    # type: ignore
 
+    users = []
     if isinstance(results, dict):
         # In the case the integration is not configured, this value will return as str.
         # Unsupported Command..
         users = results.get('users', [])
 
+    users_res_for_chart = []
     for user in users:
         users_res_for_chart.append({"name": user.get("identity").get("emails", [""])[0],
                                     "data": [user.get("threatStatistics").get("attackIndex")]})

@@ -3,13 +3,14 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    users = []
-    users_res_for_chart = []
     results: dict = demisto.executeCommand('proofpoint-get-top-clickers', {'window': 90})[0]  # type: ignore
     contents = results.get('Contents')
+    
+    users = []
     if isinstance(contents, dict):
         users = contents.get('users', [])
 
+    users_res_for_chart = []
     for user in users:
         users_res_for_chart.append({"name": user.get("identity").get("emails", [""])[0],
                                     "data": [user.get("clickStatistics").get("clickCount")]})
