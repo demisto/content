@@ -16,9 +16,7 @@ def main():
         users_res_for_chart.append({"name": user.get("identity").get("emails", [""])[0],
                     "data": [user.get("threatStatistics").get("attackIndex")]})
 
-    default_empty_chart_data = [
-        {"name": "", "data": [], "color": ""},
-    ]
+    default_empty_chart_data = [{"name": "", "data": [], "color": ""}]
 
     final_res = users_res_for_chart if users_res_for_chart else default_empty_chart_data
     return_results(json.dumps(final_res))
