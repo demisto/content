@@ -10819,6 +10819,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
 
     def dec(func):
         def inner(args, *arguments, **kwargs):
+            demisto.debug('in inner')
             """
             Args:
                 args (dict): command arguments (demisto.args()).
