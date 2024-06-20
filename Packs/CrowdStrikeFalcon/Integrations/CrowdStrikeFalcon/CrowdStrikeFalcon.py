@@ -67,7 +67,7 @@ DETECTIONS_BASE_KEY_MAP = {
 POST_RAPTOR_RELEASE_DETECTIONS_BASE_KEY_MAP = {
     'device.hostname': 'System',
     'device.cid': 'CustomerID',
-    'hostinfo.domain': 'MachineDomain',
+    'device.hostinfo.domain': 'MachineDomain',
     'composite_id': 'ID',
     'created_timestamp': 'ProcessStartTime',
     'severity': 'MaxSeverity',
@@ -4021,7 +4021,7 @@ def search_detections_command():
 
             if extended_data:
                 detection_entry['Device'] = demisto.get(detection, 'device')
-                if not POST_RAPTOR_RELEASE:     # Raptor release does not have the 'device' key
+                if not POST_RAPTOR_RELEASE:     # Raptor release does not have the 'behaviors_processed' key
                     detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
 
             entries.append(detection_entry)
