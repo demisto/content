@@ -27,7 +27,7 @@ def run_test(mocker: unittest.mock,
 
 
 def test_shuffleable(mocker):
-    with open('./test_data/test-shuffleable.json', 'r') as f:
+    with open('./test_data/test-shuffleable.json') as f:
         test_list = json.load(f)
 
     for case in test_list:
