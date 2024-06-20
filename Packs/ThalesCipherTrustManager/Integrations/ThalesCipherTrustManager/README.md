@@ -1,5 +1,5 @@
 Manage secrets and protect sensitive data through Thales CipherTrust security platform.
-This integration was integrated and tested with version xx of CipherTrust.
+This integration was integrated and tested with version v1 of CipherTrust.
 
 ## Configure Thales CipherTrust Manager on Cortex XSOAR
 
