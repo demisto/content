@@ -1092,7 +1092,7 @@ Get a list of all your ASM alerts filtered by alert IDs, severity and/or creatio
 | alert_id_list         | Comma-separated list of alert IDs.                                                                                                                                                                                                 | Optional | 
 | severity              | Comma-separated list of alert severities (valid values are low, medium, high, critical, informational).                                                                                                                                  | Optional | 
 | tags                  | Comma-separated list of alert tags. These should include the tag prefix, ex. AT:Asset Tag.                                                                                                                                             | Optional | 
-| status                | Comma-separated list of the alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
+| status                | Comma-separated list of the alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
 | business_units_list   | Comma-separated list business units.                                                                                                                                                                                            | Optional | 
 | case_id_list          | Comma-separated list of case (incident) IDs.                                                                                                                                                                                       | Optional | 
 | lte_creation_time     | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                                                | Optional | 
@@ -1985,7 +1985,7 @@ Updates the state of one or more alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id_list | Comma-separated list of integers of the alert ID. | Optional | 
-| status | Updated alert status. Possible values are: new, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
+| status | Updated alert status. Possible values are: new, reopened, under_investigation, resolved_no_longer_observed, resolved_no_risk, resolved_risk_accepted, resolved_contested_asset, resolved_remediated_automatically, resolved. | Optional | 
 | severity | The severity of the alert. Possible values are: low, medium, high, critical. | Optional | 
 
 #### Context Output

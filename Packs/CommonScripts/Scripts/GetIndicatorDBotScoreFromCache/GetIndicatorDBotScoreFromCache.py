@@ -3,11 +3,35 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+def escape_special_characters(text: str) -> str:
+    """Add escape char.
+
+    Args:
+        text (str): indicator value.
+
+    Returns:
+        return the value with the added escape char.
+    """
+    return (
+        text.replace("\\", r"\\")
+        .replace("\n", r"\n")
+        .replace("\t", r"\t")
+        .replace("\r", r"\r")
+        .replace("(", r"\(")
+        .replace(")", r"\)")
+        .replace("[", r"\[")
+        .replace("]", r"\]")
+        .replace("^", r"\^")
+        .replace(":", r"\:")
+        .replace('"', r"\"")
+    )
+
+
 def main():
     values: list[str] = argToList(demisto.args().get("value", None))
     unique_values: set[str] = {v.lower() for v in values}  # search query is case insensitive
 
-    query = f"""value:({' '.join([f'"{value}"' for value in unique_values])})"""
+    query = f"""value:({' '.join([f'"{escape_special_characters(value)}"' for value in unique_values])})"""
     demisto.debug(f'{query=}')
 
     res = demisto.searchIndicators(

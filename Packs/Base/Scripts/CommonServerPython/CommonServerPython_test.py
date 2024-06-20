@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import urllib
+import uuid
 import warnings
 
 import dateparser
@@ -1272,9 +1273,10 @@ def test_get_error_need_raise_error_on_non_error_input():
     (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected, filename):
-    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
-    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
-    file_name = "1_test_file_result"
+    file_id = str(uuid.uuid4())
+    mocker.patch.object(demisto, 'uniqueFile', return_value="fileresult")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+    file_name = "{}_fileresult".format(file_id)
 
     def cleanup():
         try:
@@ -1563,6 +1565,48 @@ def test_is_mac_address():
 
     assert (is_mac_address(mac_address_false) is False)
     assert (is_mac_address(mac_address_true))
+
+
+def test_return_error_truncated_message(mocker):
+    """
+    Given
+    - invalid error message due to longer than max length (50,000)
+
+    When
+    - return_error function is called
+
+    Then
+    - Return a truncated message that contains clarification about the truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * (MAX_ERROR_MESSAGE_LENGTH + 1)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
+        len("...This error body was truncated...")
+    assert "This error body was truncated" in results.call_args[0][0]["Contents"]
+
+
+def test_return_error_valid_message(mocker):
+    """
+    Given
+    - A valid error message
+
+    When
+    - return_error function is called
+
+    Then
+    - Ensure the same message is returned
+    - Ensure the error message does not contain clarification about a truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * int(MAX_ERROR_MESSAGE_LENGTH * 0.9)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == len(err_msg)
+    assert "This error body was truncated" not in results.call_args[0][0]["Contents"]
 
 
 def test_return_error_command(mocker):
@@ -6904,13 +6948,13 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-            {'Address': 'user@example.com',
+            {"Email": {'Address': 'user@example.com'},
              'Domain': 'example.com',
-                'Description': 'test',
-                'Internal': True,
-                'STIXID': 'stix_id_test',
-                'Tags': ['tag1', 'tag2'],
-                'TrafficLightProtocol': 'traffic_light_protocol_test'}
+             'Description': 'test',
+             'Internal': True,
+             'STIXID': 'stix_id_test',
+             'Tags': ['tag1', 'tag2'],
+             'TrafficLightProtocol': 'traffic_light_protocol_test'}
 
     @pytest.mark.parametrize('item', [
         'CommunityNotes', 'Publications', 'ThreatTypes'

@@ -1,6 +1,8 @@
 Orca Security event collector integration for Cortex XSIAM.
 This integration was integrated and tested with version 0.1.0 of Orca Event Collector
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Orca Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
