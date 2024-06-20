@@ -227,7 +227,7 @@ class CoreClient(BaseClient):
             self._handle_error(error_handler, response, with_metrics)
         try:
             return json.loads(response['data'])
-        except requests.JSONDecodeError:
+        except json.JSONDecodeError:
             demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
             return response['data']
 
