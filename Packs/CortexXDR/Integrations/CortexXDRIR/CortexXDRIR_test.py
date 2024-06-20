@@ -1524,6 +1524,7 @@ def test_main(mocker):
     mock_client.test_module.return_value = 'ok'
     main()
 
+
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_core_http_request_xsiam_tenant(mocker):
     """
