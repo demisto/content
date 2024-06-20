@@ -11,10 +11,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: db7af57a-9e72-468a-8ceb-eb144f841b6c
+    taskid: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
     type: start
     task:
-      id: db7af57a-9e72-468a-8ceb-eb144f841b6c
+      id: 9193802e-ca8d-4d1d-8fb6-ac843c6409e0
       version: -1
       name: ""
       iscommand: false
@@ -29,7 +29,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -530
+          "y": -160
         }
       }
     note: false
@@ -41,10 +41,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 208ea0cc-d48e-4e60-87c3-754d9d560549
+    taskid: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
     type: regular
     task:
-      id: 208ea0cc-d48e-4e60-87c3-754d9d560549
+      id: 97297dba-2ed4-45c7-8f88-63bd12b62ea8
       version: -1
       name: Delete Context
       description: |-
@@ -59,7 +59,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "304"
     scriptarguments:
       all:
         simple: "yes"
@@ -69,84 +69,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": -400
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 7b26f247-4793-4491-8200-d1cd9683af62
-    type: regular
-    task:
-      id: 7b26f247-4793-4491-8200-d1cd9683af62
-      version: -1
-      name: Get Available Users - AD
-      description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
-      script: '|||ad-get-user'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    scriptarguments:
-      ignore-outputs:
-        simple: "false"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": -240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "3":
-    id: "3"
-    taskid: b89c2791-18c8-4de4-86ce-cad7ebe155ea
-    type: condition
-    task:
-      id: b89c2791-18c8-4de4-86ce-cad7ebe155ea
-      version: -1
-      name: AD Users Retrieved?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "309"
-      "yes":
-      - "304"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: ActiveDirectory.Users.name
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": -80
+          "y": -30
         }
       }
     note: false
@@ -158,12 +81,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 35fca0ce-85f2-4754-89dc-eaf4e85f0b8f
+    taskid: 90af5859-c5fe-4c8b-8445-e28169810e6a
     type: title
     task:
-      id: 35fca0ce-85f2-4754-89dc-eaf4e85f0b8f
+      id: 90af5859-c5fe-4c8b-8445-e28169810e6a
       version: -1
-      name: Start Tests
+      name: AD - Start Tests
       type: title
       iscommand: false
       brand: ""
@@ -178,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1270
+          "y": 950
         }
       }
     note: false
@@ -190,12 +113,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: a219a2f2-0e18-49ef-85c2-489dccc40798
+    taskid: 8c1b6d86-c4df-4bde-88bb-b6dafe50c57a
     type: title
     task:
-      id: a219a2f2-0e18-49ef-85c2-489dccc40798
+      id: 8c1b6d86-c4df-4bde-88bb-b6dafe50c57a
       version: -1
-      name: Check Context Data
+      name: AD - Check Context Data
       type: title
       iscommand: false
       brand: ""
@@ -210,7 +133,7 @@ tasks:
       {
         "position": {
           "x": 1090,
-          "y": 1410
+          "y": 1090
         }
       }
     note: false
@@ -222,10 +145,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "70":
     id: "70"
-    taskid: 4011a1d3-8d58-4c87-86e7-b9289280d429
+    taskid: bf93b539-fca2-4775-8749-ef27e98f7ae0
     type: condition
     task:
-      id: 4011a1d3-8d58-4c87-86e7-b9289280d429
+      id: bf93b539-fca2-4775-8749-ef27e98f7ae0
       version: -1
       name: Verify Number Of Related Alerts
       description: Verify that the ‘NumOfRelatedAlerts’ context key was extracted correctly.
@@ -252,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 1090,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -264,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "71":
     id: "71"
-    taskid: 4acb9c4c-b0b1-4d11-8504-eb6acf260ba6
+    taskid: e514c625-9b92-4ba3-84a8-aa67c4f87f6b
     type: regular
     task:
-      id: 4acb9c4c-b0b1-4d11-8504-eb6acf260ba6
+      id: e514c625-9b92-4ba3-84a8-aa67c4f87f6b
       version: -1
       name: Verify Context Error - Number Of Related Alerts
       description: Prints an error entry with a given message
@@ -289,7 +212,7 @@ tasks:
       {
         "position": {
           "x": 1090,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -301,10 +224,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "256":
     id: "256"
-    taskid: 516a3a74-905b-4f9b-83aa-5c2944631b22
+    taskid: a9a1c41e-894a-466e-8e4a-41f22b84dde4
     type: title
     task:
-      id: 516a3a74-905b-4f9b-83aa-5c2944631b22
+      id: a9a1c41e-894a-466e-8e4a-41f22b84dde4
       version: -1
       name: Done Verifying Context Data
       type: title
@@ -320,7 +243,7 @@ tasks:
       {
         "position": {
           "x": 690,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -332,12 +255,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "265":
     id: "265"
-    taskid: 77f4d88a-78f7-4992-8a5f-3c9c4e2ae6c0
+    taskid: dc92ec9a-a53c-45b0-8dfb-afbff69b6959
     type: regular
     task:
-      id: 77f4d88a-78f7-4992-8a5f-3c9c4e2ae6c0
+      id: dc92ec9a-a53c-45b0-8dfb-afbff69b6959
       version: -1
-      name: Set 'Username' To Alert Field
+      name: Set Okta Username To Alert Field
       description: commands.local.cmd.set.incident
       script: Builtin|||setAlert
       type: regular
@@ -347,24 +270,8 @@ tasks:
       '#none#':
       - "266"
     scriptarguments:
-      username:
-        complex:
-          root: ActiveDirectory.Users
-          filters:
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: ActiveDirectory.Users.name
-                iscontext: true
-          - - operator: isNotEmpty
-              left:
-                value:
-                  simple: ActiveDirectory.Users.mail
-                iscontext: true
-              ignorecase: true
-          accessor: name
-          transformers:
-          - operator: FirstArrayElement
+      osparentusername:
+        simple: demisto\testplaybookuser
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -383,12 +290,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "266":
     id: "266"
-    taskid: 0ca02a43-c537-4c4d-82e3-0ff7f1648a44
+    taskid: e4ed2f15-8e18-4c25-87d9-62f47bfaaf89
     type: playbook
     task:
-      id: 0ca02a43-c537-4c4d-82e3-0ff7f1648a44
+      id: e4ed2f15-8e18-4c25-87d9-62f47bfaaf89
       version: -1
-      name: Identity Analytics - Alert Handling - AD
+      name: Identity Analytics - Alert Handling
       description: |-
         The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
@@ -412,7 +319,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "310"
+      - "313"
     scriptarguments:
       AutoContainment:
         simple: "False"
@@ -455,10 +362,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "268":
     id: "268"
-    taskid: 7aa53d32-657d-4fb4-8aa3-ac64a25c8ab7
+    taskid: 236b39f9-f21e-4df3-84e6-1001159bbdae
     type: regular
     task:
-      id: 7aa53d32-657d-4fb4-8aa3-ac64a25c8ab7
+      id: 236b39f9-f21e-4df3-84e6-1001159bbdae
       version: -1
       name: Set 'IP.Address' to Context
       description: |-
@@ -497,12 +404,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "269":
     id: "269"
-    taskid: 97cb2eec-2fe3-4eae-81cf-24b019325092
+    taskid: f5d32b79-109e-47c4-8de3-7f7bc5063df7
     type: title
     task:
-      id: 97cb2eec-2fe3-4eae-81cf-24b019325092
+      id: f5d32b79-109e-47c4-8de3-7f7bc5063df7
       version: -1
-      name: Check Alert Field
+      name: AD - Check Alert Field
       type: title
       iscommand: false
       brand: ""
@@ -527,7 +434,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": 1410
+          "y": 1090
         }
       }
     note: false
@@ -539,10 +446,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "270":
     id: "270"
-    taskid: c6e07f4d-9d6d-462f-8035-85bb453cdaba
+    taskid: a62c74a2-f5b4-4fe5-83c6-c9c83b93c222
     type: condition
     task:
-      id: c6e07f4d-9d6d-462f-8035-85bb453cdaba
+      id: a62c74a2-f5b4-4fe5-83c6-c9c83b93c222
       version: -1
       name: Verify Number Of Found Related Alerts
       description: Verify that the ‘numberoffoundrelatedalerts’ alert field was populated correctly.
@@ -569,7 +476,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -581,10 +488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "271":
     id: "271"
-    taskid: b5b5b919-7c1b-4e89-8cf3-42072a5b2ffb
+    taskid: 3358070e-b0bd-49ba-8e56-cb486474d5d5
     type: regular
     task:
-      id: b5b5b919-7c1b-4e89-8cf3-42072a5b2ffb
+      id: 3358070e-b0bd-49ba-8e56-cb486474d5d5
       version: -1
       name: Verify Context Error - Number Of Found Related Alerts
       description: Prints an error entry with a given message
@@ -608,7 +515,7 @@ tasks:
       {
         "position": {
           "x": -170,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -620,10 +527,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "272":
     id: "272"
-    taskid: fe34904a-e309-465d-8207-224e16481c45
+    taskid: 52336c7a-87b8-4fc1-889d-52b5c8da9736
     type: condition
     task:
-      id: fe34904a-e309-465d-8207-224e16481c45
+      id: 52336c7a-87b8-4fc1-889d-52b5c8da9736
       version: -1
       name: Verify Alert Search Results
       description: Verify that the ‘alertsearchresults’ alert field was populated correctly.
@@ -650,7 +557,7 @@ tasks:
       {
         "position": {
           "x": -570,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -662,10 +569,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "273":
     id: "273"
-    taskid: 807d59ca-2d07-4a53-8c84-408e80fcd061
+    taskid: 5fe1b2d8-8b2a-4cef-8d54-5a7602f28d07
     type: regular
     task:
-      id: 807d59ca-2d07-4a53-8c84-408e80fcd061
+      id: 5fe1b2d8-8b2a-4cef-8d54-5a7602f28d07
       version: -1
       name: Verify Context Error - Alert Search Results
       description: Prints an error entry with a given message
@@ -687,7 +594,7 @@ tasks:
       {
         "position": {
           "x": -570,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -699,10 +606,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "274":
     id: "274"
-    taskid: 6dc7496a-e2ce-4205-8ac7-b5eddcfe8d87
+    taskid: 817d975c-7f22-40a7-8c0b-b92df7f67a0a
     type: condition
     task:
-      id: 6dc7496a-e2ce-4205-8ac7-b5eddcfe8d87
+      id: 817d975c-7f22-40a7-8c0b-b92df7f67a0a
       version: -1
       name: Verify User Risk Level
       description: Verify that the ‘userrisklevel’ alert field was populated correctly.
@@ -731,7 +638,7 @@ tasks:
       {
         "position": {
           "x": -960,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -743,10 +650,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "275":
     id: "275"
-    taskid: ed82fa7d-5a65-43fd-86e6-edbd06d5bde4
+    taskid: 0a82551d-3257-4113-8ed4-ff0a860e9126
     type: regular
     task:
-      id: ed82fa7d-5a65-43fd-86e6-edbd06d5bde4
+      id: 0a82551d-3257-4113-8ed4-ff0a860e9126
       version: -1
       name: Verify Context Error - User Risk Level
       description: Prints an error entry with a given message
@@ -768,7 +675,7 @@ tasks:
       {
         "position": {
           "x": -960,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -780,10 +687,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "276":
     id: "276"
-    taskid: 9d7666fe-9973-4830-8db8-4085da8f0852
+    taskid: 9d4a9ac2-c203-405d-8726-f6b286663e3c
     type: condition
     task:
-      id: 9d7666fe-9973-4830-8db8-4085da8f0852
+      id: 9d4a9ac2-c203-405d-8726-f6b286663e3c
       version: -1
       name: Verify Failed Logon Events
       description: Verify that the ‘failedlogonevents’ alert field was populated correctly.
@@ -810,7 +717,7 @@ tasks:
       {
         "position": {
           "x": -1350,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -822,10 +729,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "277":
     id: "277"
-    taskid: c2ad7c84-dc1f-4fa3-8d5c-057e5fd13015
+    taskid: 5edb80fe-b6c8-4ab3-8a9e-cd83ac6eb77d
     type: regular
     task:
-      id: c2ad7c84-dc1f-4fa3-8d5c-057e5fd13015
+      id: 5edb80fe-b6c8-4ab3-8a9e-cd83ac6eb77d
       version: -1
       name: Verify Context Error - Failed Logon Events
       description: Prints an error entry with a given message
@@ -847,7 +754,7 @@ tasks:
       {
         "position": {
           "x": -1350,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -859,10 +766,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "278":
     id: "278"
-    taskid: 5de64588-d447-491d-8803-8abc3ca4f96c
+    taskid: 99f406f9-0842-4743-8738-22ff862893db
     type: condition
     task:
-      id: 5de64588-d447-491d-8803-8abc3ca4f96c
+      id: 99f406f9-0842-4743-8738-22ff862893db
       version: -1
       name: Verify Email
       description: Verify that the ‘email’ alert field was populated correctly.
@@ -889,7 +796,7 @@ tasks:
       {
         "position": {
           "x": -1740,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -901,10 +808,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "279":
     id: "279"
-    taskid: bf8bee67-73e0-4179-8290-be9c4769c904
+    taskid: fbf13d29-ccfa-4bbd-883c-2fcb256cd8be
     type: regular
     task:
-      id: bf8bee67-73e0-4179-8290-be9c4769c904
+      id: fbf13d29-ccfa-4bbd-883c-2fcb256cd8be
       version: -1
       name: Verify Context Error - Email
       description: Prints an error entry with a given message
@@ -926,7 +833,7 @@ tasks:
       {
         "position": {
           "x": -1740,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -938,10 +845,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "280":
     id: "280"
-    taskid: 414ed9cd-4daf-41b9-8189-b0fefb5114ae
+    taskid: 8482abdf-1621-4901-83d8-b352be77ae97
     type: condition
     task:
-      id: 414ed9cd-4daf-41b9-8189-b0fefb5114ae
+      id: 8482abdf-1621-4901-83d8-b352be77ae97
       version: -1
       name: Verify Account Member Of
       description: Verify that the ‘accountmemberof’ alert field was populated correctly.
@@ -968,7 +875,7 @@ tasks:
       {
         "position": {
           "x": -2140,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -980,10 +887,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "281":
     id: "281"
-    taskid: e1fa1df6-fb9a-4cb6-878e-5dd71875d7df
+    taskid: efd6b953-3e67-4871-8652-254813202dce
     type: regular
     task:
-      id: e1fa1df6-fb9a-4cb6-878e-5dd71875d7df
+      id: efd6b953-3e67-4871-8652-254813202dce
       version: -1
       name: Verify Context Error - Account Member Of
       description: Prints an error entry with a given message
@@ -1005,7 +912,7 @@ tasks:
       {
         "position": {
           "x": -2140,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1017,10 +924,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "282":
     id: "282"
-    taskid: 9f9e47c6-83e6-4f43-838d-acc9cf5f0d44
+    taskid: 11de9847-b002-44f9-8053-20cc37a99d56
     type: condition
     task:
-      id: 9f9e47c6-83e6-4f43-838d-acc9cf5f0d44
+      id: 11de9847-b002-44f9-8053-20cc37a99d56
       version: -1
       name: Verify Cloud Account ID
       description: Verify that the ‘cloudaccountid’ alert field was populated correctly.
@@ -1047,7 +954,7 @@ tasks:
       {
         "position": {
           "x": -2530,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -1059,10 +966,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "283":
     id: "283"
-    taskid: 230ec433-b766-425a-85e7-4eb6e175f4cc
+    taskid: bb482d29-c2de-4a34-82ab-89d52cdcd420
     type: regular
     task:
-      id: 230ec433-b766-425a-85e7-4eb6e175f4cc
+      id: bb482d29-c2de-4a34-82ab-89d52cdcd420
       version: -1
       name: Verify Context Error - Cloud Account ID
       description: Prints an error entry with a given message
@@ -1084,7 +991,7 @@ tasks:
       {
         "position": {
           "x": -2530,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1096,10 +1003,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "284":
     id: "284"
-    taskid: 3ec6e664-6673-4094-8d56-61c8889f1702
+    taskid: 7f3dc8fe-a21d-45e2-8079-e47b29548826
     type: condition
     task:
-      id: 3ec6e664-6673-4094-8d56-61c8889f1702
+      id: 7f3dc8fe-a21d-45e2-8079-e47b29548826
       version: -1
       name: Verify Account ID
       description: Verify that the ‘accountid’ alert field was populated correctly.
@@ -1126,7 +1033,7 @@ tasks:
       {
         "position": {
           "x": -2920,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -1138,10 +1045,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "285":
     id: "285"
-    taskid: fa5e13d0-a97c-4a46-83d8-af5f8c8a59db
+    taskid: 1408e059-4b84-45e9-8a59-df2fd349cfb5
     type: regular
     task:
-      id: fa5e13d0-a97c-4a46-83d8-af5f8c8a59db
+      id: 1408e059-4b84-45e9-8a59-df2fd349cfb5
       version: -1
       name: Verify Context Error - Account ID
       description: Prints an error entry with a given message
@@ -1163,7 +1070,7 @@ tasks:
       {
         "position": {
           "x": -2920,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1175,10 +1082,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "286":
     id: "286"
-    taskid: 470abd04-e361-4a76-83b4-0e15e5ec1881
+    taskid: a8ebc973-1d72-4cc1-83d3-626ab658cd87
     type: condition
     task:
-      id: 470abd04-e361-4a76-83b4-0e15e5ec1881
+      id: a8ebc973-1d72-4cc1-83d3-626ab658cd87
       version: -1
       name: Verify SAM Account Name
       description: Verify that the ‘sAMAccountName’ alert field was populated correctly.
@@ -1205,7 +1112,7 @@ tasks:
       {
         "position": {
           "x": -3310,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -1217,10 +1124,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "287":
     id: "287"
-    taskid: 5c91b5f9-0d87-48bc-8970-795ee0b4844e
+    taskid: 63b1137e-cfc9-4ef3-886f-31db0331ea9f
     type: regular
     task:
-      id: 5c91b5f9-0d87-48bc-8970-795ee0b4844e
+      id: 63b1137e-cfc9-4ef3-886f-31db0331ea9f
       version: -1
       name: Verify Context Error - SAM Account Name
       description: Prints an error entry with a given message
@@ -1242,7 +1149,7 @@ tasks:
       {
         "position": {
           "x": -3310,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1254,10 +1161,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "288":
     id: "288"
-    taskid: 957cde49-c45b-4d5f-83b6-37da92e0507f
+    taskid: 401cc249-60c8-452e-8680-c9e1ed514f0c
     type: condition
     task:
-      id: 957cde49-c45b-4d5f-83b6-37da92e0507f
+      id: 401cc249-60c8-452e-8680-c9e1ed514f0c
       version: -1
       name: Verify Account Status
       description: Verify that the ‘accountstatus’ alert field was populated correctly.
@@ -1284,7 +1191,7 @@ tasks:
       {
         "position": {
           "x": -3700,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -1296,10 +1203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "289":
     id: "289"
-    taskid: 6cd7ddbb-c1e4-4461-8c88-0accbae15fff
+    taskid: a9f70512-1077-4e38-845f-3a2b2ce38040
     type: regular
     task:
-      id: 6cd7ddbb-c1e4-4461-8c88-0accbae15fff
+      id: a9f70512-1077-4e38-845f-3a2b2ce38040
       version: -1
       name: Verify Context Error - Account Status
       description: Prints an error entry with a given message
@@ -1321,7 +1228,7 @@ tasks:
       {
         "position": {
           "x": -3700,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1333,10 +1240,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "290":
     id: "290"
-    taskid: 59dc665d-029c-4daf-8c34-175d3f452dc4
+    taskid: b10ebe76-383f-4d92-8b32-21cbd22c1711
     type: condition
     task:
-      id: 59dc665d-029c-4daf-8c34-175d3f452dc4
+      id: b10ebe76-383f-4d92-8b32-21cbd22c1711
       version: -1
       name: Verify Manager Email Address
       description: Verify that the ‘manageremailaddress’ alert field was populated correctly.
@@ -1363,7 +1270,7 @@ tasks:
       {
         "position": {
           "x": -4090,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -1375,10 +1282,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "291":
     id: "291"
-    taskid: b31ed228-91c9-4968-89f8-9733e60cc9be
+    taskid: aeb4a8cf-2829-4b3e-8a36-f2a4bbfbe210
     type: regular
     task:
-      id: b31ed228-91c9-4968-89f8-9733e60cc9be
+      id: aeb4a8cf-2829-4b3e-8a36-f2a4bbfbe210
       version: -1
       name: Verify Context Error - Manager Email Address
       description: Prints an error entry with a given message
@@ -1400,7 +1307,7 @@ tasks:
       {
         "position": {
           "x": -4090,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1412,10 +1319,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "292":
     id: "292"
-    taskid: 14b6eb18-a528-455d-89b6-4ec6323f7f14
+    taskid: bffdbf80-8b7e-43a3-8bd3-5d33d44718b1
     type: regular
     task:
-      id: 14b6eb18-a528-455d-89b6-4ec6323f7f14
+      id: bffdbf80-8b7e-43a3-8bd3-5d33d44718b1
       version: -1
       name: Set 'foundIncidents' to Context
       description: |-
@@ -1454,10 +1361,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "293":
     id: "293"
-    taskid: 798d99b6-be9c-4ee9-89b3-6f53b0d502fc
+    taskid: 8fc71761-3c79-452e-8c5f-047802502bb5
     type: regular
     task:
-      id: 798d99b6-be9c-4ee9-89b3-6f53b0d502fc
+      id: 8fc71761-3c79-452e-8c5f-047802502bb5
       version: -1
       name: Set 'event.auth_identity' to Context
       description: |-
@@ -1500,10 +1407,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "294":
     id: "294"
-    taskid: ef228948-dc93-4378-8fdc-cf3c3d3a27ed
+    taskid: 5546ea04-8718-4b78-833f-0e477209aaaa
     type: regular
     task:
-      id: ef228948-dc93-4378-8fdc-cf3c3d3a27ed
+      id: 5546ea04-8718-4b78-833f-0e477209aaaa
       version: -1
       name: Set 'AzureFailLoginCount' to Context
       description: |-
@@ -1542,10 +1449,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "295":
     id: "295"
-    taskid: 12677334-0737-46e2-8cd2-f4c354531078
+    taskid: ac4f561c-7127-4e3c-824d-6c23a9dadab0
     type: regular
     task:
-      id: 12677334-0737-46e2-8cd2-f4c354531078
+      id: ac4f561c-7127-4e3c-824d-6c23a9dadab0
       version: -1
       name: Set 'NumOfOktaFailedLogon' to Context
       description: |-
@@ -1584,10 +1491,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "296":
     id: "296"
-    taskid: 7e2f62da-7b62-4365-8286-f7299eb3f031
+    taskid: 882ae487-3956-48c3-8662-a3695958307b
     type: regular
     task:
-      id: 7e2f62da-7b62-4365-8286-f7299eb3f031
+      id: 882ae487-3956-48c3-8662-a3695958307b
       version: -1
       name: Set 'ActiveDirectory' to Context
       description: Set multiple keys/values to the context.
@@ -1623,10 +1530,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "297":
     id: "297"
-    taskid: 72efc2dc-171c-43d5-890a-67f59c2bbc95
+    taskid: b8a43984-0118-4663-810d-24f442aa83bf
     type: regular
     task:
-      id: 72efc2dc-171c-43d5-890a-67f59c2bbc95
+      id: b8a43984-0118-4663-810d-24f442aa83bf
       version: -1
       name: Set 'MSGraphUser' to Context
       description: |-
@@ -1665,10 +1572,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "298":
     id: "298"
-    taskid: 13dc2f2d-b3bc-4b98-8c50-9407fa0280e6
+    taskid: 56998d02-5041-4ebb-82c6-a18147a74882
     type: regular
     task:
-      id: 13dc2f2d-b3bc-4b98-8c50-9407fa0280e6
+      id: 56998d02-5041-4ebb-82c6-a18147a74882
       version: -1
       name: Set 'Account' to Context
       description: Set multiple keys/values to the context.
@@ -1704,10 +1611,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "299":
     id: "299"
-    taskid: 25e4e034-88df-432c-8bc3-14b17070d047
+    taskid: a4e7f681-8c38-409b-8685-743c5d7165fa
     type: regular
     task:
-      id: 25e4e034-88df-432c-8bc3-14b17070d047
+      id: a4e7f681-8c38-409b-8685-743c5d7165fa
       version: -1
       name: Set 'UserManagerEmail' to Context
       description: |-
@@ -1746,10 +1653,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "300":
     id: "300"
-    taskid: fb766d2a-f445-4623-8979-abce3c55de74
+    taskid: aab9a8c2-3b0a-489d-8fda-73ccd6560ebe
     type: condition
     task:
-      id: fb766d2a-f445-4623-8979-abce3c55de74
+      id: aab9a8c2-3b0a-489d-8fda-73ccd6560ebe
       version: -1
       name: Verify Verdict
       description: Verify that the ‘ Verdict’ alert field was populated correctly.
@@ -1779,7 +1686,7 @@ tasks:
       {
         "position": {
           "x": -4480,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -1791,10 +1698,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "301":
     id: "301"
-    taskid: bc770bbe-a44a-486f-863c-3755c6ec6dc0
+    taskid: f9b9a665-b49f-4a89-83b6-75bf369bdf25
     type: regular
     task:
-      id: bc770bbe-a44a-486f-863c-3755c6ec6dc0
+      id: f9b9a665-b49f-4a89-83b6-75bf369bdf25
       version: -1
       name: Verify Context Error - Verdict
       description: Prints an error entry with a given message
@@ -1815,7 +1722,7 @@ tasks:
       {
         "position": {
           "x": -4480,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1827,10 +1734,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "302":
     id: "302"
-    taskid: 105c527c-ce30-49d7-85f1-8afec2b77171
+    taskid: 64977738-e4a1-4e2c-81af-4cc22f485b98
     type: condition
     task:
-      id: 105c527c-ce30-49d7-85f1-8afec2b77171
+      id: 64977738-e4a1-4e2c-81af-4cc22f485b98
       version: -1
       name: Verify Verdict
       description: Verify that the ‘Verdict’ context key was extracted correctly.
@@ -1860,7 +1767,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 1550
+          "y": 1230
         }
       }
     note: false
@@ -1872,10 +1779,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "303":
     id: "303"
-    taskid: be490050-5919-45af-873d-6c7f3274d35e
+    taskid: aef7bcc6-5955-41db-8b1c-90c7e731552a
     type: regular
     task:
-      id: be490050-5919-45af-873d-6c7f3274d35e
+      id: aef7bcc6-5955-41db-8b1c-90c7e731552a
       version: -1
       name: Verify Context Error - Verdict
       description: Prints an error entry with a given message
@@ -1896,7 +1803,7 @@ tasks:
       {
         "position": {
           "x": 1490,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1908,10 +1815,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "304":
     id: "304"
-    taskid: 2d1a3bfd-e8b5-4d08-8e7f-770692ab2654
+    taskid: 7b9f528a-6bbb-401e-8e83-442ff1775743
     type: title
     task:
-      id: 2d1a3bfd-e8b5-4d08-8e7f-770692ab2654
+      id: 7b9f528a-6bbb-401e-8e83-442ff1775743
       version: -1
       name: Set Information to Context
       type: title
@@ -1949,10 +1856,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "305":
     id: "305"
-    taskid: 0b41783a-1bf3-47a8-88c6-c6e35db7a6fe
+    taskid: ad6203d9-d2b1-4572-85d3-d18aaeafbc46
     type: title
     task:
-      id: 0b41783a-1bf3-47a8-88c6-c6e35db7a6fe
+      id: ad6203d9-d2b1-4572-85d3-d18aaeafbc46
       version: -1
       name: Done Verifying Alert Fields
       type: title
@@ -1968,7 +1875,7 @@ tasks:
       {
         "position": {
           "x": 230,
-          "y": 1755
+          "y": 1435
         }
       }
     note: false
@@ -1980,12 +1887,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "306":
     id: "306"
-    taskid: c0a0fcfe-4f1a-4136-8bb9-517a0d31b500
+    taskid: 6d354a35-ee63-47f3-8ca4-8acf5baf3ff5
     type: title
     task:
-      id: c0a0fcfe-4f1a-4136-8bb9-517a0d31b500
+      id: 6d354a35-ee63-47f3-8ca4-8acf5baf3ff5
       version: -1
-      name: Done
+      name: Done - AD Tests
       type: title
       iscommand: false
       brand: ""
@@ -1996,7 +1903,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1910
+          "y": 1590
         }
       }
     note: false
@@ -2008,10 +1915,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "308":
     id: "308"
-    taskid: b28cb016-33d4-4eb5-82d4-b3218ddab6ae
+    taskid: 6b85e306-5f16-490f-8aef-410032b8737f
     type: regular
     task:
-      id: b28cb016-33d4-4eb5-82d4-b3218ddab6ae
+      id: 6b85e306-5f16-490f-8aef-410032b8737f
       version: -1
       name: Set 'RiskyUser.risk_level' to Context
       description: |-
@@ -2052,155 +1959,14 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "309":
-    id: "309"
-    taskid: bd516d72-bab1-42fc-8afa-ca24cd489bef
-    type: regular
-    task:
-      id: bd516d72-bab1-42fc-8afa-ca24cd489bef
-      version: -1
-      name: Get Users Error - No Available AD Users
-      description: Prints an error entry with a given message.
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "No available users were found. \nThis may indicate the following:\n1- The 'ad-get-user' script failed to execute.\n2- The 'ad-get-user' script did not return any results.\n3- The 'name' input configuration was changed for the 'ad-get-user' automation used in the 'Get Available Users - AD' test playbook task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1070,
-          "y": 90
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "310":
-    id: "310"
-    taskid: c42a28fe-f030-46ca-8482-ff8d8996d974
-    type: regular
-    task:
-      id: c42a28fe-f030-46ca-8482-ff8d8996d974
-      version: -1
-      name: Get Available Users - Okta
-      description: Lists users in your organization.
-      script: '|||okta-list-users'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "311"
-    scriptarguments:
-      ignore-outputs:
-        simple: "false"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 600
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "311":
-    id: "311"
-    taskid: 88b347b6-06b6-454b-84cd-59b0d5790c6c
-    type: condition
-    task:
-      id: 88b347b6-06b6-454b-84cd-59b0d5790c6c
-      version: -1
-      name: Okta Users Retrieved?
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "312"
-      "yes":
-      - "313"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: Account.ID
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 460,
-          "y": 760
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "312":
-    id: "312"
-    taskid: 0fb52403-f709-48fb-8095-f1653bb5a020
-    type: regular
-    task:
-      id: 0fb52403-f709-48fb-8095-f1653bb5a020
-      version: -1
-      name: Get Users Error - No Available Okta Users
-      description: Prints an error entry with a given message.
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "No available users were found. \nThis may indicate the following:\n1- The 'okta-list-users' script failed to execute.\n2- The 'okta-list-users' script did not return any results."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1090,
-          "y": 940
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "313":
     id: "313"
-    taskid: 5e343d1c-3e42-48dd-8c8c-fb39dcf87d54
+    taskid: 2da1b7ee-aaea-499d-8c9c-68c76aa30e74
     type: regular
     task:
-      id: 5e343d1c-3e42-48dd-8c8c-fb39dcf87d54
+      id: 2da1b7ee-aaea-499d-8c9c-68c76aa30e74
       version: -1
-      name: Set 'Username' To Alert Field
+      name: Set Azure Username To Alert Field
       description: commands.local.cmd.set.incident
       script: Builtin|||setAlert
       type: regular
@@ -2211,28 +1977,14 @@ tasks:
       - "314"
     scriptarguments:
       username:
-        complex:
-          root: Account
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: Account.DisplayName
-                iscontext: true
-              right:
-                value:
-                  simple: test
-              ignorecase: true
-          accessor: Username
-          transformers:
-          - operator: FirstArrayElement
+        simple: testplaybookuser@demistodev.onmicrosoft.com
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 460,
-          "y": 930
+          "y": 610
         }
       }
     note: false
@@ -2244,10 +1996,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "314":
     id: "314"
-    taskid: 29dbf83b-c384-41c1-866d-a2df8afc7dfa
+    taskid: 33673237-d9ba-493a-8c0b-ba59a4291f2d
     type: playbook
     task:
-      id: 29dbf83b-c384-41c1-866d-a2df8afc7dfa
+      id: 33673237-d9ba-493a-8c0b-ba59a4291f2d
       version: -1
       name: Identity Analytics - Alert Handling - Okta
       description: |-
@@ -2304,7 +2056,7 @@ tasks:
       {
         "position": {
           "x": 460,
-          "y": 1090
+          "y": 770
         }
       }
     note: false
@@ -2322,10 +2074,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2505,
+        "height": 1815,
         "width": 7520,
         "x": -4480,
-        "y": -530
+        "y": -160
       }
     }
   }
