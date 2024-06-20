@@ -28,11 +28,11 @@ var map = {};
 while (found = reg.exec(html)) {
     var path = found[1];
 
-    if (path.indexOf('incident.labels.') === 0) {
+    if (path.indexOf('incident.labels.') === 0 && getDemistoVersion().platform !== 'x2') {
         logDebug("Field " + path + " is handled as label.")
         map[path] = getLabel(incidents[0], path);
 
-    } else if (path.indexOf('incident.') === 0) {
+    } else if (path.indexOf('incident.') === 0 && getDemistoVersion().platform !== 'x2') {
         map[path] = dq({'incident': incidents[0]}, path);
         // check if this path is actually in custom fields (not found directly under incident)
         if (map[path] === null) {
@@ -40,12 +40,25 @@ while (found = reg.exec(html)) {
             var customFieldPath = path.replace('incident.', 'incident.CustomFields.');
             map[path] = dq({'incident': incidents[0]}, customFieldPath);
         }
-    } else if (path.indexOf('object.') === 0) {
+    if (path.indexOf('alert.labels.') === 0 && getDemistoVersion().platform === 'x2') {
+        logDebug("Field " + path + " is handled as label.")
+        map[path] = getLabel(incidents[0], path);
+
+    } else if (path.indexOf('alert.') === 0 && getDemistoVersion().platform === 'x2') {
+        map[path] = dq({'alert': incidents[0]}, path);
+        // check if this path is actually in custom fields (not found directly under incident)
+        if (map[path] === null) {
+            logDebug("Field " + path + " is either custom or null. Handling as custom.")
+            var customFieldPath = path.replace('alert.', 'alert.CustomFields.');
+            map[path] = dq({'alert': incidents[0]}, customFieldPath);
+        }
+    if (path.indexOf('object.') === 0) {
         logDebug("Field " + path + " is part of object.")
 
         var obj = (typeof args.object === 'string') ? JSON.parse(args.object) : args.object;
         map[path] = dq({'object': obj}, path);
     } else {
+        logDebug("we called the else")
         map[path] = dq(invContext, path);
     }
 }
