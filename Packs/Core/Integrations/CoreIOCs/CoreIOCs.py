@@ -35,6 +35,7 @@ class Client(CoreClient):
     query: str = 'reputation:Bad and (type:File or type:Domain or type:IP)'
     tag = 'Cortex Core'
     tlp_color = None
+    using_base_client_http_request=False
     error_codes: dict[int, str] = {
         500: 'XDR internal server error.',
         401: 'Unauthorized access. An issue occurred during authentication. This can indicate an '    # noqa: W504
@@ -58,8 +59,7 @@ class Client(CoreClient):
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> dict:
         if FORWARD_USER_RUN_RBAC:
-            return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs,
-                                            using_base_client_http_request=False)
+            return CoreClient._http_request(self, method='POST', url_suffix=url_suffix, data=requests_kwargs)
         if requests_kwargs is None:
             requests_kwargs = {}
         res = requests.post(url=self._base_url + url_suffix,
