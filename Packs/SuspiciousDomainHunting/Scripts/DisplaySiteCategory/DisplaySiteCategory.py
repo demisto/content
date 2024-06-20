@@ -19,6 +19,7 @@ def format_value(value):
         formatted_value = str(value)
     return formatted_value
 
+
 def generate_html_for_context_keys(context_keys):
     html_content = ""
 
