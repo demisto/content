@@ -111,7 +111,7 @@ def build_client(args: dict):
     demisto.debug('client built')
 
     demisto.debug('creating session')
-    client.aws_session(
+    client = client.aws_session(
         service='ec2',
         region=args.get('region'),
         role_arn=args.get('roleArn'),
