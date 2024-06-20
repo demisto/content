@@ -250,12 +250,10 @@ script:
     - description: An Arcanna event id.
       name: event_id
       required: true
-    - name: feedback
-      description: Provided feedback from analyst.
-      required: true
     - name: decision_set
       description: Valid candidates for feedback based on Arcanna.ai job configuration.
-      required: true
+    - name: feedback
+      description: Provided feedback from analyst.
     - description: An Arcanna feedback label.
       name: label
       required: true
@@ -272,7 +270,7 @@ script:
     - contextPath: Arcanna.Event.feedback_status
       description: An Arcanna feedback status response.
       type: String
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.10.14.98471
   runonce: false
   script: '-'
   subtype: python3
