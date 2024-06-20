@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 import base64
 import json
 import platform
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import requests
 
@@ -156,7 +156,7 @@ class Actions:
         if action_result:
             command_results = [CommandResults(**action_result)]
         elif result_actions:
-            command_results: List[CommandResults] = []
+            command_results: List[CommandResults] = []  # type: ignore[no-redef]
             for action in result_actions:
                 if "CommandResults" in action:
                     command_results.append(CommandResults(**action["CommandResults"]))
@@ -199,15 +199,15 @@ class Actions:
                 _transform_incidents_attachments(_val)
                 demisto.incidents(_val)
 
-    def playbook_alert_search_command(self) -> List[CommandResults]:
+    def playbook_alert_search_command(self) -> Optional[List[CommandResults]]:
         response = self.client.search_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_details_command(self) -> List[CommandResults]:
+    def playbook_alert_details_command(self) -> Optional[List[CommandResults]]:
         response = self.client.details_playbook_alerts()
         return self._process_result_actions(response=response)
 
-    def playbook_alert_update_command(self) -> List[CommandResults]:
+    def playbook_alert_update_command(self) -> Optional[List[CommandResults]]:
         response = self.client.update_playbook_alerts()
         return self._process_result_actions(response=response)
 
