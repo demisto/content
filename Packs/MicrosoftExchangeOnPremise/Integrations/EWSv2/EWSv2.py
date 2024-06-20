@@ -1,6 +1,5 @@
 import email
 import hashlib
-import subprocess
 from multiprocessing import Process
 
 import dateparser  # type: ignore
@@ -11,7 +10,7 @@ from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version, Body)
+                         ItemAttachment, Version, Body, FolderCollection)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -21,12 +20,12 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol
+from exchangelib.protocol import BaseProtocol, Protocol, FaultTolerance
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
-                                 EXCHANGE_2010_SP2, EXCHANGE_2013,
+                                 EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2013_SP1,
                                  EXCHANGE_2016, EXCHANGE_2019)
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
@@ -49,7 +48,13 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):  # pragma: no cover
+class exchangelibInsecureSSLAdapter(SSLAdapter):
+
+    def __init__(self, *args, **kwargs):
+        # Processing before init call
+        kwargs.pop('verify', None)
+        super().__init__(verify=False, **kwargs)
+
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
@@ -67,6 +72,7 @@ VERSIONS = {
     '2010': EXCHANGE_2010,
     '2010_SP2': EXCHANGE_2010_SP2,
     '2013': EXCHANGE_2013,
+    '2013_SP1': EXCHANGE_2013_SP1,
     '2016': EXCHANGE_2016,
     '2019': EXCHANGE_2019
 }
@@ -110,7 +116,7 @@ ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceive
 NON_SECURE = demisto.params().get('insecure', True)
 AUTH_METHOD_STR = demisto.params().get('authType', '')
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
-VERSION_STR = demisto.params().get('defaultServerVersion', None)
+VERSION_STR = demisto.params().get('defaultServerVersion', '')
 MANUAL_USERNAME = demisto.params().get('domainAndUserman', '')
 FOLDER_NAME = demisto.params().get('folder', 'Inbox')
 IS_PUBLIC_FOLDER = demisto.params().get('isPublicFolder', False)
@@ -125,211 +131,6 @@ MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
-
-START_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$query
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-# Generate a unique search name
-$searchName = [guid]::NewGuid().ToString() -replace '[-]'
-$searchName = "DemistoSearch" + $searchName
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-$compliance = New-ComplianceSearch -Name $searchName -ExchangeLocation All -ContentMatchQuery $query -Confirm:$false
-
-Start-ComplianceSearch -Identity $searchName
-
-$complianceSearchName = "Action status: " + $searchName
-
-$complianceSearchName | ConvertTo-Json
-
-# Close the session
-Remove-PSSession $session
-"""
-GET_COMPLIANCE = """[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName Get-ComplianceSearch -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-
-$searchStatus = Get-ComplianceSearch $searchName
-#"Search status: " + $searchStatus.Status
-$searchStatus.Status
-if ($searchStatus.Status -eq "Completed")
-{
-   $searchStatus.SuccessResults | ConvertTo-Json
-}
-
-# Close the session
-Remove-PSSession $session
-"""
-PURGE_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-# Delete mails based on an existing search criteria
-$newActionResult = New-ComplianceSearchAction -SearchName $searchName -Purge -PurgeType SoftDelete -Confirm:$false
-if (!$newActionResult)
-{
-   # Happens when there are no results from the search
-   "No action was created"
-}
-
-# Close the session
-Remove-PSSession $session
-return
-"""
-PURGE_STATUS_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-$actionName = $searchName + "_Purge"
-$actionStatus = Get-ComplianceSearchAction $actionName
-""
-$actionStatus.Status
-
-# Close the session
-Remove-PSSession $session
-"""
-REMOVE_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-
-# open remote PS session to Office 365 Security & Compliance Center
-
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-# Remove the search
-Remove-ComplianceSearch $searchName -Confirm:$false
-
-# Close the session
-Remove-PSSession $session
-"""
 
 # initialized in main()
 EWS_SERVER = ''
@@ -415,10 +216,9 @@ def prepare_context(credentials):  # pragma: no cover
 
 def prepare():  # pragma: no cover
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibInsecureSSLAdapter
     else:
         BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
-
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
@@ -451,8 +251,7 @@ def prepare():  # pragma: no cover
             config_args['service_endpoint'] = EWS_SERVER
         else:
             config_args['server'] = EWS_SERVER
-
-        return Configuration(**config_args), None
+        return Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)), None
 
 
 def construct_config_args(context_dict, credentials):  # pragma: no cover
@@ -680,21 +479,17 @@ def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
         if path in folders_map:
             return account.root._folders_map[path]
 
-    if is_public:
-        folder_result = account.public_folders_root
-    elif path == 'AllItems':
-        folder_result = account.root
-    else:
-        folder_result = account.inbox.parent  # Top of Information Store
+    folder = account.public_folders_root if is_public else account.root.tois
     path = path.replace("/", "\\")
     path = path.split('\\')
-    for sub_folder_name in path:
-        folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
-        if len(folder_filter_by_name) == 0:
-            raise Exception("No such folder %s" % path)
-        folder_result = folder_filter_by_name[0]
-
-    return folder_result
+    for part in path:
+        try:
+            demisto.debug(f'resolving {part=} {path=}')
+            folder = folder // part
+        except Exception as e:
+            demisto.debug(f'got error {e}')
+            raise ValueError(f'No such folder {path}')
+    return folder
 
 
 class MarkAsJunk(EWSAccountService):
@@ -783,7 +578,7 @@ def get_message_for_body_type(body, body_type, html_body):
         return HTMLBody(html_body) if html_body else Body(body)
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
         return HTMLBody(html_body)
-    return Body(body)
+    return Body(body) if (body or not html_body) else HTMLBody(html_body)
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
@@ -984,7 +779,6 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         entry = get_searchable_mailboxes(protocol)
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
-
     try:
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
         search_results = search_results[:limit]
@@ -1702,10 +1496,8 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
                             is_public=None, selected_fields='all', surround_id_with_angle_brackets=True):  # pragma: no cover
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
-
     if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != '<' and message_id[-1] != '>':
         message_id = f'<{message_id}>'
-
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
     if folder_path.lower() == 'inbox':
@@ -1714,11 +1506,9 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = account.inbox.parent.walk()  # pylint: disable=E1101
-
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()  # pylint: disable=E1101
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
-
     if selected_all_fields:
         restricted_fields = {x.name for x in Message.FIELDS}  # type: ignore
     else:
@@ -1735,11 +1525,9 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         items += get_limited_number_of_messages_from_qs(items_qs, limit)
         if len(items) >= limit:
             break
-
     items = items[:limit]
     searched_items_result = [parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
                                                 compact_fields=selected_all_fields) for item in items]
-
     if not selected_all_fields:
         # we show id as 'itemId' for BC
         restricted_fields.remove('id')
@@ -1747,7 +1535,6 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         searched_items_result = [
             {k: v for (k, v) in i.items()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
-
     return get_entry_for_object('Searched items',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 searched_items_result,
@@ -1866,21 +1653,21 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):  # pragma:
 
 def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    root = account.root
-    if is_public:
-        root = account.public_folders_root
+    root = account.public_folders_root if is_public else account.root.tois  # pylint: disable=E1101
+    root_collection = FolderCollection(account=account, folders=[root])
     folders = []
-    for f in root.walk():  # pylint: disable=E1101
+    for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree()  # pylint: disable=E1101
+
+    readable_output = root.tree()  # pylint: disable=E1101
 
     return {
         'Type': entryTypes['note'],
         'Contents': folders,
         'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': folders_tree,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
         ENTRY_CONTEXT: {
             'EWS.Folders(val.id == obj.id)': folders
         }
@@ -2004,157 +1791,6 @@ def get_cs_status(search_name, status):  # pragma: no cover
             'EWS.ComplianceSearch(val.Name === obj.Name)': {'Name': search_name, 'Status': status}
         }
     }
-
-
-def start_compliance_search(query):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("startcompliancesearch2.ps1", "w+") as f:
-            f.write(START_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "startcompliancesearch2.ps1", USERNAME, query],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("startcompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    prefix = '"Action status: '
-    pref_ind = stdout.find(prefix)
-    sub_start = pref_ind + len(prefix)
-    sub_end = sub_start + 45
-    search_name = stdout[sub_start:sub_end]
-
-    return {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': f'Search started: {search_name!r}',
-        'EntryContext': {
-            'EWS.ComplianceSearch': {'Name': search_name, 'Status': 'Starting'}
-        }
-    }
-
-
-def get_compliance_search(search_name, show_only_recipients):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("getcompliancesearch2.ps1", "w+") as f:
-            f.write(GET_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("getcompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    # Get search status
-    stdout = stdout[len(PASSWORD):]
-    stdout = stdout.split('\n', 1)  # type: ignore
-
-    results = [get_cs_status(search_name, stdout[0])]
-
-    # Parse search results from script output if the search has completed. Output to warroom as table.
-    if stdout[0] == 'Completed':
-        if stdout[1] and stdout[1] != '{}':
-            res = [r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n')]
-            res = [dict(s.split(': ') for s in x) for x in res]
-            entry = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': stdout,
-                'ReadableContentsFormat': formats['markdown'],
-            }
-            if show_only_recipients == 'True':
-                res = [x for x in res if int(x['Item count']) > 0]
-
-                entry['EntryContext'] = {
-                    'EWS.ComplianceSearch(val.Name == obj.Name)': {
-                        'Name': search_name,
-                        'Results': res
-                    }
-                }
-
-            entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
-                                                     ['Location', 'Item count', 'Total size'])
-        else:
-            entry = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': stdout,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': "The compliance search didn't return any results."
-            }
-
-        results.append(entry)
-    return results
-
-
-def purge_compliance_search(search_name):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("purgecompliancesearch2.ps1", "w+") as f:
-            f.write(PURGE_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        _, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("purgecompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    return get_cs_status(search_name, 'Purging')
-
-
-def check_purge_compliance_search(search_name):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("purgestatuscompliancesearch2.ps1", "w+") as f:
-            f.write(PURGE_STATUS_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-        stdout = stdout[len(PASSWORD):]
-
-    finally:
-        os.remove("purgestatuscompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    return get_cs_status(search_name, 'Purged' if stdout.split('\n')[-2] == 'Completed' else 'Purging')
-
-
-def remove_compliance_search(search_name):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("removecompliance2.ps1", "w+") as f:
-            f.write(REMOVE_COMPLIANCE)
-
-        output = subprocess.Popen(
-            ["pwsh", "removecompliance2.ps1", USERNAME, search_name],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("removecompliance2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    return get_cs_status(search_name, 'Removed')
 
 
 def get_autodiscovery_config():  # pragma: no cover
@@ -2436,7 +2072,6 @@ def sub_main():  # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
-
     fix_2010()
     try:
         protocol = get_protocol()
@@ -2479,16 +2114,6 @@ def sub_main():  # pragma: no cover
             encode_and_submit_results(get_items(**args))
         elif demisto.command() == 'ews-get-folder':
             encode_and_submit_results(get_folder(**args))
-        elif demisto.command() == 'ews-o365-start-compliance-search':
-            encode_and_submit_results(start_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-get-compliance-search':
-            encode_and_submit_results(get_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-purge-compliance-search-results':
-            encode_and_submit_results(purge_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-get-compliance-search-purge-status':
-            encode_and_submit_results(check_purge_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-remove-compliance-search':
-            encode_and_submit_results(remove_compliance_search(**args))
         elif demisto.command() == 'ews-get-autodiscovery-config':
             encode_and_submit_results(get_autodiscovery_config())
         elif demisto.command() == 'ews-expand-group':

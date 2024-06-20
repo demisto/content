@@ -372,13 +372,13 @@
                     },
                     {
                         "displayType": "ROW",
-                        "h": 2,
+                        "h": 4,
                         "hideName": false,
                         "i": "caseinfoid-79xyjdophv-caseinfoid-55bd2240-d8c8-11ec-9d6b-6f4f1820d86f",
                         "items": [
                             {
                                 "endCol": 6,
-                                "fieldId": "sumologiccloudsiemsignalrecords",
+                                "fieldId": "sumologiccloudsiemrecordfieldsjson",
                                 "height": 106,
                                 "id": "9d5d9500-988d-11ed-a46a-4bfa06845bc3",
                                 "index": 0,

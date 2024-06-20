@@ -172,6 +172,35 @@ The following are tips for handling issues with mirroring incidents between Secu
 | Viewing masked data on the XSOAR application | If you observe masked data, it is highly likely that 'Masking' is enabled on your Securonix tenant. Please check with your Securonix Administrator for further details. |
 
 
+### The `securonix-list-violation-data` command not returning the violations
+
+1. Check the `from` and `to` arguments provided to the command. It should be ranging in the violations' generation time.
+
+> Note: The following steps are compatible with the Securonix Build version 6.4_Apr2024_R1.
+
+2. If the `query` arguments contain the special characters, then check and follow the below steps:
+   1. Use the XSOAR automation browser to run the command.
+   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
+3. If the `Securonix Policy Type` incident field is one of these (Land Speed, DIRECTIVE, BEACONING, TIER2) then try to execute command again with the additional '`policy_type`' argument. The value for the `policy_type` argument should be the same as the value for the `Securonix Policy Type` incident field.
+
+
+### The `securonix-list-activity-data` command not returning the activity data
+
+1. Check the `from` and `to` arguments provided to the command. It should be ranging in the activity data generation time.
+
+> Note: The following steps are compatible with the Securonix Build version 6.4_Apr2024_R1.
+
+2. If the `query` arguments contain the special characters, then check and follow the below steps:
+   1. Use the XSOAR automation browser to run the command.
+   2. Don't add the extra backslashes for the `*`, `?` and `\` characters. This is handled by the command itself. Before upgrading, revert any temporary backslash solutions that may have been provided.
+
+
+### Command HR or War room entries are breaking in the table view
+
+1. There might be some special characters (restricted by Markdown viewer i.e, \\\*\_\{\}\[\]\(\)\#\+\-\!\`\|) in the value of field which is breaking the view.
+2. Impact is in only on the HR output, however user can get exact values from the command context for such fields if any.
+
+
 ## Commands
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
@@ -578,7 +607,7 @@ Gets a list of activity data for the specified resource group.
 | --- | --- | --- |
 | from | Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
 | to | End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
-| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation". | Optional | 
+| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".<br/>Note: Use the XSOAR automation browser to run the command if the "query" argument contains the special characters. | Optional | 
 
 
 ##### Context Output
@@ -586,6 +615,7 @@ Gets a list of activity data for the specified resource group.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Securonix.ActivityData.Accountname | String | Account name. | 
+| Securonix.ActivityData.Accountresourcekey | String | Account source key. | 
 | Securonix.ActivityData.Agentfilename | String | Agent file name. | 
 | Securonix.ActivityData.Categorybehavior | String | Category behavior. | 
 | Securonix.ActivityData.Categoryobject | String | Category object. | 
@@ -619,45 +649,72 @@ Gets a list of activity data for the specified resource group.
 | Securonix.ActivityData.TenantID | String | Tenant ID. | 
 | Securonix.ActivityData.Tenantname | String | Tenant name. | 
 | Securonix.ActivityData.Timeline | String | Time when the activity occurred, in Epoch time. | 
+| Securonix.Activity.totalDocuments | Number | Total number of events. | 
+| Securonix.Activity.message | String | Message from the API. | 
+| Securonix.Activity.queryId | String | Query Id for the pagination. | 
+| Securonix.Activity.command_name | String | The command name. | 
 
-
-##### Command Example
-```!securonix-list-activity-data from="03/08/2023 00:00:00" to="03/09/2023 00:00:00"```
-
+##### Command example
+```!securonix-list-activity-data from="01/12/2024 10:00:00" to="01/15/2024 12:01:00"```
 ##### Context Example
 ```json
 {
     "Securonix": {
+        "Activity": {
+            "queryId": "spotter_web_service_00000000-0000-0000-0000-000000000001",
+            "totalDocuments": 1182,
+            "command_name": "securonix-list-activity-data"
+        },
         "ActivityData": [
             {
-                "Accountname": "ACCOUNT617",
+                "Accountname": "ACCOUNT_001",
+                "Accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-1",
                 "Agentfilename": "test.txt",
+                "Categorybehavior": "Account Create",
+                "Categoryobject": "Account Management",
                 "Categoryseverity": "0",
                 "Collectionmethod": "file",
-                "Collectiontimestamp": "1678435071000",
+                "Collectiontimestamp": "1690803374000",
+                "Destinationusername": "TEST134044",
+                "Devicehostname": "HOST.com",
+                "EventID": "00000000-0000-0000-0000-000000000001",
+                "Eventoutcome": "Success",
+                "Filepath": "N/A",
                 "Ingestionnodeid": "CONSOLE",
-                "Jobstarttime": "1678435071000",
-                "Publishedtime": "1678435071533",
-                "Receivedtime": "1678435081978",
-                "Resourcename": "test",
+                "Jobstarttime": "1690803374000",
+                "Message": "A user account was created.",
+                "Publishedtime": "1690803374572",
+                "Receivedtime": "1690803420706",
+                "Resourcename": "HOST.com",
+                "Sourceusername": "USER",
                 "TenantID": "2",
-                "Tenantname": "test_tenant",
-                "Timeline": "1678255200000"
+                "Tenantname": "Response-Automation",
+                "Timeline": "1670911200000"
             },
             {
-                "Accountname": "ACCOUNT618",
+                "Accountname": "ACCOUNT_002",
+                "Accountresourcekey": "00000000000~000000000.0000.com~pipe_line_test~0000~-2",
                 "Agentfilename": "test.txt",
+                "Categorybehavior": "Account Create",
+                "Categoryobject": "Account Management",
                 "Categoryseverity": "0",
                 "Collectionmethod": "file",
-                "Collectiontimestamp": "1678431865000",
+                "Collectiontimestamp": "1690803374000",
+                "Destinationusername": "TEST134044",
+                "Devicehostname": "HOST.com",
+                "EventID": "00000000-0000-0000-0000-000000000002",
+                "Eventoutcome": "Success",
+                "Filepath": "N/A",
                 "Ingestionnodeid": "CONSOLE",
-                "Jobstarttime": "1678431865000",
-                "Publishedtime": "1678431869722",
-                "Receivedtime": "1678431877794",
-                "Resourcename": "test",
+                "Jobstarttime": "1690803374000",
+                "Message": "A user account was created.",
+                "Publishedtime": "1690803374572",
+                "Receivedtime": "1690803420500",
+                "Resourcename": "HOST.com",
+                "Sourceusername": "USER",
                 "TenantID": "2",
-                "Tenantname": "test_tenant",
-                "Timeline": "1678255200000"
+                "Tenantname": "Response-Automation",
+                "Timeline": "1670911200000"
             }
         ]
     }
@@ -665,11 +722,13 @@ Gets a list of activity data for the specified resource group.
 ```
 
 ##### Human Readable Output
+
 >### Activity data:
->|Accountname|
->|---|
->| ACCOUNT617 |
->| ACCOUNT618 |
+>|EventID|Message|Accountname|Timeline|Devicehostname|Accountresourcekey|
+>|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001 | A user account was created. | ACCOUNT_001 | 2024-01-13T06:00:00.000Z | HOST.com | 00000000000~000000000.0000.com~pipe_line_test~0000~-1 |
+>| 00000000-0000-0000-0000-000000000002 | A user account was created. | ACCOUNT_002 | 2024-01-13T06:00:00.000Z | HOST.com | 00000000000~000000000.0000.com~pipe_line_test~0000~-2 |
+
 
 ### securonix-list-violation-data
 ***
@@ -685,8 +744,9 @@ Gets a list activity data for an account name.
 | --- | --- | --- |
 | from | Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
 | to | End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss). | Required | 
-| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation"." | Optional | 
+| query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".<br/>Note: Use the XSOAR automation browser to run the command if the "query" argument contains the special characters. | Optional | 
 | query_id | Paginate next set of results. | Optional | 
+| policy_type | Provide the policy type for retrying if the violations are not found in the initial attempt. The types of policies that can be retried are: "Land Speed", "TIER2", "DIRECTIVE", "BEACONING". | Optional | 
 
 
 ##### Context Output

@@ -2323,7 +2323,7 @@ def certificate_command(client: Client, args: Dict[str, Any]) -> List[CommandRes
             if len(ba_hash) == 16:
                 # MD5 hash
                 curr_hash = base64.urlsafe_b64encode(ba_hash).decode('ascii')
-            else:  #  maybe a different hash? let's look for an indicator with a corresponding hash
+            else:  # maybe a different hash? let's look for an indicator with a corresponding hash
                 result_hash = find_indicator_md5_by_hash(ba_hash.hex())
                 if result_hash is None:
                     continue

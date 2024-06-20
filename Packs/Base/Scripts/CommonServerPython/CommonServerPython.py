@@ -52,6 +52,7 @@ DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
+MAX_ERROR_MESSAGE_LENGTH = 50000
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -199,6 +200,7 @@ logging.raiseExceptions = False
 try:
     import requests
     from requests.adapters import HTTPAdapter
+    from requests.models import RequestEncodingMixin
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set, cast
 
@@ -4256,7 +4258,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
+        CONTEXT_PATH = 'Account(val.Email.Address && val.Email.Address == obj.Email.Address)'
 
         def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None, description=None,
                      internal=None, stix_id=None, tags=None, traffic_light_protocol=None):
@@ -4282,7 +4284,7 @@ class Common(object):
 
         def to_context(self):
             email_context = {
-                'Address': self.address
+                'Email': {'Address': self.address}
             }
 
             if self.blocked:
@@ -7247,7 +7249,7 @@ def return_error(message, error='', outputs=None):
         Returns error entry with given message and exits the script
 
         :type message: ``str``
-        :param message: The message to return in the entry (required)
+        :param message: The message to return to the entry (required)
 
         :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
@@ -7286,6 +7288,10 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
+        if len(message) > MAX_ERROR_MESSAGE_LENGTH:
+            half_length = MAX_ERROR_MESSAGE_LENGTH // 2
+            message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
+
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
@@ -8898,7 +8904,7 @@ if 'requests' in sys.modules:
                 method_whitelist = "allowed_methods" if hasattr(
                     Retry.DEFAULT, "allowed_methods") else "method_whitelist"  # type: ignore[attr-defined]
                 whitelist_kawargs = {
-                    method_whitelist: frozenset(['GET', 'POST', 'PUT'])
+                    method_whitelist: frozenset(['GET', 'POST', 'PUT', 'PATCH', 'DELETE'])
                 }
                 retry = Retry(
                     total=retries,
@@ -9397,6 +9403,12 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
+
+    if files:
+        """
+        To prevent timeout errors when sending large files, it is necessary to load the files into memory by reading them using the command f.read().
+        """
+        RequestEncodingMixin._encode_files(files=files, data={})
 
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
@@ -11992,7 +12004,21 @@ def safe_sleep(duration_seconds):
                              .format(duration_seconds, run_duration))
     else:
         demisto.info('Safe sleep is not supported in this server version, sleeping for the requested time.')
-    time.sleep(duration_seconds)
+    time.sleep(duration_seconds)  # pylint: disable=E9003
+
+
+def is_time_sensitive():
+    """
+    Checks if the command reputation (auto-enrichment) is called as auto-extract=inline.
+    This function checks if the 'isTimeSensitive' attribute exists in the 'demisto' object and if it's set to True.
+
+        :return: bool
+        :rtype: ``bool``
+    """
+    return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+
+
+from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
 ###########################################

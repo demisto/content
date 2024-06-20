@@ -4174,6 +4174,50 @@ def test_get_remote_detection_data(mocker):
                               'behaviors.display_name': 'SampleTemplateDetection'}
 
 
+def test_get_remote_idp_or_mobile_detection_data_idp(mocker):
+    """
+    Given
+        - an idp detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_idp_or_mobile_detection_data
+    detection_entity = input_data.response_idp_detection.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(input_data.remote_idp_detection_id)
+    detection_entity['severity'] = 2
+    assert mirrored_data == detection_entity
+    assert detection_type == 'IDP'
+    assert updated_object == {'incident_type': 'IDP detection',
+                              'status': 'closed',
+                              'id': 'ind:20879a8064904ecfbb62c118a6a19411:C0BB6ACD-8FDC-4CBA-9CF9-EBF3E28B3E56'}
+
+
+def test_get_remote_idp_or_mobile_detection_data_mobile_detection(mocker):
+    """
+    Given
+        - an idp detection ID on the remote system
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
+    """
+    from CrowdStrikeFalcon import get_remote_idp_or_mobile_detection_data
+    detection_entity = input_data.response_mobile_detection.copy()
+    mocker.patch('CrowdStrikeFalcon.get_detection_entities', return_value={'resources': [detection_entity.copy()]})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(input_data.remote_mobile_detection_id)
+    detection_entity['severity'] = 90
+    assert mirrored_data == detection_entity
+    assert detection_type == 'Mobile'
+    assert updated_object == {'incident_type': 'MOBILE detection',
+                              'status': 'new',
+                              'mobile_detection_id': '1111111111111111111'}
+
+
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_incident_entries_args)
 def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close_incident):
     """
@@ -4187,10 +4231,36 @@ def test_set_xsoar_incident_entries(mocker, updated_object, entry_content, close
     """
     from CrowdStrikeFalcon import set_xsoar_incident_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    mocker.patch.object(demisto, 'debug', return_value=None)
     entries = []
-    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id)
+    reopen_statuses = ['New', 'Reopened', 'In Progress']
+    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
     if entry_content:
         assert entry_content in entries[0].get('Contents')
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_incident_entries_args)
+def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - the reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on an incident
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_incident_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
+    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    if updated_object.get('status') == 'Reopened':
+        assert 'dbotIncidentReopen' in entries[0].get('Contents')
     else:
         assert entries == []
 
@@ -4209,9 +4279,62 @@ def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, clos
     from CrowdStrikeFalcon import set_xsoar_detection_entries
     mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
     entries = []
-    set_xsoar_detection_entries(updated_object, entries, input_data.remote_incident_id)
+    reopen_statuses = ['New', 'In progress', 'True positive', 'False positive', 'Reopened', 'Ignored']
+    set_xsoar_detection_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
     if entry_content:
         assert entry_content in entries[0].get('Contents')
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_detections_entries_args)
+def test_set_xsoar_detection_entries_reopen_check(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - the reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_detection_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
+    set_xsoar_detection_entries(updated_object, entries, input_data.remote_detection_id, reopen_statuses)
+    if updated_object.get('status') == 'reopened':
+        assert 'dbotIncidentReopen' in entries[0].get('Contents')
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
+def test_set_xsoar_idp_or_mobile_detection_entries(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - the reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_idp_or_mobile_detection_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = ['Reopened']  # Add a reopen entry only if the status in CS Falcon is reopened
+    set_xsoar_idp_or_mobile_detection_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
+    if updated_object.get('status') == 'reopened':
+        assert 'dbotIncidentReopen' in entries[0].get('Contents')
+    elif updated_object.get('status') == 'closed':
+        assert 'dbotIncidentClose' in entries[0].get('Contents')
+        assert 'closeReason' in entries[0].get('Contents')
+        assert entries[0].get('Contents', {}).get('closeReason') == 'IDP was closed on CrowdStrike Falcon'
     else:
         assert entries == []
 
@@ -4543,10 +4666,10 @@ ARGS_vulnerability = [
                         "impact_score": 1.4}}
          ]
          },
-        '### List Vulnerabilities\n' \
-        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n' \
-        '|---|---|---|---|---|---|---|\n' \
-        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
+        '### List Vulnerabilities\n'
+        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n'
+        '|---|---|---|---|---|---|---|\n'
+        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n'
         '| idcve4 |  | open |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
 
     )
@@ -6748,3 +6871,74 @@ def test_get_cve_command(mocker):
 
     results = CrowdStrikeFalcon.get_cve_command(args={'cve': 'CVE-2023-12345'})
     assert len(results) == 2
+
+
+def test_http_request(mocker):
+    """
+    Given:
+        - arguments of a http_request
+    When:
+        - Running any command
+    Then:
+        - Validate that the in case of 429 error code, get_token() will be called again in order to create a new token and
+            generic_http_request will be called again as well.
+    """
+    from requests import Response
+    from CrowdStrikeFalcon import http_request
+    res_429 = Response()
+    res_429.status_code = 429
+    res_200 = Response()
+    res_200.status_code = 200
+    mock_request_get_token = mocker.patch('CrowdStrikeFalcon.get_token', return_value='token')
+    mock_request_generic_http_request = mocker.patch('CrowdStrikeFalcon.generic_http_request', side_effect=[res_429, res_200])
+    http_request(url_suffix='url_suffix',
+                 method='method',
+                 headers={},
+                 no_json=True)
+    # validate that in a case of 429, we will try again
+    assert mock_request_generic_http_request.call_count == 2
+    assert mock_request_get_token.call_count == 2
+
+
+class ResMocker:
+    def __init__(self, http_response, status_code, reason):
+        self.http_response = http_response
+        self.status_code = status_code
+        self.reason = reason
+        self.ok = False
+
+    def json(self):
+        return self.http_response
+
+
+def test_error_handler():
+    """
+    Given:
+        - A response with an error from the API.
+    When:
+        - Running any command
+    Then:
+        - Validate that the error message contains the correct info
+    """
+    from CrowdStrikeFalcon import error_handler
+    status_code = 429
+    reason = "Too Many Requests API rate limit exceeded."
+    res_json = {
+        "meta": {
+            "query_time": 0.00571046,
+            "pagination": {
+                "offset": 0,
+                "limit": 100,
+                "total": 2
+            },
+            "powered_by": "legacy-detects",
+            "trace_id": "11111111-1111-1111-1111-111111111111"
+        },
+        "errors": [],
+    }
+
+    arg_res = ResMocker(res_json, status_code, reason)
+    try:
+        error_handler(arg_res)
+    except DemistoException as e:
+        assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'

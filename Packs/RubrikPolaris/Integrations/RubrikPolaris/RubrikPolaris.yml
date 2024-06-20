@@ -3060,7 +3060,7 @@ script:
     - contextPath: RubrikPolaris.SuspiciousFile.__typename
       description: 'The type name of the suspicious file response.'
       type: String
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.89429
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.92981
   isfetch: true
   runonce: false
   script: '-'
