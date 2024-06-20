@@ -186,8 +186,8 @@ Returns a list of all risky users and their properties.
 | next_token | The URL for the next set of items to return during pagination. (This URL can be retrieved from a previous call). | Optional | 
 | risk_level | Sets the Risk Level to retrieve. Possible values are: low, medium, high. | Optional | 
 | order_by | The method used to order the retrieved results. Possible values are: riskLastUpdatedDateTime desc, riskLastUpdatedDateTime asc. Default is riskLastUpdatedDateTime desc. | Optional | 
-| updated_before | Displays all RiskyUsers before a specific Date Time. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours". | Optional | 
-| updated_after | Displays all RiskyUsers after a specific Date Time. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours". | Optional | 
+| updated_before | Displays all RiskyUsers before a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours". | Optional | 
+| updated_after | Displays all RiskyUsers after a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours". | Optional | 
 
 #### Context Output
 
