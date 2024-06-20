@@ -995,46 +995,38 @@ script:
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - name: runtime
       description: The runtime environment for the function.
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - name: handler
       description: "The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler'."
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - name: code
       description: Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: S3-bucket
       description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: description
       description: A description of the function.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: functionTimeout
       description: The amount of time that Lambda allows a function to run before stopping it.
       defaultValue: "3"
       predefined:
       - ""
-      auto: PREDEFINED
     - name: memorySize
       description: The amount of memory available to the function at runtime.
       defaultValue: "128"
       predefined:
       - ""
-      auto: PREDEFINED
     - name: publish
       description: Set to true to publish the first version of the function during creation.
       auto: PREDEFINED
@@ -1045,7 +1037,6 @@ script:
       description: Json string contains SubnetIds - list of VPC subnet IDs, SecurityGroupIds - A list of VPC security group IDs,  and boolean Ipv6AllowedForDualStack - allows outbound IPv6 traffic.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: packageType
       description: The type of deployment package.
       auto: PREDEFINED
@@ -1056,30 +1047,25 @@ script:
       description: The environment variables for the function. Should be given as key-value pairs in a json string.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: tracingConfig
       description: The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray.
       defaultValue: "Active"
       predefined:
       - ""
-      auto: PREDEFINED
     - name: tags
       description: The list of tags to apply to the function.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: role
       description: The Amazon Resource Name (ARN) of the function’s execution role.
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - name: layers
       description: A list of function layers to add to the function's execution environment.
       isArray: true
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the default region will be used.
       name: region
@@ -1163,38 +1149,31 @@ script:
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - name: description
       description: The description of the version.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: s3-bucket
       description: The Amazon S3 bucket of the layer archive.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: s3-key
       description: The Amazon S3 key of the layer archive.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: s3-object-version
       description: For versioned objects, the version of the layer archive object to use.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: zip-file
       description: Entry ID of the base64-encoded contents of the layer archive.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: compatible-runtimes
       description: " The name of the method within your code that Lambda calls to execute your function."
       isArray: true
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the default region will be used.
       name: region
@@ -1256,28 +1235,23 @@ script:
       description: A runtime identifier. For example, java21.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: layer-name
       description: The name or Amazon Resource Name (ARN) of the layer.
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - name: token
       description: A pagination token returned by a previous call.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: limit
       description: The maximum number of versions to return.
       predefined:
       - ""
-      auto: PREDEFINED
     - name: compatible-architecture
       description: The compatible instruction set architecture.
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the default region will be used.
       name: region
@@ -1337,13 +1311,11 @@ script:
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - name: layer-name
       description: The name or Amazon Resource Name (ARN) of the layer.
       required: true
       predefined:
       - ""
-      auto: PREDEFINED
     - auto: PREDEFINED
       description: The AWS Region. If not specified, the default region will be used.
       name: region
