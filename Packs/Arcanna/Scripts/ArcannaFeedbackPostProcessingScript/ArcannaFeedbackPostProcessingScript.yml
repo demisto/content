@@ -23,7 +23,7 @@ tags:
 - post-processing
 timeout: '0'
 type: python
-dockerimage: demisto/python3:3.10.14.95956
+dockerimage: demisto/python3:3.10.14.98471
 runas: DBotWeakRole
 dependson:
   should:

@@ -7,7 +7,7 @@ comment: Deprecated. NOT_USED No available replacement.
 commonfields:
   id: PrepareArcannaRawJson
   version: -1
-dockerimage: demisto/python3:3.10.14.95956
+dockerimage: demisto/python3:3.10.14.98471
 enabled: true
 name: PrepareArcannaRawJson
 outputs:
