@@ -2,6 +2,7 @@ import demistomock as demisto  # noqa: F401
 import hcl
 from CommonServerPython import *  # noqa: F401
 import hvac
+from hvac import exceptions, utils
 
 ''' GLOBAL VARIABLES '''
 
@@ -32,6 +33,7 @@ DEFAULT_STATUS_CODES = {
 def get_headers():
     headers = {
         'Content-Type': 'application/json',
+        'X-Vault-Request':'true'
     }
 
     if TOKEN:  # pragma: no cover
@@ -45,40 +47,45 @@ def get_headers():
 
 def login():  # pragma: no cover
     if USE_APPROLE_AUTH_METHOD:
-        client = hvac.Client(namespace=NAMESPACE, url=BASE_URL, verify=VERIFY_SSL)
-        try:
-            res = client.auth.approle.login(
-                role_id=USERNAME,
-                secret_id=PASSWORD,
-            )
-            return res['auth']['client_token']
-        except Exception as e:
-            return_error(f"Could not authenticate user: {str(e)}")
+        path = 'auth/approle/login'  # type: ignore
+        body = {
+            'role_id': USERNAME,
+            'secret_id': PASSWORD
+        }
+        # client = hvac.Client(namespace=NAMESPACE, url=BASE_URL, verify=VERIFY_SSL)
+        # try:
+        #     res = client.auth.approle.login(
+        #         role_id=USERNAME,
+        #         secret_id=PASSWORD,
+        #     )
+        #     return res['auth']['client_token']
+        # except Exception as e:
+        #     return_error(f"Could not authenticate user: {str(e)}")
     else:
         path = 'auth/userpass/login/' + USERNAME  # type: ignore
         body = {
             'password': PASSWORD
         }
-        url = urljoin(SERVER_URL, path)
-        payload = json.dumps(body)
-        headers = get_headers()
+    url = urljoin(SERVER_URL, path)
+    payload = json.dumps(body)
+    headers = get_headers()
+    headers.update({'X-Vault-Request':'true'})
+    res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
+    if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
+        try:
+            error_body = res.json()
+            if 'errors' in error_body and isinstance(error_body['errors'], list):
+                error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
+        except Exception as ex:
+            demisto.error(f"Error in login (parsing error msg): {ex}")
+            error_body = res.content
+        return_error(f'Login failed. Status code: {str(res.status_code)}, details: {error_body}')
 
-        res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
-        if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
-            try:
-                error_body = res.json()
-                if 'errors' in error_body and isinstance(error_body['errors'], list):
-                    error_body = ';'.join(error_body['errors']) if len(error_body['errors']) > 0 else 'None'
-            except Exception as ex:
-                demisto.error(f"Error in login (parsing error msg): {ex}")
-                error_body = res.content
-            return_error(f'Login failed. Status code: {str(res.status_code)}, details: {error_body}')
+    auth_res = res.json()
+    if not auth_res or 'auth' not in auth_res or 'client_token' not in auth_res['auth']:
+        return_error('Could not authenticate user')
 
-        auth_res = res.json()
-        if not auth_res or 'auth' not in auth_res or 'client_token' not in auth_res['auth']:
-            return_error('Could not authenticate user')
-
-        return auth_res['auth']['client_token']
+    return auth_res['auth']['client_token']
 
 
 def send_request(path, method='get', body=None, params=None, headers=None):
@@ -265,6 +272,13 @@ def get_secret_metadata(engine_path, secret_path):
     path = engine_path + '/metadata/' + secret_path
 
     return send_request(path, 'get')
+    # client = hvac.Client(namespace=NAMESPACE, url=BASE_URL, verify=VERIFY_SSL, token=TOKEN)
+    # api_path = utils.format_url(
+    #     "/v1/{engine_path}/metadata/{secret_path}", engine_path=engine_path, secret_path=secret_path
+    # )
+    # return client._adapter.get(
+    #     url=api_path,
+    # )
 
 
 def delete_secret_command():  # pragma: no cover
