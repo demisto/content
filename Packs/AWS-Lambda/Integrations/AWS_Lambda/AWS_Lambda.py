@@ -282,6 +282,7 @@ def invoke(args, aws_client):
         kwargs.update({'ClientContext': args.get('clientContext')})
     if args.get('payload') is not None:
         payload = args.get('payload')
+        RequestPayload = args.get('payload')
         if (not isinstance(payload, str)) or (not payload.startswith('{') and not payload.startswith('[')):
             payload = json.dumps(payload)
         kwargs.update({'Payload': payload})
