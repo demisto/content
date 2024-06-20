@@ -11631,12 +11631,14 @@ def split_data_to_chunks(data, target_chunk_size):
         data = data.split('\n')
     for data_part in data:
         if chunk_size >= target_chunk_size:
+            demisto.debug("reached chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
+        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
 
 
