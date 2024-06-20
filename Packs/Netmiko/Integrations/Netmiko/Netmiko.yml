@@ -189,7 +189,7 @@ configuration:
   displaypassword: ""
   hiddenusername: false
 - name: TimeoutOverride
-  display: TimeoutOverride
+  display: Override the default timeout value
   required: false
   defaultvalue: "60"
   type: 0
@@ -222,6 +222,7 @@ script:
     - defaultValue: "false"
       description: Whether an exit argument is required after commands are executed (default is false).
       name: require_exit
+      auto: PREDEFINED
       predefined:
       - "false"
       - "true"

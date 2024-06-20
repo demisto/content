@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+''' IMPORTS '''
 
 # Logging only needed for netmiko debugging
 # import logging
@@ -12,6 +13,8 @@ from netmiko import ConnectHandler
 
 # value for Netmiko last_read parameter
 LAST_READ_TIMEOUT = 15.0
+
+''' HELPER FUNCTIONS '''
 
 # Return only specific keys from dictionary
 
