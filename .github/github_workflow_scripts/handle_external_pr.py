@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import json
-import os
 from pathlib import Path
 import urllib3
 from blessings import Terminal
@@ -8,7 +7,7 @@ from github import Github
 from git import Repo
 from github.PullRequest import PullRequest
 from github.Repository import Repository
-from demisto_sdk.commands.common.tools import get_pack_metadata
+from demisto_sdk.commands.common.tools import get_pack_metadata, get_yaml
 from demisto_sdk.commands.content_graph.objects.base_content import BaseContent
 from demisto_sdk.commands.content_graph.objects.integration import Integration
 from demisto_sdk.commands.common.content_constant_paths import CONTENT_PATH
@@ -168,7 +167,8 @@ def packs_to_check_in_pr(file_paths: list[str]) -> set:
     return pack_dirs_to_check
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, remote_fork_owner: str, repo_name: str = 'content') -> str:
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, remote_fork_owner: str,
+                                  repo_name: str = 'content') -> str:
     """
     Get The contributions' support level label.
 
@@ -263,9 +263,8 @@ def check_if_item_is_tim(content_object: BaseContent | None) -> bool:
 
     Returns: `bool` whether the content object is a feed or has the relevant tags/categories
     """
-    if isinstance(content_object, Integration):
-        if content_object.is_feed:
-            return True
+    if isinstance(content_object, Integration) and content_object.is_feed:
+        return True
     try:
         pack = content_object.in_pack  # type: ignore
         tags = pack.tags
@@ -307,7 +306,7 @@ def check_files_of_pr_manually(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(pr_files: list[str], external_pr_branch: str, remote_fork_owner: str,  repo_name: str) -> bool:
+def is_tim_content(pr_files: list[str], external_pr_branch: str, remote_fork_owner: str, repo_name: str) -> bool:
     """
     Checks if tim reviewer needed, if the pack is new and not part of Master.
     First the remote branch is going to be checked out and then verified for the data
@@ -343,7 +342,8 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, remote_fork_own
     return False
 
 
-def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, remote_fork_owner: str,  repo_name: str) -> bool:
+def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str,
+                           remote_fork_owner: str, repo_name: str) -> bool:
     """
     Checks whether the PR need to be reviewed by a TIM reviewer.
     It check the yml file of the integration - if it has the feed: True
