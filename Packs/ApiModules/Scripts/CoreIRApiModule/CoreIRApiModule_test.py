@@ -4073,7 +4073,8 @@ def test_http_request_demisto_call(mocker):
                                                            'status': 200,
                                                            'reply': {"data": {"container": ["1.1.1.1"]}}})
     res = client._http_request(method="POST",
-                               url_suffix="/distributions/get_versions/")
+                               url_suffix="/distributions/get_versions/",
+                               using_base_client_http_request=False)
     assert res == {"container": ["1.1.1.1"]}
 
 
