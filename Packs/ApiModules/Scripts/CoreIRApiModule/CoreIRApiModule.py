@@ -225,11 +225,7 @@ class CoreClient(BaseClient):
         )
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
-        try:
-            return response.json()
-        except requests.JSONDecodeError:
-            demisto.debug(f'This is the Responses Content-Type = {response.headers.get("Content-Type")}.'
-                          f' Failed to convert Response to Json')
+        return response
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
