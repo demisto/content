@@ -4066,15 +4066,15 @@ def test_http_request_demisto_call(mocker):
     """
     from CoreIRApiModule import CoreClient
     client = CoreClient(
-        base_url=f'{Core_URL}/public_api/v1', headers={}
+        base_url=f'{Core_URL}/public_api/v1', headers={},
+        using_base_client_http_request=False
     )
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
     mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                                            'status': 200,
                                                            'reply': {"data": {"container": ["1.1.1.1"]}}})
     res = client._http_request(method="POST",
-                               url_suffix="/distributions/get_versions/",
-                               using_base_client_http_request=False)
+                               url_suffix="/distributions/get_versions/")
     assert res == {"container": ["1.1.1.1"]}
 
 
