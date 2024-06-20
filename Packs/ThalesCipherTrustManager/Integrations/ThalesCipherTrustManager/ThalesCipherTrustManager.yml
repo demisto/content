@@ -2389,4 +2389,5 @@ script:
   longRunningPort: false
 fromversion: 6.0.0
 tests:
-- No tests
+- Thales CipherTrust Test Playbook - Access Management
+- Thales CipherTrust Test Playbook - CA
