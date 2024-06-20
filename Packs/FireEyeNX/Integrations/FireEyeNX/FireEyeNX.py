@@ -443,7 +443,7 @@ def get_incidents_for_alert(**kwargs) -> tuple[list[dict[str, Any]], dict[str, A
             occurred_date = dateparser.parse(context_alert.get('occurred', ''))
             assert occurred_date is not None
             if ((alert_occurred_time := alert.get('occurred'))
-                    and next_alert_start_time == alert_occurred_time) and (alert_id := alert.get('eventId')):
+                    and next_alert_start_time == alert_occurred_time) and (alert_id := alert.get('id')):
                 # Save the alert id for the next fetch dedup
                 next_incidents_ids.append(alert_id)
 
