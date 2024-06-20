@@ -200,6 +200,7 @@ logging.raiseExceptions = False
 try:
     import requests
     from requests.adapters import HTTPAdapter
+    from requests.models import RequestEncodingMixin
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set, cast
 
@@ -9402,6 +9403,12 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
+
+    if files:
+        """
+        To prevent timeout errors when sending large files, it is necessary to load the files into memory by reading them using the command f.read().
+        """
+        RequestEncodingMixin._encode_files(files=files, data={})
 
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
