@@ -898,7 +898,7 @@ def index_document(args, proxies):
     #     response = es.index(index=index, id=doc_id, document=doc)
     # else:
     #     response = es.index(index=index, document=doc)
-    demisto.debug(f"index response is: {response}")
+    # demisto.debug(f"index response is: {response}")
     return response
 
 def index_document_command(args, proxies):
@@ -933,7 +933,7 @@ def index_document_command(args, proxies):
         readable_output=readable_output,
         outputs_prefix='Elasticsearch.Index',
         outputs=index_context,
-        raw_response=resp,
+        raw_response=resp.body,
         outputs_key_field='id'
     )
     demisto.debug(f"result is: {result}")
