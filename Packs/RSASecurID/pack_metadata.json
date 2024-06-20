@@ -1,6 +1,6 @@
 {
-    "name": "RSA SecureID",
-    "description": " RSA SecureID is an MFA technology designed to increase security for network resources and help organizations maintain compliance.",
+    "name": "RSA SecurID",
+    "description": " RSA SecurID is an MFA technology designed to increase security for network resources and help organizations maintain compliance.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
