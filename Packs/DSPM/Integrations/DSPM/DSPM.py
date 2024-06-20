@@ -24,6 +24,12 @@ STATUS_MAPPING = {
     'HANDLED': 'Resolved',
     'INVESTIGATING': 'Active'
 }
+MIRROR_DIRECTION = {
+    "None": None,
+    "Incoming": "In",
+    "Outgoing": "Out",
+    "Incoming And Outgoing": "Both",
+}
 # Define remediation steps for specific findings
 REMEDIATE_STEPS = {
     'Sensitive asset open to world': (
@@ -199,7 +205,19 @@ def update_risk_finding_status_command(client, args):
 ''' FETCH INCIDENTS FUNCTION'''
 
 
-def fetch_incidents(client: Client):
+def get_mirroring_fields(mirror_direction):
+    """
+    Get tickets mirroring.
+    """
+
+    return {
+        "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
+        "mirror_instance": demisto.integrationInstance(),
+        "incident_type": "DSPM Risk Findings",
+    }
+
+
+def fetch_incidents(client: Client, mirror_direction):
     last_run = demisto.getLastRun()
     last_fetch = last_run.get('last_fetch')
     processed_ids = last_run.get('processed_ids', [])
@@ -225,6 +243,7 @@ def fetch_incidents(client: Client):
     for finding in findings:
         finding_id = finding.get('id')
         occurred_time = datetime.utcnow().strftime(DATE_FORMAT)
+        finding.update(get_mirroring_fields(mirror_direction))
 
         if finding_id not in processed_ids:
             asset_id = finding.get('asset', {}).get('assetId', '')
@@ -292,7 +311,7 @@ def get_integration_config_command():
 
 # def find_existing_incident(dbot_mirror_id: str) -> bool:
 #     query = f'dbotMirrorId:"{dbot_mirror_id}"'
-#     result = demisto.executeCommand("getIncidents", {"query": query, "limit": 1})
+#     result = demisto.execute_command("getIncidents", {"query": query, "limit": 1})
 #     if is_error(result):
 #         return False
 #     incidents = result[0].get('Contents', {}).get('data', [])
@@ -427,14 +446,36 @@ def set_xsoar_incident_entries(mirrored_data: dict[str, Any], entries: list, inc
     :param close_incident: Boolean flag to close the incident if needed.
     :return: Updated list of entries.
     """
-    # Process mirrored data and append necessary entries
-    entries.append({
+    demisto.debug(f"Setting XSOAR incident entries for incident ID {incident_id} with mirrored data: {mirrored_data}")
+
+    fields_to_update = {
+        'Incident ID': mirrored_data.get('id', ''),
+        'Name': mirrored_data.get('ruleName', ''),
+        'Severity': mirrored_data.get('severity', ''),
+        'Asset Name': mirrored_data.get('asset', {}).get('name', ''),
+        'Asset ID': mirrored_data.get('asset', {}).get('assetId', ''),
+        'Status': mirrored_data.get('status', ''),
+        'Project ID': mirrored_data.get('projectId', ''),
+        'Cloud Provider': mirrored_data.get('cloudProvider', ''),
+        'Cloud Environment': mirrored_data.get('cloudEnvironment', ''),
+        'First Discovered': mirrored_data.get('firstDiscovered', ''),
+        'Compliance Standards': mirrored_data.get('complianceStandards', {}),
+        'dbotMirrorId': mirrored_data.get('id', ''),
+        'Details': mirrored_data.get('asset', {}).get('name', '')
+    }
+
+    entry = {
         "Type": 1,  # Note type
         "Contents": f"Mirrored data fetched for incident ID {incident_id}.",
         "ContentsFormat": "json",
         "Tags": ["mirrored"],
         "Note": True
-    })
+    }
+
+    for key, value in fields_to_update.items():
+        entry[key] = value
+
+    entries.append(entry)
 
     if close_incident:
         entries.append({
@@ -533,6 +574,7 @@ def main() -> None:
     api_key = demisto.params().get('credentials', {}).get('password')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
+    mirror_direction = demisto.params().get('mirror_direction', None)
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
@@ -549,7 +591,7 @@ def main() -> None:
         elif demisto.command() == "dspm-get-integration-cofig":
             return_results(get_integration_config_command())
         elif demisto.command() == 'fetch-incidents':
-            fetch_incidents(client)
+            fetch_incidents(client, mirror_direction)
         elif demisto.command() == 'dspm-get_risk_findings':
             return_results(get_risk_findings_command(client, demisto.args()))
         elif demisto.command() == 'dspm-get_asset_details':
