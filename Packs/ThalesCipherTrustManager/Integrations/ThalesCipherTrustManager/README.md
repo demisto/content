@@ -80,8 +80,8 @@ Managing digital certificates is crucial for maintaining secure communications a
     
     Creating a local CA is a two-step process:
   - Invoke Create local CA which creates a local CA in pending state and returns a CSR for signing. A pending local CA can then be activated in two ways:
-     - Invoke Self-sign a local CA to let the CA sign itself. This is typically done for Root CAs.
-     - Invoke Install a local CA which requires a signed certificate based on the CSR from the pending CA. This certificate can be signed by any other entity such as an external CA or even an other local CA.
+    - Invoke Self-sign a local CA to let the CA sign itself. This is typically done for Root CAs.
+    - Invoke Install a local CA which requires a signed certificate based on the CSR from the pending CA. This certificate can be signed by any other entity such as an external CA or even an other local CA.
   - Once a local CA exists a signed certificate can be issued by invoking Issue certificate and provide the CSR, the purpose and the duration. A new signed certificate will be returned.
       
   CipherTrust Manager allows to revoke and resume certificates signed by local CA. User can specify a reason to revoke a certificate according to RFC 5280. Certificates revoked with certificateHold reason will only allow resuming.
@@ -134,8 +134,11 @@ Creates a Certificate Signing Request (CSR) and its corresponding private key. T
 | InfoFile.Extension | string | File extension. | 
 
 #### Command example
+
 ```!ciphertrust-csr-generate cn="example_csr" private_key_file_password=123```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": [
@@ -215,8 +218,11 @@ Issues a certificate by signing the provided CSR with the CA. This is typically 
 | CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
 
 #### Command example
+
 ```!ciphertrust-certificate-issue ca_id="example_local_ca" csr_entry_id="2234@a48e3cfd-a079-4895-89a7-4fac11b8143d" purpose=server duration=365```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -302,8 +308,11 @@ Returns a list of certificates issued by the specified CA. The results can be fi
 | CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
 
 #### Command example
+
 ```!ciphertrust-certificate-list ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -374,6 +383,7 @@ Returns a list of certificates issued by the specified CA. The results can be fi
 #### Human Readable Output
 
 >### Certificates issued by localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd
+
 >|Id|Uri|Createdat|Updatedat|Name|Ca|RevokedReason|RevokedAt|State|Sha1Fingerprint|Sha256Fingerprint|Sha512Fingerprint|Serialnumber|Subject|Issuer|Notbefore|Notafter|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 731d4f15-ea27-4cd5-bd11-7f8d488f51b7 | kylo:kylo:naboo:certs:731d4f15-ea27-4cd5-bd11-7f8d488f51b7 | 2024-06-13T16:22:50.935704Z | 2024-06-13T16:27:51.151693Z | cert-731d4f15-ea27-4cd5-bd11-7f8d488f51b7 | kylo:kylo:naboo:localca:3dc1f629-23b6-4cce-876a-c7d07a4862cd | certificateHold | 2024-06-13T16:27:51.151471Z | revoked | EEDE423751F0D393B775CAC3795B9CBB4D67ADF3 | 6E0BCC3C4294725AA9D8CA797A65066458A08DF243A5B1335A17BF1CE5E8EDD6 | 7C41E2235A73B61CB1456155DCBA2C05272DC9585521B84067BD579F9E73E0B598F1805C1593E81D767D702BE5466D367FC4D64555118F9832E1D0B3BC0CF1C3 | 278194539608420376178600649699280848294 | /CN=ui_test | /CN=demo_prep_example.com | 2024-06-13T16:22:51Z | 2025-06-02T13:58:56Z |
@@ -429,8 +439,11 @@ Certificate can be resumed only if it is revoked with reason certificateHold.
 | CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
 
 #### Command example
+
 ```!ciphertrust-certificate-resume ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd" cert_id="0fb15f00-722c-412e-a1e8-6eb6130e87ba"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -518,8 +531,11 @@ Revoke certificate with a given specific reason.
 | CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
 
 #### Command example
+
 ```!ciphertrust-certificate-revoke ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd" cert_id="0fb15f00-722c-412e-a1e8-6eb6130e87ba" reason="certificateHold"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -577,8 +593,11 @@ Deletes an external CA certificate.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciphertrust-external-ca-delete external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774"```
+
 #### Human Readable Output
 
 >123e0a83-63d3-4632-925b-e78ddbfc7774 has been deleted successfully!
@@ -635,8 +654,11 @@ Returns a list of external CA certificates. The results can be filtered, using t
 | CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
 
 #### Command example
+
 ```!ciphertrust-external-ca-list```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -769,6 +791,7 @@ Returns a list of external CA certificates. The results can be filtered, using t
 #### Human Readable Output
 
 >### External Certificate Authorities
+
 >|Name|Subject|Serial #|Activation|Expiration|Client Auth|User Auth|
 >|---|---|---|---|---|---|---|
 >| test_ui | /CN=ui_test | 22416116914186521030446027138329400040 | 13 Jun 2024, 16:20 | 13 Jun 2025, 16:20 | Disabled | Disabled |
@@ -827,8 +850,11 @@ Update an external CA.
 | CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
 
 #### Command example
+
 ```!ciphertrust-external-ca-update external_ca_id="123e0a83-63d3-4632-925b-e78ddbfc7774" allow_client_authentication=true allow_user_authentication=true```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -915,8 +941,11 @@ Uploads an external CA certificate. These certificates can later be trusted by s
 | CipherTrust.ExternalCA.sha512Fingerprint | String | SHA-512 fingerprint of the CA certificate. | 
 
 #### Command example
+
 ```"!ciphertrust-external-ca-upload cert_entry_id=2327@a48e3cfd-a079-4895-89a7-4fac11b8143d#### Context Example"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -967,8 +996,11 @@ Create a new group. The group name is required.
 | CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
 
 #### Command example
+
 ```!ciphertrust-group-create name="example_group" description="this is an example group"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -1005,8 +1037,11 @@ Deletes a group given the group name.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciphertrust-group-delete group_name="example_group" force=true```
+
 #### Human Readable Output
 
 >example_group has been deleted successfully!
@@ -1046,8 +1081,11 @@ Returns a list of group  Command arguments can be used to filter the results. Gr
 | CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
 
 #### Command example
+
 ```!ciphertrust-group-list page=1 page_size=10```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -1141,6 +1179,7 @@ Returns a list of group  Command arguments can be used to filter the results. Gr
 #### Human Readable Output
 
 >### Groups
+
 >|Name|Defined By|No. Of Members|Description|
 >|---|---|---|---|
 >| admin | System | 1 |  |
@@ -1187,8 +1226,11 @@ Update the properties of a group given the group name.
 | CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
 
 #### Command example
+
 ```!ciphertrust-group-update group_name="example_group" description="this is a modified description"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -1257,8 +1299,11 @@ Creates a pending local CA. This operation returns a CSR that either can be self
 | CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
 
 #### Command example
+
 ```!ciphertrust-local-ca-create cn="test.com" name="example_local_ca" algorithm="RSA" name_fields_raw_json="[ {\"O\" : \"FakeCompany\", \"OU\": \"RnD\", \"C\": \"US\", \"ST\": \"CA\", \"L\": \"FakeCity\"}, {\"OU\": \"Fake Group Inc.\"}]" email="fakeemail@fakecompany.com,fakeemail1@fakecompany.com" ip="10.10.10.10,20.20.20.20" dns_names="*.fakecompany.com,*.fakecompany.net"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -1311,8 +1356,11 @@ Deletes a local CA certificate.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciphertrust-local-ca-delete local_ca_id="example_local_ca"```
+
 #### Human Readable Output
 
 >example_local_ca has been deleted successfully!
@@ -1365,8 +1413,11 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 | CipherTrust.CAInstall.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
 
 #### Command example
+
 ```!ciphertrust-local-ca-install cert_entry_id=2412@a48e3cfd-a079-4895-89a7-4fac11b8143d local_ca_id=7951163f-a91d-4b29-91f7-b8175d732fc2 parent_id=b8f345ba-cd21-41ad-8184-56e6442bc52b"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -1441,8 +1492,11 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 | CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
 
 #### Command example
+
 ```!ciphertrust-local-ca-list```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -2409,7 +2463,9 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 #### Human Readable Output
 
 >### Local Certificate Authorities 
+
 >### Active CAs
+
 >|Name|Subject|Serial #|Activation|Expiration|Client Auth|User Auth|
 >|---|---|---|---|---|---|---|
 >| example_local_ca | /C=US/ST=CA/L=FakeCity/O=FakeCompany/OU=RnD/OU=Fake Group Inc./CN=test.com | 158212075602881140442360379812918138547 | 29 May 2024, 00:00 | 18 Jun 2027, 09:16 | Enabled | Enabled |
@@ -2452,6 +2508,7 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 >| localca-36c36025-2eb8-428b-bbcb-de5eb91b363f | /CN=demo_prep_example.com | 297192342979904258733709782583904105532 | 15 Jun 2024, 12:25 | 16 Jun 2025, 12:25 | Enabled | Enabled |
 >
 >### Pending CAs
+
 >|Name|Subject|Created|Fingerprint|
 >|---|---|---|---|
 >| localca-f39a4d50-7024-49e1-8e43-d56827a0394f | /CN=test_playbook | 16 Jun 2024, 12:56 | 811DD053B0953D8F3CB271BDFB9242B1BE85740A |
@@ -2465,6 +2522,7 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 >| localca-89efc91b-56c2-4575-8d4a-a7497f552889 | /CN=test_playbook | 16 Jun 2024, 12:30 | 2AD5DC3F6E1FE4878D37A546EA1826B28C433EAC |
 >
 >### Expired CAs
+
 >|Name|Subject|Created|Fingerprint|
 >|---|---|---|---|
 >| localca-3f953b5c-f432-4e6f-8b9e-bba0e4f2ec95 | /CN=test_ui_2 | 13 Jun 2024, 14:07 | 0A63239115356D9F28CBC20EE21D44B088FBB0D5 |
@@ -2520,8 +2578,11 @@ Self-sign a local CA certificate. This is used to create a root CA. Either durat
 | CipherTrust.CASelfSign.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
 
 #### Command example
+
 ```!ciphertrust-local-ca-self-sign local_ca_id="example_local_ca" not_after="in three years" not_before="29.5.24"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -2608,8 +2669,11 @@ Update a local CA.
 | CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
 
 #### Command example
+
 ```!ciphertrust-local-ca-update local_ca_id="example_local_ca" allow_client_authentication=true allow_user_authentication=true```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -2669,8 +2733,11 @@ Deletes a local certificate.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciphertrust-local-certificate-delete ca_id="localca-3dc1f629-23b6-4cce-876a-c7d07a4862cd" local_ca_id="0fb15f00-722c-412e-a1e8-6eb6130e87ba"```
+
 #### Human Readable Output
 
 >0fb15f00-722c-412e-a1e8-6eb6130e87ba has been deleted successfully!
@@ -2741,8 +2808,11 @@ To enable the two-factor authentication based on username-password and user cert
 | CipherTrust.Users.login_flags | Unknown | Flags related to login permissions. | 
 
 #### Command example
+
 ```!ciphertrust-user-create username="example_user" password="123ABC!123abc" allowed_auth_methods="password,user_certificate" allowed_client_types="empty" certificate_subject_dn="OU=organization unit,O=organization,L=location,ST=state,C=country"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -2800,8 +2870,11 @@ Deletes a user given the user's user ID. If the current user is logged into a su
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciphertrust-user-delete user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c"```
+
 #### Human Readable Output
 
 >local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c has been deleted successfully!
@@ -2827,8 +2900,11 @@ Change the current user's password. Can only be used to change the password of t
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciphertrust-user-password-change username="example_user" password="123ABC!123abc" new_password="new_123ABC!123abc"```
+
 #### Human Readable Output
 
 >Password has been changed successfully for example_user!
@@ -2863,8 +2939,11 @@ Add a user to a group. This command is idempotent: calls to add a user to a grou
 | CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
 
 #### Command example
+
 ```!ciphertrust-user-to-group-add group_name="example_group" user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -2902,8 +2981,11 @@ Removes a user from a group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!ciphertrust-user-to-group-remove group_name="example_group" user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c"```
+
 #### Human Readable Output
 
 >local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c has been deleted successfully from example_group
@@ -2966,8 +3048,11 @@ Change the properties of a user, for instance, the name, the password, or metada
 | CipherTrust.Users.login_flags | Unknown | Flags related to login, such as prevent_ui_login. | 
 
 #### Command example
+
 ```!ciphertrust-user-update user_id="local|9a1769b4-86e0-4e24-8316-ea4e7b76c23c" failed_logins_count=0 expires_at="empty"```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -3072,8 +3157,11 @@ Returns a list of users.
 | CipherTrust.Users.auth_domain_name | String | Name of the authentication domain. | 
 
 #### Command example
+
 ```!ciphertrust-users-list limit=10```
+
 #### Context Example
+
 ```json
 {
     "CipherTrust": {
@@ -3196,6 +3284,7 @@ Returns a list of users.
 #### Human Readable Output
 
 >### Users
+
 >|Username|Full Name|Email|Created|Updated|Expires|Id|Last Login|Logins|Last Failed Login|Password Changed|Password Change Required|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| admin | admin | admin@local | 14 Feb 2024, 10:08 | 18 Jun 2024, 09:16 | Never | local\|1e83aa21-0141-458a-8d77-e7d21192a82f | 18 Jun 2024, 09:16 | 1518 | 13 Jun 2024, 07:53 | 14 Feb 2024, 11:36 | false |

@@ -28,122 +28,122 @@ script:
     description: Creates a Certificate Signing Request (CSR) and its corresponding private key. This API does not store any state on the server as everything is returned in the result. This means that both the CSR and the private key must be stored securely on the client side. The private key can optionally be encrypted with a password. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory and the file itself is protected with the password even if the private key is not encrypted.
     name: ciphertrust-csr-generate
     arguments:
-      - name: cn
-        isArray: false
-        description: Common Name
-        required: true
-        secret: false
-        default: false
-      - name: algorithm
-        isArray: false
-        description: RSA or ECDSA (default) algorithms are supported. A signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
-        required: false
-        secret: false
-        default: false
-        predefined:
-          - RSA
-          - ECDSA
-        auto: PREDEFINED
-      - name: dns_names
-        isArray: true
-        description: A comma-separated list of Subject Alternative Names (SAN) values.
-        required: false
-        secret: false
-        default: false
-      - name: email
-        isArray: true
-        description: A comma-separated list of e-mail addresses.
-        required: false
-        secret: false
-        default: false
-      - name: ip
-        isArray: true
-        description: A comma-separated list of IP addresses.
-        required: false
-        secret: false
-        default: false
-      - name: name
-        isArray: false
-        description: A unique name of the CSR.
-        required: false
-        secret: false
-        default: false
-      - name: encryption_algo
-        isArray: false
-        description: Private key encryption algorithm.
-        required: false
-        secret: false
-        default: false
-        predefined:
-          - AES256
-          - AES192
-          - AES128
-          - TDES
-        auto: PREDEFINED
-      - name: name_fields_raw_json
-        isArray: true
-        description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]"'
-        required: false
-        secret: false
-        default: false
-      - name: name_fields_json_entry_id
-        isArray: false
-        description: Entry ID of the file that contains the JSON representation of the name_fields_raw_json
-        required: false
-        secret: false
-        default: false
-      - name: key_size
-        isArray: false
-        description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'
-        required: false
-        secret: false
-        default: false
-        predefined:
-          - '1024'
-          - '2048'
-          - '3072'
-          - '4096'
-          - '256'
-          - '384'
-          - '521'
-        auto: PREDEFINED
-      - name: encryption_password
-        isArray: false
-        description: Password to PEM-encrypt the private key. If not specified, the private key is not encrypted in return. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory.
-        required: false
-        secret: true
-        default: false
-      - name: private_key_file_password
-        isArray: false
-        description: Password to encrypt the private key file. It is strongly recommended to encrypt the private key. If not specified, the private key is encrypted with the password which must be provided.
-        required: false
-        secret: true
-        default: false
-      - name: private_key_bytes
-        isArray: false
-        description: Private Key bytes of the key which is to be used while creating CSR. (The algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size.
-        required: false
-        secret: false
-        default: false
+    - name: cn
+      isArray: false
+      description: Common Name.
+      required: true
+      secret: false
+      default: false
+    - name: algorithm
+      isArray: false
+      description: RSA or ECDSA (default) algorithms are supported. A signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - RSA
+      - ECDSA
+      auto: PREDEFINED
+    - name: dns_names
+      isArray: true
+      description: A comma-separated list of Subject Alternative Names (SAN) values.
+      required: false
+      secret: false
+      default: false
+    - name: email
+      isArray: true
+      description: A comma-separated list of e-mail addresses.
+      required: false
+      secret: false
+      default: false
+    - name: ip
+      isArray: true
+      description: A comma-separated list of IP addresses.
+      required: false
+      secret: false
+      default: false
+    - name: name
+      isArray: false
+      description: A unique name of the CSR.
+      required: false
+      secret: false
+      default: false
+    - name: encryption_algo
+      isArray: false
+      description: Private key encryption algorithm.
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - AES256
+      - AES192
+      - AES128
+      - TDES
+      auto: PREDEFINED
+    - name: name_fields_raw_json
+      isArray: true
+      description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]".'
+      required: false
+      secret: false
+      default: false
+    - name: name_fields_json_entry_id
+      isArray: false
+      description: Entry ID of the file that contains the JSON representation of the name_fields_raw_json.
+      required: false
+      secret: false
+      default: false
+    - name: key_size
+      isArray: false
+      description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521.'
+      required: false
+      secret: false
+      default: false
+      predefined:
+      - '1024'
+      - '2048'
+      - '3072'
+      - '4096'
+      - '256'
+      - '384'
+      - '521'
+      auto: PREDEFINED
+    - name: encryption_password
+      isArray: false
+      description: Password to PEM-encrypt the private key. If not specified, the private key is not encrypted in return. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory.
+      required: false
+      secret: true
+      default: false
+    - name: private_key_file_password
+      isArray: false
+      description: Password to encrypt the private key file. It is strongly recommended to encrypt the private key. If not specified, the private key is encrypted with the password which must be provided.
+      required: false
+      secret: true
+      default: false
+    - name: private_key_bytes
+      isArray: false
+      description: Private Key bytes of the key which is to be used while creating CSR. (The algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size.
+      required: false
+      secret: false
+      default: false
     outputs:
-      - contextPath: InfoFile.Name
-        description: File name.
-        type: string
-      - contextPath: InfoFile.EntryID
-        description: The entry ID of the report.
-        type: string
-      - contextPath: InfoFile.Size
-        description: File size.
-        type: number
-      - contextPath: InfoFile.Type
-        description: File type, e.g., "PE".
-        type: string
-      - contextPath: InfoFile.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: InfoFile.Extension
-        description: File extension.
-        type: string
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
   - deprecated: false
     description: Issues a certificate by signing the provided CSR with the CA. This is typically used to issue server, client or intermediate CA certificates. Either duration or not_after date must be specified. If both not_after date and duration are given, then not_after takes precedence over duration. If duration is given without not_before date, ceritificate is issued starting from server's current time for the specified duration.
     name: ciphertrust-certificate-issue
@@ -177,7 +177,7 @@ script:
       required: false
       secret: false
       default: false
-      defaultValue : 365
+      defaultValue: 365
     - name: name
       isArray: false
       description: A unique name of the certificate. If not provided, will be set to cert-<id>.
@@ -197,81 +197,81 @@ script:
       secret: false
       default: false
     outputs:
-      - contextPath: InfoFile.Name
-        description: File name.
-        type: string
-      - contextPath: InfoFile.EntryID
-        description: The entry ID of the report.
-        type: string
-      - contextPath: InfoFile.Size
-        description: File size.
-        type: number
-      - contextPath: InfoFile.Type
-        description: File type, e.g., "PE".
-        type: string
-      - contextPath: InfoFile.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: InfoFile.Extension
-        description: File extension.
-        type: string
-      - contextPath: CipherTrust.CACertificate.id
-        description: A unique identifier for the certificate authority (CA).
-        type: String
-      - contextPath: CipherTrust.CACertificate.uri
-        description: Uniform Resource Identifier associated with the CA.
-        type: String
-      - contextPath: CipherTrust.CACertificate.account
-        description: Account associated with the CA.
-        type: String
-      - contextPath: CipherTrust.CACertificate.application
-        description: Application associated with the CA.
-        type: String
-      - contextPath: CipherTrust.CACertificate.devAccount
-        description: Developer account associated with the CA.
-        type: String
-      - contextPath: CipherTrust.CACertificate.name
-        description: Name of the CA.
-        type: String
-      - contextPath: CipherTrust.CACertificate.state
-        description: Current state of the CA (e.g., active, pending).
-        type: String
-      - contextPath: CipherTrust.CACertificate.createdAt
-        description: Timestamp of when the CA was created.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.updatedAt
-        description: Timestamp of the last update of the CA.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.serialNumber
-        description: Serial number of the CA's certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.subject
-        description: Subject of the CA's certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.issuer
-        description: Issuer of the CA's certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.ca
-        description: Certificate authority.
-        type: String
-      - contextPath: CipherTrust.CACertificate.revoked_at
-        description: Revocation timestamp.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA1 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA256 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA512 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.notBefore
-        description: Timestamp of when the certificate is valid from.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.notAfter
-        description: Timestamp of when the certificate is valid until.
-        type: Date
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate authority (CA).
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.name
+      description: Name of the CA.
+      type: String
+    - contextPath: CipherTrust.CACertificate.state
+      description: Current state of the CA (e.g., active, pending).
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the CA was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the CA.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the CA's certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
   - deprecated: false
     description: Returns a list of certificates issued by the specified CA. The results can be filtered, using the command arguments.
     name: ciphertrust-certificate-list
@@ -326,152 +326,152 @@ script:
       default: false
       defaultValue: 50
     outputs:
-      - contextPath: CipherTrust.CACertificate.name
-        description: The name of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.id
-        description: A unique identifier for the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.uri
-        description: Uniform Resource Identifier associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.account
-        description: Account associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.application
-        description: Application associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.devAccount
-        description: Developer account associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.createdAt
-        description: Timestamp of when the certificate was created.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.updatedAt
-        description: Timestamp of the last update of the certificate.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.ca
-        description: Certificate authority.
-        type: String
-      - contextPath: CipherTrust.CACertificate.revoked_at
-        description: Revocation timestamp.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA1 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA256 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA512 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.serialNumber
-        description: Serial number of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.subject
-        description: Subject of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.issuer
-        description: Issuer of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.notBefore
-        description: Timestamp of when the certificate is valid from.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.notAfter
-        description: Timestamp of when the certificate is valid until.
-        type: Date
+    - contextPath: CipherTrust.CACertificate.name
+      description: The name of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the certificate was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the certificate.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
   - deprecated: false
     description: Certificate can be resumed only if it is revoked with reason certificateHold.
     name: ciphertrust-certificate-resume
     arguments:
-      - name: ca_id
-        isArray: false
-        description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
-        required: true
-        secret: false
-        default: false
-      - name: cert_id
-        isArray: false
-        description: An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI).
-        required: true
-        secret: false
-        default: false
+    - name: ca_id
+      isArray: false
+      description: An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
+    - name: cert_id
+      isArray: false
+      description: An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI).
+      required: true
+      secret: false
+      default: false
     outputs:
-      - contextPath: InfoFile.Name
-        description: File name.
-        type: string
-      - contextPath: InfoFile.EntryID
-        description: The entry ID of the report.
-        type: string
-      - contextPath: InfoFile.Size
-        description: File size.
-        type: number
-      - contextPath: InfoFile.Type
-        description: File type, e.g., "PE".
-        type: string
-      - contextPath: InfoFile.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: InfoFile.Extension
-        description: File extension.
-        type: string
-      - contextPath: CipherTrust.CACertificate.name
-        description: The name of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.id
-        description: A unique identifier for the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.uri
-        description: Uniform Resource Identifier associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.account
-        description: Account associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.application
-        description: Application associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.devAccount
-        description: Developer account associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.createdAt
-        description: Timestamp of when the certificate was created.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.updatedAt
-        description: Timestamp of the last update of the certificate.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.ca
-        description: Certificate authority.
-        type: String
-      - contextPath: CipherTrust.CACertificate.revoked_at
-        description: Revocation timestamp.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.state
-        description: Current state of the certificate (e.g., active, revoked).
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA1 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA256 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA512 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.serialNumber
-        description: Serial number of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.subject
-        description: Subject of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.issuer
-        description: Issuer of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.notBefore
-        description: Timestamp of when the certificate is valid from.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.notAfter
-        description: Timestamp of when the certificate is valid until.
-        type: Date
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CACertificate.name
+      description: The name of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the certificate was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the certificate.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.state
+      description: Current state of the certificate (e.g., active, revoked).
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
   - deprecated: false
     description: Revoke certificate with a given specific reason.
     name: ciphertrust-certificate-revoke
@@ -507,84 +507,84 @@ script:
       - aACompromise
       auto: PREDEFINED
     outputs:
-      - contextPath: InfoFile.Name
-        description: File name.
-        type: string
-      - contextPath: InfoFile.EntryID
-        description: The entry ID of the report.
-        type: string
-      - contextPath: InfoFile.Size
-        description: File size.
-        type: number
-      - contextPath: InfoFile.Type
-        description: File type, e.g., "PE".
-        type: string
-      - contextPath: InfoFile.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: InfoFile.Extension
-        description: File extension.
-        type: string
-      - contextPath: CipherTrust.CACertificate.name
-        description: The name of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.id
-        description: A unique identifier for the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.uri
-        description: Uniform Resource Identifier associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.account
-        description: Account associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.application
-        description: Application associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.devAccount
-        description: Developer account associated with the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.createdAt
-        description: Timestamp of when the certificate was created.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.updatedAt
-        description: Timestamp of the last update of the certificate.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.ca
-        description: Certificate authority.
-        type: String
-      - contextPath: CipherTrust.CACertificate.revoked_at
-        description: Revocation timestamp.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.revoked_reason
-        description: Reason for revocation.
-        type: String
-      - contextPath: CipherTrust.CACertificate.state
-        description: Current state of the certificate (e.g., active, revoked).
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha1Fingerprint
-        description: SHA1 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha256Fingerprint
-        description: SHA256 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.sha512Fingerprint
-        description: SHA512 fingerprint of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.serialNumber
-        description: Serial number of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.subject
-        description: Subject of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.issuer
-        description: Issuer of the certificate.
-        type: String
-      - contextPath: CipherTrust.CACertificate.notBefore
-        description: Timestamp of when the certificate is valid from.
-        type: Date
-      - contextPath: CipherTrust.CACertificate.notAfter
-        description: Timestamp of when the certificate is valid until.
-        type: Date
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.CACertificate.name
+      description: The name of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.id
+      description: A unique identifier for the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.uri
+      description: Uniform Resource Identifier associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.account
+      description: Account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.application
+      description: Application associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.devAccount
+      description: Developer account associated with the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.createdAt
+      description: Timestamp of when the certificate was created.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.updatedAt
+      description: Timestamp of the last update of the certificate.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.ca
+      description: Certificate authority.
+      type: String
+    - contextPath: CipherTrust.CACertificate.revoked_at
+      description: Revocation timestamp.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.revoked_reason
+      description: Reason for revocation.
+      type: String
+    - contextPath: CipherTrust.CACertificate.state
+      description: Current state of the certificate (e.g., active, revoked).
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha1Fingerprint
+      description: SHA1 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha256Fingerprint
+      description: SHA256 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.sha512Fingerprint
+      description: SHA512 fingerprint of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.serialNumber
+      description: Serial number of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.subject
+      description: Subject of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.issuer
+      description: Issuer of the certificate.
+      type: String
+    - contextPath: CipherTrust.CACertificate.notBefore
+      description: Timestamp of when the certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.CACertificate.notAfter
+      description: Timestamp of when the certificate is valid until.
+      type: Date
   - deprecated: false
     description: Deletes an external CA certificate.
     name: ciphertrust-external-ca-delete
@@ -650,78 +650,78 @@ script:
       default: false
       defaultValue: 50
     outputs:
-      - contextPath: InfoFile.Name
-        description: File name.
-        type: string
-      - contextPath: InfoFile.EntryID
-        description: The entry ID of the report.
-        type: string
-      - contextPath: InfoFile.Size
-        description: File size.
-        type: number
-      - contextPath: InfoFile.Type
-        description: File type, e.g. ,"PE".
-        type: string
-      - contextPath: InfoFile.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: InfoFile.Extension
-        description: File extension.
-        type: string
-      - contextPath: CipherTrust.ExternalCA.id
-        description: A unique identifier for the certificate authority (CA) certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.uri
-        description: Uniform Resource Identifier associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.account
-        description: Account associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.devAccount
-        description: Developer account associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.application
-        description: Application associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.createdAt
-        description: Timestamp of when the CA certificate was created.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.updatedAt
-        description: Timestamp of the last update of the CA certificate.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.name
-        description: Name of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
-        description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
-        description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.serialNumber
-        description: Serial number of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.subject
-        description: Subject of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.issuer
-        description: Issuer of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.notBefore
-        description: Timestamp of when the CA certificate is valid from.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.notAfter
-        description: Timestamp of when the CA certificate is valid until.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
-        description: SHA1 fingerprint of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
-        description: SHA256 fingerprint of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
-        description: SHA512 fingerprint of the CA certificate.
-        type: String
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g. ,"PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.ExternalCA.id
+      description: A unique identifier for the certificate authority (CA) certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.uri
+      description: Uniform Resource Identifier associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.account
+      description: Account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.devAccount
+      description: Developer account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.application
+      description: Application associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.createdAt
+      description: Timestamp of when the CA certificate was created.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.updatedAt
+      description: Timestamp of the last update of the CA certificate.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.name
+      description: Name of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.serialNumber
+      description: Serial number of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.subject
+      description: Subject of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.issuer
+      description: Issuer of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.notBefore
+      description: Timestamp of when the CA certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.notAfter
+      description: Timestamp of when the CA certificate is valid until.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
+      description: SHA1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
+      description: SHA256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
+      description: SHA512 fingerprint of the CA certificate.
+      type: String
   - deprecated: false
     description: Update an external CA.
     name: ciphertrust-external-ca-update
@@ -753,78 +753,78 @@ script:
       - 'false'
       auto: PREDEFINED
     outputs:
-      - contextPath: InfoFile.Name
-        description: File name.
-        type: string
-      - contextPath: InfoFile.EntryID
-        description: The entry ID of the report.
-        type: string
-      - contextPath: InfoFile.Size
-        description: File size.
-        type: number
-      - contextPath: InfoFile.Type
-        description: File type, e.g., "PE".
-        type: string
-      - contextPath: InfoFile.Info
-        description: Basic information of the file.
-        type: string
-      - contextPath: InfoFile.Extension
-        description: File extension.
-        type: string
-      - contextPath: CipherTrust.ExternalCA.id
-        description: A unique identifier for the certificate authority (CA) certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.uri
-        description: Uniform Resource Identifier associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.account
-        description: Account associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.devAccount
-        description: Developer account associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.application
-        description: Application associated with the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.createdAt
-        description: Timestamp of when the CA certificate was created.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.updatedAt
-        description: Timestamp of the last update of the CA certificate.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.name
-        description: Name of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
-        description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
-        description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.serialNumber
-        description: Serial number of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.subject
-        description: Subject of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.issuer
-        description: Issuer of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.notBefore
-        description: Timestamp of when the CA certificate is valid from.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.notAfter
-        description: Timestamp of when the CA certificate is valid until.
-        type: Date
-      - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
-        description: SHA1 fingerprint of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
-        description: SHA256 fingerprint of the CA certificate.
-        type: String
-      - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
-        description: SHA512 fingerprint of the CA certificate.
-        type: String
+    - contextPath: InfoFile.Name
+      description: File name.
+      type: string
+    - contextPath: InfoFile.EntryID
+      description: The entry ID of the report.
+      type: string
+    - contextPath: InfoFile.Size
+      description: File size.
+      type: number
+    - contextPath: InfoFile.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: InfoFile.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: InfoFile.Extension
+      description: File extension.
+      type: string
+    - contextPath: CipherTrust.ExternalCA.id
+      description: A unique identifier for the certificate authority (CA) certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.uri
+      description: Uniform Resource Identifier associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.account
+      description: Account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.devAccount
+      description: Developer account associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.application
+      description: Application associated with the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.createdAt
+      description: Timestamp of when the CA certificate was created.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.updatedAt
+      description: Timestamp of the last update of the CA certificate.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.name
+      description: Name of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.client_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for client authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.purpose.user_authentication
+      description: If set to enabled, the certificates signed by the specified CA can be used for user authentication.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.serialNumber
+      description: Serial number of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.subject
+      description: Subject of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.issuer
+      description: Issuer of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.notBefore
+      description: Timestamp of when the CA certificate is valid from.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.notAfter
+      description: Timestamp of when the CA certificate is valid until.
+      type: Date
+    - contextPath: CipherTrust.ExternalCA.sha1Fingerprint
+      description: SHA1 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha256Fingerprint
+      description: SHA256 fingerprint of the CA certificate.
+      type: String
+    - contextPath: CipherTrust.ExternalCA.sha512Fingerprint
+      description: SHA512 fingerprint of the CA certificate.
+      type: String
   - deprecated: false
     description: Uploads an external CA certificate. These certificates can later be trusted by services inside the system for verification of client certificates. The uploaded certificate must have "CA:TRUE" as part of the "X509v3 Basic Constraints" to be accepted.
     name: ciphertrust-external-ca-upload
@@ -978,8 +978,8 @@ script:
       secret: false
       default: false
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
       auto: PREDEFINED
     outputs: []
   - deprecated: false
@@ -1018,7 +1018,7 @@ script:
       default: false
     - name: page_size
       isArray: false
-      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000
+      description: Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000.
       required: false
       secret: false
       default: false
@@ -1118,8 +1118,8 @@ script:
       secret: false
       default: false
       predefined:
-        - RSA
-        - ECDSA
+      - RSA
+      - ECDSA
       auto: PREDEFINED
     - name: copy_from_ca
       isArray: false
@@ -1153,7 +1153,7 @@ script:
       default: false
     - name: name_fields_raw_json
       isArray: true
-      description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]"'
+      description: 'Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]".'
       required: false
       secret: false
       default: false
@@ -1165,18 +1165,18 @@ script:
       default: false
     - name: size
       isArray: false
-      description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521'
+      description: 'Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521.'
       required: false
       secret: false
       default: false
       predefined:
-        - '256'
-        - '384'
-        - '521'
-        - '1024'
-        - '2048'
-        - '3072'
-        - '4096'
+      - '256'
+      - '384'
+      - '521'
+      - '1024'
+      - '2048'
+      - '3072'
+      - '4096'
       auto: PREDEFINED
     outputs:
     - contextPath: InfoFile.Name
@@ -1432,7 +1432,7 @@ script:
       description: File type, e.g., "PE".
       type: string
     - contextPath: InfoFile.Info
-      description: Basic information of the file
+      description: Basic information of the file.
       type: string
     - contextPath: InfoFile.Extension
       description: File extension.
@@ -1504,7 +1504,7 @@ script:
       required: false
       secret: false
       default: false
-      defaultValue : 365
+      defaultValue: 365
     - name: not_after
       isArray: false
       description: End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given.
@@ -1522,7 +1522,7 @@ script:
       description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The entry ID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
       description: File size.
@@ -1628,7 +1628,7 @@ script:
       description: File name.
       type: string
     - contextPath: InfoFile.EntryID
-      description: The entry ID of the report
+      description: The entry ID of the report.
       type: string
     - contextPath: InfoFile.Size
       description: File size.
@@ -1769,7 +1769,7 @@ script:
       auto: PREDEFINED
     - name: certificate_subject_dn
       isArray: false
-      description: The Distinguished Name of the user in certificate
+      description: The Distinguished Name of the user in certificate.
       required: false
       secret: false
       default: false
@@ -2180,7 +2180,7 @@ script:
       description: Flags related to login, such as prevent_ui_login.
       type: Unknown
   - deprecated: false
-    description: Returns a list of users. 
+    description: Returns a list of users.
     name: ciphertrust-users-list
     arguments:
     - name: name
@@ -2381,7 +2381,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.95440
+  dockerimage: demisto/py3-tools:1.0.0.98662
   feed: false
   isfetch: false
   runonce: false

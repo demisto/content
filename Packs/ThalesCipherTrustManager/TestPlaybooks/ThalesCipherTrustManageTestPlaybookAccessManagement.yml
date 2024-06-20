@@ -1,6 +1,5 @@
-id: 613bbfc7-6c4e-40bf-816d-59257686091b
-version: 7
-vcShouldKeepItemLegacyProdMachine: false
+id: Thales CipherTrust Test Playbook - Access Management
+version: -1
 name: Thales CipherTrust Test Playbook - Access Management
 starttaskid: "0"
 tasks:
@@ -14,6 +13,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "13"
@@ -117,9 +117,7 @@ tasks:
       id: b624c41e-1b54-4197-8de2-5117b970650c
       version: -1
       name: ciphertrust-group-list
-      description: Returns a list of group  Command arguments can be used to filter
-        the results.Groups can be filtered for user or client membership. Connection
-        filter applies only to user group membership and NOT to clients.
+      description: Returns a list of group  Command arguments can be used to filter the results.Groups can be filtered for user or client membership. Connection filter applies only to user group membership and NOT to clients.
       script: CipherTrust|||ciphertrust-group-list
       type: regular
       iscommand: true
@@ -188,8 +186,7 @@ tasks:
       id: 1e18f035-3467-49bb-83d0-89b395194e4b
       version: -1
       name: ciphertrust-users-list
-      description: 'Returns a list of user  Command arguments can be used to filter
-        the results. The results can be filtered, using the command arguments. '
+      description: 'Returns a list of user  Command arguments can be used to filter the results. The results can be filtered, using the command arguments. '
       script: CipherTrust|||ciphertrust-users-list
       type: regular
       iscommand: true
@@ -269,9 +266,7 @@ tasks:
       id: fcbc562b-f99c-47a9-8cae-2ed5352932a4
       version: -1
       name: ciphertrust-user-to-group-add
-      description: 'Add a user to a group. This command is idempotent: calls to add
-        a user to a group in which they already belong will return an identical, OK
-        response.'
+      description: 'Add a user to a group. This command is idempotent: calls to add a user to a group in which they already belong will return an identical, OK response.'
       script: CipherTrust|||ciphertrust-user-to-group-add
       type: regular
       iscommand: true
@@ -308,10 +303,7 @@ tasks:
       id: 5f13bef2-3585-40de-8e8a-227331ffa09c
       version: -1
       name: ciphertrust-user-update
-      description: Change the properties of a user. For instance the name, the password,
-        or metadata. Permissions would normally restrict this route to users with
-        admin privileges. Non admin users wishing to change their own passwords should
-        use the ciphertrust-user-password-change command.
+      description: Change the properties of a user. For instance the name, the password, or metadata. Permissions would normally restrict this route to users with admin privileges. Non admin users wishing to change their own passwords should use the ciphertrust-user-password-change command.
       script: CipherTrust|||ciphertrust-user-update
       type: regular
       iscommand: true
@@ -385,10 +377,7 @@ tasks:
       id: aaad0f18-1d39-40a9-8ce6-87255a669f30
       version: -1
       name: ciphertrust-user-delete
-      description: Deletes a user given the user's user-id. If the current user is
-        logged into a sub-domain, the user is deleted from that sub-domain. If the
-        current user is logged into the root domain, the user is deleted from all
-        domains it belongs to.
+      description: Deletes a user given the user's user-id. If the current user is logged into a sub-domain, the user is deleted from that sub-domain. If the current user is logged into the root domain, the user is deleted from all domains it belongs to.
       script: CipherTrust|||ciphertrust-user-delete
       type: regular
       iscommand: true
@@ -547,3 +536,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.10.0
+description: ''
