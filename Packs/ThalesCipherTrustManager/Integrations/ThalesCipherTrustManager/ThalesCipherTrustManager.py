@@ -380,7 +380,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-        tuple[int, int]:
+    tuple[int, int]:
     """
     Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
     If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
@@ -910,9 +910,11 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
             allowed_client_types=args.get(ALLOWED_CLIENT_TYPES),
             password_policy=args.get(PASSWORD_POLICY),
             return_groups=optional_arg_to_bool(args.get(RETURN_GROUPS)), )
+
         raw_response = client.get_users_list(params=params)
         outputs = raw_response.get('resources', [])
         hr_title = 'Users'
+
     hr = ciphertrust_table_to_markdown(hr_title, data=raw_response,
                                        keys=['username', 'name', 'email', 'created_at', 'updated_at', 'expires_at', 'user_id',
                                              'last_login', 'logins_count', 'last_failed_login_at', 'password_changed_at',
@@ -1048,39 +1050,38 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
     if local_ca_id := args.get(
-            LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+        LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
         outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
         return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
-        return CommandResults(
-            outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
-            outputs=outputs,
-            raw_response=raw_response,
-            readable_output=hr_local_ca(raw_response),
-        )
+        outputs = [outputs]
+        hr = hr_local_ca(raw_response)
+    else:
 
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
-                                                       args.get(PAGE),
-                                                       args.get(PAGE_SIZE))
-    params = assign_params(
-        skip=skip,
-        limit=limit,
-        subject=args.get(SUBJECT),
-        issuer=args.get(ISSUER),
-        state=args.get(STATE),
-        cert=args.get(CERT),
-    )
-    raw_response = client.get_local_ca_list(params=params)
+        skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
+                                                           args.get(PAGE),
+                                                           args.get(PAGE_SIZE))
+        params = assign_params(
+            skip=skip,
+            limit=limit,
+            subject=args.get(SUBJECT),
+            issuer=args.get(ISSUER),
+            state=args.get(STATE),
+            cert=args.get(CERT),
+        )
+        raw_response = client.get_local_ca_list(params=params)
+        outputs = [remove_key_from_outputs(local_ca_entry, ['csr', 'cert'])[0] for local_ca_entry in
+                   raw_response.get('resources', [])]
+        hr = hr_local_ca_list(raw_response)
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
-        outputs=[remove_key_from_outputs(local_ca_entry, ['csr', 'cert'])[0] for local_ca_entry in
-                 raw_response.get('resources', [])],
+        outputs=outputs,
         raw_response=raw_response,
-        readable_output=hr_local_ca_list(raw_response),
+        readable_output=hr,
     )
 
 
@@ -1193,21 +1194,15 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
         issued_certificate_dict = raw_response.get('resources', [])[0] if raw_response.get('resources', []) else {}
         outputs, removed_values = remove_key_from_outputs(issued_certificate_dict, ['csr', 'cert'])
         return_file_results(removed_values[1], 'Certificate.pem')
-        return CommandResults(
-            outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-            outputs=outputs,
-            raw_response=raw_response,
-            readable_output=ciphertrust_table_to_markdown(title=f'Certificates issued by {args.get(CA_ID, "")}',
-                                                          data=raw_response,
-                                                          keys=CERTIFICATE_LIST_KEYS,
-                                                          keys_headers_mapping={},
-                                                          keys_value_mapping={}),
-        )
+        outputs = [outputs]
+
+    else:
+        outputs = [remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
+                   raw_response.get('resources', [])]
 
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
-        outputs=[remove_key_from_outputs(certificate, ['csr', 'cert'])[0] for certificate in
-                 raw_response.get('resources', [])],
+        outputs=outputs,
         raw_response=raw_response,
         readable_output=ciphertrust_table_to_markdown(title=f'Certificates issued by {args.get(CA_ID, "")}',
                                                       data=raw_response,
@@ -1303,37 +1298,37 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
         raw_response = client.get_external_ca(external_ca_id=external_ca_id)
         outputs, cert = remove_key_from_outputs(raw_response, 'cert')
         return_file_results(cert, 'Certificate.pem')
-        return CommandResults(
-            outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
-            outputs=outputs,
-            raw_response=raw_response,
-            readable_output=ciphertrust_table_to_markdown(raw_response.get('subject', ''),
-                                                          data=raw_response,
-                                                          keys=EXTERNAL_CA_KEYS,
-                                                          keys_headers_mapping={},
-                                                          keys_value_mapping={}),
+        outputs = [outputs]
+        hr = ciphertrust_table_to_markdown(raw_response.get('subject', ''),
+                                           data=raw_response,
+                                           keys=EXTERNAL_CA_KEYS,
+                                           keys_headers_mapping={},
+                                           keys_value_mapping={})
+
+    else:
+
+        skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
+                                                           args.get(PAGE),
+                                                           args.get(PAGE_SIZE))
+        params = assign_params(
+            skip=skip,
+            limit=limit,
+            subject=args.get(SUBJECT),
+            issuer=args.get(ISSUER),
+            serialNumber=args.get(SERIAL_NUMBER),
+            cert=args.get(CERT),
         )
 
-    skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
-                                                       args.get(PAGE),
-                                                       args.get(PAGE_SIZE))
-    params = assign_params(
-        skip=skip,
-        limit=limit,
-        subject=args.get(SUBJECT),
-        issuer=args.get(ISSUER),
-        serialNumber=args.get(SERIAL_NUMBER),
-        cert=args.get(CERT),
-    )
-
-    raw_response = client.get_external_ca_list(params=params)
+        raw_response = client.get_external_ca_list(params=params)
+        outputs = [remove_key_from_outputs(external_ca_entry, ['cert'])[0]
+                   for external_ca_entry in raw_response.get('resources', [])]
+        hr = hr_external_ca_list(raw_response)
 
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
-        outputs=[remove_key_from_outputs(external_ca_entry, ['cert'])[0]
-                 for external_ca_entry in raw_response.get('resources', [])],
+        outputs=outputs,
         raw_response=raw_response,
-        readable_output=hr_external_ca_list(raw_response),
+        readable_output=hr,
     )
 
 

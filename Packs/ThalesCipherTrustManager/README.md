@@ -4,11 +4,15 @@ Thales CipherTrust Manager integrates with Palo Alto Network’s Cortex XSOAR to
 
 
 ## What does this pack do?
-By leveraging Thales CipherTrust Manager with Cortex XSOAR, organizations can enhance the integration and automation of their security operations. This collaboration empowers security teams to:
-- Monitor and manage user groups and digital certificates centrally.
-- Automate responses to security incidents involving sensitive data and user credentials.
-- Enforce security policies automatically following specific triggers or alerts.
-- Improve overall security posture by ensuring quick and decisive actions are taken against potential threats.
+
+This pack provides comprehensive tools and functionalities centered around three main use cases to enhance security and management within the platform:
+
+- **Groups Management**: It allows for the organization and definition of permissions within User Defined and System Defined Groups. This is essential for structuring operational hierarchy and ensuring effective access control across the platform.
+
+- **Users Management**: The pack supports efficient user account management with secure access capabilities. It facilitates authentication across multiple systems, including LDAP and AD, enabling a streamlined and secure user management process.
+
+- **Certificate Authority Management**: The pack includes features to manage digital certificates, which are vital for maintaining secure communication channels. It enables the creation and management of both local and external Certificate Authorities (CAs), and the generation and issuance of certificates to ensure communication security.
+
 
 ### Use Cases
 
@@ -23,21 +27,8 @@ The pack includes an integration that supports several practical use cases:
 For detailed description of each of the use cases, see the integration documentation.
 
 
-## Permissions Overview
+## Permissions
 
-This section outlines the permissions and command functionalities related to managing groups and users within the system.
 For details on the Attribute-based Access Control (ABAC) permissions required for operations on resources, see the [CipherTrust Documentation](https://thalesdocs.com/ctp/cm/latest/admin/cm_admin/abac-permissions/index.html).
 
-
-### Commands Related to Groups
-
-Users and Clients can be added to Groups. Users' and Clients' group membership is available to the authorization system, so policies can use users' and clients' group membership to assign permissions.
-
-### Commands Related to Users
-
-Initially, there is only one Application Administrator, and the name of this user is "admin". The "admin" user is a special user who:
-- Cannot be deleted.
-- Will always have access to all resources.
-
-This is enforced by the policy engine to prevent accidental lockouts.
 
