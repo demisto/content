@@ -1324,50 +1324,101 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     if len(ips) == 0:
         raise ValueError('ip(s) not specified')
 
-    # trim down the list to the max number of supported results
     if len(ips) > DEFAULT_SEARCH_LIMIT:
         ips = ips[:DEFAULT_SEARCH_LIMIT]
 
-    ip_data_list: list[dict[str, Any]] = []
+    xpanse_ip_list_command_output: list[dict[str, Any]] = []
+    xsoar_indicator_list_command_output: list[dict[str, Any]] = []
     command_results = []
+    is_xsoar_timestamp_within_three_days = None
+    xsoar_indicators = []
+    ips_not_found =[]
     for ip in ips:
-        search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
-        ip_data = client.list_asset_internet_exposure_request(search_params=search_params)
-        formatted_response = ip_data.get("reply", {}).get("assets_internet_exposure", {})
-        if len(formatted_response) > 0:
-            formatted_response = formatted_response[0]
-        else:
-            continue
+        xsoar_ips_of_indicators = []
+        search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IP")
+        
+        if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
+            xsoar_indicators = search_xsoar_indicator_results.get('iocs')
+            if not isinstance(xsoar_indicators, list):
+                xsoar_indicators = [xsoar_indicators]
+            xsoar_ips_of_indicators = [entry['value'] for entry in xsoar_indicators if 'value' in entry]
 
-        formatted_response['ip'] = ip
-        ip_standard_context = Common.IP(
-            ip=ip,
-            dbot_score=Common.DBotScore(
-                indicator=ip,
-                indicator_type=DBotScoreType.IP,
-                integration_name="CortexXpanse",
-                score=Common.DBotScore.NONE,
-                reliability=demisto.params().get('integration_reliability')
-            ),
-            hostname=formatted_response.get("domain", "N/A")
-        )
-        command_results.append(CommandResults(
-            readable_output=tableToMarkdown("New IP indicator was found", {"IP": ip}),
-            indicator=ip_standard_context
-        ))
+        if ip in xsoar_ips_of_indicators:
+            xsoar_indicators = [entry for entry in xsoar_indicators if entry.get('value') == ip]
+            if len(xsoar_indicators) == 1 and "insightCache" in xsoar_indicators[0]:
+                indicator_timestamp = xsoar_indicators[0].get('insightCache').get('modified')
+                is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
 
-        ip_data_list.append({
+        if xsoar_indicators and is_xsoar_timestamp_within_three_days and "insightCache" in xsoar_indicators[0]:
+            score_data = xsoar_indicators[0].get('insightCache').get('scores').get('Cortex Xpanse - EXPANDR-9482')
+            indicator_data_subset = {
+                'name': xsoar_indicators[0].get('value'),
+                'indicator_type': xsoar_indicators[0].get('indicator_type'),
+                'score': xsoar_indicators[0].get('score'),
+                'reliability': score_data.get('reliability'),
+                'id': xsoar_indicators[0].get('id')
+            }
+            indicator_data = indicator_data_subset
+            xsoar_indicator_list_command_output.append(indicator_data)
+        elif not is_xsoar_timestamp_within_three_days:
+            search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
+            ip_data = client.list_asset_internet_exposure_request(search_params=search_params)
+            formatted_response = ip_data.get("reply", {}).get("assets_internet_exposure", {})
+            if len(formatted_response) > 0:
+                formatted_response = formatted_response[0]
+            else:
+                ips_not_found.append(ip)
+                continue
+
+            formatted_response['ip'] = ip
+            
+            ip_standard_context = Common.IP(
+                ip=ip,
+                dbot_score=Common.DBotScore(
+                    indicator=ip,
+                    indicator_type=DBotScoreType.IP,
+                    integration_name="CortexXpanse",
+                    score=Common.DBotScore.NONE,
+                    reliability=demisto.params().get('integration_reliability')
+                ),
+                hostname=formatted_response.get("domain", "N/A")
+            )
+            command_results.append(CommandResults(
+                readable_output=tableToMarkdown("IP indicator was found", {"IP": ip}),
+                indicator=ip_standard_context
+            ))
+
+        xpanse_ip_list_command_output.append({
             k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
         })
 
-    readable_output = tableToMarkdown(
-        'Xpanse IP List', ip_data_list) if len(ip_data_list) > 0 else "## No IPs found"
-    command_results.append(CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='ASM.IP',
-        outputs_key_field=['ip', 'asset_type'],
-        outputs=ip_data_list if len(ip_data_list) > 0 else None,
-    ))
+    if len(xpanse_ip_list_command_output) > 0:
+        readable_output = tableToMarkdown('Xpanse Discovered IP List', xpanse_ip_list_command_output)
+        command_results.append(CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='ASM.IP',
+            outputs_key_field=['name', 'asset_type'],
+            outputs=xpanse_ip_list_command_output,
+            raw_response=xpanse_ip_list_command_output
+        ))
+    
+    if len(xsoar_indicator_list_command_output) > 0:
+        markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
+                        "If you would additional Xpanse specific information about these please use `asm-list-asset-internet-exposure`.")
+        readable_output = tableToMarkdown(name="## Xpanse Discovered IP List (Existing Indicators)\n" + markdown_body,
+                                          t=xsoar_indicator_list_command_output)
+        command_results.append(CommandResults(
+            readable_output=readable_output,
+            outputs_prefix='ASM.IP',
+            outputs_key_field='name',
+            outputs=xsoar_indicator_list_command_output,
+            raw_response=xsoar_indicator_list_command_output
+        ))
+
+    if ips_not_found:
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown(name="IPs Not Found", t={"domain": ips_not_found})
+        ))
     return command_results
 
 
@@ -1387,7 +1438,6 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     if len(domains) == 0:
         raise ValueError('domains(s) not specified')
 
-    # trim down the list to the max number of supported results
     if len(domains) > DEFAULT_SEARCH_LIMIT:
         domains = domains[:DEFAULT_SEARCH_LIMIT]
 
@@ -1395,7 +1445,6 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     xsoar_indicator_list_command_output: list[dict[str, Any]] = []
     command_results = []
     is_xsoar_timestamp_within_three_days = None
-    markdown = None
     xsoar_indicators = []
     domains_not_found =[]
 
@@ -1446,7 +1495,6 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             xpanse_domain_list_command_output.append({
                 k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
             })
-            markdown = tableToMarkdown("New Domain indicator was found", {"Domain": domain})
 
         if domain.startswith('*.'):
             indicator_type = DBotScoreType.DOMAINGLOB
@@ -1465,7 +1513,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
         )
         
         command_results.append(CommandResults(
-            readable_output=markdown,
+            readable_output=tableToMarkdown("Domain indicator was found", {"Domain": domain}),
             indicator=domain_standard_context
         ))
 
