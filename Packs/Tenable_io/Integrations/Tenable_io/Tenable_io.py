@@ -172,9 +172,9 @@ PRODUCT = 'io'
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 50
 MAX_CHUNKS_PER_FETCH = 10
-MAX_VULNS_CHUNKS_PER_FETCH = 1
+MAX_VULNS_CHUNKS_PER_FETCH = 5
 ASSETS_FETCH_FROM = '90 days'
-VULNS_FETCH_FROM = '7 days'
+VULNS_FETCH_FROM = '1 days'
 MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = '404'
 
@@ -257,11 +257,12 @@ class Client(BaseClient):
         Returns: The UUID of the vulnerabilities export job.
 
         """
-        demisto.debug(f"last found is: {last_found}")
+        severity = argToList(demisto.params().get('severity'))
         payload: dict[str, Any] = {
             "filters":
                 {
-                    "last_found": last_found
+                    "last_found": last_found,
+                    "severity": severity
                 },
             "num_assets": num_assets
         }
@@ -612,7 +613,8 @@ def generate_export_uuid(client: Client, last_run):
         last_run: last run object.
     """
     demisto.info("Getting vulnerabilities export uuid for report.")
-    last_found: float = get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))   # type: ignore
+    prev_fetch = last_run.get("assets_last_fetch")
+    last_found: float = prev_fetch if prev_fetch else get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))   # type: ignore
 
     export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER, last_found=last_found)
 
@@ -1872,46 +1874,6 @@ def util_load_json(file_path):
         return json.loads(f.read())
 
 
-# def generate_vulns():
-#     import json
-#     import random
-#
-#     # Set the number of objects in the list
-#     num_objects = 8000000  # Change this value as needed. 10K is 4MB
-#
-#     # Template for the JSON object
-#     json_template = {
-#         "AcceptedCount": 0,
-#         "CountsBySeverity": [
-#             {
-#                 "count": 2,
-#                 "value": 0
-#             }
-#         ],
-#         "Family": "Service detection",
-#         "Id": None,  # Placeholder for the random Id
-#         "Name": "Service Detection",
-#         "RecastedCount": 0,
-#         "Severity": "None",
-#         "VulnerabilityOccurences": 2,
-#         "VulnerabilityState": "Active"
-#     }
-#
-#     # Create a list to hold all the JSON objects
-#     json_list = []
-#
-#     # Generate each object with a unique Id and add it to the list
-#     for _ in range(num_objects):
-#         obj = json_template.copy()
-#         obj["Id"] = random.randint(1000000000, 9999999999)  # Generate a random 6-digit number
-#         json_list.append(obj)
-#
-#     return json_list
-#     # # Convert the list to a JSON string
-#     # json_string = json.dumps(json_list, indent=4)
-#     # return json_string
-#     # Use the json_string in send_events_to_xsiam
-
 def main():  # pragma: no cover
     """main function, parses params and runs command functions
     """
@@ -1928,6 +1890,7 @@ def main():  # pragma: no cover
     # Events Params
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
+    severity = argToList(params.get('severity'))
 
     demisto.debug(f'Command being called is {command}')
     try:
@@ -2012,12 +1975,11 @@ def main():  # pragma: no cover
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (assets_export_uuid -> continue prev fetch, or, no vuln_export_uuid -> new fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('vuln_export_uuid'):
-                assets = run_assets_fetch(client, assets_last_run)
-                # assets = []
+                # assets = run_assets_fetch(client, assets_last_run)
+                assets = []
             # Fetch Vulnerabilities
             if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('assets_export_uuid'):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
-                # vulnerabilities = generate_vulns()
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
 
@@ -2025,8 +1987,10 @@ def main():  # pragma: no cover
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
             if vulnerabilities:
-                # demisto.debug(f"first vuln: {vulnerabilities[0]}")
+                t = vulnerabilities[0]
+                vulnerabilities = [t]
                 demisto.debug('sending vulnerabilities to XSIAM.')
+                demisto.debug(f"sending one vuln: {vulnerabilities}")
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
             demisto.info("Done Sending data to XSIAM.")
