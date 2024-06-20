@@ -225,7 +225,7 @@ def main():  # pragma: no cover
             # Execute the report creation
             out = subprocess.check_output(cmd, cwd=WORKING_DIR,
                                           stderr=subprocess.STDOUT)
-            demisto.debug(f"Sane-pdf output: {out}")
+            demisto.debug(f"Sane-pdf output: {str(out)}")
 
             with open(output_file, 'rb') as f:
                 encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
