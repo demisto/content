@@ -2,9 +2,9 @@ import json
 import demistomock as demisto
 
 from ArcannaAI import Client, get_jobs, post_event, get_event_status, \
-    send_event_feedback
+    send_event_feedback, get_decision_set, trigger_training
 
-client = Client(api_key="dummy", base_url="demisto.con", verify=False, proxy=False, default_job_id=-1)
+client = Client(base_url="demisto.con", verify=False, proxy=False, headers={})
 
 
 def util_load_json(path):
@@ -16,7 +16,7 @@ connection_json = {"connected": True}
 
 arcanna_get_decision_set_response = ['Drop', 'Escalate']
 
-arcanna_trigger_train_Response = {
+arcanna_trigger_train_response = {
     "status": "OK",
     "error_message": ""
 }
@@ -92,7 +92,7 @@ def test_arcanna_get_decision_set(mocker):
         "job_id": 10
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_results = get_decision_set(client, 1201, command_args)
+    command_result = get_decision_set(client, 1201, command_args)
     assert command_result.outputs_prefix == "Arcanna.Event"
     assert command_result.outputs_key_field == "decision_set"
     assert isinstance(command_result.raw_response['decision_set'], list)

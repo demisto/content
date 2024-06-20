@@ -80,6 +80,44 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
+def get_default_job_id(client: Client) -> CommandResults:
+    response = 1201
+    readable_output = f'## {response}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Arcanna.Default_Job_Id',
+        outputs=response
+    )
+
+
+def set_default_job_id(client: Client, args: dict[str, Any]) -> CommandResults:
+    job_id = 1201
+    return get_default_job_id(client)
+
+
+def send_bulk_events(client: Client, feature_mapping_field: str, args: dict[str, Any]) -> CommandResults:
+    readable_output = f' ## Arcanna send bulk results: {response}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Arcanna.Bulk',
+        outputs_key_field='status',
+        outputs={'status': 'deprecated'}
+    )
+
+
+def get_feedback_field(params: dict[str, Any]) -> CommandResults:
+    response = "deprecated"
+    readable_output = f' ## Get feedback returned results: {response}'
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Arcanna.FeedbackField',
+        outputs=response
+    )
+
+
 def test_module(client: Client) -> str:
     try:
         response = client.test_arcanna()
@@ -198,15 +236,15 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
 
 
 @polling_function('get_polling_event_status')
-def get_polling_event_status_command(args: Dict[str, Any], client: Client) -> CommandResults:
+def get_polling_event_status_command(args: Dict[str, Any], client: Client) -> PollResult:
     job_id = args.get("job_id", args.get("default_job_id"))
-    event_id = args.get("event_id")
+    event_id = str(args.get("event_id"))
     result = client.get_event_status(job_id, event_id)
-    successful_response = result.status != 'pending_inference'
+    successful_response = result.json().get("status", 'pending_inference') != 'pending_inference'
 
     if successful_response:
-        success_return = result
-        return PollResult(success_return)
+        response = show_successful_response(result)
+        return PollResult(response)
     else:
         error_response = CommandResults(raw_response=result, readable_output='Decision not ready', entry_type=entryTypes['error'])
         return PollResult(continue_to_poll=True, response=error_response)
@@ -215,7 +253,7 @@ def get_polling_event_status_command(args: Dict[str, Any], client: Client) -> Co
 def get_event_status(client: Client, default_job_id: int, args: Dict[str, Any]) -> CommandResults:
     args["default_job_id"] = default_job_id
     job_id = args.get("job_id", default_job_id)
-    event_id = args.get("event_id")
+    event_id = str(args.get("event_id"))
     polling = args.get("polling", 'false')
     result = None
     if polling == 'false':
@@ -301,7 +339,8 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy
         )
-
+        # Deprecated. For BC purposes
+        feature_mapping = {}
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result_test = test_module(client)
@@ -327,6 +366,18 @@ def main() -> None:
         elif demisto.command() == "arcanna-send-event-feedback":
             result_send_feedback = send_event_feedback(client, default_job_id, demisto.args())
             return_results(result_send_feedback)
+        elif demisto.command() == "arcanna-get-default-job-id":
+            result_get_default_id = get_default_job_id(client)
+            return_results(result_get_default_id)
+        elif demisto.command() == "arcanna-set-default-job-id":
+            result_set_default_id = set_default_job_id(client, demisto.args())
+            return_results(result_set_default_id)
+        elif demisto.command() == "arcanna-send-bulk-events":
+            result_bulk = send_bulk_events(client, feature_mapping, demisto.args())
+            return_results(result_bulk)
+        elif demisto.command() == "arcanna-get-feedback-field":
+            result_feedback_field = get_feedback_field(demisto.params())
+            return_results(result_feedback_field)
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
