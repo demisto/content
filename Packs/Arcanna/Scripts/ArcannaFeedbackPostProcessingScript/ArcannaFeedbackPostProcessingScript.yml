@@ -11,7 +11,7 @@ args:
 - default: true
   description: aaa.
   name: closing_reason
-comment: Deprecated. NOT_USED No available replacement.
+comment: Deprecated. No available replacement.
 commonfields:
   id: ArcannaFeedbackPostProcessing
   version: -1
