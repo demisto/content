@@ -814,7 +814,7 @@ def test_local_ca_list_command_id_provided(mock_get_local_ca):
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == LOCAL_CA_CONTEXT_OUTPUT_PREFIX
-    assert result.outputs == mock_outputs
+    assert result.outputs == [mock_outputs]
     assert result.raw_response == mock_get_local_ca.return_value
 
     args = {"chained": "true"}

@@ -380,7 +380,7 @@ class CipherTrustClient(BaseClient):
 
 
 def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
-    tuple[int, int]:
+        tuple[int, int]:
     """
     Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
     If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
@@ -1050,7 +1050,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
     if local_ca_id := args.get(
-        LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+            LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )
