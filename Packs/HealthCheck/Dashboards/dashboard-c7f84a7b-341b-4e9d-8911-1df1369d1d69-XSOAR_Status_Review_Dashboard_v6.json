@@ -14,7 +14,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.131250827Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -58,13 +57,8 @@
                 "propagationLabels": [],
                 "query": "-category:job and -status:archived ",
                 "sequenceNumber": 440575642,
-                "shouldCommit": false,
                 "sizeInBytes": 736,
-                "sortValues": [
-                    "widget_active-incidents-by-severity"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "column"
@@ -83,7 +77,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.127666276Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -122,14 +115,9 @@
                 "propagationLabels": [],
                 "query": "status:active -category:job",
                 "sequenceNumber": 440575584,
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 696,
-                "sortValues": [
-                    "widget_top-active-playbooks"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "column"
@@ -148,7 +136,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-01T09:18:11.46553187Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -184,10 +171,8 @@
                 ],
                 "query": "-category:job",
                 "sequenceNumber": 480420300,
-                "shouldCommit": false,
                 "sizeInBytes": 632,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "number"
@@ -206,7 +191,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-01T09:19:52.695257225Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -247,10 +231,8 @@
                 ],
                 "query": "-category:job",
                 "sequenceNumber": 480420473,
-                "shouldCommit": false,
                 "sizeInBytes": 705,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "pie"
@@ -269,7 +251,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.126046424Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -353,14 +334,9 @@
                 "propagationLabels": [],
                 "query": "type:integration",
                 "sequenceNumber": 440575558,
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 1091,
-                "sortValues": [
-                    "widget_command-execution-count-per-command"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "pie"
@@ -379,7 +355,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-01T09:25:03.769858465Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -421,10 +396,8 @@
                 ],
                 "query": "type:integration and apiResponseType:QuotaError",
                 "sequenceNumber": 480421054,
-                "shouldCommit": false,
                 "sizeInBytes": 736,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "trend"
@@ -443,7 +416,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.13172364Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -501,13 +473,8 @@
                 "propagationLabels": [],
                 "query": "type:playbook",
                 "sequenceNumber": 440575646,
-                "shouldCommit": false,
                 "sizeInBytes": 873,
-                "sortValues": [
-                    "widget_number-of-failed-playbooks"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "trend"
@@ -526,7 +493,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.131339466Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -607,16 +573,11 @@
                 "prevName": "Playbook run errors",
                 "primaryTerm": 14,
                 "propagationLabels": [],
-                "query": "type:playbook and errorCount:\u003e0",
+                "query": "type:playbook and errorCount:>0",
                 "sequenceNumber": 440575643,
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 1100,
-                "sortValues": [
-                    "widget_playbooks-with-errors"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "pie"
@@ -635,7 +596,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.126394266Z",
                 "dataType": "tasks",
                 "dateRange": {
@@ -716,14 +676,9 @@
                 "propagationLabels": [],
                 "query": "state:Error",
                 "sequenceNumber": 440575563,
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 1061,
-                "sortValues": [
-                    "widget_tasks-errors"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "pie"
@@ -742,7 +697,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.131856674Z",
                 "dataType": "indicators",
                 "dateRange": {
@@ -785,13 +739,8 @@
                 "propagationLabels": [],
                 "query": "expirationStatus:active",
                 "sequenceNumber": 440575648,
-                "shouldCommit": false,
                 "sizeInBytes": 763,
-                "sortValues": [
-                    "widget_058c56ef-b78f-4318-8ec9-a20a3c298c44"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "column"
@@ -810,7 +759,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.131856674Z",
                 "dataType": "indicators",
                 "dateRange": {
@@ -853,13 +801,8 @@
                 "propagationLabels": [],
                 "query": "expirationStatus:expired",
                 "sequenceNumber": 440575648,
-                "shouldCommit": false,
                 "sizeInBytes": 763,
-                "sortValues": [
-                    "widget_058c56ef-b78f-4318-8ec9-a20a3c298c44"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "column"
@@ -878,7 +821,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.131856674Z",
                 "dataType": "indicators",
                 "dateRange": {
@@ -921,13 +863,8 @@
                 "propagationLabels": [],
                 "query": "",
                 "sequenceNumber": 440575648,
-                "shouldCommit": false,
                 "sizeInBytes": 763,
-                "sortValues": [
-                    "widget_058c56ef-b78f-4318-8ec9-a20a3c298c44"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 0,
                 "widgetType": "pie"
@@ -946,7 +883,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T05:07:04.561023106Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -998,10 +934,8 @@
                 ],
                 "query": "getAutomationsCount",
                 "sequenceNumber": 481742472,
-                "shouldCommit": false,
                 "sizeInBytes": 660,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -1020,7 +954,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T05:07:36.860731508Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -1072,10 +1005,8 @@
                 ],
                 "query": "getPlaybooksCount",
                 "sequenceNumber": 481742544,
-                "shouldCommit": false,
                 "sizeInBytes": 642,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -1094,7 +1025,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-15T06:23:15.043513621Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -1130,10 +1060,8 @@
                 ],
                 "query": "getContentPackStatus",
                 "sequenceNumber": 482329414,
-                "shouldCommit": false,
                 "sizeInBytes": 661,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -1152,7 +1080,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.127120085Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -1235,14 +1162,9 @@
                 "propagationLabels": [],
                 "query": "type:integration",
                 "sequenceNumber": 440575575,
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 1149,
-                "sortValues": [
-                    "widget_error-count-per-instance"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "pie"
@@ -1261,7 +1183,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.130284041Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -1345,14 +1266,9 @@
                 "propagationLabels": [],
                 "query": "type:automation",
                 "sequenceNumber": 440575626,
-                "shouldCommit": false,
                 "size": 5,
                 "sizeInBytes": 1247,
-                "sortValues": [
-                    "widget_failed-automation-executions-per-incident-types-top-5"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "bar"
@@ -1371,7 +1287,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-06-07T09:05:58.498570607Z",
                 "dataType": "metrics",
                 "dateRange": {
@@ -1410,13 +1325,8 @@
                 ],
                 "query": "type:automation",
                 "sequenceNumber": 409545453,
-                "shouldCommit": false,
                 "sizeInBytes": 687,
-                "sortValues": [
-                    "widget_84bc34a7-0221-4bb2-8ad9-d99f8410fa16"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "number"
@@ -1435,7 +1345,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:03:07.946989122Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -1471,10 +1380,8 @@
                 ],
                 "query": "getPlaybooksHealthStatus",
                 "sequenceNumber": 483646899,
-                "shouldCommit": false,
                 "sizeInBytes": 633,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -1493,7 +1400,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:05:43.008856991Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -1520,17 +1426,15 @@
                 "packID": "",
                 "packName": "",
                 "params": {},
-                "prevName": "Big Incidents \u0026 Indicators Status",
+                "prevName": "Big Incidents & Indicators Status",
                 "primaryTerm": 15,
                 "propagationLabels": [
                     "all"
                 ],
                 "query": "getInvHealthStatus",
                 "sequenceNumber": 483647188,
-                "shouldCommit": false,
                 "sizeInBytes": 790,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -1549,7 +1453,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:19:29.846775618Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -1576,7 +1479,7 @@
                 "packID": "",
                 "packName": "",
                 "params": {
-                    "text": "# \u003c-:-\u003e-----------------------------------------    Incidents    -----------------------------------------------"
+                    "text": "# <-:->-----------------------------------------    Incidents    -----------------------------------------------"
                 },
                 "prevName": "------",
                 "primaryTerm": 15,
@@ -1585,10 +1488,8 @@
                 ],
                 "query": "",
                 "sequenceNumber": 483648731,
-                "shouldCommit": false,
                 "sizeInBytes": 699,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -1607,7 +1508,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:19:29.846775618Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -1634,7 +1534,7 @@
                 "packID": "",
                 "packName": "",
                 "params": {
-                    "text": "# \u003c-:-\u003e---------------------------------------    Playbooks    ----------------------------------------------"
+                    "text": "# <-:->---------------------------------------    Playbooks    ----------------------------------------------"
                 },
                 "prevName": "------",
                 "primaryTerm": 15,
@@ -1643,10 +1543,8 @@
                 ],
                 "query": "",
                 "sequenceNumber": 483648731,
-                "shouldCommit": false,
                 "sizeInBytes": 699,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -1665,7 +1563,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:19:29.846775618Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -1692,7 +1589,7 @@
                 "packID": "",
                 "packName": "",
                 "params": {
-                    "text": "# \u003c-:-\u003e---------------------------------------    Automations    --------------------------------------------"
+                    "text": "# <-:->---------------------------------------    Automations    --------------------------------------------"
                 },
                 "prevName": "------",
                 "primaryTerm": 15,
@@ -1701,10 +1598,8 @@
                 ],
                 "query": "",
                 "sequenceNumber": 483648731,
-                "shouldCommit": false,
                 "sizeInBytes": 699,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -1723,7 +1618,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:19:29.846775618Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -1750,7 +1644,7 @@
                 "packID": "",
                 "packName": "",
                 "params": {
-                    "text": "# \u003c-:-\u003e-----------------------------------------    Indicators    ----------------------------------------------"
+                    "text": "# <-:->-----------------------------------------    Indicators    ----------------------------------------------"
                 },
                 "prevName": "------",
                 "primaryTerm": 15,
@@ -1759,10 +1653,8 @@
                 ],
                 "query": "",
                 "sequenceNumber": 483648731,
-                "shouldCommit": false,
                 "sizeInBytes": 699,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -1781,7 +1673,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.132279811Z",
                 "dataType": "indicators",
                 "dateRange": {
@@ -1823,13 +1714,8 @@
                 "propagationLabels": [],
                 "query": "(expirationStatus:active or expirationStatus:\"\") and -sourceBrands:\"\"",
                 "sequenceNumber": 440575654,
-                "shouldCommit": false,
                 "sizeInBytes": 832,
-                "sortValues": [
-                    "widget_8166df3f-d62e-4f33-8930-ef665ab33d65"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 21,
                 "widgetType": "line"
@@ -1848,7 +1734,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:19:29.846775618Z",
                 "dataType": "incidents",
                 "dateRange": {
@@ -1875,7 +1760,7 @@
                 "packID": "",
                 "packName": "",
                 "params": {
-                    "text": "# \u003c-:-\u003e-----------------------------------------    System    ----------------------------------------------"
+                    "text": "# <-:->-----------------------------------------    System    ----------------------------------------------"
                 },
                 "prevName": "------",
                 "primaryTerm": 15,
@@ -1884,10 +1769,8 @@
                 ],
                 "query": "",
                 "sequenceNumber": 483648731,
-                "shouldCommit": false,
                 "sizeInBytes": 699,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -1906,7 +1789,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-24T10:09:08.369272678Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -1940,13 +1822,8 @@
                 ],
                 "query": "getSystemHealthStatus",
                 "sequenceNumber": 483647565,
-                "shouldCommit": false,
                 "sizeInBytes": 628,
-                "sortValues": [
-                    "widget_c69c8589-fa02-416a-8e04-bca853f45fa5"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -1965,7 +1842,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-15T05:43:33.700434629Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -2001,13 +1877,8 @@
                 ],
                 "query": "getDiskSpaceStatus",
                 "sequenceNumber": 482324597,
-                "shouldCommit": false,
                 "sizeInBytes": 619,
-                "sortValues": [
-                    "widget_86de75f5-f346-4558-8a75-85e8d7f83d44"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -2026,7 +1897,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-15T05:41:31.113654022Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -2062,13 +1932,8 @@
                 ],
                 "query": "getDockerContainersCount",
                 "sequenceNumber": 482324367,
-                "shouldCommit": false,
                 "sizeInBytes": 635,
-                "sortValues": [
-                    "widget_5eaf954c-bd68-4d36-870d-34deee20db3a"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -2087,7 +1952,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-04-11T06:11:04.142834437Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -2121,13 +1985,8 @@
                 ],
                 "query": "getWorkersCount",
                 "sequenceNumber": 481750004,
-                "shouldCommit": false,
                 "sizeInBytes": 589,
-                "sortValues": [
-                    "widget_59173fc6-3b78-4e66-86e3-7b86044a2982"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "text"
@@ -2146,7 +2005,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.127925145Z",
                 "dataType": "system",
                 "dateRange": {
@@ -2199,13 +2057,8 @@
                 "propagationLabels": [],
                 "query": "disk.usedPercent./",
                 "sequenceNumber": 440575589,
-                "shouldCommit": false,
                 "sizeInBytes": 784,
-                "sortValues": [
-                    "widget_disk-current-usage"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "number"
@@ -2224,7 +2077,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.129416469Z",
                 "dataType": "system",
                 "dateRange": {
@@ -2277,13 +2129,8 @@
                 "propagationLabels": [],
                 "query": "cpu.usedPercent",
                 "sequenceNumber": 440575613,
-                "shouldCommit": false,
                 "sizeInBytes": 778,
-                "sortValues": [
-                    "widget_cpu-current-usage"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "number"
@@ -2302,7 +2149,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2023-11-30T09:50:42.132384394Z",
                 "dataType": "system",
                 "dateRange": {
@@ -2355,13 +2201,8 @@
                 "propagationLabels": [],
                 "query": "memory.usedPercent",
                 "sequenceNumber": 440575656,
-                "shouldCommit": false,
                 "sizeInBytes": 790,
-                "sortValues": [
-                    "widget_memory-current-usage"
-                ],
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 27,
                 "widgetType": "number"
@@ -2380,7 +2221,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-05-12T04:40:13.543518283Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -2416,10 +2256,8 @@
                 ],
                 "query": "getDetachedPlaybooks",
                 "sequenceNumber": 486229177,
-                "shouldCommit": false,
                 "sizeInBytes": 629,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -2438,7 +2276,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-05-12T04:36:58.261807588Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -2480,10 +2317,8 @@
                 ],
                 "query": "getCustomPlaybooks",
                 "sequenceNumber": 486228769,
-                "shouldCommit": false,
                 "sizeInBytes": 712,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -2502,7 +2337,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-05-12T04:39:17.628543492Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -2538,10 +2372,8 @@
                 ],
                 "query": "getCustomAutomations",
                 "sequenceNumber": 486229062,
-                "shouldCommit": false,
                 "sizeInBytes": 683,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -2560,7 +2392,6 @@
                 "Cache": null,
                 "cacheVersn": 0,
                 "category": "",
-                "commitMessage": "",
                 "created": "2024-05-12T04:40:33.839899004Z",
                 "dataType": "scripts",
                 "dateRange": {
@@ -2596,10 +2427,8 @@
                 ],
                 "query": "getDetachedAutomations",
                 "sequenceNumber": 486229230,
-                "shouldCommit": false,
                 "sizeInBytes": 635,
                 "toServerVersion": "",
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
                 "version": 1,
                 "widgetType": "table"
@@ -2621,6 +2450,6 @@
     "version": -1,
     "fromVersion": "6.10.0",
     "toVersion": "6.99.0",
-    "description": "XSOAR review dashboard can be used to get the playbooks, automations \u0026 system status in last 30 days. Note that 'CORE REST API' integration need to be enabled with admin credentials before start using this dashboard",
+    "description": "XSOAR review dashboard can be used to get the playbooks, automations & system status in last 30 days. Note that 'CORE REST API' integration need to be enabled with admin credentials before start using this dashboard",
     "isPredefined": true
 }
