@@ -20,6 +20,7 @@ class StderrRedirect:
 
     def __exit__(self, exc_type, exc_value, exc_traceback):
         demisto.debug(f'exiting StderrRedirect: {exc_type=}, {exc_value=}, {exc_traceback=}')
+        self.temp_stderr.seek(0)
         demisto.debug(f'stderr: {self.temp_stderr.read()}')
         os.dup2(self.old_stderr, sys.stderr.fileno())  # restore stderr
         os.close(self.old_stderr)
