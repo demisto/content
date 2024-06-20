@@ -243,7 +243,8 @@ def test_call_return_http_error(mock_http_request: Mock):
 
 def test_call_with_kwargs(mocker):
     """
-    Test the `_call` method to ensure it correctly processes additional keyword arguments and sends a request with the expected parameters.
+    Test the `_call` method to ensure it correctly processes
+    additional keyword arguments and sends a request with the expected parameters.
     """
 
     import os
@@ -523,7 +524,6 @@ def test_playbook_alert_details_multi_input(mocker):
         "alert_ids": mock_alert_ids,
         "detail_sections": mock_detail_sections,
     }
-    mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
 
     mocker.patch.object(demisto, "command", return_value=mock_command_name)
     mocker.patch.object(demisto, "args", return_value=mock_command_args)
@@ -554,7 +554,6 @@ def test_playbook_alert_update_multi_input(mocker):
     mock_alert_ids = "input1,input2"
 
     mock_command_args = {"alert_ids": mock_alert_ids}
-    mock_args_processed = {k: v.split(",") for k, v in mock_command_args.items()}
 
     mocker.patch.object(demisto, "command", return_value=mock_command_name)
     mocker.patch.object(demisto, "args", return_value=mock_command_args)
@@ -587,13 +586,6 @@ def test_playbook_alert_search_multi_input(mocker):
     mock_command_args = {
         "priority": mock_priority,
         "playbook_alert_status": mock_detail_sections,
-    }
-    mock_args_processed = {
-        "playbook_alert_status": [
-            "sdadwa",
-            "adinhw0ijd",
-        ],
-        "priority": "high",
     }
 
     mocker.patch.object(demisto, "command", return_value=mock_command_name)

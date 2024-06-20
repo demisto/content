@@ -772,4 +772,4 @@ script:
   isfetch: true
 tests:
 - No tests
-fromversion: 6.9.0
+fromversion: 6.0.0

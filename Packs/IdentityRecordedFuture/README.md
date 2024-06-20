@@ -108,5 +108,3 @@ This pack depends on the following content packs:
 - **Active Directory Query**
 
 ---
-
-Copyright (C) 2020-2024 Recorded Future, Inc.
