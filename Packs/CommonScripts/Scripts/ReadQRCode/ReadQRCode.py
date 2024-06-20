@@ -1,52 +1,52 @@
 import demistomock as demisto  # noqa
 from CommonServerPython import *  # noqa
+from typing import IO
 from pyzbar import pyzbar
 import cv2
+import tempfile
 # pylint: disable=E1101  # disable pylint not recognizing cv2's attributes.
 
 
+class StderrRedirect:
+    '''Context manager to redirect stderr.'''
+    temp_stderr: IO
+    old_stderr: int
+
+    def __enter__(self):
+        demisto.debug('entering StderrRedirect')
+        self.temp_stderr = tempfile.TemporaryFile()
+        self.old_stderr = os.dup(sys.stderr.fileno())  # make a copy of stderr
+        os.dup2(self.temp_stderr.fileno(), sys.stderr.fileno())  # redirect stderr to the temporary file
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        demisto.debug(f'exiting StderrRedirect: {exc_type=}, {exc_value=}, {exc_traceback=}')
+        demisto.debug(f'stderr: {self.temp_stderr.read()}')
+        os.dup2(self.old_stderr, sys.stderr.fileno())  # restore stderr
+        os.close(self.old_stderr)
+        self.temp_stderr.close()
+
+
 def read_qr_code(filename: str) -> list:
-    demisto.debug('read_qr_code: enter')
-    # debug_message = 'successfully decoded with pyzbar'
-    # with pipes() as (out, err):  # don't use demisto.debug under the context manager.
 
-    #  for debug purposes:
-    import os
-    demisto.debug('\n'.join((
-        '\nFile info:'
-        f'name: {filename}',
-        f'size: {os.path.getsize(filename)}',
-        f'created: {os.path.getctime(filename)}',
-        f'last modified: {os.path.getmtime(filename)}',
-    )))
+    with StderrRedirect():  # redirect stderr to catch cv2 warnings which are sent directly to stderr 
 
-    img = cv2.imread(filename)
-    demisto.debug('decoded image')
-    text = [d.data.decode() for d in pyzbar.decode(img)]
-    demisto.debug(f'{text=}')
+        img = cv2.imread(filename)
+        demisto.debug(f'loaded file: {filename}')
+        text = [d.data.decode() for d in pyzbar.decode(img)]
+        demisto.debug(f'pybar decode: {text}')
 
-    if not text:
-        # debug_message = "Couldn't extract text with pyzbar, retrying with cv2."
-        demisto.debug("Couldn't extract text with pyzbar, retrying with cv2.")
-        detect = cv2.QRCodeDetector()
-        demisto.debug('created detect object')
-        text, *_ = detect.detectAndDecode(img)
-        demisto.debug(f'{text=}')
+        if not text:
+            demisto.debug("Couldn't extract text with pyzbar, retrying with cv2.")
+            text = [cv2.QRCodeDetector().detectAndDecode(img)[0]]
 
-    # demisto.debug(debug_message)
-    # demisto.debug(f'pipes stdout: {out.read()}, sterr: {err.read()}')
-    demisto.debug('read_qr_code: exit')
-    return text if isinstance(text, list) else [text]
+    return text
 
 
 def extract_indicators_from_text(text: list) -> dict:
-    demisto.debug('extract_indicators_from_text: enter')
     res = demisto.executeCommand('extractIndicators', {'text': text})
-    demisto.debug(f'extract_indicators_from_text: {res=}')
     if is_error(res):
         demisto.debug(f'Error in "extractIndicators": {get_error(res)}')
         return {}
-    demisto.debug('extract_indicators_from_text: exit')
     return json.loads(res[0]['Contents'])  # type: ignore
 
 
@@ -60,8 +60,9 @@ def extract_info_from_qr_code(entry_id: str) -> CommandResults:
         indicators = extract_indicators_from_text(text)
     except (cv2.error, TypeError) as e:  # generic error raised by cv2
         raise DemistoException('Error parsing file. Please make sure it is a valid image file.') from e
-    except ValueError:  # raised by demisto.getFilePath when the entry_id is not found
-        raise DemistoException(f'Invalid entry ID: {entry_id=}')
+    except ValueError as e:  # raised by demisto.getFilePath when the entry_id is not found
+        demisto.debug(f'ValueError: {e}, {e.args}')
+        raise DemistoException(f'Invalid entry ID: {entry_id=}') from e
     return CommandResults(
         outputs_prefix='QRCodeReader',
         outputs=({'Text': text} | indicators),
@@ -80,6 +81,4 @@ def main():
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    demisto.debug('begin ReadQRCode')
     main()
-    demisto.debug('end ReadQRCode')
