@@ -15,7 +15,7 @@ Supported authentication methods:
 ## Security and Compliance Integration Changes
 
 ### Overview
-In response to Microsoft's deprecation of the App ID, we need to make the following changes to our app registration in Azure:
+In response to Microsoft's deprecation of the App ID, the following changes to app registration in Azure are required:
 1. Add the `Exchange.Manage` delegated permissions.
 2. Enable "Allow public client flows" in the authentication section.
 3. Add an app secret to the app registration.
