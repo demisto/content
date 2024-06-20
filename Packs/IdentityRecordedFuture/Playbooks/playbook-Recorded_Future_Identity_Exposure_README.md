@@ -1,4 +1,4 @@
-This playbook was developed as a template response when an Identity Exposure Playbook Alert has been triggered.
+This playbook is a common baseline response for an Identity Exposure Playbook Alert.
 
 ## Dependencies
 
