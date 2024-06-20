@@ -1492,7 +1492,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             raw_response=xsoar_indicator_list_command_output
         ))
 
-    if not xsoar_indicator_list_command_output or not xpanse_domain_list_command_output:
+    if domains_not_found:
         command_results.append(CommandResults(
             readable_output=tableToMarkdown(name="Domains Not Found", t={"domain": domains_not_found})
         ))
