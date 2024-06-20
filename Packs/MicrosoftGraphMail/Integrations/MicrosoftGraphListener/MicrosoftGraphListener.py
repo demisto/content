@@ -22,7 +22,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
     @staticmethod
     def _get_next_run_time(fetched_emails, start_time):
         """
-        Returns received time of last email if exist, else utc time that was passed as start_time.
+        Returns received time of last email if exists, else utc time that was passed as start_time.
 
         The elements in fetched emails are ordered by modified time in ascending order,
         meaning the last element has the latest received time.
@@ -41,7 +41,7 @@ class MsGraphListenerClient(MsGraphMailBaseClient):
     @logger
     def fetch_incidents(self, last_run):
         """
-        Fetches emails from office 365 mailbox and creates incidents of parsed emails.
+        Fetches emails from Office 365 mailbox and creates incidents of parsed emails.
 
         :type last_run: ``dict``
         :param last_run:
@@ -110,7 +110,9 @@ def main():     # pragma: no cover
     """ COMMANDS MANAGER / SWITCH PANEL """
     params = demisto.params()
     # params related to common instance configuration
-    base_url = 'https://graph.microsoft.com/v1.0/'
+
+    azure_cloud = get_azure_cloud(params, "Microsoft Graph Mail Single User")
+    base_url = urljoin(azure_cloud.endpoints.microsoft_graph_resource_id, API_VERSION)
     use_ssl = not params.get('insecure', False)
     proxy = params.get('proxy', False)
     ok_codes = (200, 201, 202)
@@ -163,7 +165,6 @@ def main():     # pragma: no cover
         first_fetch_interval=first_fetch_interval,
         emails_fetch_limit=emails_fetch_limit,
         fetch_html_formatting=fetch_html_formatting,
-
         refresh_token=refresh_token,
         auth_code=auth_code,
         private_key=private_key,
@@ -171,7 +172,8 @@ def main():     # pragma: no cover
         mark_fetched_read=mark_fetched_read,
         redirect_uri=params.get('redirect_uri', ''),
         certificate_thumbprint=certificate_thumbprint,
-        managed_identities_client_id=managed_identities_client_id)
+        managed_identities_client_id=managed_identities_client_id,
+        azure_cloud=azure_cloud)
     try:
         args = demisto.args()
         command = demisto.command()

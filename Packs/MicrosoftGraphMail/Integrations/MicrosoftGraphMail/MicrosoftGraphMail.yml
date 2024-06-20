@@ -6,12 +6,29 @@ commonfields:
   id: MicrosoftGraphMail
   version: -1
 configuration:
-- defaultvalue: https://graph.microsoft.com
-  display: Server URL
+- display: Server URL
   name: url
-  required: true
+  defaultvalue: https://graph.microsoft.com
+  required: false
   type: 0
   section: Connect
+  additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
+- display: Azure Cloud
+  name: azure_cloud
+  type: 15
+  required: false
+  defaultvalue: Worldwide
+  options:
+    - Worldwide
+    - US GCC
+    - US GCC-High
+    - DoD
+    - Germany
+    - China
+    - Custom
+  section: Connect
+  advanced: true
+  additionalinfo: When selecting the Custom option, the Server URL parameter must be filled. More information about National clouds can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - displaypassword: Application ID or Client ID
   additionalinfo: See the Help tab.
   hiddenusername: true
@@ -1141,7 +1158,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.89294
+  dockerimage: demisto/crypto:1.0.0.98336
   isfetch: true
   runonce: false
   script: '-'

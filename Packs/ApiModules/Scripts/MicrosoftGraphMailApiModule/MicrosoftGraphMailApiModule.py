@@ -4,6 +4,7 @@ from MicrosoftApiModule import *  # noqa: E402
 
 
 API_DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+API_VERSION = 'v1.0'
 
 
 class MsGraphMailBaseClient(MicrosoftClient):
