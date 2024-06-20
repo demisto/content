@@ -338,15 +338,31 @@ switch (command) {
         contentType = response.Headers && response.Headers['Content-Type'] && response.Headers['Content-Type'][0];
         logDebug("DEBUG: Result type: " + contentType)
         if (contentType && contentType.indexOf('application/json') !== -1) {
-          result = JSON.parse(response.Body);
+            try {
+                logDebug("DEBUG: parse JSON response")
+                result = JSON.parse(response.Body);
+            }
+            catch(e) {
+                logDebug("DEBUG: the response.Body" + response.Body)
+                logDebug("DEBUG: We got an error during JSON.parse: " + e)
+            }
+            logDebug("DEBUG: The result after parsing: " + parsed_response_body)
         }
         if (contentType && contentType.indexOf('application/xml') !== -1) {
-          parsed_response_body = x2j(response.Body)
-          logDebug("DEBUG: The result after parsing: " + parsed_response_body)
+            try {
+                    parsed_response_body = x2j(response.Body)
+            }
+            catch(e) {
+                logDebug("DEBUG: We got an error during x2j: " + e)
+                logDebug("DEBUG: the response.Body" + response.Body)
+            }
+            logDebug("DEBUG: The result after parsing: " + parsed_response_body)
           try {
             result = JSON.parse(parsed_response_body)
           } catch(e) {
-            logDebug("DEBUG: We got an error: " + e)
+            logDebug("DEBUG: the parsed_response_body" + parsed_response_body)
+            logDebug("DEBUG: the response.Body" + response.Body)
+            logDebug("DEBUG: We got an error while parsing xml to json: " + e)
             result = {}
           }
           result = JSON.parse(parsed_response_body);
