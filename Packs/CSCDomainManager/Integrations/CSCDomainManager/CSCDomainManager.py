@@ -104,14 +104,15 @@ class Client(BaseClient):
                 headers=self._headers
             )
         except DemistoException as e:
-            if "404" in e.message:
+            if e.res is not None and e.res.status_code == 404:
+            # if "404" in e.message:
                 results = CommandResults(
                     readable_output="No results were found",
                     outputs=None,
                     raw_response=None,
                 )
             else:
-                return return_error(e)
+                raise e
         return results
 
     def get_qualified_domain_name(self, qualified_domain_name):
