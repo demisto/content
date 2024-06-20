@@ -1,0 +1,249 @@
+category: Network Security
+commonfields:
+  id: DSPM
+  version: -1
+configuration:
+- defaultvalue: https://api.dig.security/
+  display: Your DSPM server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Your Jira server URL
+  name: jiraServerUrl
+  required: true
+  type: 0
+- display: Your Jira user name (email).
+  name: jiraEmail
+  required: true
+  type: 0
+- displaypassword: API Token
+  additionalinfo: The API Token to use for jira connection
+  name: jiraApiToken
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Your XSOAR instance base URL
+  name: xsoarUrl
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key that you have created on XSOAR instance
+  name: xsoarApiKey
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  type: 15
+  required: false
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+- additionalinfo: When selected, closing the DSPM ticket is mirrored in Cortex XSOAR.
+  defaultvalue: 'false'
+  display: Close Mirrored XSOAR Incident
+  name: close_xsoar_incident
+  type: 8
+  required: false
+description: |
+  This integration fetches risk findings from Dig Security, allowing users to monitor and manage security risks identified by Dig Security in their cloud environments.
+display: DSPM
+name: DSPM
+script:
+  commands:
+  - arguments:
+    - description: 'List of rule names'
+      isArray: true
+      isOptional: true
+      name: ruleNameIn
+      required: false
+      secret: false
+    - description: 'Exact rule name'
+      isArray: false
+      isOptional: true
+      name: ruleNameEqual
+      required: false
+      secret: false
+    - description: 'List of DSPM tag keys'
+      isArray: true
+      isOptional: true
+      name: dspmTagKeyIn
+      required: false
+      secret: false
+    - description: 'Exact DSPM tag key'
+      isArray: false
+      isOptional: true
+      name: dspmTagKeyEqual
+      required: false
+      secret: false
+    - description: 'List of DSPM tag values'
+      isArray: true
+      isOptional: true
+      name: dspmTagValueIn
+      required: false
+      secret: false
+    - description: 'Exact DSPM tag value'
+      isArray: false
+      isOptional: true
+      name: dspmTagValueEqual
+      required: false
+      secret: false
+    - description: 'List of project IDs'
+      isArray: true
+      isOptional: true
+      name: projectIdIn
+      required: false
+      secret: false
+    - description: 'Exact project ID'
+      isArray: false
+      isOptional: true
+      name: projectIdEqual
+      required: false
+      secret: false
+    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]'
+      isArray: true
+      isOptional: true
+      name: cloudProviderIn
+      required: false
+      secret: false
+    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]'
+      isArray: false
+      isOptional: true
+      name: cloudProviderEqual
+      required: false
+      secret: false
+    - description: 'List of affects ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"]'
+      isArray: true
+      isOptional: true
+      name: affectsIn
+      required: false
+      secret: false
+    - description: 'Exact affect ["SECURITY", "COMPLIANCE", "GOVERNANCE", "SECURITY_AND_COMPLIANCE", "SECURITY_AND_GOVERNANCE", "COMPLIANCE_AND_GOVERNANCE","SECURITY_AND_COMPLIANCE_AND_GOVERNANCE"]'
+      isArray: false
+      isOptional: true
+      name: affectsEqual
+      required: false
+      secret: false
+    - description: 'List of statuses ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]'
+      isArray: true
+      isOptional: true
+      name: statusIn
+      required: false
+      secret: false
+    - description: 'Exact status ["OPEN", "CLOSED", "UNIMPORTANT", "WRONG", "HANDLED", "INVESTIGATING"]'
+      isArray: false
+      isOptional: true
+      name: statusEqual
+      required: false
+      secret: false
+    - description: 'Sort order'
+      isArray: true
+      isOptional: true
+      name: sort
+      required: false
+      secret: false
+    - description: 'Page number'
+      isArray: false
+      isOptional: true
+      name: page
+      required: false
+      secret: false
+    - description: 'Page size'
+      isArray: false
+      isOptional: true
+      name: size
+      required: false
+      secret: false
+    description: Retrieves risk findings matching the input criteria.
+    name: dspm-get_risk_findings
+    outputs:
+    - contextPath: DSPM.RiskFindings
+      description: List of risk findings matching the input criteria.
+      type: String
+  - arguments:
+    - description: ID of the asset to retrieve details for.
+      name: asset_id
+      required: true
+    description: Retrieves asset details for the provided asset ID.
+    name: dspm-get_asset_details
+    outputs:
+    - contextPath: DSPM.AssetDetails
+      description: Details of the asset for the provided ID.
+      type: String
+  - arguments: []
+    description: Pushes local changes to the remote system.
+    name: update-remote-system
+  - arguments:
+    description: for testing the fetch-handle method.
+    name: fetch-incidents
+  - arguments:
+    description: for getting integration config.
+    name: dspm-get-integration-cofig
+  - arguments:
+    - description: The incident ID.
+      name: id
+      required: true
+    - description: Retrieve entries that were created after lastUpdate.
+      name: lastUpdate
+      required: true
+    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+    name: get-remote-data
+  - arguments:
+    - description: Retrieve entries that were created after lastUpdate.
+      name: last_update
+      required: false
+    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
+    name: get-modified-remote-data
+  - arguments:
+    - description: 'Risk Finding ID'
+      isArray: false
+      isOptional: false
+      name: findingId
+      required: true
+    - description: Updated Status.
+      isArray: false
+      isOptional: false
+      name: status
+      required: true
+    description: Updates the status of a risk finding.
+    name: dspm-update_risk_finding_status
+    outputs:
+      - contextPath: DSPM.RiskFinding
+        description: The updated risk finding.
+        type: String
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+fromversion: '6.12'
+tests:
+- No tests (auto formatted)
+defaultclassifier: DSPM Classifier
+defaultmapperin: DSPM Incoming Mapper

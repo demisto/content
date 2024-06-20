@@ -1,0 +1,20 @@
+{
+    "name": "DSPM",
+    "description": "fetchs the risk findings from DSPM portal (formaly Dig Security).",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "DSPM",
+    "url": "",
+    "email": "",
+    "categories": [
+        "Network Security"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": []
+}
