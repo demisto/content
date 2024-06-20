@@ -16,13 +16,25 @@ This pack provides comprehensive tools and functionalities centered around three
 
 ### Use Cases
 
-The pack includes an integration that supports several practical use cases:
+This pack supports a variety of use cases essential for secure and efficient platform management:
 
-- **Groups Management**: Organize users and define permissions through User Defined and System Defined Groups, critical for maintaining operational hierarchy and effective access control within the platform.
+- **Group Management Operations**:
+  - **Creating, Deleting, Updating Groups**: Control permissions for performing specific tasks or organize users into groups.
+  - **Policy Application**: Utilize group membership to assign permissions across different policies.
 
-- **Users Management**: Secure access and manage accounts efficiently. This functionality supports authentication across various systems including LDAP and AD, ensuring robust and versatile user management capabilities.
+- **User Management Operations**:
+  - **Creating, Deleting, Editing Users**: Manage user authentication and control login behavior.
+  - **Store Application-Specific Information**: Maintain user-specific data which may include preferences or security roles.
 
-- **Certificate Authority Management**: Handle digital certificates crucial for secure communications. This includes the ability to create and manage both local and external Certificate Authorities (CAs), and generate and issue certificates, ensuring that secure communication channels are established and maintained.
+- **User to Group Association**:
+  - **Adding User to Group**: Facilitate the inclusion of users into specific groups to align with organizational policies and access control.
+
+- **Certificate Authority Management**:
+  - **Create Local and External CAs**: Establish new Certificate Authorities that can be utilized for internal interfaces and services.
+  
+- **Digital Certificates Management**:
+  - **Issue and Install Certificates**: Manage the issuance and installation of server and client digital certificates along with certificate signing requests (CSR).
+  - **Revoke and Resume Certificates**: Provide functionality to revoke or resume certificates, specifically those signed by local CAs, ensuring compliance with security standards.
 
 For detailed description of each of the use cases, see the integration documentation.
 
