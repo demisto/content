@@ -98,17 +98,18 @@ class Client(BaseClient):
     def send_get_request(self, url_suffix, params) -> Any:
         try:
             results = self._http_request(
-                method="GET",
-                url_suffix=url_suffix,
-                params=params,
-                headers=self._headers
-            )
-        except DemistoException:
-            results = CommandResults(
-                readable_output="No results were found",
-                outputs=None,
-                raw_response=None,
-            )
+                    method="GET",
+                    url_suffix=url_suffix,
+                    params=params,
+                    headers=self._headers
+                )
+        except DemistoException as e:
+            if "404" in e.message:
+                results = CommandResults(
+                    readable_output="No results were found",
+                    outputs=None,
+                    raw_response=None,
+                )
         return results
 
     def get_qualified_domain_name(self, qualified_domain_name):
