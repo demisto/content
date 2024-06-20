@@ -8,15 +8,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: a7014ced-ed3c-4876-8411-f9ab7e221d1b
+    taskid: 94abd7af-4529-41ee-8910-fad3d1c4e3f9
     type: start
     task:
-      id: a7014ced-ed3c-4876-8411-f9ab7e221d1b
+      id: 94abd7af-4529-41ee-8910-fad3d1c4e3f9
       version: -1
       name: ""
+      description: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "24"
@@ -38,10 +38,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 7aa65830-643a-4c62-87cd-ccbd5fa3833c
+    taskid: 79f3fc61-a724-41c9-8bc2-49d362cfec77
     type: regular
     task:
-      id: 7aa65830-643a-4c62-87cd-ccbd5fa3833c
+      id: 79f3fc61-a724-41c9-8bc2-49d362cfec77
       version: -1
       name: Check AD for active account
       description: Retrieves detailed information about a user account. The user can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filter is specified, all users are returned.
@@ -75,10 +75,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 7bf34c9b-a430-49fc-8ef1-bc70bcd0760d
+    taskid: a26f24b6-f1aa-4273-89f8-0ee2945c39b1
     type: collection
     task:
-      id: 7bf34c9b-a430-49fc-8ef1-bc70bcd0760d
+      id: a26f24b6-f1aa-4273-89f8-0ee2945c39b1
       version: -1
       name: Analyst Prompt | Review Account Information
       description: Determine if the exposed identity was a true positive and does the end user wish to initiate incident response actions.
@@ -144,10 +144,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 7665a258-1e09-4132-8720-3893ba17640a
+    taskid: 7b203811-b4f5-408a-8c3d-263505ad0c6d
     type: condition
     task:
-      id: 7665a258-1e09-4132-8720-3893ba17640a
+      id: 7b203811-b4f5-408a-8c3d-263505ad0c6d
       version: -1
       name: True Positive?
       description: ""
@@ -188,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 831f66bb-586f-46e1-89d9-304085e042f7
+    taskid: b902e041-d887-4c99-88f3-1696586a64b0
     type: regular
     task:
-      id: 831f66bb-586f-46e1-89d9-304085e042f7
+      id: b902e041-d887-4c99-88f3-1696586a64b0
       version: -1
       name: Disable AD account
       description: Disables an Active Directory user account.
@@ -223,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 22e5f65f-1ebb-4c06-89af-81f8d72f61d3
+    taskid: adde8e1f-5a4d-4465-8c5b-67631b6c04cc
     type: regular
     task:
-      id: 22e5f65f-1ebb-4c06-89af-81f8d72f61d3
+      id: adde8e1f-5a4d-4465-8c5b-67631b6c04cc
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -255,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 69d52f2f-2319-4141-8cc0-321bb300a90e
+    taskid: 25cba10d-3613-4262-85a7-890a31cb2825
     type: regular
     task:
-      id: 69d52f2f-2319-4141-8cc0-321bb300a90e
+      id: 25cba10d-3613-4262-85a7-890a31cb2825
       version: -1
       name: Create ticket in IM system
       description: ""
@@ -286,10 +286,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 3fdfbf6f-790b-40dc-82e5-d584e916eeda
+    taskid: 63f82adf-acbd-463b-8390-f5430273f12e
     type: collection
     task:
-      id: 3fdfbf6f-790b-40dc-82e5-d584e916eeda
+      id: 63f82adf-acbd-463b-8390-f5430273f12e
       version: -1
       name: Analyst Prompt | Take Automated Action?
       description: Does the end user wish to take automated response actions via XSOAR.
@@ -355,10 +355,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 7d54c25a-d5d5-42d9-8c60-4c05b8694d13
+    taskid: ca74660d-db91-46bf-8887-322286ce0e13
     type: condition
     task:
-      id: 7d54c25a-d5d5-42d9-8c60-4c05b8694d13
+      id: ca74660d-db91-46bf-8887-322286ce0e13
       version: -1
       name: Automate IR?
       description: ""
@@ -411,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 908e97c4-b991-44e9-8f14-3055d718aa7a
+    taskid: cbdab6ab-1c9e-4285-8f68-d89fdc984f1f
     type: regular
     task:
-      id: 908e97c4-b991-44e9-8f14-3055d718aa7a
+      id: cbdab6ab-1c9e-4285-8f68-d89fdc984f1f
       version: -1
       name: Manual response
       description: Determine what the corporate incident response plan is and proceed accordingly.
@@ -442,10 +442,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: edb27353-e46b-4cde-8f46-b2dbc1aee434
+    taskid: cde74d3a-6ac9-4aad-8757-e4b2e35f233b
     type: regular
     task:
-      id: edb27353-e46b-4cde-8f46-b2dbc1aee434
+      id: cde74d3a-6ac9-4aad-8757-e4b2e35f233b
       version: -1
       name: Expire password
       description: Expires the password of an Active Directory user.
@@ -477,16 +477,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 756e522e-575c-4a81-82db-1d80677322f4
+    taskid: ad09e2f0-31ab-41d0-8619-00f2040baab0
     type: title
     task:
-      id: 756e522e-575c-4a81-82db-1d80677322f4
+      id: ad09e2f0-31ab-41d0-8619-00f2040baab0
       version: -1
       name: Done
+      description: ""
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -505,10 +505,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ee63d272-0d8a-42c6-80ed-331b68caa2b6
+    taskid: 44d3e027-67a3-4865-8dc6-877d4f9a469c
     type: condition
     task:
-      id: ee63d272-0d8a-42c6-80ed-331b68caa2b6
+      id: 44d3e027-67a3-4865-8dc6-877d4f9a469c
       version: -1
       name: Is Active Directory integration available
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -544,10 +544,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b4b82f98-05a7-403e-8f8c-ca206c43c2a3
+    taskid: b42f0774-efae-4ffd-8337-64f401c19d78
     type: condition
     task:
-      id: b4b82f98-05a7-403e-8f8c-ca206c43c2a3
+      id: b42f0774-efae-4ffd-8337-64f401c19d78
       version: -1
       name: Is Okta integration available
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
@@ -583,10 +583,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: c926728b-012f-4589-8f58-8f8fd97a40e5
+    taskid: 4644b8bd-6b86-4a13-8b9e-f710a9438378
     type: regular
     task:
-      id: c926728b-012f-4589-8f58-8f8fd97a40e5
+      id: 4644b8bd-6b86-4a13-8b9e-f710a9438378
       version: -1
       name: Check Okta for active account
       description: Searches for Okta users.
@@ -620,10 +620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 1e9708f9-42c1-4fdc-82ab-1b470a62cb23
+    taskid: deeed73f-0c12-4919-8177-408988ac7ea7
     type: regular
     task:
-      id: 1e9708f9-42c1-4fdc-82ab-1b470a62cb23
+      id: deeed73f-0c12-4919-8177-408988ac7ea7
       version: -1
       name: Suspend Okta user
       description: Suspends a single user. This operation can only be performed on users with an ACTIVE status. After the porcess is completed, the user's status is SUSPENDED.
@@ -639,6 +639,8 @@ tasks:
         complex:
           root: Account
           accessor: Username
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -657,10 +659,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 29a9e87b-1a48-4af1-8f1b-68bb71dec373
+    taskid: abbd45b3-ec2e-4702-820d-bcb429dde8e4
     type: regular
     task:
-      id: 29a9e87b-1a48-4af1-8f1b-68bb71dec373
+      id: abbd45b3-ec2e-4702-820d-bcb429dde8e4
       version: -1
       name: Add user to Compromised group
       description: Adds a user to a group with OKTA_GROUP type.
@@ -673,7 +675,11 @@ tasks:
       - "10"
     scriptarguments:
       username:
-        simple: ${Account.Username}
+        complex:
+          root: Account
+          accessor: Username
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -692,10 +698,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: e5e0e525-af78-42a1-85fc-f34ae1427117
+    taskid: dfb521c2-c4dc-4851-8239-d3c8704a949f
     type: regular
     task:
-      id: e5e0e525-af78-42a1-85fc-f34ae1427117
+      id: dfb521c2-c4dc-4851-8239-d3c8704a949f
       version: -1
       name: Review account manually
       description: Review the identity exposure user credential in question manually; either via Active Directory, an Identity Access Management system, or log event data within a SIEM tool.
@@ -723,10 +729,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 73135cfa-b88e-46b0-8925-43a52c5dca50
+    taskid: dc530ef3-30fb-4e23-8d82-d8179af8eba7
     type: condition
     task:
-      id: 73135cfa-b88e-46b0-8925-43a52c5dca50
+      id: dc530ef3-30fb-4e23-8d82-d8179af8eba7
       version: -1
       name: Integration was available?
       description: Checks if at least 1 integration (Okta or AD) is available.
@@ -767,10 +773,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ccadcc6e-9f9e-4d4e-8200-840459b5baeb
+    taskid: 8bdd9564-60a1-4a6e-8c8f-17a402b961e6
     type: regular
     task:
-      id: ccadcc6e-9f9e-4d4e-8200-840459b5baeb
+      id: 8bdd9564-60a1-4a6e-8c8f-17a402b961e6
       version: -1
       name: Set Recorded Future alert to 'in-progress'
       description: Update the status of one or multiple Playbook alerts.
@@ -807,10 +813,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: ebe11b0a-3013-4d47-8f22-48ea24abef35
+    taskid: 5b8dc6b6-51a4-4635-8696-0e3dc3f749c8
     type: collection
     task:
-      id: ebe11b0a-3013-4d47-8f22-48ea24abef35
+      id: 5b8dc6b6-51a4-4635-8696-0e3dc3f749c8
       version: -1
       name: Analyst Prompt | Select Resolving Action
       description: Does the end user wish to resolve the Recorded Future alert and add a resolving action.
@@ -880,10 +886,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 2c0d3dc6-3a89-4117-8e95-735a9fa083bb
+    taskid: d7ed5483-913f-4264-83a8-f060f1324026
     type: regular
     task:
-      id: 2c0d3dc6-3a89-4117-8e95-735a9fa083bb
+      id: d7ed5483-913f-4264-83a8-f060f1324026
       version: -1
       name: Set Recorded Future alert to 'resolved'
       description: Update the status of one or multiple Playbook alerts.
@@ -971,10 +977,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 8218318d-22c8-4763-8686-52ffbc0b62cc
+    taskid: 9c39ba10-09ed-4339-8dc9-6c11d812e00f
     type: regular
     task:
-      id: 8218318d-22c8-4763-8686-52ffbc0b62cc
+      id: 9c39ba10-09ed-4339-8dc9-6c11d812e00f
       version: -1
       name: Contact user or user's manager
       description: ""
