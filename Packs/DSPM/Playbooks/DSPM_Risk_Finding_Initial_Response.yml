@@ -1,0 +1,190 @@
+id: ede87603-5081-4c93-8ad4-7bdcfe23ecc2
+version: 20
+vcShouldKeepItemLegacyProdMachine: false
+rolename:
+- Read-Only
+name: DSPM Risk Finding Initial Response
+description: A playbook to handle new DSPM Risk Finding incidents
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 76060e4f-3fd7-45e0-82ec-b3a517b60210
+    type: start
+    task:
+      id: 76060e4f-3fd7-45e0-82ec-b3a517b60210
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 7824caea-a261-4c2b-82b2-7ddc3ac54c07
+    type: regular
+    task:
+      id: 7824caea-a261-4c2b-82b2-7ddc3ac54c07
+      version: -1
+      name: DSPM_fetch_incident_details
+      scriptName: DSPM_fetch_incident_details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      get_all_incidents:
+        simple: ${incident}
+      get_incident_details:
+        simple: ${incident}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b9b10790-29d7-4063-8313-aafb1c2f76fd
+    type: regular
+    task:
+      id: b9b10790-29d7-4063-8313-aafb1c2f76fd
+      version: -1
+      name: closeInvestigation
+      description: Close the current incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: d3fb6d2f-5525-4afa-84de-5e5114305b05
+    type: regular
+    task:
+      id: d3fb6d2f-5525-4afa-84de-5e5114305b05
+      version: -1
+      name: DSPM_send_slack_notification
+      scriptName: DSPM_send_slack_notificatio
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      custom_object:
+        simple: ${custom_object}
+      incident:
+        simple: ${incident_details}
+      incident_details:
+        simple: ${incident_details}
+      incident_object:
+        simple: ${incident_object}
+      projects_list:
+        simple: ${projects_list}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 4fb93376-0cff-421e-81ff-64fac96df148
+    type: regular
+    task:
+      id: 4fb93376-0cff-421e-81ff-64fac96df148
+      version: -1
+      name: DSPM_fetch_list_of_projects
+      scriptName: DSPM_fetch_list_of_jira_project
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 915,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
