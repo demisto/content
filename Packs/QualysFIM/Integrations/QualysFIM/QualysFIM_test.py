@@ -11,7 +11,7 @@ def load_mock_response(file_name: str) -> dict:
     Args:
         file_name (str): Name of the mock response JSON file to return.
     """
-    with open(f'{file_name}', mode='r', encoding='utf-8') as json_file:
+    with open(f'{file_name}', encoding='utf-8') as json_file:
         return json.loads(json_file.read())
 
 
