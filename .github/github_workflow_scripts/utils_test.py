@@ -15,8 +15,10 @@ from utils import (
     get_doc_reviewer,
     CONTENT_ROLES_BLOB_MASTER_URL,
     get_content_roles,
-    CONTENT_ROLES_FILENAME
+    CONTENT_ROLES_FILENAME,
+    GITHUB_HIDDEN_DIR
 )
+from git import Repo
 
 
 class TestGetEnvVar:
@@ -365,12 +367,14 @@ class TestGetContentRoles:
             status_code=404
         )
 
-        # Create content_roles in fs
-        content_roles_path = tmp_path / CONTENT_ROLES_FILENAME
+        # Create repo and content_roles.json in fs
+        Repo.init(tmp_path)
+        (tmp_path / GITHUB_HIDDEN_DIR).mkdir()
+        content_roles_path = tmp_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
         content_roles_path.touch()
         content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
 
-        actual_content_roles = get_content_roles(content_roles_path)
+        actual_content_roles = get_content_roles(tmp_path)
 
         assert actual_content_roles
         assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
@@ -401,12 +405,14 @@ class TestGetContentRoles:
             json={"only_key"}
         )
 
-        # Create content_roles in fs
-        content_roles_path = tmp_path / CONTENT_ROLES_FILENAME
+        # Create repo and content_roles.json in fs
+        Repo.init(tmp_path)
+        (tmp_path / GITHUB_HIDDEN_DIR).mkdir()
+        content_roles_path = tmp_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
         content_roles_path.touch()
         content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
 
-        actual_content_roles = get_content_roles(content_roles_path)
+        actual_content_roles = get_content_roles(tmp_path)
 
         assert actual_content_roles
         assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
@@ -438,11 +444,13 @@ class TestGetContentRoles:
             json={"only_key"}
         )
 
-        # Create content_roles in fs
-        content_roles_path = tmp_path / CONTENT_ROLES_FILENAME
+        # Create repo and content_roles.json in fs
+        Repo.init(tmp_path)
+        (tmp_path / GITHUB_HIDDEN_DIR).mkdir()
+        content_roles_path = tmp_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
         content_roles_path.touch()
         content_roles_path.write_text("{\"only_key\"}")
 
-        actual_content_roles = get_content_roles(content_roles_path)
+        actual_content_roles = get_content_roles(tmp_path)
 
         assert not actual_content_roles
