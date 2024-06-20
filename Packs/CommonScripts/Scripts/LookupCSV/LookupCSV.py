@@ -65,7 +65,7 @@ def main():
                 file_name))
 
     csv_data: list = []
-    with open(file_path, mode='r') as csv_file:
+    with open(file_path) as csv_file:
         if header_row:
             csv_reader = csv.DictReader(csv_file)
             for line in csv_reader:
