@@ -1,0 +1,2689 @@
+id: Test Playbook - Impossible Traveler Response
+version: -1
+name: Test Playbook - Impossible Traveler Response
+description: |-
+  This playbook tests the ‘Impossible Traveler - Enrichment' playbook which is part of the ‘Core’ pack.
+
+  The following tests are conducted in the playbook:
+  1- Review and validate the playbook’s output.
+  2- Ensure that the context data is correctly extracted.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e504bb25-ccbb-4ba2-81ee-7b2efcee9669
+    type: start
+    task:
+      id: e504bb25-ccbb-4ba2-81ee-7b2efcee9669
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: eaf9f035-8995-4392-8bfd-26c4864fefbc
+    type: regular
+    task:
+      id: eaf9f035-8995-4392-8bfd-26c4864fefbc
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "275"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3b558190-88b1-4d1d-81af-9203e12a5871
+    type: title
+    task:
+      id: 3b558190-88b1-4d1d-81af-9203e12a5871
+      version: -1
+      name: Start Tests
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "278"
+      - "13"
+      - "78"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 93e83aca-7ed4-4ad8-8523-45282bdfb1eb
+    type: title
+    task:
+      id: 93e83aca-7ed4-4ad8-8523-45282bdfb1eb
+      version: -1
+      name: Check Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "70"
+      - "269"
+      - "271"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: bb8c1c33-fde8-437d-87e1-04ff29a626dc
+    type: condition
+    task:
+      id: bb8c1c33-fde8-437d-87e1-04ff29a626dc
+      version: -1
+      name: Verify IP Address
+      description: Verify that the ‘ IP.Address’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "258"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Address
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 8bfc6eef-afe9-4573-8838-d73b7cb7ccc7
+    type: regular
+    task:
+      id: 8bfc6eef-afe9-4573-8838-d73b7cb7ccc7
+      version: -1
+      name: Verify Context Error -  IP Address
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Address' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'IP.Address' context key.
+          3- The playbook outputs have been modified and no longer contain the 'IP.Address' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: ec4c98d2-00f1-417e-8121-0dcbcee8adec
+    type: condition
+    task:
+      id: ec4c98d2-00f1-417e-8121-0dcbcee8adec
+      version: -1
+      name: Verify IP Geo Country
+      description: Verify that the ‘IP.Geo.Country’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "53"
+      "yes":
+      - "258"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.Country
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 0ca96d15-ef6f-4d12-8e57-91bc143b8003
+    type: regular
+    task:
+      id: 0ca96d15-ef6f-4d12-8e57-91bc143b8003
+      version: -1
+      name: Verify Context Error -  IP Geo Country
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Geo.Country' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'IP.Geo.Country' context key.
+          3- The playbook outputs have been modified and no longer contain the 'IP.Geo.Country' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: 4e92fe76-5fe3-4a5c-89c6-b887e25763f1
+    type: condition
+    task:
+      id: 4e92fe76-5fe3-4a5c-89c6-b887e25763f1
+      version: -1
+      name: Verify IP Geo Country Code
+      description: Verify that the ‘IP.Geo.CountryCode’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "55"
+      "yes":
+      - "258"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Geo.CountryCode
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 082fcbbe-af48-4811-8059-f7e16488894d
+    type: regular
+    task:
+      id: 082fcbbe-af48-4811-8059-f7e16488894d
+      version: -1
+      name: Verify Context Error -  IP Geo Country Code
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Geo.CountryCode' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'IP.Geo.CountryCode' context key.
+          3- The playbook outputs have been modified and no longer contain the 'IP.Geo.CountryCode' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1680,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 80b5007d-db6c-4fb9-8bde-3282390e4251
+    type: condition
+    task:
+      id: 80b5007d-db6c-4fb9-8bde-3282390e4251
+      version: -1
+      name: Verify Malicious IP - Vendor
+      description: Verify that the ‘IP.Malicious.Vendor’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "57"
+      "yes":
+      - "258"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Vendor
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: e1c1aedc-6de9-497f-815f-90c80329bc8a
+    type: regular
+    task:
+      id: e1c1aedc-6de9-497f-815f-90c80329bc8a
+      version: -1
+      name: Verify Context Error - Malicious IP - Vendor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Malicious.Vendor' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'IP.Malicious.Vendor' context key.
+          3- The IP address configured within the 'sourceip' playbook input is no longer malicious.
+          4- The playbook outputs have been modified and no longer contain the 'IP.Malicious.Vendor' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2070,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: d10c4f4b-70b9-4fdb-8039-55a19c56046b
+    type: condition
+    task:
+      id: d10c4f4b-70b9-4fdb-8039-55a19c56046b
+      version: -1
+      name: Verify Malicious IP - Detections
+      description: Verify that the ‘IP.Malicious.Detections’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "59"
+      "yes":
+      - "258"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Detections
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2470,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: f65da36f-72c9-4418-8126-42df1fadf883
+    type: regular
+    task:
+      id: f65da36f-72c9-4418-8126-42df1fadf883
+      version: -1
+      name: Verify Context Error -  Malicious IP - Detections
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Malicious.Detections' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'IP.Malicious.Detections' context key.
+          3- The IP address configured within the 'sourceip' playbook input is no longer malicious.
+          4- The playbook outputs have been modified and no longer contain the 'IP.Malicious.Detections' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2470,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: ecbc626f-45b1-4546-826b-bd106255f405
+    type: condition
+    task:
+      id: ecbc626f-45b1-4546-826b-bd106255f405
+      version: -1
+      name: Verify Malicious IP - Description
+      description: Verify that the ‘IP.Malicious.Description’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "61"
+      "yes":
+      - "258"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: IP.Malicious.Description
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2860,
+          "y": 1880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 7d660204-fb8e-4338-8c43-d660b09e013e
+    type: regular
+    task:
+      id: 7d660204-fb8e-4338-8c43-d660b09e013e
+      version: -1
+      name: Verify Context Error - Malicious IP - Description
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'IP.Malicious.Description' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'IP.Malicious.Description' context key.
+          3- The IP address configured within the 'sourceip' playbook input is no longer malicious.
+          4- The playbook outputs have been modified and no longer contain the 'IP.Malicious.Description' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2860,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 14cf59f2-68fa-4cbc-82de-911b943ff0d5
+    type: condition
+    task:
+      id: 14cf59f2-68fa-4cbc-82de-911b943ff0d5
+      version: -1
+      name: Verify Score
+      description: Verify that the ‘DBotScore.Score’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "63"
+      "yes":
+      - "257"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Score
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: 6f2f7f81-87d2-4f18-8ee9-3ea588adb172
+    type: regular
+    task:
+      id: 6f2f7f81-87d2-4f18-8ee9-3ea588adb172
+      version: -1
+      name: Verify Context Error - Score
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Score' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'DBotScore.Score' context key.
+          3- The playbook outputs have been modified and no longer contain the 'DBotScore.Score' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: da3d18d3-0778-4bb3-85cc-f19ad42a019d
+    type: condition
+    task:
+      id: da3d18d3-0778-4bb3-85cc-f19ad42a019d
+      version: -1
+      name: Verify Vendor
+      description: Verify that the ‘DBotScore.Vendor’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "65"
+      "yes":
+      - "257"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Vendor
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 0546c56a-4362-4f06-8f4c-51adedbba351
+    type: regular
+    task:
+      id: 0546c56a-4362-4f06-8f4c-51adedbba351
+      version: -1
+      name: Verify Context Error - Vendor
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Vendor' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'DBotScore.Vendor' context key.
+          3- The playbook outputs have been modified and no longer contain the 'DBotScore.Vendor' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1300,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 815a9fd9-7aa3-4950-85bd-3785cb51b375
+    type: condition
+    task:
+      id: 815a9fd9-7aa3-4950-85bd-3785cb51b375
+      version: -1
+      name: Verify Indicator
+      description: Verify that the ‘DBotScore.Indicator’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "67"
+      "yes":
+      - "257"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Indicator
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: ae6fd98a-57a5-4ec1-83e1-533cf969c0ee
+    type: regular
+    task:
+      id: ae6fd98a-57a5-4ec1-83e1-533cf969c0ee
+      version: -1
+      name: Verify Context Error - Indicator
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Indicator' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'DBotScore.Indicator' context key.
+          3- The playbook outputs have been modified and no longer contain the 'DBotScore.Indicator' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1700,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: 4b905e03-f64d-467f-8b7b-e6f71091326c
+    type: condition
+    task:
+      id: 4b905e03-f64d-467f-8b7b-e6f71091326c
+      version: -1
+      name: Verify Indicator Type
+      description: Verify that the ‘DBotScore.Type’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "69"
+      "yes":
+      - "257"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: DBotScore.Type
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 1360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 5a6d831b-dd27-4d75-8c2b-23fc459ced1d
+    type: regular
+    task:
+      id: 5a6d831b-dd27-4d75-8c2b-23fc459ced1d
+      version: -1
+      name: Verify Context Error - Indicator Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'DBotScore.Type' playbook output was not extracted properly. One of the following may be the cause:
+          1- 'IP' script did not return any results.
+          2- The 'IP' automation outputs have been modified and no longer contain the 'DBotScore.Type' context key.
+          3- The playbook outputs have been modified and no longer contain the 'DBotScore.Type' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2100,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: eed5b94b-73f4-49e8-8d4e-4af77dfa1d1b
+    type: condition
+    task:
+      id: eed5b94b-73f4-49e8-8d4e-4af77dfa1d1b
+      version: -1
+      name: Verify Impossible Traveler IPs
+      description: Verify that the ‘ImpossibleTravelerIPs’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "268"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ImpossibleTravelerIPs
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1540,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: 6fa622a4-06b4-4542-865d-38a4d12c32a3
+    type: title
+    task:
+      id: 6fa622a4-06b4-4542-865d-38a4d12c32a3
+      version: -1
+      name: Check Playbook Outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "254"
+      - "255"
+      - "186"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 690,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "186":
+    id: "186"
+    taskid: 0a3bb5c7-e279-4843-82bc-bbade6390b0d
+    type: title
+    task:
+      id: 0a3bb5c7-e279-4843-82bc-bbade6390b0d
+      version: -1
+      name: Account
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "187"
+      - "189"
+      - "191"
+      - "193"
+      - "195"
+      - "197"
+      - "199"
+      - "213"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "187":
+    id: "187"
+    taskid: 5e4ca3d0-8c89-47fc-8f6c-720629e533f8
+    type: condition
+    task:
+      id: 5e4ca3d0-8c89-47fc-8f6c-720629e533f8
+      version: -1
+      name: Verify Display Name
+      description: Verify that the ‘Account.DisplayName’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "188"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.DisplayName
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "188":
+    id: "188"
+    taskid: 5997f552-22f1-4b68-8e46-6e8f0a2afeaf
+    type: regular
+    task:
+      id: 5997f552-22f1-4b68-8e46-6e8f0a2afeaf
+      version: -1
+      name: Verify Context Error - Display Name
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.DisplayName' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'ad-get-user' and the 'msgraph-user-get' 'scripts failed to execute.
+          2-The 'ad-get-user' and the 'msgraph-user-get' scripts did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.DisplayName' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "189":
+    id: "189"
+    taskid: 5f2696e2-59bc-47d3-8d86-391f7b257be6
+    type: condition
+    task:
+      id: 5f2696e2-59bc-47d3-8d86-391f7b257be6
+      version: -1
+      name: Verify Email
+      description: Verify that the ‘Account.Email’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "190"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Email
+            iscontext: true
+          ignorecase: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Account.Email.Address
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "190":
+    id: "190"
+    taskid: 337ea972-417f-4689-8780-4d63ffeddf07
+    type: regular
+    task:
+      id: 337ea972-417f-4689-8780-4d63ffeddf07
+      version: -1
+      name: Verify Context Error - Email
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.Email' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'ad-get-user' and the 'msgraph-user-get' 'scripts failed to execute.
+          2-The 'ad-get-user' and the 'msgraph-user-get' scripts did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.Email' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1290,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "191":
+    id: "191"
+    taskid: 6c86c8cc-a6f7-4e3a-84a7-6f8d63734fb9
+    type: condition
+    task:
+      id: 6c86c8cc-a6f7-4e3a-84a7-6f8d63734fb9
+      version: -1
+      name: Verify Username
+      description: Verify that the ‘Account.Username’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "192"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Username
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "192":
+    id: "192"
+    taskid: fe690a37-e96f-4b84-8dd1-48c0ef22f155
+    type: regular
+    task:
+      id: fe690a37-e96f-4b84-8dd1-48c0ef22f155
+      version: -1
+      name: Verify Context Error - Username
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.Username' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'ad-get-user' and the 'msgraph-user-get' 'scripts failed to execute.
+          2-The 'ad-get-user' and the 'msgraph-user-get' scripts did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.Username' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1690,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "193":
+    id: "193"
+    taskid: 120a22f0-891c-4030-8c27-3beb94b4adaf
+    type: condition
+    task:
+      id: 120a22f0-891c-4030-8c27-3beb94b4adaf
+      version: -1
+      name: Verify User Manager
+      description: Verify that the ‘Account.Manager’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "194"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Manager
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "194":
+    id: "194"
+    taskid: 86c0bef8-3264-46b5-83e0-a7191e706114
+    type: regular
+    task:
+      id: 86c0bef8-3264-46b5-83e0-a7191e706114
+      version: -1
+      name: Verify Context Error - User Manager
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.Manager' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'ad-get-user' script failed to execute.
+          2-The 'ad-get-user' script did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.Manager' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2090,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "195":
+    id: "195"
+    taskid: 2f2f123a-ac6e-48a6-8902-938a9ca8ec46
+    type: condition
+    task:
+      id: 2f2f123a-ac6e-48a6-8902-938a9ca8ec46
+      version: -1
+      name: Verify Groups
+      description: Verify that the ‘Account.Groups’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "196"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Groups
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "196":
+    id: "196"
+    taskid: 226c6194-2c60-42e5-89e3-f70fc4f6a1d4
+    type: regular
+    task:
+      id: 226c6194-2c60-42e5-89e3-f70fc4f6a1d4
+      version: -1
+      name: Verify Context Error - Groups
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.Groups' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'ad-get-user' and the 'msgraph-user-get' 'scripts failed to execute.
+          2-The 'ad-get-user' and the 'msgraph-user-get' scripts did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.Groups' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2480,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "197":
+    id: "197"
+    taskid: fea88adc-6271-4f07-8446-4278a2ae0cd3
+    type: condition
+    task:
+      id: fea88adc-6271-4f07-8446-4278a2ae0cd3
+      version: -1
+      name: Verify Account ID
+      description: Verify that the ‘Account.ID’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "198"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.ID
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2870,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "198":
+    id: "198"
+    taskid: 05e6312a-aa92-4046-8b9e-cc8fd1e4033a
+    type: regular
+    task:
+      id: 05e6312a-aa92-4046-8b9e-cc8fd1e4033a
+      version: -1
+      name: Verify Context Error - Account ID
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.ID' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'ad-get-user' and the 'msgraph-user-get' 'scripts failed to execute.
+          2-The 'ad-get-user' and the 'msgraph-user-get' scripts did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.ID' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 2870,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "199":
+    id: "199"
+    taskid: bd7bc4cb-5511-4de8-82b0-fc1da3642664
+    type: condition
+    task:
+      id: bd7bc4cb-5511-4de8-82b0-fc1da3642664
+      version: -1
+      name: Verify Job Title
+      description: Verify that the ‘Account.JobTitle’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "200"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.JobTitle
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3270,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "200":
+    id: "200"
+    taskid: eeeaaa33-a4c6-44f7-82b8-3dec8cc985e5
+    type: regular
+    task:
+      id: eeeaaa33-a4c6-44f7-82b8-3dec8cc985e5
+      version: -1
+      name: Verify Context Error - Job Title
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.JobTitle' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'msgraph-user-get' 'script failed to execute.
+          2-The 'msgraph-user-get' script did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.JobTitle' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3270,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "213":
+    id: "213"
+    taskid: 95197ff4-ed71-4207-883e-d44ea749772f
+    type: condition
+    task:
+      id: 95197ff4-ed71-4207-883e-d44ea749772f
+      version: -1
+      name: Verify Type
+      description: Verify that the ‘Account.Type’ playbook output was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "214"
+      "yes":
+      - "259"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Account.Type
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3680,
+          "y": 2390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "214":
+    id: "214"
+    taskid: cabf3dea-38fc-47c9-8286-7640162949e1
+    type: regular
+    task:
+      id: cabf3dea-38fc-47c9-8286-7640162949e1
+      version: -1
+      name: Verify Context Error - Type
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'Account.Type' playbook output was not extracted properly. One of the following may be the cause:
+          1- The 'ad-get-user' and the 'msgraph-user-get' 'scripts failed to execute.
+          2-The 'ad-get-user' and the 'msgraph-user-get' scripts did not returned any results.
+          3- The playbook outputs have been modified and no longer contain the 'Account.Type' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3680,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "254":
+    id: "254"
+    taskid: d45a16b6-c5f0-4836-8c50-2bcb6bc5e298
+    type: title
+    task:
+      id: d45a16b6-c5f0-4836-8c50-2bcb6bc5e298
+      version: -1
+      name: DBotScore
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "62"
+      - "64"
+      - "66"
+      - "68"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "255":
+    id: "255"
+    taskid: 722e0006-71d0-4070-843a-3292d2b9f26b
+    type: title
+    task:
+      id: 722e0006-71d0-4070-843a-3292d2b9f26b
+      version: -1
+      name: IP
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "18"
+      - "52"
+      - "54"
+      - "56"
+      - "58"
+      - "60"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 900,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "256":
+    id: "256"
+    taskid: 37b0950e-1591-401b-80cf-2ad11ec81d08
+    type: title
+    task:
+      id: 37b0950e-1591-401b-80cf-2ad11ec81d08
+      version: -1
+      name: Done Verifying Context Data
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "281"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1930,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "257":
+    id: "257"
+    taskid: 2395822f-9d75-4004-8e74-a7a033410542
+    type: title
+    task:
+      id: 2395822f-9d75-4004-8e74-a7a033410542
+      version: -1
+      name: Done Verifying 'DBotScore' Playbook Output
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "280"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4080,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "258":
+    id: "258"
+    taskid: 73b315da-c73f-452e-8f32-2ca2d55f5339
+    type: title
+    task:
+      id: 73b315da-c73f-452e-8f32-2ca2d55f5339
+      version: -1
+      name: Done Verifying 'IP' Playbook Output
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "280"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4080,
+          "y": 2065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "259":
+    id: "259"
+    taskid: c4be13e9-2cd0-459f-8aa5-1517ce9eff65
+    type: title
+    task:
+      id: c4be13e9-2cd0-459f-8aa5-1517ce9eff65
+      version: -1
+      name: Done Verifying 'Account' Playbook Output
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "280"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4080,
+          "y": 2575
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "260":
+    id: "260"
+    taskid: 74fb3f80-c058-452b-83d1-4835181018de
+    type: title
+    task:
+      id: 74fb3f80-c058-452b-83d1-4835181018de
+      version: -1
+      name: Done Verifying 'MS Graph User Manager' Playbook Output
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "264"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12730,
+          "y": 3620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "261":
+    id: "261"
+    taskid: 0067307c-97c4-4e5d-8f69-3543399f5fe1
+    type: title
+    task:
+      id: 0067307c-97c4-4e5d-8f69-3543399f5fe1
+      version: -1
+      name: Done Verifying 'MS Graph User' Playbook Output
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "264"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12730,
+          "y": 4145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "262":
+    id: "262"
+    taskid: 21559260-24ab-4d88-8dca-fc7923e16bb3
+    type: title
+    task:
+      id: 21559260-24ab-4d88-8dca-fc7923e16bb3
+      version: -1
+      name: Done Verifying 'AbuseIPDB' Playbook Output
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "264"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12730,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "263":
+    id: "263"
+    taskid: 66c1924e-67fc-4c2f-8d31-6af39e8c31b9
+    type: title
+    task:
+      id: 66c1924e-67fc-4c2f-8d31-6af39e8c31b9
+      version: -1
+      name: Done Verifying 'Active Directory Users' Playbook Output
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "264"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12730,
+          "y": 5095
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "264":
+    id: "264"
+    taskid: e885dad6-6261-4b58-8fd3-1aa6f9bf54fb
+    type: title
+    task:
+      id: e885dad6-6261-4b58-8fd3-1aa6f9bf54fb
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 12970,
+          "y": 5240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "265":
+    id: "265"
+    taskid: 3c4637cd-1e52-4ead-838d-90e3ceba7050
+    type: regular
+    task:
+      id: 3c4637cd-1e52-4ead-838d-90e3ceba7050
+      version: -1
+      name: Set Alert Fields
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "266"
+    scriptarguments:
+      localip:
+        simple: 8.8.8.8,64.233.160.0
+      username:
+        complex:
+          root: MSGraphUser.DisplayName
+          filters:
+          - - operator: isNotEmpty
+              left:
+                value:
+                  simple: MSGraphUser.DisplayName
+                iscontext: true
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "266":
+    id: "266"
+    taskid: efdee73d-dd9d-470e-8f41-f4c92891c27b
+    type: playbook
+    task:
+      id: efdee73d-dd9d-470e-8f41-f4c92891c27b
+      version: -1
+      name: Impossible Traveler Response
+      description: "This playbook handles impossible traveler alerts.\n\nAn Impossible Traveler event occurs when multiple login attempts seen for a user from multiple remote countries in a short period of time, which shouldn't be possible. This may indicate the account is compromised.\n\n**Attacker's Goals:**\n\nGain user-account credentials.\n\n**Investigative Actions:**\n\nInvestigate the IP addresses and identities involved in the detected activity using:\n\n* Impossible Traveler - Enrichment playbook\n* CalculateGeoDistance automation\n\n**Response Actions**\n\nThe playbook's first response actions are based on the data available within the alert. In that phase, the playbook will execute:\n\n* Manual block indicators if the IP address found malicious\n* Manual disable user\n* Manual clear of the user’s sessions (Okta)\n\nWhen the playbook continues, after validating the activity with the user’s manager, another phase of response actions is being executed, which includes:\n\n* Auto block indicators \n\n\n**External Resources:**\n\n[Impossible traveler alert](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Impossible-traveler-SSO)"
+      playbookName: Impossible Traveler Response
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AbuseIPDBThreshold:
+        simple: "80"
+      AutoContainment:
+        simple: "False"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      ContactUserManager:
+        simple: "False"
+      MaxMilesPerHourAllowed:
+        simple: "400"
+      ShouldOpenTicket:
+        simple: "False"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      addCommentPerEndpoint:
+        simple: "True"
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      domain:
+        simple: demisto
+      preInvestigationContainment:
+        simple: "False"
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "268":
+    id: "268"
+    taskid: 6c73cb45-9d7a-445f-83db-d21f79ac77ec
+    type: regular
+    task:
+      id: 6c73cb45-9d7a-445f-83db-d21f79ac77ec
+      version: -1
+      name: Verify Context Error - Impossible Traveler IPs
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'ImpossibleTravelerIPs' context key was not extracted properly. One of the following may be the cause:
+          1- The 'CreateArray' script failed to execute.
+          2- The 'contextKey' input configuration was changed for the 'CreateArray' automation used in the 'Get all Impossible Traveler IP Addresses' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1540,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "269":
+    id: "269"
+    taskid: ac870eec-4348-41c3-8900-d31277a80df6
+    type: condition
+    task:
+      id: ac870eec-4348-41c3-8900-d31277a80df6
+      version: -1
+      name: Verify Block Indicators
+      description: Verify that the ‘BlockIndicators’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "270"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: BlockIndicators
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "270":
+    id: "270"
+    taskid: 1dba3e76-c58d-4132-8e86-c769e904ed40
+    type: regular
+    task:
+      id: 1dba3e76-c58d-4132-8e86-c769e904ed40
+      version: -1
+      name: Verify Context Error - Block Indicators
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'BlockIndicators' context key was not extracted properly. One of the following may be the cause:
+          1- The 'Set' script failed to execute.
+          2- The 'key' input configuration was changed for the 'Set' automation used in the 'Set containment actions' task.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1150,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "271":
+    id: "271"
+    taskid: 2e963dab-e830-4523-8ce8-66a30bd2bd27
+    type: condition
+    task:
+      id: 2e963dab-e830-4523-8ce8-66a30bd2bd27
+      version: -1
+      name: Verify Geo Events
+      description: Verify that the ‘GeoEvents’ context key was extracted correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "272"
+      "yes":
+      - "256"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: GeoEvents
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "272":
+    id: "272"
+    taskid: d064ef26-32fe-4178-801b-0f1ae8b38211
+    type: regular
+    task:
+      id: d064ef26-32fe-4178-801b-0f1ae8b38211
+      version: -1
+      name: Verify Context Error - GeoEvents
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'GeoEvents' context key was not extracted properly. One of the following may be the cause:
+          1- The 'impossibleTravelerGetDistance' script failed to execute.
+          2- The 'src_coords' input configuration was changed for the 'impossibleTravelerGetDistance' automation used in the 'Calculate geographical distance between logins' task.
+          3- The 'dest_coords' input configuration was changed for the 'impossibleTravelerGetDistance' automation used in the 'Calculate geographical distance between logins' task.
+          4- The 'impossibleTravelerGetDistance' automation outputs have been modified and no longer contain the 'GeoEvents' context key.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -760,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "273":
+    id: "273"
+    taskid: 7b97e6de-aeb7-4da2-8236-8bb8a6c9a7c4
+    type: condition
+    task:
+      id: 7b97e6de-aeb7-4da2-8236-8bb8a6c9a7c4
+      version: -1
+      name: Verify Resolution Status
+      description: Verify that the ‘resolution_status’ alert field was populated correctly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "274"
+      "yes":
+      - "279"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.resolution_status
+            iscontext: true
+          right:
+            value:
+              simple: Under Investigation
+          ignorecase: true
+      - - operator: isNotEqualString
+          left:
+            value:
+              simple: alert.resolution_status
+            iscontext: true
+          right:
+            value:
+              simple: New
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "274":
+    id: "274"
+    taskid: 898f83c4-01a4-43f7-8500-423823da5f59
+    type: regular
+    task:
+      id: 898f83c4-01a4-43f7-8500-423823da5f59
+      version: -1
+      name: Verify Alert Field Error - Resolution Status
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: |-
+          The 'resolution_status' alert field was not populated properly. One of the following may be the cause:
+          1- The 'closeInvestigation' script failed to execute.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "275":
+    id: "275"
+    taskid: c4910438-512e-4b3e-85ee-d63e9d5791cc
+    type: regular
+    task:
+      id: c4910438-512e-4b3e-85ee-d63e9d5791cc
+      version: -1
+      name: Get Available Users - MSGraph
+      description: |-
+        Retrieves a list of user objects.
+        Permissions: - User.ReadBasic.All (Delegated) - User.Read.All (Application).
+      script: '|||msgraph-user-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "276"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "276":
+    id: "276"
+    taskid: 3171dc14-4417-42c0-85a7-dc19bbaeb6c8
+    type: condition
+    task:
+      id: 3171dc14-4417-42c0-85a7-dc19bbaeb6c8
+      version: -1
+      name: Users Retrieved?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "277"
+      "yes":
+      - "265"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: MSGraphUser.DisplayName
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "277":
+    id: "277"
+    taskid: 072b2140-cf5c-4ff2-8b4f-21582cfaadf4
+    type: regular
+    task:
+      id: 072b2140-cf5c-4ff2-8b4f-21582cfaadf4
+      version: -1
+      name: Get Users Error - No Available Users
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: "No available users were found. \nThis may indicate the following:\n1- The 'msgraph-user-list' script failed to execute.\n2. results were not returned for the 'msgraph-user-list' script."
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 920,
+          "y": 470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "278":
+    id: "278"
+    taskid: 26cd111b-8a0e-4630-8c9b-2f3938963e71
+    type: title
+    task:
+      id: 26cd111b-8a0e-4630-8c9b-2f3938963e71
+      version: -1
+      name: Check Alert Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "273"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "279":
+    id: "279"
+    taskid: 15cab150-1644-44e0-832d-1a4edc0f799c
+    type: title
+    task:
+      id: 15cab150-1644-44e0-832d-1a4edc0f799c
+      version: -1
+      name: Done Verifying Alert Fields
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "281"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -340,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "280":
+    id: "280"
+    taskid: 225f9d9e-c718-4b1e-8be4-2a4e51bdaf08
+    type: title
+    task:
+      id: 225f9d9e-c718-4b1e-8be4-2a4e51bdaf08
+      version: -1
+      name: Done Verifying Playbook Outputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "281"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 4460,
+          "y": 2720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "281":
+    id: "281"
+    taskid: 3a9279da-7f1f-4fb3-8390-e798d8ac4115
+    type: title
+    task:
+      id: 3a9279da-7f1f-4fb3-8390-e798d8ac4115
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "187_259_yes": 0.11,
+      "189_259_yes": 0.1,
+      "18_258_yes": 0.1,
+      "191_259_yes": 0.1,
+      "193_259_yes": 0.11,
+      "195_259_yes": 0.1,
+      "197_259_yes": 0.1,
+      "199_259_yes": 0.1,
+      "213_259_yes": 0.16,
+      "52_258_yes": 0.1,
+      "54_258_yes": 0.11,
+      "56_258_yes": 0.16,
+      "58_258_yes": 0.23,
+      "60_258_yes": 0.34,
+      "62_257_yes": 0.12,
+      "64_257_yes": 0.11,
+      "66_257_yes": 0.1,
+      "68_257_yes": 0.25,
+      "70_256_yes": 0.11
+    },
+    "paper": {
+      "dimensions": {
+        "height": 5455,
+        "width": 15280,
+        "x": -1930,
+        "y": -150
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
+marketplaces:
+- marketplacev2

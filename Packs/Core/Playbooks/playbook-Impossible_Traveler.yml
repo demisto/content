@@ -1574,6 +1574,6 @@ outputs:
   description: The domain name of the Endpoint.
   type: string
 tests:
-- No tests (auto formatted)
+- Test Playbook - Impossible Traveler Response
 marketplaces: ["marketplacev2"]
 fromversion: 6.6.0
