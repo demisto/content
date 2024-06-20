@@ -2001,7 +2001,7 @@ tasks:
     task:
       id: 33673237-d9ba-493a-8c0b-ba59a4291f2d
       version: -1
-      name: Identity Analytics - Alert Handling - Okta
+      name: Identity Analytics - Alert Handling
       description: |-
         The `Identity Analytics - Alert Handling` playbook is designed to handle Identity Analytics alerts and executes the following:
 
