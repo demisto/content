@@ -631,7 +631,7 @@
                                         "userMarkedRequired": true
                                     }
                                 },
-                                "buttonClass": "secondary",
+                                "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -646,7 +646,7 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "secondary",
+                                "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -661,7 +661,7 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "secondary",
+                                "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -676,7 +676,7 @@
                             },
                             {
                                 "args": {},
-                                "buttonClass": "secondary",
+                                "buttonClass": "primary",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -720,14 +720,14 @@
                                         "simple": "in-progress"
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "success",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 44,
                                 "id": "18a71c40-0714-11ef-b715-15598fdfcb5d",
                                 "index": 0,
                                 "name": "In-Progress",
-                                "scriptId": "IdentityRecordedFuturePlaybookAlerts|||recordedfuture-identity-playbook-alerts-update",
+                                "scriptId": "Recorded Future Identity|||recordedfuture-identity-playbook-alerts-update",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -745,7 +745,7 @@
                                         "simple": "dismissed"
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "warning",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -754,7 +754,7 @@
                                 "index": 1,
                                 "listId": "caseinfoid-b1c78230-0713-11ef-b715-15598fdfcb5d",
                                 "name": "Dismissed - False Positive",
-                                "scriptId": "IdentityRecordedFuturePlaybookAlerts|||recordedfuture-identity-playbook-alerts-update",
+                                "scriptId": "Recorded Future Identity|||recordedfuture-identity-playbook-alerts-update",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -772,7 +772,7 @@
                                         "simple": "resolved"
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "error",
                                 "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "",
@@ -781,7 +781,7 @@
                                 "index": 2,
                                 "listId": "caseinfoid-b1c78230-0713-11ef-b715-15598fdfcb5d",
                                 "name": "Resolved - True Positive",
-                                "scriptId": "IdentityRecordedFuturePlaybookAlerts|||recordedfuture-identity-playbook-alerts-update",
+                                "scriptId": "Recorded Future Identity|||recordedfuture-identity-playbook-alerts-update",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             },
@@ -802,20 +802,16 @@
                                     "comment": {
                                         "simple": "",
                                         "userMarkedRequired": true
-                                    },
-                                    "remove_actions_taken": {
-                                        "simple": "",
-                                        "userMarkedRequired": false
                                     }
                                 },
-                                "buttonClass": "primary",
+                                "buttonClass": "secondary",
                                 "endCol": 2,
                                 "fieldId": "",
                                 "height": 22,
                                 "id": "4a6e93d0-0c81-11ef-9ce4-35cb652fb7cd",
                                 "index": 3,
                                 "name": "Select Resolving Action",
-                                "scriptId": "IdentityRecordedFuturePlaybookAlerts|||recordedfuture-identity-playbook-alerts-update",
+                                "scriptId": "Recorded Future Identity|||recordedfuture-identity-playbook-alerts-update",
                                 "sectionItemType": "button",
                                 "startCol": 0
                             }

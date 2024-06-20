@@ -10,9 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Active Directory Query v2
 * IdentityRecordedFuturePlaybookAlerts
-* Okta v2
 
 ### Scripts
 
@@ -20,13 +18,13 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* okta-suspend-user
-* ad-get-user
 * okta-add-to-group
 * closeInvestigation
-* okta-search
-* ad-disable-account
 * recordedfuture-identity-playbook-alerts-update
+* okta-suspend-user
+* okta-search
+* ad-get-user
+* ad-disable-account
 * ad-expire-password
 
 ## Playbook Inputs
@@ -43,4 +41,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Recorded Future - Identity Exposure](../doc_files/Recorded_Future_-_Identity_Exposure.png)
+![Recorded Future Identity Exposure](../doc_files/Recorded_Future_Identity_Exposure_playbook.png)
