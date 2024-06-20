@@ -9,7 +9,7 @@ import pytest
 
 import demistomock
 import demistomock as demisto
-from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException, BaseClient
+from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
