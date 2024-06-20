@@ -799,3 +799,28 @@ def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
     main()
 
     mock_get_license.assert_called()
+
+
+def test_empty_api_token_with_get_license_test_for_test(mocker: MockerFixture, platform: str):
+    """
+    Given:
+        - command, params, platform
+    When:
+        - run main function
+    Then:
+        - Ensure that `Tim license` supported for the integration for all platforms.
+    """
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': ''})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.get_demisto_version", return_value={"platform": platform})
+    mock_get_license = mocker.patch.object(
+        demisto,
+        'getLicenseCustomField',
+        return_value="".join(["X" for i in range(32)])
+    )
+
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module")
+    main()
+
+    mock_get_license.assert_called()
