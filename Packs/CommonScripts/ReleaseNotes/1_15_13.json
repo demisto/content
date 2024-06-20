@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The ***PrintToParentAlert*** script is no longer available on Cortex XSIAM. Please use the script ***PrintToParentIncident*** instead."
+    "breakingChangesNotes": "The misnamed, recently-released ***PrintToParentAlert*** script is no longer available. Use ***PrintToParentIncident*** instead."
 }
