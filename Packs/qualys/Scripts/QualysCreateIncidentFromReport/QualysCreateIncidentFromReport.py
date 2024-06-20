@@ -24,7 +24,7 @@ def main():
     min_severity = int(demisto.args().get("minSeverity", 1))
 
     file_entry = demisto.getFilePath(demisto.args().get("entryID"))
-    with open(file_entry['path'], 'r') as f:
+    with open(file_entry['path']) as f:
         data = f.read(max_file_size)
 
     if data:
