@@ -806,13 +806,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.30.0"
+version = "1.31.0"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.8,<3.12"
 files = [
-    {file = "demisto_sdk-1.30.0-py3-none-any.whl", hash = "sha256:8377dd6cc151e41c9f797b1ca4b89b0faad02b664d6cb6e66ab0ecaf969c7c85"},
-    {file = "demisto_sdk-1.30.0.tar.gz", hash = "sha256:120ff0b159915277ae5f2e82ca537e6eea4bb5098bdf8212688800590645cc0c"},
+    {file = "demisto_sdk-1.31.0-py3-none-any.whl", hash = "sha256:1c34a978d5279ed3079cf6cb9541bfe6fc2d23756886d4dc76b40f2a970be177"},
+    {file = "demisto_sdk-1.31.0.tar.gz", hash = "sha256:e9496943e66fa59fe7c703a34d9d73933c2e37b0b095093e61438ad53c5659cd"},
 ]
 
 [package.dependencies]
@@ -867,7 +867,7 @@ requests = ">=2.27.1,<3.0.0"
 "ruamel.yaml" = ">=0.17.21,<0.18.0"
 slack-sdk = ">=3.17.0,<4.0.0"
 tabulate = ">=0.8.9,<0.10.0"
-tenacity = ">=8.2.3,<9.0.0"
+tenacity = ">=8.4.1,<9.0.0"
 toml = ">=0.10.2,<0.11.0"
 typer = {version = ">=0.9.0,<0.10.0", extras = ["all"]}
 typing-extensions = ">=4.1.1,<5.0.0"
@@ -4390,13 +4390,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "tenacity"
-version = "8.3.0"
+version = "8.4.1"
 description = "Retry code until it succeeds"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "tenacity-8.3.0-py3-none-any.whl", hash = "sha256:3649f6443dbc0d9b01b9d8020a9c4ec7a1ff5f6f3c6c8a036ef371f573fe9185"},
-    {file = "tenacity-8.3.0.tar.gz", hash = "sha256:953d4e6ad24357bceffbc9707bc74349aca9d245f68eb65419cf0c249a1949a2"},
+    {file = "tenacity-8.4.1-py3-none-any.whl", hash = "sha256:28522e692eda3e1b8f5e99c51464efcc0b9fc86933da92415168bc1c4e2308fa"},
+    {file = "tenacity-8.4.1.tar.gz", hash = "sha256:54b1412b878ddf7e1f1577cd49527bad8cdef32421bd599beac0c6c3f10582fd"},
 ]
 
 [package.extras]
@@ -5261,4 +5261,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "9cb337bb3c1454136afb75e57caf829b58dea3c633ca4097e1f3ea57f970c18d"
+content-hash = "19c6265adc4120b7a35f2866add72c81aa642e8fd54d24a5d8642298bac70488"
