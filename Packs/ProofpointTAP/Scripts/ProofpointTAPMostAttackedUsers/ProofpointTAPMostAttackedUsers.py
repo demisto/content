@@ -3,14 +3,15 @@ from CommonServerPython import *  # noqa: F401
 
 
 def main():
-    most_attacked_user_list = demisto.executeCommand('proofpoint-list-most-attacked-users', {'window': 14})
-    results = most_attacked_user_list[0].get('Contents', {})    # type: ignore
+    most_attacked_user_list: dict = demisto.executeCommand('proofpoint-list-most-attacked-users',
+                                                           {'window': 14})[0]  # type: ignore
+    contents = most_attacked_user_list.get('Contents')
 
     users = []
-    if isinstance(results, dict):
-        # In the case the integration is not configured, this value will return as str.
+    if isinstance(contents, dict):
+        # In the case the command is not available, this value will return as str.
         # Unsupported Command..
-        users = results.get('users', [])
+        users = contents.get('users', [])
 
     users_res_for_chart = []
     for user in users:

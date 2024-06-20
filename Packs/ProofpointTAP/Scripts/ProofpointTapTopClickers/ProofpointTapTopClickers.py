@@ -8,6 +8,8 @@ def main():
     
     users = []
     if isinstance(contents, dict):
+        # In the case the command is not available, this value will return as str.
+        # Unsupported Command..
         users = contents.get('users', [])
 
     users_res_for_chart = []
