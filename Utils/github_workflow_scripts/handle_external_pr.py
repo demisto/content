@@ -169,7 +169,7 @@ def packs_to_check_in_pr(file_paths: list[str]) -> set:
     return pack_dirs_to_check
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, remote_repo: str, repo_name: str = 'content') -> str:
+def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, remote_fork_owner: str, repo_name: str = 'content') -> str:
     """
     Get The contributions' support level label.
 
@@ -185,6 +185,7 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
     Args:
         file_paths(str): file paths
         external_pr_branch (str): the branch of the external PR.
+        remote_fork_owner: the remote fork owner
         repo_name(str): the name of the forked repo (without the owner)
 
     Returns:
@@ -200,13 +201,11 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
         f'to retrieve support level of {pack_dirs_to_check_support_levels_labels}'
     )
     try:
-        fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            #fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
-            fork_owner=remote_repo if remote_repo != 'xsoar-bot' else 'xsoar-contrib',
+            fork_owner=remote_fork_owner if remote_fork_owner != 'xsoar-bot' else 'xsoar-contrib',
             repo_name=repo_name
         ):
             packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
@@ -261,7 +260,7 @@ def check_if_item_is_tim(content_object: BaseContent | None) -> bool:
     Checks whether a given object (graph object) is a feed or related to TIM
 
     Arguments:
-        - `content_object`: ``dict``: Content object from the graph
+        - `content_object`: ``BaseContent``: Content object from the graph
 
     Returns: `bool` whether the content object is a feed or has the relevant tags/categories
     """
@@ -309,7 +308,7 @@ def check_files_of_pr_manually(pr_files: list[str]) -> bool:
     return False
 
 
-def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str) -> bool:
+def is_tim_content(pr_files: list[str], external_pr_branch: str, remote_fork_owner: str,  repo_name: str) -> bool:
     """
     Checks if tim reviewer needed, if the pack is new and not part of Master.
     First the remote branch is going to be checked out and then verified for the data
@@ -318,17 +317,17 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
         - `pr_files`: ``List[str]``: The list of files changed in the Pull Request. Will be used to determine
         whether a security engineer is required for the review.
         - 'external_pr_branch': str : name of branch to checkout
+        - 'remote_fork_owner' (str) : name of the remote owner for checkout
         - 'repo_name': str : name of repository
 
     Returns: `bool` whether a security engineer should be assigned
     """
     try:
-        fork_owner = os.getenv('GITHUB_ACTOR')
         with Checkout(
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            fork_owner=fork_owner if fork_owner != 'xsoar-bot' else 'xsoar-contrib',
+            fork_owner=remote_fork_owner if remote_fork_owner != 'xsoar-bot' else 'xsoar-contrib',
             repo_name=repo_name
         ):
             for file in pr_files:
@@ -345,7 +344,7 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, repo_name: str)
     return False
 
 
-def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, repo_name: str) -> bool:
+def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str, remote_fork_owner: str,  repo_name: str) -> bool:
     """
     Checks whether the PR need to be reviewed by a TIM reviewer.
     It check the yml file of the integration - if it has the feed: True
@@ -356,12 +355,13 @@ def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_
     - pr_files: tThe list of files changed in the Pull Request
     - support_label: the support label of the PR - the highest one.
     - 'external_pr_branch' (str) : name of the external branch to checkout
+    - 'remote_fork_owner' (str) : name of the remote owner for checkout
     - 'repo_name' (str) : name of the external repository
 
     Returns: True or false if tim reviewer needed
     """
     if support_label in (XSOAR_SUPPORT_LEVEL_LABEL, PARTNER_SUPPORT_LEVEL_LABEL):
-        return is_tim_content(pr_files, external_pr_branch, repo_name)
+        return is_tim_content(pr_files, external_pr_branch, remote_fork_owner, repo_name)
     return False
 
 
@@ -491,10 +491,9 @@ def main():
 
     pr_files = [file.filename for file in pr.get_files()]
     print(f'{pr_files=} for {pr_number=}')
-    remote_repo = pr.head.repo.full_name.split('/')[0]
+    remote_fork_owner = pr.head.repo.full_name.split('/')[0]
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
-    #if support_label := get_packs_support_level_label(pr_files, pr.head.ref, repo_name):
-    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, remote_repo, repo_name):
+    if support_label := get_packs_support_level_label(pr_files, pr.head.ref, remote_fork_owner, repo_name):
         labels_to_add.append(support_label)
 
     # Add the initial labels to PR:
@@ -549,7 +548,7 @@ def main():
         pr.add_to_labels(SECURITY_LABEL)
 
     # adding TIM reviewer
-    if is_tim_reviewer_needed(pr_files, support_label, pr.head.ref, repo_name):
+    if is_tim_reviewer_needed(pr_files, support_label, pr.head.ref, remote_fork_owner, repo_name):
         reviewers.append(tim_reviewer)
         pr.add_to_labels(TIM_LABEL)
 
