@@ -1,7 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
 from AWSApiModule import *
 
 """IMPORTS"""
@@ -282,7 +280,6 @@ def invoke(args, aws_client):
         kwargs.update({'ClientContext': args.get('clientContext')})
     if args.get('payload') is not None:
         payload = args.get('payload')
-        RequestPayload = args.get('payload')
         if (not isinstance(payload, str)) or (not payload.startswith('{') and not payload.startswith('[')):
             payload = json.dumps(payload)
         kwargs.update({'Payload': payload})
@@ -292,6 +289,7 @@ def invoke(args, aws_client):
     data = ({
         'FunctionName': args.get('functionName'),
         'Region': obj['_user_provided_options']['region_name'],
+        'RequestPayload': args.get('payload'),
     })
     if 'LogResult' in response:
         data.update({'LogResult': base64.b64decode(response['LogResult']).decode("utf-8")})  # type:ignore

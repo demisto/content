@@ -337,13 +337,16 @@ Returns list of aliases created for a Lambda function. For each alias, the respo
 
 
 ### aws-lambda-invoke
+
 ***
-Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias .  If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" args to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+Invokes a Lambda function. Specify just a function name to invoke the latest version of the function. To invoke a published version, use the Qualifier parameter to specify a version or alias.  If you use the RequestResponse (synchronous) invocation option, note that the function may be invoked multiple times if a timeout is reached. For functions with a long timeout, your client may be disconnected during synchronous invocation while it waits for a response. Use the "timeout" and "retries" arguments to control this behavior. If you use the Event (asynchronous) invocation option, the function will be invoked at least once in response to an event and the function must be idempotent to handle this.
+
 #### Required Permissions
 * `AWSLambdaRole`: more details [here](https://docs.aws.amazon.com/lambda/latest/dg/access-control-identity-based.html).
 #### Base Command
 
 `aws-lambda-invoke`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -351,27 +354,27 @@ Invokes a Lambda function. Specify just a function name to invoke the latest ver
 | functionName | The name of the Lambda function. | Required | 
 | invocationType | Choose from the following options.  RequestResponse (default) - Invoke the function synchronously. Keep the connection open until the function returns a response or times out. Event - Invoke the function asynchronously. Send events that fail multiple times to the function's dead-letter queue (if configured). DryRun - Validate parameter values and verify that the user or role has permission to invoke the function. Possible values are: Event, RequestResponse, DryRun. | Optional | 
 | logType | You can set this optional parameter to Tail in the request only if you specify the InvocationType parameter with value RequestResponse . In this case, AWS Lambda returns the base64-encoded last 4 KB of log data produced by your Lambda function in the x-amz-log-result header. Possible values are: None, Tail. | Optional | 
-| clientContext | Using the ClientContext you can pass client-specific information to the Lambda function you are invoking. . | Optional | 
+| clientContext | Using the ClientContext you can pass client-specific information to the Lambda function you are invoking. | Optional | 
 | payload | JSON that you want to provide to your Lambda function as input. | Optional | 
 | qualifier | Specify a version or alias to invoke a published version of the function. | Optional | 
-| region | The AWS Region, if not specified the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
+| region | The AWS Region. If not specified, the default region will be used. Possible values are: us-east-1, us-east-2, us-west-1, us-west-2, ca-central-1, eu-west-1, eu-central-1, eu-west-2, ap-northeast-1, ap-northeast-2, ap-southeast-1, ap-southeast-2, ap-south-1, sa-east-1, eu-north-1, eu-west-3. | Optional | 
 | roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
 | roleSessionName | An identifier for the assumed role session. | Optional | 
 | roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
-| retries | The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. If not specified will use the instances configured default timeout. | Optional | 
-| timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If not specified will use the instances configured default timeout. | Optional | 
-
+| retries | The maximum retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. If not specified, will use the instances configured default timeout. | Optional | 
+| timeout | The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If not specified, will use the instances configured default timeout. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AWS.Lambda.InvokedFunctions.FunctionName | string | The name of the Lambda function. | 
-| AWS.Lambda.InvokedFunctions.FunctionError | string | Indicates whether an error occurred while executing the Lambda function. If an error occurred this field will have one of two values; Handled or Unhandled . Handled errors are errors that are reported by the function while the Unhandled errors are those detected and reported by AWS Lambda. Unhandled errors include out of memory errors and function timeouts. | 
-| AWS.Lambda.InvokedFunctions.LogResult | string | logs for the Lambda function invocation. This is present only if the invocation type is RequestResponse and the logs were requested. | 
-| AWS.Lambda.InvokedFunctions.Payload | string | It is the JSON representation of the object returned by the Lambda function. This is present only if the invocation type is RequestResponse. | 
+| AWS.Lambda.InvokedFunctions.FunctionError | string | Indicates whether an error occurred while executing the Lambda function. If an error occurred this field will have one of two values; Handled or Unhandled. Handled errors are errors that are reported by the function while the Unhandled errors are those detected and reported by AWS Lambda. Unhandled errors include out of memory errors and function timeouts. | 
+| AWS.Lambda.InvokedFunctions.LogResult | string | Logs for the Lambda function invocation. This is present only if the invocation type is RequestResponse and the logs were requested. | 
+| AWS.Lambda.InvokedFunctions.Payload | string | The JSON representation of the object returned by the Lambda function. This is present only if the invocation type is RequestResponse. | 
 | AWS.Lambda.InvokedFunctions.ExecutedVersion | string | The function version that has been executed. This value is returned only if the invocation type is RequestResponse. | 
 | AWS.Lambda.InvokedFunctions.Region | string | The AWS Region. | 
+| AWS.Lambda.InvokedFunctions.RequestPayload | unknown | The JSON representation of the object passed to the Lambda function as input. | 
 
 
 #### Command Example
@@ -400,7 +403,6 @@ Invokes a Lambda function. Specify just a function name to invoke the latest ver
 >|ExecutedVersion|FunctionName|LogResult|Payload|Region|
 >|---|---|---|---|---|
 >| $LATEST | test_echo | START RequestId: c24e087f-5c05-4e92-a1a8-e54f2d6cd925 Version: $LATEST<br/>END RequestId: c24e087f-5c05-4e92-a1a8-e54f2d6cd925<br/>REPORT RequestId: c24e087f-5c05-4e92-a1a8-e54f2d6cd925	Duration: 16.00 ms	Billed Duration: 16 ms	Memory Size: 128 MB	Max Memory Used: 65 MB	Init Duration: 133.86 ms	<br/> | {"message":"Your function executed successfully!","payload":{"value":"test"}} | us-west-2 |
-
 
 ### aws-lambda-get-account-settings
 ***
@@ -870,6 +872,7 @@ Deletes a Lambda function URL. When you delete a function URL, you can’t recov
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-lambda-delete-function-url-config
 
 ***
@@ -893,6 +896,7 @@ Deletes a Lambda function URL. When you delete a function URL, you can’t recov
 #### Context Output
 
 There is no context output for this command.
+
 ### aws-lambda-delete-function
 
 ***

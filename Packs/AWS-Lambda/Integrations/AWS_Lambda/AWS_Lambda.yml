@@ -443,7 +443,7 @@ script:
     - contextPath: AWS.Lambda.InvokedFunctions.LogResult
       description: Logs for the Lambda function invocation. This is present only if the invocation type is RequestResponse and the logs were requested.
       type: string
-    - contextPath: AWS.Lambda.InvokedFunctions.RequestPayload
+    - contextPath: AWS.Lambda.InvokedFunctions.Payload
       description: The JSON representation of the object returned by the Lambda function. This is present only if the invocation type is RequestResponse.
       type: string
     - contextPath: AWS.Lambda.InvokedFunctions.ExecutedVersion
@@ -452,6 +452,9 @@ script:
     - contextPath: AWS.Lambda.InvokedFunctions.Region
       description: The AWS Region.
       type: string
+    - contextPath: AWS.Lambda.InvokedFunctions.RequestPayload
+      description: The JSON representation of the object passed to the Lambda function as input.
+      type: unknown
   - arguments:
     - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
