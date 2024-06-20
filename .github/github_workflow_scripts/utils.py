@@ -271,8 +271,7 @@ def get_content_roles_from_blob() -> dict[str, Any] | None:
         response = requests.get(CONTENT_ROLES_BLOB_MASTER_URL)
         response.raise_for_status()  # Raise an error for bad status codes
         print(f"Successfully retrieved {CONTENT_ROLES_FILENAME} from blob")
-        json_data = response.json()
-        roles = json_data
+        roles = response.json()
     except (requests.RequestException, requests.HTTPError, json.JSONDecodeError, TypeError) as e:
         print(f"{e.__class__.__name__} getting {CONTENT_ROLES_FILENAME} from blob: {e}.")
     finally:
