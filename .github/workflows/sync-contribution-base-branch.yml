@@ -28,6 +28,6 @@ jobs:
           CONTENTBOT_GH_ADMIN_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}
         run: |
           echo "Updating contribution base branches (contrib/*)"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run ./sync_contrib_base.py
           echo "Finished updating base branches"
