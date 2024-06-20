@@ -14,7 +14,7 @@ FILE_ENTRY = {
 
 
 def util_load_json(file_name):
-    with open(os.path.join('test_data', file_name), mode='r',
+    with open(os.path.join('test_data', file_name),
               encoding='utf-8') as mock_file:
         return json.loads(mock_file.read())
 
