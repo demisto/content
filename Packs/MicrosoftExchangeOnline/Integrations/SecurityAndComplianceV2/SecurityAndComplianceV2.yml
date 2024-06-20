@@ -52,7 +52,7 @@ configuration:
   required: false
 - display: App Secret
   name: app_secret
-  type: 0
+  type: 4
   section: Connect
   advanced: true
   required: false
