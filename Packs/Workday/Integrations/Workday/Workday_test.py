@@ -15,7 +15,7 @@ def util_load_json(path):
 
 
 def util_read_file(path):
-    with open(path, 'r') as _file:
+    with open(path) as _file:
         return _file.read()
 
 
