@@ -1842,7 +1842,7 @@ Returns a list of local CA certificates. The results can be filtered, using the 
                 "createdAt": "2024-05-22T12:54:22.457459Z",
                 "id": "133aa865-0c12-4b56-9d9a-6ca513b28ef8",
                 "issuer": "/C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/OU=Thales Group Inc./CN=kylo.com",
-                "name": "localca-<id>",
+                "name": "localca-&lt;id&gt;",
                 "notAfter": "2025-06-16T12:25:37Z",
                 "notBefore": "2024-06-15T12:25:37Z",
                 "purpose": {
@@ -2484,7 +2484,7 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 >| isempty1? | /C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/OU=Thales Group Inc./CN=kylo2.com | 163510084562999310649486415171752198390 | 15 Jun 2024, 12:25 | 16 Jun 2025, 12:25 | Enabled | Enabled |
 >| isempty? | /C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/OU=Thales Group Inc./CN=kylo2.com | 135850894135202628853705544520531120469 | 15 Jun 2024, 12:25 | 16 Jun 2025, 12:25 | Enabled | Enabled |
 >| test1 | /C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/OU=Thales Group Inc./CN=kylo.com | 178903473729619830181379965311891574804 | 15 Jun 2024, 12:25 | 16 Jun 2025, 12:25 | Enabled | Enabled |
->| localca-<id> | /C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/OU=Thales Group Inc./CN=kylo.com | 225686445354134570260952387642633959405 | 15 Jun 2024, 12:25 | 16 Jun 2025, 12:25 | Enabled | Enabled |
+>| localca-&lt;id&gt;| /C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/OU=Thales Group Inc./CN=kylo.com | 225686445354134570260952387642633959405 | 15 Jun 2024, 12:25 | 16 Jun 2025, 12:25 | Enabled | Enabled |
 >| localca-b765018b-0a64-419f-b537-c30863aa4002 | /C=US/ST=TX/L=Austin/O=Thales/CN=CipherTrust Root CA | 24463087808077808513660017390325960995 | 13 Feb 2024, 10:08 | 11 Feb 2034, 10:08 | Enabled | Enabled |
 >| sarah-2-CA | /C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/CN=kylo.com | 297957266980521970680269241879076856098 | 01 May 2024, 10:05 | 01 May 2025, 10:05 | Enabled | Enabled |
 >| maya-CA | /C=US/ST=MD/L=Belcamp/O=Thales/OU=RnD/OU=Thales Group Inc./CN=kylo.com | 139248642490513216788901886347651629296 | 20 May 2024, 12:54 | 16 May 2025, 12:54 | Enabled | Enabled |
