@@ -41,12 +41,18 @@ configuration:
   type: 0
   section: Connect
   advanced: true
-  hidden: true
+  hidden: false
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   defaultvalue: "false"
   type: 8
+  section: Connect
+  advanced: true
+  required: false
+- display: App Secret
+  name: app_secret
+  type: 4
   section: Connect
   advanced: true
   required: false

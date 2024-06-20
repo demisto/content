@@ -268,7 +268,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
 
 #### OAuth Client - Access Token Management ####
 class OAuth2DeviceCodeClient {
-    [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
+    [string]$application_id
     [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
     [string]$device_code
     [int]$device_code_expires_in
@@ -279,9 +279,11 @@ class OAuth2DeviceCodeClient {
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
+    [string]$app_secret
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
+                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time,
+                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -291,6 +293,8 @@ class OAuth2DeviceCodeClient {
         $this.access_token_creation_time = $access_token_creation_time
         $this.insecure = $insecure
         $this.proxy = $proxy
+        $this.application_id = $application_id
+        $this.app_secret = $app_secret
         <#
             .DESCRIPTION
             OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
@@ -339,10 +343,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret) {
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret)
 
         return $client
         <#
@@ -366,7 +370,9 @@ class OAuth2DeviceCodeClient {
         $params = @{
             "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
             "Method" = "Post"
-            "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+            "Headers" = @{
+                "Content-Type" = "application/x-www-form-urlencoded"
+            }
             "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
             "NoProxy" = !$this.proxy
             "SkipCertificateCheck" = $this.insecure
@@ -378,7 +384,7 @@ class OAuth2DeviceCodeClient {
         $this.device_code_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
         $this.device_code_expires_in = [int]::Parse($response_body.expires_in)
 
-        return $response_body
+    return $response_body
 
         <#
             .DESCRIPTION
@@ -1857,7 +1863,7 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false, $integration_params.app_id, $integration_params.app_secret)
 
         # Executing oauth2 commands
         switch ($command) {
