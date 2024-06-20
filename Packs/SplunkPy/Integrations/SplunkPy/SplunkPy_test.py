@@ -1100,24 +1100,30 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     assert value == expected_value
 
 
-@pytest.mark.parametrize('notable_data, search, raw, expected_search', [
-    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
-    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
-    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, ''),
-    ({"signature": "Backdoor.test"}, "View related '$signature$' events for $dest$", {"dest": "ACME-test-005"},
+@pytest.mark.parametrize('notable_data, search, raw, is_query_name, expected_search', [
+    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, False, 'search a="1" c="3" suffix'),
+    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, False, 'search (a="1" OR a="2") b="3" suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, False, ''),
+    ({"signature": "Backdoor.test"}, "View related '$signature$' events for $dest$", {"dest": "ACME-test-005"}, True,
      "View related 'Backdoor.test' events for ACME-test-005"),
-    ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"},
+    ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"}, True,
      'View all wineventlogs involving user="test"'),
-    ({}, 'Test query name', {}, 'Test query name')
+    ({}, 'Test query name', {}, True, 'Test query name'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
+     'index="test" | where user = "test\\\\crusher"'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
+     'index="test" | where user = "test\\\\crusher"')
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
     "search query fields don't exist in notable data and raw data",
     "query name fields in notables data and raw data",
     "query name fields in raw data",
-    "query name without fields to replace"
+    "query name without fields to replace",
+    "search query with a user field that contains a backslash",
+    "search query with a user field that is surrounded by quotation marks and contains a backslash"
 ])
-def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
+def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
     """
     Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
      corresponding query part (key & value).
@@ -1129,6 +1135,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
     - A raw query name with fields both in the notable's data and in the notable's raw data
     - A raw query name with fields in the notable's raw data
     - A raw query name without any fields to replace.
+    - A raw query search with a user field that contains a backslash
+    - A raw query search with a user field that is surrounded by quotation marks and contains a backslash
 
 
     When:
@@ -1138,7 +1146,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
-    assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
+    parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
+    assert parsed_query == expected_search
 
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
@@ -1519,7 +1528,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = \'test_user\'')]),
+       'search index="test"\n| where user = "\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
     "A notable data with multiple (two) drilldown searches to enrich"
