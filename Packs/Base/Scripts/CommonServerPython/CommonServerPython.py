@@ -10783,9 +10783,13 @@ class PollResult:
         :param partial_result: CommandResults to return, even though we will poll again
 
         """
+        demisto.debug('is doing self.response = response')
         self.response = response
+        demisto.debug('is doing self.continue_to_poll = continue_to_poll')
         self.continue_to_poll = continue_to_poll
+        demisto.debug('is doing self.args_for_next_run = args_for_next_run')
         self.args_for_next_run = args_for_next_run
+        demisto.debug('is doing self.partial_result = partial_result')
         self.partial_result = partial_result
 
 

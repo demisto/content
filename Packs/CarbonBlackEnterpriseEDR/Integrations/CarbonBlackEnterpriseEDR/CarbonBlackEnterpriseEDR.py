@@ -591,7 +591,7 @@ def alert_workflow_update_command_with_results(client: Client, args: dict):
     return None, status
 """
 
-@polling_function(name='cb-eedr-alert-workflow-update', interval=1000, requires_polling_arg=False)
+@polling_function(name='cb-eedr-alert-workflow-update', interval=60, requires_polling_arg=False)
 def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
     demisto.debug('trying to get request_id')
     request_id = arg_to_number(args.get('request_id'))
