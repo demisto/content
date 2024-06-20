@@ -5527,7 +5527,7 @@ def put_live_response_file_action(client, args):
 
 def put_file_get_successful_action_results(client, res):
     md_results = {
-        'Machine Action Id': res.get('id'), 
+        'Machine Action Id': res.get('id'),
         'MachineId': res.get('machineId'),
         'Hostname': res.get('computerDnsName'),
         'Status': res.get('status'),
