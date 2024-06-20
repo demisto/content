@@ -11,7 +11,7 @@ def read_file_content(input_entry_or_string):
     if not res:
         return_error("Entry {} not found".format(input_entry_or_string))
     file_path = res['path']
-    with open(file_path, 'r') as f:
+    with open(file_path) as f:
         file_content = f.read()
     return file_content
 
