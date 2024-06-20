@@ -1,7 +1,7 @@
 
 ## Netmiko SSH module integration
 
-This integration provides ssh-based access to network devices, servers, and other appliances that support this method of configuration. For a complete list of supported platforms, please visit the below URL:
+This integration provides ssh-based access to network devices, servers, and other appliances that support this method of configuration. For a complete list of supported platforms, visit the following URL:
 
 [Netmiko Platforms.md on Github](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md)
 
