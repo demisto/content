@@ -25,7 +25,7 @@ def cache_manager(zendesk_client):
 
 def get_json_file(file_data_type: str):
     full_file_path = Path(__file__).parent / 'test_data' / f'{file_data_type}.json'
-    with open(full_file_path, 'r') as json_file:
+    with open(full_file_path) as json_file:
         return json.load(json_file)
 
 
