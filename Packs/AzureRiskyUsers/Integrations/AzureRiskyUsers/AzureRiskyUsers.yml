@@ -89,7 +89,7 @@ script:
       predefined:
         - 'riskLastUpdatedDateTime desc'
         - 'riskLastUpdatedDateTime asc'
-    - description: Displays all RiskyUsers before a specific Date Time. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
+    - description: Displays all RiskyUsers before a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
       name: updated_before
     - description: Displays all RiskyUsers after a specific Date Time. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
       name: updated_after
