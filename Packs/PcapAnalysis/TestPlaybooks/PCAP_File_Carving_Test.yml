@@ -40,7 +40,7 @@ tasks:
       version: -1
       name: Get PCAP
       description: Sends http request. Returns the response as json.
-      scriptName: httpaaa
+      scriptName: http
       type: regular
       iscommand: false
       brand: ""
@@ -110,7 +110,7 @@ tasks:
           - - operator: inList
               left:
                 value:
-                  simple: File.Names
+                  simple: File.Name
                 iscontext: true
               right:
                 value:
@@ -119,11 +119,11 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Extensionssss
+                  simple: File.Extension
                 iscontext: true
               right:
                 value:
-                  simple: pcapsa
+                  simple: pcap
             - operator: isEqualString
               left:
                 value:
@@ -131,7 +131,7 @@ tasks:
                 iscontext: true
               right:
                 value:
-                  simple: capaaa
+                  simple: cap
             - operator: isEqualString
               left:
                 value:
@@ -158,7 +158,7 @@ tasks:
             - operator: isEqualString
               left:
                 value:
-                  simple: File.Extensionss
+                  simple: File.Extension
                 iscontext: true
               right:
                 value:
