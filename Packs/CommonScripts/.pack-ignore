@@ -177,7 +177,6 @@ unescape_url
 unescape
 hyperlinks
 Auth
-skipprepare
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
