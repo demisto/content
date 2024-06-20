@@ -1,11 +1,19 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-results = demisto.executeCommand('proofpoint-get-top-clickers', {'window': 90})[0]['Contents']['users']
 users = []
+users_res_for_chart = []
+results: dict = demisto.executeCommand('proofpoint-get-top-clickers', {'window': 90})[0]  # type: ignore
+contents = results.get('Contents')
+if isinstance(contents, dict):
+	users = contents.get('users', [])
 
-for user in results:
-    users.append({"name": user.get("identity").get("emails", [""])[0],
+for user in users:
+    users_res_for_chart.append({"name": user.get("identity").get("emails", [""])[0],
                   "data": [user.get("clickStatistics").get("clickCount")]})
+default_empty_chart_data = [
+    {"name": "", "data": [], "color": ""},
+]
 
-return_results(json.dumps(users))
+final_res = users_res_for_chart if users_res_for_chart else default_empty_chart_data
+return_results(json.dumps(final_res))
