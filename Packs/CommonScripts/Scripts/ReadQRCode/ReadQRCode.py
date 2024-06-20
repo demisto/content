@@ -29,7 +29,7 @@ class StderrRedirect:
 
 def read_qr_code(filename: str) -> list:
 
-    with StderrRedirect():  # redirect stderr to catch cv2 warnings which are sent directly to stderr 
+    with StderrRedirect():  # redirect stderr to catch cv2 warnings which are sent directly to stderr
 
         img = cv2.imread(filename)
         demisto.debug(f'loaded file: {filename}')
