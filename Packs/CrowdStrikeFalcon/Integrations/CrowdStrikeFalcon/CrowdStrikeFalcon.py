@@ -1390,8 +1390,9 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     else:
         endpoint_url = "alerts/queries/alerts/v2?filter=product:'epp'"
     if filter_arg:
+        # behavior filters are not supported in Raptor
         endpoint_url += urllib.parse.quote_plus(f"+{filter_arg}")
-        
+
     response = http_request('GET', endpoint_url)
     return response
 

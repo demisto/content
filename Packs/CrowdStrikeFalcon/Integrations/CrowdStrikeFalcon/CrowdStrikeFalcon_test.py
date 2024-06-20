@@ -6954,24 +6954,31 @@ def test_error_handler():
         assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'
 
 @pytest.mark.parametrize('Post_Raptor_release, url_suffix', [
-        (True,"alerts/queries/alerts/v2?filter=product:'epp'"),
-         (False, '/detects/queries/detects/v1')])
-def test_get_detection(mocker, Post_Raptor_release, url_suffix):
+    (True, "alerts/queries/alerts/v2?filter=product:'epp'%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"),
+     (False, '/detects/queries/detects/v1')
+     ])
+def test_get_detection___url(mocker, Post_Raptor_release, url_suffix):
     """
     Given:
-        - The Post_Raptor_release flag
-    When:
-        - Running get_detection
-    Then:
-        - Validate that the correct url_suffix is used
-            case 1: Post_Raptor_release is True, the url_suffix should be alerts/queries/alerts/v2?filter=product:'epp'
-            case 2: Post_Raptor_release is False, the url_suffix should be /detects/queries/detects/v1
+    - The `Post_Raptor_release` flag
+When:
+    - Invoking `get_fetch_detections` with various input parameters
+Then:
+    - Verify that the correct `url_suffix` is used
+
+Test Scenarios:
+    1. When `Post_Raptor_release` is True, the `url_suffix` should be:
+       "alerts/queries/alerts/v2?filter=product:'epp'%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+       since all parameters are part of the URL and are URL-encoded.
+    2. When `Post_Raptor_release` is False, the `url_suffix` should be:
+       "/detects/queries/detects/v1" since all the provided parameters are passed under 'parameters'.
     """
     from CrowdStrikeFalcon import get_detections
     mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
 
-    get_detections()
+    get_detections(last_behavior_time='2024-06-19T15:25:00Z', behavior_id=123,
+                   filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'")
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
         
 
@@ -7000,26 +7007,38 @@ def test_resolve_detection(mocker, Post_Raptor_release, url_suffix, data):
     assert http_request_mocker.call_args_list[0][1]["data"] == data
 
 
-@pytest.mark.parametrize('Post_Raptor_release, url_suffix', [
-        (True, "/alerts/queries/alerts/v2?filter=product:'epp'"),
-         (False, '/detects/queries/detects/v1')])
-def test_get_fetch_detections(mocker, Post_Raptor_release, url_suffix):
+
+
+@pytest.mark.parametrize('post_raptor_release, url_suffix, request_params', [
+    (True, "/alerts/queries/alerts/v2?filter=product:'epp'%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27", {'limit': 3}),
+    (False, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3, 'filter': "created_timestamp:>'2024-06-19T15:25:00Z'"})
+])
+def test_get_fetch_detections__url(mocker, post_raptor_release, url_suffix, request_params):
     """
     Given:
-        - The Post_Raptor_release flag
+        - The `Post_Raptor_release` flag
     When:
-        - Running get_fetch_detections
+        - Invoking `get_fetch_detections` with various input parameters
     Then:
-        - Validate that the correct url_suffix is used
-            case 1: Post_Raptor_release is True, the url_suffix should be /alerts/queries/alerts/v2?filter=product:'epp'
-            case 2: Post_Raptor_release is False, the url_suffix should be /detects/queries/detects/v1
+        - Verify that the correct `url_suffix` is used and the input parameters are correctly passed
+
+    Test Scenarios:
+        1. When `Post_Raptor_release` is True, the `url_suffix` should be:
+        "/alerts/queries/alerts/v2?filter=product:'epp'%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+        All parameters (except 'limit') are part of the URL and are URL-encoded.
+        2. When `Post_Raptor_release` is False, the `url_suffix` should be "/detects/queries/detects/v1"
+        All the provided parameters are passed under 'parameters'.
     """
     from CrowdStrikeFalcon import get_fetch_detections
-    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', post_raptor_release)
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
-    
-    get_fetch_detections()
+
+    get_fetch_detections(last_created_timestamp='2024-06-19T15:25:00Z', filter_arg=None, offset=5,
+                         last_updated_timestamp='2024-06-19T15:25:00Z',
+                         has_limit=True, limit=3)
+
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+    assert http_request_mocker.call_args_list[0][0][2] == request_params
 
 
 @pytest.mark.parametrize('Post_Raptor_release, expected_output', [
