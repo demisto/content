@@ -1,10 +1,9 @@
 {
-    "id": "XMCO-mapper",
+    "id": "XMCO - Serenety Mapper",
     "name": "XMCO - Serenety Mapper",
     "type": "mapping-incoming",
     "description": "Maps incoming XMCO alert fields.",
-    "fromVersion": "6.8.0",
-    "defaultIncidentType": "",
+    "fromVersion": "6.10.0",
     "mapping": {
         "XMCO Serenety Alert": {
             "dontMapEventToLabels": false,
