@@ -842,11 +842,11 @@ def test_ssl_configuration():
     }
     assert kafka.conf_consumer == expected_consumer_conf
     assert kafka.conf_producer == expected_producer_conf
-    with open(kafka.ca_path, 'r') as f:
+    with open(kafka.ca_path) as f:
         assert f.read() == 'ca_cert'
-    with open(kafka.client_cert_path, 'r') as f:
+    with open(kafka.client_cert_path) as f:
         assert f.read() == 'client_cert'
-    with open(kafka.client_key_path, 'r') as f:
+    with open(kafka.client_key_path) as f:
         assert f.read() == 'client_cert_key'
     os.remove(kafka.ca_path)
     os.remove(kafka.client_cert_path)
