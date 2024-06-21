@@ -25,7 +25,7 @@ timeout: '0'
 type: python
 subtype: python3
 runas: DBotRole
-dockerimage: demisto/office-utils:2.0.0.78144
+dockerimage: demisto/office-utils:2.0.0.93886
 fromversion: 5.0.0
 tests:
 - Extract Indicators From File - Generic v2 - Test

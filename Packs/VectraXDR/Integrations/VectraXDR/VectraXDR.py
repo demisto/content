@@ -60,6 +60,7 @@ ERRORS = {
     'REQUIRED_ARGUMENT': "Please provide valid value of the '{}'. It is required field.",
     'INVALID_INTEGER_VALUE': "'{}' value must be a non-zero and positive integer value.",
     'INVALID_NUMBER': '"{}" is not a valid number',
+    'INVALID_PAGE_RESPONSE': 'page contains no results',
     'INVALID_MAX_FETCH': 'Invalid Max Fetch: {}. Max Fetch must be a positive integer ranging from 1 to 200.',
     'INVALID_PAGE_SIZE': "Invalid 'page size' provided. Please ensure that the page size value is between 1 and 5000.",
     'TRIAGE_AS_REQUIRED_WITH_DETECTION_IDS': "'triage_as' argument must be provided when using the 'detection_ids' "
@@ -1289,6 +1290,23 @@ def get_mirroring():
     }
 
 
+def reopen_in_xsoar(entries: list, entity_id_type: list):
+    """Reopen the XSOAR incident for the given entity.
+
+    Args:
+        entries (list): List of entries where the reopening entry will be appended.
+        entity_id_type (list): Indicates the entity ID and type.
+    """
+    demisto.debug(f'Reopening the incident with remote entity ID: {entity_id_type}.')
+    entries.append({
+        'Type': EntryType.NOTE,
+        'Contents': {
+            'dbotIncidentReopen': True
+        },
+        'ContentsFormat': EntryFormat.JSON
+    })
+
+
 def get_user_list_command_hr(users: List):
     """
     Converts a list of users into a human-readable table format.
@@ -1790,11 +1808,19 @@ def fetch_incidents(client: VectraClient, params: Dict[str, Any]) -> List:
         from_timestamp = query_params.get('last_modified_timestamp_gte', [''])[0]
         tags = query_params.get('tags', [''])[0]
 
-    # Fetch the entities list from the server using the provided parameters
-    response = client.list_entities_request(page=page, page_size=max_fetch, entity_type=entity_type,  # type: ignore
-                                            is_prioritized=is_prioritized,
-                                            last_modified_timestamp=from_timestamp,  # type: ignore
-                                            tags=tags, ordering='last_modified_timestamp')
+    try:
+        # Fetch the entities list from the server using the provided parameters
+        response = client.list_entities_request(page=page, page_size=max_fetch, entity_type=entity_type,  # type: ignore
+                                                is_prioritized=is_prioritized,
+                                                last_modified_timestamp=from_timestamp,  # type: ignore
+                                                tags=tags, ordering='last_modified_timestamp')
+    except DemistoException as e:
+        # If the status code is 404 and the message is invalid page number, then return the empty list of incidents.
+        if str(e.res) == '<Response [404]>' and (
+                e.res.status_code == 404 and ERRORS['INVALID_PAGE_RESPONSE'] in str(e.message).lower()):
+            demisto.debug(f'Returning 0 incidents in fetch incidents due to the end of page: {str(e.message)}')
+            return demisto_incidents
+        raise e
 
     # Retrieve the next page URL for pagination
     next_url = response.get('next')
@@ -2941,9 +2967,16 @@ def get_modified_remote_data_command(client: VectraClient, args: Dict) -> GetMod
             page_size = arg_to_number(query_params.get('page_size', [''])[0], arg_name='page_size')
             command_last_run_date = query_params.get('last_modified_timestamp_gte', [''])[0]
 
-        response = client.list_entities_request(last_modified_timestamp=command_last_run_date,  # type: ignore
-                                                page=page, page_size=page_size, state='')
-
+        try:
+            response = client.list_entities_request(last_modified_timestamp=command_last_run_date,  # type: ignore
+                                                    page=page, page_size=page_size, state='')
+        except DemistoException as e:
+            # If the status code is 404 and the message is invalid page number, then return the empty list of incidents.
+            if str(e.res) == '<Response [404]>' and (
+                    e.res.status_code == 404 and ERRORS['INVALID_PAGE_RESPONSE'] in str(e.message)):
+                demisto.debug(f'Got the 404 error in get-modified-remote-data command: {str(e.message)}')
+                break
+            raise e
         entities = response.get('results', [])
         next_url = response.get('next_url')
         if len(entities) == 0:
@@ -2986,7 +3019,7 @@ def get_remote_data_command(client: VectraClient, args: Dict) -> GetRemoteDataRe
     Returns:
         GetRemoteDataResponse: An object containing the remote incident data and any new entries to return to XSOAR.
     """
-    new_entries_to_return = []
+    new_entries_to_return: List[Dict] = []
 
     dbot_mirror_id: str = args.get('id')  # type: ignore
     demisto.debug(f'dbot_mirror_id:{dbot_mirror_id}')
@@ -3051,6 +3084,8 @@ def get_remote_data_command(client: VectraClient, args: Dict) -> GetRemoteDataRe
         demisto.debug(f'Nothing new in the Vectra entity {entity_id_type}.')
     else:
         demisto.debug(f'The Vectra entity {entity_id_type} is updated.')
+        if detections:
+            reopen_in_xsoar(new_entries_to_return, entity_id_type)
 
     notes = remote_incident_data.get('notes')
 

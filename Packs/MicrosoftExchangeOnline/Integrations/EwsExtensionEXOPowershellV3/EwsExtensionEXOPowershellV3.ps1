@@ -1351,9 +1351,14 @@ function EXONewTenantAllowBlockListCommand
     $raw_response = $client.EXONewTenantAllowBlockList(
         $entries, $list_type, $list_subtype, $action, $notes, $no_expiration, $expiration_date
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.NewTenantBlocks" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.NewTenantBlocks" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 
 }
 
@@ -1373,9 +1378,14 @@ function EXOGetTenantAllowBlockListCommand
     $raw_response = $client.EXOGetTenantAllowBlockList(
         $entry, $list_type, $list_subtype, $action, $no_expiration, $expiration_date
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentTenantBlocks" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentTenantBlocks" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 }
 
 function EXOCountTenantAllowBlockListCommand
@@ -1393,9 +1403,14 @@ function EXOCountTenantAllowBlockListCommand
         ListSubType = $list_subtype
         Count = $m.Count
     }
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentListCount" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.CurrentListCount" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 
 }
 
@@ -1417,9 +1432,14 @@ function EXORemoveTenantAllowBlockListCommand
     $raw_response = $client.EXORemoveTenantAllowBlockList(
         $entries, $ids, $list_type, $list_subtype
     )
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RemovedTenantBlocks" = $raw_response }
-    Write-Output $human_readable, $entry_context, $raw_response
+    if($raw_response -eq $null){
+        Write-Output "No Tenant Allow/Block List items were found."
+    }
+    else{
+        $human_readable = TableToMarkdown $raw_response "Results of $command"
+        $entry_context = @{ "$script:INTEGRATION_ENTRY_CONTEXT.RemovedTenantBlocks" = $raw_response }
+        Write-Output $human_readable, $entry_context, $raw_response
+    }
 
 }
 

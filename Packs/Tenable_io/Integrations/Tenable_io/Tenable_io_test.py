@@ -3,7 +3,6 @@ import pytest
 from freezegun import freeze_time
 from CommonServerPython import *
 import json
-import io
 
 # mypy: disable-error-code="operator"
 
@@ -56,7 +55,7 @@ MOCK_CLIENT_ARGS = {
 
 
 def util_load_json(file_path):
-    with io.open(file_path, mode='r', encoding='utf-8') as f:
+    with open(file_path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -103,7 +102,7 @@ def test_get_vuln_by_asset(mocker, requests_mock):
 
     actual_result = results['EntryContext']['TenableIO.Vulnerabilities']
 
-    for k in actual_result[0].keys():
+    for k in actual_result[0]:
         assert EXPECTED_VULN_BY_ASSET_RESULTS[0][k] == actual_result[0][k]
 
 

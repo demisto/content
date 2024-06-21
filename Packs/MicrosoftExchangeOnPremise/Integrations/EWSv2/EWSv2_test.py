@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
 
@@ -8,11 +9,12 @@ import logging
 import dateparser
 import pytest
 from exchangelib import Message, Mailbox, Contact, HTMLBody, Body
-from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_physical_address
+from EWSv2 import fetch_last_emails, get_message_for_body_type, parse_item_as_dict, parse_physical_address
 from exchangelib.errors import UnauthorizedError, ErrorNameResolutionNoResults
 from exchangelib import EWSDateTime, EWSTimeZone
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound
 import demistomock as demisto
+from exchangelib.properties import ItemId
 
 
 class TestNormalCommands:
@@ -814,6 +816,18 @@ def test_get_message_for_body_type_text_body_type_with_no_html_body():
     assert result == Body(body)
 
 
+def test_get_message_for_body_type_text_body_type_with_html_body_no_body():
+    """
+    Given: html_body, no body, the default 'text' as body_type.
+    When: Constructing the message body.
+    Then: Assert that the result is an html body.
+    """
+    html_body = "<p>This is an HTML body</p>"
+    result = get_message_for_body_type('', 'text', html_body)
+    assert isinstance(result, HTMLBody)
+    assert result == HTMLBody(html_body)
+
+
 def test_parse_physical_address():
     assert parse_physical_address(PhysicalAddress(city='New York',
                                                   country='USA',
@@ -826,3 +840,21 @@ def test_parse_physical_address():
                                                                       'state': 'NY',
                                                                       'street': 'Broadway Ave.',
                                                                       'zipcode': 10001}
+
+
+def test_parse_item_as_dict_return_json_serializable():
+    """
+    Given:
+        - A message with cc_recipients with an object that includes a non-serializable object (ItemId).
+    When:
+        - Calling parse_item_as_dict
+
+    Then:
+        - Verify that the received dict is json serializable,
+        and that the ItemId appears both in the received dict and the json serialized object.
+    """
+    item = Message(cc_recipients=[Mailbox(item_id=ItemId(id='id123', changekey='change'))])
+    item_as_dict = parse_item_as_dict(item, None)
+    item_as_json = json.dumps(item_as_dict, ensure_ascii=False)
+    assert isinstance((item_as_dict.get("cc_recipients", [])[0]).get("item_id"), dict)
+    assert '"item_id": {"id": "id123", "changekey": "change"}' in item_as_json

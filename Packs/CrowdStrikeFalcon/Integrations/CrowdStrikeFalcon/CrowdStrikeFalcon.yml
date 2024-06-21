@@ -163,6 +163,21 @@ configuration:
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
+- defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
+  display: Reopen Statuses
+  name: reopen_statuses
+  type: 16
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: Crowdsrike Falcon statuses that will reopen an incident in XSOAR if closed. You can choose any combination.
+  options:
+  - New
+  - In progress
+  - True positive
+  - False positive
+  - Reopened
+  - Ignored
 - defaultvalue: '1'
   display: 'Incidents Fetch Interval'
   name: incidentFetchInterval
@@ -2604,6 +2619,8 @@ script:
       defaultValue: false
     - name: timeout
       description: The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs.
+    - name: polling_timeout
+      description: Timeout for polling. Default is 600 seconds.
     description: Gets the RTR extracted file contents for the specified file path.
     name: cs-falcon-rtr-retrieve-file
     outputs:
@@ -2901,7 +2918,7 @@ script:
     name: cve
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -5015,7 +5032,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.91603
+  dockerimage: demisto/py3-tools:1.0.0.98401
   isfetch: true
   ismappable: true
   isremotesyncin: true

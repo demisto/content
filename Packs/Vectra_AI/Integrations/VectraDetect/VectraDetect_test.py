@@ -182,7 +182,7 @@ for input_type in {'min_privilege_level'}:
                          id=f"{input_type}_{'none' if invalid_value is None else invalid_value}_1-10"))
 validate_argument_test_data.append(
     pytest.param('vectra', 'vectra',
-                 pytest.raises(SystemError, match='Unknow argument type'),
+                 pytest.raises(SystemError, match='Unknown argument type'),
                  id='invalid-argument_exception'))
 
 

@@ -1,0 +1,32 @@
+{
+    "id": "incident_clarotyxdomedevicealertdetectedtime",
+    "version": -1,
+    "modified": "2024-04-18T10:35:37.988452273Z",
+    "name": "Claroty xDome Device-Alert Detected Time",
+    "ownerOnly": false,
+    "description": "Date and time when the Alert was first detected",
+    "cliName": "clarotyxdomedevicealertdetectedtime",
+    "type": "date",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Claroty xDome Alert"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

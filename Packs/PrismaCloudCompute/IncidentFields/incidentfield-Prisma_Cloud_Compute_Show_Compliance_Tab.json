@@ -1,0 +1,31 @@
+{
+    "id": "incident_prismacloudcomputeshowcompliancetab",
+    "version": -1,
+    "modified": "2024-03-21T15:55:21.847788151Z",
+    "name": "Prisma Cloud Compute Show Compliance Tab",
+    "ownerOnly": false,
+    "cliName": "prismacloudcomputeshowcompliancetab",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Prisma Cloud Compute Compliance v2"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "unsearchable": true,
+    "fromVersion": "6.10.0"
+}

@@ -2,7 +2,7 @@
     "name": "Citrix ADC",
     "description": "Citrix ADC is an application delivery controller (ADC) is a purpose-built networking appliance used to improve the performance, security, and resiliency of applications delivered over the web.",
     "support": "xsoar",
-    "currentVersion": "1.0.2",
+    "currentVersion": "1.0.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -11,7 +11,9 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "NetScaler"
+    ],
     "marketplaces": [
         "marketplacev2"
     ]

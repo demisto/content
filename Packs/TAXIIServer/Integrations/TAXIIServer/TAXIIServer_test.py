@@ -423,13 +423,16 @@ def test_validate_indicators(indicator):
     assert sdv.validate_xml(tree)
 
 
-@pytest.mark.parametrize('request_headers, url_scheme, expected',
+@pytest.mark.parametrize('request_headers, url_scheme, expected, is_xsiam',
                          [
-                             ({}, 'http', 'http://host:9000'),
-                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https', 'https://host/instance/execute/eyy')
+                             ({}, 'http', 'http://host:9000', False),
+                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https',
+                              'https://host/instance/execute/eyy', False),
+                             ({'X-Request-URI': 'http://host/instance/execute'}, 'https',
+                              'https://ext-host/xsoar/instance/execute/eyy', True)
                          ]
                          )
-def test_get_url(mocker, request_headers, url_scheme, expected):
+def test_get_url(mocker, request_headers, url_scheme, expected, is_xsiam):
     """
     Given:
         - Case 1: Empty requests headers and http URL scheme
@@ -450,4 +453,24 @@ def test_get_url(mocker, request_headers, url_scheme, expected):
     TAXIIServer.SERVER = taxii_server
     if request_headers:
         mocker.patch('TAXIIServer.get_calling_context', return_value={'IntegrationInstance': 'eyy'})
+        mocker.patch('TAXIIServer.is_xsiam_or_xsoar_saas', return_value=is_xsiam)
     assert taxii_server.get_url(request_headers) == expected
+
+
+def test_create_stix_hash_observable():
+    """
+    Given:
+        - namespace: The XML namespace, indicator: The Demisto File indicator.
+
+    When:
+        - Getting a File indicator
+
+    Then:
+        - Ensure the stix hash observable is created
+    """
+
+    from TAXIIServer import create_stix_hash_observable
+    namespace = "namespace"
+    indicator = {'indicator_type': 'File', 'value': '123456789'}
+    observable = create_stix_hash_observable(namespace, indicator)
+    assert observable

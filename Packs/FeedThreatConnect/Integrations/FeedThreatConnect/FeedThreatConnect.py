@@ -34,7 +34,7 @@ INDICATOR_MAPPING_NAMES = {
     'CIDR': FeedIndicatorType.CIDR,
     'EmailAddress': FeedIndicatorType.Email,
     'File': FeedIndicatorType.File,
-    'Host': FeedIndicatorType.Host,
+    'Host': FeedIndicatorType.Domain,
     'Mutex': FeedIndicatorType.MUTEX,
     'Registry Key': FeedIndicatorType.Registry,
     'URL': FeedIndicatorType.URL,
@@ -77,14 +77,16 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
              'threatAssessRating': 'verdict',
              'description': 'description',
              'summary': 'name',
+             'md5': 'md5',
+             'sha1': 'sha1',
              'sha256': 'sha256'},
-    'Host': {'dateAdded': 'firstseenbysource',
-             'lastModified': 'updateddate',
-             'threatAssessRating': 'verdict',
-             'threatAssessConfidence': 'confidence',
-             'description': 'description',
-             'summary': 'name',
-             'hostname': 'hostname'},
+    'Domain': {'dateAdded': 'firstseenbysource',
+               'lastModified': 'updateddate',
+               'threatAssessRating': 'verdict',
+               'threatAssessConfidence': 'confidence',
+               'description': 'description',
+               'summary': 'name',
+               'hostName': 'domainname'},
     'Mutex': {'dateAdded': 'firstseenbysource',
               'threatAssessRating': 'verdict',
               'description': 'description',
@@ -95,10 +97,7 @@ TC_INDICATOR_TO_XSOAR_INDICATOR = {
                      'threatAssessRating': 'verdict',
                      'threatAssessConfidence': 'confidence',
                      'description': 'description',
-                     'summary': 'name',
-                     'Key Name': 'keyvalue.name',
-                     'Value Name': 'keyvalue.data',
-                     'Key Type': 'keyvalue.type'},
+                     'summary': 'name'},
     'URL': {'dateAdded': 'firstseenbysource',
             'lastModified': 'updateddate',
             'threatAssessRating': 'verdict',
@@ -233,6 +232,35 @@ def calculate_dbot_score(threat_assess_score: Optional[Union[int, str]] = None) 
     return score
 
 
+def create_rk_grid_field(indicator: dict):
+    """Creating the Key Value field for the registry key indicator type
+
+    Args:
+        indicator (dict): The data of the indicator
+    """
+    key_value = [{'name': indicator.get('Key Name'),
+                 'type': indicator.get('Value Name'),
+                  'data': indicator.get('Key Type')
+                  }]
+
+    return key_value
+
+
+def get_indicator_value(indicator: dict, indicator_type: str) -> str:
+    """Getting the indicator value according to the indicator type
+    Args:
+        indicator (dict): The data of the indicator
+        indicator_type (str): The type of the indicator
+    Returns:
+        str: The indicator value
+    """
+    if indicator_type == 'File':
+        indicator_value = indicator.get('sha256') or indicator.get('sha1') or indicator.get('md5') or ''
+    else:
+        indicator_value = indicator.get('summary') or indicator.get('name', '')
+    return indicator_value
+
+
 def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     """ Parsing indicator by indicators demisto convention.
     Args:
@@ -240,8 +268,8 @@ def parse_indicator(indicator: Dict[str, str]) -> Dict[str, Any]:
     Returns:
         dict: Parsed indicator.
     """
-    indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''))
-    indicator_value = indicator.get('summary') or indicator.get('name')
+    indicator_type = INDICATOR_MAPPING_NAMES.get(indicator.get('type', ''), '')
+    indicator_value = get_indicator_value(indicator, indicator_type)
     fields = create_indicator_fields(indicator, indicator_type)
     relationships = create_indicator_relationships(fields, indicator_type, indicator_value)  # type: ignore
     indicator_obj = {
@@ -280,6 +308,7 @@ def create_indicator_fields(indicator, indicator_type):
     if indicator_type == 'Course of Action':
         fields['action'] = indicator.get('attributes', {}).get('action', '')
     if indicator_type == 'Registry Key':
+        fields['Key Value'] = create_rk_grid_field(indicator)
         fields['namefield'] = indicator.get('Key Name', '')
 
     tlp_color = params.get('tlp_color', '')

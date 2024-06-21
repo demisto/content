@@ -432,14 +432,8 @@ Retrieve the properties of a collection of riskDetection objects.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Unique ID of the risk detection. | Optional | 
-| user_id | Unique ID of the user. | Optional | 
-| user_principal_name | The user principal name (UPN) of the user. | Optional | 
-| country | The country or region of the activity. For example, `US` or `UK`. For further details, see https://docs.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-beta. | Optional | 
-| filter_expression | A custom query in OData syntax. Using this overrides all arguments, except for next_link. For more details, see https://docs.microsoft.com/en-us/graph/query-parameters. | Optional | 
-| limit | Number of results to provide. Default is 50. | Optional | 
-| next_link | A link that specifies a starting point for subsequent calls. Using this argument overrides all other arguments. | Optional | 
-
+| odata_query | An odata query to send to the api. | Optional     |
+| limit | Number of results to provide. Default is 50. | Optional |
 
 #### Context Output
 

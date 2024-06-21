@@ -45,6 +45,13 @@ args:
 - name: tags
   description: The tags to add to the new indicators.
   isArray: true
+- name: associate_to_current
+  auto: PREDEFINED
+  predefined:
+    - "true"
+    - "false"
+  defaultValue: "false"
+  description: Whether to force the association of the indicator to the current incident.
 - name: verbose
   auto: PREDEFINED
   predefined:

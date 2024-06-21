@@ -216,6 +216,12 @@ configuration:
   hidden: true
   required: false
 - defaultvalue: 'false'
+  additionalinfo: 'When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present.'
+  display: Mirror Existing Notes For New Fetched Incidents
+  name: mirror_notes_for_new_incidents
+  type: 8
+  required: false
+- defaultvalue: 'false'
   display: 'Use system proxy settings'
   name: proxy
   type: 8
@@ -605,7 +611,6 @@ script:
     - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
-      defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
