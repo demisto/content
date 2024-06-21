@@ -9,65 +9,82 @@ sectionOrder:
 - Collect
 description: "Fetch alerts and events from SEKOIA.IO XDR.\nTo use this integration, please create an API Key with the appropriate permissions."
 configuration:
-- display: API key
+- section: Connect
+  display: API key
   displaypassword: API Key
   name: credentials
   type: 9
   required: true
   hiddenusername: true
-  section: Connect
-- display: Server URL (i.e. https://api.sekoia.io)
+- section: Connect
+  display: Server URL (i.e. https://api.sekoia.io)
   name: url
   defaultvalue: https://api.sekoia.io
   type: 0
   required: true
-  section: Connect
-- display: Trust any certificate (not secure)
+- section: Connect
+  advanced: true
+  display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
-  section: Connect
+- section: Connect
   advanced: true
-- display: Use system proxy settings
+  display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-  section: Connect
-  advanced: true
-- display: Fetch incidents
+- section: Collect
+  display: Fetch incidents
   name: isFetch
   type: 8
   required: false
-  section: Collect
-- display: Incident type
+- section: Collect
+  display: Incident type
   name: incidentType
   type: 13
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+- section: Collect
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  defaultvalue: -7d,now
+  defaultvalue: -7d
   type: 0
   required: true
-  section: Collect
-- display: Fetch alerts with the selected status.
+- section: Collect
+  display: Maximum incidents to fetch per interval.
+  name: max_fetch
+  defaultvalue: "10"
+  type: 0
+  required: true
+  additionalinfo: By default the max_fetch is set to 10
+- section: Collect
+  advanced: true
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- section: Collect
+  advanced: true
+  display: Alerts status.
   name: alerts_status
   defaultvalue: Pending,Acknowledged,Ongoing
   type: 16
   required: false
-  section: Collect
-  advanced: true
   options:
   - Pending
   - Acknowledged
   - Ongoing
   - Rejected
   - Closed
-- display: List of types of alerts to fetch. (Write and press enter to insert types that are not in the list)
+  additionalinfo: Filter alerts to fetch by status. You can write and press enter
+    to insert new types.
+- section: Collect
+  advanced: true
+  display: Alerts types.
   name: alerts_type
   type: 16
   required: false
-  section: Collect
-  advanced: true
   options:
   - spam
   - ddos
@@ -101,63 +118,42 @@ configuration:
   - tunnel
   - exfiltration
   - blacklist
-- display: 'Filter alerts by their urgencies range in the following format: "MINurgency,MAXurgency". i.e: 80,100.'
+  additionalinfo: Filter alerts to fetch by types. You can write and press enter to
+    insert new types.
+- section: Collect
+  advanced: true
+  display: 'Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ).'
   name: alerts_urgency
   type: 0
   required: false
-  section: Collect
-  advanced: true
-- display: Maximum incidents to fetch per interval (By default set to 10).
-  name: max_fetch
-  defaultvalue: "10"
-  type: 0
-  required: true
-  section: Collect
-- display: Fetch mode
+  additionalinfo: Filter alerts by their urgency levels. Use the format "MINurgency,
+    MAXurgency"
+- section: Collect
+  display: Fetch mode
   name: fetch_mode
   defaultvalue: Fetch Without Events
   type: 15
   required: true
-  section: Collect
   options:
   - Fetch Without Events
   - Fetch With All Events
   additionalinfo: If there's no max_fetch it will fetch 10 incidents by default.
-- display: Include assets information in the alerts when fetching.
-  name: fetch_with_assets
-  defaultvalue: "false"
-  type: 8
-  required: false
-  section: Collect
-  advanced: true
-  additionalinfo: |-
-      When selected, it includes the assets information in the alert when fetched from Sekoia.
-      And also If there's no max_fetch it will fetch 10 incidents by default.
-- display: Include kill chain information in the alerts when fetching.
-  name: fetch_with_kill_chain
-  defaultvalue: "false"
-  type: 8
-  required: false
-  section: Collect
-  advanced: true
-  additionalinfo: |-
-      When selected, it includes the kill chain information in the alert when fetched from Sekoia.
-      And also If there's no max_fetch it will fetch 10 incidents by default.
-- display: Replace the "dots" from the event field names for a different character easier to reference in XSOAR.
+- section: Collect
+  display: Replace "dots" in event field names with another character.
   name: replace_dots_event
   defaultvalue: _
   type: 15
   required: true
-  section: Collect
   options:
   - _
-  - "-"
-- display: "Indicate if there is any information you want to exclude from the results of the events search.  i.e:  original.message, message,  agent.name, etc. "
+  - '-'
+  additionalinfo: Replacing dots in events will make names look pretty good for users
+- section: Collect
+  advanced: true
+  display: Events fields to exclude from the events search result.
   name: exclude_info_events
   type: 16
   required: false
-  section: Collect
-  advanced: true
   options:
   - original.message
   - message
@@ -184,72 +180,94 @@ configuration:
   - event.outcome
   - http.request.method
   - sekoiaio.customer.community_name
-  additionalinfo: These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter.
-- display: Incident Mirroring Direction
+  additionalinfo: These are the names of the headers presented in the events table.
+    If the header is not in the dropdown list write it and press enter.
+- section: Collect
+  advanced: true
+  display: Include assets information in the alerts when fetching.
+  name: fetch_with_assets
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: |-
+    When selected, it includes the assets information in the alert when fetched from Sekoia.
+    And also If there's no max_fetch it will fetch 10 incidents by default.
+- section: Collect
+  advanced: true
+  display: Include kill chain information in the alerts when fetching.
+  name: fetch_with_kill_chain
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: |-
+    When selected, it includes the kill chain information in the alert when fetched from Sekoia.
+    And also If there's no max_fetch it will fetch 10 incidents by default.
+- section: Collect
+  display: Incident Mirroring Direction.
   name: mirror_direction
   defaultvalue: None
   type: 15
-  section: Collect
   required: true
   options:
   - None
   - Incoming
   - Outgoing
   - Incoming and Outgoing
-  additionalinfo: "Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR)."
-- display: Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
-  name: reopen_incident
-  defaultvalue: "false"
-  type: 8
-  required: false
-  section: Collect
+  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring),
+    Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia
+    XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
+- section: Collect
   advanced: true
-  additionalinfo: When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident.
-- display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
-  name: close_incident
-  defaultvalue: "false"
-  type: 8
-  required: false
-  section: Collect
-  advanced: true
-  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident.
-- display: Close notes.
-  name: close_notes
-  defaultvalue: Closed by Sekoia.
-  type: 0
-  required: true
-  section: Collect
-  additionalinfo: Change the closing notes that will be added to the tickets closed automatically by the automation.
-- display: Include events in the mirroring of the alerts.
+  display: Include events in the mirroring of the alerts.
   name: mirror_events
   defaultvalue: "false"
   type: 8
   required: false
-  section: Collect
+  additionalinfo: When selected, it includes the events in the mirrored alerts when
+    an alert is updated in Sekoia.
+- section: Collect
   advanced: true
-  additionalinfo: When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia.
-- display: Include kill chain information in the mirroring of the alerts.
+  display: Include kill chain information in the mirroring of the alerts.
   name: mirror_kill_chain
   defaultvalue: "false"
   type: 8
   required: false
-  section: Collect
+  additionalinfo: When selected, it includes the kill chain information of the alert
+    in the mirrored alerts when an alert is updated in Sekoia.
+- section: Collect
   advanced: true
-  additionalinfo: When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia.
-- display: "Input your timezone, use formats from the list of tz database time zones (i.e. 'UTC', 'Europe/Madrid', 'US/Eastern', 'Etc/Greenwich', 'Canada/Eastern') "
+  display: Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
+  name: reopen_incident
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: When selected, reopening the Sekoia XDR alert will reopen the Cortex
+    XSOAR incident.
+- section: Collect
+  advanced: true
+  display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
+  name: close_incident
+  defaultvalue: "false"
+  type: 8
+  required: false
+  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject"
+    status will close the Cortex XSOAR incident.
+- section: Collect
+  display: Close notes.
+  name: close_notes
+  defaultvalue: Closed by Sekoia.
+  type: 0
+  required: true
+  additionalinfo: Change the closing notes that will be added to the tickets closed
+    automatically by the automation.
+- section: Collect
+  display: Timezone ( TZ format )
   name: timezone
   defaultvalue: Europe/Paris
   type: 0
   required: true
-  section: Collect
-  additionalinfo: This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc.
-- display: Incidents Fetch Interval
-  name: incidentFetchInterval
-  defaultvalue: "1"
-  type: 19
-  required: false
-  section: Collect
-  advanced: true
+  additionalinfo: This will be used to present dates in the appropiate timezones,  used
+    for comment timestamps, etc.
 script:
   script: "-"
   type: python
@@ -433,6 +451,7 @@ script:
       description: "Valid expressions: +3d: three days in the future, +2w: two weeks in the future, now: current time."
     - name: query
       required: true
+      defaultValue: ""
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
     - name: max_last_events
       description: Maximum number of listed events.
@@ -506,7 +525,7 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: UUID of the query excuted previously with the "sekoia-xdr-query-events" command.
+      description: UUID of the query executed previously with the "sekoia-xdr-query-events" command.
     outputs:
     - contextPath: SekoiaXDR.Events.Status.uuid
       description: The unique identifier for the event.
@@ -579,12 +598,13 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: UUID of the query excuted previously with the "sekoia-xdr-query-events" command.
+      description: UUID of the query executed previously with the "sekoia-xdr-query-events" command.
     outputs:
     - contextPath: SekoiaXDR.Events.Results
       description: The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results.
     description: Command to retrieve the events from the search job "sekoia-xdr-execute-events-query" previously done on Sekoia XDR.
   - name: sekoia-xdr-search-events
+    polling: true
     arguments:
     - name: earliest_time
       required: true
@@ -595,6 +615,7 @@ script:
     - name: query
       required: true
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
+      defaultValue: ""
     - name: max_last_events
       description: Maximum number of listed events.
     - name: exclude_info
@@ -653,6 +674,8 @@ script:
       - user_agent.original
       description:  "Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter."
       isArray: true
+    - name: job_uuid
+      hidden: true
     outputs:
     - contextPath: SekoiaXDR.Events.Results
       description: The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results.
@@ -674,13 +697,6 @@ script:
     - name: comment
       description: A comment to describe why the alert status has changed.
     description: Command to update the status of a specific Alert by uuid or short_id.
-  - name: sekoia-xdr-await_alert_status
-    polling: true
-    arguments:
-    - name: uuid
-      required: true
-      description: The UUID of the alert search job.
-    description: Polling command to await for query to finish.
   - name: sekoia-xdr-post-comment-alert
     arguments:
     - name: id

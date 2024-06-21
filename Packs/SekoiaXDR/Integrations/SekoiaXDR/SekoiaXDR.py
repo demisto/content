@@ -545,7 +545,7 @@ def fetch_incidents(
                 "timeout_in_seconds": timeout_in_seconds,
             }
             events = search_events_command(args=args, client=client)
-            alert["events"] = events.outputs
+            alert["events"] = events.outputs  # pylint: disable=E1101
 
         if fetch_with_assets:
             # Add assets information to the alert
@@ -663,7 +663,7 @@ def get_remote_data_command(
             "timeout_in_seconds": timeout_in_seconds,
         }
         events = search_events_command(args=args, client=client)
-        alert["events"] = events.outputs
+        alert["events"] = events.outputs  # pylint: disable=E1101
 
     # Add the kill chain information to the alert
     if mirror_kill_chain and alert["kill_chain_short_id"]:
@@ -943,7 +943,8 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]) -> CommandResu
     )
 
 
-def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+@polling_function(name="sekoia-xdr-search-events", requires_polling_arg=False)
+def search_events_command(args: Dict[str, Any], client: Client) -> PollResult:
     """Parameters"""
     earliest_time = args["earliest_time"]
     lastest_time = args["lastest_time"]
@@ -953,15 +954,27 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
     exclude_info_param = demisto.params().get("exclude_info_events")
     replace_symbol = demisto.params().get("replace_dots_event")
 
-    search = client.query_events(
-        events_earliest_time=earliest_time,
-        events_latest_time=lastest_time,
-        events_term=term,
-        max_last_events=max_last_events,
-    )
-    search_job_uuid = search["uuid"]
+    if not (search_job_uuid := args.get("job_uuid")):
+        search = client.query_events(
+            events_earliest_time=earliest_time,
+            events_latest_time=lastest_time,
+            events_term=term,
+            max_last_events=max_last_events,
+        )
+        search_job_uuid = search["uuid"]
 
-    await_alert_status_command(args={"uuid": search_job_uuid}, client=client)
+    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
+    finished_status = query_status["status"] == 2
+
+    if not finished_status:
+        return PollResult(
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run=(args | {"job_uuid": search_job_uuid}),
+            partial_result=CommandResults(
+                readable_output=f"Query is still running. Current state: {query_status['status']}."
+            ),
+        )
 
     events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
     total = max_last_events or events["total"]
@@ -972,10 +985,10 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
                 event_info=events, exclude_info=exclude_info_arg
             )
             headers = [header.replace(".", replace_symbol) for header in headers]
-            events_undot = undot(json_data=events)
+            undot(json_data=events)
             readable_output = tableToMarkdown(
                 f"{total} events out of {str(events['total'])} retrieved for the {term}",
-                events_undot,
+                events["items"],
                 headers=headers,
             )
         elif exclude_info_param:
@@ -983,17 +996,19 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
                 event_info=events, exclude_info=",".join(exclude_info_param)
             )
             headers = [header.replace(".", replace_symbol) for header in headers]
-            events_undot = undot(json_data=events)
+            undot(json_data=events)
             readable_output = tableToMarkdown(
                 f"{total} events out of {events['total']} retrieved for the {term}",
-                events_undot,
+                events["items"],
                 headers=headers,
             )
         else:
-            events_undot = undot(json_data=events)
+            undot(json_data=events)
+            headers = list(events["items"][0].keys())
             readable_output = tableToMarkdown(
                 f"{total} events out of {events['total']} retrieved for the {term}",
-                events_undot,
+                events["items"],
+                headers=headers,
             )
     else:
         readable_output = tableToMarkdown(
@@ -1001,45 +1016,15 @@ def search_events_command(client: Client, args: Dict[str, Any]) -> CommandResult
             events["items"],
         )
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix="SekoiaXDR.Events.Results",
-        outputs_key_field="search_job_uuid",
-        outputs=events["items"],
+    return PollResult(
+        response=CommandResults(
+            readable_output=readable_output,
+            outputs_prefix="SekoiaXDR.Events.Results",
+            outputs_key_field="search_job_uuid",
+            outputs=events["items"],
+        ),
+        continue_to_poll=False,
     )
-
-
-@polling_function(
-    name="await-alert-status",
-    poll_message="Polling for alert status",
-)
-def await_alert_status_command(args: Dict[str, Any], client: Client) -> PollResult:
-    """
-    Polls for the status of an alert search job.
-
-    Args:
-        args (Dict[str, Any]): The command arguments.
-            - uuid (str): The UUID of the alert search job.
-        client (Client): The SekoiaXDR client.
-
-    Returns:
-        PollResult: The result of the polling.
-            - continue_to_poll (bool): Whether to continue polling.
-            - response (Any): The response from the query.
-
-    """
-    search_job_uuid = args["uuid"]
-    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
-
-    finished_status = query_status["status"] == 2
-
-    if finished_status:
-        return PollResult(
-            continue_to_poll=False,
-            response=query_status["status"],
-        )
-
-    return PollResult(continue_to_poll=True, response=query_status["status"])
 
 
 def update_status_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1431,9 +1416,7 @@ def main() -> None:
         elif command == "sekoia-xdr-events-results-query":
             return_results(retrieve_events_command(client, args))
         elif command == "sekoia-xdr-search-events":
-            return_results(search_events_command(client, args))
-        elif command == "sekoia-xdr-await_alert_status":
-            return_results(await_alert_status_command(args, client))
+            return_results(search_events_command(args, client))
         elif command == "sekoia-xdr-update-status-alert":
             return_results(update_status_alert_command(client, args))
         elif command == "sekoia-xdr-post-comment-alert":

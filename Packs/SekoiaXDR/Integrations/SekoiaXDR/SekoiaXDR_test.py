@@ -332,7 +332,7 @@ def test_search_events(client, requests_mock, mocker):
         "exclude_info": "False",
         "interval_in_seconds": "3",
     }
-    result = SekoiaXDR.search_events_command(client=client, args=args)
+    result: PollResult = SekoiaXDR.search_events_command(client=client, args=args)
 
     assert result.outputs[0]["action_id"]
     assert result.outputs[0]["action_outcome"]
@@ -649,4 +649,3 @@ def test_update_remote_system_command(client, requests_mock):
     result = SekoiaXDR.update_remote_system_command(client=client, args=args)
 
     assert result == "ALWVYiP2Msz4"
-    
