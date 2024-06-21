@@ -1,6 +1,7 @@
 """
 Tests module for Cortex Xpanse integration.
 """
+import pytest
 
 ### Helper Functions
 
@@ -20,7 +21,7 @@ def new_client():
     return client
 
 
-def test_format_asm_id_func(requests_mock):
+def test_format_asm_id_func():
     """Tests format_asm_id helper function.
 
         Given:
@@ -31,7 +32,6 @@ def test_format_asm_id_func(requests_mock):
             - Checks the output of the helper function with the expected output.
     """
     from CortexXpanse import format_asm_id
-
     from test_data.raw_response import INTERNET_EXPOSURE_PRE_FORMAT
     from test_data.expected_results import INTERNET_EXPOSURE_POST_FORMAT
 
@@ -54,7 +54,7 @@ def test_list_external_service_command(requests_mock):
     from CortexXpanse import list_external_service_command
 
     from test_data.raw_response import EXTERNAL_SERVICES_RESPONSE
-    from test_data.expected_results import EXTERNAL_SERVICES_RESULTS
+    from test_data.expected_results import EXTERNAL_SERVICES_RESULTS    
     requests_mock.post('https://test.com/public_api/v1/assets/get_external_services/',
                        json=EXTERNAL_SERVICES_RESPONSE)
 
@@ -160,7 +160,21 @@ def test_get_external_ip_address_range_command(requests_mock):
     assert response.outputs_key_field == 'range_id'
 
 
-def test_list_asset_internet_exposure_command(requests_mock):
+@pytest.mark.parametrize("args", [
+    ({'name': 'testdomain.com'}),
+    ({"externally_inferred_cves": ["CVE-2020-15778"]}),
+    ({"ipv6s": ["2600:1900:4000:9664:0:7::"]}),
+    ({"asm_ids": ["3c176460-8735-333c-b618-8262e2fb660c"]}),
+    ({"aws_cloud_tags": ["Name:AD Lab"]}),
+    ({"gcp_cloud_tags": ["Name:gcp Lab"]}),
+    ({"azure_cloud_tags": ["Name:azure Lab"]}),
+    ({"has_xdr_agent": "NO"}),
+    ({"externally_detected_providers": ["Amazon Web Services"]}),
+    ({"has_bu_overrides": False}),
+    ({"business_units": ["Acme"]}),
+    ({"mac_address": ["00:11:22:33:44:55"]}),
+])
+def test_list_asset_internet_exposure_command(requests_mock, args):
     """Tests list_asset_internet_exposure_command function.
 
         Given:
@@ -179,80 +193,12 @@ def test_list_asset_internet_exposure_command(requests_mock):
                        json=EXTERNAL_EXPOSURES_RESPONSE)
 
     client = new_client()
-    args = {'name': 'testdomain.com'}
-    args_externally_inferred_cves = {"externally_inferred_cves": ["CVE-2020-15778"]}
-    args_ipv6s = {"ipv6s": ["2600:1900:4000:9664:0:7::"]}
-    args_asm_id_list = {"asm_ids": ["3c176460-8735-333c-b618-8262e2fb660c"]}
-    args_aws_cloud_tags = {"aws_cloud_tags": ["Name:AD Lab"]}
-    args_gcp_cloud_tags = {"gcp_cloud_tags": ["Name:gcp Lab"]}
-    args_azure_cloud_tags = {"azure_cloud_tags": ["Name:azure Lab"]}
-    args_has_xdr_agent = {"has_xdr_agent": "NO"}
-    args_externally_detected_providers = {"externally_detected_providers": ["Amazon Web Services"]}
-    args_has_bu_overrides = {"has_bu_overrides": False}
-    args_business_units_list = {"business_units": ["Acme"]}
-    args_mac_address = {"mac_address": ["00:11:22:33:44:55"]}
 
     response = list_asset_internet_exposure_command(client, args)
-    response_externally_inferred_cves = list_asset_internet_exposure_command(args=args_externally_inferred_cves, client=client)
-    response_ipv6s = list_asset_internet_exposure_command(args=args_ipv6s, client=client)
-    response_asm_id_list = list_asset_internet_exposure_command(args=args_asm_id_list, client=client)
-    response_aws_cloud_tags = list_asset_internet_exposure_command(args=args_aws_cloud_tags, client=client)
-    response_gcp_cloud_tags = list_asset_internet_exposure_command(args=args_gcp_cloud_tags, client=client)
-    response_azure_cloud_tags = list_asset_internet_exposure_command(args=args_azure_cloud_tags, client=client)
-    response_has_xdr_agent = list_asset_internet_exposure_command(args=args_has_xdr_agent, client=client)
-    response_externally_detected_providers = list_asset_internet_exposure_command(
-        args=args_externally_detected_providers, client=client)
-    response_has_bu_overrides = list_asset_internet_exposure_command(args=args_has_bu_overrides, client=client)
-    response_business_units_list = list_asset_internet_exposure_command(args=args_business_units_list, client=client)
-    response_mac_address = list_asset_internet_exposure_command(args=args_mac_address, client=client)
 
     assert response.outputs == EXTERNAL_EXPOSURES_RESULTS
     assert response.outputs_prefix == 'ASM.AssetInternetExposure'
     assert response.outputs_key_field == 'asm_ids'
-
-    assert response_externally_inferred_cves.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_externally_inferred_cves.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_externally_inferred_cves.outputs_key_field == "asm_ids"
-
-    assert response_ipv6s.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_ipv6s.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_ipv6s.outputs_key_field == "asm_ids"
-
-    assert response_asm_id_list.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_asm_id_list.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_asm_id_list.outputs_key_field == "asm_ids"
-
-    assert response_aws_cloud_tags.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_aws_cloud_tags.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_aws_cloud_tags.outputs_key_field == "asm_ids"
-
-    assert response_gcp_cloud_tags.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_gcp_cloud_tags.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_gcp_cloud_tags.outputs_key_field == "asm_ids"
-
-    assert response_azure_cloud_tags.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_azure_cloud_tags.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_azure_cloud_tags.outputs_key_field == "asm_ids"
-
-    assert response_has_xdr_agent.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_has_xdr_agent.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_has_xdr_agent.outputs_key_field == "asm_ids"
-
-    assert response_externally_detected_providers.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_externally_detected_providers.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_externally_detected_providers.outputs_key_field == "asm_ids"
-
-    assert response_has_bu_overrides.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_has_bu_overrides.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_has_bu_overrides.outputs_key_field == "asm_ids"
-
-    assert response_business_units_list.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_business_units_list.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_business_units_list.outputs_key_field == "asm_ids"
-
-    assert response_mac_address.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response_mac_address.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response_mac_address.outputs_key_field == "asm_ids"
 
 
 def test_get_asset_internet_exposure_command(requests_mock):
@@ -625,7 +571,7 @@ def test_successfully_add_note_to_asset_command(requests_mock):
 
 
 
-def test_ip_command(requests_mock):
+def test_ip_command_xpanse_asset_object(requests_mock):
     """Tests ip_command function.
 
         Given:
@@ -653,11 +599,82 @@ def test_ip_command(requests_mock):
     for response in responses:
         if response.outputs_prefix == 'ASM.IP':
             assert response.outputs == IP_RESULTS
-        elif response.outputs_prefix == 'DBotScore':
-            assert response.outputs.get("Score") == 0
+        elif response.indicator:
+            assert response.indicator.dbot_score.indicator == '1.1.1.1'
+        else:
+            pytest.fail()
+            
+def test_ip_command_xsoar_indicator(mocker):
+    """Tests domain_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate domain_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'domain_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import ip_command
+    import demistomock as demisto
+    from test_data.raw_response import XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW
+    from test_data.expected_results import XSOAR_SEARCH_INDICATOR_IP_RESULTS
+    from datetime import datetime
+    XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW['iocs'][0]['insightCache']['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
+    
+    mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW)
+
+    client = new_client()
+    
+    responses = ip_command(client, {'ip': '1.1.1.2'})
+
+    assert len(responses) == 2
+    for response in responses:
+        if response.outputs_prefix == 'ASM.TIM.IP':
+            assert response.outputs[0] == XSOAR_SEARCH_INDICATOR_IP_RESULTS
+        elif response.indicator:
+            assert response.indicator.dbot_score.indicator == '1.1.1.2'
+        else:
+            pytest.fail()
+
+def test_ip_command_xsoar_and_xpanse(mocker, requests_mock):
+    """Tests domain_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate domain_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'domain_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import ip_command
+    import demistomock as demisto
+    from test_data.raw_response import IP_DOMAIN_RAW, XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW
+    from test_data.expected_results import IP_RESULTS, XSOAR_SEARCH_INDICATOR_IP_RESULTS
+    
+    requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
+                       json=IP_DOMAIN_RAW)
+    mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW)
+
+    client = new_client()
+    
+    responses = ip_command(client, {'ip': '1.1.1.2, 1.1.1.1'})
+
+    assert len(responses) == 3
+    for response in responses:
+        if response.outputs_prefix == 'ASM.IP':
+            assert response.outputs == IP_RESULTS
+        if response.outputs_prefix == 'ASM.TIM.IP':
+            assert response.outputs[0] == XSOAR_SEARCH_INDICATOR_IP_RESULTS
+        elif response.indicator:
+            assert response.indicator.dbot_score.indicator_type == 'ip'
+        else:
+            pytest.fail()
 
 
-def test_domain_command(requests_mock):
+
+def test_domain_command_xpanse_asset_object(requests_mock):
     """Tests domain_command function.
 
         Given:
@@ -669,28 +686,98 @@ def test_domain_command(requests_mock):
             - Checks the output of the command function with the expected output.
     """
     from CortexXpanse import domain_command
-
     from test_data.raw_response import IP_DOMAIN_RAW
     from test_data.expected_results import IP_RESULTS
+    
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
 
     client = new_client()
-    args = {
-        'domain': "*.acme.com"
-    }
+    
+    responses = domain_command(client, {'domain': '*.acme.com'})
+    
     del IP_RESULTS[0]['ip']
-    responses = domain_command(client, args)
-
     assert len(responses) == 2
     for response in responses:
         if response.outputs_prefix == 'ASM.Domain':
             assert response.outputs == IP_RESULTS
-        elif response.outputs_prefix == 'DBotScore':
-            assert response.outputs.get("Score") == 0
+        elif response.indicator:
+            assert response.indicator.dbot_score.indicator == '*.acme.com'
+        else:
+            pytest.fail()
 
 
-def test_fetch_incidents(requests_mock, mocker):
+def test_domain_command_xsoar_indicator(mocker):
+    """Tests domain_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate domain_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'domain_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import domain_command
+    import demistomock as demisto
+    from datetime import datetime
+    from test_data.raw_response import XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW
+    from test_data.expected_results import XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
+    
+    XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW['iocs'][0]['insightCache']['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
+    mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW)
+
+    client = new_client()
+    
+    responses = domain_command(client, {'domain': 'www.toysrus.com'})
+
+    assert len(responses) == 2
+    for response in responses:
+        if response.outputs_prefix == 'ASM.TIM.Domain':
+            assert response.outputs[0] == XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
+        elif response.indicator:
+            assert response.indicator.dbot_score.indicator == 'www.toysrus.com'
+        else:
+            pytest.fail()
+
+
+def test_domain_command_xsoar_and_xpanse(mocker, requests_mock):
+    """Tests domain_command function.
+
+        Given:
+            - requests_mock instance to generate the appropriate domain_command( API response,
+              loaded from a local JSON file.
+        When:
+            - Running the 'domain_command'.
+        Then:
+            - Checks the output of the command function with the expected output.
+    """
+    from CortexXpanse import domain_command
+    import demistomock as demisto
+    from test_data.raw_response import IP_DOMAIN_RAW, XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW
+    from test_data.expected_results import DOMAIN_RESULTS, XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
+    
+    requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
+                       json=IP_DOMAIN_RAW)
+    mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW)
+
+    client = new_client()
+    
+    responses = domain_command(client, {'domain': 'www.toysrus.com, *.acme.com'})
+
+    assert len(responses) == 3
+    for response in responses:
+        if response.outputs_prefix == 'ASM.TIM.Domain':
+            assert response.outputs[0] == XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
+        elif response.outputs_prefix == 'ASM.Domain':
+            assert response.outputs[0] == DOMAIN_RESULTS
+        elif response.indicator:
+            assert response.indicator.dbot_score.indicator_type in ['domain', 'domainglob']
+        else:
+            pytest.fail()
+
+
+def test_fetch_incidents(requests_mock):
     """Tests fetch_incidents function.
 
         Given:
