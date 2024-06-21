@@ -1350,7 +1350,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                 is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
 
         if xsoar_indicators and is_xsoar_timestamp_within_three_days and "insightCache" in xsoar_indicators[0]:
-            score_data = xsoar_indicators[0].get('insightCache').get('scores').get('Cortex Xpanse - EXPANDR-9482')
+            score_data = xsoar_indicators[0].get('insightCache').get('scores').get('Cortex Xpanse')
             indicator_data_subset = {
                 'name': xsoar_indicators[0].get('value'),
                 'indicator_type': xsoar_indicators[0].get('indicator_type'),
@@ -1372,25 +1372,24 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
             formatted_response['ip'] = ip
             
-            ip_standard_context = Common.IP(
-                ip=ip,
-                dbot_score=Common.DBotScore(
-                    indicator=ip,
-                    indicator_type=DBotScoreType.IP,
-                    integration_name="CortexXpanse",
-                    score=Common.DBotScore.NONE,
-                    reliability=demisto.params().get('integration_reliability')
-                ),
-                hostname=formatted_response.get("domain", "N/A")
+            xpanse_ip_list_command_output.append({
+                k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
+            })
+        
+        ip_standard_context = Common.IP(
+            ip=ip,
+            dbot_score=Common.DBotScore(
+                indicator=ip,
+                indicator_type=DBotScoreType.IP,
+                integration_name="CortexXpanse",
+                score=Common.DBotScore.NONE,
+                reliability=demisto.params().get('integration_reliability')
             )
-            command_results.append(CommandResults(
-                readable_output=tableToMarkdown("IP indicator was found", {"IP": ip}),
-                indicator=ip_standard_context
-            ))
-
-        xpanse_ip_list_command_output.append({
-            k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
-        })
+        )
+        command_results.append(CommandResults(
+            readable_output=tableToMarkdown("IP indicator was found", {"IP": ip}),
+            indicator=ip_standard_context
+        ))
 
     if len(xpanse_ip_list_command_output) > 0:
         readable_output = tableToMarkdown('Xpanse Discovered IP List', xpanse_ip_list_command_output)
@@ -1405,11 +1404,11 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     if len(xsoar_indicator_list_command_output) > 0:
         markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
                         "If you would additional Xpanse specific information about these please use `asm-list-asset-internet-exposure`.")
-        readable_output = tableToMarkdown(name="## Xpanse Discovered IP List (Existing Indicators)\n" + markdown_body,
+        readable_output = tableToMarkdown(name="Xpanse Discovered IP List (Existing Indicators)\n" + markdown_body,
                                           t=xsoar_indicator_list_command_output)
         command_results.append(CommandResults(
             readable_output=readable_output,
-            outputs_prefix='ASM.IP',
+            outputs_prefix='ASM.TIM.IP',
             outputs_key_field='name',
             outputs=xsoar_indicator_list_command_output,
             raw_response=xsoar_indicator_list_command_output
@@ -1454,8 +1453,6 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:DomainGlob")
         else:
             search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:Domain")
-            
-        print(search_xsoar_indicator_results)
         
         if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
             xsoar_indicators = search_xsoar_indicator_results.get('iocs')
@@ -1470,7 +1467,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                 is_xsoar_timestamp_within_three_days = is_timestamp_within_days(timestamp=indicator_timestamp, days=3)
 
         if xsoar_indicators and is_xsoar_timestamp_within_three_days and "insightCache" in xsoar_indicators[0]:
-            score_data = xsoar_indicators[0].get('insightCache').get('scores').get('Cortex Xpanse - EXPANDR-9482')
+            score_data = xsoar_indicators[0].get('insightCache').get('scores').get('Cortex Xpanse')
             indicator_data_subset = {
                 'name': xsoar_indicators[0].get('value'),
                 'indicator_type': xsoar_indicators[0].get('indicator_type'),
@@ -1534,7 +1531,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                                           t=xsoar_indicator_list_command_output)
         command_results.append(CommandResults(
             readable_output=readable_output,
-            outputs_prefix='ASM.Domain',
+            outputs_prefix='ASM.TIM.Domain',
             outputs_key_field='name',
             outputs=xsoar_indicator_list_command_output,
             raw_response=xsoar_indicator_list_command_output
