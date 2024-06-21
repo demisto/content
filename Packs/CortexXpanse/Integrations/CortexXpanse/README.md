@@ -2011,7 +2011,7 @@ Updates the state of one or more alerts.
 ### ip
 
 ***
-Returns enrichment for an IP address.
+Returns reputation lookup for an IP address found in Xpanse.
 
 #### Base Command
 
@@ -2025,31 +2025,40 @@ Returns enrichment for an IP address.
 
 #### Context Output
 
-| **Path**                | **Type** | **Description**                                            |
-|-------------------------|----------|------------------------------------------------------------|
-| ASM.IP.ip               | String   | The IP address of the asset.                               |
-| ASM.IP.domain           | String   | The domain affiliated with an asset.                       |
-| ASM.IP.name             | String   | The asset name.                                            |
-| ASM.IP.asset_type       | String   | The asset type.                                            |
-| ASM.IP.first_observed   | unknown  | When the asset was first observed.                         |
-| ASM.IP.last_observed    | unknown  | When the asset was last observed.                          |
-| ASM.IP.asm_ids          | unknown  | The ID of the asset.                                       |
-| ASM.IP.service_type     | unknown  | Affiliated service types for the asset.                    |
-| ASM.IP.tags             | unknown  | A list of tags that have been assigned to the asset.       |
-| ASM.IP.asset_explainers | unknown  | The asset explanation details.                             |
-| ASM.IP.domain_details   | unknown  | Additional domain details.                                 |
-| ASM.IP.recent_ips       | unknown  | Details about the recent IP observations.                  |
-| DBotScore.Vendor        | String   | The vendor reporting the score of the indicator.           |
-| DBotScore.Score         | Number   | An integer regarding the status of the indicator.          |
-| DBotScore.Indicator     | String   | The indicator value.                                       |
-| DBotScore.Type          | String   | The vendor used to calculate the score.                    |
-| DBotScore.Reliability   | String   | Reliability of the source providing the intelligence data. |
-| IP.Address              | String   | IP address.                                                |
+| **Path**                  | **Type** | **Description**                                                            |
+|---------------------------|----------|----------------------------------------------------------------------------|
+| ASM.IP.ip                 | String   | The IP address of the asset.                                               |
+| ASM.IP.domain             | String   | The domain affiliated with an asset.                                       |
+| ASM.IP.name               | String   | The asset name.                                                            |
+| ASM.IP.asset_type         | String   | The asset type.                                                            |
+| ASM.IP.first_observed     | unknown  | When the asset was first observed.                                         |
+| ASM.IP.last_observed      | unknown  | When the asset was last observed.                                          |
+| ASM.IP.asm_ids            | unknown  | The ID of the asset.                                                       |
+| ASM.IP.service_type       | unknown  | Affiliated service types for the asset.                                    |
+| ASM.IP.tags               | unknown  | A list of tags that have been assigned to the asset.                       |
+| ASM.IP.asset_explainers   | unknown  | The asset explanation details.                                             |
+| ASM.IP.domain_details     | unknown  | Additional domain details.                                                 |
+| ASM.IP.recent_ips         | unknown  | Details about the recent IP observations.                                  |
+| DBotScore.Vendor          | String   | The vendor reporting the score of the indicator.                           |
+| DBotScore.Score           | Integer  | An integer regarding the status of the indicator.                          |
+| DBotScore.Indicator       | String   | The indicator value.                                                       |
+| DBotScore.Type            | String   | The vendor used to calculate the score.                                    |
+| DBotScore.Reliability     | String   | Reliability of the source providing the intelligence data.                 |
+| IP.Address                | String   | IP address.                                                                |
+| ASM.TIM.IP.name           | String   | The existing Xpanse IP address recently updated in XSOAR indicators        |
+| ASM.TIM.IP.indicator_type | String   | The existing Xpanse indicator type in XSOAR indicators                     |
+| ASM.TIM.IP.id             | String   | The existing indicator ID in XSOAR indicators                              |
+| ASM.TIM.IP.reliability    | String   | The existing indicator reliability recently updated in XSOAR indicators    |
+| ASM.TIM.IP.score          | Integer  | The existing indicator score recently updated in XSOAR indicators          |
 
 
 #### Command example
-```!ip ip=1.1.1.1```
+```!ip ip='1.1.1.1, 1.1.1.2'```
+
 #### Context Example
+
+If the Indicator was **not** updated in XSOAR in the last 3 days:
+
 ```json
 {
     "ASM": {
@@ -2124,16 +2133,42 @@ Returns enrichment for an IP address.
 }
 ```
 
+If the Indicator was updated in XSOAR in the last 3 days:
+
+```json
+{
+    "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+    "indicator_type": "IP",
+    "name": "1.1.1.2",
+    "reliability": "A+ - 3rd party enrichment",
+    "score": 0
+}
+```
+
 #### Human Readable Output
->### Xpanse IP List
->|asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|ip|last_observed|name|recent_ips|service_type|tags|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the Indicator was **not** updated in XSOAR in the last 3 days:
+
+> ### Xpanse Discovered IP List
+> |asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|ip|last_observed|name|recent_ips|service_type|tags|
+> |---|---|---|---|---|---|---|---|---|---|---|---|
+> | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the Indicator was updated in XSOAR in the last 3 days:
+
+> ### Xpanse Discovered IP List (Existing Indicators)
+>
+> This domain list is from existing records found in XSOAR within the last 3 days.
+> If you would additional Xpanse specific information about these please use asm-list-asset-internet-exposure.
+>
+> |id|indicator_type|name|reliability|score|
+> |---|---|---|---|---|
+> | abcd1b2abcd1a0b20c7a8bc5d67e8eea | IP | 1.1.1.2 | A+ - 3rd party enrichment | 0 |
 
 ### domain
 
 ***
-Returns enrichment for a domain.
+Returns reputation lookup for an doamin found in Xpanse
 
 #### Base Command
 
@@ -2147,29 +2182,38 @@ Returns enrichment for a domain.
 
 #### Context Output
 
-| **Path**                    | **Type** | **Description**                                            |
-|-----------------------------|----------|------------------------------------------------------------|
-| ASM.Domain.domain           | String   | The domain affiliated with an asset.                       |
-| ASM.Domain.name             | String   | The asset name.                                            |
-| ASM.Domain.asset_type       | String   | The asset type.                                            |
-| ASM.Domain.first_observed   | unknown  | When the asset was first observed.                         |
-| ASM.Domain.last_observed    | unknown  | When the asset was last observed.                          |
-| ASM.Domain.asm_ids          | unknown  | The ID of the asset.                                       |
-| ASM.Domain.service_type     | unknown  | Affiliated service types for the asset.                    |
-| ASM.Domain.tags             | unknown  | A list of tags that have been assigned to the asset.       |
-| ASM.Domain.asset_explainers | unknown  | The asset explanation details.                             |
-| ASM.Domain.domain_details   | unknown  | Additional domain details.                                 |
-| ASM.Domain.recent_ips       | unknown  | Details about the recent IP observations.                  |
-| DBotScore.Vendor            | String   | The vendor reporting the score of the indicator.           |
-| DBotScore.Score             | Number   | An integer regarding the status of the indicator.          |
-| DBotScore.Indicator         | String   | The indicator value.                                       |
-| DBotScore.Type              | String   | The vendor used to calculate the score.                    |
-| DBotScore.Reliability       | String   | Reliability of the source providing the intelligence data. |
-| Domain.Name                 | String   | Name of the domain.                                        |
+| **Path**                      | **Type** | **Description**                                                            |
+|-------------------------------|----------|----------------------------------------------------------------------------|
+| ASM.Domain.domain             | String   | The domain affiliated with an asset.                                       |
+| ASM.Domain.name               | String   | The asset name.                                                            |
+| ASM.Domain.asset_type         | String   | The asset type.                                                            |
+| ASM.Domain.first_observed     | unknown  | When the asset was first observed.                                         |
+| ASM.Domain.last_observed      | unknown  | When the asset was last observed.                                          |
+| ASM.Domain.asm_ids            | unknown  | The ID of the asset.                                                       |
+| ASM.Domain.service_type       | unknown  | Affiliated service types for the asset.                                    |
+| ASM.Domain.tags               | unknown  | A list of tags that have been assigned to the asset.                       |
+| ASM.Domain.asset_explainers   | unknown  | The asset explanation details.                                             |
+| ASM.Domain.domain_details     | unknown  | Additional domain details.                                                 |
+| ASM.Domain.recent_ips         | unknown  | Details about the recent IP observations.                                  |
+| DBotScore.Vendor              | String   | The vendor reporting the score of the indicator.                           |
+| DBotScore.Score               | Number   | An integer regarding the status of the indicator.                          |
+| DBotScore.Indicator           | String   | The indicator value.                                                       |
+| DBotScore.Type                | String   | The vendor used to calculate the score.                                    |
+| DBotScore.Reliability         | String   | Reliability of the source providing the intelligence data.                 |
+| Domain.Name                   | String   | Name of the domain.                                                        |
+| ASM.TIM.Domain.name           | String   | The existing Xpanse domain recently updated in XSOAR indicators            |
+| ASM.TIM.Domain.indicator_type | String   | The existing Xpanse indicator type in XSOAR indicators                     |
+| ASM.TIM.Domain.id             | String   | The existing indicator ID in XSOAR indicators                              |
+| ASM.TIM.Domain.reliability    | String   | The existing indicator reliability recently updated in XSOAR indicators    |
+| ASM.TIM.Domain.score          | Integer  | The existing indicator score recently updated in XSOAR indicators          |
 
 #### Command example
-```!domain domain="*.acme.com"```
+```!domain domain="*.acme.com, www.example.com"```
+
 #### Context Example
+
+If the Indicator was **not** updated in XSOAR in the last 3 days:
+
 ```json
 {
     "ASM": {
@@ -2243,11 +2287,39 @@ Returns enrichment for a domain.
 }
 ```
 
+If the Indicator was updated in XSOAR in the last 3 days:
+
+```json
+{
+    "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+    "indicator_type": "Domain",
+    "name": "www.example.com",
+    "reliability": "A+ - 3rd party enrichment",
+    "score": 0
+}
+```
+
 #### Human Readable Output
->### Xpanse Domain List
->|asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|last_observed|name|recent_ips|service_type|tags|
->|---|---|---|---|---|---|---|---|---|---|---|---|
->| 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the Indicator was **not** updated in XSOAR in the last 3 days:
+
+> ### Xpanse Discovered Domain List
+>
+> |asm_ids|asset_explainers|asset_type|domain|domain_details|first_observed|last_observed|name|recent_ips|service_type|tags|
+> |---|---|---|---|---|---|---|---|---|---|---|---|
+> | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
+
+If the Indicator was updated in XSOAR in the last 3 days:
+
+> ### Xpanse Discovered Domain List (Existing Indicators)
+>
+> This domain list is from existing records found in XSOAR within the last 3 days.
+> If you would additional Xpanse specific information about these please use asm-list-asset-internet-exposure.
+>
+> |id|indicator_type|name|reliability|score|
+> |---|---|---|---|---|
+> | abcd1b2abcd1a0b20c7a8bc5d67e8eea | Domain | www.example.com | A+ - 3rd party enrichment | 0 |
+
 
 ### asm-list-external-websites
 
@@ -2717,4 +2789,48 @@ Get a list of all your external websites filtered by authentication type. Maximu
 >|Host|Authentication Type|
 >|---|---|
 >| example.com | Form based authentication | 
+
+
+### asm-add-note-to-asset
+
+#### Base Command
+
+`asm-add-note-to-asset`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| asset_id | Authentication type string on which to search. | Required | 
+| entity_type | Maximum number of assets to return. The default and maximum is 100. | Required | 
+| note_to_add | The custom note to be added to the notes section of the asset in Xpanse | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ASM.AssetAnnotation.status | String | Status of the note being added to the asset in Xpanse. | 
+
+#### Command example
+
+
+```!asm-add-note-to-asset asset_id=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx entity_type=asset note_to_add="Test adding note to asset."```
+
+
+#### Context Example
+
+```json
+{
+    "status": "succeeded"
+}
+```
+
+#### Human Readable Output
+
+> ### Status
+> 
+>|Status|
+>|---|
+>| succeeded |
+
 
