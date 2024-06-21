@@ -50,6 +50,7 @@ repos:
     - community
     exclude_support_level:nightly:
     - community
+    skip:nightly: true
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
@@ -199,7 +200,6 @@ repos:
     require_serial: true
     args:
     -  validate
-    -  --skip-depth-one-file
     -  --skip-depth-one-folder
     -  --skip-integration-script-file-name
     -  --skip-markdown
