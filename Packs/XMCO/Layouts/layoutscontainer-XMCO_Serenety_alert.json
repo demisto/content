@@ -2,26 +2,10 @@
     "fromVersion": "6.10.0",
     "group": "incident",
     "id": "XMCO Serenety Alert",
-    "itemVersion": "",
-    "locked": false,
-    "mobile": null,
     "name": "XMCO Serenety Alert",
-    "packID": "XMCO",
-    "packName": "XMCO",
-    "propagationLabels": [
-        "all"
-    ],
     "system": false,
-    "toServerVersion": "",
     "version": -1,
-    "cacheVersn": 0,
-    "close": null,
-    "definitionId": "",
-    "description": "",
-    "detached": false,
-    "details": null,
     "detailsV2": {
-        "TypeName": "",
         "tabs": [
             {
                 "id": "summary",
@@ -229,7 +213,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "serenetyidentification",
+                                "fieldId": "xmcoserenetyidentification",
                                 "height": 53,
                                 "id": "7ded1a20-2319-11ef-9b1a-abe06ffff45a",
                                 "index": 3,
@@ -337,7 +321,7 @@
                         "items": [
                             {
                                 "endCol": 2,
-                                "fieldId": "serenetymonitoring",
+                                "fieldId": "xmcoserenetymonitoring",
                                 "height": 53,
                                 "id": "807b1800-2319-11ef-9b1a-abe06ffff45a",
                                 "index": 0,
@@ -346,7 +330,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "serenetyidentification",
+                                "fieldId": "xmcoserenetyidentification",
                                 "height": 22,
                                 "id": "a1f00130-2319-11ef-9b1a-abe06ffff45a",
                                 "index": 1,
@@ -355,7 +339,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "serenetycategory",
+                                "fieldId": "xmcoserenetycategory",
                                 "height": 53,
                                 "id": "816ec6d0-2319-11ef-9b1a-abe06ffff45a",
                                 "index": 1,
@@ -364,7 +348,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "serenetysubcategory",
+                                "fieldId": "xmcoserenetysubcategory",
                                 "height": 53,
                                 "id": "82219c10-2319-11ef-9b1a-abe06ffff45a",
                                 "index": 2,
@@ -410,5 +394,6 @@
                 "type": "canvas"
             }
         ]
-    }
+    },
+    "description": ""
 }

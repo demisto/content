@@ -40,7 +40,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-description: 'Fetch Serenety alert from XMCO'
+description: 'Fetch Serenety alert from XMCO.'
 display: Serenety
 name: Serenety
 script:
@@ -57,5 +57,5 @@ script:
   subtype: python3
   type: python
 tests:
-- No tests (auto formatted)
+- No tests (auto formatted).
 

@@ -165,10 +165,10 @@ def fetch_incidents(client: Client,
             'rawJSON': json.dumps(data),
             'type': 'XMCO Serenety Alert',
             'CustomFields': {
-                'serenetycategory': data['custom_fields']['category'],
-                'serenetysubcategory': data['custom_fields']['subcategory'],
-                'serenetyidentification': data['custom_fields']['identification'],
-                'serenetymonitoring': data['custom_fields']['scope'],
+                'xmcoserenetycategory': data['custom_fields']['category'],
+                'xmcoserenetysubcategory': data['custom_fields']['subcategory'],
+                'xmcoserenetyidentification': data['custom_fields']['identification'],
+                'xmcoserenetymonitoring': data['custom_fields']['scope'],
                 'renderedhtml': data['description']
             }
         }

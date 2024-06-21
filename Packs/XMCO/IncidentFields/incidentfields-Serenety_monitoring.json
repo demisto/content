@@ -1,10 +1,10 @@
 {
-    "id": "incident_serenetymonitoring",
+    "id": "incident_xmcoserenetymonitoring",
     "fromVersion": "6.10.0",
     "version": -1,
-    "name": "Serenety monitoring",
+    "name": "XMCO Serenety monitoring",
     "ownerOnly": false,
-    "cliName": "serenetymonitoring",
+    "cliName": "xmcoserenetymonitoring",
     "type": "shortText",
     "closeForm": true,
     "editForm": false,
@@ -23,7 +23,7 @@
     ],
     "associatedToAll": false,
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72
