@@ -692,4 +692,3 @@ def test_update_remote_system_command(client, requests_mock):
     result = SekoiaXDR.update_remote_system_command(client=client, args=args)
 
     assert result == "ALWVYiP2Msz4"
-    
