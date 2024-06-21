@@ -55,7 +55,9 @@ def util_load_json(path):
 
 
 def func_template(requests_mock, command):
-    """Tests a given Darktrace ASM command function.
+    """
+    Tests a given Darktrace ASM command function for functions that return CommandResults types.
+    Mainly for GET requests.
 
     Configures requests_mock instance to generate the appropriate
     API response, loaded from a local JSON file. Checks
@@ -82,6 +84,35 @@ def func_template(requests_mock, command):
     # THEN the response should be returned and formatted
     assert integration_response.outputs == expected_response
     assert integration_response.outputs_prefix == f'Darktrace.{prefix}'
+
+
+def func_template_post(requests_mock, command):
+    """
+    Tests a given Darktrace ASM command function for functions that return string types.
+    Mainly for POST requests.
+
+    Configures requests_mock instance to generate the appropriate
+    API response, loaded from a local JSON file. Checks
+    the output of the command function with the expected output.
+    """
+
+    # GIVEN an integration is configured to Darktrace
+    mock_api_response = util_load_json(f'test_data/{command}.json')
+    requests_mock.post('https://mock.darktrace.com/graph/v1.0/api', json=mock_api_response)
+
+    client = Client(
+        base_url='https://mock.darktrace.com',
+        verify=False,
+        headers={"Authorization": "Token example_token"}
+    )
+
+    args = command_dict[command]['args']
+
+    integration_response = command_dict[command]["command"](client, args)
+    expected_response = util_load_json(f'test_data/formatted_{command}.json').get("readable_output")
+
+    # THEN the response should be returned and formatted
+    assert integration_response == expected_response
 
 
 """*****TEST FUNCTIONS****"""
@@ -146,7 +177,7 @@ def test_mitigate_risk(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template(requests_mock, 'mitigate_asm_risk')
+    func_template_post(requests_mock, 'mitigate_asm_risk')
 
 
 def test_post_comment(requests_mock):
@@ -158,7 +189,7 @@ def test_post_comment(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template(requests_mock, 'post_asm_comment')
+    func_template_post(requests_mock, 'post_asm_comment')
 
 
 def test_edit_comment(requests_mock):
@@ -170,7 +201,7 @@ def test_edit_comment(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template(requests_mock, 'edit_asm_comment')
+    func_template_post(requests_mock, 'edit_asm_comment')
 
 
 def test_delete_comment(requests_mock):
@@ -182,7 +213,7 @@ def test_delete_comment(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template(requests_mock, 'delete_asm_comment')
+    func_template_post(requests_mock, 'delete_asm_comment')
 
 
 def test_create_tag(requests_mock):
@@ -194,7 +225,7 @@ def test_create_tag(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template(requests_mock, 'create_asm_tag')
+    func_template_post(requests_mock, 'create_asm_tag')
 
 
 def test_assign_tag(requests_mock):
@@ -206,7 +237,7 @@ def test_assign_tag(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template(requests_mock, 'assign_asm_tag')
+    func_template_post(requests_mock, 'assign_asm_tag')
 
 
 def test_unassign_tag(requests_mock):
@@ -218,4 +249,4 @@ def test_unassign_tag(requests_mock):
     Then
             The context will be updated to indicate a success or failure
     """
-    func_template(requests_mock, 'unassign_asm_tag')
+    func_template_post(requests_mock, 'unassign_asm_tag')

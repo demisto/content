@@ -345,6 +345,8 @@ class Client(BaseClient):
                     '''
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
+        if not response['data']['placeComment']:
+            return response
         return response["data"]["placeComment"]
 
     def edit_asm_comment(self, comment_id: str, comment: str):
@@ -369,7 +371,8 @@ class Client(BaseClient):
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
         if not response['data']['editComment']:
-            message = response['errors'][0]['message']
+            errors = [error.get("message", "") for error in response.get("errors", [])]
+            message = '\n'.join(errors)
             raise CommentNotFound(comment_id, message)
         return response["data"]["editComment"]
 
@@ -388,6 +391,8 @@ class Client(BaseClient):
                     '''
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
+        if not response['data']['deleteComment']:
+            return response
         return response["data"]["deleteComment"]
 
     def create_asm_tag(self, tag_name: str):
@@ -433,7 +438,8 @@ class Client(BaseClient):
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
         if not response['data']['assignTag']:
-            message = response['errors'][0]['message']
+            errors = [error.get("message", "") for error in response.get("errors", [])]
+            message = '\n'.join(errors)
             raise TagNotFound(name=tag_name, message=message)
         return response['data']['assignTag']
 
@@ -745,20 +751,14 @@ def get_asm_risk_command(client: Client, args: dict[str, Any]) -> CommandResults
     )
 
 
-def mitigate_asm_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def mitigate_asm_risk_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'risk_id')
     risk_id = str(args.get('risk_id', None))
 
-    response = client.mitigate_asm_risk(risk_id)
+    client.mitigate_asm_risk(risk_id)
 
-    readable_output = tableToMarkdown('Darktrace ASM Risk Mitigation', response)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.risk',
-        outputs_key_field='success',
-        outputs=response
-    )
+    readable_output = f'Successfully mitigated risk. Risk ID: {risk_id}'
+    return readable_output
 
 
 def get_asm_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -779,104 +779,95 @@ def get_asm_asset_command(client: Client, args: dict[str, Any]) -> CommandResult
     )
 
 
-def post_asm_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def post_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'id', 'comment')
     id = str(args.get('id', None))
     comment = str(args.get('comment', None))
 
     response = client.post_asm_comment(id, comment)
 
-    readable_output = tableToMarkdown('Darktrace ASM Comment', response)
+    if response.get("success", False):
+        comment_dict = response.get("comment", {})
+        readable_output = f'Comment successful. Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}'
+    else:
+        errors = [error.get("message", '') for error in response.get("errors", {})]
+        errors_string = '\n'.join(errors)
+        readable_output = f'Comment failed due to following errors:\n{errors_string}'
+    return readable_output
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.comment',
-        outputs_key_field='success',
-        outputs=response
-    )
 
-
-def edit_asm_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def edit_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'comment_id', 'comment')
     comment_id = str(args.get('comment_id', None))
     comment = str(args.get('comment', None))
 
     response = client.edit_asm_comment(comment_id, comment)
 
-    readable_output = tableToMarkdown('Darktrace ASM Comment Edit', response)
+    if response.get("success", False):
+        comment_dict = response.get("comment", {})
+        readable_output = f'Comment successfully edited. Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}'
+    else:
+        errors = [error.get("message", '') for error in response.get("errors", {})]
+        errors_string = '\n'.join(errors)
+        readable_output = f'Failed to edit comment due to following errors:\n{errors_string}'
+    return readable_output
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.comment',
-        outputs_key_field='success',
-        outputs=response
-    )
 
-
-def delete_asm_comment_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def delete_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'comment_id')
     comment_id = str(args.get('comment_id', None))
 
     response = client.delete_asm_comment(comment_id)
 
-    readable_output = tableToMarkdown('Darktrace ASM Comment Deletion', response)
+    if response.get("success", False):
+        readable_output = f'Comment successfully deleted. Comment ID: {comment_id}'
+    else:
+        errors = [error.get("message", '') for error in response.get("errors", {})]
+        errors_string = '\n'.join(errors)
+        readable_output = f'Comment deletion failed due to following errors:\n{errors_string}'
+    return readable_output
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.comment',
-        outputs_key_field='success',
-        outputs=response
-    )
 
-
-def create_asm_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def create_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'tag_name')
     tag_name = str(args.get('tag_name', None))
 
-    response = client.create_asm_tag(tag_name)
+    client.create_asm_tag(tag_name)
 
-    readable_output = tableToMarkdown('Darktrace ASM Tag Creation', response)
+    # TODO: add error handling depending on XSOAR response on best practice
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.tag',
-        outputs_key_field='success',
-        outputs=response
-    )
+    readable_output = f'Successfully created tag {tag_name}.'
+    return readable_output
 
 
-def assign_asm_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def assign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'tag_name', 'asset_id')
     tag_name = str(args.get('tag_name', None))
     asset_id = str(args.get('asset_id', None))
 
     response = client.assign_asm_tag(tag_name, asset_id)
 
-    readable_output = tableToMarkdown('Darktrace ASM Tag Assignment', response)
+    asset = response.get("asset")
+    tags = asset.get("tags")
+    tags_string = "\n".join(tags)
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.tag',
-        outputs_key_field='success',
-        outputs=response
-    )
+    readable_output = f'Successfully assigned tag {tag_name} to asset {asset_id}.  Tags applied to asset:\n{tags_string}'
+    return readable_output
 
 
-def unassign_asm_tag_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def unassign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     check_required_fields(args, 'tag_name', 'asset_id')
     tag_name = str(args.get('tag_name', None))
     asset_id = str(args.get('asset_id', None))
 
     response = client.unassign_asm_tag(tag_name, asset_id)
 
-    readable_output = tableToMarkdown('Darktrace ASM Tag Unassignment', response)
+    asset = response.get("asset")
+    tags = asset.get("tags")
+    tags_string = "\n".join(tags)
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.tag',
-        outputs_key_field='success',
-        outputs=response
-    )
+    readable_output = f'Successfully unassigned tag {tag_name} from asset {asset_id}.  Tags applied to asset:\n{tags_string}'
+    return readable_output
 
 
 """*****MAIN FUNCTIONS****
