@@ -24,7 +24,7 @@ t = Terminal()
 
 ORGANIZATION_NAME = "demisto"
 REPO_MANE = "content"
-BASE = "master"
+BASE = "fix_autobump"
 PR_COMMENT_TITLE = "### This PR was automatically updated by a " \
                    "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
 PR_COMMENT = "- **{}** pack version was bumped to **{}**.\n"
