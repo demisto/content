@@ -198,6 +198,7 @@ class AutoBumperManager:
             )
             if not pr.head.ref.startswith("test_auto_bump"):
                 continue
+            print(f"hiiiiiiiiiiiiiiii {pr.head.ref}")
             conditions = [
                 LastModifiedCondition(pr=pr, git_repo=self.git_repo_obj),
                 LabelCondition(pr=pr, git_repo=self.git_repo_obj),
