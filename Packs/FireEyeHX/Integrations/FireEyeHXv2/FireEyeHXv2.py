@@ -11,10 +11,6 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' CONSTANTS '''
 
 
-def test_auto_bump():
-    return "ok"
-
-
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # ISO8601 format with UTC, default in XSOAR
 
 STANDARD_INVESTIGATIVE_DETAILS_OSX = {  # pragma: no cover
