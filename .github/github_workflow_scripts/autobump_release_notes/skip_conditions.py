@@ -4,10 +4,10 @@ from enum import Enum
 from pathlib import Path
 from demisto_sdk.commands.common.tools import get_pack_names_from_files
 from git import Repo, GitCommandError
-from github.PullRequest import PullRequest
-from packaging.version import Version
-from blessings import Terminal
-from utils import load_json, Checkout, timestamped_print
+# from github.PullRequest import PullRequest
+# from packaging.version import Version
+# from blessings import Terminal
+from github_workflow_scripts.utils import load_json, Checkout, timestamped_print
 
 
 print = timestamped_print
