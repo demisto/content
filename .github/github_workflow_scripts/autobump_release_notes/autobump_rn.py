@@ -196,7 +196,8 @@ class AutoBumperManager:
                 f"{t.yellow}Looking on pr number [{pr.number}]: last updated: "
                 f"{str(pr.updated_at)}, branch={pr.head.ref}"
             )
-
+            if not pr.head.ref.startswith("test_auto_bump"):
+                continue
             conditions = [
                 LastModifiedCondition(pr=pr, git_repo=self.git_repo_obj),
                 LabelCondition(pr=pr, git_repo=self.git_repo_obj),
