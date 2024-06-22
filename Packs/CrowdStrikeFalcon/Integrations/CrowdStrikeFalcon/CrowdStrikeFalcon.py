@@ -537,6 +537,50 @@ def build_query_params(query_params: dict) -> str:
 
     return query
 
+def modify_detection_summaries_outputs(detection: dict):
+    """
+    Modifies the detection summaries outputs in the post raptor release, to be in the same format as the pre raptor release.
+    
+    Args:
+        detection: The detection to modify.
+    Returns:
+        The modified detection.
+    """
+    keys_to_move = [
+        "pattern_disposition_details",
+        "timestamp",
+        "device_id",
+        "filename",
+        "alleged_filetype",
+        "cmdline",
+        "scenario",
+        "objective",
+        "tactic",
+        "technique",
+        "severity",
+        "confidence",
+        "ioc_type",
+        "ioc_value",
+        "user_name",
+        "user_id",
+        "control_graph_id",
+        "triggering_process_graph_id",
+        "sha256",
+        "pattern_disposition"
+    ]
+
+    nested_dict = {key: detection.pop(key, None) for key in keys_to_move if key in detection}
+    
+    device_id =detection.get("device", {}).get("device_id")
+    nested_dict["device_id"] = device_id if device_id else None
+
+    detection["behaviors"] = nested_dict
+    
+    hostinfo =detection.get("device", {}).get("hostinfo")
+    detection["hostinfo"] = hostinfo if hostinfo else None
+
+    return detection
+
 
 ''' API FUNCTIONS '''
 
@@ -4777,12 +4821,9 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
     detections = list(detections_response_data.get('resources')) if detections_response_data else []
-    # modify the "post raptor" outputs to match the old format for backward compatibility
     if POST_RAPTOR_RELEASE:
-        for detection in detections:
-            pattern_details = detection.pop("pattern_disposition_details", None)
-            if pattern_details:
-                detection["behaviors"] = {"pattern_disposition_details": pattern_details}
+        # modify the "post raptor" outputs to match the old format for backward compatibility
+        detections = [modify_detection_summaries_outputs(detection) for detection in detections]
     detections_human_readable = detections_to_human_readable(detections)
 
     return CommandResults(

@@ -2016,7 +2016,7 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.user_id | String | The Security Identifier \(SID\) of the user in Windows. | 
 | CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. | 
 | CrowdStrike.Detections.behaviors.triggering_process_graph_id | String | The ID of the process that triggered the behavior detection. | 
-| CrowdStrike.Detections.behaviors.sha256 | String | The SHA256 of the triggering process. | 
+| CrowdStrike.Detections.behaviors.sha256 | String | The SHA256 of the triggering process.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.behaviors.md5 | String | The MD5 of the triggering process. | 
 | CrowdStrike.Detections.behaviors.parent_details.parent_sha256 | String | The SHA256 hash of the parent process.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.behaviors.parent_details.parent_md5 | String | The MD5 hash of the parent process.  Note: This output does not exist in the post raptor version.| 
@@ -2039,14 +2039,14 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation is blocked. | 
 | CrowdStrike.Detections.email_sent | Boolean | Whether an email is sent about this detection. | 
 | CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior.  Note: This output does not exist in the post raptor version.| 
-| CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior. | 
+| CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.| 
-| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100. | 
+| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.show_in_ui | Boolean | Whether the detection displays in the UI. | 
 | CrowdStrike.Detections.status | String | The status of the detection. | 
-| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned. | 
-| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned. | 
+| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.hostinfo.domain | String | The domain of the Active Directory. | 
 | CrowdStrike.Detections.seconds_to_triaged | Number | The amount of time it took to move a detection from "new" to "in_progress". | 
 | CrowdStrike.Detections.seconds_to_resolved | Number | The amount of time it took to move a detection from new to a resolved state \("true_positive", "false_positive", and "ignored"\). | 

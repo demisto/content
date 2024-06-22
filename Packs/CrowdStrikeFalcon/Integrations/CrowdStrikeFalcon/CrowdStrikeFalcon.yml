@@ -354,7 +354,7 @@ script:
       description: The process ID of the behavior.
       type: String
     - contextPath: CrowdStrike.Behavior.ID
-      description: 'The ID of the behavior.
+      description: The ID of the behavior.
       type: String
   - arguments:
     - description: The IDs of the detections to search. If provided, will override other arguments.
@@ -1923,7 +1923,7 @@ script:
       description: The SHA256 of the triggering process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.md5
-      description: The MD5 of the triggering process.
+      description: 'The MD5 of the triggering process.  Note: This output does not exist in the post raptor version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_sha256
       description: "The SHA256 hash of the parent process.  Note: This output does not exist in the post raptor version."
@@ -1989,13 +1989,13 @@ script:
       description: 'The datetime of the first behavior.  Note: This output does not exist in the post raptor version.'
       type: Date
     - contextPath: CrowdStrike.Detections.last_behavior
-      description: The datetime of the last behavior.
+      description: 'The datetime of the last behavior.  Note: This output does not exist in the post raptor version.'''
       type: Date
     - contextPath: CrowdStrike.Detections.max_confidence
       description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity
-      description: The highest severity value of all behaviors. Value can be any integer between 1-100.
+      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output does not exist in the post raptor version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity_displayname
       description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output does not exist in the post raptor version.'
@@ -2007,10 +2007,10 @@ script:
       description: The status of the detection.
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_uid
-      description: The UID of the user for whom the detection is assigned.
+      description: "The UID of the user for whom the detection is assigned. Note: This output does not exist in the post raptor version."
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: The human-readable name of the user to whom the detection is currently assigned.
+      description: "The human-readable name of the user to whom the detection is currently assigned.  Note: This output does not exist in the post raptor version."
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The domain of the Active Directory.
