@@ -21,6 +21,9 @@ DEFAULT_LIMIT = 50
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 
+def test_auto_bump():
+    return "ok"
+
 def get_now():
     """ A wrapper function for datetime.now
     helps handle tests
