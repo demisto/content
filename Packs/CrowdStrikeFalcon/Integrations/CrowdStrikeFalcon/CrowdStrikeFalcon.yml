@@ -354,7 +354,7 @@ script:
       description: The process ID of the behavior.
       type: String
     - contextPath: CrowdStrike.Behavior.ID
-      description: 'The ID of the behavior.  Note: this field dose not exist in the new "post raptor" version.'
+      description: 'The ID of the behavior.
       type: String
   - arguments:
     - description: The IDs of the detections to search. If provided, will override other arguments.
@@ -1866,7 +1866,7 @@ script:
       description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.behaviors.behavior_id
-      description: The ID of the behavior.
+      description: 'The ID of the behavior. Note: This output does not exist in the post raptor version.'''
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.filename
       description: The file name of the triggering process.
