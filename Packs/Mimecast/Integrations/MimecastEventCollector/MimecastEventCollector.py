@@ -107,7 +107,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         """
         limit = 1 if demisto.command() == 'test-module' else SIEM_LOG_LIMIT
         stored = []
-            
+
         if self.events_from_prev_run:
             # In order to ensure no bc break and missing events v 2.2.6
             stored.extend(self.events_from_prev_run)
@@ -120,9 +120,8 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                     f'Reached more then {limit} siem events'
                 )
                 break
-                
-        return stored
 
+        return stored
 
     def _iter_events(self):  # pragma: no cover
         while True:
@@ -134,7 +133,6 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
                 return []
 
             yield events
-        
 
     def process_siem_response(self, response: Response) -> list:  # ignore: type
         """
@@ -155,7 +153,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
             if fail_reason := json_response.get('fail', []):
                 raise DemistoException(f'There was an error with siem events call {fail_reason}')
-            
+
             demisto.info('No siem logs available')
             return []
         # Process log file
@@ -241,7 +239,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
         return json.dumps(post_body)
 
-    def write_file(self, file_name: str, data_to_write: bytes) -> list:     #pragma: no cover
+    def write_file(self, file_name: str, data_to_write: bytes) -> list:  # pragma: no cover
         """
         Args:
             - file_name (str): The name of the file returned form the api response header
@@ -515,7 +513,7 @@ def main():  # pragma: no cover
     demisto_params['app_key'] = demisto_params.get('credentials_app', {}).get('password')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
-    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='https://dummy.com', headers={})
+    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='', headers={})
     client = MimecastClient(empty_first_request, options)
     siem_event_handler = MimecastGetSiemEvents(client, options)
     audit_event_handler = MimecastGetAuditEvents(client, options)
@@ -526,13 +524,13 @@ def main():  # pragma: no cover
         demisto.info(f'\n Total of {len(events_audit)} Audit Logs were fetched in this run')
         events_siem = siem_event_handler.run()
         demisto.info(f'\n Total of {len(events_siem)} Siem Logs were fetched in this run')
-        
+
         demisto_last_run: dict = demisto.getLastRun()
         de_dup_events_audit, audit_next_run, duplicates_audit = audit_events_last_run(
             audit_event_handler, events_audit, demisto_last_run)
         siem_next_run = siem_events_last_run(
             siem_event_handler, demisto_last_run)
-            
+
         if command == 'test-module':
             return_results('ok')
 

@@ -227,7 +227,7 @@ def test_siem_custom_run3(mocker):
         - Check the events are stored correctly
     """
     # This is a list of list so the iter_events loop will take into acount as one batch of events.
-    iter_events_mock_return_val = [list(range(600,900))]
+    iter_events_mock_return_val = [list(range(600, 900))]
     mocker.patch.object(MimecastGetSiemEvents, '_iter_events', return_value=iter_events_mock_return_val)
     events_from_prev_run = list(range(200))
     siem_event_handler.events_from_prev_run = events_from_prev_run
