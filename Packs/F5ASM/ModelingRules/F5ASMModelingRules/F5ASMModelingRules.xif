@@ -64,6 +64,6 @@ alter event_type = arrayindex(regextract(_raw_log ,"CEF\:\d\|\w+\|\w+\|\d+\.\d+[
 , XDM.Network.http.url= request
 , XDM.Network.Destination.process.executable.path = full_request
 , XDM.Network.Destination.host.hostname= host
-, XDM.Network.ip_protocol= X_Forwarded_Proto
+//, XDM.Network.ip_protocol= X_Forwarded_Proto
 //, XDM.Network.http.user_agent= User_agent
 , XDM.Network.http.referrer= referrer;
