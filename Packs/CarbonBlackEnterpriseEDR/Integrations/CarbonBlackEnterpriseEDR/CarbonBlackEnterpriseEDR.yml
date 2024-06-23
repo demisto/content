@@ -94,6 +94,7 @@ script:
       - NONE
     - name: time_range
       description: Relative time range for the request
+      defaultValue: -2w
     - name: start
       description: The lower bound of the time range. Requires end and must be a timestamp before end.
     - name: end

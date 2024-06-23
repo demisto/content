@@ -601,7 +601,6 @@ def alert_workflow_update_command_with_results(client: Client, args: dict):
 
 @polling_function(name='cb-eedr-alert-workflow-update', interval=60, requires_polling_arg=False)
 def alert_workflow_update_command_v2(args: dict, client: Client) -> PollResult:
-    print(f'Running again with {args=}')
     request_id = arg_to_number(args.get('request_id'))
     alert_id = args['alert_id']
     demisto.debug(f'got {request_id=}, {alert_id=}')
@@ -617,6 +616,12 @@ def alert_workflow_update_command_v2(args: dict, client: Client) -> PollResult:
         if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
             state = 'CLOSED'
         comment = args.get('comment')
+        
+        if start or end:
+            if not start or not end:
+                raise DemistoException('Need to specify start and end timestamps')
+            if start > end:
+                raise DemistoException('start timestamp needs to be before end timestamp')
         
         
         demisto.debug('calling alert_workflow_update_request function')
@@ -641,7 +646,7 @@ def alert_workflow_update_command_v2(args: dict, client: Client) -> PollResult:
     status = response['status']
     demisto.debug(f'{status=}')
 
-    if status != 'COMPLETED': #TODO fail!
+    if status != 'COMPLETED':
         message = CommandResults(
             readable_output="Checking again in 60 seconds...")
         demisto.debug('returning PollResult with continue_to_poll=True')
@@ -652,8 +657,6 @@ def alert_workflow_update_command_v2(args: dict, client: Client) -> PollResult:
             args_for_next_run={"request_id": request_id,
                             **args})
       
-    # status is completed!
-    demisto.debug('status is COMPLETED')
     message = CommandResults(
         readable_output='The alert workflow has been updated successfully')
     demisto.debug('returning PollResult with continue_to_poll=False')
@@ -1682,8 +1685,8 @@ def main():
             if 'MALFORMED_JSON' in err_msg:
                 message = err_msg.split('\n')
                 bad_field = json.loads(message[1]).get('field')
-                #return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
-                             #f'invalid. Make sure that the arguments is correct.')
+                return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
+                             f'invalid. Make sure that the arguments is correct.')
         except Exception:
             pass
             return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
