@@ -51,6 +51,31 @@ configuration:
   displaypassword: API key secret
   section: Connect
   required: false
+- display: Incident Mirroring Direction
+  name: mirror_direction
+  section: Collect
+  required: false
+  type: 15
+  options:
+    - None
+    - Incoming
+    - Outgoing
+    - Both
+  defaultvalue: None
+- display: Close Mirrored XSOAR Incidents
+  name: close_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: When selected, closing the IBM Resilient incident with a 'Closed' status, will close the Cortex XSOAR incident.
+- display: Close Mirrored IBM Resilient Incidents
+  name: close_incident
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  additionalinfo: When selected, closing the Cortex XSOAR incident  will close the incident in IBM Resilient
 description: Case management that enables visibility across your tools for continual IR improvement.
 display: IBM Resilient Systems
 name: IBM Resilient Systems
