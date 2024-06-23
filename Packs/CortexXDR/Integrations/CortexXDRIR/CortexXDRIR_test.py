@@ -895,10 +895,10 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
     with capfd.disabled():
         if should_raise_error:
             with pytest.raises(DemistoException):
-                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+                validate_custom_mapping(mapping=custom_mapping, direction=direction)
         else:
             try:
-                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+                validate_custom_mapping(mapping=custom_mapping, direction=direction)
             except DemistoException as e:
                 pytest.fail(f"Unexpected exception raised for input {input}: {e}")
 

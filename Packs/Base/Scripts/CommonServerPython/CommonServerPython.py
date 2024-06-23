@@ -12018,6 +12018,21 @@ def is_time_sensitive():
     return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 
 
+def parse_json_string(json_string):
+    try:
+        data = json.loads(json_string)
+        return data
+    except json.JSONDecodeError as error:
+        demisto.error("Error decoding JSON: {error}".format(error=error))
+        return {}
+
+def get_server_config():
+    response = demisto.internalHttpRequest(method='GET', uri='/system/config')
+    body = parse_json_string(response.get('body'))
+    server_config = body.get('sysConf')
+    return server_config
+
+
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
