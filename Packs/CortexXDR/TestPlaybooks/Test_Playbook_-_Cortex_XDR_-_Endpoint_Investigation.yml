@@ -30,7 +30,7 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": -1465
+          "y": -1625
         }
       }
     note: false
@@ -65,7 +65,7 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": -1335
+          "y": -1495
         }
       }
     note: false
@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2960,
-          "y": 90
+          "x": 3180,
+          "y": -240
         }
       }
     note: false
@@ -153,8 +153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2555,
-          "y": 90
+          "x": 2775,
+          "y": -240
         }
       }
     note: false
@@ -195,8 +195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3750,
-          "y": 90
+          "x": 3970,
+          "y": -240
         }
       }
     note: false
@@ -239,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3355,
-          "y": 90
+          "x": 3575,
+          "y": -240
         }
       }
     note: false
@@ -283,49 +283,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "112":
-    id: "112"
-    taskid: 3b7592a1-75ed-40d1-8907-72043a7c81bf
-    type: title
-    task:
-      id: 3b7592a1-75ed-40d1-8907-72043a7c81bf
-      version: -1
-      name: '''PaloAltoNetworksXDR'' Context Data'
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "46"
-      - "73"
-      - "74"
-      - "75"
-      - "294"
-      - "296"
-      - "298"
-      - "300"
-      - "302"
-      - "312"
-      - "304"
-      - "306"
-      - "367"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1945,
-          "y": -225
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "113":
     id: "113"
     taskid: 9edb91b9-451d-42a8-8fe3-5c1d57f1a196
@@ -346,8 +303,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1350,
-          "y": 290
+          "x": 1560,
+          "y": -60
         }
       }
     note: false
@@ -378,8 +335,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3355,
-          "y": 315
+          "x": 3575,
+          "y": -15
         }
       }
     note: false
@@ -410,8 +367,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3750,
-          "y": 315
+          "x": 3970,
+          "y": -15
         }
       }
     note: false
@@ -442,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2560,
-          "y": 315
+          "x": 2780,
+          "y": -15
         }
       }
     note: false
@@ -474,8 +431,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2960,
-          "y": 315
+          "x": 3180,
+          "y": -15
         }
       }
     note: false
@@ -505,7 +462,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1140,
           "y": -550
         }
       }
@@ -543,7 +500,7 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": -1170
+          "y": -1330
         }
       }
     note: false
@@ -694,7 +651,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "84"
+      - "366"
     scriptarguments:
       FileSHA256:
         complex:
@@ -755,7 +712,7 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": -850
+          "y": -1010
         }
       }
     note: false
@@ -798,7 +755,7 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": -1010
+          "y": -1170
         }
       }
     note: false
@@ -841,8 +798,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4150,
-          "y": 90
+          "x": 4370,
+          "y": -240
         }
       }
     note: false
@@ -873,8 +830,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4150,
-          "y": 315
+          "x": 4370,
+          "y": -15
         }
       }
     note: false
@@ -915,8 +872,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4550,
-          "y": 90
+          "x": 4770,
+          "y": -240
         }
       }
     note: false
@@ -947,8 +904,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4550,
-          "y": 315
+          "x": 4770,
+          "y": -15
         }
       }
     note: false
@@ -989,8 +946,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4950,
-          "y": 90
+          "x": 5170,
+          "y": -240
         }
       }
     note: false
@@ -1021,8 +978,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4950,
-          "y": 315
+          "x": 5170,
+          "y": -15
         }
       }
     note: false
@@ -1063,8 +1020,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5350,
-          "y": 90
+          "x": 5570,
+          "y": -240
         }
       }
     note: false
@@ -1095,8 +1052,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5350,
-          "y": 315
+          "x": 5570,
+          "y": -15
         }
       }
     note: false
@@ -1137,8 +1094,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5750,
-          "y": 90
+          "x": 5970,
+          "y": -240
         }
       }
     note: false
@@ -1169,8 +1126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5750,
-          "y": 315
+          "x": 5970,
+          "y": -15
         }
       }
     note: false
@@ -1211,8 +1168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6150,
-          "y": 90
+          "x": 6370,
+          "y": -240
         }
       }
     note: false
@@ -1243,8 +1200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6150,
-          "y": 315
+          "x": 6370,
+          "y": -15
         }
       }
     note: false
@@ -1285,8 +1242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6550,
-          "y": 90
+          "x": 6770,
+          "y": -240
         }
       }
     note: false
@@ -1317,8 +1274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6550,
-          "y": 315
+          "x": 6770,
+          "y": -15
         }
       }
     note: false
@@ -1363,8 +1320,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1750,
-          "y": 90
+          "x": 1970,
+          "y": -240
         }
       }
     note: false
@@ -1395,8 +1352,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1750,
-          "y": 315
+          "x": 1970,
+          "y": -15
         }
       }
     note: false
@@ -1437,8 +1394,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2160,
-          "y": 90
+          "x": 2380,
+          "y": -240
         }
       }
     note: false
@@ -1469,8 +1426,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2160,
-          "y": 315
+          "x": 2380,
+          "y": -15
         }
       }
     note: false
@@ -1511,8 +1468,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6950,
-          "y": 90
+          "x": 7170,
+          "y": -240
         }
       }
     note: false
@@ -1543,8 +1500,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6950,
-          "y": 315
+          "x": 7170,
+          "y": -15
         }
       }
     note: false
@@ -1578,7 +1535,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1140,
           "y": -420
         }
       }
@@ -1764,7 +1721,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1140,
           "y": -255
         }
       }
@@ -1796,7 +1753,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 930,
+          "x": 1140,
           "y": -25
         }
       }
@@ -1827,8 +1784,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 540,
-          "y": -80
+          "x": 750,
+          "y": -60
         }
       }
     note: false
@@ -1852,13 +1809,13 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "366"
+      - "367"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1945,
+          "x": 2165,
           "y": -550
         }
       }
@@ -1971,7 +1928,7 @@ tasks:
       {
         "position": {
           "x": 70,
-          "y": -80
+          "y": -60
         }
       }
     note: false
@@ -3052,7 +3009,7 @@ tasks:
       {
         "position": {
           "x": 540,
-          "y": 430
+          "y": 140
         }
       }
     note: false
@@ -3075,9 +3032,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "113"
+      - "365"
       "yes":
-      - "112"
+      - "84"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -3091,8 +3048,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1945,
-          "y": -420
+          "x": 540,
+          "y": -850
         }
       }
     note: false
@@ -3150,8 +3107,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1945,
-          "y": -80
+          "x": 2165,
+          "y": -410
         }
       }
     note: false
@@ -3244,17 +3201,16 @@ view: |-
       "359_338_Verified": 0.1,
       "361_338_Verified": 0.1,
       "363_338_Verified": 0.1,
-      "366_112_yes": 0.55,
-      "366_113_#default#": 0.34,
+      "366_365_#default#": 0.19,
       "367_113_#default#": 0.56,
       "73_116_#default#": 0.7
     },
     "paper": {
       "dimensions": {
-        "height": 2170,
-        "width": 13260,
+        "height": 2330,
+        "width": 13480,
         "x": -5930,
-        "y": -1465
+        "y": -1625
       }
     }
   }
