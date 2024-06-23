@@ -316,7 +316,6 @@ The number of mailboxes to search in may be limited by Microsoft Exchange. See [
 | limit | Maximum number of results to return. Default is 250. | Optional | 
 | email_addresses | CSV list or array of email addresses. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -464,6 +463,8 @@ Searches for items in the specified mailbox. Specific permissions are needed for
 | is-public | Whether the folder is a Public Folder?. Possible values are: True, False. | Optional | 
 | message-id | The message ID of the email. This will be ignored if a query argument is provided. | Optional | 
 | selected-fields | A CSV list of fields to retrieve. Possible values are: . Default is all. | Optional | 
+| surround_id_with_angle_brackets | Whether to surround the message ID with angle brackets (&lt;&gt;) if it does not exist. Default is 'True'. | Optional | 
+
 
 
 #### Context Output
@@ -1718,13 +1719,14 @@ Sends an email using EWS.
 | bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
 | subject | Subject for the email to be sent. | Required | 
 | replyTo | The email address specified in the 'reply to' field. | Optional | 
-| body | The contents (body) of the email to send. | Optional | 
-| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| body | The contents (body) of the email to send. This argument overrides the "htmlBody" argument if the "bodyType" argument is Text. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument if the "bodyType" argument is HTML. | Optional | 
 | attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
 | attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | raw_message | Raw email message from MimeContent type. | Optional | 
 | from | The email address from which to reply. | Optional | 
+| bodyType | Whether message response body type is Text or HTML. Default is Text. | Required | 
 
 
 #### Context Output

@@ -58,6 +58,8 @@ GROUP_PROFILE_ARGS = [
     'description'
 ]
 
+MAX_LOGS_LIMIT = 1000
+
 
 class Client(OktaClient):
     # Getting Group Id with a given group name
@@ -513,7 +515,7 @@ class Client(OktaClient):
             json_data=body
         )
 
-    def get_paged_results(self, uri, query_param=None):
+    def get_paged_results(self, uri, query_param=None, max_limit=None):
         response = self.http_request(
             method="GET",
             url_suffix=uri,
@@ -532,6 +534,8 @@ class Client(OktaClient):
 
             )
             paged_results += response.json()
+            if max_limit and len(paged_results) >= max_limit:
+                return paged_results[:max_limit]
         return paged_results
 
     def get_group_members(self, group_id, limit):
@@ -606,13 +610,17 @@ class Client(OktaClient):
             if key == 'query':
                 key = 'q'
             query_params[key] = encode_string_results(value)
-        if args.get('limit'):
+        limit = args.get('limit')
+        limit = int(limit) if limit else None
+        if limit and limit <= MAX_LOGS_LIMIT:
             return self.http_request(
                 method='GET',
                 url_suffix=uri,
                 params=query_params
             )
-        return self.get_paged_results(uri, query_params)
+        if limit and limit > MAX_LOGS_LIMIT:
+            query_params['limit'] = MAX_LOGS_LIMIT
+        return self.get_paged_results(uri, query_params, max_limit=limit)
 
     def delete_user(self, user_term):
         uri = f"/api/v1/users/{encode_string_results(user_term)}"
@@ -1371,18 +1379,8 @@ def delete_limit_param(url):
 def main():
     try:
         params = demisto.params()
-        base_url = params['url'].rstrip('/')
-
-        api_token = params.get("credentials", {}).get("password") or params.get('apitoken')
-
-        if not api_token:
-            raise ValueError('Missing API token.')
-
-        verify_certificate = not params.get('insecure', False)
-        proxy = params.get('proxy', False)
 
         demisto.debug(f'Command being called is {demisto.command()}')
-
         commands = {
             'test-module': module_test,
             'okta-unlock-user': unlock_user_command,
@@ -1422,19 +1420,18 @@ def main():
         }
 
         command = demisto.command()
-        auth_type = AuthType.OAUTH if argToBoolean(params.get('use_oauth', False)) else AuthType.API_TOKEN
 
         client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
+            base_url=params['url'].rstrip('/'),
+            verify=(not params.get('insecure', False)),
             headers={
                 'Accept': 'application/json',
                 'Content-Type': 'application/json',
             },
-            proxy=proxy,
+            proxy=params.get('proxy', False),
             ok_codes=(200, 201, 204),
-            api_token=api_token,
-            auth_type=auth_type,
+            api_token=params.get("credentials", {}).get("password") or params.get('apitoken'),
+            auth_type=AuthType.OAUTH if argToBoolean(params.get('use_oauth', False)) else AuthType.API_TOKEN,
             client_id=params.get('client_id'),
             scopes=OAUTH_TOKEN_SCOPES,
             private_key=params.get('private_key'),

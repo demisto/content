@@ -1,0 +1,21 @@
+{
+    "name": "test",
+    "type": "scan-for-malware",
+    "scheduleDetails": {
+        "timeZone": "some time zone",
+        "recurrenceType": "none",
+        "onceOnlyScheduleParameters": {
+            "startTime": 0
+        }
+    },
+    "enabled": true,
+    "nextRunTime": 1708615684662,
+    "scanForMalwareTaskParameters": {
+        "computerFilter": {
+            "type": "computer",
+            "computerID": 111111
+        },
+        "timeout": "never"
+    },
+    "ID": 1
+}

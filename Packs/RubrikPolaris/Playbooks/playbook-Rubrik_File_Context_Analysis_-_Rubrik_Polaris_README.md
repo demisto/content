@@ -1,4 +1,4 @@
-This playbook fetches file context information for the provided file/folder/fileshare name and the object ID to get the policy hits.
+This playbook fetches file context information for the provided file, folder, or file share name and the object ID to get the policy hits.
 
 ## Dependencies
 

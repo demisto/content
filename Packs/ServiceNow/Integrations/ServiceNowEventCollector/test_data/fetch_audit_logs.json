@@ -1,0 +1,72 @@
+{
+    "fetch_logs": [
+        {
+            "fieldname": "DELETED",
+            "reason": "",
+            "sys_id": "1",
+            "newvalue": "DELETED",
+            "sys_created_on": "2023-04-13 07:00:00",
+            "documentkey": "3",
+            "internal_checkpoint": "",
+            "record_checkpoint": "-1",
+            "tablename": "test_table"
+        },
+        {
+            "fieldname": "DELETED",
+            "reason": "",
+            "sys_id": "2",
+            "newvalue": "DELETED",
+            "sys_created_on": "2023-04-15 07:00:00",
+            "documentkey": "3",
+            "internal_checkpoint": "",
+            "record_checkpoint": "-1",
+            "tablename": "test_table"
+        },
+        {
+            "fieldname": "DELETED",
+            "reason": "",
+            "sys_id": "3",
+            "newvalue": "DELETED",
+            "sys_created_on": "2023-04-15 07:00:00",
+            "documentkey": "3",
+            "internal_checkpoint": "",
+            "record_checkpoint": "-1",
+            "tablename": "test_table"
+        }
+    ],
+    "fetched_events": [
+        {
+            "fieldname": "DELETED",
+            "reason": "",
+            "sys_id": "1",
+            "newvalue": "DELETED",
+            "sys_created_on": "2023-04-13 07:00:00",
+            "documentkey": "3",
+            "internal_checkpoint": "",
+            "record_checkpoint": "-1",
+            "tablename": "test_table"
+        },
+        {
+            "fieldname": "DELETED",
+            "reason": "",
+            "sys_id": "2",
+            "newvalue": "DELETED",
+            "sys_created_on": "2023-04-15 07:00:00",
+            "documentkey": "3",
+            "internal_checkpoint": "",
+            "record_checkpoint": "-1",
+            "tablename": "test_table"
+        },
+        {
+            "fieldname": "DELETED",
+            "reason": "",
+            "sys_id": "3",
+            "newvalue": "DELETED",
+            "sys_created_on": "2023-04-15 07:00:00",
+            "documentkey": "3",
+            "internal_checkpoint": "",
+            "record_checkpoint": "-1",
+            "tablename": "test_table"
+        }
+    ]
+}

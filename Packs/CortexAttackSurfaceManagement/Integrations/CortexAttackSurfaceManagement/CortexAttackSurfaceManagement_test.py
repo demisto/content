@@ -303,13 +303,80 @@ def test_list_asset_internet_exposure_command(requests_mock):
         json=EXTERNAL_EXPOSURES_RESPONSE,
     )
 
-    args = {"name": "testdomain.com"}
+    args_name = {"name": "testdomain.com"}
+    args_externally_inferred_cves = {"externally_inferred_cves": ["CVE-2020-15778"]}
+    args_ipv6s = {"ipv6s": ["2600:1900:4000:9664:0:7::"]}
+    args_asm_id_list = {"asm_ids": ["3c176460-8735-333c-b618-8262e2fb660c"]}
+    args_aws_cloud_tags = {"aws_cloud_tags": ["Name:AD Lab"]}
+    args_gcp_cloud_tags = {"gcp_cloud_tags": ["Name:gcp Lab"]}
+    args_azure_cloud_tags = {"azure_cloud_tags": ["Name:azure Lab"]}
+    args_has_xdr_agent = {"has_xdr_agent": "NO"}
+    args_externally_detected_providers = {"externally_detected_providers": ["Amazon Web Services"]}
+    args_has_bu_overrides = {"has_bu_overrides": False}
+    args_business_units_list = {"business_units": ["Acme"]}
+    args_mac_address = {"mac_address": ["00:11:22:33:44:55"]}
 
-    response = list_asset_internet_exposure_command(args=args, client=client)
+    response_name = list_asset_internet_exposure_command(args=args_name, client=client)
+    response_externally_inferred_cves = list_asset_internet_exposure_command(args=args_externally_inferred_cves, client=client)
+    response_ipv6s = list_asset_internet_exposure_command(args=args_ipv6s, client=client)
+    response_asm_id_list = list_asset_internet_exposure_command(args=args_asm_id_list, client=client)
+    response_aws_cloud_tags = list_asset_internet_exposure_command(args=args_aws_cloud_tags, client=client)
+    response_gcp_cloud_tags = list_asset_internet_exposure_command(args=args_gcp_cloud_tags, client=client)
+    response_azure_cloud_tags = list_asset_internet_exposure_command(args=args_azure_cloud_tags, client=client)
+    response_has_xdr_agent = list_asset_internet_exposure_command(args=args_has_xdr_agent, client=client)
+    response_externally_detected_providers = list_asset_internet_exposure_command(
+        args=args_externally_detected_providers, client=client)
+    response_has_bu_overrides = list_asset_internet_exposure_command(args=args_has_bu_overrides, client=client)
+    response_business_units_list = list_asset_internet_exposure_command(args=args_business_units_list, client=client)
+    response_mac_address = list_asset_internet_exposure_command(args=args_mac_address, client=client)
 
-    assert response.outputs == EXTERNAL_EXPOSURES_RESULTS
-    assert response.outputs_prefix == "ASM.AssetInternetExposure"
-    assert response.outputs_key_field == "asm_ids"
+    assert response_name.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_name.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_name.outputs_key_field == "asm_ids"
+
+    assert response_externally_inferred_cves.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_externally_inferred_cves.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_externally_inferred_cves.outputs_key_field == "asm_ids"
+
+    assert response_ipv6s.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_ipv6s.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_ipv6s.outputs_key_field == "asm_ids"
+
+    assert response_asm_id_list.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_asm_id_list.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_asm_id_list.outputs_key_field == "asm_ids"
+
+    assert response_aws_cloud_tags.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_aws_cloud_tags.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_aws_cloud_tags.outputs_key_field == "asm_ids"
+
+    assert response_gcp_cloud_tags.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_gcp_cloud_tags.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_gcp_cloud_tags.outputs_key_field == "asm_ids"
+
+    assert response_azure_cloud_tags.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_azure_cloud_tags.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_azure_cloud_tags.outputs_key_field == "asm_ids"
+
+    assert response_has_xdr_agent.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_has_xdr_agent.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_has_xdr_agent.outputs_key_field == "asm_ids"
+
+    assert response_externally_detected_providers.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_externally_detected_providers.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_externally_detected_providers.outputs_key_field == "asm_ids"
+
+    assert response_has_bu_overrides.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_has_bu_overrides.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_has_bu_overrides.outputs_key_field == "asm_ids"
+
+    assert response_business_units_list.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_business_units_list.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_business_units_list.outputs_key_field == "asm_ids"
+
+    assert response_mac_address.outputs == EXTERNAL_EXPOSURES_RESULTS
+    assert response_mac_address.outputs_prefix == "ASM.AssetInternetExposure"
+    assert response_mac_address.outputs_key_field == "asm_ids"
 
 
 def test_get_asset_internet_exposure_command(requests_mock, mocker):

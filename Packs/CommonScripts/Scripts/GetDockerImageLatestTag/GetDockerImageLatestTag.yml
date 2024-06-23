@@ -25,7 +25,9 @@ args:
   - "no"
   description: Trust any certificate (not secure).
   defaultValue: "no"
+- name: creds_for_opp
+  description: Credentials for OPP gateway.
 tests:
 - No test - no testplaybook, but unit tests exist
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.10.13.89009

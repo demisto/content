@@ -1,4 +1,4 @@
-Checks whether an IPv4 address is not contained in one or more comma-delimited CIDR ranges.
+Checks whether an IPv4 or IPv6 address is not contained in one or more comma-delimited CIDR ranges.
 
 ## Script Data
 
@@ -6,7 +6,7 @@ Checks whether an IPv4 address is not contained in one or more comma-delimited C
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | javascript |
 | Tags | filter |
 | Cortex XSOAR Version | 5.0.0 |
 
@@ -16,8 +16,8 @@ Checks whether an IPv4 address is not contained in one or more comma-delimited C
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| left | IPv4 address to filter. |
-| right | Comma-separated list of IPv4 ranges in CIDR notation against which to match. |
+| left | IPv4/IPv6 address to filter. |
+| right | Comma-separated list of IPv4/IPv6 ranges in CIDR notation against which to match. |
 
 ## Outputs
 

@@ -8,7 +8,6 @@ import requests
 import dateparser
 import urllib3
 from datetime import datetime
-from typing import Dict
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -77,7 +76,7 @@ def http_request(method, url_suffix, params=None, headers=None, data=None, **kwa
     if res.status_code == 401:
         raise Exception('UnauthorizedError: please validate your credentials.')
     if res.status_code not in {200}:
-        raise Exception('Error in API call to Example Integration [{}] - {}'.format(res.status_code, res.reason))
+        raise Exception(f'Error in API call to Example Integration [{res.status_code}] - {res.reason}')
 
     return res.json()
 
@@ -133,7 +132,7 @@ def get_time_range(time_frame=None, start_time=None, end_time=None):
     elif time_frame == 'Last 30 Days':
         start_time = end_time - timedelta(days=30)
     else:
-        raise ValueError('Could not parse time frame: {}'.format(time_frame))
+        raise ValueError(f'Could not parse time frame: {time_frame}')
 
     return date_to_timestamp(start_time), date_to_timestamp(end_time)
 
@@ -150,8 +149,12 @@ def convert_timestamp_to_iso86(timestamp: str, timezone_letter: str = 'Z') -> st
     """
     if not timestamp:
         return ''
-    datetime_from_timestamp = dateparser.parse(timestamp, settings={"TO_TIMEZONE": timezone_letter,
-                                                                    "RETURN_AS_TIMEZONE_AWARE": True})
+    try:
+        datetime_from_timestamp = dateparser.parse(str(timestamp), settings={"TO_TIMEZONE": timezone_letter,
+                                                                             "RETURN_AS_TIMEZONE_AWARE": True})
+    except Exception as e:
+        demisto.error(f"Encountered issue parsing {timestamp}. err: {str(e)}")
+        return ''
     assert datetime_from_timestamp is not None, f'{timestamp} could not be parsed'
     time_in_iso86 = datetime_from_timestamp.strftime("%Y-%m-%dT%H:%M:%S.%f")
     return time_in_iso86[:-3] + timezone_letter
@@ -261,7 +264,7 @@ def parse_events(events_data):
     return events
 
 
-def dict_value_to_int(target_dict: Dict, key: str):
+def dict_value_to_int(target_dict: dict, key: str):
     """
     :param target_dict: A dictionary which has the key param
     :param key: The key that we need to convert it's value to integer
@@ -321,7 +324,7 @@ def get_alarm_command():
     # Parse response into context & content entries
     alarm_details = parse_alarms(response)
 
-    return_outputs(tableToMarkdown('Alarm {}'.format(alarm_id), alarm_details),
+    return_outputs(tableToMarkdown(f'Alarm {alarm_id}', alarm_details),
                    {'AlienVault.Alarm(val.ID && val.ID == obj.ID)': alarm_details},
                    response)
 
@@ -363,7 +366,7 @@ def search_alarms(start_time=None, end_time=None, status=None, priority=None, sh
     params = {
         'page': 0,
         'size': limit,
-        'sort': 'timestamp_occured,{}'.format(direction),
+        'sort': f'timestamp_occured,{direction}',
         'suppressed': show_suppressed
     }
 
@@ -417,7 +420,7 @@ def search_events(start_time=None, end_time=None, account_name=None, event_name=
     params = {
         'page': 1,
         'size': limit,
-        'sort': 'timestamp_occured,{}'.format(direction),
+        'sort': f'timestamp_occured,{direction}',
     }
 
     if account_name:
@@ -447,7 +450,7 @@ def get_events_by_alarm_command():
 
     events = parse_events(alarm['events'])
 
-    return_outputs(tableToMarkdown('Events of Alarm {}:'.format(alarm_id), events),
+    return_outputs(tableToMarkdown(f'Events of Alarm {alarm_id}:', events),
                    {'AlienVault.Event(val.ID && val.ID == obj.ID)': events},
                    alarm)
 
@@ -503,7 +506,7 @@ COMMANDS = {
 def main():
     global AUTH_TOKEN
     cmd = demisto.command()
-    LOG('Command being called is {}'.format(cmd))
+    LOG(f'Command being called is {cmd}')
 
     try:
         handle_proxy()
@@ -522,7 +525,7 @@ def main():
             LOG.print_log()
             raise
         else:
-            return_error('An error occurred: {}'.format(str(e)))
+            return_error(f'An error occurred: {str(e)}')
 
 
 # python2 uses __builtin__ python3 uses builtins

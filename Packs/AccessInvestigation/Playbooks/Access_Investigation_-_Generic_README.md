@@ -3,25 +3,31 @@ This playbook investigates an access incident by gathering user and IP informati
 The playbook then interacts with the user that triggered the incident to confirm whether or not they initiated the access action.
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 * Active Directory - Get User Manager Details
-* Account Enrichment - Generic v2.1
 * IP Enrichment - Generic v2
+* Account Enrichment - Generic v2.1
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
-* AssignAnalystToIncident
+
 * EmailAskUser
+* AssignAnalystToIncident
 
 ### Commands
-* closeInvestigation
+
 * setIncident
+* closeInvestigation
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -31,8 +37,10 @@ This playbook does not use any integrations.
 | Username | The username of the account that was used to access the DstIP. | incident.srcuser | Optional |
 | Role | The default role to assign the incident to. | Administrator | Required |
 | OnCall | Set to true to assign only the users that are currently on shift. Requires Cortex XSOAR v5.5 or later. | false | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -60,5 +68,7 @@ This playbook does not use any integrations.
 | Endpoint.Domain | Endpoint domain name | string |
 
 ## Playbook Image
+
 ---
-![Access](https://raw.githubusercontent.com/demisto/content/a5e419535b376b08764f65670c24ea364072e869/Packs/AccessInvestigation/doc_files/Access_Investigation_-_Generic_4_5.png)
+
+![Access Investigation - Generic](../doc_files/Access_Investigation_-_Generic_4_5.png)

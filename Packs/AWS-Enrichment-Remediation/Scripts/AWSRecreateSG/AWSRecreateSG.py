@@ -1,34 +1,11 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 from typing import Any
 import traceback
 from random import randint
 
 ROLE_SESSION_NAME = "xsoar-session"
-
-
-def get_context_path(context: dict, path: str):
-    """Get a context output ignoring the DT suffix.
-
-    Args:
-        context (dict): The context output with DT paths as keys.
-        path (str): The outputs prefix path without the DT transform under which the required data is held.
-
-    Return:
-        (Any): The context data under the prefix.
-
-    Example:
-        >>> output = demisto.executeCommand('aws-ec2-describe-addresses')
-        >>> output
-        {'Contents': {'path.to.data(val.Id && val.Id == obj.Id)': [1, 2, 3, 4]}}
-        >>> get_context_path(output, 'path.to.data')
-        [1, 2, 3, 4]
-    """
-    return context.get(
-        next((key for key in context if key.partition('(')[0] == path), None)
-    )
 
 
 def split_rule(rule: dict, port: int, protocol: str) -> list[dict]:
@@ -93,7 +70,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
     Returns:
         Dict: Dict of the new SG to be used
     """
-    info = get_context_path(sg_info[0]['Contents'], 'AWS.EC2.SecurityGroups')[0]  # type: ignore
+    info = dict_safe_get(sg_info, (0, 'Contents', 0))
     recreate_list = []
     # Keep track of change in SG or not.
     change = False
@@ -108,13 +85,6 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
                     and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
                     and rule['IpProtocol'] == protocol
                 ):
-                    change = True
-                elif (
-                    rule["FromPort"] == port and port == rule["ToPort"]
-                    and any(d["CidrIp"] == "0.0.0.0/0" for d in rule["IpRanges"])
-                    and rule["IpProtocol"] == protocol
-                ):
-                    # If condition to check for Quad 0 in the rules list for matching port.
                     change = True
                 elif (
                     rule['FromPort'] <= port and port <= rule['ToPort']
@@ -160,7 +130,7 @@ def sg_fix(sg_info: list, port: int, protocol: str, assume_role: str, instance_t
         new_sg = demisto.executeCommand("aws-ec2-create-security-group", cmd_args)
         if isError(new_sg):
             raise ValueError('Error on creating new security group')
-        new_id = new_sg[0]['Contents']['AWS.EC2.SecurityGroups']['GroupId']
+        new_id = dict_safe_get(new_sg, (0, 'Contents', 'GroupId'))
     for item in recreate_list:
         cmd_args = {"groupId": new_id, "IpPermissionsFull": item, "using": instance_to_use}
         if assume_role:
@@ -293,8 +263,7 @@ def instance_info(instance_id: str, public_ip: str, assume_role: str, region: st
     # Need a for loop in case multiple AWS-EC2 integrations are configured.
     match = False
     for instance in instance_info:
-        # Check if returned error, in the case of multiple integration instances only one should pass.
-        interfaces = get_context_path(instance.get('Contents'), 'AWS.EC2.Instances')[0].get('NetworkInterfaces')  # type: ignore
+        interfaces = dict_safe_get(instance, ('Contents', 0, 'NetworkInterfaces'))
         if not isError(instance) and interfaces:
             mapping_dict = {}
             for interface in interfaces:

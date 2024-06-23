@@ -36,7 +36,7 @@ Gets the list of firewall policies defined in a particular domain.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain_id | The ID of the domain. To get the domain_id, use the !nsm-get-domains command. | Required | 
-| limit | The maximum number of projects to return. Default is 50. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 | page_size | The number of records in a page. | Optional | 
 
@@ -366,7 +366,7 @@ Gets the list of rule objects defined in a particular domain.
 | --- | --- | --- |
 | domain_id | The ID of the domain. To get the domain ID, use the !nsm-get-domains command. | Required | 
 | type | The type of the rule. Possible values are: Endpoint IP V.4, Range IP V.4, Network IP V.4, Endpoint IP V.6, Range IP V.6, Network IP V.6, All. Default is All. | Optional | 
-| limit | The maximum number of projects to return. Default is 50. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 | page_size | The number of records in a page. | Optional | 
 
@@ -664,7 +664,7 @@ Retrieves the alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of projects to return. Default is 50. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 | page_size | The number of records in a page. | Optional | 
 | time_period | Time period. Possible values are: LAST_5_MINUTES, LAST_1_HOUR, LAST_6_HOURS, LAST_12_HOURS, LAST_24_HOURS, LAST_7_DAYS, LAST_14_DAYS, CUSTOM. Default is LAST_7_DAYS. | Optional | 
@@ -1277,7 +1277,7 @@ If a domain ID is given, the command returns the details of the specific domain.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain_id | Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank. | Optional | 
-| limit | The maximum number of projects to return. Default is 50.0. | Optional | 
+| limit | The maximum number of records to return. Default is 50.0. | Optional | 
 | page | The specific result page to display. | Optional | 
 | page_size | The number of records in a page. | Optional | 
 
@@ -1326,7 +1326,7 @@ Gets the list of sensors available in the specified domain. If the domain is not
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain_id | Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank. | Optional | 
-| limit | The maximum number of projects to return. Default is 50. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 | page_size | The number of records in a page. | Optional | 
 
@@ -1404,7 +1404,7 @@ Gets all the IPS policies defined in the specific domain.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | domain_id | Specific domain ID. To get the domain_id use !nsm-get-domains command and leave the parameter blank. | Required | 
-| limit | The maximum number of projects to return. Default is 50. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 | page | The specific result page to display. | Optional | 
 | page_size | The number of records in a page. | Optional | 
 
@@ -1930,7 +1930,7 @@ Retrieves the list of captured PCAP files.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The ID of the sensor. To get the sensor_id, use the !nsm-get-sensors command. | Required | 
-| limit | The maximum number of projects to return. Default is 50. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 | page | The specific result page to display. The default is 1. | Optional | 
 | page_size | The number of records in a page. | Optional | 
 

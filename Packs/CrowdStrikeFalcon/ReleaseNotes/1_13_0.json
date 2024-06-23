@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Parameters *limit* (with defualt value 50) and *offset* (with defualt value 0), were introduced to ***cs-falcon-search-device*** command. Number of returned results will be defined by the limit"
+}

@@ -24,7 +24,8 @@
  "hidden": false,
  "associatedTypes": [
   "ExtraHop Detection",
-  "Vectra Detection"
+  "Vectra Detection",
+  "CrowdStrike Falcon Mobile Detection"
  ],
  "systemAssociatedTypes": null,
  "associatedToAll": false,

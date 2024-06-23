@@ -10,19 +10,21 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* Google Cloud Compute
 * GCP-IAM
+* Google Cloud Compute
 
 ### Scripts
 
-GCPProjectHierarchy
+* GCPOffendingFirewallRule
+* Set
+* GCPProjectHierarchy
 
 ### Commands
 
-* gcp-compute-aggregated-list-instances-by-ip
-* gcp-compute-list-firewall
-* gcp-iam-project-iam-policy-get
 * gcp-iam-tagbindings-list
+* gcp-iam-project-iam-policy-get
+* gcp-compute-aggregated-list-instances-by-ip
+* gcp-compute-get-instance
 
 ## Playbook Inputs
 
@@ -31,6 +33,8 @@ GCPProjectHierarchy
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | GcpIP | GCP IP in alert | alert.remoteip | Required |
+| port | Port to match traffic on for firewall rules. | ${alert.remoteport} | Optional |
+| protocol | Protocol to match traffic on for firewall rules. | ${alert.protocol} | Optional |
 
 ## Playbook Outputs
 
@@ -39,10 +43,10 @@ GCPProjectHierarchy
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | GoogleCloudCompute.Instances | GCP VM Instances information. | unknown |
-| GoogleCloudCompute.Firewalls | GCP Firewall information | unknown |
 | GCPIAM.Policy | GCP IAM information | unknown |
 | GCPIAM.TagBindings | Project/Folder/Organization level tags. | unknown |
-| GCPHierarchy | GCP project hierarchy information.  | unknown |
+| GCPHierarchy | GCP project hierarchy information. | unknown |
+| GCPOffendingFirewallRule | One or more potential offending firewall rules in GCP based on port, protocol and possibly target tags \(network tags\). | unknown |
 
 ## Playbook Image
 

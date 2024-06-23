@@ -166,3 +166,85 @@ def test_identify_attached_mail_no_entries_passed(mocker):
 
     results = identify_attached_mail({})
     assert results == ('yes', {'reportedemailentryid': '23@2'})
+
+
+def test_identify_attached_mail_no_email_found(mocker):
+    """
+    Given
+    - no email entries in the warroom
+    - the platform is xsoar saas
+
+    When
+    - running the script to get the entries
+
+    Then
+    - no entries to be found
+
+    """
+    import CommonServerPython
+    mocker.patch.object(CommonServerPython, 'get_demisto_version', return_value={
+        'version': '8.2.0',
+        'buildNumber': '12345'
+    })
+
+    def execute_command(command, args):
+        if command == 'getEntries' and args == {"filter": {"categories": ["attachments"]}}:
+            return
+        else:
+            pytest.fail()
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    results = identify_attached_mail({})
+    assert results == ('no', None)
+
+
+def test_list_of_entries_passed_in_xsoar_saas_but_no_file_entries(mocker):
+    """
+    Given
+    - two entries with ids 23@2 24@2 which are not file entries
+    - the platform is xsoar saas
+
+    When
+    - running the script to get the entries
+
+    Then
+    - expect the getEntriesByIDs to be called
+    - expect no email entries to be found
+
+    """
+    entry_ids = """[\"23@2\",\"24@2\"]"""
+    import CommonServerPython
+    mocker.patch.object(CommonServerPython, 'get_demisto_version', return_value={
+        'version': '8.2.0',
+        'buildNumber': '12345'
+    })
+
+    def execute_command(command, args):
+        if command == 'getEntriesByIDs' and args.get('entryIDs') == '23@2,24@2':
+            return [
+                {
+                    'File': 'msg.txt',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '23@2'
+                },
+                {
+                    'File': 'foo.txt',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '24@2'
+                }
+            ]
+        else:
+            pytest.fail()
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    args = {
+        'entryid': entry_ids
+    }
+    results = identify_attached_mail(args)
+    assert results == ('no', None)

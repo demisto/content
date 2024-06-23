@@ -1,5 +1,8 @@
 Palo Alto Networks Trend Micro Vision One Event Collector integration for Cortex XSIAM collects the Workbench, Observed Attack Techniques, Search Detections and Audit logs.
 Trend Micro Vision One is a purpose-built threat defense platform that provides added value and new benefits beyond XDR solutions, allowing you to see more and respond faster. Providing deep and broad extended detection and response (XDR) capabilities that collect and automatically correlate data across multiple security layers—email, endpoints, servers, cloud workloads, and networks—Trend Micro Vision One prevents the majority of attacks with automated protection.
+
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Trend Micro Vision One Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.

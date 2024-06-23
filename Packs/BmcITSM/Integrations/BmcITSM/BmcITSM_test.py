@@ -1181,3 +1181,302 @@ def test_gen_fetch_incidents_query():
         custom_query,
     )
     assert query == "'Submit Date' <= \"1657032797\" AND 'Submit Date' >\"1657032797\" AND 'Urgency' = \"4-Low\""
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,expected_outputs_len,expected_desc",
+    [
+        (
+            "list_support_group.json",
+            {
+                "limit": "2",
+            },
+            2,
+            "APX990000000029",
+        ),
+        (
+            "list_support_group.json",
+            {
+                "page": "2",
+                "page_size": "1"
+            },
+            1,
+            "SGP000000000110",
+        ),
+        (
+            "list_support_group_filter.json",
+            {
+                "limit": "2",
+                "company": "Apex"
+            },
+            1,
+            "APX990000000029",
+        ),
+    ],
+)
+def test_list_support_group_command(
+    response_file_name,
+    command_arguments,
+    expected_outputs_len,
+    expected_desc,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: List support groups.
+    Given:
+     - User has provided valid credentials.
+     - User may provided pagination args.
+     - User may provided filtering arguments.
+     - User may provided query arguments.
+    When:
+     - bmc-itsm-support-group-list command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Validate outputs' fields.
+    """
+    from BmcITSM import support_group_list_command
+
+    mock_response = load_mock_response(response_file_name)
+    url = f"{BASE_URL}/api/arsys/v1/entry/CTM:Support Group"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = support_group_list_command(mock_client, command_arguments)
+    outputs = result.outputs
+
+    assert result.outputs_prefix == "BmcITSM.SupportGroup"
+    assert len(outputs) == expected_outputs_len
+    assert outputs[0]["SupportGroupID"] == expected_desc
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,expected_outputs_len,expected_desc",
+    [
+        (
+            "list_work_order_template.json",
+            {
+                "limit": "2",
+            },
+            2,
+            "IDGCWH5RDMNSBARVRM5ERVRM5EKP11",
+        ),
+        (
+            "list_work_order_template.json",
+            {
+                "page": "2",
+                "page_size": "1"
+            },
+            1,
+            "IDGCWH5RDMNSBARVRNNGRVRNNGKY0X",
+        ),
+        (
+            "list_work_order_template_filter.json",
+            {
+                "limit": "2",
+                "template_name": "UNIX User"
+            },
+            1,
+            "IDGCWH5RDMNSBARWFDYBRWFDYBB8NV",
+        ),
+        (
+            "list_work_order_template.json",
+            {
+                "limit": 2,
+                "template_ids": "IDGCWH5RDMNSBARVRM5ERVRM5EKP11,IDGCWH5RDMNSBARVRNNGRVRNNGKY0X"
+            },
+            2,
+            "IDGCWH5RDMNSBARVRM5ERVRM5EKP11"
+        ),
+        (
+            "list_work_order_template_filter.json",
+            {
+                "limit": 2,
+                "query": "Summary like \"%UNIX%\""
+            },
+            1,
+            "IDGCWH5RDMNSBARWFDYBRWFDYBB8NV"
+        ),
+    ],
+)
+def test_list_work_order_template_command(
+    response_file_name,
+    command_arguments,
+    expected_outputs_len,
+    expected_desc,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: List work order templates.
+    Given:
+     - User has provided valid credentials.
+     - User may provided pagination args.
+     - User may provided filtering arguments.
+     - User may provided query arguments.
+    When:
+     - bmc-itsm-work-order-template-list command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Validate outputs' fields.
+    """
+    from BmcITSM import work_order_template_list_command
+
+    mock_response = load_mock_response(response_file_name)
+    url = f"{BASE_URL}/api/arsys/v1/entry/WOI:Template"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = work_order_template_list_command(mock_client, command_arguments)
+    outputs = result.outputs
+
+    assert result.outputs_prefix == "BmcITSM.WorkOrderTemplate"
+    assert len(outputs) == expected_outputs_len
+    assert outputs[0]["GUID"] == expected_desc
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,expected_outputs_len,expected_id",
+    [
+        (
+            "create_work_order.json",
+            {
+                "customer_first_name": "Scully",
+                "customer_last_name": "Agent",
+                "customer_company": "Calbro Services",
+                "summary": "Sample WO 20240205",
+                "detailed_description": "Sample WO 20240205",
+                "status": "Assigned",
+                "priority": "Low",
+                "location_company": "Calbro Services",
+            },
+            3,
+            "WO0000000000701",
+        ),
+    ],
+)
+def test_work_order_create_command(
+    response_file_name,
+    command_arguments,
+    expected_outputs_len,
+    expected_id,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: Create Work order.
+    Given:
+     - User has provided valid credentials.
+    When:
+     - bmc-itsm-work-order-create command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Validate outputs' fields.
+    """
+    from BmcITSM import work_order_create_command
+
+    mock_response = load_mock_response(response_file_name)
+    fields = "values(Request ID,WorkOrder_ID,Create Date)"
+    url = f"{BASE_URL}/api/arsys/v1/entry/WOI:WorkOrderInterface_Create?fields={fields}"
+    requests_mock.post(url=url, json=mock_response)
+
+    request_id = "WO0000000000701"
+    url = f"{BASE_URL}/api/arsys/v1/entry/WOI:WorkOrderInterface/{request_id}"
+    requests_mock.get(url=url, json=load_mock_response("get_work_order.json"))
+
+    result = work_order_create_command(mock_client, command_arguments)
+    outputs = result.outputs
+
+    assert result.outputs_prefix == "BmcITSM.WorkOrder"
+    assert len(outputs) == expected_outputs_len
+    assert outputs["RequestID"] == expected_id
+
+
+@pytest.mark.parametrize(
+    "request_id,command_arguments,expected_msg",
+    [
+        (
+            "WO0000000000701",
+            {
+                "request_id": "WO0000000000701",
+                "status": "In Progress",
+                "summary": "Updated Summary"
+
+            },
+            "Work Order: WO0000000000701 was successfully updated.",
+        ),
+    ],
+)
+def test_work_order_update_command(request_id, command_arguments, expected_msg,
+                                   requests_mock, mock_client):
+    """
+    Scenario: Update Work error.
+    Given:
+     - User has provided valid credentials.
+     - User has provided updated values
+    When:
+     - bmc-itsm-work-order-update command called.
+    Then:
+     - Ensure the human readable message is correct.
+    """
+    from BmcITSM import work_order_update_command
+
+    url = f"{BASE_URL}/api/arsys/v1/entry/WOI:WorkOrder/{request_id}"
+    requests_mock.put(url=url, text="")
+
+    result = work_order_update_command(mock_client, command_arguments)
+    readable_output = result.readable_output
+
+    assert readable_output == expected_msg
+
+
+@pytest.mark.parametrize(
+    "response_file_name,command_arguments,ticket_form,expected_outputs_len,expected_name",
+    [
+        (
+            "list_tickets_work_order.json",
+            {
+                "limit": "2",
+                "ticket_ids": "WO0000000000009",
+                "ticket_type": "work order",
+            },
+            "WOI:WorkOrderInterface",
+            1,
+            "WO0000000000009",
+        ),
+    ],
+)
+def test_ticket_list_work_order_command(
+    response_file_name,
+    command_arguments,
+    ticket_form,
+    expected_outputs_len,
+    expected_name,
+    requests_mock,
+    mock_client,
+):
+    """
+    Scenario: List work order tickets.
+    Given:
+     - User has provided valid credentials.
+     - User may Provided filtering arguments.
+    When:
+     - bmc-itsm-ticket-list command called.
+    Then:
+     - Ensure outputs prefix is correct.
+     - Ensure number of items is correct.
+     - Validate outputs' fields.
+    """
+    from BmcITSM import ticket_list_command
+
+    mock_response = load_mock_response(response_file_name)
+    url = f"{BASE_URL}/api/arsys/v1/entry/{ticket_form}"
+    requests_mock.get(url=url, json=mock_response)
+
+    result = ticket_list_command(mock_client, command_arguments)
+    outputs = result.outputs
+
+    assert result.outputs_prefix == "BmcITSM.Ticket"
+    assert len(outputs) == expected_outputs_len
+    assert outputs[0]["DisplayID"] == expected_name

@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The parameters `ID`, `Category`, `Source`, `Severity` are no longer supported for `varonis-get-threat-models` command</li><li>The fields `Category`, `Source`, `Severity` removed from `varonis-get-threat-models` command output</li></ul>Make sure to check and update any Playbooks/Scripts that use the above context paths."
+}

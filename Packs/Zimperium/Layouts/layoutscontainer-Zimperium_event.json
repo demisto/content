@@ -388,6 +388,15 @@
 								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+                            {
+								"endCol": 2,
+								"fieldId": "zimperiumbundleid",
+								"height": 22,
+								"id": "8f6fa5e0-ca74-11ee-9f38-077f9099e7b6",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,

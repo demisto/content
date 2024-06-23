@@ -9,7 +9,7 @@ def get_exif_tags(file_entry_id):
 
     tags = exifread.process_file(f)
     arr = []
-    for tag in tags.keys():
+    for tag in tags:
         arr.append({'tag': str(tag), 'value': str(tags[tag])})
 
     md = tableToMarkdown('Exif Tags', arr)

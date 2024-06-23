@@ -13,6 +13,7 @@ INCIDENT = "incident"
 TASK = "task"
 PROBLEM_INVESTIGATION = "problem investigation"
 KNOWN_ERROR = "known error"
+WORK_ORDER = "work order"
 
 SERVICE_REQUEST_CONTEXT_MAPPER = {
     "SysRequestID": "RequestID",
@@ -100,6 +101,24 @@ KNOWN_ERROR_CONTEXT_MAPPER = {
     "View Access": "ViewAccess",
     "Stastus_Reason": "StatusReason",  # The product has typo in the response
 }
+
+WORK_ORDER_CONTEXT_MAPPER = {
+    "Request ID": "RequestID",
+    "Work Order ID": "DisplayID",
+    "Submit Date": "CreateDate",
+    "Status": "Status",
+    "Description": "Summary",
+    "Last Modified Date": "LastModifiedDate",
+    "Detailed Description": "Details",
+    "VIP": "VIP",
+    "Reported Source": "ReportedSource",
+    "Status Reason": "StatusReason",
+    "ASCHG": "Assignee",
+    "ASGRP": "Assigned Group",
+    "ASCPY": "Assigned Support Company",
+    "Support Organization": "Assigned Support Organization",
+}
+
 COMMON_PROPERTIES = [
     "Submitter",
     "Urgency",
@@ -136,6 +155,7 @@ TICKET_TYPE_TO_LIST_FORM = {
     TASK: "TMS:Task",
     PROBLEM_INVESTIGATION: "PBM:ProblemInterface",
     KNOWN_ERROR: "PBM:KnownErrorInterface",
+    WORK_ORDER: "WOI:WorkOrderInterface",
 }
 
 TICKET_TYPE_TO_DELETE_FORM = {
@@ -144,6 +164,7 @@ TICKET_TYPE_TO_DELETE_FORM = {
     TASK: "TMS:Task",
     PROBLEM_INVESTIGATION: "PBM:Problem Investigation",
     KNOWN_ERROR: "PBM:Known Error",
+    WORK_ORDER: "WOI:WorkOrderInterface",
 }
 
 TICKET_TYPE_TO_STATUS_FIELD = {
@@ -153,6 +174,7 @@ TICKET_TYPE_TO_STATUS_FIELD = {
     PROBLEM_INVESTIGATION: "Investigation Status",
     KNOWN_ERROR: "Known Error Status",
     TASK: "Status",
+    WORK_ORDER: "Status",
 }
 
 TICKET_TYPE_TO_CONTEXT_MAPPER = {
@@ -162,6 +184,7 @@ TICKET_TYPE_TO_CONTEXT_MAPPER = {
     TASK: TASK_CONTEXT_MAPPER,
     PROBLEM_INVESTIGATION: PROBLEM_INVESTIGATION_CONTEXT_MAPPER,
     KNOWN_ERROR: KNOWN_ERROR_CONTEXT_MAPPER,
+    WORK_ORDER: WORK_ORDER_CONTEXT_MAPPER,
 }
 
 TICKET_TYPE_TO_STATUS_KEY = {
@@ -171,6 +194,7 @@ TICKET_TYPE_TO_STATUS_KEY = {
     TASK: "Status",
     PROBLEM_INVESTIGATION: "Investigation Status",
     KNOWN_ERROR: "Known Error Status",
+    WORK_ORDER: "Status",
 }
 
 TICKET_TYPE_TO_SUMMARY_KEY = {
@@ -180,6 +204,7 @@ TICKET_TYPE_TO_SUMMARY_KEY = {
     TASK: "Summary",
     PROBLEM_INVESTIGATION: "Description",
     KNOWN_ERROR: "Description",
+    WORK_ORDER: "Description",
 }
 
 TICKET_TYPE_TO_REQUEST_ID_KEY = {
@@ -189,6 +214,7 @@ TICKET_TYPE_TO_REQUEST_ID_KEY = {
     TASK: "Task ID",
     PROBLEM_INVESTIGATION: "Request ID",
     KNOWN_ERROR: "Request ID",
+    WORK_ORDER: "Work Order ID",
 }
 
 TICKET_TYPE_TO_CREATE_QUERY = {
@@ -198,6 +224,7 @@ TICKET_TYPE_TO_CREATE_QUERY = {
     TASK: "values(Task ID,Create Date)",
     PROBLEM_INVESTIGATION: "values(Request ID,Problem Investigation ID,Create Date)",
     KNOWN_ERROR: "values(Request ID,Known Error ID,Create Date)",
+    WORK_ORDER: "values(Request ID,WorkOrder_ID,Create Date)",
 }
 
 FIELD_DELIMITER = ";"
@@ -209,6 +236,7 @@ REQUEST_NUM_PREFIX_TO_TICKET_TYPE = {
     "TAS": TASK,
     "PBI": PROBLEM_INVESTIGATION,
     "PKE": KNOWN_ERROR,
+    "WO0": WORK_ORDER,
 }
 
 CREATE_CONTEXT_MAPPER = {
@@ -223,12 +251,14 @@ CREATE_CONTEXT_MAPPER = {
     "Submit Date": "CreateDate",
     "Create Date": "CreateDate",
     "Task ID": "DisplayID",
+    "WorkOrder_ID": "DisplayID",
 }
 
 TICKET_TYPE_TO_DISPLAY_ID = {
     INCIDENT: "Incident Number",
     PROBLEM_INVESTIGATION: "Problem Investigation ID",
     KNOWN_ERROR: "Known Error ID",
+    WORK_ORDER: "Work Order ID",
 }
 ID_QUERY_MAPPER_KEY = "IDS"
 EQUAL_QUERY_MAPPER_KEY = "EQUAL"
@@ -246,6 +276,7 @@ ALL_TICKETS = [
     TASK,
     PROBLEM_INVESTIGATION,
     KNOWN_ERROR,
+    WORK_ORDER,
 ]
 TICKET_INCIDENT_TYPES = [
     "BMC Change-Request",
@@ -254,6 +285,7 @@ TICKET_INCIDENT_TYPES = [
     "BMC Problem Investigation incident",
     "BMC Service Request",
     "BMC Task",
+    "BMC Work Order",
 ]
 
 TICKET_TYPE_TO_INCIDENT_TYPE = {
@@ -263,6 +295,7 @@ TICKET_TYPE_TO_INCIDENT_TYPE = {
     PROBLEM_INVESTIGATION: "BMC Problem Investigation incident",
     KNOWN_ERROR: "BMC Problem – Known Error",
     TASK: "BMC Task",
+    WORK_ORDER: "BMC Work Order",
 }
 
 MIRRORING_COMMON_FIELDS = [
@@ -282,6 +315,7 @@ TICKET_TYPE_TO_ADDITIONAL_MIRRORING_FIELDS = {
     TASK: ["Priority"],
     PROBLEM_INVESTIGATION: ["Priority"],
     KNOWN_ERROR: ["Priority"],
+    WORK_ORDER: ["Priority"],
 }
 
 MIRROR_DIRECTION_MAPPING = {
@@ -1274,6 +1308,143 @@ class Client(BaseClient):
         response = self._http_request(
             "PUT",
             f"arsys/v1/entry/PBM:KnownErrorInterface/{known_error_id}",
+            json_data=data,
+            resp_type="text",
+        )
+
+        return response
+
+    def create_work_order_request(
+        self,
+        template_guid: str,
+        first_name: str,
+        last_name: str,
+        customer_person_id: str,
+        customer_first_name: str,
+        customer_last_name: str,
+        customer_company: str,
+        summary: str,
+        detailed_description: str,
+        status: str,
+        priority: str,
+        work_order_type: str,
+        location_company: str,
+        scedulded_start_date: str,
+        scedulded_end_date: str,
+        **additional_fields,
+    ) -> Dict[str, Any]:
+        """
+        Create work order request.
+
+        Args:
+            template_guid (str): Work order template GUID.
+            first_name (str): Requester first name.
+            last_name (str): Requester last name.
+            customer_person_id (str): Customer person id (in case first/last pair in ambiguous),
+            customer_first_name (str): Customer first name
+            customer_last_name (str): Customer last name
+            customer_company (str): Customer company
+            summary (str): Work order summary.
+            detailed_description (str): Work order detailed descirption.
+            status (str): Ticket status.
+            priority (str): Ticket priority.
+            work_order_type (str): Work order type.
+            location_company (str): Company assoiciated with work order process.
+            scedulded_start_date (str): Schedulded start date.
+            scedulded_end_date (str):  Schedulded end date.
+
+        Returns:
+            Dict[str, Any]: API respnse from BmcITSM.
+        """
+
+        properties = remove_empty_elements({
+            "TemplateID": template_guid,
+            "First Name": first_name,
+            "Last Name": last_name,
+            "Customer Person ID": customer_person_id,
+            "Customer First Name": customer_first_name,
+            "Customer Last Name": customer_last_name,
+            "Customer Company": customer_company,
+            "Summary": summary,
+            "Detailed Description": detailed_description,
+            "Status": status,
+            "Priority": priority,
+            "Work Order Type": work_order_type,
+            "Location Company": location_company,
+            "Scheduled Start Date": scedulded_start_date,
+            "Scheduled End Date": scedulded_end_date,
+            "z1D_Action": "CREATE",
+            **additional_fields,
+        })
+        data = {"values": properties}
+        params = {"fields": TICKET_TYPE_TO_CREATE_QUERY[WORK_ORDER]}
+        response = self._http_request("POST",
+                                      "arsys/v1/entry/WOI:WorkOrderInterface_Create",
+                                      json_data=data,
+                                      params=params)
+        return response
+
+    def update_work_order_request(
+        self,
+        request_id: str,
+        summary: str,
+        detailed_description: str,
+        status: str,
+        status_reason: str,
+        priority: str,
+        work_order_type: str,
+        company: str,
+        assignee: str,
+        support_organization: str,
+        support_group_name: str,
+        location_company: str,
+        scedulded_start_date: str,
+        schedulded_end_date: str,
+        **additional_fields,
+    ):
+        """
+        Work order update request.
+
+        Args:
+            request_id (str): Work order request ID.
+            summary (str): Work order summary.
+            detailed_description (str): Work order details.
+            status (str): Work order status.
+            status_reason (str): The reason for changing the status.
+            priority (str): Work order priority.
+            work_order_type (str): Work order type.
+            company (str): Work order company.
+            assignee (str): Assignee.
+            support_organization (str): Support organization.
+            support_group_name (str): Support group name.
+            location_company (str): Company assoiciated with ticet process.
+            scedulded_start_date (str): Schedulded start date.
+            scedulded_end_date (str):  Schedulded end date.
+        Returns:
+            str: API respnse from BmcITSM.
+        """
+
+        properties = remove_empty_elements({
+            "Summary": summary,
+            "Detailed Description": detailed_description,
+            "Location Company": location_company,
+            "Status": status,
+            "Status Reason": status_reason,
+            "Work Order Type": work_order_type,
+            "Priority": priority,
+            "Support Organization": support_organization,
+            "Support Group Name": support_group_name,
+            "Company": company,
+            "Request Assignee": assignee,
+            "Assigned To": assignee,
+            "Scheduled Start Date": scedulded_start_date,
+            "Scheduled End Date": schedulded_end_date,
+            **additional_fields,
+        })
+        data = {"values": properties}
+        response = self._http_request(
+            "PUT",
+            f"arsys/v1/entry/WOI:WorkOrder/{request_id}",
             json_data=data,
             resp_type="text",
         )
@@ -2513,6 +2684,186 @@ def known_error_update_command(client: Client, args: Dict[str, Any]) -> CommandR
     return command_results
 
 
+def support_group_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """List BmcITSM support groups.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    context_output_mapper = {
+        "Support Group ID": "SupportGroupID",
+        "Company": "Company",
+        "Support Organization": "SupportOrganization",
+        "Support Group Name": "SupportGroupName"
+    }
+
+    command_results = list_command(
+        client,
+        args,
+        "CTM:Support Group",
+        context_output_mapper,
+        header_prefix="List support groups.",
+        outputs_prefix="BmcITSM.SupportGroup",
+        outputs_key_field="SupportGroupID",
+        record_id_key="SupportGroupID",
+    )
+    return command_results
+
+
+def work_order_template_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """List BmcITSM work order templates.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    context_output_mapper = {
+        "Request ID": "Id",
+        "Template Name": "Name",
+        "GUID": "GUID",
+    }
+
+    args["ids"] = argToList(args.get("template_ids"))
+    command_results = list_command(
+        client,
+        args,
+        "WOI:Template",
+        context_output_mapper,
+        header_prefix="List work order templates.",
+        outputs_prefix="BmcITSM.WorkOrderTemplate",
+        outputs_key_field="Id",
+        record_id_key="GUID",
+    )
+    return command_results
+
+
+def work_order_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Create BmcITSM work order.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    template_guid = args.get("template_guid")
+    first_name = args.get("first_name")
+    last_name = args.get("last_name")
+    customer_person_id = args.get("customer_person_id")
+    customer_first_name = args.get("customer_first_name")
+    customer_last_name = args.get("customer_last_name")
+    customer_company = args.get("customer_company")
+    summary = args.get("summary")
+    detailed_description = args.get("detailed_description")
+    status = args.get("status")
+    priority = args.get("priority")
+    work_order_type = args.get("work_order_type")
+    location_company = args.get("location_company")
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
+    scedulded_end_date: datetime = arg_to_datetime(args.get("scedulded_end_date"))
+
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
+    response = client.create_work_order_request(
+        template_guid,
+        first_name,
+        last_name,
+        customer_person_id,
+        customer_first_name,
+        customer_last_name,
+        customer_company,
+        summary,
+        detailed_description,
+        status,
+        priority,
+        work_order_type,
+        location_company,
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
+        scedulded_end_date=scedulded_end_date.isoformat() if scedulded_end_date else None,
+        **additional_fields,
+    )
+
+    outputs = format_create_ticket_outputs(response.get("values"))
+    # Fixing API returning RequestID in form 000...NNN instead of WO0...NNN
+    outputs["RequestID"] = "WO0" + outputs["RequestID"][3:]
+    readable_output = tableToMarkdown("Work order ticket successfully created.",
+                                      outputs,
+                                      headerTransform=pascalToSpace)
+    command_results = CommandResults(
+        outputs_prefix="BmcITSM.WorkOrder",
+        outputs_key_field="RequestID",
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+    return command_results
+
+
+def work_order_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Update BmcITSM work order.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+
+    request_id = args.get("request_id")
+    summary = args.get("summary")
+    detailed_description = args.get("detailed_description")
+    status = args.get("status")
+    status_reason = args.get("status_reason")
+    priority = args.get("priority")
+    work_order_type = args.get("work_order_type")
+    company = args.get("company")
+    assignee = args.get("assignee")
+    support_organization = args.get("support_organization")
+    support_group = args.get("support_group")
+    location_company = args.get("location_company")
+    scedulded_start_date: datetime = arg_to_datetime(args.get("scedulded_start_date"))
+    schedulded_end_date: datetime = arg_to_datetime(args.get("schedulded_end_date"))
+
+    additional_fields = extract_args_from_additional_fields_arg(args.get("additional_fields"),
+                                                                "additional_fields")
+
+    validate_related_arguments_provided(support_organization=support_organization, support_group=support_group)
+
+    client.update_work_order_request(
+        request_id,
+        summary=summary,
+        detailed_description=detailed_description,
+        status=status,
+        status_reason=status_reason,
+        priority=priority,
+        work_order_type=work_order_type,
+        company=company,
+        assignee=assignee,
+        support_organization=support_organization,
+        support_group_name=support_group,
+        location_company=location_company,
+        scedulded_start_date=scedulded_start_date.isoformat() if scedulded_start_date else None,
+        schedulded_end_date=schedulded_end_date.isoformat if schedulded_end_date else None,
+        **additional_fields,
+    )
+
+    command_results = CommandResults(readable_output=f"Work Order: {request_id} was successfully updated.")
+
+    return command_results
+
+
 def format_command_output(records: List[dict],
                           mapper: Dict[str, Any],
                           context_data_arranger: Callable = None) -> Dict[str, Any]:
@@ -2833,6 +3184,9 @@ def generate_query_filter_mapper_by_args(args: Dict[str, Any], record_id_key: Op
         "Organization": args.get("organization"),
         "Company Type": args.get("company_type"),
         "TaskName": args.get("task_name"),
+        "Template Name": args.get("template_name"),
+        "Support Organization": args.get("support_organization"),
+        "Support Group Name": args.get("support_group"),
     }
     return {
         ID_QUERY_MAPPER_KEY: ids_filter_mapper,
@@ -3579,6 +3933,10 @@ def main() -> None:
             "bmc-itsm-problem-investigation-update": problem_investigation_update_command,
             "bmc-itsm-known-error-create": known_error_create_command,
             "bmc-itsm-known-error-update": known_error_update_command,
+            "bmc-itsm-support-group-list": support_group_list_command,
+            "bmc-itsm-work-order-template-list": work_order_template_list_command,
+            "bmc-itsm-work-order-create": work_order_create_command,
+            "bmc-itsm-work-order-update": work_order_update_command,
         }
 
         if command == "test-module":

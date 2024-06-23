@@ -1,10 +1,7 @@
 name: Manage Contribution Board - Daily
 on:
   schedule:
-    - cron:  '0 0 * * *'
-permissions:
-  contents: read
-
+    - cron: "0 0 * * *"
 jobs:
   manage_project_board:
     runs-on: ubuntu-latest
@@ -12,15 +9,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python 3.7
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.7'
+          python-version: "3.7"
       - name: Get project manager
         run: |
           pip install --upgrade pip
-          pip install github-automation
+          pip install github-automation==0.2.3
       - name: Manage project
         run: |
           github-automation manage -c .github/project_conf/contributions.ini
         env:
-          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_BOARD_UPDATE_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}

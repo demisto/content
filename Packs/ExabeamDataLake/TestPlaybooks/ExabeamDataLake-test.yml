@@ -1,0 +1,88 @@
+id: ExabeamDataLake-test
+version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: ExabeamDataLake-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: c6af0dc9-3028-4a11-856e-ebd4b862bbf3
+    type: start
+    task:
+      id: c6af0dc9-3028-4a11-856e-ebd4b862bbf3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 1f926fc2-1d31-41ae-8267-f878f006f8cb
+    type: regular
+    task:
+      id: 1f926fc2-1d31-41ae-8267-f878f006f8cb
+      version: -1
+      name: exabeam-data-lake-search
+      description: Get events from Exabeam Data Lake.
+      script: '|||exabeam-data-lake-search'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      end_time:
+        simple: 15-05-2024
+      query:
+        simple: Prodcut:Exabeam DL AND Vendor:Exabeam AND session_id:rkoch-20240514132437
+          AND _id:lms.kafka.topic_10_4050665_82063a0a4d1b
+      start_time:
+        simple: 14-05-2024
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 335,
+        "width": 380,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
+fromversion: 6.10.0

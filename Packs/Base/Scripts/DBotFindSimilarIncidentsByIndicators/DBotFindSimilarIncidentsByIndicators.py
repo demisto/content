@@ -9,6 +9,8 @@ from collections import Counter
 import re
 import math
 
+from GetIncidentsApiModule import *  # noqa: E402
+
 SEARCH_INDICATORS_LIMIT = 10000
 SEARCH_INDICATORS_PAGE_SIZE = 500
 
@@ -236,8 +238,8 @@ def get_related_incidents(
         "fromDate": from_date,
     }
     demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
-    res = execute_command("GetIncidentsByQuery", args, fail_on_error=True)
-    incident_ids = [incident[INCIDENT_ID_FIELD] for incident in json.loads(res)]
+    incidents = get_incidents_by_query(args)
+    incident_ids = [incident[INCIDENT_ID_FIELD] for incident in incidents]
     demisto.debug(f"Found {len(incident_ids)} related incidents: {incident_ids}")
     return incident_ids
 
@@ -364,8 +366,8 @@ def enrich_incidents(
         "populateFields": ",".join(fields_to_display),
     }
     demisto.debug(f"Executing GetIncidentsByQuery with {args=}")
-    res = execute_command("GetIncidentsByQuery", args, fail_on_error=True)
-    incidents_map: dict[str, dict] = {incident[INCIDENT_ID_FIELD]: incident for incident in json.loads(res)}
+    res = get_incidents_by_query(args)
+    incidents_map: dict[str, dict] = {incident[INCIDENT_ID_FIELD]: incident for incident in res}
     if CREATED_FIELD in fields_to_display:
         incidents[CREATED_FIELD] = [
             dateparser.parse(incidents_map[inc_id][CREATED_FIELD]).strftime(DATE_FORMAT)  # type: ignore

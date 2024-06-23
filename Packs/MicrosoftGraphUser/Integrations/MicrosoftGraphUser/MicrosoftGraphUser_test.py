@@ -95,7 +95,7 @@ def test_get_user_command_url_saved_chars(mocker):
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
-    assert 'users/dbot%5E' == http_mock.call_args[1]["url_suffix"]
+    assert http_mock.call_args[1]["url_suffix"] == 'users/dbot%5E'
 
 
 def test_get_unsupported_chars_in_user():

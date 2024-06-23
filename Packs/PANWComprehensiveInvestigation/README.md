@@ -1,6 +1,6 @@
 
 Responding and managing cyber security attacks requires security teams to reconcile data from a variety of different sources. Valuable time is lost shuttling between screens and executing repeatable tasks while an attack continues to manifest.
-This Palo Alto Networks Comprehensive Investigation content pack contains the ‘Palo Alto Networks - Endpoint Malware Investigation v3’ playbook, that automates response to a malware found on an endpoint, the ‘Palo Alto Networks - Malware Remediation` playbook, that automates remediation strategies to many different cyber security incidents, and the `Palo Alto Networks - Hunting And Threat Detection` playbook, that automates hunting for other affected entities in your organizations. 
+This Palo Alto Networks Comprehensive Investigation content pack contains the ‘Palo Alto Networks - Endpoint Malware Investigation v3’ playbook, that automates response to a malware found on an endpoint, the ‘Palo Alto Networks - Malware Remediation’ playbook, that automates remediation strategies to many different cyber security incidents, and the ‘Palo Alto Networks - Hunting And Threat Detection’ playbook, that automates hunting for other affected entities in your organizations. 
 The pack also contains the corresponding custom malware incident views and layouts to facilitate analyst investigation.  
 These playbooks orchestrate across multiple products to extract and enrich IOCs, detonate malicious files, hunt for more IOCs within the organization, and perform remediation using only Palo Alto Networks products.
 

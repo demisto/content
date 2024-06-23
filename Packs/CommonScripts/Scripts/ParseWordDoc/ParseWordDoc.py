@@ -4,7 +4,7 @@ from docx import Document
 from docx.opc.exceptions import PackageNotFoundError
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 import zipfile
-from xml.etree.cElementTree import XML
+from xml.etree.ElementTree import XML
 
 
 def extract_urls_xml(file_path):
@@ -45,7 +45,7 @@ def parse_word_doc(entry_id):
         file_data = '\n'.join([para.text for para in document.paragraphs])
 
         urls = extract_urls_xml(file_path) + extract_urls_docx(document)
-        file_data = file_data + '\n\n\nExtracted links:\n* ' + '\n* '.join([url for url in urls])
+        file_data = file_data + '\n\n\nExtracted links:\n* ' + '\n* '.join(list(urls))
 
         file_name = cmd_res.get('name')
         output_file_name = file_name[0:file_name.rfind('.')] + '.txt'

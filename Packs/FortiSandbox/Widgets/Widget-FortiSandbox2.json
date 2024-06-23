@@ -1,0 +1,70 @@
+{
+    "dataType": "metrics",
+    "params": {
+        "customGroupBy": [
+            null,
+            {
+                "General Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "GeneralError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "General Error"
+                },
+                "Success": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "Successful",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Success"
+                }
+            }
+        ],
+        "groupBy": [
+            "modified(h)",
+            "apiResponseType"
+        ],
+        "keys": [
+            "sum|totalAPICalls"
+        ],
+        "referenceLine": {},
+        "timeFrame": "hours",
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "Time",
+        "yAxisLabel": "Request Counts"
+    },
+    "query": "type:integration and name:FortiSandboxv2",
+    "modified": "2022-04-27T15:34:53.64268093Z",
+    "name": "API Call Results for FortiSandbox2",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "days",
+            "byFrom": "hours",
+            "toValue": 0,
+            "fromValue": 3,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "0821903b-1099-4f3d-8c30-27decd8c5c06",
+    "widgetType": "line",
+    "fromVersion": "6.10.0",
+    "description": ""
+}

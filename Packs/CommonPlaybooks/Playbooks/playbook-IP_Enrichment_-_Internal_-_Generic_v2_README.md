@@ -18,8 +18,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IsIPInRanges
 * IPToHost
+* IsIPInRanges
 
 ### Commands
 
@@ -32,9 +32,9 @@ This playbook does not use any commands.
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
 | IP | The IP address to enrich. | IP.Address | Optional |
-| InternalRange | A CSV list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. <br/>For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If no list is provided, will use default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). | 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16 | Optional |
-| ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\).<br/>The default value is true. | True | Required |
-| ExecutedFromParent | Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main \(IP Enrichment - Generic v2\) enrichment playbook, instead of in the sub-playbooks.<br/>Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.<br/><br/>Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overfall size of the incident. | False | Optional |
+| InternalRange | A comma-separated list of IP address ranges \(in CIDR notation\). Use this list to check if an IP address is found within a set of IP address ranges. <br/>For example: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
+| ResolveIP | Whether to convert the IP address to a hostname using a DNS query \(True/False\).<br/>The default value is true. | inputs.ResolveIP | Required |
+| ExecutedFromParent | Whether to execute common logic, like the classification of IP addresses to ranges and resolving, in the the main \(IP Enrichment - Generic v2\) enrichment playbook, instead of the sub-playbooks.<br/><br/>Possible values are: True, False.<br/>Setting this to True will execute the relevant commands in the main playbook instead of executing them in both sub-playbooks.<br/><br/>Set this to True in the parent playbook if you are using the parent playbook, as opposed to using the sub-playbooks directly in your playbooks, as this will improve the performance of the playbook and reduce the overall size of the incident. | False | Optional |
 | Hostnames | Hostnames to enrich. If the ExecutedFromParent playbook is set to True in the IP - Enrichment - Generic v2 playbook, and an internal IP resolves to an endpoint hostname that you want to enrich, the hostnames defined here will be used. |  | Optional |
 
 ## Playbook Outputs

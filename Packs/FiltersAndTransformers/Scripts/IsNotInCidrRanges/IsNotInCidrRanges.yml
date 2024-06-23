@@ -3,22 +3,22 @@ commonfields:
   version: -1
 name: IsNotInCidrRanges
 script: ''
-type: python
-subtype: python3
+type: javascript
 tags:
 - filter
-comment: Checks whether an IPv4 address is not contained in one or more comma-delimited CIDR ranges.
+comment: Checks whether an IPv4 or IPv6 address is not contained in one or more comma-delimited CIDR ranges.
 enabled: true
 args:
 - name: left
   required: true
-  description: IPv4 address to filter.
+  description: A comma-separated list of IPv4/IPv6 addresses to check.
+  isArray: true
 - name: right
   required: true
-  description: Comma-separated list of IPv4 ranges in CIDR notation against which to match.
+  description: A comma-separated list of IPv4/IPv6 ranges in CIDR notation against which to match.
+  isArray: true
 scripttarget: 0
-dockerimage: demisto/netutils:1.0.0.83404
 runas: DBotWeakRole
 tests:
-- No test - unit test
+- TestIsNotInCidrRanges
 fromversion: 5.0.0

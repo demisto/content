@@ -1,8 +1,8 @@
 {
-    "name": "BMC Remedy On-Demand",
-    "description": "Use Remedy On-Demand to manage tickets",
+    "name": "BMC Remedy On-Demand (Deprecated)",
+    "description": "Deprecated. Use BMC Helix ITSM instead",
     "support": "xsoar",
-    "currentVersion": "1.1.3",
+    "currentVersion": "1.1.4",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",

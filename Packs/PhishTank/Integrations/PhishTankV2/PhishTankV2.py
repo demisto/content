@@ -35,19 +35,26 @@ class Client(BaseClient):
            use_https (bool): Whether to use HTTPS URL or HTTP URL.
    """
 
-    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str, reliability: str):
+    def __init__(self, proxy: bool, verify: bool, fetch_interval_hours: str, use_https: str, reliability: str,
+                 username: str = ''):
         super().__init__(proxy=proxy, verify=verify, base_url=HTTPS_BASE_URL if use_https else BASE_URL)
         self.fetch_interval_hours = fetch_interval_hours
+        self.username = username
+
         if DBotScoreReliability.is_valid_type(reliability):
             self.reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
         else:
             return_error("PhishTankV2 error: Please provide a valid value for the Source Reliability parameter.")
 
     def get_http_request(self, url_suffix: str):
+        headers = {}
+        if self.username:
+            headers = {'User-Agent': f'phishtank/{self.username}'}
         result = self._http_request(
             method='GET',
             url_suffix=url_suffix,
             resp_type="text",
+            headers=headers,
             error_handler=handle_error
         )
         return result
@@ -316,13 +323,14 @@ def main() -> None:
     verify = not params.get('insecure')
     fetch_interval_hours = params.get('fetchIntervalHours')
     reliability = params.get('integrationReliability')
+    username = params.get('username')
 
     if not is_number(fetch_interval_hours):
         return_error("PhishTankV2 error: Please provide a numeric value (and bigger than 0) for Database refresh "
                      "interval (hours)")
 
     # initialize a client
-    client = Client(proxy, verify, fetch_interval_hours, use_https, reliability)
+    client = Client(proxy, verify, fetch_interval_hours, use_https, reliability, username)
 
     command = demisto.command()
     demisto.debug(f'PhishTankV2: command is {command}')

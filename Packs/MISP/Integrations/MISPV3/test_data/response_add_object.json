@@ -1,0 +1,65 @@
+{
+    "Object":
+    {
+        "id": "20524",
+        "name": "corporate-asset",
+        "meta-category": "misc",
+        "description": "Corporate asset",
+        "template_uuid": "1a99327a-bbe6-493d-97da-fce83965eccd",
+        "template_version": "20210317",
+        "event_id": "1572",
+        "uuid": "1642924e-c749-4758-b0e4-f1f9d8474393",
+        "timestamp": "1707861295",
+        "distribution": "5",
+        "sharing_group_id": "0",
+        "comment": "",
+        "deleted": false,
+        "first_seen": null,
+        "last_seen": null,
+        "Attribute":
+        [
+            {
+                "id": "285625",
+                "event_id": "1572",
+                "object_id": "20524",
+                "object_relation": "asset-type",
+                "category": "Other",
+                "type": "text",
+                "value1": "Server",
+                "value2": "",
+                "to_ids": false,
+                "uuid": "7399c837-8044-49be-b313-52192cf18af8",
+                "timestamp": "1707861295",
+                "distribution": "5",
+                "sharing_group_id": "0",
+                "comment": "",
+                "deleted": false,
+                "disable_correlation": true,
+                "first_seen": null,
+                "last_seen": null,
+                "value": "Server"
+            },
+            {
+                "id": "285626",
+                "event_id": "1572",
+                "object_id": "20524",
+                "object_relation": "asset-id",
+                "category": "Targeting data",
+                "type": "target-machine",
+                "value1": "1",
+                "value2": "",
+                "to_ids": false,
+                "uuid": "b7143b40-ae18-4b15-8e8e-af4bce5f906c",
+                "timestamp": "1707861295",
+                "distribution": "5",
+                "sharing_group_id": "0",
+                "comment": "",
+                "deleted": false,
+                "disable_correlation": true,
+                "first_seen": null,
+                "last_seen": null,
+                "value": "1"
+            }
+        ]
+    }
+}

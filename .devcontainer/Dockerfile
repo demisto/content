@@ -1,12 +1,14 @@
-FROM python:3.10-slim-bullseye
+FROM python:3.10-slim-bookworm
 
 ENV USERNAME demisto
 ENV HOME /home/$USERNAME
 ENV NODE_EXTRA_CA_CERTS /usr/local/share/ca-certificates/certs.crt
 ENV PATH $PATH:$HOME/.local/bin:/root/.local/bin:/usr/local/share/nvm/current/bin
+ENV FEATURES_COMMIT_HASH fc62e9abf47c5ea52e02de997c91c5d52a5edc3a
+
 
 ADD createCerts.sh .
-RUN apt-get update && apt-get install dos2unix git python2 curl -y \
+RUN apt-get update && apt-get install dos2unix git curl -y \
     && dos2unix /createCerts.sh \
     && chmod +x /createCerts.sh \ 
     && /createCerts.sh $NODE_EXTRA_CA_CERTS \
@@ -15,13 +17,14 @@ RUN apt-get update && apt-get install dos2unix git python2 curl -y \
     && git clone https://github.com/devcontainers/features.git /features \
     && cd /features \
     # locking to the latest master commit in this repo (https://github.com/devcontainers/features.git) to prevent breaking changes
-    # We should update this commit hash from time to time to
-    && git checkout 96bff0097028001e6e4126c5528d37cb8c13e785
+    # We should update this commit hash from time to time to time
+    && git checkout $FEATURES_COMMIT_HASH
 
 # This is a workaround for VSCode devcontainer features in self signed certificate
 RUN UID="1000" GID="1000" bash /features/src/common-utils/install.sh
 RUN VERSION="os-provided" bash /features/src/git/install.sh
-RUN VERSION="latest" bash /features/src/docker-in-docker/install.sh
+# Install a specific version of moby-buildx when using Moby. (2024-02-09: Microsoft's Package Manifest has mismatching filesize and SHA for 0.12.1;  0.12.0 is the last known good version)
+RUN VERSION="lts" MOBYBUILDXVERSION="0.12.0" bash /features/src/docker-in-docker/install.sh
 RUN VERSION="lts" bash /features/src/node/install.sh
 RUN bash /features/src/sshd/install.sh
 RUN bash /features/src/github-cli/install.sh

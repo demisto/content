@@ -1,4 +1,3 @@
-import json
 import numpy as np
 import pandas as pd
 import pytest
@@ -35,16 +34,17 @@ def get_related_indicators(incident_id: str):
 
 
 def mock_execute_command(command: str, args: dict):
-    query: str = args.get("query") or ""
-    from_date: str = args.get("fromDate") or ""
     match command:
-        case "GetIncidentsByQuery":
-            match = re.search(r"incident\.id:\((.*)\)", query)
+        case "getIncidents":
+            query: str = args.get("query") or ""
+            from_date: str = args.get("fromdate") or ""
+            match = re.search(r"incident\.id:\(([^\)]*)\)", query)
             incident_ids = set(match.group(1).split(" ") if match and match.group(1) else [])
-            res = json.dumps([
+            res = {"data": [
                 {k: v for k, v in i.items() if k in args["populateFields"] or k == "id"} for i in INCIDENTS_LIST
-                if i["id"] in incident_ids and (not from_date or parse(i["created"]) >= parse(from_date))
-            ])
+                if i["id"] in incident_ids
+                and (not from_date or parse(i["created"]) >= parse(from_date).replace(tzinfo=None))
+            ]}
         case _:
             raise Exception(f"Unmocked command: {command}")
     return [{"Contents": res, "Type": "json"}]

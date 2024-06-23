@@ -142,6 +142,7 @@ class GroupClient(BaseClient):
     GroupClient will implement the service API, and should not contain any Demisto logic.
     Should only do requests and return data.
     """
+
     def __init__(self, base_url, verify=True, proxy=False, headers=None):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy)
 
@@ -251,6 +252,7 @@ class OutputContext:
     """
         Class to build a generic output and context.
     """
+
     def __init__(self, success=None, active=None, id=None, username=None, email=None, errorCode=None,
                  errorMessage=None, details=None, displayName=None, members=None):
         self.instanceName = demisto.callingContext['context']['IntegrationInstance']

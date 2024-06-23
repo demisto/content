@@ -29,12 +29,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* XCloud Alert Enrichment
+* Cloud Credentials Rotation - Generic
+* Ticket Management - Generic
 * Cloud Response - Generic
 * XCloud Cryptojacking - Set Verdict
-* Ticket Management - Generic
-* Cloud Credentials Rotation - Generic
 * Handle False Positive Alerts
-* XCloud Alert Enrichment
 
 ### Integrations
 
@@ -42,14 +42,14 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* IncreaseAlertSeverity
+* IncreaseIncidentSeverity
 * LoadJSON
 
 ### Commands
 
 * closeInvestigation
-* core-get-cloud-original-alerts
 * send-mail
+* core-get-cloud-original-alerts
 * setParentIncidentFields
 
 ## Playbook Inputs
@@ -65,12 +65,12 @@ This playbook does not use any integrations.
 | cloudProvider | The cloud service provider involved. | alert.cloudprovider | Optional |
 | alert_id | The alert ID. |  | Optional |
 | ResolveIP | Determines whether to convert the IP address to a hostname using a DNS query \(True/ False\). | True | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. |  | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. <br/>For IP Enrichment - Generic v2 playbook. | lists.PrivateIPs | Optional |
 | autoAccessKeyRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
 | autoBlockIndicators | Whether to block the indicators automatically. | False | Optional |
 | autoResourceRemediation | Whether to execute the resource remediation flow automatically. | False | Optional |
 | autoUserRemediation | Whether to execute the user remediation flow automatically. | False | Optional |
-| credentialsRemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. |  | Optional |
+| credentialsRemediationType | The response playbook provides the following remediation actions using AWS, MSGraph Users, GCP and GSuite Admin:<br/><br/>Reset: By entering "Reset" in the input, the playbook will execute password reset.<br/>Supports: AWS, MSGraph Users, GCP and GSuite Admin.<br/><br/>Revoke: By entering "Revoke" in the input, the GCP will revoke the access key, GSuite Admin will revoke the access token and the MSGraph Users will revoke the session.<br/>Supports: GCP, GSuite Admin and MSGraph Users.<br/><br/>Deactivate - By entering "Deactivate" in the input, the playbook will execute access key deactivation.<br/>Supports: AWS.<br/><br/>ALL: By entering "ALL" in the input, the playbook will execute the all remediation actions provided for each CSP. | Reset | Optional |
 | AWS-accessKeyRemediationType | Choose the remediation type for the user's access key.<br/><br/>AWS available types:<br/>Disable - for disabling the user's access key.<br/>Delete - for the user's access key deletion. | Disable | Optional |
 | AWS-resourceRemediationType | Choose the remediation type for the instances created.<br/><br/>AWS available types:<br/>Stop - for stopping the instances.<br/>Terminate - for terminating the instances. | Stop | Optional |
 | AWS-userRemediationType | Choose the remediation type for the user involved.<br/><br/>AWS available types:<br/>Delete - for the user deletion.<br/>Revoke - for revoking the user's credentials. | Revoke | Optional |
