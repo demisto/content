@@ -138,6 +138,8 @@ def create_context_for_campaign_details(campaign_found=False, incidents_df=None,
         incident_id = demisto.incident()['id']
         incidents_df['recipients'] = incidents_df.apply(lambda row: get_recipients(row), axis=1)
         incidents_df['recipientsdomain'] = incidents_df.apply(lambda row: extract_domain_from_recipients(row), axis=1)
+        if 'removedfromcampaigns' not in incidents_df.columns.tolist():
+            incidents_df['removedfromcampaigns'] = pd.NA
         incidents_df['removedfromcampaigns'] = incidents_df['removedfromcampaigns'].apply(lambda x: [] if pd.isna(x) else x)
         context_keys = {'id', 'similarity', FROM_FIELD, FROM_DOMAIN_FIELD, 'recipients', 'recipientsdomain', 'removedfromcampaigns'}
         invalid_context_keys = set()
@@ -541,6 +543,7 @@ def analyze_incidents_campaign(incidents, fields_to_display):
 
 def main():
     global EMAIL_BODY_FIELD, EMAIL_SUBJECT_FIELD, EMAIL_HTML_FIELD, FROM_FIELD, SELF_IN_CONTEXT
+
     input_args = demisto.args()
     EMAIL_BODY_FIELD = input_args.get('emailBody', EMAIL_BODY_FIELD)
     EMAIL_SUBJECT_FIELD = input_args.get('emailSubject', EMAIL_SUBJECT_FIELD)
@@ -548,7 +551,6 @@ def main():
     FROM_FIELD = input_args.get('emailFrom', FROM_FIELD)
     fields_to_display = input_args.get('fieldsToDisplay')
     SELF_IN_CONTEXT = argToBoolean(input_args.get('includeSelf', 'false'))
-
     if fields_to_display is not None:
         input_args['populateFields'] = fields_to_display
         fields_to_display = get_comma_sep_list(fields_to_display)
