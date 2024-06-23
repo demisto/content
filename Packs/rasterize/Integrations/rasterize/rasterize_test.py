@@ -438,8 +438,8 @@ def test_chrome_options_in_chromes_options_and_instance_id_not_linked(mocker):
 
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = get_chrome_instances_contents_dictionaries(
-        mock_file_content_edited)
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
@@ -480,8 +480,8 @@ def test_chrome_options_not_in_chromes_options_and_instance_id_not_in_instances_
 
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = get_chrome_instances_contents_dictionaries(
-        mock_file_content_edited)
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
@@ -523,8 +523,8 @@ def test_chrome_options_not_in_chrome_options_and_instance_id_in_instances_id(mo
 
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = get_chrome_instances_contents_dictionaries(
-        mock_file_content_edited)
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
@@ -567,8 +567,8 @@ def test_chrome_options_in_chrome_options_and_instance_id_linked(mocker):
 
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = get_chrome_instances_contents_dictionaries(
-        mock_file_content_edited)
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(mock_file_content_edited)
     mocker.patch.object(demisto, 'callingContext', mock_context)
     mocker.patch.object(demisto, 'params', return_value=params)
     mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
