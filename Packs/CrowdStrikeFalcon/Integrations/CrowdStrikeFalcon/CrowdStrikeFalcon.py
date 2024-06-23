@@ -570,25 +570,26 @@ def modify_detection_summaries_outputs(detection: dict):
         "parent_details",
         "md5",
     ]
-    # rename some keys to be the same as the ols version, and add them to a nested dict
-    if detection.get("parent_details"):
-        detection["parent_details"]["parent_sha256"] = detection["parent_details"].pop("sha256", None)
-        detection["parent_details"]["parent_cmdline"] = detection["parent_details"].pop("cmdline", None)
-        detection["parent_details"]["parent_md5"] = detection["parent_details"].pop("md5", None)
-        detection["parent_details"]["parent_process_graph_id"] = detection["parent_details"].pop("process_graph_id", None)
-        
+    
+   # rename some keys to be the same as the old version, before adding them to a nested dict
+    parent_details = detection.get("parent_details", {})
+    parent_keys = ["sha256", "cmdline", "md5", "process_graph_id"]
+    for key in parent_keys:
+        if key in parent_details:
+            new_key = f"parent_{key}"
+            parent_details[new_key] = parent_details.pop(key)
+
     # change some keys from a flat dict to nested dict to be the same as the old version
     nested_dict = {key: detection.pop(key, None) for key in keys_to_move if key in detection}
-    device_id =detection.get("device", {}).get("device_id")
-    nested_dict["device_id"] = device_id if device_id else None
+    nested_dict["device_id"] = detection.get("device", {}).get("device_id")
     detection["behaviors"] = nested_dict
-    
-    #change some keys from nested to flat to be the same as the old version
-    hostinfo =detection.get("device", {}).get("hostinfo")
-    detection["hostinfo"] = hostinfo if hostinfo else None
-    
-    #change some key name, to be the same as the old version
+
+    # change some keys from nested to flat to be the same as the old version
+    detection["hostinfo"] = detection.get("device", {}).get("hostinfo")
+
+    # change some key name, to be the same as the old version
     detection["detection_id"] = detection.pop("composite_id", None)
+    
     return detection
 
 
@@ -4839,7 +4840,7 @@ def list_detection_summaries_command():
     return CommandResults(
         readable_output=detections_human_readable,
         outputs_prefix='CrowdStrike.Detections',
-        outputs_key_field='detection_id' if not POST_RAPTOR_RELEASE else 'composite_id',
+        outputs_key_field='detection_id',
         outputs=detections
     )
 

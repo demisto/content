@@ -7063,25 +7063,37 @@ def test_detections_to_human_readable(mocker, expected_output, Post_Raptor_relea
     assert mock_table_to_markdown.call_args[0][1] == expected_output
     
     
-def test_list_detection_summaries_command(mocker):
+
+def test_modify_detection_summaries_outputs():
     """
     Given:
-        - A Post_Raptor_release flag
+        - A detection dictionary
     When:
-        - Running list_detection_summaries_command
+        - Running modify_detection_summaries_outputs
     Then:
-        - Validate that the outputs are modified to avoid breaking changes with the old version
-
+        - Validate that the output is correctly modified
     """
-    from CrowdStrikeFalcon import list_detection_summaries_command
-    mocker.patch.object(demisto, 'args')
-    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', True)
-    mocker.patch('CrowdStrikeFalcon.get_fetch_detections')
-    mocker.patch('CrowdStrikeFalcon.demisto.get')
-    mocker.patch('CrowdStrikeFalcon.detections_to_human_readable')
-    mocker_CommandResults = mocker.patch('CrowdStrikeFalcon.CommandResults', return_value='results')
-    mocker.patch('CrowdStrikeFalcon.get_detections_entities',
-                return_value={'resources': [{"pattern_disposition_details": "detection1"}]})
-    
-    list_detection_summaries_command()
-    assert mocker_CommandResults.call_args[1]["outputs"][0] == {'behaviors': {'pattern_disposition_details': 'detection1'}}
+    from CrowdStrikeFalcon import modify_detection_summaries_outputs
+    # Arrange
+    detection = {
+        "pattern_disposition_details": "details",
+        "timestamp": "time",
+        "device": {"device_id": "device1", "hostinfo": "info"},
+        "filename": "file",
+        "cmdline": "cmd",
+        "pattern_disposition": "disposition",
+        "parent_details": {"sha256": "parent_sha256_test", "cmdline": "parent_cmd_test",
+                           "md5": "parent_md5_test", "process_graph_id": "parent_id_test"},
+        "composite_id": "composite"
+    }
+
+    modified_detection = modify_detection_summaries_outputs(detection)
+
+    assert modified_detection["behaviors"]["device_id"] == "device1"
+    assert modified_detection["behaviors"]["filename"] == "file"
+    assert modified_detection["hostinfo"] == "info"
+    assert modified_detection["detection_id"] == "composite"
+    assert modified_detection["behaviors"]["parent_details"]["parent_sha256"] == "parent_sha256_test"
+    assert modified_detection["behaviors"]["parent_details"]["parent_cmdline"] == "parent_cmd_test"
+    assert modified_detection["behaviors"]["parent_details"]["parent_md5"] == "parent_md5_test"
+    assert modified_detection["behaviors"]["timestamp"] == "time"
