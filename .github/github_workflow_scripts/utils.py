@@ -330,8 +330,8 @@ def get_repo_path(path: str = ".") -> Path:
         print("Unable to get repo root path. Terminating...")
         sys.exit(1)
 
-        
- def get_metadata(pack_dirs: set[str]) -> list[dict]:
+
+def get_metadata(pack_dirs: set[str]) -> list[dict]:
     """
     Get the pack metadata.
 
@@ -351,4 +351,3 @@ def get_repo_path(path: str = ".") -> Path:
             print(f'Could not find pack support level for pack {pack_dir}')  # noqa: T201
 
     return pack_metadata_list
-  

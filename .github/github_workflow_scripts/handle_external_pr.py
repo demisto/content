@@ -21,7 +21,6 @@ from utils import (
     Checkout,
     get_content_reviewers,
     get_support_level,
-    get_metadata
     get_content_roles,
     get_metadata
 )
