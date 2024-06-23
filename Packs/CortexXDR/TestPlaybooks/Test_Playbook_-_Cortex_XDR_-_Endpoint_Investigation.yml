@@ -700,7 +700,7 @@ tasks:
       mitreTechniqueID:
         simple: TA0003
       timeRange:
-        simple: 2 days
+        simple: 2 hours ago
     separatecontext: false
     continueonerrortype: ""
     loop:
