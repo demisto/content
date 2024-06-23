@@ -105,7 +105,6 @@ class Client(BaseClient):
             )
         except DemistoException as e:
             if e.res is not None and e.res.status_code == 404:
-            # if "404" in e.message:
                 results = CommandResults(
                     readable_output="No results were found",
                     outputs=None,
