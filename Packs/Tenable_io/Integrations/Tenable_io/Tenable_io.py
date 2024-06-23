@@ -170,9 +170,9 @@ DATE_FORMAT = '%Y-%m-%d'
 VENDOR = 'tenable'
 PRODUCT = 'io'
 CHUNK_SIZE = 5000
-ASSETS_NUMBER = 50
+ASSETS_NUMBER = 100
 MAX_CHUNKS_PER_FETCH = 10
-MAX_VULNS_CHUNKS_PER_FETCH = 5
+MAX_VULNS_CHUNKS_PER_FETCH = 20
 ASSETS_FETCH_FROM = '90 days'
 VULNS_FETCH_FROM = '3 days'
 MIN_ASSETS_INTERVAL = 60
@@ -1975,12 +1975,10 @@ def main():  # pragma: no cover
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (assets_export_uuid -> continue prev fetch, or, no vuln_export_uuid -> new fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('vuln_export_uuid'):
-                # assets = run_assets_fetch(client, assets_last_run)
-                assets = []
+                assets = run_assets_fetch(client, assets_last_run)
             # Fetch Vulnerabilities
             if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('assets_export_uuid'):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
-                # vulnerabilities = generate_vulns()
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
 
@@ -1989,13 +1987,9 @@ def main():  # pragma: no cover
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
             if vulnerabilities:
                 demisto.debug('sending vulnerabilities to XSIAM.')
-                # if len(vulnerabilities) > 3000:
-                #     vulnerabilities = vulnerabilities[:3000]
-                demisto.debug(f"sending {len(vulnerabilities)} vulns.")
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
             demisto.info("Done Sending data to XSIAM.")
-
             demisto.debug(f"new lastrun assets: {assets_last_run}")
             demisto.setAssetsLastRun(assets_last_run)
 
