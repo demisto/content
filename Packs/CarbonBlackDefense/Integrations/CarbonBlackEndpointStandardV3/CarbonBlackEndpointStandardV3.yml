@@ -1,0 +1,360 @@
+category: Endpoint
+commonfields:
+  id: Carbon Black Endpoint Standard v3 -dev
+  version: -1
+configuration:
+- name: url
+  defaultvalue: https://defense.conferdeploy.net/
+  display: URL
+  required: true
+  type: 0
+- name: custom_credentials
+  display: Custom Api Key (using for API version 7)
+  type: 9
+  required: false
+- name: live_response_credentials
+  display: Api Key (Api/Live Response key using for API version 3)
+  type: 9
+  required: false
+- name: organization_key
+  display: Organization Key
+  type: 0
+  required: false
+  additionalinfo: The organization unique key. This is required for all use cases (and for fetching incidents) except the policy use cases.
+- name: incidentType
+  display: Incident type
+  type: 13
+  required: false
+- name: isFetch
+  display: Fetch incidents
+  type: 8
+  required: false
+- name: insecure
+  display: Trust any certificate (not secure)
+  type: 8
+  required: false
+- name: proxy
+  display: Use system proxy settings
+  type: 8
+  required: false
+- name: type
+  display: The type of the alert
+  defaultvalue: all
+  options:
+    - cbanalytics
+    - containerruntime
+    - devicecontrol
+    - hostnasedfirewall
+    - intrusiondetectionsystem
+    - watchlist
+    - all
+  type: 15
+  required: false
+  additionalinfo: Type of alert to be fetched.
+- name: device_id
+  display: Device id
+  type: 0
+  required: false
+  additionalinfo: The alerts related to a specific device, represented by its ID.
+- name: policy_id
+  display: Policy id
+  type: 0
+  required: false
+  additionalinfo: The alerts related to a specific policy, represented by its ID.
+- name: device_username
+  display: Device username
+  type: 0
+  required: false
+  additionalinfo: The alerts related to a specific device, represented by its username.
+- name: min_severity
+  display: Minimum severity
+  options:
+  - '1'
+  - '2'
+  - '3'
+  - '4'
+  - '5'
+  - '6'
+  - '7'
+  - '8'
+  - '9'
+  - '10'
+  type: 15
+  required: false
+  additionalinfo: The minimum severity of the alerts to be fetched.
+- name: query
+  display: Query
+  type: 0
+  required: false
+  additionalinfo: Query in Lucene syntax and/or value searches. If defined, the other fetch incidents parameters should be left blank.
+- name: first_fetch
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days).
+  type: 0
+  required: false
+  defaultvalue: 7 days
+- name: max_fetch
+  display: Maximum number of incidents per fetch
+  type: 0
+  required: false
+  defaultvalue: '50'
+description: Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
+display: Carbon Black Endpoint Standard v3 -dev
+name: Carbon Black Endpoint Standard v3 -dev
+script:
+  commands:
+  - name: cbd-get-alert-details
+    arguments:
+    - name: alertId
+      description: The ID of the alert.
+      required: true
+    description: Get details about the events that led to an alert by its ID. This includes retrieving metadata around the alert as well as a list of all the events associated with the alert. Only API keys of type “API” can call the alerts API.
+  - name: cbd-alerts-search
+    arguments:
+    - name: type
+      description: The type of the alerts.
+      auto: PREDEFINED
+      predefined:
+      - cbanalytics
+      - containerruntime
+      - devicecontrol
+      - hostnasedfirewall
+      - intrusiondetectionsystem
+      - watchlist
+      - all
+      defaultValue: all
+    - name: device_id
+      description: The device ID.
+    - name: first_event_time
+      description: 'The time of the first event associated with the alert. The syntax is  {"start": "<dateTime>", "range": "<string>", "end": "<dateTime>" }. For example: { "start": "2010-09-25T00:10:50.277Z", "end": "2015-01-20T10:40:00.00Z"}.'
+    - name: policy_id
+      description: The policy ID.
+    - name: process_sha256
+      description: The SHA-256 hash of the primary involved process.
+    - name: reputation
+      description: 'The reputation of the primary involved process. Possible values: "KNOWN_MALWARE", "NOT_LISTED", etc.'
+    - name: tags
+      description: The tags associated with the alert.
+    - name: device_username
+      description: The username of the user logged on during the alert. If the user is not available then this may be populated with the device owner.
+    - name: query
+      description: The query in Lucene syntax and/or value searches.
+    - name: rows
+      description: The number of results to be returned.
+    - name: start
+      description: The number of the alert from where to start retrieving results.
+    description: Gets details on the events that led to an alert. This includes retrieving metadata around the alert as well as the event associated with the alert.
+  - name: cbd-get-policy
+    arguments:
+    - name: policyId
+      description: The policy ID.
+      required: true
+    description: Retrieves a policy object by ID.
+  - name: cbd-delete-policy
+    arguments:
+    - name: policyId
+      description: The policy ID.
+      required: true
+    description: 'Deletes a policy from the CB Defense backend. This may return an error if devices are actively assigned to the policy ID requested for deletion. Note: System policies cannot be deleted.'
+  - name: cbd-create-policy
+    arguments:
+    - name: description
+      description: A description of the policy. Can be multiple lines.
+      required: true
+    - name: name
+      description: A unique one-line name for the policy.
+      required: true
+    - name: priorityLevel
+      description: 'The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW".'
+      auto: PREDEFINED
+      predefined:
+      - MISSION_CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      required: true
+    - name: policy
+      description: The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object.
+      required: true
+    description: Creates a new policy on the CB Defense backend.
+  - name: cbd-add-rule-to-policy
+    arguments:
+    - name: action
+      auto: PREDEFINED
+      description: 'Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY, and "TERMINATE_PROCESS".'
+      predefined:
+      - TERMINATE
+      - IGNORE
+      - TERMINATE_THREAD
+      - ALLOW
+      - DENY
+      - TERMINATE_PROCESS
+      required: true
+    - name: operation
+      auto: PREDEFINED
+      description: Rule operation.
+      predefined:
+      - MODIFY_SYSTEM_EXE
+      - PASSTHRU
+      - CRED
+      - RANSOM
+      - NETWORK_SERVER
+      - POL_INVOKE_NOT_TRUSTED
+      - IMPERSONATE
+      - MICROPHONE_CAMERA
+      - INVOKE_SYSAPP
+      - NETWORK_CLIENT
+      - BYPASS_REG
+      - BUFFER_OVERFLOW
+      - BYPASS_API
+      - USER_DOC
+      - CODE_INJECTION
+      - BYPASS_NET
+      - KEYBOARD
+      - BYPASS_ALL
+      - RUN
+      - INVOKE_CMD_INTERPRETER
+      - MODIFY_SYTEM_CONFIG
+      - ESCALATE
+      - BYPASS_FILE
+      - RUN_AS_ADMIN
+      - BYPASS_PROCESS
+      - NETWORK
+      - KERNEL_ACCESS
+      - NETWORK_PEER
+      - PACKED
+      - INVOKE_SCRIPT
+      - MEMORY_SCRAPE
+      - BYPASS_SELF_PROTECT
+      - TAMPER_API
+      required: true
+    - name: required
+      auto: PREDEFINED
+      description: 'Whether the rule is required. Possible values: "true" and "false".'
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - name: type
+      auto: PREDEFINED
+      description: 'Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH".'
+      predefined:
+      - REPUTATION
+      - SIGNED_BY
+      - NAME_PATH
+      required: true
+    - name: value
+      description: Application value.
+      predefined:
+      - ADWARE,
+      - COMMON_WHITE_LIST,
+      - COMPANY_BLACK_LIST,
+      - COMPANY_WHITE_LIST,
+      - HEURISTIC, IGNORE,
+      - KNOWN_MALWARE,
+      - LOCAL_WHITE, 
+      - NOT_LISTED,
+      - PUP,
+      - RESOLVING,
+      - SUSPECT_MALWARE,
+      - TRUSTED_WHITE_LIST
+      required: true
+    - name: policyId
+      description: The policy ID.
+      required: true
+    description: 'Adds a new rule to an existing policy. Note: System policies cannot be modified.'
+  - name: cbd-update-rule-in-policy
+    arguments:
+    - name: action
+      auto: PREDEFINED
+      description: 'Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY", and "TERMINATE_PROCESS".'
+      predefined:
+      - TERMINATE
+      - IGNORE
+      - TERMINATE_THREAD
+      - ALLOW
+      - DENY
+      - TERMINATE_PROCESS
+      required: true
+    - name: operation
+      auto: PREDEFINED
+      description: Rule operation.
+      predefined:
+      - MODIFY_SYSTEM_EXE
+      - PASSTHRU
+      - CRED
+      - RANSOM
+      - NETWORK_SERVER
+      - POL_INVOKE_NOT_TRUSTED
+      - IMPERSONATE
+      - MICROPHONE_CAMERA
+      - INVOKE_SYSAPP
+      - NETWORK_CLIENT
+      - BYPASS_REG
+      - BUFFER_OVERFLOW
+      - BYPASS_API
+      - USER_DOC
+      - CODE_INJECTION
+      - BYPASS_NET
+      - KEYBOARD
+      - BYPASS_ALL
+      - RUN
+      - INVOKE_CMD_INTERPRETER
+      - MODIFY_SYTEM_CONFIG
+      - ESCALATE
+      - BYPASS_FILE
+      - RUN_AS_ADMIN
+      - BYPASS_PROCESS
+      - NETWORK
+      - KERNEL_ACCESS
+      - NETWORK_PEER
+      - PACKED
+      - INVOKE_SCRIPT
+      - MEMORY_SCRAPE
+      - BYPASS_SELF_PROTECT
+      - TAMPER_API
+      required: true
+    - name: required
+      auto: PREDEFINED
+      description: 'Whether the rule is required. Possible values: "true" and "false".'
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - name: id
+      description: Rule ID.
+      required: true
+    - name: type
+      auto: PREDEFINED
+      description: 'Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH".'
+      predefined:
+      - REPUTATION
+      - SIGNED_BY
+      - NAME_PATH
+      required: true
+    - name: value
+      description: Application value.
+      required: true
+    - name: policyId
+      description: The policy ID.
+      required: true
+    description: 'Updates an existing rule with a new rule. Note: System policies cannot be modified.'
+  - name: cbd-delete-rule-from-policy
+    arguments:
+    - name: policyId
+      description: The policy ID.
+      required: true
+    - name: ruleId
+      description: The rule ID.
+      required: true
+    description: 'Removes a rule from an existing policy. Note: System policies cannot be modified.'
+  - name: cbd-get-policies-summary
+    description: Get an overview of the policies available in the organization.
+  dockerimage: demisto/python3:3.10.14.97608
+  isfetch: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+tests:
+- carbonBlackEndpointStandardTestPlaybook
+fromversion: 6.10.0
