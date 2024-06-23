@@ -25,10 +25,29 @@ def main():
         return CommandResults(readable_output='Drilldown was not configured for notable.')
 
     if isinstance(drilldown_results, list):
-        events_arr = []
-        for event in drilldown_results:
-            events_arr.append(event)
-        markdown = tableToMarkdown("", events_arr, headers=events_arr[0].keys())
+        if 'query_name' in drilldown_results[0]:
+            # Get drilldown results of multiple drilldown searches
+            markdown = "#### Drilldown Searches Results\n"
+
+            for drilldown in drilldown_results:
+                markdown += f"**Query Name:** {drilldown.get('query_name','')}\n\n **Query"\
+                    f"Search:**\n{drilldown.get('query_search','')}\n\n **Results:**\n"
+
+                if drilldown.get('enrichment_status') == 'Enrichment failed':
+                    markdown += "\nDrilldown enrichment failed."
+
+                elif results := drilldown.get("query_results", []):
+                    markdown += tableToMarkdown("", results, headers=results[0].keys())
+
+                else:
+                    markdown += "\nNo results found for drilldown search."
+
+                markdown += "\n\n"
+
+        else:
+            # Drilldown results of a single drilldown search
+            markdown = tableToMarkdown("", drilldown_results, headers=drilldown_results[0].keys())
+
     else:
         markdown = tableToMarkdown("", drilldown_results)
 

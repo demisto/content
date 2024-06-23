@@ -50,6 +50,7 @@ def test_sane_pdf_report(mocker):
 
 
 def test_markdown_image_server(mocker, capfd):
+    from SanePdfReport import MD_HTTP_PORT
     with capfd.disabled():
         mocker.patch.object(demisto, 'results')
         fileName = '1234-5678-9012-3456.png'
@@ -63,7 +64,7 @@ def test_markdown_image_server(mocker, capfd):
         time.sleep(5)
 
         # wrong path
-        conn = http.client.HTTPConnection("localhost", 10888)
+        conn = http.client.HTTPConnection("localhost", MD_HTTP_PORT)
         conn.request("GET", "/wrong/path")
         res1 = conn.getresponse()
         assert res1.status == 400

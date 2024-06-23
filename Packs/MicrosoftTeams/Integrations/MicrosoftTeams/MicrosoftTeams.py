@@ -2753,7 +2753,7 @@ def generate_login_url_command():
                         " and the bot is added to a team.")
     login_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                 f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
-                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}&prompt=consent'
+                f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}'
 
     result_msg = f"""### Authorization instructions
 1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.

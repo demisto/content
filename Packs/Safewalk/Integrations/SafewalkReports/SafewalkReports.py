@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import urllib3
 import json
 import dateparser
-from typing import Any, Dict
+from typing import Any
 from CommonServerPython import *
 
 
@@ -43,7 +43,7 @@ class Client(BaseClient):
 
         return json.loads(self._http_request(
             method='GET',
-            url_suffix='/reports/inactive_users/?since_date=%s&user_information=%s' % (sincedate, str(userinformation)),
+            url_suffix=f'/reports/inactive_users/?since_date={sincedate}&user_information={str(userinformation)}',
             resp_type='text'
         ))
 
@@ -63,14 +63,14 @@ class Client(BaseClient):
 
         return json.loads(self._http_request(
             method='GET',
-            url_suffix='/reports/licensesusage/?begin_date=%s&end_date=%s' % (begindate, enddate),
+            url_suffix=f'/reports/licensesusage/?begin_date={begindate}&end_date={enddate}',
             resp_type='text'
         ))
 
     def get_most_active_users(self, days=10, limit=30, userinformation=False):
         return json.loads(self._http_request(
             method='GET',
-            url_suffix='/reports/top_users/?days=%s&limit=%s&user_information=%s' % (str(days), str(limit), str(userinformation)),
+            url_suffix=f'/reports/top_users/?days={str(days)}&limit={str(limit)}&user_information={str(userinformation)}',
             resp_type='text'
         ))
 
@@ -97,7 +97,7 @@ class Client(BaseClient):
 
         return json.loads(self._http_request(
             method='GET',
-            url_suffix='/reports/registrations/?begin_date=%s&end_date=%s&user_information=%s' % (
+            url_suffix='/reports/registrations/?begin_date={}&end_date={}&user_information={}'.format(
                 begindate, enddate, str(userinformation)),
             resp_type='text'
         ))
@@ -109,7 +109,7 @@ class Client(BaseClient):
             resp_type='text'
         ))
 
-    def list_incidents(self, page, search, locked, query_filter=None) -> Dict[str, Any]:
+    def list_incidents(self, page, search, locked, query_filter=None) -> dict[str, Any]:
         if page is None:
             page = 1
 
@@ -119,7 +119,7 @@ class Client(BaseClient):
 
         p_locked = ""
         if locked is not None and locked:
-            p_locked = '&locked=%s' % "true"
+            p_locked = '&locked={}'.format("true")
 
         p_query_filter = ""
         if query_filter is not None and search != '':
@@ -127,7 +127,7 @@ class Client(BaseClient):
 
         return json.loads(self._http_request(
             method='GET',
-            url_suffix='/transactionlog/?page=%s%s%s%s' % (page, p_search, p_locked, p_query_filter),
+            url_suffix=f'/transactionlog/?page={page}{p_search}{p_locked}{p_query_filter}',
             resp_type='text'
         ))
 
@@ -416,6 +416,7 @@ def test_module(client, is_fetch, last_run, first_fetch_str, fetch_limit):
                 return 'Failed to run test, invalid credentials.'
             else:
                 return 'ok'
+        return None
     else:
         return 'Failed to run test.'
 

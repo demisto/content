@@ -542,7 +542,7 @@ if demisto.command() == 'attivo-list-users':
                 users[user] = [group_name]
 
     all_users = []
-    for user in sorted(list(users.keys()), key=lambda x: x.lower()):
+    for user in sorted(users.keys(), key=lambda x: x.lower()):
         user_entry = {'User': user, 'Groups': ", ".join(users[user])}
         all_users.append(user_entry)
 

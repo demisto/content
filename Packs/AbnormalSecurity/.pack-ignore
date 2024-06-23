@@ -5,5 +5,5 @@ ignore=IM111
 ignore=MR108
 
 [file:AbnormalSecurityEventCollector.yml]
-ignore=MR108,IN124
+ignore=MR108
 

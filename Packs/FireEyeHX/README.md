@@ -1,3 +1,4 @@
+<~XSIAM>
 # FireEye HX
 This pack includes Cortex XSIAM content.
 
@@ -28,4 +29,5 @@ You can configure the specific vendor and product for this instance.
    - product as hx_audit
    - format as Auto-Detect
    - protocol as UDP
- 
+   
+ </~XSIAM>

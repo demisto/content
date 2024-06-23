@@ -11,6 +11,7 @@
 !qradar-search-create query_expression="""SELECT "destinationPort" AS 'Destination Port', UniqueCount("sourceIP") AS 'Source IP (Unique Count)', UniqueCount("destinationIP") AS 'Destination IP (Unique Count)', UniqueCount(qid) AS 'Event Name (Unique Count)', UniqueCount(logSourceId) AS 'Log Source (Unique Count)', UniqueCount(category) AS 'Low Level Category (Unique Count)', UniqueCount("protocolId") AS 'Protocol (Unique Count)', UniqueCount("userName") AS 'Username (Unique Count)', MAX("magnitude") AS 'Magnitude (Maximum)', SUM("eventCount") AS 'Event Count (Sum)', COUNT(*) AS 'Count' from events where ( ("creEventList"='100120') or ("creEventList"='100122') or ("creEventList"='100135') AND "eventDirection"='R2L' ) GROUP BY "destinationPort" order by "Event Count (Sum)" desc last 6 hours"""
 !qradar-search-status-get search_id=36227863-bc6a-488f-9aa4-0f9c6f767655
 !qradar-search-results-get search_id=36227863-bc6a-488f-9aa4-0f9c6f767655 range=0-3
+!qradar-search-delete search_id=36227863-bc6a-488f-9aa4-0f9c6f767655
 !qradar-reference-sets-list filter="timeout_type=FIRST_SEEN" range=0-2
 !qradar-reference-set-create element_type=IP ref_name="Malicious IPs" time_to_live="1 year" timeout_type=FIRST_SEEN
 !qradar-reference-set-value-upsert ref_name="Malicious IPs" value="1.2.3.4,1.2.3.5,192.168.1.3"

@@ -610,7 +610,8 @@ Connects agents to the network.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Agent.AgentsAffected | Number | The number of affected agents. | 
-| SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
+| SentinelOne.Agent.NetworkStatus | String | Agent network status. | 
+| SentinelOne.Agent.ID | String | Input agents' IDs. | 
 
 ### sentinelone-disconnect-agent
 
@@ -632,7 +633,7 @@ Disconnects agents from the network.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | SentinelOne.Agent.NetworkStatus | String | Agent network status. | 
-| SentinelOne.Agent.ID | String | The IDs of the affected agents. | 
+| SentinelOne.Agent.ID | String | Input agents' IDs. | 
 
 ### sentinelone-broadcast-message
 

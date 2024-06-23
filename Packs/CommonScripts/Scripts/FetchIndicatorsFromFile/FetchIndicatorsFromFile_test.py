@@ -63,7 +63,7 @@ def test_csv_file_to_indicator_list_1():
     result = csv_file_to_indicator_list(file_path='test_data/Hashes_list.csv',
                                         col_num=0, starting_row=0, auto_detect=True, default_type=None, type_col=None,
                                         limit=None, offset=0)
-    assert CSV_TEST_RESULTS_1 == result
+    assert result == CSV_TEST_RESULTS_1
 
 
 def test_csv_file_to_indicator_list_2():
@@ -71,7 +71,7 @@ def test_csv_file_to_indicator_list_2():
     result = csv_file_to_indicator_list(file_path='test_data/Hashes_list.csv',
                                         col_num=0, starting_row=1, auto_detect=False, default_type='Domain',
                                         type_col=None, limit=2, offset=0)
-    assert CSV_TEST_RESULTS_2 == result
+    assert result == CSV_TEST_RESULTS_2
 
 
 def test_xls_file_to_indicator_list_1():
@@ -124,15 +124,15 @@ def test_txt_file_to_indicator_list_2():
 
 def test_detect_type():
     from FetchIndicatorsFromFile import detect_type
-    assert 'File' == detect_type('4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0')
-    assert 'Domain' == detect_type('demisto.com')
-    assert 'IP' == detect_type('8.8.8.8')
-    assert 'IPv6' == detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348')
-    assert 'URL' == detect_type('www.demisto.com/path')
-    assert 'CIDR' == detect_type('8.8.8.8/12')
-    assert 'Email' == detect_type('some@mail.com')
-    assert 'DomainGlob' == detect_type('*.demisto.com')
-    assert 'IPv6CIDR' == detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348/32')
+    assert detect_type('4f79697b40d0932e91105bd496908f8e02c130a0e36f6d3434d6243e79ef82e0') == 'File'
+    assert detect_type('demisto.com') == 'Domain'
+    assert detect_type('8.8.8.8') == 'IP'
+    assert detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348') == 'IPv6'
+    assert detect_type('www.demisto.com/path') == 'URL'
+    assert detect_type('8.8.8.8/12') == 'CIDR'
+    assert detect_type('some@mail.com') == 'Email'
+    assert detect_type('*.demisto.com') == 'DomainGlob'
+    assert detect_type('2001:db8:85a3:8d3:1319:8a2e:370:7348/32') == 'IPv6CIDR'
     assert None is detect_type('not_an_indicator')
 
 

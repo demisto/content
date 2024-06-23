@@ -27,6 +27,7 @@ def stringify_indicators(threat_indicators):
     # other indicators
     if threat_indicators.get("type") is not None:
         return tableToMarkdown("", threat_indicators, ["type", "value"], pretty_title) + '\n\n'
+    return None
 
 
 def pretty_title(s):

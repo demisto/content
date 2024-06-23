@@ -9,7 +9,7 @@ var sendRequest = function(url, body, queryName) {
             {
                 Method: 'POST',
                 Body: body,
-                Headers: {'content-type': ['application/x-www-form-urlencoded']},
+                Headers: {'content-type': ['application/json'], 'x-API-Id': [apiid], 'x-API-Key': [apikey]},
             },
             true,
             proxy
@@ -147,8 +147,7 @@ var urlDict = {
     'incap-test-alert-attack-monitoring-start': '/api/v1/infra-protect/test-alerts/monitoring/attack-start'
 }
 
-args['api_id'] = apiid;
-args['api_key'] = apikey;
+
 switch (command) {
     case 'test-module':
         var res = sendRequest(base + urlDict['incap-get-texts'], encodeToURLQuery(args).substr(1), 'test');

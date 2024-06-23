@@ -81,7 +81,7 @@ def extract_domain(the_input):
         domain = get_fld(full_domain, fail_silently=True)
 
     # convert None to empty string if needed
-    domain = '' if not domain else domain
+    domain = domain if domain else ''
     return domain
 
 

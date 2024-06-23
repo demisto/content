@@ -36,6 +36,7 @@ The Reco and Palo Alto Networks Cortex XSOAR integration empower organizations t
 - **reco-get-3rd-parties-accessible-to-data-list** - Get files shared with 3rd parties
 - **reco-get-sensitive-assets-with-public-link** - Get sensitive assets publicly exposed
 - **reco-get-user-context-by-email-address** - Get user context by email address
+- **reco-get-private-email-list-with-access** - Get private email list with access
 
 
 For more information on Reco, please visit www.reco.ai

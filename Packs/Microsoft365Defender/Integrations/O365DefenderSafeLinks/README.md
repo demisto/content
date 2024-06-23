@@ -8,7 +8,7 @@ ___
 * In the Azure Application, give the following application permission:
     * Office 365 Exchange Online -> Exchange.ManageAsApp - Application
 * To create, modify, and delete Safe Links policies, or use any of the report commands (detailed or aggregate report), you need to be a member of the `Organization Management` or `Security Administrator` role groups.
-* To manage permissions in the Microsoft 365 Defender portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft 365 Defender portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft 365 Defender portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft 365 Defender portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
+* To manage permissions in the Microsoft Defender XDR portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft Defender XDR portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft Defender XDR portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft Defender XDR portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
 
 
 ## Configure O365 Defender SafeLinks on Cortex XSOAR
@@ -37,7 +37,7 @@ The basic elements of a Safe Links policy are:
 
 **The safe links policy**: Turn on Safe Links protection, turn on real-time URL scanning, specify whether to wait for real-time scanning to complete before delivering the message, turn on scanning for internal messages, specify whether to track user clicks on URLs, and specify whether to allow users to click trough to the original URL.
 **The safe links rule**: Specifies the priority and recipient filters (who the policy applies to).
-The difference between these two elements isn't obvious when you manage Safe Links policies in the Microsoft 365 Defender portal:
+The difference between these two elements isn't obvious when you manage Safe Links policies in the Microsoft Defender XDR portal:
 
 When you create a Safe Links policy, you're actually creating a safe links rule and the associated safe links policy at the same time using the same name for both.
 When you modify a Safe Links policy, settings related to the name, priority, enabled or disabled, and recipient filters modify the safe links rule. All other settings modify the associated safe links policy.

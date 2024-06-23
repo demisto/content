@@ -6,8 +6,482 @@
 	"id": "SentinelOne Incoming Mapper",
 	"mapping": {
 		"SentinelOne Incident": {
-			"dontMapEventToLabels": true,
+			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"Agent ID": {
+					"simple": "agentRealtimeInfo.agentId"
+				},
+				"Agent Version": {
+					"simple": "agentDetectionInfo.agentVersion"
+				},
+				"Classification": {
+					"simple": "threatInfo.classification"
+				},
+				"Device External IP": {
+					"simple": "agentDetectionInfo.externalIp"
+				},
+				"Device Id": {
+					"simple": "agentDetectionInfo.agentUuid"
+				},
+				"Device Internal IPs": {
+					"simple": "agentDetectionInfo.agentIpV6"
+				},
+				"Device Local IP": {
+					"simple": "agentDetectionInfo.agentIpV4"
+				},
+				"Device MAC Address": {
+					"simple": "agentRealtimeInfo.networkInterfaces.physical"
+				},
+				"Device Name": {
+					"simple": "agentRealtimeInfo.agentComputerName"
+				},
+				"Device OS Name": {
+					"simple": "agentDetectionInfo.agentOsName"
+				},
+				"Device OS Version": {
+					"simple": "agentDetectionInfo.agentOsRevision"
+				},
+				"Device Username": {
+					"simple": "agentDetectionInfo.agentLastLoggedInUserName"
+				},
+				"Domain Name": {
+					"simple": "agentRealtimeInfo.agentDomain"
+				},
+				"Endpoint": {
+					"simple": "agentRealtimeInfo.agentComputerName"
+				},
+				"External Confidence": {
+					"simple": "threatInfo.confidenceLevel"
+				},
+				"File MD5": {
+					"simple": "threatInfo.md5"
+				},
+				"File Name": {
+					"simple": "threatInfo.threatName"
+				},
+				"File Path": {
+					"simple": "threatInfo.filePath"
+				},
+				"File SHA1": {
+					"simple": "threatInfo.sha1"
+				},
+				"File SHA256": {
+					"simple": "threatInfo.sha256"
+				},
+				"File Size": {
+					"simple": "threatInfo.fileSize"
+				},
+				"Investigation Stage": {
+					"simple": "threatInfo.incidentStatusDescription"
+				},
+				"OS": {
+					"simple": "agentRealtimeInfo.agentOsName"
+				},
+				"OS Type": {
+					"simple": "agentRealtimeInfo.agentOsType"
+				},
+				"OS Version": {
+					"simple": "agentRealtimeInfo.agentOsRevision"
+				},
+				"SentinelOne Account ID": {
+					"simple": "agentDetectionInfo.accountId"
+				},
+				"SentinelOne Account Name": {
+					"simple": "agentDetectionInfo.accountName"
+				},
+				"SentinelOne Agent Network Status": {
+					"simple": "agentRealtimeInfo.agentNetworkStatus"
+				},
+				"SentinelOne Classification Source": {
+					"simple": "threatInfo.classificationSource"
+				},
+				"SentinelOne Cloud Provider": {
+					"complex": {
+						"accessor": "cloudProviders",
+						"filters": [],
+						"root": "agentDetectionInfo",
+						"transformers": [
+							{
+								"args": {
+									"dt": {
+										"isContext": false,
+										"value": {
+											"simple": ".=get_provider(val);function get_provider(d){if(\"AWS\" in d){return \"AWS\"} else if(\"GCP\" in d){return \"GCP\"} else if(\"Azure\" in d){return \"Azure\"} else {return \"N/A\"}};"
+										}
+									}
+								},
+								"operator": "DT"
+							}
+						]
+					}
+				},
+				"SentinelOne Cloud Provider Account": {
+					"complex": {
+						"accessor": "cloudAccount",
+						"filters": [],
+						"root": "agentDetectionInfo.cloudProviders.AWS",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.GCP.cloudAccount"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.Azure.cloudAccount"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+					}
+				},
+				"SentinelOne Cloud Provider Image": {
+					"complex": {
+						"accessor": "cloudImage",
+						"filters": [],
+						"root": "agentDetectionInfo.cloudProviders.AWS",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.GCP.cloudImage"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.Azure.cloudImage"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+					}
+				},
+				"SentinelOne Cloud Provider Instance ID": {
+					"complex": {
+						"accessor": "cloudInstanceId",
+						"filters": [],
+						"root": "agentDetectionInfo.cloudProviders.AWS",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.GCP.cloudInstanceId"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.Azure.cloudInstanceId"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+					}
+				},
+				"SentinelOne Cloud Provider Instance Size": {
+					"complex": {
+						"accessor": "cloudInstanceSize",
+						"filters": [],
+						"root": "agentDetectionInfo.cloudProviders.AWS",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.GCP.cloudInstanceSize"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.Azure.cloudInstanceSize"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+					}
+				},
+				"SentinelOne Cloud Provider Location": {
+					"complex": {
+						"accessor": "cloudLocation",
+						"filters": [],
+						"root": "agentDetectionInfo.cloudProviders.AWS",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.GCP.cloudLocation"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.Azure.cloudLocation"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+					}
+				},
+				"SentinelOne Cloud Provider Network": {
+					"complex": {
+						"accessor": "cloudNetwork",
+						"filters": [],
+						"root": "agentDetectionInfo.cloudProviders.AWS",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.GCP.cloudNetwork"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+					}
+				},
+				"SentinelOne Cloud Provider Resource Group": {
+					"simple": "agentDetectionInfo.cloudProviders.Azure.azureResourceGroup"
+				},
+				"SentinelOne Cloud Provider Role": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsRole"
+				},
+				"SentinelOne Cloud Provider Security Group": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSecurityGroups"
+				},
+				"SentinelOne Cloud Provider Service Account": {
+					"simple": "agentDetectionInfo.cloudProviders.GCP.gcpServiceAccount"
+				},
+				"SentinelOne Cloud Provider SubnetId": {
+					"simple": "agentDetectionInfo.cloudProviders.AWS.awsSubnetIds"
+				},
+				"SentinelOne Cloud Provider Tags": {
+					"complex": {
+						"accessor": "cloudTags",
+						"filters": [],
+						"root": "agentDetectionInfo.cloudProviders.AWS",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.GCP.cloudTags"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "agentDetectionInfo.cloudProviders.Azure.cloudTags"
+										}
+									}
+								},
+								"operator": "append"
+							},
+							{
+								"args": {
+									"empty_values": {
+										"isContext": false
+									},
+									"remove_keys": {
+										"isContext": false,
+										"value": {
+											"simple": "true"
+										}
+									}
+								},
+								"operator": "RemoveEmpty"
+							}
+						]
+					}
+				},
+				"SentinelOne Group ID": {
+					"simple": "agentDetectionInfo.groupId"
+				},
+				"SentinelOne Group Name": {
+					"simple": "agentDetectionInfo.groupName"
+				},
+				"SentinelOne Kubernetes Cluster": {
+					"simple": "kubernetesInfo.cluster"
+				},
+				"SentinelOne Kubernetes Controller Kind": {
+					"simple": "kubernetesInfo.controllerKind"
+				},
+				"SentinelOne Kubernetes Controller Labels": {
+					"simple": "kubernetesInfo.controllerLabels"
+				},
+				"SentinelOne Kubernetes Controller Name": {
+					"simple": "kubernetesInfo.controllerName"
+				},
+				"SentinelOne Kubernetes Namespace": {
+					"simple": "kubernetesInfo.namespace"
+				},
+				"SentinelOne Kubernetes Namespace Labels": {
+					"simple": "kubernetesInfo.namespaceLabels"
+				},
+				"SentinelOne Kubernetes Node": {
+					"simple": "kubernetesInfo.node"
+				},
+				"SentinelOne Kubernetes Node Labels": {
+					"simple": "kubernetesInfo.nodeLabels"
+				},
+				"SentinelOne Kubernetes Pod": {
+					"simple": "kubernetesInfo.pod"
+				},
+				"SentinelOne Kubernetes Pod Labels": {
+					"simple": "kubernetesInfo.podLabels"
+				},
+				"SentinelOne Kubernetes isContainerQuarantine": {
+					"simple": "kubernetesInfo.isContainerQuarantine"
+				},
+				"SentinelOne Network Interface Details": {
+					"simple": "agentRealtimeInfo.networkInterfaces"
+				},
+				"SentinelOne Site ID": {
+					"simple": "agentDetectionInfo.siteId"
+				},
+				"SentinelOne Site Name": {
+					"simple": "agentDetectionInfo.siteName"
+				},
 				"SentinelOne Threat Analyst Verdict": {
 					"simple": "threatInfo.analystVerdictDescription"
 				},
@@ -16,6 +490,15 @@
 				},
 				"SentinelOne Threat Status": {
 					"simple": "threatInfo.incidentStatusDescription"
+				},
+				"SentinelOne Threat Story Line": {
+					"simple": "threatInfo.storyline"
+				},
+				"Threat Name": {
+					"simple": "threatInfo.threatName"
+				},
+				"Verdict": {
+					"simple": "threatInfo.analystVerdictDescription"
 				},
 				"dbotMirrorDirection": {
 					"simple": "mirror_direction"

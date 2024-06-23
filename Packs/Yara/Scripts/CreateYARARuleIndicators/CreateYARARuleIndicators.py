@@ -17,8 +17,10 @@ YARA_META_TO_XSOAR = {
 }
 # TODO - Add creation date as well
 
+RELATIONSHIPS = ["Malware", "CVE", "Attack_Pattern"]
 
-def parse_rules(rules: str) -> CommandResults:
+
+def parse_rules(rules: str, create_relationships: bool = False) -> CommandResults:
     """Parses a YARA rule in its string format into an XSOAR indicator
 
     Args:
@@ -31,6 +33,7 @@ def parse_rules(rules: str) -> CommandResults:
     parser = plyara.Plyara()
     indicators: list[dict] = []
     successfully_created_indicators: int = 0
+    relationships = []
 
     try:
         parsed_rules = parser.parse_string(rules)
@@ -48,6 +51,10 @@ def parse_rules(rules: str) -> CommandResults:
         successfully_created_indicators += 1
         demisto.debug(f'Created new indicator {indicator["value"]} ({successfully_created_indicators}/len(parsed_rules))')
 
+    if create_relationships:
+        for indicator in indicators:
+            relationships = build_relationships(indicator)
+
     readable_output = f'{tblToMd(f"{len(indicators)} new YARA rules created", indicators, ["value", "author", "description"])}'
 
     # Removing "type" from and MD blocks from context dict
@@ -58,6 +65,7 @@ def parse_rules(rules: str) -> CommandResults:
         outputs_key_field='Rule',
         outputs=outputs,
         readable_output=readable_output,
+        relationships=relationships
     )
 
 
@@ -115,6 +123,37 @@ def parse_metadata(meta: list[dict], key: str) -> str:
     return ''
 
 
+def build_relationships(indicator: dict) -> list[EntityRelationship]:
+
+    relationships = []
+    related_iocs: list[Any] = demisto.executeCommand('extractIndicators', args={"text": indicator["rawrule"]})
+    related_iocs = json.loads(related_iocs[0].get('Contents', {}))
+
+    demisto.debug(f'Found the following indicators in the YARA Rule {related_iocs}')
+
+    for indicator_type in RELATIONSHIPS:
+
+        demisto.debug(f'Handling {indicator_type} relationships')
+
+        if indicator_type == 'Malware':
+            # Will extract only malware with APTXXX prefix.
+            indicators = set(re.findall(r'(?i)apt[-_]?\d{1,2}', indicator["rawrule"]))
+
+        else:
+            indicators = related_iocs.get(indicator_type, [])
+
+        for related_indicator in indicators:
+            demisto.debug(f'Creating relationship object for {related_indicator}')
+
+            relationships.append(EntityRelationship(entity_a=indicator['value'],
+                                                    entity_a_type='YARA Rule',
+                                                    entity_b=related_indicator,
+                                                    entity_b_type=indicator_type.replace('_', ' '),
+                                                    name=EntityRelationship.Relationships.RELATED_TO))
+
+    return relationships
+
+
 def main():  # pragma: no cover
     try:
         # TODO: replace the invoked command function with yours
@@ -131,7 +170,7 @@ def main():  # pragma: no cover
         else:
             raise Exception('Please provide exactly one input to the script yara_signatures or entry_id.')
 
-        return_results(parse_rules(yara_rules))
+        return_results(parse_rules(yara_rules, argToBoolean(args.get("create_relationships"))))
 
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

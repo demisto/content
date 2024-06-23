@@ -39,7 +39,7 @@ jobs:
           EVENT_PAYLOAD: ${{ toJson(github.event) }}
         run: |
           echo "Creating an internal PR from original merged external PR ${{ github.event.pull_request.html_url }}"
-          cd Utils/github_workflow_scripts
+          cd .github/github_workflow_scripts
           poetry run ./create_internal_pr.py
           echo "Finished Creating Internal PR"
       

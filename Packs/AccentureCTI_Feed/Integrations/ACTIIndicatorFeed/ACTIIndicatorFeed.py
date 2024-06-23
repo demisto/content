@@ -1,9 +1,8 @@
-from typing import Dict, Union
 from CommonServerPython import *
 from JSONFeedApiModule import *  # noqa: E402
 
 
-def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
+def custom_build_iterator(client: Client, feed: dict, limit, **kwargs) -> List:
     """
     Implement the http_request with API that works with pagination and filtering. Uses the integration context to
     save last fetch time to each indicator type
@@ -79,7 +78,7 @@ def custom_build_iterator(client: Client, feed: Dict, limit, **kwargs) -> List:
     return result
 
 
-def create_fetch_configuration(indicators_type: list, filters: dict, params: dict) -> Dict[str, dict]:
+def create_fetch_configuration(indicators_type: list, filters: dict, params: dict) -> dict[str, dict]:
     mapping_by_indicator_type = {                                                                             # pragma: no cover
         'IP': {
             'last_seen_as': 'malwaretypes',
@@ -119,7 +118,7 @@ def create_fetch_configuration(indicators_type: list, filters: dict, params: dic
     return indicators_configuration
 
 
-def build_feed_filters(params: dict) -> Dict[str, Optional[Union[str, list]]]:
+def build_feed_filters(params: dict) -> dict[str, Optional[str | list]]:
     filters = {'severity.from': params.get('severity'),
                'threat_types.values': params.get('threat_type'),
                'confidence.from': params.get('confidence_from'),
@@ -131,7 +130,7 @@ def build_feed_filters(params: dict) -> Dict[str, Optional[Union[str, list]]]:
 
 def main():  # pragma: no cover
     params = demisto.params()
-    filters: Dict[str, Optional[Union[str, list]]] = build_feed_filters(params)
+    filters: dict[str, Optional[str | list]] = build_feed_filters(params)
     indicators_type: list = argToList(params.get('indicator_type', []))
     params['feed_name_to_config'] = create_fetch_configuration(indicators_type, filters, params)
 

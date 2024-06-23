@@ -1,0 +1,11 @@
+[
+    {
+        "ModuleName": "InnerServicesModule",
+        "Brand": "Builtin",
+        "Category": "Builtin",
+        "ID": "",
+        "Version": 0,
+        "Type": 1,
+        "Contents": "ValueA\r\nValueC"
+    }
+]

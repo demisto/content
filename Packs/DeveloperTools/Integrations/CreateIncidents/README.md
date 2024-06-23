@@ -2,7 +2,7 @@ CreateIncidents fetches incident created manually.
 
 ## Configure Create Test Incidents on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Create Test Incidents.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -65,12 +65,12 @@ Creates incidents from json file, and stores it in the instance context.
 
 There is no context output for this command.
 #### Command example
-```!create-test-incident-from-raw-json incident_entry_id=12@12"```
+```!create-test-incident-from-raw-json incident_entry_id="12@12"```
 #### Human Readable Output
 
 >Loaded 1 incidents from file.
 
-```!create-test-incident-from-raw-json incident_raw_json={'name': 'test_incident'}"```
+```!create-test-incident-from-raw-json incident_raw_json="{'name': 'test_incident'}"```
 #### Human Readable Output
 
 >Loaded 1 incidents from file.

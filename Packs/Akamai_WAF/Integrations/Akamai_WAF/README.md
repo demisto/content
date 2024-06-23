@@ -22,6 +22,7 @@ This is the modified version where a new command "akamai-update-network-list-ele
 
 4. Click **Test** to validate the URLs, token, and connection.
 
+
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
@@ -1075,10 +1076,12 @@ Acknowledge the warning message for uploading the certs and trust chains of enro
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | change_path | The path of the changed certificate. | Required | 
+| allowed_input_type_param | Enum found as the last part of Change.allowedInput[].update hypermedia URL. Possible values are: change-management-ack, lets-encrypt-challenges-completed, post-verification-warnings-ack, pre-verification-warnings-ack. Default is post-verification-warnings-ack. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
 ### akamai-modify-appsec-config-selected-hosts
 
 ***

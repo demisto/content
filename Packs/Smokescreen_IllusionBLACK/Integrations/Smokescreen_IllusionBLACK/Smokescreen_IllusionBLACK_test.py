@@ -191,6 +191,7 @@ def mock_http_request(client, url_suffix=None, **kwargs):
         return RECON_DECOYS
     elif url_suffix == "/events":
         return EVENTS
+    return None
 
 
 def test_get_network_decoys(mocker):

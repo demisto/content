@@ -204,7 +204,11 @@ def test_no_iocs_returned_from_search_indicators(mocker):
 @pytest.mark.parametrize('input, expected_res', [("hello\nhow", "hello\\nhow"),
                                                  ('a', 'a'),
                                                  ('', ''),
-                                                 ('\t\r\n', '\\t\\r\\n')])
+                                                 ('\t\r\n', '\\t\\r\\n'),
+                                                 ('([', '\(\['),
+                                                 ('^ASDF:', '\^ASDF\:'),
+                                                 ('aaa\gg123:', r'aaa\\gg123\:'),
+                                                 ('"', '\\"')])
 def test_escape_special_characters(input, expected_res):
     """
     Given:

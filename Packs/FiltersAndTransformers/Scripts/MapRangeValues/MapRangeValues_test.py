@@ -35,6 +35,7 @@ data_test_get_typed_value = [
     (1, int),
     ('1.5', float),
     (1.5, float),
+    ('10.0', int)
 ]
 
 

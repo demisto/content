@@ -1167,6 +1167,7 @@ def test_fetch_incidents_for_alert_success(
     # Assert
     assert len(incidents) == mock_fetch_limit
     assert next_run.get('alerts').get('start_time') is not None
+    assert 8520 in next_run['alerts']['alert_ids']
 
 
 @patch('FireEyeNX.Client.http_request')

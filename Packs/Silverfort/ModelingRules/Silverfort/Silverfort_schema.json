@@ -1,0 +1,88 @@
+{
+    "silverfort_admin_console_raw": {
+        "rt": {
+            "type": "datetime",
+            "is_array": false
+        },
+        "cefdeviceeventclassid": {
+            "type": "string",
+            "is_array": false
+        },
+        "cefseverity": {
+            "type": "string",
+            "is_array": false
+        },
+        "msg": {
+            "type": "string",
+            "is_array": false
+        },
+        "app": {
+            "type": "string",
+            "is_array": false
+        },
+        "suser": {
+            "type": "string",
+            "is_array": false
+        },
+        "sntdom": {
+            "type": "string",
+            "is_array": false
+        },
+        "shost": {
+            "type": "string",
+            "is_array": false
+        },
+        "src": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs1": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs2": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs3": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs5": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs7": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs8": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs9": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs10": {
+            "type": "string",
+            "is_array": false
+        },
+        "cs11": {
+            "type": "string",
+            "is_array": false
+        },
+        "destinationservicename": {
+            "type": "string",
+            "is_array": false
+        },
+        "dhost": {
+            "type": "string",
+            "is_array": false
+        },
+        "dntdom": {
+            "type": "string",
+            "is_array": false
+        }
+    }
+}

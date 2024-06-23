@@ -733,7 +733,7 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code&scope=offline_access%20https://management.azure.com/.default' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftManagementActivity.return_results.call_args[0][0].readable_output
     assert expected_url in res
 

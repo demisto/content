@@ -514,9 +514,11 @@ script:
     - contextPath: AzureWAF.ResourceGroup.tags
       description: Resource group tags.
       type: String
-  dockerimage: demisto/crypto:1.0.0.66562
+  dockerimage: demisto/crypto:1.0.0.96042
   runonce: false
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -5,7 +5,7 @@ import json
 import urllib3
 import traceback
 import requests
-from typing import Any, Dict
+from typing import Any
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -151,7 +151,7 @@ def get_jobs(client: Client) -> CommandResults:
     )
 
 
-def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
+def post_event(client: Client, args: dict[str, Any]) -> CommandResults:
     title = args.get("title")
 
     job_id = args.get("job_id", None)
@@ -171,7 +171,7 @@ def post_event(client: Client, args: Dict[str, Any]) -> CommandResults:
     )
 
 
-def get_event_status(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_event_status(client: Client, args: dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", None)
     if not job_id:
         job_id = client.get_default_job_id()
@@ -198,7 +198,7 @@ def get_default_job_id(client: Client) -> CommandResults:
     )
 
 
-def get_feedback_field(params: Dict[str, Any]) -> CommandResults:
+def get_feedback_field(params: dict[str, Any]) -> CommandResults:
     response = params.get("closing_reason_field")
     readable_output = f' ## Get feedback returned results: {response}'
 
@@ -209,7 +209,7 @@ def get_feedback_field(params: Dict[str, Any]) -> CommandResults:
     )
 
 
-def set_default_job_id(client: Client, args: Dict[str, Any]) -> CommandResults:
+def set_default_job_id(client: Client, args: dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id")
     client.set_default_job_id(job_id)
     return get_default_job_id(client)
@@ -218,7 +218,7 @@ def set_default_job_id(client: Client, args: Dict[str, Any]) -> CommandResults:
 ''' MAIN FUNCTION '''
 
 
-def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[str, Any]) -> CommandResults:
+def send_event_feedback(client: Client, feature_mapping_field: str, args: dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id", None)
     if not job_id:
         job_id = client.get_default_job_id()
@@ -244,7 +244,7 @@ def send_event_feedback(client: Client, feature_mapping_field: str, args: Dict[s
     )
 
 
-def send_bulk_events(client: Client, feature_mapping_field: str, args: Dict[str, Any]) -> CommandResults:
+def send_bulk_events(client: Client, feature_mapping_field: str, args: dict[str, Any]) -> CommandResults:
     job_id = args.get("job_id")
     events = argToList(args.get("events"))
     mappings = parse_mappings(feature_mapping_field)

@@ -188,8 +188,6 @@ class Client:
         service_account_credential = json.loads(encoded_service_account, strict=False)
         # Create a credential using the Google Developer Service Account Credential and Chronicle API scope.
         credentials = service_account.Credentials.from_service_account_info(service_account_credential, scopes=SCOPES)
-        # Build an HTTP client which can make authorized OAuth requests.
-        self.http_client = auth_requests.AuthorizedSession(credentials)
 
         proxies = {}
         if proxy:
@@ -199,6 +197,11 @@ class Client:
             https_proxy = proxies['https']
             if not https_proxy.startswith('https') and not https_proxy.startswith('http'):
                 proxies['https'] = 'https://' + https_proxy
+        else:
+            skip_proxy()
+
+        # Build an HTTP client which can make authorized OAuth requests.
+        self.http_client = auth_requests.AuthorizedSession(credentials)
         self.proxy_info = proxies
         self.disable_ssl = disable_ssl
 

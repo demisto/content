@@ -73,6 +73,15 @@ configuration:
   - Auto-Resolved
   required: false
   type: 15
+- additionalinfo: 'Choose the direction to mirror the incident: Outgoing (from Cortex XSOAR to Varonis SaaS).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Outgoing
+  type: 15
+  required: false
 description: Streamline alerts and related forensic information from Varonis SaaS.
 display: Varonis SaaS
 name: VaronisSaaS
@@ -510,9 +519,16 @@ script:
       description: Name of the threat model.
       type: String
     name: varonis-get-threat-models
-  dockerimage: demisto/python3:3.10.14.91134
+  - description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
+    name: get-mapping-fields
+  - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
+    name: update-remote-system
+  dockerimage: demisto/python3:3.10.14.92207
   feed: false
   isfetch: true
+  ismappable: true
+  isremotesyncin: false
+  isremotesyncout: true
   longRunning: false
   longRunningPort: false
   runonce: false

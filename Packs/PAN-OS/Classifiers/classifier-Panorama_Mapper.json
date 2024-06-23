@@ -25,7 +25,7 @@
                     "simple": "severity"
                 },
                 "Source Create time": {
-                    "simple": "time_generated"
+                    "simple": "match_time"
                 },
                 "Source IP": {
                     "simple": "src"

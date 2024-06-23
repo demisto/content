@@ -10,17 +10,18 @@ you are implementing with your integration
 
 import io
 import json
+
 import pytest
 import requests_mock as rm
-
 from octoxlabs import OctoxLabs
+from OctoxLabs import convert_to_json, run_command
 from octoxlabs.exceptions import NotFound
 from octoxlabs.models.adapter import Adapter
-from OctoxLabs import convert_to_json, run_command
 
 
 @pytest.fixture()
-def octox_client() -> OctoxLabs:
+def octox_client(requests_mock) -> OctoxLabs:
+    requests_mock.post("/api/token/token", json={"access": "token"})
     return OctoxLabs(ip="octoxlabs.test", token="xsoar")
 
 
@@ -170,3 +171,128 @@ def test_get_query_by_name(requests_mock, octox_client):
     data = result.outputs
 
     assert data["name"] == "cisco ise machines"
+
+
+def test_get_companies(requests_mock, octox_client):
+    companies_data = util_load_json(path="test_data/get_companies.json")
+    requests_mock.get("/companies/companies", json=companies_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-companies", args={}
+    )
+    first_data = result.outputs
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["name"] == "Octoxlabs"
+
+
+def test_get_company_by_id(requests_mock, octox_client):
+    company_data = util_load_json(path="test_data/get_company.json")
+    requests_mock.get("/companies/companies/1", json=company_data)
+    result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-get-company-by-id",
+        args={"company_id": 1},
+    )
+    first_data = result.outputs
+    assert first_data["name"] == "Octoxlabs"
+
+
+def test_get_company_by_name(requests_mock, octox_client):
+    company_data = util_load_json(path="test_data/get_companies.json")
+    requests_mock.get("/companies/companies", json=company_data)
+    result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-get-company-by-name",
+        args={"company_name": "Octoxlabs"},
+    )
+    first_data = result.outputs
+    assert first_data["name"] == "Octoxlabs"
+
+
+def test_get_domains(requests_mock, octox_client):
+    domains_data = util_load_json(path="test_data/get_domains.json")
+    requests_mock.get("/companies/domains", json=domains_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-domains", args={}
+    )
+    first_data = result.outputs
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["tenant_name"] == "Octoxlabs"
+
+
+def test_get_domain_by_id(requests_mock, octox_client):
+    domain_data = util_load_json(path="test_data/get_domain.json")
+    requests_mock.get("/companies/domains/1", json=domain_data)
+    result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-get-domain-by-id",
+        args={"domain_id": 1},
+    )
+    first_data = result.outputs
+    assert first_data["tenant_name"] == "Octoxlabs"
+
+
+def test_get_domain_by_domain_name(requests_mock, octox_client):
+    domain_data = util_load_json(path="test_data/get_domains.json")
+    requests_mock.get("/companies/domains", json=domain_data)
+    result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-get-domain-by-domain-name",
+        args={"domain_name": "localhost"},
+    )
+    first_data = result.outputs
+    assert first_data["domain"] == "localhost"
+
+
+def test_get_users(requests_mock, octox_client):
+    users_data = util_load_json(path="test_data/get_users.json")
+    requests_mock.get("/users/users", json=users_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-users", args={}
+    )
+    first_data = result.outputs
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["name"] == "XSOAR OctoxLabs"
+
+
+def test_get_user_by_id(requests_mock, octox_client):
+    user_data = util_load_json(path="test_data/get_user.json")
+    requests_mock.get("/users/users/1", json=user_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-user-by-id", args={"user_id": 1}
+    )
+    first_data = result.outputs
+    assert first_data["name"] == "XSOAR OctoxLabs"
+
+
+def test_get_user_by_username(requests_mock, octox_client):
+    users_data = util_load_json(path="test_data/get_users.json")
+    requests_mock.get("/users/users", json=users_data)
+    result = run_command(
+        octox=octox_client,
+        command_name="octoxlabs-get-user-by-username",
+        args={"username": "xsoar"},
+    )
+    first_data = result.outputs
+    assert first_data["username"] == "xsoar"
+
+
+def test_get_groups(requests_mock, octox_client):
+    groups_data = util_load_json(path="test_data/get_groups.json")
+    requests_mock.get("/users/groups", json=groups_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-groups", args={}
+    )
+    first_data = result.outputs
+    assert first_data["count"] == 2
+    assert first_data["results"][0]["name"] == "Auditors"
+
+
+def test_get_permissions(requests_mock, octox_client):
+    permissions_data = util_load_json(path="test_data/get_permissions.json")
+    requests_mock.get("/users/permissions", json=permissions_data)
+    result = run_command(
+        octox=octox_client, command_name="octoxlabs-get-permissions", args={}
+    )
+    first_data = result.outputs
+    assert first_data["count"] == 1
+    assert first_data["results"][0]["app"] == "activities"

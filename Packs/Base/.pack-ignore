@@ -82,8 +82,10 @@ CPE
 CPEs
 debug-entry
 clickable
+truncate
 
 [tests_require_network]
 CommonServerPython
 SanePdfReports
 CheckDockerImageAvailable
+enrichers

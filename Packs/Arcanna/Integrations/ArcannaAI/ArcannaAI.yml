@@ -39,57 +39,57 @@ configuration:
   name: closing_reason_field
   type: 0
   required: false
-description: Arcanna integration for using the power of AI in SOC
+description: Arcanna integration for using the power of AI in SOC.
 display: Arcanna.AI
 name: Arcanna.AI
 script:
   commands:
-  - description: Get jobs list
+  - description: Get jobs list.
     name: arcanna-get-jobs
     outputs:
     - contextPath: Arcanna.Jobs.job_id
-      description: Arcanna Job id
+      description: Arcanna Job id.
       type: Number
     - contextPath: Arcanna.Jobs.data_type
-      description: Arcanna Job type
+      description: Arcanna Job type.
       type: String
     - contextPath: Arcanna.Jobs.title
-      description: Arcanna Job title
+      description: Arcanna Job title.
       type: String
     - contextPath: Arcanna.Jobs.status
-      description: Arcanna job status
+      description: Arcanna job status.
       type: String
   - arguments:
-    - description: An Arcanna running job_id
+    - description: An Arcanna running job_id.
       name: job_id
     - description: json event for arcanna to inference.
       name: event_json
       required: true
-    - description: event title
+    - description: event title.
       name: title
       required: true
-    - description: event severity
+    - description: event severity.
       name: severity
-    description: Sends a raw event to Arcanna
+    description: Sends a raw event to Arcanna.
     name: arcanna-send-event
     outputs:
     - contextPath: Arcanna.Event.event_id
-      description: Arcanna event id
+      description: Arcanna event id.
       type: Number
     - contextPath: Arcanna.Event.status
-      description: Arcanna ingestion status
+      description: Arcanna ingestion status.
       type: String
     - contextPath: Arcanna.Event.ingest_timestamp
-      description: Arcanna ingestion timestamp
+      description: Arcanna ingestion timestamp.
       type: date
     - contextPath: Arcanna.Event.error_message
-      description: Arcanna error message if any
+      description: Arcanna error message if any.
       type: String
     - contextPath: Arcanna.Event.job_id
       description: An Arcanna Job id used for sending.
       type: Number
   - arguments:
-    - description: Arcanna Job Id
+    - description: Arcanna Job Id.
       name: job_id
     - description: Arcanna generated unique event id.
       name: event_id
@@ -98,7 +98,7 @@ script:
     name: arcanna-get-event-status
     outputs:
     - contextPath: Arcanna.Event.event_id
-      description: Arcanna event id
+      description: Arcanna event id.
       type: String
     - contextPath: Arcanna.Event.ingest_timestamp
       description: Arcanna ingestion timestamp.
@@ -107,7 +107,7 @@ script:
       description: Arcanna ML confidence_level.
       type: Number
     - contextPath: Arcanna.Event.result
-      description: Arcanna event  result
+      description: Arcanna event  result.
       type: String
     - contextPath: Arcanna.Event.is_duplicated
       description: Arcanna signalling if event is duplicated by another alert.
@@ -122,10 +122,10 @@ script:
     name: arcanna-get-default-job-id
     outputs:
     - contextPath: Arcanna.Default_Job_Id
-      description: Arcanna Default Job id
+      description: Arcanna Default Job id.
       type: String
   - arguments:
-    - description: job_id
+    - description: job_id.
       name: job_id
       required: true
     description: Sets Arcanna Default Job id.
@@ -168,7 +168,7 @@ script:
     name: arcanna-send-bulk-events
     outputs:
     - contextPath: Arcanna.Bulk.status
-      description: Arcanna response status for bulk events indexing
+      description: Arcanna response status for bulk events indexing.
       type: String
   - description: Returns the Feedback field set on integration.
     name: arcanna-get-feedback-field
@@ -176,7 +176,7 @@ script:
     - contextPath: Arcanna.FeedbackField
       description: XSOAR field used to signal feedback/label for Arcanna.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.14.95956
   runonce: false
   script: '-'
   subtype: python3
