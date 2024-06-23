@@ -49,7 +49,7 @@ class DataExplorerClient:
             self_deployed=True,
             auth_id=client_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
-                                                                                                    connection_type else None,
+            connection_type else None,
             grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url=cluster_url,
             verify=verify,
@@ -564,6 +564,7 @@ def test_module(client: DataExplorerClient) -> str:
     else:
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-data-explorer-auth-test command in order to test it")
+
 
 def main() -> None:
     """
