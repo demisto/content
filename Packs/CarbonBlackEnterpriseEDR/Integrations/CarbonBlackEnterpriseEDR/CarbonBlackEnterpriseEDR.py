@@ -77,18 +77,26 @@ class Client(BaseClient):
         return response
         
         
-    def alert_workflow_update_request(self, alert_id: str, state: str = None, comment: str = None,
-                                      determination: str = None, time_range: str = None, start: str = None,
-                                      end: str = None, closure_reason: str = None) -> dict:
+    def alert_workflow_update_request(self, alert_id: str, state: None | str = None, comment: None | str = None,
+                                      determination: None | str = None, time_range: None | str = None, start: None | str = None,
+                                      end: None | str = None, closure_reason: None | str = None) -> dict:
+        demisto.debug("alert_workflow_update_request: ")
         suffix_url = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/workflow'
         body = assign_params(
+            time_range=assign_params(start=start, end=end, range=time_range),
             criteria= assign_params(id=[alert_id]),
+            determination=determination,
+            closure_reason=closure_reason,
             status=state,
             note=comment,
-            closure_reason=closure_reason,
         )
-
-        response = self._http_request('POST', suffix_url, json_data=body)
+        
+        demisto.debug(f"{body=}")
+        try:
+            response = self._http_request('POST', suffix_url, json_data=body)
+        except Exception as e:
+            if 'determination' in e.args[0] and 'status' in e.args[0]:
+                raise e#('error_code: BAD_REQUEST, message: Must specify at least one of determination or state.')
         return response
 
     def devices_list_request(self, device_id: list = None, status: list = None, device_os: list = None,
@@ -592,45 +600,48 @@ def alert_workflow_update_command_with_results(client: Client, args: dict):
 """
 
 @polling_function(name='cb-eedr-alert-workflow-update', interval=60, requires_polling_arg=False)
-def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
-    demisto.debug('trying to get request_id')
+def alert_workflow_update_command_v2(args: dict, client: Client) -> PollResult:
+    print(f'Running again with {args=}')
     request_id = arg_to_number(args.get('request_id'))
-    demisto.debug('trying to get alert_id')
     alert_id = args['alert_id']
+    demisto.debug(f'got {request_id=}, {alert_id=}')
 
     if not request_id: #if this is the first time
-        demisto.debug('no request id was found in args')
         demisto.debug('trying to get all relevant args for first run')
-        state = args.get('state')
-        if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
-            state = 'CLOSED'
-        comment = args.get('comment')
-        # All of these are added in v7
         determination = args.get('determination')
         time_range = args.get('time_range')
         start = args.get('start')
         end = args.get('end')
         closure_reason = args.get('closure_reason')
+        state = args.get('state')
+        if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
+            state = 'CLOSED'
+        comment = args.get('comment')
+        
         
         demisto.debug('calling alert_workflow_update_request function')
         response = client.alert_workflow_update_request(
             alert_id, state, comment, determination, time_range, start, end, closure_reason)
-        if response:
-            demisto.debug('a response has received')
-        demisto.debug('trying to get request_id after getting the first response')
-        request_id = response['request_id']
-        if request_id:
-            args["request_id"] = request_id
-            demisto.debug('there is a request id!!')
-        else:
-            raise DemistoException("Failed to update workflow for alert")
         
-    demisto.debug('now calling the second API')
-    # The second API call
+        demisto.debug(f'{response=}')
+        
+        return PollResult(
+            partial_result=CommandResults(readable_output="running polling"),
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"request_id":  response['request_id']} | args
+            )
+
+    request_id = args['request_id']
+        
+    demisto.debug('now calling the second endpoint')
     response = client.alert_workflow_update_request_v2(request_id)  #There for sure will be a request id once we get here
+    demisto.debug(f'{response=}')
+
     status = response['status']
-    if status != 'COMPLETED':
-        demisto.debug('status is not completed')
+    demisto.debug(f'{status=}')
+
+    if status != 'COMPLETED': #TODO fail!
         message = CommandResults(
             readable_output="Checking again in 60 seconds...")
         demisto.debug('returning PollResult with continue_to_poll=True')
@@ -639,7 +650,9 @@ def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
             response=None,
             continue_to_poll=True,
             args_for_next_run={"request_id": request_id,
-                               **args})
+                            **args})
+      
+    # status is completed!
     demisto.debug('status is COMPLETED')
     message = CommandResults(
         readable_output='The alert workflow has been updated successfully')
@@ -648,32 +661,6 @@ def alert_workflow_update_command_v2(client: Client, args: dict) -> PollResult:
         response=message,
         continue_to_poll=False)
 
-
-"""
-#The first time the API is called
-def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
-        
-    alert_id = args['alert_id']
-    state = args.get('state')
-    if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
-        state = 'CLOSED'
-    comment = args.get('comment')
-    # All of these are added in v7
-    determination = args.get('determination')
-    time_range = args.get('time_range')
-    start = args.get('start')
-    end = args.get('end')
-    closure_reason = args.get('closure_reason')
-    
-    #remediation_state = args.get('remediation_state')  # Changes do to new version of API
-
-    result = client.alert_workflow_update_request(alert_id, state, comment, determination, time_range, start, end, closure_reason)
-
-    results = CommandResults(
-        raw_response=result
-    )
-    return results
-"""
 
 def list_devices_command(client: Client, args: dict) -> CommandResults | str:
     device_id = argToList(args.get('device_id'))
@@ -1574,8 +1561,7 @@ def main():
             return_results(alert_list_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
-            #return_results(alert_workflow_update_command_with_results(client, demisto.args()))
-            return_results(alert_workflow_update_command_v2(client, demisto.args()))
+            return_results(alert_workflow_update_command_v2(demisto.args(), client))
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))
@@ -1696,9 +1682,10 @@ def main():
             if 'MALFORMED_JSON' in err_msg:
                 message = err_msg.split('\n')
                 bad_field = json.loads(message[1]).get('field')
-                return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
-                             f'invalid. Make sure that the arguments is correct.')
+                #return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
+                             #f'invalid. Make sure that the arguments is correct.')
         except Exception:
+            pass
             return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
         return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 
