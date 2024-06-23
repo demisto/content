@@ -368,7 +368,8 @@ class MimecastGetAuditEvents(IntegrationGetEvents):
     def to_audit_time_format(time_to_convert: str) -> str:
         """
         converts the iso8601 format (e.g. 2011-12-03T10:15:30+00:00),
-        to be mimecast compatible (e.g. 2011-12-03T10:15:30+0000)
+        to be mimecast compatible (e.g. 2011-12-03T10:15:30+0000).
+        Removes last colon from the time format.
         """
         regex = r'(?!.*:)'
         find_last_colon = re.search(regex, time_to_convert)
@@ -389,8 +390,10 @@ def handle_last_run_entrance(user_inserted_last_run: str, audit_event_handler: M
         demisto_last_run: dict = demisto.getLastRun()
         audit_event_handler.start_time = demisto_last_run.get(AUDIT_LAST_RUN, '')
         siem_event_handler.token = demisto_last_run.get(SIEM_LAST_RUN, '')
+        # starting version 2.5.0 siem_events_from_last_run should always be empty list.
+        # we dont save any more events in the context between fetch executions.
         siem_event_handler.events_from_prev_run = demisto_last_run.get(SIEM_EVENTS_FROM_LAST_RUN, [])
-        demisto.info(f'\nhandle_last_run_entrance \naudit start time: {audit_event_handler.start_time} \n'
+        demisto.info(f'handle_last_run_entrance \naudit start time: {audit_event_handler.start_time} \n'
                      f'siem next token: {siem_event_handler.token}\n'
                      f'duplicate list last run {demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST, [])}\n')
 
@@ -402,7 +405,7 @@ def dedup_audit_events(audit_events: list, last_run_potential_dup: list) -> list
         audit_events (list): The list of events from this run
         last_run_potential_dup (list) : potential duplicates from prev run
     Returns:
-        list: A filtered dedup list of the events.
+        list: A filtered de dup list of the events.
     """
     if not last_run_potential_dup or not audit_events:
         return audit_events
@@ -496,7 +499,7 @@ def audit_events_last_run(audit_event_handler: MimecastGetAuditEvents, audit_eve
     # de dup with events from previous round.
     audit_events = dedup_audit_events(audit_events, demisto_last_run.get(AUDIT_EVENT_DEDUP_LIST, []))
     # set next audit event type next query start time.
-    audit_next_run = set_audit_next_run(audit_events) if set_audit_next_run(audit_events) else audit_event_handler.end_time
+    audit_next_run = set_audit_next_run(audit_events) if audit_events else audit_event_handler.end_time
     # prepare all events with the same last run time.
     duplicates_audit = prepare_potential_audit_duplicates_for_next_run(audit_events, audit_next_run)
     demisto.info(f'{len(audit_events)} Audit events remain after de dup.')
@@ -513,7 +516,7 @@ def main():  # pragma: no cover
     demisto_params['app_key'] = demisto_params.get('credentials_app', {}).get('password')
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
     options = MimecastOptions(**demisto_params)
-    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='', headers={})
+    empty_first_request = IntegrationHTTPRequest(method=Method.GET, url='https://api.mimecast.com', headers={})     # type: ignore
     client = MimecastClient(empty_first_request, options)
     siem_event_handler = MimecastGetSiemEvents(client, options)
     audit_event_handler = MimecastGetAuditEvents(client, options)
@@ -532,6 +535,8 @@ def main():  # pragma: no cover
             siem_event_handler, demisto_last_run)
 
         if command == 'test-module':
+            # End points are already tested as part of the event_handlers run method.
+            # If we reach this point the requests were executed successfully.
             return_results('ok')
 
         elif command == 'fetch-events':
@@ -558,6 +563,8 @@ def main():  # pragma: no cover
             if should_push_events:
                 events = events_siem + events_audit
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+                next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run)
+                demisto.setLastRun(next_run_obj)
 
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
