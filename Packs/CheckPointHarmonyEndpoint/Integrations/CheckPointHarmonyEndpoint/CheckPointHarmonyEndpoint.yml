@@ -454,7 +454,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -502,7 +502,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -575,7 +575,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -623,7 +623,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -649,14 +649,14 @@ script:
       - 'true'
       - 'false'
     - name: update_from_ep_server
-      description: Determines whether to Update from EP server.
+      description: Determines whether to update from the EP server.
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'true'
       - 'false'
     - name: update_from_cp_server
-      description: Determines whether to Update from CP server..
+      description: Determines whether to update from the CP server.
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
@@ -714,7 +714,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -762,7 +762,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -830,7 +830,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-forensics-indicator-analyze
-    description: "Collects forensics data whenever a computer that matches the given query accesses or executes the given IP, URL, file name, MD5 or path. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Collects forensics data whenever a computer that matches the given query accesses or executes the given IP, URL, filename, MD5 or path. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: indicator_type
       description: The indictor type to analyze.
@@ -843,12 +843,12 @@ script:
       - Path
       required: true
     - name: indicator_value
-      description: A URL, IP, Path, File or MD5 that, when accessed or executed will trigger a forensics report.
+      description: A URL, IP, Path, File or MD5 that when accessed or executed will trigger a forensics report.
       required: true
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -896,7 +896,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -922,7 +922,7 @@ script:
       - 'true'
       - 'false'
     - name: generate_activity_logs
-      description: Generate detailed activity logs.
+      description: Determines whether to generate detailed activity logs.
       auto: PREDEFINED
       defaultValue: 'true'
       predefined:
@@ -987,7 +987,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -1035,7 +1035,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -1119,7 +1119,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -1167,7 +1167,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -1240,7 +1240,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -1288,7 +1288,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -1347,7 +1347,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -1395,7 +1395,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -1454,7 +1454,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -1502,7 +1502,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -1582,7 +1582,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -1630,7 +1630,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -1710,7 +1710,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -1758,7 +1758,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -1873,7 +1873,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: page
       description: 'Page number of paginated results. Minimum value: 1.'
@@ -1930,13 +1930,13 @@ script:
       description: The computer last login user.
       type: String
     - contextPath: HarmonyEP.Computer.osName
-      description: The computer OS name.
+      description: The computer operating system name.
       type: String
     - contextPath: HarmonyEP.Computer.osVersion
-      description: The computer OS version.
+      description: The computer operating system version.
       type: String
     - contextPath: HarmonyEP.Computer.ip
-      description: The computer IP.
+      description: The computer IP address.
       type: String
     - contextPath: HarmonyEP.Computer.DeploymentStatus
       description: The computer deployment status.
@@ -2016,7 +2016,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -2064,7 +2064,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -2135,7 +2135,7 @@ script:
     description: "Terminates the given process on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: terminate_all_instances
-      description: Indicates whether to terminate all processes matching the given name. If set to true while a non-zero pid is given, only a single process with the given name AND PID may be matched. If set to false or not provided, will terminate only the first matching process.
+      description: Indicates whether to terminate all processes matching the given name. If set to true while a non-zero PID is given, only a single process with the given name AND PID may be matched. If set to false or not provided, will terminate only the first matching process.
       defaultValue: 'false'
       auto: PREDEFINED
       predefined:
@@ -2150,7 +2150,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -2198,7 +2198,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -2269,7 +2269,7 @@ script:
     description: "Adds a given registry key and/or value to the registry of computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: is_redirected
-      description: Determines if the key should reside under WOW6432Node. Keys intended for 64bit versions of Windows may target 32bit versions by using setting 'true' here. Thus specifying that the registry key/value be added under under the WOW6432Node.
+      description: Determines if the key should reside under WOW6432Node. Keys intended for 64bit versions of Windows may target 32bit versions by setting this value to 'true, thus specifying that the registry key/value be added under the WOW6432Node.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2291,7 +2291,7 @@ script:
       description: The full path path of the key to create or add a value to. For example, 'SOFTWARE\Node.js\Components'.
       required: true
     - name: hive
-      description: Defines known Windows Registry Hives. For more information, see https://docs.microsoft.com/en-us/windows/win32/sysinfo/predefined-keys Predefined Keys (Microsoft).
+      description: Defines known Windows Registry Hives. For more information, see https://docs.microsoft.com/en-us/windows/win32/sysinfo/predefined-keys.
       auto: PREDEFINED
       predefined:
       - HKEY_CURRENT_USER
@@ -2303,7 +2303,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -2351,7 +2351,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -2422,7 +2422,7 @@ script:
     description: "Removes the given registry key or value to the registry of computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: is_redirected
-      description: Determines if the key should reside under WOW6432Node. Keys intended for 64bit versions of Windows may target 32bit versions by using setting 'true' here. Thus specifying that the registry key/value be removed under the WOW6432Node.
+      description: Determines if the key should be removed from under WOW6432Node. Keys intended for 64bit versions of Windows may target 32bit versions by setting this value to 'true', thus specifying that the registry key/value be removed under the WOW6432Node.
       auto: PREDEFINED
       predefined:
       - 'true'
@@ -2433,7 +2433,7 @@ script:
       description: The full path path of the key to delete or remove a value from. For example, 'SOFTWARE\Node.js\Components'.
       required: true
     - name: hive
-      description: Defines known Windows Registry Hives. For more information, see https://docs.microsoft.com/en-us/windows/win32/sysinfo/predefined-keys Predefined Keys (Microsoft).
+      description: Defines known Windows Registry Hives. For more information, see https://docs.microsoft.com/en-us/windows/win32/sysinfo/predefined-keys.
       auto: PREDEFINED
       predefined:
       - HKEY_CURRENT_USER
@@ -2445,7 +2445,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -2493,7 +2493,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -2564,7 +2564,7 @@ script:
     description: "Copies the given file from the given source to the given destination on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: destination_absolute_path
-      description: The absolute, full destination path. Note, The provided path must include the target file's name (e.g., c:\backup\backup1.txt).
+      description: The absolute, full destination path. The provided path must include the target file's name (e.g., c:\backup\backup1.txt).
       required: true
     - name: source_absolute_path
       description: The absolute, full source path (e.g., c:\backup\backup1.txt).
@@ -2572,7 +2572,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -2620,7 +2620,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -2691,7 +2691,7 @@ script:
     description: "Moves the given file from the given source to the given destination on computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: destination_absolute_path
-      description: The absolute, full destination path. Note, The provided path must include the target file's name (e.g., c:\backup\backup1.txt).
+      description: The absolute, full destination path. The provided path must include the target file's name (e.g., c:\backup\backup1.txt).
       required: true
     - name: source_absolute_path
       description: The absolute, full source path (e.g., c:\backup\backup1.txt).
@@ -2699,7 +2699,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -2747,7 +2747,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -2823,7 +2823,7 @@ script:
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -2871,7 +2871,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -2939,7 +2939,7 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-vpn-site-add
-    description: "Adds the given VPN Site's configuration to computers matching the given query Adding a VPN Site allows Harmony Endpoint Clients to connect to it. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: " Adds the given VPN site's configuration to computers matching the given query. Adding a VPN site allows Harmony Endpoint Clients to connect to it. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: remote_access_gateway_name
       description: The remote gateway's name.
@@ -2948,7 +2948,7 @@ script:
       description: The remote gateway's certificate fingerprint. Fingerprints are used to verify the authenticity of the gateway.
       required: true
     - name: authentication_method
-      description: Authentication methods used in conjunction with VPN Site Standard Login.
+      description: Authentication methods used in conjunction with VPN site standard login.
       auto: PREDEFINED
       predefined:
       - CERTIFICATE
@@ -2960,14 +2960,14 @@ script:
       - CHALLENGE_RESPONSE
       required: true
     - name: display_name
-      description: The VPN Site's Display Name.
+      description: The VPN site's display name.
     - name: host
       description: The target site's host name or IP address.
       required: true
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -3015,7 +3015,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.
@@ -3083,16 +3083,16 @@ script:
       description: The client device's unique ID.
       type: String
   - name: harmony-ep-agent-vpn-site-remove
-    description: "Removes the given VPN Site's configuration to computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
+    description: "Removes the given VPN site's configuration to computers matching the given query. Note that you must specify at least one of the following filter arguments: computer_ids, computer_names, computer_ips, computer_group_names, computer_types, computer_deployment_status, computer_last_connection, or filter. "
     arguments:
     - name: display_name
-      description: The Display Name of the VPN Site to remove. If a Display Name was not provided during the site's creation, the host name/IP should be used instead.
+      description: The display name of the VPN site to remove. If a display name was not provided during the site's creation, the host name/IP should be used instead.
       required: true
       default: true
     - name: comment
       description: Operation comment.
     - name: scheduling_date_time
-      description: Start the operation on a given date and time If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
+      description: Start the operation on a given date and time. If not specified, defaults to 'Now' (i.e. immediate execution). For example, “2024-04-12 03:59”.
     - name: expiration_seconds
       description: The amount of time, in seconds, the operation will be valid for. When the specified time has elapsed, the operation will expire and will not be pushed to any more clients. If not specified, defaults to 86400 seconds (24 hours). Minimum value is 1.
     - name: computer_ids
@@ -3140,7 +3140,7 @@ script:
       required: false
       isArray: true
     - name: filter
-      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames . For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
+      description: "A comma-separated list of list of search filters according to the following template: \"column_name operator 'values_list' \".  For example, the query \"computerId Contains '1,2,3,4' , computerIP Exact '1.1.1.1' \" will refer to computers contains '1', '2', '3', and '4'  in their ID and that their IP is '1.1.1.1'. For more optional 'column_name' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/ComputerColumnNames. For more optional 'operator' values, see https://app.swaggerhub.com/apis/Check-Point/web-mgmt-external-api-production/1.9.179#/FilterType ."
       required: false
     - name: groups_ids_to_exclude
       description: A comma-separated list of group IDs to exclude from the operation.

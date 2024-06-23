@@ -2,6 +2,6 @@ Cortex XSOAR interfaces with Check Point Harmony Endpoint to help protect organi
 
 # What does this pack do?
 
-- Views, creates, updates, and deletes a IOCs from Harmony Endpoint.
-- Views, updates and install policy rules.
-- Views, creates, and abort push operation items.
+- Views, creates, updates, and deletes IOCs from Harmony Endpoint.
+- Views, updates and installs policy rules.
+- Views, creates, and aborts push operation items.
