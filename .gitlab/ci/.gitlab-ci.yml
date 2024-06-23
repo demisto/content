@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: "CIAC-8445-test-private-buckets"
+  CURRENT_BRANCH_NAME: "CIAC-8445"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "CIAC-8445-test-private-buckets"
+    ref: "CIAC-8445"
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
