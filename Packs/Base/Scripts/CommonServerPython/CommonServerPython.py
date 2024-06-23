@@ -45,7 +45,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 5 * (2 ** 20)  # 9 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -11636,8 +11636,16 @@ def split_data_to_chunks(data, target_chunk_size):
     chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')
-    demisto.debug("we want to send chunk with size: {size}".format(size=data))
+    demisto.debug("we want to send chunk with size: {size}".format(size=sys.getsizeof(data)))
+    demisto.debug("chunk size num: {size}".format(size=(5 * (2 ** 20))))
+    demisto.debug("chunk size limit: {size}".format(size=XSIAM_EVENT_CHUNK_SIZE_LIMIT))
+    demisto.debug("chunk size target: {size}".format(size=target_chunk_size))
     for data_part in data:
+        # demisto.debug("object size is: {size}".format(size=sys.getsizeof(data_part)))
+        if sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug("skipped object with size: {size}".format(size=sys.getsizeof(data_part)))
+            continue
+        # if chunk_size + sys.getsizeof(data_part) >= target_chunk_size:
         if chunk_size >= target_chunk_size:
             demisto.debug("reached chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
