@@ -11636,18 +11636,13 @@ def split_data_to_chunks(data, target_chunk_size):
     chunk_size = 0
     if isinstance(data, str):
         data = data.split('\n')
-    demisto.debug("we want to send chunk with size: {size}".format(size=sys.getsizeof(data)))
-    demisto.debug("chunk size limit: {size}".format(size=XSIAM_EVENT_CHUNK_SIZE_LIMIT))
-    demisto.debug("chunk size target: {size}".format(size=target_chunk_size))
-    demisto.debug("new check")
     for data_part in data:
-        # demisto.debug("object size is: {size}".format(size=sys.getsizeof(data_part)))
         if sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
             demisto.debug("skipped object with size: {size}".format(size=sys.getsizeof(data_part)))
             continue
         if chunk_size + sys.getsizeof(data_part) >= target_chunk_size:
         # if chunk_size >= target_chunk_size:
-            demisto.debug("reached chunk size, sending chunk with size: {size}".format(size=chunk_size))
+            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
             chunk_size = 0
