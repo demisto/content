@@ -34,5 +34,5 @@ jobs:
           echo "PR number is: $PR_NUMBER"
           echo "Target branch name is: $BRANCH_NAME"
           echo "Starting check of contributor packs"
-          poetry run python ./Utils/github_workflow_scripts/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --email_api_token $SENDGRID_EMAIL_API_KEY
+          poetry run python ./.github/github_workflow_scripts/request_contributor_review.py --pr_number $PR_NUMBER --github_token $GITHUB_TOKEN --email_api_token $SENDGRID_EMAIL_API_KEY
           echo "Finished check of contributor packs"
