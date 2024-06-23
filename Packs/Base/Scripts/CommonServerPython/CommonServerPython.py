@@ -11936,8 +11936,6 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         raise DemistoException(header_msg + error, DemistoException)
 
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
-    demisto.debug("target chunk size is: {size}".format(size=chunk_size))
-    demisto.debug("max chunk size is: {size}".format(size=XSIAM_EVENT_CHUNK_SIZE_LIMIT))
     data_chunks = split_data_to_chunks(data, chunk_size)
     for data_chunk in data_chunks:
         data_size += len(data_chunk)
