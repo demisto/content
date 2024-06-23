@@ -362,7 +362,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     return None, None
 
 
-def terminate_chrome(chrome_port='', killall=False):
+def terminate_chrome(chrome_port: str = '', killall: bool = False) -> None:
     """
     Terminates Chrome processes based on the specified criteria.
 
@@ -431,7 +431,7 @@ def chrome_manager() -> tuple[Any | None, int | None]:
             - The Browser or None if an error occurred.
             - The chrome port or None if an error occurred.
     """
-    demisto.log("failure")
+    demisto.log("failure")  # TODO: Remove this log
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH)
@@ -452,7 +452,24 @@ def chrome_manager() -> tuple[Any | None, int | None]:
     return browser, chrome_port
 
 
-def get_chrome_instances_contents_dictionaries(chrome_instances_contents):
+def get_chrome_instances_contents_dictionaries(chrome_instances_contents: str) -> tuple[
+    Dict[str, str], Dict[str, str], List[str], List[str]]:
+    """
+    Parses the chrome instances content to extract and return two dictionaries and two lists.
+
+    Args:
+        chrome_instances_contents: The file content to be parsed.
+
+    Returns:
+        tuple: A tuple containing:
+            - instance_id_to_chrome_options (dict): A dictionary mapping instance ID to Chrome options.
+            - instance_id_to_port (dict): A dictionary mapping instance ID to port.
+            - instances_id (list): A list of instances ID extracted from instance_id_to_port keys.
+            - chromes_options (list): A list of Chrome options extracted from instance_id_to_chrome_options values.
+
+    The purpose of this method is to transform the file content into dictionaries and lists
+    for easier access and manipulation of the data.
+    """
     instance_id_to_chrome_options = {}
     instance_id_to_port = {}
 
@@ -470,12 +487,12 @@ def get_chrome_instances_contents_dictionaries(chrome_instances_contents):
     return instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options
 
 
-def generate_new_chrome_instance(instance_id, chrome_options):
+def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
     return start_chrome_headless(str(chrome_port), instance_id, chrome_options)
 
 
-def generate_chrome_port():
+def generate_chrome_port() -> int | None:
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
     random.shuffle(ports_list)
@@ -495,7 +512,24 @@ def generate_chrome_port():
     return None
 
 
-def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents, instance_id, chrome_port):
+def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents: str, instance_id: str,
+                                                                         chrome_port: str) -> None:
+    """
+    Removes a specific row from the given content based on the instance ID and port,
+    and updates the file with the new content.
+
+    Args:
+        chrome_instances_contents (str): The file content to be searched and modified.
+        instance_id (str): The instance ID to search for in the content.
+        chrome_port (str): The port to search for in the content.
+
+    Returns:
+        None
+
+    This function searches for a row in the content that includes the specified instance ID and port.
+    Once the row is found, it is deleted from the content. The updated content is then written
+    back to the file using the write_file function.
+    """
     index_to_delete = -1
 
     splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
