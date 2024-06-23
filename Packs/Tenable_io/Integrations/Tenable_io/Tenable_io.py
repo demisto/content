@@ -1975,11 +1975,12 @@ def main():  # pragma: no cover
                 assets_last_run.update({"assets_last_fetch": time.time()})
             # Fetch Assets (assets_export_uuid -> continue prev fetch, or, no vuln_export_uuid -> new fetch)
             if assets_last_run_copy.get('assets_export_uuid') or not assets_last_run_copy.get('vuln_export_uuid'):
-                assets = run_assets_fetch(client, assets_last_run)
-                # assets = []
+                # assets = run_assets_fetch(client, assets_last_run)
+                assets = []
             # Fetch Vulnerabilities
             if assets_last_run_copy.get('vuln_export_uuid') or not assets_last_run_copy.get('assets_export_uuid'):
                 vulnerabilities = run_vulnerabilities_fetch(client, last_run=assets_last_run)
+                # vulnerabilities = generate_vulns()
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
 
@@ -1987,8 +1988,6 @@ def main():  # pragma: no cover
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
             if vulnerabilities:
-                # t = vulnerabilities[0]
-                # vulnerabilities = [t]
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 # if len(vulnerabilities) > 3000:
                 #     vulnerabilities = vulnerabilities[:3000]
