@@ -109,7 +109,7 @@ def update_ec2_instance(account_ids: list[str], ec2_instance_name: str) -> str:
     except StopIteration:
         raise DemistoException(f'AWS - EC2 instance {ec2_instance_name!r} was not found or is not an AWS - EC2 instance.')
     except (TypeError, KeyError) as e:
-        raise DemistoException(f'{e}: Please make sure a "Core REST API" instance is enabled.')
+        raise DemistoException(f'Please make sure a "Core REST API" instance is enabled.\nError: {e}')
     except Exception as e:
         raise DemistoException(f'Unexpected error while configuring AWS - EC2 instance with accounts {accounts_as_str!r}:\n{e}')
 
