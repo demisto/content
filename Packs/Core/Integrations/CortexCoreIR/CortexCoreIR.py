@@ -28,7 +28,7 @@ PREVALENCE_COMMANDS = {
 
 
 class Client(CoreClient):
-
+    
     def test_module(self):
         """
             Performs basic get request to get item samples
@@ -187,7 +187,7 @@ def main():  # pragma: no cover
         verify=verify_cert,
         headers=headers,
         timeout=timeout,
-        using_base_client_http_request=True
+        using_base_client_http_request=True,
     )
 
     try:
