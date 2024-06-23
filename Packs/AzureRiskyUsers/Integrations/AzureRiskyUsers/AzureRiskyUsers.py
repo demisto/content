@@ -15,7 +15,7 @@ MAX_ITEMS_PER_REQUEST = 500
 
 class Client:
     """
-    API Client to communicate with AzureRiskyUsers.
+    API Client to communicate with AzureRiskyUsers. test
     """
 
     def __init__(self, client_id: str, verify: bool, proxy: bool, authentication_type: str,
