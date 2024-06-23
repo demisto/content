@@ -4,30 +4,19 @@
 
   [Netmiko Platforms.md on Github](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md)
 
-## Configuration Parameters
-
- - *Name* - Integration instance name
- - *Platform* - The Netmiko-specific platform name
- - *Hostname* - The IP address, Hostname, or FQDN to connect to over SSH
- - *Port* - The port to use for the SSH connection
- - *Credentials* - The credentials should be the same as the Tanium client.
- - *Override the default timeout value* - Override the default read timeout value used for a SSH connection (useful for slow-responding devices). 
-
-**NOTE**: Platform names are taken from the supported
-[SSH](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-ssh-device_type-values) or [Telnet](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-telnet-device_type-values) device type lists on GitHub.
-
-
 ## Configure Netmiko Integration in Cortex XSOAR
 
  1. Navigate to **Settings** - **Integrations**
  2. Search for **Netmiko**
  3. Click **Add instance** to create and configure a new integration instance.
-	 - *Name*: a name for the integration instance.
-	 - *Platform*: the platform identifier taken from the above SSH or Telnet platform name lists (e.g., linux_ssh, paloalto_panos, etc.)
-	 - *Hostname*: The IP address, hostname, or FQDN for the device to connect to via SSH.
-	 - *Port*: The port to connect to via SSH
-	 - *Credentials*: The username/password, or XSOAR credential object, to be used for the connection
-	 - *TimeoutOverride*: Override the timeout value (in seconds) for a given integration instance. This is useful for devices that are slow in responding with requested output over SSH.
+	 - **Name**: a name for the integration instance.
+	 - **Platform**: the platform identifier taken from the above SSH or Telnet platform name lists (e.g., linux_ssh, paloalto_panos, etc.)
+**NOTE**: Platform names are taken from the supported
+[SSH](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-ssh-device_type-values) or [Telnet](https://github.com/ktbyers/netmiko/blob/develop/PLATFORMS.md#supported-telnet-device_type-values) device type lists on GitHub.
+	 - **Hostname**: The IP address, hostname, or FQDN for the device to connect to via SSH.
+	 - **Port**: The port to connect to via SSH
+	 - **Credentials**: The username/password, or XSOAR credential object, to be used for the connection
+	 - **TimeoutOverride**: Override the timeout value (in seconds) for a given integration instance. This is useful for devices that are slow in responding with requested output over SSH.
 4. Click **Test** to validate the new instance. This performs a simple connection to the system hosting the SSH server.
 
 ## Commands
@@ -46,17 +35,17 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 ------------------
 | **Argument Name** | **Description**  | **Required** |
 |--|--|--|
-|cmds|The command, or commands, to execute. When commands are manually specified and executed via the Cortex XSOAR CLI or in a task, place each command after the first on a new line (no comma required)|Required|
+|cmds|The command, or commands, to execute. When commands are manually specified and executed via the XSOAR CLI or in a task, place each command after the first on a new line (no comma required)|Required|
 |disable_context|The package ID. Package ID or package name is required. When both exist, ID is used.|Optional|
-|exit_argument|The optional ***exit*** command to be executed after the *cmds* parameter. This is tied to the *requires_exit* optional parameter. (Default: **q**)|Optional|
-|isConfig|Specifies whether or not the commands being executed require a ***configure*** command to be executed first (e.g., **conf t** for Cisco IOS). The specific configure command is handled by the Netmiko Python module, and is associated with the *Platform* parameter specified in the integration instance. (Default: **False**)|Optional|
+|exit_argument|The optional **exit** command to be executed after the **cmds** parameter. This is tied to the **requires_exit** optional parameter. (Default: **q**)|Optional|
+|isConfig|Specifies whether or not the commands being executed require a **configure** command to be executed first (e.g., **conf t** for Cisco IOS). The specific configure command is handled by the Netmiko Python module, and is associated with the **Platform** parameter specified in the integration instance. (Default: **False**)|Optional|
 |override_host|If specified, uses this host in place of the one specified in the instance configuration.|Optional|
 |override_password|If specified, uses this password in place of the one specified in the instance configuration.|Optional|
 |override_platform|If specified, uses this platform name in place of the one specified in the instance configuration.|Optional|
 |override_port|If specified, uses this port in place of the one specified in the instance configuration.|Optional|
 |override_username|If specified, uses this username in place of the one specified in the instance configuration.|Optional|
 |raw_print|Prints the raw output directly to the war room (Default: **False**)|Optional|
-|require_enable|Specifies whether or not the ***enable*** command must be executed before the commands specified in the *cmds* parameter. (Default: **False**)|Optional|
+|require_enable|Specifies whether or not the **enable** command must be executed before the commands specified in the cmds parameter. (Default: **False**)|Optional|
 |require_exit|Specifies an optional command that must be executed upon completion of the cmds parameter being executed. (Default: **False**)|Optional|
 
 #### Context Output 
@@ -90,7 +79,7 @@ Executes a command, or series of commands, over an SSH connection. Outputs from 
 `!netmiko-cmds cmds="whoami`
 `who"`
 
-#### As multiple commands via CLI or task using an array
+#### As multiple commands via CLI or task using an array 
 `array context key = ["whoami", "who"]`
 `!netmiko-cmds cmds=${array}`
 
