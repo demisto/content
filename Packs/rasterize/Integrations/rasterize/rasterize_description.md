@@ -11,6 +11,6 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 ```
 --disable-auto-reload,[--disable-dev-shm-usage]
 ```
-To accept different languages, use the Chrome option '--accept-lang' followed by the desired language. For example, for German, use: '--accept-lang=de-DE'.
+To set a language for the browser, add the *--accept-lang* argument followed by the desired language code in IETF BCP 47 format. For example, `--accept-lang=de-DE`.
 * Rasterize Mode: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. WebDriver supports more options than Headless CLI. Such as support for the `offline` option in the `rasterize-emails` command. There are some urls that do not rasterize well with WebDriver and may succeed with Headless CLI. Thus, it is recommended to use the `WebDriver - Preferred` mode, which will use WebDriver as a start and fallback to Headless CLI if it fails.
 * Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: this integration does not support proxies which require authentication.

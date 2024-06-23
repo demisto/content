@@ -288,9 +288,7 @@ def write_file(filename, contents, overwrite=False):
     mode = 'w' if overwrite else 'a'
     try:
         with open(filename, mode, encoding='utf-8') as file:
-            if not overwrite:
-                file.write("\n")
-            file.write(contents)
+            file.write(("\n" if not overwrite else "") + contents)
             demisto.info(f"File '{filename}' saved successfully with {contents}.")
     except Exception as e:
         demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
@@ -414,89 +412,48 @@ def terminate_chrome(chrome_port='', killall=False):
     demisto.debug('terminate_chrome, Finish')
 
 
-def chrome_manager():
-    # Check if chrome_instances.tsv contains the instance id and chrome options.
-    # If we have open port matches for it - Try to use it.
-    # If no, or we cannot use it - Find a free port
-    instance_id, chrome_options = get_instance_id_and_chrome_options()
-    chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH)
-    instance_id_to_chrome_options, chrome_options_to_port, instance_id_to_port = get_chrome_instances_contents_dictionaries(
-        chrome_instances_contents)
+def chrome_manager() -> tuple[Any | None, int | None]:
+    """
+    Manages Chrome instances based on user-specified chrome options and integration instance ID.
 
-    if chrome_instances_contents:
-        instances_id, chromes_options = fetch_instances_id_and_chromes_options_from_chrome_instances_contents(
-            chrome_instances_contents)
+    This function performs the following steps:
+    1. Retrieves the instance ID of the integration and the Chrome options set by the user.
+    2. Checks if the instance ID has been used previously.
+        - If the instance ID is new, generates a new Chrome instance with the specified Chrome options.
+        - If the instance ID has been used:
+            - If the current Chrome options differ from the saved options for this instance ID,
+              it terminates the existing Chrome instance and generates a new one with the new options.
+            - If the current Chrome options match the saved options for this instance ID,
+              it reuses the existing Chrome instance.
+
+    Returns:
+        tuple[Any | None, int | None]: A tuple containing:
+            - The Browser or None if an error occurred.
+            - The chrome port or None if an error occurred.
+    """
+    demisto.log("failure")
+    instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
+    chrome_options = demisto.params().get('chrome_options', 'None')
+    chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH)
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(chrome_instances_contents)
 
     if not chrome_instances_contents or instance_id not in instances_id:
-        """
-        When:
-            case 1: file is empty, that means no chrome open on the machine
-            or
-            case 2: new instance with the same existing chrome configuration as another instance
-            or
-            case 3: chrome configuration does not exist and integration instance does not exist in the file
-        Then:
-            create new browser
-        """
-
-        if not chrome_instances_contents:
-            demisto.debug("case 1: file is empty, meaning no Chrome running on the machine")
-        elif chrome_options in chromes_options and instance_id not in instances_id:
-            demisto.debug("case 2: new instance with the same existing Chrome configuration as another instance")
-        elif chrome_options not in chromes_options and instance_id not in instances_id:
-            demisto.debug("case 3: Chrome configuration does not exist and integration instance does not exist in the file")
-
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    elif instance_id in instances_id and chrome_options != instance_id_to_chrome_options.get(instance_id):
-        """
-        When:
-            case 4: instance updated the chrome configuration to different configuration
-        Then:
-            should kill the old browser and create a new one
-        """
-
-        demisto.debug(f"case 4: found {instance_id=} but with different {chrome_options=}")
+    elif chrome_options != instance_id_to_chrome_options.get(instance_id):
         chrome_port = instance_id_to_port.get(instance_id)
         delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents, instance_id, chrome_port)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    elif instance_id in instances_id and chrome_options == instance_id_to_chrome_options.get(instance_id):
-        """
-        When:
-            case 5: The instance exists in the file and the chrome configuration matches it
-        Then:
-            use the existing browser
-        """
-
-        demisto.debug(f"case 5: found {instance_id=} with matching {chrome_options=}")
-        chrome_port = chrome_options_to_port.get(chrome_options)
-        browser = is_chrome_running_locally(chrome_port)
-        return browser, chrome_port
-
-    else:
-        message = f"ERROR: Cannot connect to Chrome with parameters: {instance_id=}, {chrome_options=}"
-        demisto.info(message)
-        demisto.error(message)
-        return None
-
-
-def get_instance_id_and_chrome_options():
-    instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID')
-    chrome_options = demisto.params().get('chrome_options')
-
-    if not instance_id:
-        instance_id = 'None'
-    if not chrome_options:
-        chrome_options = 'None'
-
-    return instance_id, chrome_options
+    chrome_port = instance_id_to_port.get(instance_id)
+    browser = is_chrome_running_locally(chrome_port)
+    return browser, chrome_port
 
 
 def get_chrome_instances_contents_dictionaries(chrome_instances_contents):
     instance_id_to_chrome_options = {}
-    chrome_options_to_port = {}
     instance_id_to_port = {}
 
     if chrome_instances_contents:
@@ -504,32 +461,18 @@ def get_chrome_instances_contents_dictionaries(chrome_instances_contents):
         for line in splitted_chrome_instances_contents:
             port, instance_id, chrome_options = line.strip().split('\t')
             instance_id_to_chrome_options[instance_id] = chrome_options
-            chrome_options_to_port[chrome_options] = port
             instance_id_to_port[instance_id] = port
 
-    return instance_id_to_chrome_options, chrome_options_to_port, instance_id_to_port
-
-
-def fetch_instances_id_and_chromes_options_from_chrome_instances_contents(chrome_instances_contents):
-    splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
-    _, instances_id_tuple, chromes_options_tuple = zip(
-        *[line.strip().split('\t') for line in splitted_chrome_instances_contents])
-    instances_id = list(instances_id_tuple) if instances_id_tuple else []
-    chromes_options = list(chromes_options_tuple) if chromes_options_tuple else []
-
+    instances_id = list(instance_id_to_port.keys())
+    chromes_options = list(instance_id_to_chrome_options.values())
     if instances_id and not chromes_options:
         chromes_options.append('None')
-
-    demisto.debug(f"Chrome instances contents: {instances_id=}, {chromes_options=}")
-    return instances_id, chromes_options
+    return instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options
 
 
 def generate_new_chrome_instance(instance_id, chrome_options):
     chrome_port = generate_chrome_port()
-    if chrome_port:
-        browser, chrome_port = start_chrome_headless(str(chrome_port), instance_id, chrome_options)
-        return browser, chrome_port
-    return None, None
+    return start_chrome_headless(str(chrome_port), instance_id, chrome_options)
 
 
 def generate_chrome_port():
