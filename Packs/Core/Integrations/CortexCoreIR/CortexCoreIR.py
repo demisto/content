@@ -28,7 +28,7 @@ PREVALENCE_COMMANDS = {
 
 
 class Client(CoreClient):
-    
+
     def test_module(self):
         """
             Performs basic get request to get item samples
