@@ -9,7 +9,7 @@ import pytest
 
 import demistomock
 import demistomock as demisto
-from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException, BaseClient
+from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
 from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
@@ -4055,7 +4055,10 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
         assert remote_args.delta['status'] == expected_resolved_status[i]
 
 
-def test_http_request_demisto_call(mocker):
+@pytest.mark.parametrize('data, expected_result',
+                         [('{"reply": {"container": ["1.1.1.1"]}}', {"reply": {"container": ["1.1.1.1"]}}),
+                          (b'XXXXXXX', b'XXXXXXX')])
+def test_http_request_demisto_call(mocker, data, expected_result):
     """
     Given:
         - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
@@ -4063,6 +4066,8 @@ def test_http_request_demisto_call(mocker):
         - Calling the http_request method.
     Then:
         - Make sure demisto._apiCall() is being called and the method returns the expected result.
+        - converting to json is possible - do it and return json
+        - converting to json is impossible - catch the error and return the data as is
     """
     from CoreIRApiModule import CoreClient
     client = CoreClient(
@@ -4071,27 +4076,7 @@ def test_http_request_demisto_call(mocker):
     mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
     mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                                            'status': 200,
-                                                           'reply': {"data": {"container": ["1.1.1.1"]}}})
+                                                           'data': data})
     res = client._http_request(method="POST",
                                url_suffix="/distributions/get_versions/")
-    assert res == {"container": ["1.1.1.1"]}
-
-
-def test_http_request_base_client(mocker):
-    """
-    Given:
-        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
-    When
-        - Calling the http_request method.
-    Then
-        - Make sure demisto._apiCall() is being called and the method returns the expected result.
-    """
-    from CoreIRApiModule import CoreClient
-    client = CoreClient(
-        base_url=f'{Core_URL}/public_api/v1', headers={}
-    )
-    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=False)
-    mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"data": {"container": ["1.1.1.1"]}}})
-    res = client._http_request(method="POST",
-                               url_suffix="/distributions/get_versions/")
-    assert res['reply'] == {"data": {"container": ["1.1.1.1"]}}
+    assert expected_result == res
