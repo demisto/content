@@ -307,8 +307,8 @@ class TestZendeskClient:
 
     class TestHTTPRequest:
 
-        @ staticmethod
-        @ pytest.fixture
+        @staticmethod
+        @pytest.fixture
         def default_kwargs():
             return {
                 'data': None,

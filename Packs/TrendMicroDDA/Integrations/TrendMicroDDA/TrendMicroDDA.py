@@ -210,7 +210,7 @@ def simple_upload_sample_file(sample_file):
             'X-DTAS-Time': get_epoch_time(),
             'X-DTAS-SampleType': '0',  # 0 for file, 1 for URL
             'X-DTAS-Challenge': str(uuid.uuid4()),
-            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName," \
+            'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,"
                                                + "X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
         }
         tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_file)
@@ -259,7 +259,7 @@ def simple_upload_sample_url(sample_url):
         'X-DTAS-Time': get_epoch_time(),
         'X-DTAS-SampleType': '1',  # 0 for file, 1 for URL
         'X-DTAS-Challenge': str(uuid.uuid4()),
-        'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName," \
+        'X-DTAS-ChecksumCalculatingOrder': "X-DTAS-ProtocolVersion,X-DTAS-ClientUUID,X-DTAS-SourceID,X-DTAS-SourceName,"
                                            + "X-DTAS-SHA1,X-DTAS-Time,X-DTAS-SampleType,X-DTAS-Challenge",
     }
     tmp_checksum = calculate_checksum(API_KEY, headers_simple_upload_sample_url)
