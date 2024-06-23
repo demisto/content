@@ -79,7 +79,7 @@ tasks:
       - "3"
     scriptarguments:
       ip:
-        simple: 1.2.3.4
+        simple: 34.107.151.202
       threshold: {}
     continueonerror: true
     separatecontext: false
@@ -894,7 +894,7 @@ tasks:
       - "27"
     scriptarguments:
       indicator:
-        simple: 1.2.3.4
+        simple: 34.107.151.202
       indicator_type:
         simple: IPv4
     continueonerror: true
@@ -1022,7 +1022,7 @@ tasks:
       - "31"
     scriptarguments:
       indicator:
-        simple: 1.2.3.4
+        simple: 34.107.151.202
       indicator-type:
         simple: IPv4
       indicator_type:
@@ -1543,7 +1543,7 @@ tasks:
       - "47"
     scriptarguments:
       indicator:
-        simple: 1.2.3.4
+        simple: 34.107.151.202
       indicator-type:
         simple: IPv4
       indicator_type:

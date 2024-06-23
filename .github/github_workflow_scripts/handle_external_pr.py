@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import sys
 import urllib3
 from blessings import Terminal
 from github import Github
@@ -19,9 +20,8 @@ from utils import (
     get_env_var,
     timestamped_print,
     Checkout,
-    load_json,
     get_content_reviewers,
-    CONTENT_ROLES_PATH,
+    get_content_roles,
     get_support_level
 )
 from demisto_sdk.commands.common.tools import get_pack_name
@@ -463,7 +463,12 @@ def main():
 
     # Parse PR reviewers from JSON and assign them
     # Exit if JSON doesn't exist or not parsable
-    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_roles = get_content_roles()
+
+    if not content_roles:
+        print("Unable to retrieve the content roles. Exiting...")
+        sys.exit(1)
+
     content_reviewers, security_reviewer, tim_reviewer = get_content_reviewers(content_roles)
 
     print(f"Content Reviewers: {','.join(content_reviewers)}")

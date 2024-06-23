@@ -139,6 +139,7 @@ def startServer():  # pragma: no cover
 
 
 def main():  # pragma: no cover
+    isMDImagesSupported = is_demisto_version_ge(MD_IMAGE_SUPPORT_MIN_VER)
     try:
         sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
             'utf-8')
@@ -196,6 +197,13 @@ def main():  # pragma: no cover
             with open(input_file, 'wb') as f:
                 f.write(base64.b64decode(sane_json_b64))
 
+            if headerLeftImage:
+                customer_logo_file_path = tmpdir + "/customer-logo-base64.txt"
+                with open(customer_logo_file_path, "w") as f:
+                    f.write(headerLeftImage)
+                extra_cmd = extra_cmd.replace(headerLeftImage, customer_logo_file_path)
+                headerLeftImage = customer_logo_file_path
+
             cmd = ['./reportsServer', input_file, output_file, dist_dir] + shlex.split(
                 extra_cmd)
 
@@ -210,15 +218,14 @@ def main():  # pragma: no cover
             if isMDImagesSupported:
                 params += f', markdownArtifactsServerAddress="{mdServerAddress}"'
 
-            LOG(f"Sane-pdf parameters: {params}]")
+            demisto.debug(f"Sane-PDF parameters: {params}]")
             cmd_string = " ".join(cmd)
-            LOG(f"Sane-pdf cmd: {cmd_string}")
-            LOG.print_log()
+            demisto.debug(f'Sane-PDF report commmad: {cmd_string}')
 
             # Execute the report creation
             out = subprocess.check_output(cmd, cwd=WORKING_DIR,
                                           stderr=subprocess.STDOUT)
-            LOG(f"Sane-pdf output: {str(out)}")
+            demisto.debug(f"Sane-pdf output: {str(out)}")
 
             with open(output_file, 'rb') as f:
                 encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')

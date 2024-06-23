@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
+import json
+from pathlib import Path
 import pytest
+import requests_mock
 from typing import Any
 from utils import (
     get_env_var,
@@ -9,8 +12,13 @@ from utils import (
     CONTRIBUTION_SECURITY_REVIEWER_KEY,
     TIM_REVIEWER_KEY,
     DOC_REVIEWER_KEY,
-    get_doc_reviewer
+    get_doc_reviewer,
+    CONTENT_ROLES_BLOB_MASTER_URL,
+    get_content_roles,
+    CONTENT_ROLES_FILENAME,
+    GITHUB_HIDDEN_DIR
 )
+from git import Repo
 
 
 class TestGetEnvVar:
@@ -293,3 +301,156 @@ def test_exit_get_doc_reviewer(
     with pytest.raises(ValueError) as e:
         get_doc_reviewer(content_roles)
         assert e.type == ValueError
+
+
+class TestGetContentRoles:
+
+    content_roles: dict[str, Any] = {
+        CONTRIBUTION_REVIEWERS_KEY: ['prr1', 'prr2', 'prr3'],
+        'CONTRIBUTION_TL': 'tl1',
+        CONTRIBUTION_SECURITY_REVIEWER_KEY: 'sr1',
+        'ON_CALL_DEVS': ['ocd1', 'ocd2'],
+        DOC_REVIEWER_KEY: 'dr1',
+        TIM_REVIEWER_KEY: 'tr1'
+    }
+
+    def test_get_content_roles_success(
+        self,
+        requests_mock: requests_mock.Mocker
+    ):
+        """
+        Test successful retrieval of content_roles.json.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The request to retrieve content_roles.json is successful.
+
+        Then:
+        - The response includes the expected content role keys.
+        """
+
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            json=self.content_roles
+        )
+
+        actual_content_roles = get_content_roles()
+        assert actual_content_roles
+        assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
+        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
+        assert TIM_REVIEWER_KEY in actual_content_roles
+
+    def test_get_content_roles_fail_blob(
+        self,
+        requests_mock: requests_mock.Mocker,
+        tmp_path: Path
+    ):
+        """
+        Test failure to retrieve the content_roles.json blob
+        and successful retrieval from the filesystem.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The request to retrieve content_roles.json is fails.
+
+        Then:
+        - get_content_roles returns a populated dict.
+        """
+
+        # Mock failed request
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            status_code=404
+        )
+
+        # Create repo and content_roles.json in fs
+        Repo.init(tmp_path)
+        (tmp_path / GITHUB_HIDDEN_DIR).mkdir()
+        content_roles_path = tmp_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
+        content_roles_path.touch()
+        content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
+
+        actual_content_roles = get_content_roles(tmp_path)
+
+        assert actual_content_roles
+        assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
+        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
+        assert TIM_REVIEWER_KEY in actual_content_roles
+
+    def test_get_content_roles_invalid_json_blob(
+        self,
+        requests_mock: requests_mock.Mocker,
+        tmp_path: Path
+    ):
+        """
+        Test failure to retrieve content_roles.json
+        and successful retrieval from the filesystem.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The content_roles.json is invalid.
+
+        Then:
+        - get_content_roles returns a populated dict.
+        """
+
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            json={"only_key"}
+        )
+
+        # Create repo and content_roles.json in fs
+        Repo.init(tmp_path)
+        (tmp_path / GITHUB_HIDDEN_DIR).mkdir()
+        content_roles_path = tmp_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
+        content_roles_path.touch()
+        content_roles_path.write_text(json.dumps(self.content_roles, indent=4))
+
+        actual_content_roles = get_content_roles(tmp_path)
+
+        assert actual_content_roles
+        assert CONTRIBUTION_REVIEWERS_KEY in actual_content_roles
+        assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
+        assert TIM_REVIEWER_KEY in actual_content_roles
+
+    def test_get_content_roles_invalid_json_blob_and_fs(
+        self,
+        requests_mock: requests_mock.Mocker,
+        tmp_path: Path
+    ):
+        """
+        Test failure to retrieve content_roles.json
+        from the blob and from the filesystem.
+
+        Given:
+        - A content_roles.json
+
+        When:
+        - The content_roles.json is invalid in blob.
+        - The content_roles.json is invalid in filesystem.
+
+        Then:
+        - get_content_roles returns nothing.
+        """
+
+        requests_mock.get(
+            CONTENT_ROLES_BLOB_MASTER_URL,
+            json={"only_key"}
+        )
+
+        # Create repo and content_roles.json in fs
+        Repo.init(tmp_path)
+        (tmp_path / GITHUB_HIDDEN_DIR).mkdir()
+        content_roles_path = tmp_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
+        content_roles_path.touch()
+        content_roles_path.write_text("{\"only_key\"}")
+
+        actual_content_roles = get_content_roles(tmp_path)
+
+        assert not actual_content_roles
