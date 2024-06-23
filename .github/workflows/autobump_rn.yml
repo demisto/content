@@ -1,8 +1,5 @@
 name: Autobump Version
-on:
-  push:
-    branches:
-      - master
+on: push
 
 permissions:
   pull-requests: write
