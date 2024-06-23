@@ -202,10 +202,10 @@ tasks:
             value:
               complex:
                 root: inputs.UnusualGeoLocation
-            iscontext: false
+            iscontext: true
           right:
             value:
-              simple: "true"
+              simple: "false"
           ignorecase: true
     continueonerrortype: ""
     view: |-
