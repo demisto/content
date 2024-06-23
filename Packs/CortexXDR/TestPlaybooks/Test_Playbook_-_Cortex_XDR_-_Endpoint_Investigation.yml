@@ -110,8 +110,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3180,
-          "y": -240
+          "x": 2380,
+          "y": -410
         }
       }
     note: false
@@ -153,8 +153,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2775,
-          "y": -240
+          "x": 1975,
+          "y": -410
         }
       }
     note: false
@@ -195,8 +195,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3970,
-          "y": -240
+          "x": 3170,
+          "y": -410
         }
       }
     note: false
@@ -239,8 +239,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3575,
-          "y": -240
+          "x": 2775,
+          "y": -410
         }
       }
     note: false
@@ -303,7 +303,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1560,
+          "x": 1550,
           "y": -60
         }
       }
@@ -335,8 +335,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3575,
-          "y": -15
+          "x": 2775,
+          "y": -25
         }
       }
     note: false
@@ -367,8 +367,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3970,
-          "y": -15
+          "x": 3170,
+          "y": -25
         }
       }
     note: false
@@ -399,8 +399,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2780,
-          "y": -15
+          "x": 1975,
+          "y": -25
         }
       }
     note: false
@@ -431,8 +431,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3180,
-          "y": -15
+          "x": 2380,
+          "y": -25
         }
       }
     note: false
@@ -638,10 +638,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "292":
     id: "292"
-    taskid: dbf1e89d-ec4e-4714-84bb-62ab50d69681
+    taskid: c1216f7b-2ff9-43e6-80ea-6f46e3007150
     type: playbook
     task:
-      id: dbf1e89d-ec4e-4714-84bb-62ab50d69681
+      id: c1216f7b-2ff9-43e6-80ea-6f46e3007150
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -798,8 +798,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4370,
-          "y": -240
+          "x": 3570,
+          "y": -410
         }
       }
     note: false
@@ -830,8 +830,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4370,
-          "y": -15
+          "x": 3570,
+          "y": -25
         }
       }
     note: false
@@ -872,8 +872,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4770,
-          "y": -240
+          "x": 3970,
+          "y": -410
         }
       }
     note: false
@@ -904,8 +904,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4770,
-          "y": -15
+          "x": 3970,
+          "y": -25
         }
       }
     note: false
@@ -946,8 +946,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5170,
-          "y": -240
+          "x": 4370,
+          "y": -410
         }
       }
     note: false
@@ -978,8 +978,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5170,
-          "y": -15
+          "x": 4370,
+          "y": -25
         }
       }
     note: false
@@ -1020,8 +1020,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5570,
-          "y": -240
+          "x": 4770,
+          "y": -410
         }
       }
     note: false
@@ -1052,8 +1052,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5570,
-          "y": -15
+          "x": 4770,
+          "y": -25
         }
       }
     note: false
@@ -1094,8 +1094,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5970,
-          "y": -240
+          "x": 5170,
+          "y": -410
         }
       }
     note: false
@@ -1126,8 +1126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 5970,
-          "y": -15
+          "x": 5170,
+          "y": -25
         }
       }
     note: false
@@ -1168,8 +1168,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6370,
-          "y": -240
+          "x": 5570,
+          "y": -410
         }
       }
     note: false
@@ -1200,8 +1200,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6370,
-          "y": -15
+          "x": 5570,
+          "y": -25
         }
       }
     note: false
@@ -1242,8 +1242,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6770,
-          "y": -240
+          "x": 5970,
+          "y": -410
         }
       }
     note: false
@@ -1274,160 +1274,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 6770,
-          "y": -15
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "308":
-    id: "308"
-    taskid: 817d4295-f25f-46ac-87f1-f3510547cb8b
-    type: condition
-    task:
-      id: 817d4295-f25f-46ac-87f1-f3510547cb8b
-      version: -1
-      name: Verify Mitre Tactic ID & Name
-      description: |
-        Verify that the ‘PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name’ context key was extracted correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      ' Verified':
-      - "113"
-      '#default#':
-      - "309"
-    separatecontext: false
-    conditions:
-    - label: ' Verified'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Alert
-                accessor: mitre_tactic_id_and_name
-            iscontext: true
-          right:
-            value: {}
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1970,
-          "y": -240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "309":
-    id: "309"
-    taskid: 5efcf6d3-19bc-46b6-8029-f14e0cb80216
-    type: regular
-    task:
-      id: 5efcf6d3-19bc-46b6-8029-f14e0cb80216
-      version: -1
-      name: Verify Context Error - Mitre Tactic ID & Name
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1970,
-          "y": -15
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "310":
-    id: "310"
-    taskid: 9a93cd3c-a811-4f6d-83e1-386f2c4efee7
-    type: condition
-    task:
-      id: 9a93cd3c-a811-4f6d-83e1-386f2c4efee7
-      version: -1
-      name: Verify Mitre Technique ID & Name
-      description: |
-        Verify that the ‘PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name’ context key was extracted correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      ' Verified':
-      - "113"
-      '#default#':
-      - "311"
-    separatecontext: false
-    conditions:
-    - label: ' Verified'
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2380,
-          "y": -240
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "311":
-    id: "311"
-    taskid: edb24767-975b-411c-83c7-5c95cf217201
-    type: regular
-    task:
-      id: edb24767-975b-411c-83c7-5c95cf217201
-      version: -1
-      name: Verify Context Error - Mitre Technique ID & Name
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: "The 'PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name' context key not extracted properly. This may indicate that one or more of the following changes have been made to the 'Cortex XDR Malware - Incident Enrichment' playbook:\n1- The 'xdr-get-incident-extra-data' automation outputs have been modified and no longer contain the 'PaloAltoNetworksXDR.Incident.network_artifacts' context key. \n2- The 'incident_id' input configuration was changed for the 'xdr-get-incident-extra-data' automation used in the 'Get Full Incident Details' task."
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2380,
-          "y": -15
+          "x": 5970,
+          "y": -25
         }
       }
     note: false
@@ -1468,8 +1316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7170,
-          "y": -240
+          "x": 6370,
+          "y": -410
         }
       }
     note: false
@@ -1500,8 +1348,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 7170,
-          "y": -15
+          "x": 6370,
+          "y": -25
         }
       }
     note: false
@@ -1809,13 +1657,24 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "367"
+      - "73"
+      - "46"
+      - "75"
+      - "294"
+      - "74"
+      - "296"
+      - "298"
+      - "300"
+      - "302"
+      - "304"
+      - "306"
+      - "312"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2165,
+          "x": 1975,
           "y": -550
         }
       }
@@ -3021,12 +2880,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "366":
     id: "366"
-    taskid: 2ec187bc-2ab0-4671-850f-aa00b574d238
+    taskid: 6513f3c7-2ebb-433b-8d24-e65d67ff1f17
     type: condition
     task:
-      id: 2ec187bc-2ab0-4671-850f-aa00b574d238
+      id: 6513f3c7-2ebb-433b-8d24-e65d67ff1f17
       version: -1
-      name: Is the PaloAltoNetworksXDR Alert key defined?
+      name: Are the PaloAltoNetworksXDR Alert and Mitre keys defined?
       type: condition
       iscommand: false
       brand: ""
@@ -3044,134 +2903,24 @@ tasks:
             value:
               simple: PaloAltoNetworksXDR.Alert
             iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 540,
           "y": -850
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "367":
-    id: "367"
-    taskid: 3f1df3d6-2b34-4b3f-80e4-0e8509c59b32
-    type: condition
-    task:
-      id: 3f1df3d6-2b34-4b3f-80e4-0e8509c59b32
-      version: -1
-      name: Check XDR Alert Source
-      description: The task checks the 'alert source' of the XDR alerts retrieved by the 'Cortex XDR - Endpoint Investigation' playbook before verifying the 'PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name' and 'PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name' context keys because only 'ANALYTICS_BIOC' and 'MAGNIFIER' alert source types include the 'PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name' and 'PaloAltoNetworksXDR.Alert.mitre_technique_id_and_name' context keys.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      ' Alerts include MITRE':
-      - "308"
-      - "310"
-      '#default#':
-      - "113"
-    separatecontext: false
-    conditions:
-    - label: ' Alerts include MITRE'
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Alert
-                accessor: alert_source
-            iscontext: true
-          right:
-            value:
-              simple: ANALYTICS_BIOC
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Alert
-                accessor: alert_source
-            iscontext: true
-          right:
-            value:
-              simple: MAGNIFIER
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2165,
-          "y": -410
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "368":
-    id: "368"
-    taskid: a07a1ca0-e764-46fa-89cf-6645bd20e30e
-    type: condition
-    task:
-      id: a07a1ca0-e764-46fa-89cf-6645bd20e30e
-      version: -1
-      name: Verify Mitre Tactic ID & Name
-      description: |
-        Verify that the ‘PaloAltoNetworksXDR.Alert.mitre_tactic_id_and_name’ context key was extracted correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    conditions:
-    - label: ' Verified'
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Alert
-                accessor: alert_source
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: ANALYTICS_BIOC
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Alert
-                accessor: alert_source
-            iscontext: true
-          right:
-            value:
-              simple: MAGNIFIER
-          ignorecase: true
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: PaloAltoNetworksXDR.Alert
-                accessor: mitre_tactic_id_and_name
-            iscontext: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1790,
-          "y": 610
         }
       }
     note: false
@@ -3202,13 +2951,12 @@ view: |-
       "361_338_Verified": 0.1,
       "363_338_Verified": 0.1,
       "366_365_#default#": 0.19,
-      "367_113_#default#": 0.56,
       "73_116_#default#": 0.7
     },
     "paper": {
       "dimensions": {
-        "height": 2330,
-        "width": 13480,
+        "height": 1830,
+        "width": 12680,
         "x": -5930,
         "y": -1625
       }
