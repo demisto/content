@@ -259,7 +259,7 @@ def check_if_item_is_tim(content_object: BaseContent | None) -> bool:
     Checks whether a given object (graph object) is a feed or related to TIM
 
     Arguments:
-        - `content_object`: ``BaseContent``: Content object from the graph
+        - `content_object`: ``BaseContent``: Content object taken from the graph
 
     Returns: `bool` whether the content object is a feed or has the relevant tags/categories
     """
