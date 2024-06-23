@@ -174,7 +174,7 @@ ASSETS_NUMBER = 100
 MAX_CHUNKS_PER_FETCH = 10
 MAX_VULNS_CHUNKS_PER_FETCH = 20
 ASSETS_FETCH_FROM = '90 days'
-VULNS_FETCH_FROM = '3 days'
+VULNS_FETCH_FROM = '1 days'
 MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = '404'
 
@@ -261,11 +261,12 @@ class Client(BaseClient):
         payload: dict[str, Any] = {
             "filters":
                 {
-                    "last_found": last_found,
-                    "severity": ["info"]
+                    "last_found": last_found
                 },
             "num_assets": num_assets
         }
+        # if severity:
+        #     payload["filters"]["severity"] = severity
         demisto.debug(f"my payload is: {payload}")
         res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
         return res.get('export_uuid', '')
