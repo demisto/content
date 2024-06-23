@@ -41,11 +41,15 @@ def start_and_return_bigquery_client(google_service_creds_json_string):
     cur_directory_path = os.getcwd()
     creds_file_name = '{0}.json'.format(demisto.uniqueFile())
     path_to_save_creds_file = os.path.join(cur_directory_path, creds_file_name)
+    demisto.debug("Setting GOOGLE_APPLICATION_CREDENTIALS.")
     with open(path_to_save_creds_file, "w") as creds_file:
+        if type(google_service_creds_json_string) != str:
+            google_service_creds_json_string = json.dumps(google_service_creds_json_string)
         json.dump(json.loads(google_service_creds_json_string), creds_file)
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path_to_save_creds_file
         creds_file.close()
     bigquery_client = bigquery.Client()
+    demisto.debug("Initialized bigquery client successfully.")
     return bigquery_client
 
 
@@ -130,6 +134,7 @@ def query(query_string, project_id, location, allow_large_results, default_datas
 def get_query_results(query_to_run=None):
     args = demisto.args()
     query_to_run = query_to_run or args['query']
+    demisto.debug(f"Running with the following args: {args}")
     project_id = args.get('project_id', None)
     location = args.get('location', None)
     allow_large_results = args.get('allow_large_results', None)
@@ -149,17 +154,20 @@ def get_query_results(query_to_run=None):
     query_results = query(query_to_run, project_id, location, allow_large_results, default_dataset,
                           destination_table, kms_key_name, dry_run, priority, use_query_cache, use_legacy_sql,
                           google_service_creds, job_id, write_disposition)
+    demisto.debug("Got the query results.")
     return query_results
 
 
 def query_command(query_to_run=None):
     query_results = get_query_results(query_to_run)
+    demisto.debug("Got query results.")
     args = demisto.args()
     dry_run = args.get('dry_run', None)
     context = {}
     rows_contexts = []
     human_readable = 'No results found.'
     if dry_run and str_to_bool(dry_run):
+        demisto.debug("In query dry run")
         human_readable = '### Dry run results: \n This query will process {0} ' \
                          'bytes'.format(query_results.total_bytes_processed)
 
@@ -380,24 +388,30 @@ def test_module():
         next(results_rows_iterator)
         demisto.results("ok")
     except Exception as ex:
-        return_error("Authentication error: credentials JSON provided is invalid.\n Exception recieved:"
+        return_error("Authentication error: credentials JSON provided is invalid.\n Exception received:"
                      "{}".format(ex))
 
 
-''' COMMANDS MANAGER / SWITCH PANEL '''
+''' MAIN FUNCTION '''
 
-LOG('Command being called is %s' % (demisto.command()))
 
-try:
-    if demisto.command() == 'test-module':
-        test_module()
-    elif demisto.command() == 'bigquery-query':
-        search_query = demisto.args().get('query')
-        query_command(search_query)
-    elif demisto.command() == 'fetch-incidents':
-        fetch_incidents()
+def main() -> None:
+    command = demisto.command()
+    demisto.debug(f'Command being called is {command}')
 
-except Exception as e:
-    LOG(str(e))
-    LOG.print_log()
-    raise
+    try:
+        if command == 'test-module':
+            test_module()
+        elif command == 'bigquery-query':
+            search_query = demisto.args().get('query')
+            query_command(search_query)
+        elif command == 'fetch-incidents':
+            fetch_incidents()
+        else:
+            raise NotImplementedError(f'{command} command is not implemented.')
+    except Exception as e:
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+if __name__ in ('__main__', '__builtin__', 'builtins'):
+    main()
