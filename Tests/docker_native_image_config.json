@@ -95,7 +95,7 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "devdemisto/py3-native:8.6.0.92375"
+            "docker_ref": "devdemisto/py3-native:8.6.0.98235"
         }
     },
     "ignored_content_items":[
