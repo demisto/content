@@ -7,7 +7,7 @@ from git import Repo, GitCommandError
 from github.PullRequest import PullRequest
 from packaging.version import Version
 from blessings import Terminal
-from Utils.github_workflow_scripts.utils import load_json, Checkout, timestamped_print
+from utils import load_json, Checkout, timestamped_print
 
 
 print = timestamped_print
