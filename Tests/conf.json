@@ -23,11 +23,14 @@
     "tests": [
         {
         "integrations": "CipherTrust",
-        "playbookID": "Thales CipherTrust Test Playbook - Access Management"
+        "playbookID": "Thales CipherTrust Test Playbook - Access Management",
+        "fromversion": "6.10.0"
     },
     {
         "integrations": "CipherTrust",
-        "playbookID": "Thales CipherTrust Test Playbook - CA"
+        "playbookID": "Thales CipherTrust Test Playbook - CA",
+        "fromversion": "6.10.0"
+
     },
 
         {
