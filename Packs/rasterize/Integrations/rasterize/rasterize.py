@@ -431,7 +431,6 @@ def chrome_manager() -> tuple[Any | None, str | None]:
             - The Browser or None if an error occurred.
             - The chrome port or None if an error occurred.
     """
-    demisto.log("failure")  # TODO: Remove this log
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
     chrome_options = demisto.params().get('chrome_options', 'None')
     chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH)
