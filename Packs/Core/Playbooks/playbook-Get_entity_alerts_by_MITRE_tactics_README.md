@@ -15,8 +15,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * SearchAlertsV2
+* SetAndHandleEmpty
 
 ### Commands
 
