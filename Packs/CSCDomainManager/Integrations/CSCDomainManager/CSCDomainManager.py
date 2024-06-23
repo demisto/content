@@ -498,7 +498,7 @@ def csc_domains_configuration_search_command(client: Client, args) -> CommandRes
     configurations_with_required_fields = get_domains_configurations_hr_fields(configurations_list)
 
     results = CommandResults(
-        readable_output=tableToMarkdown('Filtered Configurations',
+        readable_output = tableToMarkdown('Filtered Configurations',
                                         configurations_with_required_fields,
                                         headers=HR_HEADERS_FOR_DOMAIN_CONFI_LIST,
                                         removeNull=True),
