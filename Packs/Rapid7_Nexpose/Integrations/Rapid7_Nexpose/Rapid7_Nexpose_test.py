@@ -27,8 +27,57 @@ def load_test_data(folder: str, file_name: str) -> dict:
     Returns:
         dict: Dictionary data loaded from the json file.
     """
-    with open(Path("test_data") / folder / f"{file_name}.json", "r") as f:
+    with open(Path("test_data") / folder / f"{file_name}.json") as f:
         return json.load(f)
+
+
+def test_connection_errors_recovers(mocker, mock_client):
+    """
+    Given:
+     - Connection Error, ReadTimeout error and a success response
+
+    When:
+     - running the _http_request method
+
+    Then:
+     - Ensure that success message is printed and recovery for http request happens.
+    """
+    mocker.patch.object(demisto, "error")
+    mocker.patch("Rapid7_Nexpose.time.sleep")
+    mocker.patch.object(
+        BaseClient,
+        "_http_request",
+        side_effect=[
+            DemistoException(message="error", exception=requests.ConnectionError("error")),
+            requests.ReadTimeout("error"),
+            "success"
+        ]
+    )
+    assert mock_client._http_request(method="GET", url_suffix="url") == "success"
+
+
+def test_http_request_no_connection_errors(mocker, mock_client):
+    """
+    Given:
+     - general Http error
+
+    When:
+     - running the _http_request method
+
+    Then:
+     - Ensure that the exception is raised without triggering the retry mechanism
+    """
+    mocker.patch.object(demisto, "error")
+    sleep_mocker = mocker.patch("Rapid7_Nexpose.time.sleep")
+    mocker.patch.object(
+        BaseClient,
+        "_http_request",
+        side_effect=[DemistoException(message="error", exception=requests.exceptions.HTTPError("error"))]
+    )
+    with pytest.raises(DemistoException):
+        assert mock_client._http_request(method="GET", url_suffix="url")
+
+    assert not sleep_mocker.called
 
 
 # --- Utility Functions Tests ---

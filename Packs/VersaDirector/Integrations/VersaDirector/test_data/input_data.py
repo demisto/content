@@ -250,7 +250,8 @@ case_basic_auth = (
     "",
     "",
     "",
-    (("username", "password"), {"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ="}),
+    (("username", "password"), {"Authorization": "Basic dXNlcm5hbWU6cGFzc3dvcmQ=",
+                                'Accept': 'application/json', 'Content-Type': 'application/json'}),
 )
 case_auth_token_only = (
     "",
@@ -259,7 +260,7 @@ case_auth_token_only = (
     "",
     "",
     "access_token",
-    (None, {"Authorization": "Bearer access_token"}),
+    (None, {"Authorization": "Bearer access_token", 'Accept': 'application/json', 'Content-Type': 'application/json'}),
 )
 case_context_args_already_created = (
     "",
@@ -268,6 +269,6 @@ case_context_args_already_created = (
     "client_id",
     "client_secret",
     "access_token",
-    (None, {"Authorization": "Bearer access_token"}),
+    (None, {"Authorization": "Bearer access_token", 'Accept': 'application/json', 'Content-Type': 'application/json'}),
 )
 create_client_header_args = [case_basic_auth, case_auth_token_only, case_context_args_already_created]

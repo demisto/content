@@ -23,7 +23,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": -90
+          "y": -240
         }
       }
     note: false
@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 95
+          "y": -85
         }
       }
     note: false
@@ -116,7 +116,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 600
+          "y": 590
         }
       }
     note: false
@@ -415,7 +415,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 740
+          "y": 730
         }
       }
     note: false
@@ -647,7 +647,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 420
+          "y": 410
         }
       }
     note: false
@@ -783,8 +783,6 @@ tasks:
         complex:
           root: alert
           accessor: agentid
-      timeRange:
-        simple: 2 hours ago
     separatecontext: true
     loop:
       iscommand: false
@@ -1148,7 +1146,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "47"
+      - "61"
     scriptarguments:
       alert_ids:
         complex:
@@ -1159,7 +1157,7 @@ tasks:
       {
         "position": {
           "x": 1140,
-          "y": 230
+          "y": 50
         }
       }
     note: false
@@ -1427,6 +1425,93 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 6c95fc1f-ffd0-4de4-818f-41e07987c215
+    type: condition
+    task:
+      id: 6c95fc1f-ffd0-4de4-818f-41e07987c215
+      version: -1
+      name: Is the CMD defined?
+      description: Checks the existence of the command line parameters.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "62"
+      "yes":
+      - "47"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.DynamicAnalysis.internals.attributes.content
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.DynamicAnalysis.internals.attributes.scriptblock_text
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.DynamicAnalysis.internals.attributes.original_command_line
+            iscontext: true
+        - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.targetprocesscmd
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1140,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: 77940295-f899-43d3-8b41-40fef01d6993
+    type: title
+    task:
+      id: 77940295-f899-43d3-8b41-40fef01d6993
+      version: -1
+      name: No CMD Parameters found
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 170,
+          "y": 440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1435,14 +1520,17 @@ view: |-
       "28_43_yes": 0.43,
       "34_29_#default#": 0.25,
       "48_27_yes": 0.62,
-      "48_49_#default#": 0.47
+      "48_49_#default#": 0.47,
+      "56_16_#default#": 0.46,
+      "61_47_yes": 0.5,
+      "61_62_#default#": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 4235,
-        "width": 1510,
-        "x": 450,
-        "y": -90
+        "height": 4385,
+        "width": 1790,
+        "x": 170,
+        "y": -240
       }
     }
   }
@@ -1570,6 +1658,43 @@ inputs:
   required: false
   description: Comment for the ticket.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - ShouldCloseAutomatically
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - AutoContainment
+  - FileRemediation
+  - AutoRestoreEndpoint
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - T1059 - Command and Scripting Interpreter - Test

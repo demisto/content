@@ -14,14 +14,17 @@ To view logs only from the Windows Event log, apply any of the following filters
 * `| filter xdm.event.type="Application"`
 
 **Pay Attention**: 
-This pack excludes several events for the DNS, ADFS and AMSI Windows services according to the *provider_name* field:
+This pack excludes several events for the Sysmon, DNS, ADFS and AMSI Windows services according to the *provider_name* field:
 * AD FS Auditing
+* Microsoft-Windows-Sysmon
 * Microsoft-Windows-DNSServer
 * Microsoft-Windows-DNS-Server-Service
 * Microsoft-Antimalware-Scan-Interface
+
 Should you wish to collect those logs as well, the installation of the following packs is required:
 * Microsoft DNS
 * Microsoft Windows AMSI
+* Microsoft Windows Sysmon
 * Microsoft AD FS Collection
 
 ## Collect Events from Vendor
@@ -61,7 +64,7 @@ As Cortex XSIAM provides a YAML template for Windows Security Event Logs, you ca
 ### Option B
 #### Creating a customized YAML template
 Tailor the XDR collector to your specific needs by creating a custom template that includes all the event types you want to collect.
-As an example, In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System** and **Application**:
+As an example, In the **Winlogbeat Configuration File** section, add the following YAML template to collect **Security**, **System**, **Application**, and **Microsoft Defender** events:
  ```bash
 winlogbeat.event_logs:
 - name: Security
@@ -73,6 +76,9 @@ winlogbeat.event_logs:
   - name: Application
     ignore_older: 1h
     id: application-logs
+  - name: Microsoft-Windows-Windows Defender
+    ignore_older: 1h
+    id: defender-logs      
 ```
 
 **Note:** Control what event types will be collected by adding or removing the "name", "ignore_older", and "id" lines of the specific event type.

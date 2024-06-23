@@ -244,7 +244,7 @@ def prepare_and_validate_fetch_findings_args(client, args):
 
 def fetch_incidents(client, last_run, params):
     """
-    Fetch BitSight Findings.
+    Fetch Bitsight Findings.
 
     :param client: client to use
     :param last_run: last run object obtained from demisto.getLastRun()
@@ -270,7 +270,7 @@ def fetch_incidents(client, last_run, params):
         for entry in report_entries:
             # Set the Raw JSON to the event. Mapping will be done at the classification and mapping
             event = {
-                "name": "BitSight Finding - " + entry.get('temporary_id'),
+                "name": "Bitsight Finding - " + entry.get('temporary_id'),
                 'occurred': entry.get('first_seen') + 'T00:00:00Z',
                 "rawJSON": json.dumps(entry)}
             events.append(event)

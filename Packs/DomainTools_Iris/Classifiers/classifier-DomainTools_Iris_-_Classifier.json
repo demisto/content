@@ -1,0 +1,19 @@
+{
+    "description": "DomainTools Iris - Classifier",
+    "feed": false,
+    "id": "DomainTools Iris - Classifier",
+    "keyTypeMap": {
+        "DomainTools Iris Search Hash": "DomainTools Iris Monitor Domains - Iris Search Hash",
+        "DomainTools Iris Tag": "DomainTools Iris Monitor Domains - Iris Tags"
+    },
+    "name": "DomainTools Iris - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.6.0"
+}

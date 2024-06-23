@@ -1,27 +1,27 @@
 args:
-- description: A list of labels of the test set
+- description: A list of labels of the test set.
   isArray: true
   name: yTrue
   required: true
-- description: A list of dictionaries contain probability predictions for all classes
+- description: A list of dictionaries contain probability predictions for all classes.
   isArray: true
   name: yPred
   required: true
 - defaultValue: '0.5'
-  description: minimum precision of all classes, ranges 0-1
+  description: minimum precision of all classes, ranges 0-1.
   name: targetPrecision
 - defaultValue: '0.0'
-  description: minimum recall of all classes, ranges 0-1
+  description: minimum recall of all classes, ranges 0-1.
   isArray: true
   name: targetRecall
 - defaultValue: 'true'
-  description: if set to 'true', the output will include a full exaplanation of the confidence threshold meaning
+  description: if set to 'true', the output will include a full exaplanation of the confidence threshold meaning.
   isArray: true
   name: detailedOutput
   predefined:
   - 'true'
   - 'false'
-comment: Finds a threshold for ML model, and performs an evaluation based on it
+comment: Finds a threshold for ML model, and performs an evaluation based on it.
 commonfields:
   id: GetMLModelEvaluation
   version: -1
@@ -29,7 +29,7 @@ enabled: true
 name: GetMLModelEvaluation
 outputs:
 - contextPath: GetMLModelEvaluation.Threshold
-  description: The found thresholds which meets the conditions of precision and recall
+  description: The found thresholds which meets the conditions of precision and recall.
   type: String
 - contextPath: GetMLModelEvaluation.ConfusionMatrixAtThreshold
   description: The model evaluation confusion matrix for mails above the threhsold.
@@ -43,7 +43,7 @@ tags:
 - ml
 timeout: 60µs
 type: python
-dockerimage: demisto/ml:1.0.0.30541
+dockerimage: demisto/ml:1.0.0.88591
 tests:
 - Create Phishing Classifier V2 ML Test
 fromversion: 5.0.0

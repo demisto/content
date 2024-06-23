@@ -1,0 +1,5 @@
+fromversion: 8.4.0
+id: HelloWorldModelingRule
+name: HelloWorld Modeling Rule
+rules: ''
+schema: ''

@@ -6,15 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: aecd4e3e-22f4-4c66-8720-4369de781e8d
+    taskid: dd7508ca-6f68-4bef-8f62-8104ddaa7766
     type: start
     task:
-      id: aecd4e3e-22f4-4c66-8720-4369de781e8d
+      id: dd7508ca-6f68-4bef-8f62-8104ddaa7766
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     nexttasks:
       '#none#':
       - "5"
@@ -36,16 +36,16 @@ tasks:
     continueonerrortype: ""
   "4":
     id: "4"
-    taskid: 070d6b76-8135-4048-8140-685e95bb595a
+    taskid: 524a4f11-6bf7-4076-8025-19770047bea2
     type: title
     task:
-      id: 070d6b76-8135-4048-8140-685e95bb595a
+      id: 524a4f11-6bf7-4076-8025-19770047bea2
       version: -1
       name: Complete
       type: title
       iscommand: false
       brand: ""
-      description: ""
+      description: ''
     separatecontext: false
     view: |-
       {
@@ -64,16 +64,16 @@ tasks:
     continueonerrortype: ""
   "5":
     id: "5"
-    taskid: 6da2002c-b694-44e0-8e34-acae731a076a
+    taskid: 741b1342-a66b-469a-8a76-d9d91bc3554f
     type: title
     task:
-      id: 6da2002c-b694-44e0-8e34-acae731a076a
+      id: 741b1342-a66b-469a-8a76-d9d91bc3554f
       version: -1
       name: Triage and Qualifier Stage
-      description: ''
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "180"
@@ -95,10 +95,10 @@ tasks:
     continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 9537c3ee-7094-49d1-8d96-fd474a741f7f
+    taskid: aedd6ffd-a9c6-45b4-8cb0-7ff05b35e36c
     type: title
     task:
-      id: 9537c3ee-7094-49d1-8d96-fd474a741f7f
+      id: aedd6ffd-a9c6-45b4-8cb0-7ff05b35e36c
       version: -1
       name: Enrichment Stage
       type: title
@@ -126,10 +126,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: c07024bd-6bf8-4c52-8cb5-22474e745b80
+    taskid: ac144da8-4dc7-4d20-8739-218c58debc64
     type: title
     task:
-      id: c07024bd-6bf8-4c52-8cb5-22474e745b80
+      id: ac144da8-4dc7-4d20-8739-218c58debc64
       version: -1
       name: Decision Stage
       type: title
@@ -157,10 +157,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: f03a68ae-e54b-4304-894c-d61de024d8ed
+    taskid: ededc28d-03e7-4c76-86ac-5603bbcfd7f6
     type: title
     task:
-      id: f03a68ae-e54b-4304-894c-d61de024d8ed
+      id: ededc28d-03e7-4c76-86ac-5603bbcfd7f6
       version: -1
       name: Notification Stage
       type: title
@@ -175,8 +175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1570
+          "x": 690,
+          "y": 1610
         }
       }
     note: false
@@ -188,10 +188,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: cc589c05-8c6f-45d5-8bab-c3637180bc39
+    taskid: 973030d6-2b5a-419e-8092-35e5da4cc2ee
     type: title
     task:
-      id: cc589c05-8c6f-45d5-8bab-c3637180bc39
+      id: 973030d6-2b5a-419e-8092-35e5da4cc2ee
       version: -1
       name: Validation Stage
       type: title
@@ -219,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 3275f4b0-6d2b-499e-82fb-d9aee1fa4d59
+    taskid: 18ba5222-fc56-4c88-8dac-f1d311d880c3
     type: title
     task:
-      id: 3275f4b0-6d2b-499e-82fb-d9aee1fa4d59
+      id: 18ba5222-fc56-4c88-8dac-f1d311d880c3
       version: -1
       name: Remediation Stage
       type: title
@@ -250,10 +250,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 669e1e8f-ae70-43e8-8b72-90b6fbabc572
+    taskid: 1fb346f8-fe68-4bd2-8558-d18bf2b0bddd
     type: title
     task:
-      id: 669e1e8f-ae70-43e8-8b72-90b6fbabc572
+      id: 1fb346f8-fe68-4bd2-8558-d18bf2b0bddd
       version: -1
       name: Summarization Stage
       type: title
@@ -281,10 +281,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 05eb7a07-04c0-45f5-8084-adab931cd34d
+    taskid: 7b89f179-88dc-40be-815f-8a889746458f
     type: condition
     task:
-      id: 05eb7a07-04c0-45f5-8084-adab931cd34d
+      id: 7b89f179-88dc-40be-815f-8a889746458f
       version: -1
       name: Service exposure still observable?
       description: Determines if service was still observable and also if automated remediation was done.
@@ -339,10 +339,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 71b40e35-5ca6-4a21-8bc2-1e820f2c2cd7
+    taskid: 77d232a7-a2db-4c6d-8f0b-cb2defa7ee99
     type: collection
     task:
-      id: 71b40e35-5ca6-4a21-8bc2-1e820f2c2cd7
+      id: 77d232a7-a2db-4c6d-8f0b-cb2defa7ee99
       version: -1
       name: What to do if Remediation Confirmation Scan is inconclusive?
       description: Determines if alert should be closed or kept open for auto-closure based on analyst input.
@@ -408,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: fb7813c6-7e52-4cff-8edc-c26d2332dc2f
+    taskid: ded0a956-bf49-4efe-8048-3943798b6346
     type: condition
     task:
-      id: fb7813c6-7e52-4cff-8edc-c26d2332dc2f
+      id: ded0a956-bf49-4efe-8048-3943798b6346
       version: -1
       name: What was data collection task response?
       description: Determines the next action (remediation or ticket) based on the previous data collection task.
@@ -431,6 +431,8 @@ tasks:
       - "10"
       Jira ticket:
       - "156"
+      Slack message:
+      - "183"
     separatecontext: false
     conditions:
     - label: Automated remediation
@@ -445,6 +447,16 @@ tasks:
           right:
             value:
               simple: Automated remediation by restricting open ports
+        - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: alert.asmdatacollection
+                accessor: selected
+            iscontext: true
+          right:
+            value:
+              simple: Automated remediation by isolating the endpoint on the network
         - operator: isEqualString
           left:
             value:
@@ -503,6 +515,16 @@ tasks:
           right:
             value:
               simple: File a Jira Ticket
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmdatacollection.selected
+          operator: isEqualString
+          right:
+            value:
+              simple: Send a Slack message
+      label: Slack message
     continueonerrortype: ""
     view: |-
       {
@@ -520,10 +542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: c457ccc6-f733-481f-844f-db3178c0b978
+    taskid: 9e471e5c-5ad1-4ca3-8b76-5087d3769207
     type: collection
     task:
-      id: c457ccc6-f733-481f-844f-db3178c0b978
+      id: 9e471e5c-5ad1-4ca3-8b76-5087d3769207
       version: -1
       name: Verify service exposure resolved by service owner
       description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
@@ -538,8 +560,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 2380
+          "x": 690,
+          "y": 2400
         }
       }
     note: false
@@ -587,10 +609,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: c5f48082-0971-49c3-848f-0876fb541e16
+    taskid: 8081531e-9a7e-4ac0-8965-336013d59f19
     type: title
     task:
-      id: c5f48082-0971-49c3-848f-0876fb541e16
+      id: 8081531e-9a7e-4ac0-8965-336013d59f19
       version: -1
       name: Notification Stage
       type: title
@@ -605,8 +627,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1500
+          "x": 1080,
+          "y": 1600
         }
       }
     note: false
@@ -618,10 +640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "63":
     id: "63"
-    taskid: 2ff4825e-4fe5-4220-8f0a-9a6695809621
+    taskid: 5312a099-808b-4e8f-8988-2fa1b6235fe9
     type: title
     task:
-      id: 2ff4825e-4fe5-4220-8f0a-9a6695809621
+      id: 5312a099-808b-4e8f-8988-2fa1b6235fe9
       version: -1
       name: Remediation Stage
       type: title
@@ -649,19 +671,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "69":
     id: "69"
-    taskid: 63d8c436-474d-44f6-8897-dcff4072e2ea
+    taskid: dabb36da-ff49-4adc-8205-8b48c97cb33e
     type: regular
     task:
-      id: 63d8c436-474d-44f6-8897-dcff4072e2ea
+      id: dabb36da-ff49-4adc-8205-8b48c97cb33e
       version: -1
       name: Set remediation grid field
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "11"
@@ -698,10 +720,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "72":
     id: "72"
-    taskid: 5b26124b-f6d9-45d0-8be4-25791db3c792
+    taskid: ffe42a7a-95e1-4a97-86ee-d5302c7a7967
     type: condition
     task:
-      id: 5b26124b-f6d9-45d0-8be4-25791db3c792
+      id: ffe42a7a-95e1-4a97-86ee-d5302c7a7967
       version: -1
       name: Manual remediation selected?
       description: Determines if "manual remediation" was selected on main data collection task.
@@ -759,19 +781,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: e70c6297-d050-4e25-887d-ee85df4c16e6
+    taskid: 12e79db8-c6bc-4bf6-849e-b1fde187a780
     type: regular
     task:
-      id: e70c6297-d050-4e25-887d-ee85df4c16e6
+      id: 12e79db8-c6bc-4bf6-849e-b1fde187a780
       version: -1
       name: Set remediation grid field
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "11"
@@ -817,19 +839,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "81":
     id: "81"
-    taskid: 459e6412-4dda-40b9-8c57-88cf8731c79f
+    taskid: cd24ef90-212e-4265-820e-3f4fd480cdde
     type: regular
     task:
-      id: 459e6412-4dda-40b9-8c57-88cf8731c79f
+      id: cd24ef90-212e-4265-820e-3f4fd480cdde
       version: -1
       name: Set alert summary grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "136"
@@ -887,17 +909,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "86":
     id: "86"
-    taskid: c516b30d-bf5a-4ab2-8695-00edfe1a1c88
+    taskid: 68906b18-c318-4196-87c4-e1da1cfb0fe0
     type: playbook
     task:
-      id: c516b30d-bf5a-4ab2-8695-00edfe1a1c88
+      id: 68906b18-c318-4196-87c4-e1da1cfb0fe0
       version: -1
       name: Cortex ASM - Detect Service
       description: Playbook that looks at what ASM sub-type the alert is and directs it to different pre/post mitigation scans (such as NMAP).
-      playbookName: Cortex ASM - Detect Service
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - Detect Service
     nexttasks:
       '#none#':
       - "20"
@@ -939,10 +961,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "88":
     id: "88"
-    taskid: 7cca77d4-a9df-4dbc-8e56-066a83972462
+    taskid: 1d156f00-86d1-4cdc-885b-d2194f4c98b3
     type: collection
     task:
-      id: 7cca77d4-a9df-4dbc-8e56-066a83972462
+      id: 1d156f00-86d1-4cdc-885b-d2194f4c98b3
       version: -1
       name: Complete manual remediation
       description: Determines if manual remediation (by service owner or otherwise) was completed via analyst input.
@@ -1006,17 +1028,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "97":
     id: "97"
-    taskid: 3f8c729b-6177-4bbb-8b7d-b9733c3064cb
+    taskid: 0811d2d4-6d24-483f-8927-10416dc9c732
     type: playbook
     task:
-      id: 3f8c729b-6177-4bbb-8b7d-b9733c3064cb
+      id: 0811d2d4-6d24-483f-8927-10416dc9c732
       version: -1
       name: Cortex ASM - Enrichment
       description: Used as a container folder for all enrichments of ASM alerts.
-      playbookName: Cortex ASM - Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - Enrichment
     nexttasks:
       '#none#':
       - "125"
@@ -1036,21 +1058,33 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    scriptarguments:
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
+      RemoteIP:
+        complex:
+          accessor: remoteip
+          root: alert
   "103":
     id: "103"
-    taskid: 20f68a22-63f6-4f49-831e-9e8795451079
+    taskid: 5621c9ee-0fd0-49fe-874a-671d79d09bbc
     type: regular
     task:
-      id: 20f68a22-63f6-4f49-831e-9e8795451079
+      id: 5621c9ee-0fd0-49fe-874a-671d79d09bbc
       version: -1
       name: Set remediation grid field
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "11"
@@ -1086,10 +1120,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "110":
     id: "110"
-    taskid: 1178c050-960d-4fa0-83b4-e56c1d42cda5
+    taskid: b2bd3099-21ea-4494-8c0d-cc760a967e9d
     type: condition
     task:
-      id: 1178c050-960d-4fa0-83b4-e56c1d42cda5
+      id: b2bd3099-21ea-4494-8c0d-cc760a967e9d
       version: -1
       name: Close or keep open?
       description: Determines if the alert will be closed or kept open.
@@ -1192,10 +1226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "111":
     id: "111"
-    taskid: 970100eb-3b34-4716-8e73-3db65f2400a8
+    taskid: bf85e503-d866-4a17-86b4-2cc9bf122262
     type: regular
     task:
-      id: 970100eb-3b34-4716-8e73-3db65f2400a8
+      id: bf85e503-d866-4a17-86b4-2cc9bf122262
       version: -1
       name: Close alert (close now)
       description: Close the current alert because auto-close was selected.
@@ -1229,10 +1263,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: fee8177a-59dd-4965-8882-d106c4565d47
+    taskid: e8ffd516-c0fe-4eec-8a0c-c252a06a3c9b
     type: regular
     task:
-      id: fee8177a-59dd-4965-8882-d106c4565d47
+      id: e8ffd516-c0fe-4eec-8a0c-c252a06a3c9b
       version: -1
       name: Close alert (remediated automatically)
       description: Close the current alert because Automated Remediation path was selected.
@@ -1266,10 +1300,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "113":
     id: "113"
-    taskid: 581c7986-8c80-456e-8788-6f7cec9d1a1c
+    taskid: 3d915d61-ab31-4f8c-8a0f-9b1e015e0f2f
     type: regular
     task:
-      id: 581c7986-8c80-456e-8788-6f7cec9d1a1c
+      id: 3d915d61-ab31-4f8c-8a0f-9b1e015e0f2f
       version: -1
       name: Close alert (close now) with rule match
       description: Close the current alert because auto-close was selected.
@@ -1312,10 +1346,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 7301cc8d-bb8a-44e3-8191-6326382a9af5
+    taskid: d9757cec-c740-487c-8b85-34cd5a40d227
     type: regular
     task:
-      id: 7301cc8d-bb8a-44e3-8191-6326382a9af5
+      id: d9757cec-c740-487c-8b85-34cd5a40d227
       version: -1
       name: Close alert (remediated automatically) with rule match
       description: Close the current alert because Automated Remediation path was selected.
@@ -1358,16 +1392,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "120":
     id: "120"
-    taskid: fd62a4f5-4a21-4e7a-8777-19cba4a84da5
+    taskid: dfed6b1e-c333-4167-8fdb-b0d0f123cd9c
     type: playbook
     task:
-      id: fd62a4f5-4a21-4e7a-8777-19cba4a84da5
+      id: dfed6b1e-c333-4167-8fdb-b0d0f123cd9c
       version: -1
       name: Cortex ASM - Remediation Path Rules
-      playbookName: Cortex ASM - Remediation Path Rules
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - Remediation Path Rules
       description: ''
     nexttasks:
       '#none#':
@@ -1403,10 +1437,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "121":
     id: "121"
-    taskid: 2d533ce8-20ef-4d1b-84b2-ef5da69a1f6d
+    taskid: f09a3539-f2d7-4ef4-8232-decf8c4f0c6b
     type: title
     task:
-      id: 2d533ce8-20ef-4d1b-84b2-ef5da69a1f6d
+      id: f09a3539-f2d7-4ef4-8232-decf8c4f0c6b
       version: -1
       name: Analysis Stage
       type: title
@@ -1434,19 +1468,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "124":
     id: "124"
-    taskid: 39dbea85-d8f0-475b-844d-211d4a75a17f
+    taskid: 3d004d2e-1553-47df-895f-b2bb82cc4234
     type: regular
     task:
-      id: 39dbea85-d8f0-475b-844d-211d4a75a17f
+      id: 3d004d2e-1553-47df-895f-b2bb82cc4234
       version: -1
       name: Set playbook stage grid field (triage)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "6"
@@ -1477,19 +1511,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "125":
     id: "125"
-    taskid: 1afd8651-2285-4d13-87c4-d12a135e3d40
+    taskid: 79fa27de-b9c9-4c95-8003-d45cdacf4234
     type: regular
     task:
-      id: 1afd8651-2285-4d13-87c4-d12a135e3d40
+      id: 79fa27de-b9c9-4c95-8003-d45cdacf4234
       version: -1
       name: Set playbook stage grid field (enrichment)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "121"
@@ -1520,19 +1554,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "126":
     id: "126"
-    taskid: 160520c4-a2e9-46a9-8822-198e9025d110
+    taskid: efe24279-8922-40c6-82a8-09f9a0242f31
     type: regular
     task:
-      id: 160520c4-a2e9-46a9-8822-198e9025d110
+      id: efe24279-8922-40c6-82a8-09f9a0242f31
       version: -1
       name: Set playbook stage grid field (analysis)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "144"
@@ -1563,19 +1597,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "128":
     id: "128"
-    taskid: 4a27f04b-26d8-462c-813f-0aa0dadd2fb8
+    taskid: dc828cbd-e702-4ca7-8945-f83a175d17d8
     type: regular
     task:
-      id: 4a27f04b-26d8-462c-813f-0aa0dadd2fb8
+      id: dc828cbd-e702-4ca7-8945-f83a175d17d8
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "63"
@@ -1606,19 +1640,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "129":
     id: "129"
-    taskid: bb789638-62ba-4fdb-8560-9f0ed80346b6
+    taskid: e5758c73-aa8b-4713-8f72-757da5ed7e00
     type: regular
     task:
-      id: bb789638-62ba-4fdb-8560-9f0ed80346b6
+      id: e5758c73-aa8b-4713-8f72-757da5ed7e00
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "12"
@@ -1649,19 +1683,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "130":
     id: "130"
-    taskid: 741a3d01-421d-40aa-8019-dc53d3f53809
+    taskid: 80372fd3-eeaf-4095-84bd-d52c437c03da
     type: regular
     task:
-      id: 741a3d01-421d-40aa-8019-dc53d3f53809
+      id: 80372fd3-eeaf-4095-84bd-d52c437c03da
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "10"
@@ -1679,8 +1713,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1105
+          "x": 690,
+          "y": 1145
         }
       }
     note: false
@@ -1692,19 +1726,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "131":
     id: "131"
-    taskid: 329afdf7-4765-4b12-8479-e6cf177c1bac
+    taskid: 285687f0-08f1-4ced-8325-906375957e83
     type: regular
     task:
-      id: 329afdf7-4765-4b12-8479-e6cf177c1bac
+      id: 285687f0-08f1-4ced-8325-906375957e83
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "60"
@@ -1722,8 +1756,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1025
+          "x": 1080,
+          "y": 1125
         }
       }
     note: false
@@ -1735,19 +1769,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "133":
     id: "133"
-    taskid: 7b5c2f84-397f-4d36-8df7-47881eb19965
+    taskid: 8d1859e4-fa76-4f57-8b2a-112a4732ef6f
     type: regular
     task:
-      id: 7b5c2f84-397f-4d36-8df7-47881eb19965
+      id: 8d1859e4-fa76-4f57-8b2a-112a4732ef6f
       version: -1
       name: Set playbook stage grid field (remediation)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "72"
@@ -1778,19 +1812,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "134":
     id: "134"
-    taskid: b4bf1bb7-f143-4223-8bd8-2188ffb178ce
+    taskid: 1b72f224-dd3b-4469-8a4a-f0d7f155f665
     type: regular
     task:
-      id: b4bf1bb7-f143-4223-8bd8-2188ffb178ce
+      id: 1b72f224-dd3b-4469-8a4a-f0d7f155f665
       version: -1
       name: Set playbook stage grid field (notification)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "50"
@@ -1808,8 +1842,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1965
+          "x": 690,
+          "y": 2005
         }
       }
     note: false
@@ -1821,19 +1855,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "135":
     id: "135"
-    taskid: 41158f42-d863-4a73-8ed8-d4f37932861f
+    taskid: a91526b1-d509-484a-8b5d-6dd6e0cdfe90
     type: regular
     task:
-      id: 41158f42-d863-4a73-8ed8-d4f37932861f
+      id: a91526b1-d509-484a-8b5d-6dd6e0cdfe90
       version: -1
       name: Set playbook stage grid field (validation)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "13"
@@ -1864,19 +1898,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "136":
     id: "136"
-    taskid: 049feac3-551c-4652-810a-a98ad302a615
+    taskid: 5e11132d-3f79-4914-81db-3f9c0c2d3162
     type: regular
     task:
-      id: 049feac3-551c-4652-810a-a98ad302a615
+      id: 5e11132d-3f79-4914-81db-3f9c0c2d3162
       version: -1
       name: Set playbook stage grid field (summarization)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "110"
@@ -1907,10 +1941,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "141":
     id: "141"
-    taskid: ce7bd584-c835-4e58-86ce-cd9eca346417
+    taskid: f42d564a-6981-4ee4-8024-aa3873ad4088
     type: title
     task:
-      id: ce7bd584-c835-4e58-86ce-cd9eca346417
+      id: f42d564a-6981-4ee4-8024-aa3873ad4088
       version: -1
       name: continue
       type: title
@@ -1938,10 +1972,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "142":
     id: "142"
-    taskid: 2c25d8c8-9e5e-4320-8397-e57fec461e01
+    taskid: ec3d4619-fffa-4372-8893-c67c6f0065da
     type: regular
     task:
-      id: 2c25d8c8-9e5e-4320-8397-e57fec461e01
+      id: ec3d4619-fffa-4372-8893-c67c6f0065da
       version: -1
       name: Close alert (accepted risk)
       description: Close the current alert because the service is no longer observed.
@@ -1975,10 +2009,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "144":
     id: "144"
-    taskid: 03666933-30b5-4426-8c66-cc251ff5898c
+    taskid: a561ff8a-f9aa-474f-85ee-13f5175b206a
     type: condition
     task:
-      id: 03666933-30b5-4426-8c66-cc251ff5898c
+      id: a561ff8a-f9aa-474f-85ee-13f5175b206a
       version: -1
       name: Are there any matches from accepted risk lists?
       description: Checks if the system IDs, folders, and projects are present in the accepted risk lists.
@@ -2116,10 +2150,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "145":
     id: "145"
-    taskid: 55dd1afd-8b74-4d28-8458-c05d3d51c357
+    taskid: cc484203-56ae-4a58-8e0a-a47ef6415346
     type: condition
     task:
-      id: 55dd1afd-8b74-4d28-8458-c05d3d51c357
+      id: cc484203-56ae-4a58-8e0a-a47ef6415346
       version: -1
       name: What is the remediation action?
       description: Determines what the remediation action is (direct action or data collection task).
@@ -2139,6 +2173,8 @@ tasks:
       - "163"
       ServiceNow Ticket:
       - "162"
+      Slack:
+      - "181"
     separatecontext: false
     conditions:
     - label: Automated Remediation
@@ -2196,6 +2232,16 @@ tasks:
           right:
             value:
               simple: Jira
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: RemediationAction
+          operator: isEqualString
+          right:
+            value:
+              simple: Slack
+      label: Slack
     continueonerrortype: ""
     view: |-
       {
@@ -2213,10 +2259,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "146":
     id: "146"
-    taskid: e57e4257-3cc2-41a3-84e5-2d2b3ae92619
+    taskid: df09a445-07a6-46b7-83a3-9f203715dfc4
     type: title
     task:
-      id: e57e4257-3cc2-41a3-84e5-2d2b3ae92619
+      id: df09a445-07a6-46b7-83a3-9f203715dfc4
       version: -1
       name: Automated Remediation
       type: title
@@ -2244,10 +2290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "152":
     id: "152"
-    taskid: c4b2632b-177b-43e9-83a2-d8700a34185d
+    taskid: 62394500-6bb9-4213-8b20-9498f68d294b
     type: title
     task:
-      id: c4b2632b-177b-43e9-83a2-d8700a34185d
+      id: 62394500-6bb9-4213-8b20-9498f68d294b
       version: -1
       name: Manual Remediation
       type: title
@@ -2275,10 +2321,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "156":
     id: "156"
-    taskid: 07304953-dcf9-41cc-8211-7a9c52944330
+    taskid: 78316ab2-21fb-44cf-8fc1-b94cd770b5e6
     type: title
     task:
-      id: 07304953-dcf9-41cc-8211-7a9c52944330
+      id: 78316ab2-21fb-44cf-8fc1-b94cd770b5e6
       version: -1
       name: Notification Stage
       type: title
@@ -2293,7 +2339,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
+          "x": 290,
           "y": 1630
         }
       }
@@ -2306,19 +2352,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "157":
     id: "157"
-    taskid: ec5b2f9e-91e6-4203-85e0-aa6ea6235f8c
+    taskid: fe208949-9f9f-4ccf-84de-a2e0b3821af0
     type: regular
     task:
-      id: ec5b2f9e-91e6-4203-85e0-aa6ea6235f8c
+      id: fe208949-9f9f-4ccf-84de-a2e0b3821af0
       version: -1
       name: Set playbook stage grid field (decision)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "156"
@@ -2336,7 +2382,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
+          "x": 290,
           "y": 1175
         }
       }
@@ -2349,10 +2395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "161":
     id: "161"
-    taskid: 749a273a-ac93-4fcc-81ec-b1d19e1094a6
+    taskid: 9928bef3-2131-4d80-8f3b-d534240a79e1
     type: title
     task:
-      id: 749a273a-ac93-4fcc-81ec-b1d19e1094a6
+      id: 9928bef3-2131-4d80-8f3b-d534240a79e1
       version: -1
       name: Jira Ticket
       type: title
@@ -2367,7 +2413,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
+          "x": 290,
           "y": 1040
         }
       }
@@ -2380,10 +2426,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "162":
     id: "162"
-    taskid: 46c9bc73-f192-4cc5-81b6-b8d656fc9dfc
+    taskid: 574d8ee3-6d6f-49d9-872f-2e05b95c575c
     type: title
     task:
-      id: 46c9bc73-f192-4cc5-81b6-b8d656fc9dfc
+      id: 574d8ee3-6d6f-49d9-872f-2e05b95c575c
       version: -1
       name: ServiceNow Ticket
       type: title
@@ -2398,8 +2444,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 970
+          "x": 690,
+          "y": 1010
         }
       }
     note: false
@@ -2411,10 +2457,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "163":
     id: "163"
-    taskid: 03e1598e-5008-4473-8351-27516c3b8b2c
+    taskid: f05f334b-ce0f-4505-8478-98ccc00d5dc5
     type: title
     task:
-      id: 03e1598e-5008-4473-8351-27516c3b8b2c
+      id: f05f334b-ce0f-4505-8478-98ccc00d5dc5
       version: -1
       name: Email Notification
       type: title
@@ -2429,8 +2475,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 890
+          "x": 1080,
+          "y": 990
         }
       }
     note: false
@@ -2442,19 +2488,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "164":
     id: "164"
-    taskid: 0ca15487-64be-4bba-804b-7803ed4f3543
+    taskid: c2cbffd1-9e92-4dea-8d67-af7105bce947
     type: regular
     task:
-      id: 0ca15487-64be-4bba-804b-7803ed4f3543
+      id: c2cbffd1-9e92-4dea-8d67-af7105bce947
       version: -1
       name: Set remediation grid field
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: Builtin
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "168"
@@ -2489,10 +2535,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "165":
     id: "165"
-    taskid: 9734bac8-46c1-4e18-89b3-64fdc08c9257
+    taskid: b7d59316-36be-4ac7-81c3-7796518b8772
     type: condition
     task:
-      id: 9734bac8-46c1-4e18-89b3-64fdc08c9257
+      id: b7d59316-36be-4ac7-81c3-7796518b8772
       version: -1
       name: Are there service owners with emails?
       description: Verifies if we have emails for service owners.
@@ -2543,10 +2589,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "166":
     id: "166"
-    taskid: 5cef6460-831d-49bc-8f6b-f9f1764916aa
+    taskid: 81ba672b-6c55-43b7-8afe-b6b22c4a5b78
     type: regular
     task:
-      id: 5cef6460-831d-49bc-8f6b-f9f1764916aa
+      id: 81ba672b-6c55-43b7-8afe-b6b22c4a5b78
       version: -1
       name: Send remediation notification email to service owners
       description: Send an email to service owners regarding the status of the automated remediation action that was taken.
@@ -2595,17 +2641,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "167":
     id: "167"
-    taskid: 59fe925d-a289-4935-8740-113ad98fcb90
+    taskid: 641053ac-63af-4099-8593-5625502fd245
     type: playbook
     task:
-      id: 59fe925d-a289-4935-8740-113ad98fcb90
+      id: 641053ac-63af-4099-8593-5625502fd245
       version: -1
       name: Cortex ASM - Remediation
-      description: This playbook contains all the cloud provider sub-playbooks for remediation.
-      playbookName: Cortex ASM - Remediation
+      description: This playbook contains all the cloud provider sub playbooks for remediation.
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - Remediation
     nexttasks:
       '#none#':
       - "164"
@@ -2625,21 +2671,29 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    scriptarguments:
+      AWSAssumeRoleName:
+        simple: ${inputs.AWSAssumeRoleName}
   "168":
     id: "168"
-    taskid: 61e85bc1-ba30-4055-8b39-5be81617f0aa
+    taskid: c1b8c2a1-b656-4ea3-8dba-ccad5b91f5ee
     type: regular
     task:
-      id: 61e85bc1-ba30-4055-8b39-5be81617f0aa
+      id: c1b8c2a1-b656-4ea3-8dba-ccad5b91f5ee
       version: -1
       name: Set playbook stage grid field (remediation)
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "165"
@@ -2670,19 +2724,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "169":
     id: "169"
-    taskid: 8d1207eb-ef5a-49f8-8131-dfacbdb0e29c
+    taskid: 2a3e0cc0-ba4f-46dc-88cc-13ffb6b5998c
     type: regular
     task:
-      id: 8d1207eb-ef5a-49f8-8131-dfacbdb0e29c
+      id: 2a3e0cc0-ba4f-46dc-88cc-13ffb6b5998c
       version: -1
       name: Set playbook stage grid field (notification)
       description: |-
         Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      scriptName: GridFieldSetup
       type: regular
       iscommand: false
       brand: ""
+      script: GridFieldSetup
     nexttasks:
       '#none#':
       - "11"
@@ -2713,10 +2767,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "171":
     id: "171"
-    taskid: 1f1821bf-3f1a-4ed9-8588-c7ceed84a8a3
+    taskid: 24fca124-2988-4d3a-8fee-71e259527599
     type: regular
     task:
-      id: 1f1821bf-3f1a-4ed9-8588-c7ceed84a8a3
+      id: 24fca124-2988-4d3a-8fee-71e259527599
       version: -1
       name: Initialize grid fields
       description: Clear ASM grid fields in case the playbook is rerun.
@@ -2778,17 +2832,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "172":
     id: "172"
-    taskid: abc2a2ca-d7eb-464f-8e87-44677682fd79
+    taskid: f0db3269-8d70-4134-830c-0cbc7e5c3ace
     type: regular
     task:
-      id: abc2a2ca-d7eb-464f-8e87-44677682fd79
+      id: f0db3269-8d70-4134-830c-0cbc7e5c3ace
       version: -1
       name: GenerateSummaryReport - Analysis
       description: Generate an ASM Alert Summary report.
-      scriptName: GenerateASMReport
       type: regular
       iscommand: false
       brand: ""
+      script: GenerateASMReport
     nexttasks:
       '#none#':
       - "126"
@@ -2884,16 +2938,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "175":
     id: "175"
-    taskid: 4623a5c1-a61f-4499-8946-37e0589cd92e
+    taskid: 9a78c8cf-dd23-475f-8087-c9247c0a8b20
     type: playbook
     task:
-      id: 4623a5c1-a61f-4499-8946-37e0589cd92e
+      id: 9a78c8cf-dd23-475f-8087-c9247c0a8b20
       version: -1
       name: Cortex ASM - Remediation Guidance
-      playbookName: Cortex ASM - Remediation Guidance
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - Remediation Guidance
       description: ''
     nexttasks:
       '#none#':
@@ -2916,17 +2970,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "176":
     id: "176"
-    taskid: aff6b356-9201-4e52-8ddd-ada37440243c
+    taskid: e3c46065-209e-4c50-87bf-e3a09155aefd
     type: playbook
     task:
-      id: aff6b356-9201-4e52-8ddd-ada37440243c
+      id: e3c46065-209e-4c50-87bf-e3a09155aefd
       version: -1
       name: Cortex ASM - Email Notification
       description: This playbook is used to send email notifications to service owners to notify them of their internet exposures.
-      playbookName: Cortex ASM - Email Notification
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - Email Notification
     nexttasks:
       '#none#':
       - "134"
@@ -2950,8 +3004,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1220,
-          "y": 1635
+          "x": 1080,
+          "y": 1795
         }
       }
     note: false
@@ -2963,17 +3017,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "177":
     id: "177"
-    taskid: 448823df-4098-48d6-862b-fd3d3e3cb411
+    taskid: fc186e03-ae9c-43df-8aec-0e4b3974964e
     type: regular
     task:
-      id: 448823df-4098-48d6-862b-fd3d3e3cb411
+      id: fc186e03-ae9c-43df-8aec-0e4b3974964e
       version: -1
       name: GenerateSummaryReport - Summary
       description: Generate an ASM Alert Summary report.
-      scriptName: GenerateASMReport
       type: regular
       iscommand: false
       brand: ""
+      script: GenerateASMReport
     nexttasks:
       '#none#':
       - "81"
@@ -3073,16 +3127,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "178":
     id: "178"
-    taskid: 92c2a3a6-4d2f-44ee-8083-d2269bda6c50
+    taskid: 9068290d-00f6-4030-865e-0014779a53b1
     type: playbook
     task:
-      id: 92c2a3a6-4d2f-44ee-8083-d2269bda6c50
+      id: 9068290d-00f6-4030-865e-0014779a53b1
       version: -1
       name: Cortex ASM - Jira Notification
-      playbookName: Cortex ASM - Jira Notification
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - Jira Notification
       description: ''
     nexttasks:
       '#none#':
@@ -3107,8 +3161,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 370,
-          "y": 1780
+          "x": 290,
+          "y": 1830
         }
       }
     note: false
@@ -3120,16 +3174,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "179":
     id: "179"
-    taskid: 5908d1cd-6a1d-479a-8442-25a2d672fe67
+    taskid: 3b5f854d-d552-4149-8450-e7f51d293862
     type: playbook
     task:
-      id: 5908d1cd-6a1d-479a-8442-25a2d672fe67
+      id: 3b5f854d-d552-4149-8450-e7f51d293862
       version: -1
       name: Cortex ASM - ServiceNow Notification
-      playbookName: Cortex ASM - ServiceNow Notification
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Cortex ASM - ServiceNow Notification
       description: ''
     nexttasks:
       '#none#':
@@ -3154,8 +3208,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 800,
-          "y": 1755
+          "x": 690,
+          "y": 1815
         }
       }
     note: false
@@ -3167,10 +3221,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "180":
     id: "180"
-    taskid: 36247309-5cca-41f3-8076-c669af40995b
+    taskid: 6821e4af-fea8-4b29-8190-f83f664ffeb4
     type: regular
     task:
-      id: 36247309-5cca-41f3-8076-c669af40995b
+      id: 6821e4af-fea8-4b29-8190-f83f664ffeb4
       version: -1
       name: Delete context
       description: |-
@@ -3179,10 +3233,10 @@ tasks:
         This automation runs using the default Limited User role, unless you explicitly change the permissions.
         For more information, see the section about permissions here:
         https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Automations
-      scriptName: DeleteContext
       type: regular
       iscommand: false
       brand: ""
+      script: DeleteContext
     nexttasks:
       '#none#':
       - "171"
@@ -3205,6 +3259,155 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "181":
+    continueonerrortype: ""
+    id: "181"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "182"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 5e8d3185-d40a-40dd-8ae1-9c074bc66c7e
+      iscommand: false
+      name: Slack Message
+      type: title
+      version: -1
+      description: ''
+    taskid: 5e8d3185-d40a-40dd-8ae1-9c074bc66c7e
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 960
+        }
+      }
+  "182":
+    continueonerrortype: ""
+    id: "182"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "183"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmplaybookstage
+      keys:
+        simple: stage,timestamp
+      val1:
+        simple: decision
+      val2:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. Instead of a value, you can enter `TIMESTAMP` to get the current timestamp in ISO format.  Example of the command:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 781bc101-1cc4-4f44-8dcb-7862c724fc9e
+      iscommand: false
+      name: Set playbook stage grid field (decision)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 781bc101-1cc4-4f44-8dcb-7862c724fc9e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1085
+        }
+      }
+  "183":
+    continueonerrortype: ""
+    id: "183"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "184"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 948a8d72-8065-4f5b-8ead-3ca0fda04a44
+      iscommand: false
+      name: Notification Stage
+      type: title
+      version: -1
+      description: ''
+    taskid: 948a8d72-8065-4f5b-8ead-3ca0fda04a44
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1580
+        }
+      }
+  "184":
+    continueonerrortype: ""
+    id: "184"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "134"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      InstantMessageChannel:
+        simple: ${inputs.InstantMessageChannel}
+      OwnerNotificationBody:
+        simple: ${inputs.OwnerNotificationBody}
+      RemediationGuidance:
+        simple: ${RemediationGuidance}
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook is used to create instant messages toward service owners to notify them of their internet exposures.
+      id: da3b6dea-eab0-498c-832f-85d9ac318401
+      iscommand: false
+      name: 'Cortex ASM - Instant Message'
+      playbookId: 'Cortex ASM - Instant Message'
+      type: playbook
+      version: -1
+    taskid: da3b6dea-eab0-498c-832f-85d9ac318401
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1470,
+          "y": 1780
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {
@@ -3215,13 +3418,14 @@ view: |-
       "145_163_Notification Email": 0.74,
       "20_135_no": 0.53,
       "48_10_ServiceNow ticket": 0.82,
+      "48_183_Slack message": 0.87,
       "48_60_Notification email": 0.88,
       "48_63_Manual remediation": 0.52
     },
     "paper": {
       "dimensions": {
         "height": 7105,
-        "width": 2710,
+        "width": 2960,
         "x": -1110,
         "y": -1780
       }
@@ -3303,12 +3507,41 @@ inputs:
   description: Comma-separated list of other items that are considered an accepted risk and that should be closed. For example, a list of folders numbers in GCP and subscription IDs in Azure.
   playbookInputQuery:
 - key: JiraProjectKey
-  value:
-    simple: XPANSE
+  value: {}
   required: true
   description: The Jira project key to associate with the issue.
   playbookInputQuery:
+- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
+  key: AWSAssumeRoleName
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: Channel to send instant messages for notification purposes.  For Slack, this will be the channel ID.
+  key: InstantMessageChannel
+  playbookInputQuery:
+  required: false
+  value: {}
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.9.0
+fromversion: 6.10.0
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - OwnerNotificationSubject
+  - OwnerNotificationBody
+  - NotificationTicketType
+  - RemediationNotificationSubject
+  - RemediationNotificationHTMLBody
+  - BypassDevCheck
+  - AcceptedRiskDs
+  - AcceptedRiskProjects
+  - AcceptedRiskOther
+  - JiraProjectKey
+  - AWSAssumeRoleName
+  - InstantMessageChannel
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []

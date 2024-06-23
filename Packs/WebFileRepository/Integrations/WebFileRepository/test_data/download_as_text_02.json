@@ -1,0 +1,19 @@
+{
+    "Type": 1,
+    "Contents": {
+        "path": "/test.dat",
+        "name": "test.dat",
+        "data": "SGVsbG8h",
+        "size": 6,
+        "encoding": "base64"
+    },
+    "EntryContext": {
+        "WebFileRepository.Files(val.Path === obj.Path)": {
+            "Path": "/test.dat",
+            "Name": "test.dat",
+            "Data": "SGVsbG8h",
+            "Size": 6,
+            "Encoding": "base64"
+        }
+    }
+}

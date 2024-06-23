@@ -1,0 +1,548 @@
+id: Prisma Cloud Compute - Audit Alert Enrichment
+version: -1
+contentitemexportablefields:
+  contentitemfields: {}
+name: Prisma Cloud Compute - Audit Alert Enrichment
+description: |-
+  This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+  It does the following:
+  - Runs the "Prisma Cloud - Get Account Owner" playbook in order to retrieve potential owners for the alert.
+  - Sets the incident link to the layout.
+  - Pulls image details and alerts
+  - Pulls host scan results.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: e1d51b9f-6971-4373-85ae-ee54f5504401
+    type: start
+    task:
+      id: e1d51b9f-6971-4373-85ae-ee54f5504401
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: db5c3209-4f92-43b3-82f2-53d5e0e16ab2
+    type: regular
+    task:
+      id: db5c3209-4f92-43b3-82f2-53d5e0e16ab2
+      version: -1
+      name: Pull Images Details
+      description: Returns images by the query specification.
+      script: '|||prisma-cloud-compute-images-scan-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      compact:
+        simple: "false"
+      hostname:
+        complex:
+          root: inputs.Hostname
+      name:
+        complex:
+          root: inputs.ImageName
+    separatecontext: false
+    reputationcalc: 1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -27.5,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: dbec0409-cfb2-4f33-8a3a-793de97742bc
+    type: condition
+    task:
+      id: dbec0409-cfb2-4f33-8a3a-793de97742bc
+      description: ""
+      version: -1
+      name: Is there an image name
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "1"
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ImageName
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 265
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6f6977c9-43ae-4c8b-8c53-e0b8ec636c56
+    type: playbook
+    task:
+      id: 6f6977c9-43ae-4c8b-8c53-e0b8ec636c56
+      version: -1
+      name: Prisma Cloud - Get Account Owner
+      playbookName: Prisma Cloud - Get Account Owner
+      type: playbook
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      AccountID:
+        complex:
+          root: inputs.AccountID
+      EnrichUsers:
+        simple: "False"
+      Namespace:
+        complex:
+          root: inputs.Namespace
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: ca15fd91-c01a-441e-8981-31d72c590cd8
+    type: title
+    task:
+      id: ca15fd91-c01a-441e-8981-31d72c590cd8
+      version: -1
+      name: Find owner
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d5773da0-3901-4c33-87a2-37e9f7ed861c
+    type: playbook
+    task:
+      id: d5773da0-3901-4c33-87a2-37e9f7ed861c
+      version: -1
+      name: Prisma Cloud Compute - Get Container Events
+      description: |-
+        This is a sub-playbook of the "Prisma Cloud Compute - Audit Alert v2" playbook.
+        - Get container WAAS events
+        - Get runtime container events and set it to layout
+      playbookName: Prisma Cloud Compute - Get Container Events
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      AuditAlertType:
+        complex:
+          root: inputs.AuditAlertType
+      ImageName:
+        complex:
+          root: inputs.ImageName
+      hostname:
+        complex:
+          root: inputs.Hostname
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": -450,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 7ab9d963-1c9d-4216-895c-22882e8151e6
+    type: regular
+    task:
+      id: 7ab9d963-1c9d-4216-895c-22882e8151e6
+      version: -1
+      name: Set item owner email
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      itemowneremail:
+        complex:
+          root: PrismaCloud.UserRoles
+          accessor: associatedUsers
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: Not Found
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b7097130-08a6-4b25-862b-fff9d8a0f92c
+    type: regular
+    task:
+      id: b7097130-08a6-4b25-862b-fff9d8a0f92c
+      version: -1
+      name: Get host scan results
+      description: Get hosts scan report. The report includes vulnerabilities, compliance issues, binaries, etc.
+      script: '|||prisma-cloud-compute-hosts-scan-list'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      compact:
+        simple: "false"
+      hostname:
+        complex:
+          root: inputs.Hostname
+    separatecontext: false
+    reputationcalc: 1
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -870,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 1
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: aebd7f26-f545-44c6-8a9f-07f4a6c15770
+    type: title
+    task:
+      id: aebd7f26-f545-44c6-8a9f-07f4a6c15770
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 58963268-42d9-422f-888b-c1e419e0cd7e
+    type: regular
+    task:
+      id: 58963268-42d9-422f-888b-c1e419e0cd7e
+      version: -1
+      name: Set Incident Link
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      externallink:
+        complex:
+          root: inputs.ConsoleLink
+          transformers:
+          - operator: Stringify
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: /compute?computeState=
+              suffix: {}
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: inputs.BaseURL
+                iscontext: true
+              suffix: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 23c9f7e7-52a0-4913-8049-b4ee573c20fe
+    type: condition
+    task:
+      id: 23c9f7e7-52a0-4913-8049-b4ee573c20fe
+      description: ""
+      version: -1
+      name: Does baseUrl exist in inputs?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.BaseURL
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.ConsoleLink
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 452.5,
+          "y": 280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {
+      "13_12_yes": 0.39,
+      "4_7_yes": 0.22,
+      "4_9_#default#": 0.6
+    },
+    "paper": {
+      "dimensions": {
+        "height": 745,
+        "width": 2140,
+        "x": -870,
+        "y": 90
+      }
+    }
+  }
+inputs:
+- key: Hostname
+  value: {}
+  required: false
+  description: The hostname to retrieve events for. Relevant only for audit events.
+  playbookInputQuery:
+- key: ImageName
+  value: {}
+  required: false
+  description: The image name to retrieve events for.
+  playbookInputQuery:
+- key: AuditAlertType
+  value: {}
+  required: false
+  description: The type of the audit alert. Will be used to determine whether to retrieve WAAS events or not.
+  playbookInputQuery:
+- key: BaseURL
+  value: {}
+  required: false
+  description: The base URL of the Prisma Cloud Compute Instance used to create a link back to the alerts for an image.
+  playbookInputQuery:
+- key: ConsoleLink
+  value: {}
+  required: false
+  description: The value of the alert's console link. Part of the original incident values.
+  playbookInputQuery:
+- key: AccountID
+  value: {}
+  required: false
+  description: The cloud account ID.
+  playbookInputQuery:
+- key: Namespace
+  value: {}
+  required: false
+  description: The namespace which will be used to search associated users with in the "Get Account Owner" playbook.
+  playbookInputQuery:
+outputs:
+- contextPath: PrismaCloudCompute.ReportsImagesScan
+  description: Image scan results.
+- contextPath: PrismaCloud.Users
+  description: Prisma Cloud users.
+  type: unknown
+- contextPath: PrismaCloud.UserRoles
+  description: Prisma Cloud user roles.
+- contextPath: PrismaCloud.UserRoles.associatedUsers
+  description: User roles associated users.
+- contextPath: PrismaCloudCompute.ReportHostScan
+  description: Host scan results.
+- contextPath: PrismaCloudCompute.ReportHostScan.complianceIssues
+  description: Number of compliance issues.
+- contextPath: PrismaCloudCompute.ReportsImagesScan.complianceIssues
+  description: Number of compliance issues.
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

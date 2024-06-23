@@ -42,7 +42,7 @@ def is_valid_args(args: Dict):
         if _key in array_args:
             try:
                 if _key == 'id':
-                    if not isinstance(value, (int, str, list)):
+                    if not isinstance(value, int | str | list):
                         error_msg.append(
                             f'Error while parsing the incident id with the value: {value}. The given type: '
                             f'{type(value)} is not a valid type for an ID. The supported id types are: int, list and str')
@@ -102,8 +102,9 @@ def add_incidents_link(data: List, platform: str):
     # For XSOAR links
     else:
         server_url = demisto.demistoUrls().get('server')
+        prefix = '' if is_demisto_version_ge('8.4.0') else '#'
         for incident in data:
-            incident_link = urljoin(server_url, f'#/Details/{incident.get("id")}')
+            incident_link = urljoin(server_url, f'{prefix}/Details/{incident.get("id")}')
             incident['incidentLink'] = incident_link
     return data
 
@@ -122,8 +123,9 @@ def transform_to_alert_data(incidents: List):
 
 def search_incidents(args: Dict):   # pragma: no cover
     is_summarized_version = argToBoolean(args.get('summarizedversion', False))
+    platform = get_demisto_version().get('platform', 'xsoar')
     if not is_valid_args(args):
-        return
+        return None
 
     if fromdate := arg_to_datetime(args.get('fromdate', '30 days ago' if is_summarized_version else None)):
         from_date = fromdate.isoformat()
@@ -134,14 +136,11 @@ def search_incidents(args: Dict):   # pragma: no cover
         args['todate'] = to_date
 
     if args.get('trimevents'):
-        platform = demisto.demistoVersion().get('platform', 'xsoar')
         if platform == 'xsoar' or platform == 'xsoar_hosted':
             raise ValueError('The trimevents argument is not supported in XSOAR.')
 
         if args.get('trimevents') == '0':
             args.pop('trimevents')
-
-    platform = get_demisto_version().get('platform')
 
     # handle list of ids
     if args.get('id'):
@@ -153,34 +152,37 @@ def search_incidents(args: Dict):   # pragma: no cover
         if platform == 'x2':
             return 'Alerts not found.', {}, {}
         return 'Incidents not found.', {}, {}
-
     limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
     all_found_incidents = res[0]["Contents"]["data"]
     demisto.debug(
         f'Amount of incidents before filtering = {len(all_found_incidents)} with args {args} before pagination'
     )
+    page_size = args.get('size') or DEFAULT_PAGE_SIZE
+    more_pages = len(all_found_incidents) == page_size
     all_found_incidents = add_incidents_link(apply_filters(all_found_incidents, args), platform)
     demisto.debug(
         f'Amount of incidents after filtering = {len(all_found_incidents)} before pagination'
     )
-    # adding 1 here because the default page number start from 0
-    max_page = (res[0]["Contents"]["total"] // DEFAULT_PAGE_SIZE) + 1
-    demisto.debug(f'{max_page=}')
-
     page = STARTING_PAGE_NUMBER
-    while len(all_found_incidents) < limit and page < max_page:
+
+    while more_pages and len(all_found_incidents) < limit:
         args['page'] = page
         current_page_found_incidents = execute_command('getIncidents', args).get('data') or []
-        demisto.debug(
-            f'before filtering {len(current_page_found_incidents)=} '
-            f' {args=} {page=}'
-        )
+
+        # When current_page_found_incidents is None it means the requested page was empty
+        if not current_page_found_incidents:
+            break
+
+        demisto.debug(f'before filtering {len(current_page_found_incidents)=} {args=} {page=}')
+        more_pages = len(current_page_found_incidents) == page_size
+
         current_page_found_incidents = add_incidents_link(apply_filters(current_page_found_incidents, args), platform)
         demisto.debug(f'after filtering = {len(current_page_found_incidents)=}')
         all_found_incidents.extend(current_page_found_incidents)
         page += 1
 
     all_found_incidents = all_found_incidents[:limit]
+
     headers: List[str]
     if platform == 'x2':
         headers = ['id', 'name', 'severity', 'details', 'hostname', 'initiatedby', 'status',
@@ -194,7 +196,7 @@ def search_incidents(args: Dict):   # pragma: no cover
             if args.get("add_fields_to_summarize_context"):
                 add_headers: List[str] = args.get("add_fields_to_summarize_context", '').split(",")
                 headers = headers + add_headers
-        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers)
+        md = tableToMarkdown(name="Incidents found", t=all_found_incidents, headers=headers, url_keys=['incidentLink'])
     demisto.debug(f'amount of all the incidents that were found {len(all_found_incidents)}')
     return md, all_found_incidents, res
 

@@ -1,0 +1,4 @@
+!tessian-list-events limit=2"
+!tessian-release-from-quarantine event_id="string"
+!tessian-delete-from-quarantine event_id="string"
+!tessian-delete-from-inbox event_id="string"

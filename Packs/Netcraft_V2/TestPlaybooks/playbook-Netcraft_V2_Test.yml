@@ -1,0 +1,1151 @@
+id: Test - Netcraft
+version: -1
+name: Test - Netcraft
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 2ae59ef3-d523-42f8-87f6-ab7cbb2c98e9
+    type: start
+    task:
+      id: 2ae59ef3-d523-42f8-87f6-ab7cbb2c98e9
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 4a38264b-bd63-41aa-8bc3-4485da9930ec
+    type: regular
+    task:
+      id: 4a38264b-bd63-41aa-8bc3-4485da9930ec
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "40"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 540a2f79-4402-4624-8392-cd7f2829c249
+    type: regular
+    task:
+      id: 540a2f79-4402-4624-8392-cd7f2829c249
+      version: -1
+      name: netcraft-attack-report
+      script: Netcraft V2|||netcraft-attack-report
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      attack:
+        simple: https://www.example.com/${RandomString}
+      attack_type:
+        complex:
+          root: Netcraft.AttackType
+          accessor: name
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      comment:
+        simple: Test attack report.
+      customer_label:
+        simple: Test label
+      inactive:
+        simple: "true"
+      tags:
+        simple: coronavirus
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9272bcde-6e43-476f-84ca-3f820f72db9a
+    type: regular
+    task:
+      id: 9272bcde-6e43-476f-84ca-3f820f72db9a
+      version: -1
+      name: netcraft-takedown-list
+      script: Netcraft V2|||netcraft-takedown-list
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      escalated:
+        simple: "No"
+      sort:
+        simple: Id
+      statuses:
+        simple: unverified
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 15578e78-8104-4196-8bf7-dfae7aeedae9
+    type: regular
+    task:
+      id: 15578e78-8104-4196-8bf7-dfae7aeedae9
+      version: -1
+      name: netcraft-takedown-update
+      script: Netcraft V2|||netcraft-takedown-update
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      add_tags:
+        simple: smishing,fake-shop-logo
+      customer_label:
+        simple: Test label
+      description:
+        simple: Test description
+      remove_tags:
+        simple: coronavirus
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "20"
+      takedown_id:
+        simple: ${Netcraft.Takedown.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ce9765db-6f9c-4855-8ce9-8909533a7589
+    type: regular
+    task:
+      id: ce9765db-6f9c-4855-8ce9-8909533a7589
+      version: -1
+      name: netcraft-takedown-note-create
+      script: Netcraft V2|||netcraft-takedown-note-create
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      extend-context:
+        simple: new_note_id=note_id
+      ignore-outputs:
+        simple: "true"
+      note_text:
+        simple: Test note text
+      notify:
+        simple: "false"
+      takedown_id:
+        simple: ${Netcraft.Takedown.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1215
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 34fcdcfa-4227-42d4-8f72-2a396c78bb8f
+    type: regular
+    task:
+      id: 34fcdcfa-4227-42d4-8f72-2a396c78bb8f
+      version: -1
+      name: netcraft-takedown-note-list
+      script: Netcraft V2|||netcraft-takedown-note-list
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "44"
+    scriptarguments:
+      all_results:
+        simple: "true"
+      takedown_id:
+        simple: ${Netcraft.Takedown.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 29597d12-4639-4e42-8382-cab7136efdbc
+    type: regular
+    task:
+      id: 29597d12-4639-4e42-8382-cab7136efdbc
+      version: -1
+      name: netcraft-attack-type-list
+      script: Netcraft V2|||netcraft-attack-type-list
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      all_results:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 0771fb9a-2381-4e18-883f-cc726f11c388
+    type: regular
+    task:
+      id: 0771fb9a-2381-4e18-883f-cc726f11c388
+      version: -1
+      name: netcraft-submission-list
+      script: Netcraft V2|||netcraft-submission-list
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      limit:
+        simple: "20"
+      source_name:
+        simple: Palo Alto Networks
+      state:
+        simple: no threats
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 861058c2-e08e-42c0-804e-0e0b8ca1629b
+    type: regular
+    task:
+      id: 861058c2-e08e-42c0-804e-0e0b8ca1629b
+      version: -1
+      name: netcraft-submission-list with UUID
+      script: Netcraft V2|||netcraft-submission-list
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "38"
+      - "39"
+      - "37"
+    scriptarguments:
+      submission_uuid:
+        complex:
+          root: Netcraft.Submission
+          accessor: uuid
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 7aadd9ce-7057-42f7-8729-f36e3716cb6c
+    type: regular
+    task:
+      id: 7aadd9ce-7057-42f7-8729-f36e3716cb6c
+      version: -1
+      name: netcraft-file-report-submit
+      script: Netcraft V2|||netcraft-file-report-submit
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      extend-context:
+        simple: fileReportId=uuid
+      file_content:
+        simple: ${RandomNumber}
+      file_name:
+        simple: malicious.txt
+      interval_in_seconds:
+        simple: "15"
+      polling:
+        simple: "true"
+      reason:
+        simple: Test submission.
+      reporter_email:
+        simple: reporter@demistodev.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 52463f7c-fe99-4201-8d2a-e91c64801e99
+    type: regular
+    task:
+      id: 52463f7c-fe99-4201-8d2a-e91c64801e99
+      version: -1
+      name: netcraft-submission-file-list
+      script: Netcraft V2|||netcraft-submission-file-list
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      limit:
+        simple: "50"
+      submission_uuid:
+        simple: ${fileReportId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 3e5e5e80-072f-4c03-87cc-b59bb1bbb9bb
+    type: regular
+    task:
+      id: 3e5e5e80-072f-4c03-87cc-b59bb1bbb9bb
+      version: -1
+      name: netcraft-file-screenshot-get
+      script: Netcraft V2|||netcraft-file-screenshot-get
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      file_hash:
+        simple: ${Netcraft.SubmissionFile.hash}
+      submission_uuid:
+        simple: ${fileReportId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 0e617bba-6255-43c2-8e85-e89ca1f8e837
+    type: regular
+    task:
+      id: 0e617bba-6255-43c2-8e85-e89ca1f8e837
+      version: -1
+      name: netcraft-email-report-submit
+      script: Netcraft V2|||netcraft-email-report-submit
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      extend-context:
+        simple: mailReportId=uuid
+      message:
+        simple: |-
+          From: ${RandomString}@example.com
+          To: example@netcraft.com
+          Subject: Example mail
+          Date: Tue, 01 Jan 2019 00:00:00 +0000
+          MIME-Version: 1.0
+          Content-Type: text/plain; charset="UTF8"
+          Content-Transfer-Encoding: 8bit
+
+          Example mail body with http://example.com URL. and code "${RandomString}"
+      polling:
+        simple: "true"
+      reporter_email:
+        simple: reporter@demistodev.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 01be780b-82b8-42ba-85a3-8e88ef8563e1
+    type: regular
+    task:
+      id: 01be780b-82b8-42ba-85a3-8e88ef8563e1
+      version: -1
+      name: netcraft-submission-mail-get
+      script: Netcraft V2|||netcraft-submission-mail-get
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      submission_uuid:
+        simple: ${mailReportId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: aa7033a2-61fc-4042-824c-397056e9c7bb
+    type: regular
+    task:
+      id: aa7033a2-61fc-4042-824c-397056e9c7bb
+      version: -1
+      name: netcraft-mail-screenshot-get
+      script: Netcraft V2|||netcraft-mail-screenshot-get
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      submission_uuid:
+        simple: ${mailReportId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: e3f29cdf-51b6-47bf-8747-231a725c8d6e
+    type: regular
+    task:
+      id: e3f29cdf-51b6-47bf-8747-231a725c8d6e
+      version: -1
+      name: netcraft-url-report-submit
+      script: Netcraft V2|||netcraft-url-report-submit
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      extend-context:
+        simple: urlReportId=uuid
+      interval_in_seconds:
+        simple: "30"
+      polling:
+        simple: "true"
+      reason:
+        simple: 'Test submission with random string: "${RandomString}"'
+      reporter_email:
+        simple: reporter@demistodev.com
+      timeout:
+        simple: "900"
+      urls:
+        simple: https://www.google.com/,https://example.com/,https://xsoar.pan.dev/${RandomString}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: eef77bb1-9e90-4298-8ff3-369243a5fd8d
+    type: regular
+    task:
+      id: eef77bb1-9e90-4298-8ff3-369243a5fd8d
+      version: -1
+      name: netcraft-submission-url-list
+      script: Netcraft V2|||netcraft-submission-url-list
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      limit:
+        simple: "50"
+      submission_uuid:
+        simple: ${urlReportId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: b7de5e8c-fae0-416b-8354-382f09c35d81
+    type: regular
+    task:
+      id: b7de5e8c-fae0-416b-8354-382f09c35d81
+      version: -1
+      name: netcraft-url-screenshot-get
+      script: Netcraft V2|||netcraft-url-screenshot-get
+      type: regular
+      iscommand: true
+      brand: Netcraft V2
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      screenshot_hash:
+        complex:
+          root: Netcraft.SubmissionURL.screenshots
+          accessor: hash
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      submission_uuid:
+        simple: ${urlReportId}
+      url_uuid:
+        complex:
+          root: Netcraft.SubmissionURL
+          filters:
+          - - operator: isExists
+              left:
+                value:
+                  simple: Netcraft.SubmissionURL.screenshots.hash
+                iscontext: true
+          accessor: uuid
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 1915
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: d211fcf9-aaa0-4b1a-816a-2c25360faaca
+    type: title
+    task:
+      id: d211fcf9-aaa0-4b1a-816a-2c25360faaca
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 2090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 051cf86c-8259-4570-899c-604300f3a1cf
+    type: title
+    task:
+      id: 051cf86c-8259-4570-899c-604300f3a1cf
+      version: -1
+      name: Submission Service
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a41a6b4e-b3cc-4bf0-85e7-c40acb553767
+    type: title
+    task:
+      id: a41a6b4e-b3cc-4bf0-85e7-c40acb553767
+      version: -1
+      name: Takedown Service
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: ff5ca91b-6c77-48da-8440-1d3ae58e98d4
+    type: title
+    task:
+      id: ff5ca91b-6c77-48da-8440-1d3ae58e98d4
+      version: -1
+      name: Report URLs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1230
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 21ee4353-59e3-4a50-8645-9de8fac337f7
+    type: title
+    task:
+      id: 21ee4353-59e3-4a50-8645-9de8fac337f7
+      version: -1
+      name: Report Files
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "16"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 2444ca0f-b496-4b18-86e8-b792c7130ad8
+    type: title
+    task:
+      id: 2444ca0f-b496-4b18-86e8-b792c7130ad8
+      version: -1
+      name: Report Mails
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 7a851a86-53d5-498e-83ce-5ff821e247fc
+    type: regular
+    task:
+      id: 7a851a86-53d5-498e-83ce-5ff821e247fc
+      version: -1
+      name: Generate random string
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      Digits:
+        simple: "False"
+      Length:
+        simple: "10"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "True"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: b06f96a3-6bda-471f-8cba-167ce15057fd
+    type: regular
+    task:
+      id: b06f96a3-6bda-471f-8cba-167ce15057fd
+      version: -1
+      name: Generate random number
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+      - "35"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "10"
+      Lowercase:
+        simple: "False"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+      extend-context:
+        simple: RandomNumber=RandomString
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: aa45902c-bfb1-468a-803a-3a2bac366322
+    type: condition
+    task:
+      id: aa45902c-bfb1-468a-803a-3a2bac366322
+      version: -1
+      name: Are there URL screenshots?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "34"
+      "yes":
+      - "32"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              simple: Netcraft.SubmissionURL.screenshots.hash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1022.5,
+          "y": 1740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: ec1317f7-d9dd-448d-8e2e-938bbebd0121
+    type: condition
+    task:
+      id: ec1317f7-d9dd-448d-8e2e-938bbebd0121
+      version: -1
+      name: Is new note in list?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: new_note_id
+            iscontext: true
+          right:
+            value:
+              simple: Netcraft.TakedownNote.note_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1462.5,
+          "y": 1565
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2105,
+        "width": 1792.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: Test playbook for Netcraft

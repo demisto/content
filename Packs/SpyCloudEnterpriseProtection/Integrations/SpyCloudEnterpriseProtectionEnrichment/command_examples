@@ -1,0 +1,14 @@
+!spycloud-breach-catalog-list limit=2
+!spycloud-breach-catalog-get id=39897 limit=2
+!spycloud-domain-data-get domain=loginsoft.com limit=2
+!spycloud-username-data-get username=abc limit=2
+!spycloud-ip-address-data-get ip=4.4.4.4 limit=2
+!spycloud-email-data-get email=smoolagiri@loginsoft.com limit=2
+!spycloud-password-data-get password=welcome@123 limit=2
+!spycloud-watchlist-data-list limit=2
+!spycloud-compass-device-data-get
+infected_machine_id=72aaaec1-afa1-4d9e-838f-abfcbbf3ff82 limit=2
+!spycloud-compass-data-list limit=2
+!spycloud-compass-device-list limit=2
+!spycloud-compass-application-data-get target_application=loginsoft.greythr.com
+limit=2

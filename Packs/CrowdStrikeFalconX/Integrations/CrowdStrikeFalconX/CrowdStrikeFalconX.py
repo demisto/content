@@ -1,14 +1,21 @@
 import uuid
 from dataclasses import dataclass
-from typing import Callable, Tuple
+from collections.abc import Callable
 from urllib.parse import quote
-
+from more_itertools import always_iterable
 import urllib3
 
 from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+class FileReportWarning(Exception):
+    """
+    This class is in charge of catching errors raised from having an error object in the
+    file's sandbox analysis report
+    """
 
 
 @dataclass
@@ -56,7 +63,7 @@ class Client:
     def __init__(self, server_url: str, username: str, password: str, use_ssl: bool, proxy: bool, reliability: str):
         self._base_url = server_url
         self._verify = use_ssl
-        self._ok_codes = tuple()  # type: ignore[var-annotated]
+        self._ok_codes = ()  # type: ignore[var-annotated]
         self._username = username
         self._password = password
         self._session = requests.Session()
@@ -249,7 +256,7 @@ class Client:
             'client_secret': self._password
         }
 
-        byte_creds = f'{self._username}:{self._password}'.encode('utf-8')
+        byte_creds = f'{self._username}:{self._password}'.encode()
 
         headers = {
             'Authorization': f'Basic {base64.b64encode(byte_creds).decode()}'
@@ -608,7 +615,7 @@ def parse_file_results(report_to_results: Dict[str, RawCommandResults]) -> List[
     return command_results
 
 
-def find_suitable_hash_output(raw_results: Tuple[RawCommandResults]) -> Dict[str, dict]:
+def find_suitable_hash_output(raw_results: tuple[RawCommandResults]) -> Dict[str, dict]:
     """
     Aggregates data fields from various outputs, to create a single output per SHA256.
     :param raw_results: result that may include multiple outputs for the same SHA256 value.
@@ -674,10 +681,10 @@ def parse_outputs(
     :param sandbox_fields: the wanted params that appear in the sandbox section
     :param extra_sandbox_fields: the wanted params that appear in the extra sandbox section
     """
-    output: Dict[str, Any] = dict()
+    output: Dict[str, Any] = {}
     indicator: Optional[Common.File] = None
 
-    if api_res_meta := response.get("meta", dict()):
+    if api_res_meta := response.get("meta", {}):
         output.update(filter_dictionary(api_res_meta, meta_fields))
         output.update(filter_dictionary(api_res_meta.get("quota", {}), quota_fields))
 
@@ -736,6 +743,7 @@ def parse_indicator(sandbox: dict, reliability_str: str) -> Optional[Common.File
             signature=signature,
             relationships=relationships or None,
         )
+    return None
 
 
 def parse_indicator_relationships(sandbox: dict, indicator_value: str, reliability: str) -> List[EntityRelationship]:
@@ -896,7 +904,6 @@ def send_uploaded_file_to_sandbox_analysis_command(
     response = client.send_uploaded_file_to_sandbox_analysis(sha256, environment_id, action_script, command_line,
                                                              document_password, enable_tor, submit_name, system_date,
                                                              system_time)
-
     sandbox_fields = ("environment_id", "sha256")
     resource_fields = ('id', 'state', 'created_timestamp', 'created_timestamp')
     result = parse_outputs(response, reliability=client.reliability,
@@ -966,7 +973,7 @@ def get_full_report_command(
         client: Client,
         ids: str,  # argToList is called inside
         extended_data: str = '',
-) -> Tuple[List[CommandResults], bool]:
+) -> tuple[List[CommandResults], bool]:
     """Get a full version of a sandbox report.
     :param client: the client object with an access token
     :param ids: ids of a submitted malware samples.
@@ -1001,6 +1008,12 @@ def get_full_report_command(
         response = client.get_full_report(id_)
         if response.get('resources'):
             is_command_finished = True  # flag used when commands
+            # We can extract the error from the response object under resources section, as it looks like the error section is
+            # always empty
+            try:
+                validate_sandbox_report(response.get('resources', []))
+            except FileReportWarning as e:
+                return_warning(str(e))
 
         if extended_data == 'true':
             extra_sandbox_fields = extra_sandbox_fields + ("mitre_attacks", "signatures")  # type:ignore[assignment]
@@ -1044,7 +1057,53 @@ def get_full_report_command(
     return command_results, is_command_finished
 
 
-def find_suitable_hash_indicator(results: Tuple[RawCommandResults]) -> Dict[str, Common.File]:
+def validate_sandbox_report(report_resources: list[dict[str, Any]]) -> None:
+    """This function checks for any error messages in the sandbox report.
+    The report resource can hold the following data:
+    "resources": [
+        {
+            "id": "resource_id",
+            "cid": "cid",
+            "created_timestamp": "2024-01-10T16:17:37Z",
+            "index_timestamp": "2024-01-10T16:20:54Z",
+            "origin": "apigateway",
+            "verdict": "no verdict",
+            "sandbox": [
+                {
+                    "sha256": "dummy_sha256",
+                    "environment_id": "dummy_environment_id",
+                    "environment_description": "Windows 10 64 bit",
+                    "file_type": "PNG image data, 1951 x 954, 8-bit/color RGBA, non-interlaced",
+                    "file_type_short": [
+                        "img"
+                    ],
+                    "submit_name": "dummy_sha256",
+                    "submission_type": "file",
+                    "error_message": 'File "dummy_sha256" was detected as "image", this format is not supported on WINDOWS',
+                    "error_type": "FILE_TYPE_BAD_ERROR",
+                    "error_origin": "CLIENT",
+                    "is_certificates_valid": False
+                }
+            ]
+        }
+    ]
+    Args:
+        report_resources (list[dict[str, Any]]): Report resources of the report. They hold the data about
+        any error messages returned from the report.
+
+    Raises:
+        FileReportWarning: If an error message is found in the sandbox report
+    """
+    for resource in report_resources:
+        resource_id = resource['id']
+        for sandbox_entity in resource.get('sandbox', []):
+            if error_message := sandbox_entity.get('error_message'):
+                error_type = sandbox_entity.get('error_type', '<UNKNOWN>')
+                raise FileReportWarning(f'Sandbox report for resource id {resource_id} returned an error of'
+                                        f' type {error_type} with content: {error_message}')
+
+
+def find_suitable_hash_indicator(results: tuple[RawCommandResults]) -> Dict[str, Common.File]:
     """
     Returns the indicator with the highest dbot_score for every hash.
     :param results: raw results from a command
@@ -1092,6 +1151,14 @@ def get_report_summary_command(
 
     for single_id in argToList(ids):
         response = client.get_report_summary(single_id)
+        if response.get('resources'):
+            # We can extract the error from the response object under resources section, as it looks like the error section is
+            # always empty
+            try:
+                validate_sandbox_report(response.get('resources', []))
+            except FileReportWarning as e:
+                return_warning(str(e))
+
         result = parse_outputs(response, reliability=client.reliability,
                                resources_fields=resources_fields, sandbox_fields=sandbox_fields)
         results.append(
@@ -1322,7 +1389,9 @@ def arrange_args_for_upload_func(args: dict) -> Any:
 
 
 def run_polling_command(client, args: dict, cmd: str, upload_function: Callable, results_function: Callable,
-                        item_type) -> Union[CommandResults, List[CommandResults]]:
+                        item_type,
+                        post_function: Optional[Callable] = None
+                        ) -> Union[CommandResults, List[CommandResults]]:
     """
     This function is generically handling the polling flow. In the polling flow, there is always an initial call that
     starts the uploading to the API (referred here as the 'upload' function) and another call that retrieves the status
@@ -1375,11 +1444,33 @@ def run_polling_command(client, args: dict, cmd: str, upload_function: Callable,
             timeout_in_seconds=6000)
 
         command_result = CommandResults(scheduled_command=scheduled_command)
+    elif post_function is not None:
+        # Validate the polling results
+        post_function(command_result)
     return command_result
 
 
+def validate_submit_file_polling_results(command_results: list[CommandResults] | CommandResults) -> None:
+    """Validate the results of the polling function when submitting a file for analysis.
+
+    Args:
+        command_results (list[CommandResults] | CommandResults): The results of the polling method.
+
+    Raises:
+        DemistoException: If the results contain an error message, stating that the sandbox analysis was not able to run
+        properly.
+    """
+    for command_result in always_iterable(command_results, CommandResults):
+        raw_response: dict[str, Any] = command_result.raw_response
+        try:
+            validate_sandbox_report(raw_response.get('resources', []))
+        except FileReportWarning as e:
+            raise DemistoException(f'Sandbox was not able to analyze one of the files, failing with error: {e}')
+
+
 def upload_file_with_polling_command(client: Client, args: dict):
-    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE')
+    return run_polling_command(client, args, 'cs-fx-upload-file', upload_file_command, get_full_report_command, 'FILE',
+                               post_function=validate_submit_file_polling_results)
 
 
 def submit_uploaded_file_polling_command(client: Client, args: dict):

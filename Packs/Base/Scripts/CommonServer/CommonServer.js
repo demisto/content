@@ -278,19 +278,12 @@ function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
         for(var i=0; i<headers.length; i++){
             newHeaders.push(headerTransform(headers[i]));
         }
-        if (newHeaders.length > 1) {
-            mdResults += newHeaders.join('|') + '\n';
-        } else {
-            mdResults += newHeaders[0] + '|' + '\n';
-        }
+        mdResults += '| ' + newHeaders.join(' | ') + ' |' + '\n';
         var sep = [];
         headers.forEach(function(h){
             sep.push('---');
         });
-        if (sep.length === 1) {
-            sep[0] = sep[0]+'|';
-        }
-        mdResults += sep.join('|') + '\n';
+        mdResults += '| ' + sep.join(' | ') + ' |' + '\n';
         t.forEach(function(entry){
             var vals = [];
             if(typeof(entry) !== 'object' && !(entry instanceof Array)){
@@ -305,10 +298,8 @@ function tableToMarkdown(name, t, headers, cellDelimiter, headerTransform) {
                     vals.push(stringEscapeMD(formatCell(entry[h], cellDelimiter), true, true) || ' ');
                 }
             });
-            if (vals.length === 1) {
-                vals[0] = vals[0]+'|';
-            }
-            mdResults += vals.join(' | ') + '\n';
+
+            mdResults += '| ' + vals.join(' | ') + ' |' + '\n';
         });
     } else{
         mdResults += 'No data returned\n';
@@ -1945,7 +1936,7 @@ function stringToDate(dateString, format) {
   /**************************** REGEX FORMATTING *******************************/
 
     var ipRegex = /\b(?:(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\.){3}(?:25[0-5]|2[0-4][0-9]|1[0-9][0-9]|[1-9]?[0-9])\b/;
-    var emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/;
+    var emailRegex = /\b(?:(?:\\|\^{3})u[a-f\d]{4})?(?<localpart>[\p{L}\d.!#$%&'*+\/=?^_\xe60{}~-][\p{L}\d.!#$%&'*+\/=?^_\xe60{|}~-]{0,63})\[?@\]?(?<domain>[\p{L}\d-]{1,255}(?:\[?\.\]?(?:[\p{L}\d-]{2,}))*(?:\[?\.\]?(?<tld>[\p{L}]{2,})))\b/gm;
     var hashRegex = /[a-fA-F0-9]/;
     var md5Regex = /\b[a-fA-F\d]{32}\b/gm;
     var sha1Regex = /\b[a-fA-F\d]{40}\b/gm;

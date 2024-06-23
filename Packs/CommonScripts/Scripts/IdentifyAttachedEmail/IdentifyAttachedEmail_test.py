@@ -1,19 +1,33 @@
 from IdentifyAttachedEmail import *
 import IdentifyAttachedEmail
+import pytest
 
 
 def execute_command(command, args):
     if command == 'getEntry':
-        return [
-            {
-                'Type': entryTypes['file'],
-                'FileMetadata': {
-                    'info': 'news or mail text, ASCII text'
+        if args['id'] == '23@2':
+            return [
+                {
+                    'Type': entryTypes['note'],
+                    'FileMetadata': {
+                        'info': 'koko'
+                    },
+                    'ID': '23@2'
                 }
-            }
-        ]
+            ]
+        elif args['id'] == '24@2':
+            return [
+                {
+                    'Type': entryTypes['file'],
+                    'FileMetadata': {
+                        'info': 'news or mail text, ASCII text'
+                    },
+                    'ID': '24@2'
+                }
+            ]
     if command == "getEntries":
         return {}
+    return None
 
 
 def test_is_email():
@@ -38,18 +52,199 @@ def test_is_entry_email(mocker):
 def test_identify_attached_mail(mocker):
     entry_ids = """[\"23@2\",\"24@2\"]"""
     from CommonServerPython import demisto
-    mocker.patch.object(demisto, 'get', return_value=entry_ids)
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-    mocker.patch.object(IdentifyAttachedEmail, 'is_entry_email', return_value=True)
-    results = identify_attached_mail({})
-    assert results == ('yes', {'reportedemailentryid': True})
+    args = {
+        'entryid': entry_ids
+    }
+    results = identify_attached_mail(args)
+    assert results == ('yes', {'reportedemailentryid': '24@2'})
 
 
 def test_identify_attached_mail_no_email_attached(mocker):
-    entry_ids = """[\"23@2\",\"24@2\"]"""
+    entry_ids = """[\"23@2\"]"""
     from CommonServerPython import demisto
-    mocker.patch.object(demisto, 'get', return_value=entry_ids)
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
-    mocker.patch.object(IdentifyAttachedEmail, 'is_entry_email', return_value=False)
+
+    args = {
+        'entryid': entry_ids
+    }
+    results = identify_attached_mail(args)
+    assert results == ('no', None)
+
+
+def test_identify_attached_mail_in_xsoar_saas_list_of_entries_passed(mocker):
+    """
+    Given
+    - two entries with ids 23@2 24@2
+    - the platform is xsoar saas
+
+    When
+    - running the script to get the entries
+
+    Then
+    - expect the getEntriesByIDs to be called
+
+    """
+    entry_ids = """[\"23@2\",\"24@2\"]"""
+    import CommonServerPython
+    mocker.patch.object(CommonServerPython, 'get_demisto_version', return_value={
+        'version': '8.2.0',
+        'buildNumber': '12345'
+    })
+
+    def execute_command(command, args):
+        if command == 'getEntriesByIDs' and args.get('entryIDs') == '23@2,24@2':
+            return [
+                {
+                    'File': 'msg.eml',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '23@2'
+                },
+                {
+                    'File': 'foo.txt',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '24@2'
+                }
+            ]
+        else:
+            pytest.fail()
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    args = {
+        'entryid': entry_ids
+    }
+    results = identify_attached_mail(args)
+    assert results == ('yes', {'reportedemailentryid': '23@2'})
+
+
+def test_identify_attached_mail_no_entries_passed(mocker):
+    """
+    Given
+    - no entries passed
+    - the platform is xsoar saas
+
+    When
+    - running the script to get the entries
+
+    Then
+    - expect the getEntries to be called with filters
+
+    """
+    import CommonServerPython
+    mocker.patch.object(CommonServerPython, 'get_demisto_version', return_value={
+        'version': '8.2.0',
+        'buildNumber': '12345'
+    })
+
+    def execute_command(command, args):
+        if command == 'getEntries' and args == {"filter": {"categories": ["attachments"]}}:
+            return [
+                {
+                    'File': 'msg.eml',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '23@2'
+                },
+                {
+                    'File': 'foo.txt',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '24@2'
+                }
+            ]
+        else:
+            pytest.fail()
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
     results = identify_attached_mail({})
+    assert results == ('yes', {'reportedemailentryid': '23@2'})
+
+
+def test_identify_attached_mail_no_email_found(mocker):
+    """
+    Given
+    - no email entries in the warroom
+    - the platform is xsoar saas
+
+    When
+    - running the script to get the entries
+
+    Then
+    - no entries to be found
+
+    """
+    import CommonServerPython
+    mocker.patch.object(CommonServerPython, 'get_demisto_version', return_value={
+        'version': '8.2.0',
+        'buildNumber': '12345'
+    })
+
+    def execute_command(command, args):
+        if command == 'getEntries' and args == {"filter": {"categories": ["attachments"]}}:
+            return
+        else:
+            pytest.fail()
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    results = identify_attached_mail({})
+    assert results == ('no', None)
+
+
+def test_list_of_entries_passed_in_xsoar_saas_but_no_file_entries(mocker):
+    """
+    Given
+    - two entries with ids 23@2 24@2 which are not file entries
+    - the platform is xsoar saas
+
+    When
+    - running the script to get the entries
+
+    Then
+    - expect the getEntriesByIDs to be called
+    - expect no email entries to be found
+
+    """
+    entry_ids = """[\"23@2\",\"24@2\"]"""
+    import CommonServerPython
+    mocker.patch.object(CommonServerPython, 'get_demisto_version', return_value={
+        'version': '8.2.0',
+        'buildNumber': '12345'
+    })
+
+    def execute_command(command, args):
+        if command == 'getEntriesByIDs' and args.get('entryIDs') == '23@2,24@2':
+            return [
+                {
+                    'File': 'msg.txt',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '23@2'
+                },
+                {
+                    'File': 'foo.txt',
+                    'FileMetadata': {
+                        'info': 'ASCII text, with CRLF line terminators'
+                    },
+                    'ID': '24@2'
+                }
+            ]
+        else:
+            pytest.fail()
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    args = {
+        'entryid': entry_ids
+    }
+    results = identify_attached_mail(args)
     assert results == ('no', None)

@@ -56,6 +56,14 @@ configuration:
   required: false
 - section: Collect
   advanced: true
+  display: Minutes to delay
+  additionalinfo: Number of minutes to delay when fetching events (to handle events creation delay in the Armis database). The default value is 10 minutes. A higher value can be configured in the event that some events are still not available within those ten minutes.
+  name: fetch_delay
+  defaultvalue: "10"
+  type: 0
+  required: false
+- section: Collect
+  advanced: true
   display: Device Fetch Interval
   additionalinfo: Time between fetch of devices (for example 12 hours, 60 minutes, etc.).
   name: deviceFetchInterval
@@ -77,8 +85,20 @@ script:
       - 'true'
       - 'false'
       required: true
-    - description: The date from which to fetch events. The format should be '20 minutes', '1 hour' or '2 days'.
+    - description: The date from which to fetch events. The format should be YYYY-MM-DD or YYYY-MM-DDT:HH:MM:SS. If not specified, the current date will be used.
       name: from_date
+      required: false
+    - auto: PREDEFINED
+      defaultValue: 'Alerts'
+      description: The type of event to fetch.
+      name: event_type
+      predefined:
+      - 'Alerts'
+      - 'Activities'
+      - 'Devices'
+      required: false
+    - description: Run your own AQL query to fetch events.
+      name: aql
       required: false
     description: Manual command to fetch and display events. This command is used for developing/debugging and is to be used with caution, as it can create events, leading to events duplication and exceeding the API request limitation.
     name: armis-get-events
@@ -87,7 +107,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.78960
+  dockerimage: demisto/python3:3.10.14.92207
 marketplaces:
 - marketplacev2
 fromversion: 6.10.0

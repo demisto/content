@@ -1,0 +1,31 @@
+[
+    {
+        "ObjectTemplate":
+        {
+            "id": "300",
+            "user_id": "1",
+            "org_id": "1",
+            "uuid": "1a99327a-bbe6-493d-97da-fce83965eccd",
+            "name": "corporate-asset",
+            "meta-category": "misc",
+            "description": "Corporate asset",
+            "version": "20210317",
+            "requirements":
+            {
+                "required":
+                [
+                    "asset-type",
+                    "asset-id"
+                ]
+            },
+            "fixed": true,
+            "active": true
+        },
+        "Organisation":
+        {
+            "id": "1",
+            "name": "Palo",
+            "uuid": "8d1fff3b-a47a-4629-9b5e-1907e25cca99"
+        }
+    }
+]

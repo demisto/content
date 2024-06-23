@@ -77,7 +77,7 @@ def mock_http_response(
     mock_resp.content = content
     if headers:
         mock_resp.headers = headers
-    mock_resp.ok = True if status < 400 else False
+    mock_resp.ok = status < 400
     # add json data if provided
     if json_data:
         mock_resp.json = mock.Mock(return_value=json_data)
@@ -417,9 +417,7 @@ def test_module_success_with_fetch_incident(
     from FireEyeNX import test_function
 
     mock_get_alert.return_value = []
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
 
     mock_request.return_value = mock_http_response(
         status=200, headers=AUTHENTICATION_RESP_HEADER, text=''
@@ -1127,18 +1125,18 @@ def test_fetch_incidents_for_alert_success(
     """
     When fetch_incidents() method called with fetch_type='Alerts' and pass all required arg it success.
     """
-    from FireEyeNX import fetch_incidents
+    from FireEyeNX import fetch_incidents, API_SUPPORT_DATE_FORMAT
 
     # Configure
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    start_time = datetime.strftime(datetime.now().replace(tzinfo=timezone.utc), API_SUPPORT_DATE_FORMAT)
+    mock_last_run = {'alerts': {'start_time': start_time, 'alert_ids': ['1']}}
+
     dummy_first_fetch = 1
     mock_fetch_limit = 12
     mock_malware_type = 'malware-type'
     mock_api_token.return_value = API_TOKEN
 
-    with open('TestData/fetch_incidents_alert_response.json', 'r') as f:
+    with open('TestData/fetch_incidents_alert_response.json') as f:
         dummy_response = f.read()
 
     resp = Response()
@@ -1168,7 +1166,8 @@ def test_fetch_incidents_for_alert_success(
 
     # Assert
     assert len(incidents) == mock_fetch_limit
-    assert next_run.get('start_time') is not None
+    assert next_run.get('alerts').get('start_time') is not None
+    assert 8520 in next_run['alerts']['alert_ids']
 
 
 @patch('FireEyeNX.Client.http_request')
@@ -1192,6 +1191,26 @@ def test_set_attachment_file(mock_request, client):
     assert excepted_incident != {}
 
 
+def test_set_attachment_file_attachment_not_found(requests_mock, client):
+    """
+    Given: an incident with uuid 'abc' without attachment
+    When: attempt to set attachment for incident
+    Then: incident is not enriched and the command returns without error
+    """
+    from FireEyeNX import set_attachment_file
+    uuid = "abc"
+    requests_mock.get(
+        f'{client._base_url}/artifacts/{uuid}',
+        status_code=404,
+        headers={'Content-Type': CONTENT_TYPE_ZIP},
+        text='Could not fetch any artifacts for given uuid',
+    )
+    incident = {}
+
+    set_attachment_file(client, incident, uuid, headers={})
+    assert incident == {}
+
+
 @patch('FireEyeNX.BaseClient._http_request')
 @patch('FireEyeNX.Client.get_api_token')
 def test_fetch_incidents_for_event_success(
@@ -1203,14 +1222,12 @@ def test_fetch_incidents_for_event_success(
     from FireEyeNX import fetch_incidents
 
     # Configure
-    mock_last_run = {
-        'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp()
-    }
+    mock_last_run = {'alerts': {'start_time': datetime.now().replace(tzinfo=timezone.utc).timestamp(), 'alert_ids': ['1']}}
     dummy_first_fetch = 1
     mock_fetch_limit = 1
     mock_api_token.return_value = API_TOKEN
 
-    with open('TestData/fetch_incidents_event_response.json', 'r') as f:
+    with open('TestData/fetch_incidents_event_response.json') as f:
         dummy_response = f.read()
 
     resp = Response()
@@ -1236,4 +1253,4 @@ def test_fetch_incidents_for_event_success(
 
     # Assert
     assert len(incidents) == mock_fetch_limit
-    assert next_run.get('start_time') is not None
+    assert next_run.get('alerts').get('start_time') is not None

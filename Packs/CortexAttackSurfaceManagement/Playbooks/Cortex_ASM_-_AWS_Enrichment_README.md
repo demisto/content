@@ -15,11 +15,12 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* Set
 * GridFieldSetup
 
 ### Commands
 
-This playbook does not use any commands.
+* setAlert
 
 ## Playbook Inputs
 
@@ -29,6 +30,7 @@ This playbook does not use any commands.
 | --- | --- | --- | --- |
 | RemoteIP | IP address of service | alert.remoteip | Optional |
 | ASMRuleID | Attack Surface Management Rule ID. | alert.asmattacksurfaceruleid | Required |
+| AWSAssumeRoleName | If assuming roles for AWS, this is the name of the role to assume \(should be the same for all organizations\). |  | Optional |
 
 ## Playbook Outputs
 

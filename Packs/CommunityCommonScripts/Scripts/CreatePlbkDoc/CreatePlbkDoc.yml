@@ -20,14 +20,14 @@ comment: |-
   Input2:       Format type needed. Table or Paragraph. Paragraph is default.
   Input3:       Name of the docx file that will be produced. Give the full name including the ".docx" extension. (Mandatory)
 
-  Requirements: This automation requires "Demisto REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
+  Requirements: This automation requires "Core REST API" integration enabled and connected to the XSOAR itself. Automation uses it to read the objects of the playbook.
 commonfields:
   id: CreatePlbkDoc
   version: -1
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: "6.0.0"
-dockerimage: demisto/sane-doc-reports:1.0.0.27897
+dockerimage: demisto/sane-doc-reports:1.0.0.82656
 enabled: true
 name: CreatePlbkDoc
 runas: DBotWeakRole

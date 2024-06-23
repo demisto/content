@@ -47,7 +47,7 @@ class ConditionParser:
         ast.Add: return_none_on_error(lambda x, y: x + y),
     }
 
-    def __init__(self, context, conditions, flags=None):
+    def __init__(self, context, conditions, flags=None, **_):
         self.conditions: list
         self.functions: dict[str, Callable] = {
             'from_context': partial(demisto.dt, context)

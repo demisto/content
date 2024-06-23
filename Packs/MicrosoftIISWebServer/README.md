@@ -13,6 +13,18 @@ This pack includes XSIAM content.
 ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISW3C.png)
 5. Press **Select Fields** and ensure all the fields are checked.
 ![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b33523bbb3666eb18c779b09d38fbf14e4764075/Packs/MicrosoftIISWebServer/doc_imgs/IISLogging.png)
+
+**Pay Attention:**
+The following are the currently supported log schema structures:
+*  Network
+``` bash
+  date time s-sitename s-computername s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs-version cs(User-Agent) cs(Cookie) cs(Referer) cs-host sc-status sc-substatus sc-win32-status sc-bytes cs-bytes time-taken
+```
+* Error
+``` bash
+  date time c-ip c-port s-ip s-port cs-version cs-method cs-uri streamid streamid_ex sc-status s-siteid s-reason s-queuename transport
+```
+
 ## Collect Events from Vendor
 In order to use the collector, you need to use the following option to collect events from the vendor:
 

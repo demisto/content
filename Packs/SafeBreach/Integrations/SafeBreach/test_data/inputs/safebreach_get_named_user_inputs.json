@@ -1,0 +1,38 @@
+{
+    "not_deleted_with_name": {
+        "args": {
+            "should_include_details": "true",
+            "should_include_deleted": "true",
+            "name": "acme",
+            "email": "acme@email.com"
+        },
+        "command": "safebreach-get-user-with-matching-name-or-email"
+    },
+    "not_deleted_without_name": {
+        "args": {
+            "should_include_details": "true",
+            "should_include_deleted": "true",
+            "name": "",
+            "email": "acme@email.com"
+        },
+        "command": "safebreach-get-user-with-matching-name-or-email"
+    },
+    "deleted_with_name": {
+        "args": {
+            "should_include_details": "true",
+            "should_include_deleted": "true",
+            "name": "acme",
+            "email": "acme@email.com"
+        },
+        "command": "safebreach-get-user-with-matching-name-or-email"
+    },
+    "deleted_without_name": {
+        "args": {
+            "should_include_details": "true",
+            "should_include_deleted": "true",
+            "name": "",
+            "email": "acme@email.com"
+        },
+        "command": "safebreach-get-user-with-matching-name-or-email"
+    }
+}

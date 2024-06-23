@@ -325,7 +325,7 @@ When reporting issues always run this script with `debug-mode=true` and include 
                         "Raw": "-----BEGIN CERTIFICATE-----\nxxxx\n-----END CERTIFICATE-----\n"
                     }
                 ], 
-                "Identifier": "test.compute.amazonaws.com",
+                "Identifier": "test.compute-1.amazonaws.com",
                 "NotValidBefore": "2020-09-22 11:37:45",
                 "NotValidAfter": "2025-09-21 11:37:45",
                 "Version": 0,

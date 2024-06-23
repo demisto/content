@@ -1,25 +1,25 @@
 import json
-import io
 from collections import namedtuple
-
+from CommonServerPython import DemistoException
 import CreateIncidents
-
+import demistomock as demisto
 import pytest
 
 Attachment = namedtuple('Attachment', ['name', 'content'])
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_loaf_file(path):
-    with io.open(path, mode='rb') as f:
+    with open(path, mode='rb') as f:
         return f.read()
 
 
 incident_list = util_load_json('test_data/incidents_examples.json')
+incident = util_loaf_file('test_data/incidents.json')
 context_list = util_load_json('test_data/context_examples.json')
 attachment_content = util_loaf_file('test_data/YOU HAVE WON 10000$.eml')
 CLIENT_MOCK = CreateIncidents.Client('example_url.com', False, False)
@@ -82,6 +82,29 @@ def test_fetch_incident_command(mocker, context, expected):
     incidents = CreateIncidents.fetch_incidents_command(CLIENT_MOCK)
     assert set_context_mock.call_args[0][0] == {"incidents": []}
     assert incidents == expected
+
+
+PARSED_INCIDENT = [(context_list.get("CONTEXT_WITH_ATTACHMENT_AS_ENTRY_ID"), [
+    {'name': 'Potential phishing I received', 'occurred': '0001-01-01T00:00:00Z',
+     'attachment': [{'path': 'example_id', 'name': 'name'}]}])
+]
+
+
+@pytest.mark.parametrize('context, expected', PARSED_INCIDENT)
+def test_fetch_incident_command_with_file(mocker, context, expected):
+    """
+    Given:  a list of valid incident with one attachment
+    When:   running fetch-incident flow using the instance context
+    Then:   validates the file result method is being executed to create a file in XSOAR
+
+    """
+
+    mocker.patch.object(CreateIncidents, 'set_integration_context')
+    mocker.patch.object(CreateIncidents, 'get_integration_context', return_value=context)
+    file_result_mock = mocker.patch.object(CreateIncidents, 'fileResult', return_value={'FileID': 'example_id'})
+
+    CreateIncidents.fetch_incidents_command(CLIENT_MOCK)
+    assert file_result_mock.call_count == 1
 
 
 CASES = [
@@ -232,3 +255,34 @@ def test_create_test_incident_command_happy(mocker, incidents, attachment, expec
                                                             'attachment_paths': attachment})
     assert type(parse_mock.call_args[0][0]) == list
     assert len(parse_mock.call_args[0][0]) == expected
+
+
+ARGS = [{'incident_entry_id': 'entry_id', 'incident_raw_json': '{"name": "incident"}'},
+        {'incident_entry_id': '', 'incident_raw_json': ''}]
+
+
+@pytest.mark.parametrize('args', ARGS)
+def test_create_test_incident_from_json_command_raise_error(args):
+    """
+    Given: Invalid command arguments
+    When: creating a new incident from file
+    Then: Makes sure client fails with correct error
+    """
+
+    with pytest.raises(DemistoException) as e:
+        CreateIncidents.create_test_incident_from_json_command(args)
+    assert str(e.value) == 'Please insert entry_id or incident_raw_json, and not both'
+
+
+def test_create_test_incident_from_json_command(mocker):
+    """
+    Given: Raw json that represents incident
+           Entry id represents incident attachment
+    When: creating a new incident from file
+    Then: Makes sure attachments are added
+    """
+    args = {'incident_raw_json': incident, 'attachment_entry_ids': 'entry_id'}
+    mocker.patch.object(demisto, 'getFilePath', return_value={'path': 'test_data/YOU HAVE WON 10000$.eml', 'name': 'fileName'})
+    set_context_mock = mocker.patch.object(CreateIncidents, 'set_integration_context')
+    CreateIncidents.create_test_incident_from_json_command(args)
+    assert 'content' in set_context_mock.call_args_list[0][0][0]['incidents'][0]['entry_id_attachment'][0]

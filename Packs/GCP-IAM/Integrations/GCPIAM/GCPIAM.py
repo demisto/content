@@ -20,7 +20,8 @@ class Client:
         proxies = handle_proxy()
 
         if proxy or verify_certificate:
-            http_client = credentials.authorize(self.get_http_client_with_proxy(proxies))
+            http_client = credentials.authorize(self.get_http_client_with_proxy(
+                proxies, disable_ssl_certificate=not verify_certificate))
             self.cloud_identity_service = discovery.build('cloudidentity', 'v1', http=http_client)
             self.cloud_resource_manager_service = discovery.build('cloudresourcemanager', 'v3', http=http_client)
             self.iam_service = discovery.build('iam', 'v1', http=http_client)
@@ -32,9 +33,9 @@ class Client:
             self.iam_service = discovery.build('iam', 'v1', credentials=credentials)
             self.iam_credentials = discovery.build('iamcredentials', 'v1', credentials=credentials)
 
-    def get_http_client_with_proxy(self, proxies: dict, proxy: bool = False, verify_certificate: bool = False):
+    def get_http_client_with_proxy(self, proxies: dict, disable_ssl_certificate: bool = False):
         proxy_info = None
-        if proxy:
+        if proxies:
             if not proxies or not proxies['https']:
                 raise Exception('https proxy value is empty. Check Demisto server configuration')
             https_proxy = proxies['https']
@@ -47,7 +48,7 @@ class Client:
                 proxy_port=parsed_proxy.port,
                 proxy_user=parsed_proxy.username,
                 proxy_pass=parsed_proxy.password)
-        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=verify_certificate)
+        return httplib2.Http(proxy_info=proxy_info, disable_ssl_certificate_validation=disable_ssl_certificate)
 
     def gcp_iam_tagbindings_list_request(self, parent: str, limit: int = None) -> dict:
         """
@@ -101,7 +102,7 @@ class Client:
 
         return response
 
-    def gcp_iam_project_list_request(self, parent: str, limit: int = None, page_token=None,
+    def gcp_iam_project_list_request(self, parent: str, limit: int = None, page_token: str = None,
                                      show_deleted: bool = False) -> dict:
         """
         List projects under the specified parent.
@@ -199,7 +200,7 @@ class Client:
 
         return response
 
-    def gcp_iam_folder_list_request(self, parent: str, limit: int = None, page_token=None,
+    def gcp_iam_folder_list_request(self, parent: str, limit: int = None, page_token: str = None,
                                     show_deleted: bool = False) -> dict:
         """
         List folders under the specified parent.
@@ -295,7 +296,7 @@ class Client:
 
         return response
 
-    def gcp_iam_organization_list_request(self, limit: int = None, page_token=None) -> dict:
+    def gcp_iam_organization_list_request(self, limit: int = None, page_token: str = None) -> dict:
         """
         List organization resources that are visible to the caller.
         Args:
@@ -494,7 +495,7 @@ class Client:
 
         return response
 
-    def gcp_iam_group_membership_list_request(self, group_name: str, limit: int = None, page_token=None) -> dict:
+    def gcp_iam_group_membership_list_request(self, group_name: str, limit: int = None, page_token: str = None) -> dict:
         """
         List group memberships.
         Args:
@@ -1221,7 +1222,7 @@ def update_time_format(data: Union[dict, list], keys: list) -> list:
 
 def generate_iam_policy_command_output(response: dict, resource_name: str = None,
                                        readable_header: str = None, limit: int = None,
-                                       page: int = None) -> CommandResults:
+                                       page: int = None, roles: list = None) -> CommandResults:
     """
     Generate command output for iam-policy commands.
     Args:
@@ -1230,6 +1231,7 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         readable_header (str): Readable message header for XSOAR war room.
         limit (int): Number of elements to retrieve.
         page (int): Page number.
+        role (list): List of potential GCP IAM roles
 
     Returns:
         CommandResults: outputs, readable outputs and raw response for XSOAR.
@@ -1239,13 +1241,22 @@ def generate_iam_policy_command_output(response: dict, resource_name: str = None
         readable_header = f'{resource_name} IAM policy information:'
     outputs = copy.deepcopy(response)
     outputs['name'] = resource_name
+    bindings = outputs.get("bindings", [])
+    if roles and bindings:
+        bindings_roles_only = []
+        for index, entry in enumerate(bindings):
+            if entry.get("role") in roles:
+                bindings_roles_only.append(bindings[index])
+
+        bindings = bindings_roles_only
 
     if limit and page:
         start = (page - 1) * limit
         end = start + limit
-
-        bindings = outputs.get("bindings", [])
         outputs["bindings"] = bindings[start:end]
+        if len(bindings) < limit:
+            resource_type = readable_header.split(' ')[0]
+            readable_header = f'{resource_type} {resource_name} IAM Policy List:\n Current page size: {len(bindings)}'
 
     readable_output = tableToMarkdown(
         readable_header,
@@ -1555,6 +1566,7 @@ def gcp_iam_project_iam_policy_get_command(client: Client, args: Dict[str, Any])
     project_name = args.get('project_name', '')
     limit = arg_to_number(args.get('limit')) or 50
     page = arg_to_number(args.get('page')) or 1
+    roles = argToList(args.get('roles', []))
     validate_pagination_arguments(limit, page)
 
     readable_message = get_pagination_readable_message(header=f'Project {project_name} IAM Policy List:',
@@ -1562,7 +1574,7 @@ def gcp_iam_project_iam_policy_get_command(client: Client, args: Dict[str, Any])
 
     response = client.gcp_iam_project_iam_policy_get_request(project_name)
     return generate_iam_policy_command_output(response, project_name, readable_header=readable_message,
-                                              limit=limit, page=page)
+                                              limit=limit, page=page, roles=roles)
 
 
 def generate_test_permission_command_output(response: dict, readable_header: str) -> CommandResults:
@@ -3827,11 +3839,12 @@ def gcp_iam_tagbindings_list_command(client: Client, args: Dict[str, Any]) -> Un
     return command_results
 
 
-def test_module(service_account_key: str) -> None:
+def test_module(service_account_key: str, proxy: bool, verify_certificate: bool) -> None:
     try:
-        client: Client = Client(client_secret=service_account_key)
+        client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
         client.gcp_iam_predefined_role_list_request(include_permissions=False, limit=1)
-    except Exception:
+    except Exception as e:
+        demisto.error(f'Error when running test-module {e}')
         return return_results('Authorization Error: make sure API Service Account Key is valid.')
 
     return_results('ok')
@@ -3843,16 +3856,18 @@ def main() -> None:
     args: Dict[str, Any] = demisto.args()
 
     service_account_key = params['credentials']['password']
-    verify_certificate: bool = not params.get('insecure', False)
+    verify_certificate: bool = not argToBoolean(params.get('insecure', False))
     proxy: bool = params.get('proxy', False)
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
 
     try:
+
         if command == 'test-module':
-            return test_module(service_account_key)
+            return test_module(service_account_key, proxy=proxy, verify_certificate=verify_certificate)
 
         client: Client = Client(client_secret=service_account_key, proxy=proxy, verify_certificate=verify_certificate)
+
         commands = {
             'gcp-iam-projects-get': gcp_iam_projects_get_command,
             'gcp-iam-project-iam-policy-get': gcp_iam_project_iam_policy_get_command,

@@ -1,3 +1,4 @@
+from pytest_mock import MockFixture
 from ExtractEmailFormatting import main, check_tld, extract_email, refang_email, extract_email_from_url_query
 import pytest
 import demistomock as demisto
@@ -79,7 +80,7 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'results')
     main()
     results = [email_address['Contents'] for email_address in demisto.results.call_args[0][0]]
-    assert EXPECTED_RESULTS == results
+    assert results == EXPECTED_RESULTS
 
 
 def test_main_invalid_emails(mocker):
@@ -94,4 +95,22 @@ def test_main_invalid_emails(mocker):
     mocker.patch.object(demisto, 'args', return_value={"input": ''})
     mocker.patch.object(demisto, 'results')
     main()
-    assert '' == demisto.results.call_args[0][0]
+    assert demisto.results.call_args[0][0] == ''
+
+
+def test_main_raise_error(mocker: MockFixture):
+    """
+    Given:
+        - Exception during the automation
+    When:
+        - Running the automation
+    Then:
+        - Ensure the return_error is called with the correct error message.
+    """
+    return_error_mock = mocker.patch('ExtractEmailFormatting.return_error')
+    mocker.patch('ExtractEmailFormatting.argToList', side_effect=Exception('Test Exception'))
+
+    main()
+
+    assert return_error_mock.call_count == 1
+    assert 'Error: \nTest Exception' in return_error_mock.call_args[0][0]

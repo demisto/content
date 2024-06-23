@@ -88,7 +88,7 @@ def get_entry_id_list(attachments, files):
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
         for file in files:
-            if attachment_name == file.get('Name'):
+            if attachment_name == file.get('Name') and attachment.get('description', '') != FileAttachmentType.ATTACHED:
                 entry_id_list.append((attachment_name, file.get('EntryID')))
 
     return entry_id_list
@@ -216,7 +216,7 @@ def get_attachments_using_instance(email_related_incident, labels, email_to):
                                {'command': 'gmail-get-attachments', 'incidents': email_related_incident,
                                 'arguments': {'user-id': 'me', 'message-id': str(message_id), 'using': instance_name}})
 
-    elif integration_name in ['MicrosoftGraphMail']:
+    elif integration_name in ['MicrosoftGraphMail', 'Microsoft Graph Mail Single User']:
         demisto.executeCommand("executeCommandAt",
                                {'command': 'msgraph-mail-get-attachment', 'incidents': email_related_incident,
                                 'arguments': {'user_id': email_to, 'message_id': str(message_id),

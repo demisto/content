@@ -31,9 +31,8 @@ def analyzeData(res):
             else:
                 medFound = 0
 
-        if not highRes:
-            if item['data'][0] >= 90:
-                highRes = True
+        if not highRes and item['data'][0] >= 90:
+            highRes = True
     if lowRes or medRes or highRes:
         addActions = []
 
@@ -61,7 +60,7 @@ accountName = f"acc_{accountName}/" if accountName != "" else ""
 args = demisto.args()
 isWidget = argToBoolean(args.get('isWidget', True))
 stats = demisto.executeCommand(
-    "demisto-api-post",
+    "core-api-post",
     {
         "uri": f"{accountName}/statistics/widgets/query",
         "body": {

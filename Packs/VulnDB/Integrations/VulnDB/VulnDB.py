@@ -357,48 +357,51 @@ def vulndb_get_version_command(args: dict, client: Client):
 
 
 def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: DBotScoreReliability):
-    cve_id = args.get('cve_id', '') or args.get('cve', '')
+    cve_ids = args.get('cve_id', '') or args.get('cve', '')
 
-    if not cve_id:
+    if not cve_ids:
         raise DemistoException("You must provide a value to the `cve` argument")
 
+    cve_ids = argToList(cve_ids)
     max_size = args.get('max_size')
+    command_results = []
+    for cve_id in cve_ids:
+        response = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
+        results = response.get("results")
+        if not results:
+            return_error('Could not find "results" in the returned JSON')
+        result = results[0]
+        cvss_metrics_details = result.get("cvss_metrics", [])
 
-    response = client.http_request(f'/vulnerabilities/{cve_id}/find_by_cve_id', max_size)
-    results = response.get("results")
-    if not results:
-        return_error('Could not find "results" in the returned JSON')
-    result = results[0]
-    cvss_metrics_details = result.get("cvss_metrics", [])
+        data = {
+            "ID": cve_id,
+            "CVSS": cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
+            "Published": result.get('vulndb_published_date', '').rstrip('Z'),
+            "Modified": result.get('vulndb_last_modified', '').rstrip('Z'),
+            "Description": result.get("description", ''),
+        }
 
-    data = {
-        "ID": cve_id,
-        "CVSS": cvss_metrics_details[0].get("score", "0") if cvss_metrics_details else "0",
-        "Published": result.get('vulndb_published_date', '').rstrip('Z'),
-        "Modified": result.get('vulndb_last_modified', '').rstrip('Z'),
-        "Description": result.get("description", ''),
-    }
+        cve_data = Common.CVE(
+            id=data["ID"],
+            cvss=data["CVSS"],
+            published=data["Published"],
+            modified=data["Modified"],
+            description=data["Description"],
+            dbot_score=Common.DBotScore(
+                indicator=cve_id,
+                indicator_type=DBotScoreType.CVE,
+                integration_name="VulnDB",
+                score=Common.DBotScore.NONE,
+                reliability=dbot_score_reliability,
+            ),
+        )
 
-    cve_data = Common.CVE(
-        id=data["ID"],
-        cvss=data["CVSS"],
-        published=data["Published"],
-        modified=data["Modified"],
-        description=data["Description"],
-        dbot_score=Common.DBotScore(
-            indicator=cve_id,
-            indicator_type=DBotScoreType.CVE,
-            integration_name="VulnDB",
-            score=Common.DBotScore.NONE,
-            reliability=dbot_score_reliability,
-        ),
-    )
-
-    return_results(CommandResults(
-        indicator=cve_data,
-        readable_output=tableToMarkdown(f'Result for CVE ID: {cve_id}', data, removeNull=True),
-        raw_response=response,
-    ))
+        command_results.append(CommandResults(
+            indicator=cve_data,
+            readable_output=tableToMarkdown(f'Result for CVE ID: {cve_id}', data, removeNull=True),
+            raw_response=response,
+        ))
+    return_results(command_results)
 
 
 ''' COMMANDS MANAGER / SWITCH PANEL '''

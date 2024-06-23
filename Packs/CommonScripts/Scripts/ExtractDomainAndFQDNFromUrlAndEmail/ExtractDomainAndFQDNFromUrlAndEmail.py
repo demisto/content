@@ -7,7 +7,7 @@ import re
 PROOFPOINT_PREFIXES = ['https://urldefense.proofpoint.com/',
                        "https://urldefense.com/"]
 ATP_LINK_REG = r'(https:\/\/\w*|\w*)\.safelinks\.protection\.outlook\.com/'
-DOMAIN_REGEX = r"(?i)(?P<scheme>(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?(?P<domain>(?:[\w\-–_]+(?:\.|\[\.\]))+[^\W\d_]{2,})(?:[_/\s\"',)\]}>]|[.]\s?|%2F|.?$)"  # noqa: E501
+DOMAIN_REGEX = r"(?i)(?P<scheme>(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?(?P<domain>(?:[\w\-–_]+(?:\.|\[\.\]))+[^\W\d_]{2,})(?:[_/\s\"',)\]}>]|[.]\s?|%2F|.?$)"  # noqa: E501, RUF001
 
 
 def atp_get_original_url(safe_url):  # pragma: no cover
@@ -60,7 +60,7 @@ def get_fqdn(the_input):
         # get the subdomain using tld.subdomain
         subdomain = domain.subdomain
         if (subdomain):
-            fqdn = "{}.{}".format(subdomain, domain.fld)
+            fqdn = f"{subdomain}.{domain.fld}"
         else:
             fqdn = domain.fld
 
@@ -109,27 +109,33 @@ def extract_fqdn(the_input):
 
 
 def main():
-    the_input = demisto.args().get('input')
+    try:
+        the_input = demisto.args().get('input')
 
-    # argToList returns the argument as is if it's already a list so no need to check here
-    the_input = argToList(the_input)
-    entries_list = []
-    # Otherwise assumes it's already an array
-    for item in the_input:
-        input_entry = {
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["json"],
-            "Contents": [extract_fqdn(item)],
-            "EntryContext": {"Domain": item}
-        }
-        if input_entry.get("Contents") == ['']:
-            input_entry['Contents'] = []
-        entries_list.append(input_entry)
-    if entries_list:
-        demisto.results(entries_list)
-    else:
-        # Return empty string so it wouldn't create an empty domain indicator.
-        demisto.results('')
+        # argToList returns the argument as is if it's already a list so no need to check here
+        the_input = argToList(the_input)
+        entries_list = []
+        # Otherwise assumes it's already an array
+        for item in the_input:
+            input_entry = {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["json"],
+                "Contents": [extract_fqdn(item)],
+                "EntryContext": {"Domain": item}
+            }
+            if input_entry.get("Contents") == ['']:
+                input_entry['Contents'] = []
+            entries_list.append(input_entry)
+        if entries_list:
+            demisto.results(entries_list)
+        else:
+            # Return empty string so it wouldn't create an empty domain indicator.
+            demisto.results('')
+
+    except Exception as e:
+        return_error(
+            f'Failed to execute the automation. Error: \n{str(e)}'
+        )
 
 
 # python2 uses __builtin__ python3 uses builtins

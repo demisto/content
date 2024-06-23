@@ -1,0 +1,406 @@
+{
+    "description": "DomainTools Iris Indicator Layout",
+    "group": "indicator",
+    "id": "DomainTools Iris Indicator Layout",
+    "indicatorsDetails": {
+        "tabs": [
+            {
+                "id": "default-main",
+                "name": "Info",
+                "sections": [
+                    {
+                        "h": 2,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-relationshipsTable",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Relationships",
+                        "static": false,
+                        "type": "relationshipsTable",
+                        "w": 2,
+                        "x": 0,
+                        "y": 4
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-relatedIncidents",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Related Incidents",
+                        "static": false,
+                        "type": "relatedIncidents",
+                        "w": 2,
+                        "x": 0,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 4,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "indicatortype",
+                                "height": 22,
+                                "id": "indicator-type",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "timestamp",
+                                "height": 22,
+                                "id": "indicator-timestamp",
+                                "index": 1,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisdomainage",
+                                "height": 22,
+                                "id": "749bb260-6d0c-11ee-8a87-2bc9bae13888",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisexpirationdate",
+                                "height": 22,
+                                "id": "1ce6c6c0-6d0e-11ee-b1a9-4fdded761d69",
+                                "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisfirstseen",
+                                "height": 22,
+                                "id": "9551ec00-6cf7-11ee-b1a9-4fdded761d69",
+                                "index": 4,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "registrantname",
+                                "height": 22,
+                                "id": "5e9014c0-6d0c-11ee-8a87-2bc9bae13888",
+                                "index": 5,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisregistrantorg",
+                                "height": 22,
+                                "id": "62c29ae0-6d0c-11ee-8a87-2bc9bae13888",
+                                "index": 6,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "domaintoolsiristags",
+                                "height": 22,
+                                "id": "9ea41760-6cf7-11ee-b1a9-4fdded761d69",
+                                "index": 7,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisipaddresses",
+                                "height": 22,
+                                "id": "af900fc0-6cf7-11ee-b1a9-4fdded761d69",
+                                "index": 8,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisipcountrycode",
+                                "height": 22,
+                                "id": "5581f740-6d0c-11ee-8a87-2bc9bae13888",
+                                "index": 9,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "nameservers",
+                                "height": 22,
+                                "id": "ba702e20-6cf7-11ee-b1a9-4fdded761d69",
+                                "index": 10,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisriskscore",
+                                "height": 22,
+                                "id": "96d530a0-6cf7-11ee-b1a9-4fdded761d69",
+                                "index": 11,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisriskscorecomponents",
+                                "height": 106,
+                                "id": "405efa00-6d0e-11ee-b1a9-4fdded761d69",
+                                "index": 12,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirismailservers",
+                                "height": 22,
+                                "id": "4f8fe6d0-6d0c-11ee-8a87-2bc9bae13888",
+                                "index": 13,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisemaildomains",
+                                "height": 22,
+                                "id": "4b7a1070-6d0c-11ee-8a87-2bc9bae13888",
+                                "index": 14,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirissoaemail",
+                                "height": 22,
+                                "id": "69c38340-6d0c-11ee-8a87-2bc9bae13888",
+                                "index": 15,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "domaintoolsirisadditionalwhoisemails",
+                                "height": 22,
+                                "id": "a4a3e370-6cf7-11ee-b1a9-4fdded761d69",
+                                "index": 16,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "modified",
+                                "height": 22,
+                                "id": "indicator-modified",
+                                "index": 17,
+                                "listId": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-e2c8c970-a09d-11e9-8956-390f602b039a",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "DomainTools Iris Details",
+                        "static": false,
+                        "w": 1,
+                        "x": 1,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 1,
+                        "hideName": false,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-actions",
+                        "items": [
+                            {
+                                "args": {},
+                                "endCol": 1,
+                                "height": 44,
+                                "index": 0,
+                                "name": "Enrich indicator",
+                                "scriptId": "Builtin|||enrichIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "height": 44,
+                                "index": 1,
+                                "name": "Expire indicator",
+                                "scriptId": "Builtin|||expireIndicators",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Actions",
+                        "static": false,
+                        "type": "actions",
+                        "w": 1,
+                        "x": 2,
+                        "y": 0
+                    },
+                    {
+                        "displayType": "CARD",
+                        "h": 2,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-tagsAndTLP",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "dropEffect": "move",
+                                "endCol": 1,
+                                "height": 53,
+                                "index": 1,
+                                "name": "Add tags",
+                                "scriptId": "Builtin|||appendIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "trafficlightprotocol",
+                                "height": 53,
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {
+                                    "field": {
+                                        "simple": "tags"
+                                    }
+                                },
+                                "endCol": 2,
+                                "height": 53,
+                                "index": 1,
+                                "name": "Remove tags",
+                                "scriptId": "Builtin|||removeIndicatorField",
+                                "sectionItemType": "button",
+                                "startCol": 1
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Tags and TLP",
+                        "static": false,
+                        "type": "tagsAndTLP",
+                        "w": 1,
+                        "x": 2,
+                        "y": 6
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 3,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-indicatorTimeline",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Timeline",
+                        "static": false,
+                        "type": "indicatorTimeline",
+                        "w": 1,
+                        "x": 2,
+                        "y": 1
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-comments",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Comments",
+                        "static": false,
+                        "type": "comments",
+                        "w": 1,
+                        "x": 2,
+                        "y": 4
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-reputationStatus",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Verdict Status",
+                        "static": false,
+                        "type": "reputationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 1
+                    },
+                    {
+                        "h": 1,
+                        "hideName": true,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-expirationStatus",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Expiration Status",
+                        "static": false,
+                        "type": "expirationStatus",
+                        "w": 1,
+                        "x": 0,
+                        "y": 0
+                    },
+                    {
+                        "h": 2,
+                        "i": "default-main-2e51bfc4-73ba-40e0-8625-911abb4f023d-default-main-reputationSources",
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Verdict",
+                        "static": false,
+                        "type": "reputationSources",
+                        "w": 1,
+                        "x": 0,
+                        "y": 2
+                    }
+                ],
+                "type": "custom"
+            }
+        ]
+    },
+    "name": "DomainTools Iris Indicator Layout",
+    "system": false,
+    "version": -1,
+    "fromVersion": "6.6.0"
+}

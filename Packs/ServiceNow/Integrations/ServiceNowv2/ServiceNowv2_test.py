@@ -1,22 +1,25 @@
 import re
 
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
 import pytest
 import json
 from datetime import datetime, timedelta
 from freezegun import freeze_time
 import ServiceNowv2
 import requests
-from CommonServerPython import DemistoException, EntryType
+from CommonServerPython import CommandResults, DemistoException, EntryType
 from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_readable, \
-    generate_body, split_fields, Client, update_ticket_command, create_ticket_command, delete_ticket_command, \
+    generate_body, parse_dict_ticket_fields, split_fields, Client, update_ticket_command, create_ticket_command, \
     query_tickets_command, add_link_command, add_comment_command, upload_file_command, get_ticket_notes_command, \
     get_record_command, update_record_command, create_record_command, delete_record_command, query_table_command, \
     list_table_fields_command, query_computers_command, get_table_name_command, add_tag_command, query_items_command, \
     get_item_details_command, create_order_item_command, document_route_to_table, fetch_incidents, main, \
-    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, \
+    get_mapping_fields_command, get_remote_data_command, update_remote_system_command, delete_ticket_command, \
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
-    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, converts_state_close_reason, \
-    get_timezone_offset, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS
+    get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
+    converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -30,7 +33,8 @@ from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICK
     MIRROR_ENTRIES, RESPONSE_CLOSING_TICKET_MIRROR_CLOSED, RESPONSE_CLOSING_TICKET_MIRROR_RESOLVED, \
     RESPONSE_CLOSING_TICKET_MIRROR_CUSTOM, RESPONSE_TICKET_ASSIGNED, OAUTH_PARAMS, \
     RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, MIRROR_ENTRIES_WITH_EMPTY_USERNAME, USER_RESPONSE, \
-    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
+    RESPONSE_GENERIC_TICKET, RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT, RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, \
+    RESPONSE_COMMENTS_DISPLAY_VALUE, RESPONSE_FETCH_USE_DISPLAY_VALUE
 from test_data.result_constants import EXPECTED_TICKET_CONTEXT, EXPECTED_MULTIPLE_TICKET_CONTEXT, \
     EXPECTED_TICKET_HR, EXPECTED_MULTIPLE_TICKET_HR, EXPECTED_UPDATE_TICKET, EXPECTED_UPDATE_TICKET_SC_REQ, \
     EXPECTED_CREATE_TICKET, EXPECTED_CREATE_TICKET_WITH_OUT_JSON, EXPECTED_QUERY_TICKETS, EXPECTED_ADD_LINK_HR, \
@@ -51,6 +55,52 @@ from urllib.parse import urlencode
 def util_load_json(path):
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
+
+
+def test_force_default_url_arg(mocker: MockerFixture, requests_mock: MockerCore):
+    """Unit test
+    Given
+        - The argument force_default_url=true
+    When
+        - Calling the command servicenow-create-co-from-template
+    Then
+        - Validate that the api version configured as a parameter was not used in the API request
+    """
+    url = 'https://test.service-now.com'
+    api_endpoint = '/api/sn_chg_rest/change/standard/dummy_template'
+    api_version = '2'
+    mocker.patch.object(
+        demisto,
+        'params',
+        return_value={
+            'isFetch': True,
+            'url': url,
+            'credentials': {
+                'identifier': 'identifier',
+                'password': 'password',
+            },
+            'api_version': api_version,  # << We test overriding this value
+            'incident_name': None,
+            'file_tag_from_service_now': 'FromServiceNow',
+            'file_tag_to_service_now': 'ToServiceNow',
+            'comment_tag': 'comments',
+            'comment_tag_from_servicenow': 'CommentFromServiceNow',
+            'work_notes_tag': 'work_notes',
+            'work_notes_tag_from_servicenow': 'WorkNoteFromServiceNow'
+        }
+    )
+    mocker.patch.object(
+        demisto,
+        'args',
+        return_value={
+            'template': 'dummy_template',
+            'force_default_url': 'true'
+        }
+    )
+    mocker.patch.object(demisto, 'command', return_value='servicenow-create-co-from-template')
+    requests_mock.post(f'{url}{api_endpoint}', json=util_load_json('test_data/create_co_from_template_result.json'))
+    main()
+    assert requests_mock.request_history[0].path == api_endpoint
 
 
 def test_get_server_url():
@@ -172,8 +222,9 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'Test User',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
-                                   time_info={'display_date_format': DATE_FORMAT}) == expected_result
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT,
+                                   time_info={'display_date_format': DATE_FORMAT,
+                                              'timezone_offset': timedelta(minutes=-60)}) == expected_result
 
     # Filter comments by creation time (filter is given in UTC):
     expected_result = {'result': [{'sys_created_on': '2022-11-21 21:50:34',
@@ -181,13 +232,13 @@ def test_convert_to_notes_result():
                                    'sys_created_by': 'System Administrator',
                                    'element': 'comments'
                                    }]}
-    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE,
+    assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_AFTER_FORMAT,
                                    time_info={'display_date_format': DATE_FORMAT,
-                                              'filter': datetime.strptime('2022-11-21 21:44:37',
-                                                                          DATE_FORMAT)}) == expected_result
+                                              'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                                              'timezone_offset': timedelta(minutes=-60)}) == expected_result
 
-    ticket_response = {'result': []}
-    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == []
+    ticket_response = {}
+    assert convert_to_notes_result(ticket_response, time_info={'display_date_format': DATE_FORMAT}) == {}
 
     assert convert_to_notes_result(RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS,
                                    time_info={'display_date_format': DATE_FORMAT}) == {'result': []}
@@ -241,6 +292,19 @@ def test_split_notes():
                        }]
     assert notes == expected_notes
 
+    raw_notes = '21.11.2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
+                'Cortex XSOAR\n\n21.11.2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
+    time_info = {'timezone_offset': timedelta(minutes=-60),
+                 'filter': datetime.strptime('2022-11-21 21:44:37', DATE_FORMAT),
+                 'display_date_format': DATE_FORMAT_OPTIONS.get('dd.MM.yyyy')}
+    notes = split_notes(raw_notes, 'comments', time_info)
+    expected_notes = [{'sys_created_on': '2022-11-21 21:50:34',
+                       'value': 'Second comment\n\n Mirrored from Cortex XSOAR',
+                       'sys_created_by': 'System Administrator',
+                       'element': 'comments'
+                       }]
+    assert notes == expected_notes
+
     raw_notes = '11-21-2022 22:50:34 - System Administrator (Additional comments)\nSecond comment\n\n Mirrored from ' \
                 'Cortex XSOAR\n\n11-21-2022 21:45:37 - Test User (Additional comments)\nFirst comment\n\n'
     time_info = {'timezone_offset': timedelta(minutes=-120),
@@ -259,25 +323,163 @@ def test_get_timezone_offset():
     Then:
         - Assert the offset between the UTC and the instance times are correct.
     """
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '2022-12-07 05:38:52', 'value': '2022-12-07 13:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT)
     assert offset == timedelta(minutes=480)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}}
+    full_response = {'sys_created_on': {'display_value': '12-07-2022 15:47:34', 'value': '2022-12-07 13:47:34'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('MM-dd-yyyy'))
     assert offset == timedelta(minutes=-120)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52', 'value': '2022-12-07 09:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
     assert offset == timedelta(minutes=600)
 
-    full_response = {
-        'result': {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}}
+    full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52 PM', 'value': '2022-12-07 09:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
+    assert offset == timedelta(minutes=600)
+
+    full_response = {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
     assert offset == timedelta(minutes=-300)
+
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52 AM', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52 AM    ', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+
+
+def test_get_ticket_notes_command_success(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_GET_TICKET_NOTES
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert len(result[0].raw_response.get("result")) == 5
+    assert result[0].outputs_prefix == 'ServiceNow.Ticket'
+    assert result[0].outputs == EXPECTED_GET_TICKET_NOTES
+
+
+def test_get_ticket_notes_command_use_display_value(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called with use_display_value
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name', use_display_value=True,
+                    display_date_format="yyyy-MM-dd")
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_COMMENTS_DISPLAY_VALUE
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert len(result[0].raw_response.get("result")) == 2
+    assert result[0].outputs_prefix == 'ServiceNow.Ticket'
+    assert result[0].outputs == EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE
+
+
+def test_get_ticket_notes_command_use_display_value_no_comments(mocker):
+    """
+    Given
+    - A mock client and args input to the get_ticket_notes_command function
+    - A mock successful API response
+
+    When
+    - The get_ticket_notes_command function is called with use_display_value but no comments
+
+    Then
+    - Ensure the expected API call is made
+    - Validate the expected CommandResults are returned
+    """
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name', use_display_value=True,
+                    display_date_format="yyyy-MM-dd")
+    args = {'id': 'sys_id'}
+
+    mock_send_request = mocker.patch.object(Client, 'send_request')
+    mock_send_request.return_value = RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS
+    result = get_ticket_notes_command(client, args, {})
+
+    assert isinstance(result[0], CommandResults)
+    assert mock_send_request.called
+    assert result[0].raw_response == "No comment found on ticket sys_id."
+
+
+@pytest.mark.parametrize("notes, params, expected", [
+    (
+        [
+            {
+                "value": "First comment",
+                "sys_created_by": "Test User",
+                "sys_created_on": "2022-11-21 20:45:37",
+                "element": "comments"
+            }
+        ],
+        {
+            "comment_tag_from_servicenow": "CommentFromServiceNow"
+        },
+        [
+            {
+                "Type": 1,
+                "Category": None,
+                "Contents": "Type: comments\nCreated By: Test User\nCreated On: 2022-11-21 20:45:37\nFirst comment",
+                "ContentsFormat": None,
+                "Tags": ["CommentFromServiceNow"],
+                "Note": True,
+                "EntryContext": {"comments_and_work_notes": "First comment"}
+            }
+        ]
+    )
+])
+def test_get_entries_for_notes_with_comment(notes, params, expected):
+    """
+    Given
+        - A list of notes
+        - Params containing comment tag
+    When
+        - Calling get_entries_for_notes
+    Then
+        - Should return a list of entry contexts
+    """
+    assert get_entries_for_notes(notes, params) == expected
 
 
 @pytest.mark.parametrize('command, args, response, expected_result, expected_auto_extract', [
@@ -298,11 +500,6 @@ def test_get_timezone_offset():
      RESPONSE_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, EXPECTED_QUERY_TICKETS_EXCLUDE_REFERENCE_LINK, True),
     (upload_file_command, {'id': "sys_id", 'file_id': "entry_id", 'file_name': 'test_file'}, RESPONSE_UPLOAD_FILE,
      EXPECTED_UPLOAD_FILE, True),
-    (get_ticket_notes_command, {'id': "sys_id"}, RESPONSE_GET_TICKET_NOTES, EXPECTED_GET_TICKET_NOTES, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
-     RESPONSE_COMMENTS_DISPLAY_VALUE, EXPECTED_GET_TICKET_NOTES_DISPLAY_VALUE, True),
-    (get_ticket_notes_command, {'id': 'sys_id', 'use_display_value': 'true', 'display_date_format': DATE_FORMAT},
-     RESPONSE_COMMENTS_DISPLAY_VALUE_NO_COMMENTS, {}, True),
     (get_record_command, {'table_name': "alm_asset", 'id': "sys_id", 'fields': "asset_tag,display_name"},
      RESPONSE_GET_RECORD, EXPECTED_GET_RECORD, True),
     (update_record_command, {'name': "alm_asset", 'id': "1234", 'custom_fields': "display_name=test4"},
@@ -382,6 +579,27 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     assert expected_auto_extract == result[3]  # ignore_auto_extract is in the 4th place in the result of the command
 
 
+def test_delete_attachment_command(mocker):
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'delete_attachment', return_value=None)
+    result = delete_attachment_command(client=client, args={"file_sys_id": "1234"})
+    assert 'Attachment with Sys ID 1234 was successfully deleted.' in result[0]
+
+
+def test_delete_attachment_command_failed(mocker):
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'delete_attachment', return_value="Error")
+    with pytest.raises(DemistoException) as e:
+        delete_attachment_command(client=client, args={"file_sys_id": "1234"})
+    assert "Error: No record found. Record doesn't exist or ACL restricts the record retrieval." in str(e)
+
+
 @freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents(mocker):
     """Unit test
@@ -393,8 +611,9 @@ def test_fetch_incidents(mocker):
     - mock the parse_date_range.
     - mock the Client's send_request.
     Then
-    - run the fetch incidents command using the Client
-    Validate The length of the results.
+    - run the fetch incidents command using the Client.
+    - Validate The length of the results.
+    - Ensure the incident sys IDs are stored in integration context for the first mirroring.
     """
     RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
     RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
@@ -402,6 +621,7 @@ def test_fetch_incidents(mocker):
         'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
     )
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    mocker.patch.object(demisto, 'params', return_value={"mirror_notes_for_new_incidents": True})
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', '2 days', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
@@ -409,6 +629,7 @@ def test_fetch_incidents(mocker):
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
+    assert ["sys_id1", "sys_id2"] == demisto.getIntegrationContext()["last_fetched_incident_ids"]
 
 
 @freeze_time('2022-05-01 12:52:29')
@@ -1265,6 +1486,99 @@ def test_get_remote_data(mocker):
     assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
 
 
+def test_get_remote_data_last_fetched_incidents_entries(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context containing the last fetched ids to get their entries.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries even the lastUpdate is higher than modification time.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": ["sys_id"]})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_TICKET_MIRROR, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'sys_created_on' not in client_query_mocker.call_args[0][3]
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
+    assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
+
+
+def test_get_remote_data_no_last_fetched_incidents(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context does not containing the last fetched ids to get their entries.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket is not updated with the entries.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": []})
+    mocker.patch.object(demisto, 'params', return_value={"isFetch": True})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_TICKET_MIRROR, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(client, 'query', return_value={'result': []})
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'sys_created_on' in client_query_mocker.call_args[0][3]
+    assert len(res) == 1
+    assert not res[0]
+
+
+def test_get_remote_data_last_fetched_incidents_use_display_value(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context containing the last fetched ids to get their entries.
+        -  Using display value.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries even the lastUpdate is higher than modification time.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description',
+                    use_display_value=True, display_date_format='yyyy-MM-dd')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": ["sys_id"]})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(ServiceNowv2, 'convert_to_notes_result', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'filter' not in client_query_mocker.call_args[0][1]
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
+    assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
+
+
 def test_assigned_to_field_no_user():
     """
     Given:
@@ -1599,9 +1913,9 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     )
     result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
 
-    assert result.modified_incident_ids == [
+    assert sorted(result.modified_incident_ids) == sorted([
         record.get('sys_id') for record in api_response.get('result') if 'sys_id' in record
-    ]
+    ])
 
 
 @pytest.mark.parametrize('sys_created_on, expected', [
@@ -1883,28 +2197,36 @@ def test_get_closure_case(params, expected):
     assert get_closure_case(params) == expected
 
 
-@pytest.mark.parametrize('ticket_state, server_close_custom_state, expected_res',
-                         [('1', '', 'Other'),
-                          ('7', '', 'Resolved'),
-                          ('6', '', 'Resolved'),
-                          ('10', '10=Test', 'Test'),
-                          ('10', '10=Test,11=Test2', 'Test'),
-                          ('6', '6=Test', 'Test'),  # If builtin state was override by custom state.
-                          ('corrupt_state', '', 'Other'),
-                          ('corrupt_state', 'custom_state=Test', 'Other'),
-                          ('6', 'custom_state=Test', 'Resolved'),
+@pytest.mark.parametrize('ticket_state, ticket_close_code, server_close_custom_state, server_close_custom_code, expected_res',
+                         [('1', 'default close code', '', '', 'Other'),
+                          ('7', 'default close code', '', '', 'Resolved'),
+                          ('6', 'default close code', '', '', 'Resolved'),
+                          ('10', 'default close code', '10=Test', '', 'Test'),
+                          ('10', 'default close code', '10=Test,11=Test2', '', 'Test'),
+                          # If builtin state was override by custom.
+                          ('6', 'default close code', '6=Test', '', 'Test'),
+                          ('corrupt_state', 'default close code', '', '', 'Other'),
+                          ('corrupt_state', 'default close code', 'custom_state=Test', '', 'Other'),
+                          ('6', 'default close code', 'custom_state=Test', '', 'Resolved'),
+                          # custom close_code overwrites custom sate.
+                          ('10', 'custom close code', '10=Test,11=Test2', 'custom close code=Custom,90=90 Custom', 'Custom'),
+                          ('10', '90', '10=Test,11=Test2', '80=Custom, 90=90 Custom', '90 Custom'),
                           ])
-def test_converts_state_close_reason(ticket_state, server_close_custom_state, expected_res):
+def test_converts_close_code_or_state_to_close_reason(ticket_state, ticket_close_code, server_close_custom_state,
+                                                      server_close_custom_code, expected_res):
     """
     Given:
         - ticket_state: The state for the closed service now ticket
+        - ticket_close_code: The Service now ticket close code
         - server_close_custom_state: The custom state for the closed service now ticket
+        - server_close_custom_code: The custom close code for the closed service now ticket
     When:
         - closing a ticket on service now
     Then:
         - return the matching XSOAR incident state.
     """
-    assert converts_state_close_reason(ticket_state, server_close_custom_state) == expected_res
+    assert converts_close_code_or_state_to_close_reason(ticket_state, ticket_close_code, server_close_custom_state,
+                                                        server_close_custom_code) == expected_res
 
 
 def ticket_fields_mocker(*args, **kwargs):
@@ -2023,3 +2345,95 @@ def test_send_request_with_str_error_response(mocker, mock_json, expected_result
     with pytest.raises(Exception) as e:
         client.send_request(path='table')
     assert str(e.value) == expected_results
+
+
+@pytest.mark.parametrize('ticket, expected_ticket',
+                         [
+                             ({}, {}),
+                             ({"assigned_to": ""}, {"assigned_to": ""}),
+                             ({"assigned_to": {'link': 'https://test.service-now.com/api/now/table/sys_user/oscar@example.com',
+                                               'value': 'oscar@example.com'}}, {'assigned_to': 'oscar@example.com'})
+                         ])
+def test_parse_dict_ticket_fields_empty_ticket(ticket, expected_ticket):
+    """
+    Given:
+     - a ticket
+     - case 1: Ticket is completely empty (obtained from the case where last_update > ticket_last_update).
+     - case 2: Ticket contains assigned_to field with an empty string as a value.
+     - case 3: Ticket contains assigned_to field with a user dict as a value.
+
+    When:
+     - Running parse_dict_ticket_fields function.
+
+    Then:
+     - Verify that the ticket fields were updated correctly.
+     - case 1: Shouldn't add the assigned_to field to the obtained ticket.
+     - case 2: Should add assigned_to field with an empty string as a value.
+     - case 3: Should add assigned_to field with the user email as a value.
+    """
+    class Client:
+        def get(self, table, value, no_record_found_res):
+            return USER_RESPONSE
+    parse_dict_ticket_fields(Client(), ticket)  # type: ignore
+    assert ticket == expected_ticket
+
+
+def test_format_incidents_response_with_display_values_with_no_incidents():
+    """
+    Given:
+        No incidents
+    When:
+        Calling format_incidents_response_with_display_values
+    Then:
+        Returns empty list
+    """
+    incidents_res = []
+    result = format_incidents_response_with_display_values(incidents_res)
+
+    assert result == []
+
+
+def test_format_incidents_response_with_display_values_with_incidents():
+    """
+    Given:
+        Incidents response containing opened_by, sys_domain, assignment_group and other fields
+    When:
+        Calling format_incidents_response_with_display_values
+    Then:
+        Returns formatted incidents with display_value
+    """
+    incidents_res = RESPONSE_FETCH_USE_DISPLAY_VALUE["result"]
+    result = format_incidents_response_with_display_values(incidents_res)
+
+    assert len(result) == 2
+    assert result[0]["sys_updated_on"] == "2024-02-29 13:09:46"
+    assert result[0]["opened_at"] == "2024-02-29 13:08:46"
+    assert result[0]["opened_by"] == incidents_res[0]["opened_by"]
+    assert result[0]["sys_domain"] == incidents_res[0]["sys_domain"]
+    assert result[0]["assignment_group"] == incidents_res[0]["assignment_group"]
+
+    assert result[1]["sys_updated_on"] == "2024-02-29 11:08:44"
+    assert result[1]["opened_at"] == "2024-02-29 11:07:48"
+    assert result[1]["opened_by"] == incidents_res[1]["opened_by"]
+    assert result[1]["sys_domain"] == incidents_res[1]["sys_domain"]
+    assert result[1]["assignment_group"] == ""
+
+
+@pytest.mark.parametrize("input_string, expected", [
+    ("2023-02-15 10:30:45", True),
+    ("invalid", False),
+    ("15.02.2023 10:30:45", False),
+    ("a2023-02-15 10:30:45", False),
+    ("2023-02-15 10:30:45a", False),
+    ("2023-02-15 10:30:45 a", False),
+])
+def test_is_time_field(input_string, expected):
+    """
+    Given:
+        Input strings of varying validity
+    When:
+        is_time_field is called on those strings
+    Then:
+        It should return True if string contains valid datetime, False otherwise
+    """
+    assert is_time_field(input_string) is expected

@@ -1,6 +1,7 @@
 This automation accepts an XSOAR custom content bundle, and either returns a list of file names, or the files you want to the war room.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This automation accepts an XSOAR custom content bundle, and either returns a lis
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ This automation accepts an XSOAR custom content bundle, and either returns a lis
 | file_names | Array of file names to export, generated from the listfiles action. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

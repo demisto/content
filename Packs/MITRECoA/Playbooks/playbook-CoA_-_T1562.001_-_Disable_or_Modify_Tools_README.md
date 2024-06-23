@@ -47,4 +47,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1562.001 - Disable or Modify Tools](../doc_files/MITRE_ATT&CK_CoA_-_T1562.001_-_Disable_or_Modify_Tools.png)
+![MITRE ATT&CK CoA - T1562.001 - Disable or Modify Tools](../doc_files/MITRE_ATTandCK_CoA_-_T1562_001_-_Disable_or_Modify_Tools.png)

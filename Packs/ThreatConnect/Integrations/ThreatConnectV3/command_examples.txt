@@ -1,0 +1,21 @@
+!tc-create-victim-attribute attribute_type="Takedown Requests" victim_id=668 attribute_value="test"
+!tc-create-victim name="test" org="test" asset_type="EmailAddress" asset_value="test@test.com" attribute_type="Description" attribute_value="test"
+!tc-create-victim-asset victim_id=668 asset_type=SocialNetwork asset_value=test asset_social_network=test
+!tc-list-victim-assets limit=1
+!tc-list-victim-attributes limit=1
+!tc-list-victims limit=1
+!tc-update-victim victim_id=668 mode=append attribute_type="Source" attribute_value="test"
+!tc-update-victim-asset victim_asset_id=750 asset_value="11111"
+!tc-update-victim-attribute victim_attribute_id="132" attribute_value="test2"
+!tc-delete-victim-asset victim_asset_id=738
+!tc-delete-victim-attribute victim_attribute_id=110
+!tc-delete-victim victim_id=660
+!tc-list-attribute-type limit=1
+
+
+
+
+
+
+
+

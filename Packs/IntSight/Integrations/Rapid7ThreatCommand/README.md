@@ -9,17 +9,18 @@ This integration was integrated and tested with version 3.1.4 of rapid7_threat_c
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL |  | True |
+    | Server URL | URL of the Rapid7 platform. | True |
     | Account ID |  | True |
     | API key |  | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Fetch incidents |  | False |
-    | First fetch timestamp. | Timestamp in ISO format or &amp;lt;number&amp;gt; &amp;lt;time unit&amp;gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
-    | Maximum incidents per fetch | Default is 50. Maximum is 100. | True |
-    | Alert types to fetch as incidents |  | False |
-    | Minimum Alert Severity Level |  | False |
-    | Source types to filter alerts by |  | False |
-    | Fetch closed alerts |  | False |
+    | First fetch timestamp. | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2023-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | False |
+    | Maximum incidents per fetch | The maximum number of alerts to fetch each time. The default is 50. If the value is greater than 200, it will be considered as 200. | True |
+    | Alert types to fetch as incidents | Alert types to fetch as incidents. | False |
+    | Network types to fetch as incidents | Network types to fetch as incidents. | False |
+    | Minimum Alert Severity Level | Alerts with the minimum level of severity to fetch. | False |
+    | Source types to filter alerts by | Source types to filter alerts by. | False |
+    | Fetch closed alerts | Fetch closed alerts from Rapid7 platform. | False |
     | Include CSV files of alerts |  | False |
     | Include attachments of alerts | MSSP accounts must provide a sub-account ID to perform this action. | False |
     | Sub-account ID (for MSSP accounts). |  | False |
@@ -208,7 +209,7 @@ List cyber term IOCs by cyber term ID.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ThreatCommand.IOC.value | String | The value of the IOC. | 
-| ThreatCommand.IOC.type | String | The type of the IOC | 
+| ThreatCommand.IOC.type | String | The type of the IOC. | 
 | ThreatCommand.IOC.updated_date | String | The date the IOC was last updated. | 
 | ThreatCommand.IOC.status | String | The status of the IOC. | 
 | ThreatCommand.IOC.is_whitelisted | String | Whether the IOC is whitelisted. | 
@@ -408,7 +409,7 @@ There is no context output for this command.
 ### threat-command-ioc-search
 
 ***
-Gets IOC details by value or IOC’s full enrichment data. While using the enrichment flag, the command is scheduled and allows us to get full enrichment data. Note that enrichment has a quota. You can get the quota by using threat-command-quotas-usage-get.
+Gets IOC details by value or IOC's full enrichment data. While using the enrichment flag, the command is scheduled and allows us to get full enrichment data. Note that enrichment has a quota. You can get the quota by using threat-command-quotas-usage-get.
 
 #### Base Command
 
@@ -1425,7 +1426,7 @@ Get alert's analyst response
 | ThreatCommand.Alert.id | String | Alert ID. | 
 | ThreatCommand.Alert.Message.date | String | Response date. | 
 | ThreatCommand.Alert.Message.initiator | String | Response initiator. | 
-| ThreatCommand.Alert.Message.message | String | Response message | 
+| ThreatCommand.Alert.Message.message | String | Response message. | 
 
 #### Command example
 ```!threat-command-alert-analyst-conversation-list alert_id=1234```
@@ -1918,12 +1919,34 @@ Get alert's CSV file in case of credentials leakage or leaked credit cards alert
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| ThreatCommand.CSV.alert_id | String | Alert ID. | 
+| ThreatCommand.CSV.content | Unknown | Content of CSV file. | 
+| InfoFile.EntryID | string | The EntryID of the CSV file. | 
+| InfoFile.Extension | string | The extension of the CSV file. | 
+| InfoFile.Name | string | The name of the CSV file. | 
+| InfoFile.Info | string | The info of the CSV file. | 
+| InfoFile.Size | number | The size of the CSV file. | 
+| InfoFile.Type | string | The type of the CSV file. | 
+
 #### Command example
 ```!threat-command-alert-csv-get alert_id=1234```
 #### Context Example
 ```json
 {
+    "ThreatCommand": {
+      "CSV": {
+        "alert_id": "1234",
+        "content": [
+          {
+            "email": "someone@my.com",
+            "password": "password",
+            "raw_line": "someone@my.com|password"
+          }
+        ]
+      }
+    },
     "InfoFile": {
         "EntryID": "35323@b5fa0da4-31d6-4517-8d5c-484d4bb598ac",
         "Extension": "csv",

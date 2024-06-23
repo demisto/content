@@ -1,0 +1,8 @@
+{
+    "DataCatalogsSummary": [
+        {
+            "CatalogName": "test",
+            "Type": "LAMBDA"
+        }
+    ],
+    "NextToken": "test"}

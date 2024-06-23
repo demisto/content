@@ -8,6 +8,8 @@ import threading
 from distutils.util import strtobool
 import aiohttp
 import slack_sdk
+from urllib.parse import urlparse
+
 from slack_sdk.errors import SlackApiError
 from slack_sdk.socket_mode.aiohttp import SocketModeClient
 from slack_sdk.socket_mode.request import SocketModeRequest
@@ -15,7 +17,6 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-
 
 ''' CONSTANTS '''
 
@@ -86,14 +87,32 @@ BOT_ID: str
 CACHED_INTEGRATION_CONTEXT: dict
 CACHE_EXPIRY: float
 MIRRORING_ENABLED: bool
+FILE_MIRRORING_ENABLED: bool
 LONG_RUNNING_ENABLED: bool
 DEMISTO_API_KEY: str
 DEMISTO_URL: str
 IGNORE_RETRIES: bool
 EXTENSIVE_LOGGING: bool
 
-
 ''' HELPER FUNCTIONS '''
+
+
+def get_war_room_url(url: str) -> str:
+    # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
+    if is_xsiam():
+        incident_id = demisto.callingContext.get('context', {}).get('Inv', {}).get('id')
+        incident_url = urlparse(url)
+        war_room_url = f"{incident_url.scheme}://{incident_url.netloc}/incidents"
+        # executed from the incident War Room
+        if incident_id and incident_id.startswith('INCIDENT-'):
+            war_room_url += f"/war_room?caseId={incident_id.split('-')[-1]}"
+        # executed from the alert War Room
+        else:
+            war_room_url += f"/alerts_and_insights?caseId={incident_id}&action:openAlertDetails={incident_id}-warRoom"
+
+        return war_room_url
+
+    return url
 
 
 def get_bot_id() -> str:
@@ -183,9 +202,10 @@ def return_user_filter(user_to_search: str, users_list):
         The dict which matched the user to search for if one was found, else an empty dict.
     """
     users_filter = list(filter(lambda u: u.get('name', '').lower() == user_to_search
-                               or u.get('profile', {}).get('display_name', '').lower() == user_to_search
-                               or u.get('profile', {}).get('email', '').lower() == user_to_search
-                               or u.get('profile', {}).get('real_name', '').lower() == user_to_search, users_list))
+                                         or u.get('profile', {}).get('display_name', '').lower() == user_to_search
+                                         or u.get('profile', {}).get('email', '').lower() == user_to_search
+                                         or u.get('profile', {}).get('real_name', '').lower() == user_to_search,
+                               users_list))
     if users_filter:
         return users_filter[0]
     else:
@@ -853,7 +873,7 @@ def answer_question(text: str, question: dict, email: str = ''):
     try:
         demisto.handleEntitlementForUser(incident_id, guid, email, content, task_id)
     except Exception as e:
-        demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
+        demisto.debug(f'Failed handling entitlement {entitlement}: {str(e)}')
     question['remove'] = True
     return incident_id
 
@@ -947,16 +967,13 @@ def invite_to_mirrored_channel(channel_id: str, users: List[Dict]) -> list:
     """
     slack_users = []
     for user in users:
-        slack_user: dict = {}
-        # Try to invite by XSOAR email
         user_email = user.get('email', '')
         user_name = user.get('username', '')
-        if user_email:
-            slack_user = get_user_by_name(user_email, False)
-        if not slack_user:
-            # Try to invite by XSOAR user name
-            if user_name:
-                slack_user = get_user_by_name(user_name, False)
+
+        # Try to invite by XSOAR email, if not found then by XSOAR user name
+        slack_user = get_user_by_name(user_email, False) if user_email else None
+        if not slack_user and user_name:
+            slack_user = get_user_by_name(user_name, False)
         if slack_user:
             slack_users.append(slack_user)
         else:
@@ -1010,6 +1027,10 @@ class SlackLogger(IntegrationLogger):
         self.messages.append(text)
 
     def error(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
+
+    def exception(self, message):
         text = self.encode(message)
         self.messages.append(text)
 
@@ -1259,7 +1280,8 @@ async def create_incidents(incidents: list, user_name: str, user_email: str, use
             labels.append({'type': 'Source', 'value': 'Slack'})
         incident['labels'] = labels
 
-    data = demisto.createIncidents(incidents, userID=user_demisto_id) if user_demisto_id else demisto.createIncidents(incidents)
+    data = demisto.createIncidents(incidents, userID=user_demisto_id) if user_demisto_id else demisto.createIncidents(
+        incidents)
 
     return data
 
@@ -1310,12 +1332,12 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
 
 
 async def process_entitlement_reply(
-    entitlement_reply: str,
-    user_id: str,
-    action_text: str,
-    response_url: str | None = None,
-    channel: str | None = None,
-    message_ts: str | None = None
+        entitlement_reply: str,
+        user_id: str,
+        action_text: str,
+        response_url: str | None = None,
+        channel: str | None = None,
+        message_ts: str | None = None
 ):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
@@ -1507,47 +1529,20 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             if len(actions) > 0:
                 channel = data.get('channel', {}).get('id', '')
                 entitlement_json = actions[0].get('value')
+                entitlement_string = json.loads(entitlement_json)
                 if entitlement_json is None:
                     return
                 if actions[0].get('action_id') == 'xsoar-button-submit':
                     demisto.debug("Handling a SlackBlockBuilder response.")
-                entitlement_string = json.loads(entitlement_json)
-                entitlement_reply = json.loads(entitlement_json).get("reply", "Thank you for your reply.")
-                action_text = actions[0].get('text').get('text')
-                incident_id = answer_question(action_text, entitlement_string,
-                                              user.get('profile', {}).get('email'))  # type: ignore
-                if state and DEMISTO_API_KEY:
-                    string_safe_state = json.dumps(state)
-                    body = {
-                        "data": "!Set",
-                        "args": {
-                            "value": {
-                                "simple": string_safe_state
-                            },
-                            "key": {
-                                "simple": "SlackBlockState"
-                            }
-                        },
-                        "investigationId": str(incident_id)
-                    }
-                    headers = {
-                        'Authorization': f'{DEMISTO_API_KEY}',
-                        'Content-Type': 'application/json',
-                        'accept': 'application/json'
-                    }
-
-                    _body = json.dumps(body)
-                    try:
-                        response = requests.request("POST",  # type: ignore
-                                                    f"{DEMISTO_URL}/entry/execute/sync",
-                                                    headers=headers,
-                                                    data=_body,
-                                                    verify=VERIFY_CERT
-                                                    )
-                        response.raise_for_status()  # type: ignore
-                    except requests.exceptions.ConnectionError as err:
-                        err_message = f'Error submitting context command to server. Check your API Key: {err}'
-                        demisto.updateModuleHealth(err_message)
+                    if state:
+                        state.update({"xsoar-button-submit": "Successful"})
+                        action_text = json.dumps(state)
+                else:
+                    demisto.debug("Not handling a SlackBlockBuilder response.")
+                    action_text = actions[0].get('text').get('text')
+                _ = answer_question(action_text, entitlement_string,
+                                    user.get('profile', {}).get('email'))  # type: ignore
+                entitlement_reply = entitlement_string.get("reply", "Thank you for your reply.")
             if entitlement_reply:
                 await process_entitlement_reply(entitlement_reply, user_id, action_text, response_url=response_url)
                 reset_listener_health()
@@ -1581,7 +1576,8 @@ async def listen(client: SocketModeClient, req: SocketModeRequest):
             user = await get_user_details(user_id=user_id)
             entitlement_reply = await check_and_handle_entitlement(text, user, thread)  # type: ignore
             if entitlement_reply:
-                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel, message_ts=message_ts)
+                await process_entitlement_reply(entitlement_reply, user_id, action_text, channel=channel,
+                                                message_ts=message_ts)
                 reset_listener_health()
                 return
 
@@ -1796,6 +1792,31 @@ def get_conversation_by_name(conversation_name: str) -> dict:
     return conversation
 
 
+def send_mirrored_file_to_slack(entry: str, message: str, original_channel: str, channel_id: str, comment: Optional[str] = None):
+    """
+    Sends a file from xsoar investigation to a mirrored slack channel
+
+    Args:
+        entry: the entry ID of the file
+        message: the message from the war-room when uploading file
+        original_channel: the channel name to upload the file
+        channel_id: the channel ID to upload the file
+        comment: a comment that was added when uploading the file
+    """
+    file_name = demisto.getFilePath(entry)["name"]
+    if FILE_MIRRORING_ENABLED:
+        demisto.debug(
+            f'file {file_name} has been uploaded to a mirrored incident, '
+            f'uploading the file to slack channel {original_channel}'
+        )
+        if comment:
+            # if a comment was added when uploading the file, add it to the message
+            message = f'{message}\nComment: {comment}'
+        slack_send_file(original_channel, channel_id, entry, message)
+    else:
+        demisto.debug(f'file {file_name} will not be mirrored because file mirroring is not enabled')
+
+
 def slack_send():
     """
     Sends a message to slack
@@ -1836,6 +1857,16 @@ def slack_send():
         if tags and not any(elem in entry_tags for elem in tags):
             return
 
+        if entry:
+            send_mirrored_file_to_slack(
+                entry,
+                message=message,
+                original_channel=original_channel,
+                channel_id=channel_id,
+                comment=entry_object.get("contents")
+            )
+            return
+
     if (to and group) or (to and original_channel) or (to and original_channel and group):
         return_error('Only one destination can be provided.')
 
@@ -1855,7 +1886,8 @@ def slack_send():
             and ((severity is not None and severity < SEVERITY_THRESHOLD)
                  or not (len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0))):
         channel = None
-        demisto.debug(f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
+        demisto.debug(
+            f"Severity of the notification is - {severity} and the Severity threshold is {SEVERITY_THRESHOLD}")
 
     if not (to or group or channel or channel_id):
         return_error('Either a user, group, channel id, or channel must be provided.')
@@ -1938,17 +1970,17 @@ def save_entitlement(entitlement, thread, reply, expiry, default_response):
     set_to_integration_context_with_retries({'questions': questions}, OBJECTS_TO_KEYS, SYNC_CONTEXT)
 
 
-def slack_send_file():
+def slack_send_file(_channel: str | None = None, _channel_id: str = '', _entry_id: str | None = None, _comment: str = ""):
     """
     Sends a file to slack
     """
     to = demisto.args().get('to')
-    channel = demisto.args().get('channel')
-    channel_id = demisto.args().get('channel_id', '')
+    channel = _channel or demisto.args().get('channel')
+    channel_id = _channel_id or demisto.args().get('channel_id', '')
     group = demisto.args().get('group')
-    entry_id = demisto.args().get('file')
+    entry_id = _entry_id or demisto.args().get('file')
     thread_id = demisto.args().get('threadID')
-    comment = demisto.args().get('comment', '')
+    comment = _comment or demisto.args().get('comment', '')
 
     if not (to or channel or group):
         mirror = find_mirror_by_investigation()
@@ -2026,6 +2058,7 @@ def send_message(destinations: list, entry: str, ignore_add_url: bool, integrati
                 if investigation.get('type') != PLAYGROUND_INVESTIGATION_TYPE:
                     link = server_links.get('warRoom')
                     if link:
+                        link = get_war_room_url(link)
                         if entry:
                             link += '/' + entry
                         message += f'\nView it on: {link}'
@@ -2611,7 +2644,8 @@ def list_channels():
                                                                body={'user': channel.get('creator')})
             entry['Creator'] = creator_details_response['user']['name']
         context.append(entry)
-    readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}', context)
+    readable_output = tableToMarkdown(f'Channels list for {args.get("channel_types")} with filter {name_filter}',
+                                      context)
     demisto.results({
         'Type': entryTypes['note'],
         'Contents': channels,
@@ -2774,7 +2808,7 @@ def init_globals(command_name: str = ''):
     """
 
     global BOT_TOKEN, PROXY_URL, PROXIES, DEDICATED_CHANNEL, CLIENT, USER_CLIENT, \
-        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, USER_TOKEN
+        CACHED_INTEGRATION_CONTEXT, MIRRORING_ENABLED, FILE_MIRRORING_ENABLED, USER_TOKEN
     global SEVERITY_THRESHOLD, ALLOW_INCIDENTS, INCIDENT_TYPE, VERIFY_CERT, ENABLE_DM, BOT_ID, CACHE_EXPIRY
     global BOT_NAME, BOT_ICON_URL, MAX_LIMIT_TIME, PAGINATED_COUNT, SSL_CONTEXT, APP_TOKEN, ASYNC_CLIENT
     global DEFAULT_PERMITTED_NOTIFICATION_TYPES, CUSTOM_PERMITTED_NOTIFICATION_TYPES, PERMITTED_NOTIFICATION_TYPES
@@ -2811,6 +2845,7 @@ def init_globals(command_name: str = ''):
     CUSTOM_PERMITTED_NOTIFICATION_TYPES = demisto.params().get('permitted_notifications', [])
     PERMITTED_NOTIFICATION_TYPES = DEFAULT_PERMITTED_NOTIFICATION_TYPES + CUSTOM_PERMITTED_NOTIFICATION_TYPES
     MIRRORING_ENABLED = demisto.params().get('mirroring', True)
+    FILE_MIRRORING_ENABLED = demisto.params().get('enable_outbound_file_mirroring', False)
     LONG_RUNNING_ENABLED = demisto.params().get('longRunning', True)
     DEMISTO_API_KEY = demisto.params().get('demisto_api_key', {}).get('password', '')
     demisto_urls = demisto.demistoUrls()
@@ -2818,7 +2853,7 @@ def init_globals(command_name: str = ''):
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)
-    COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(',')) if common_channels else {}
+    COMMON_CHANNELS = parse_common_channels(common_channels)
     DISABLE_CACHING = demisto.params().get('disable_caching', False)
 
     # Formats the error message for the 'Channel Not Found' errors
@@ -2843,6 +2878,7 @@ def init_globals(command_name: str = ''):
 
     # Handle Long-Running Specific Globals
     if command_name == 'long-running-execution':
+        demisto.debug('in long running execution init globals')
         # Bot identification
         integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('bot_user_id'):
@@ -2858,6 +2894,24 @@ def init_globals(command_name: str = ''):
         # Pull initial Cached context and set the Expiry
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
+
+
+def parse_common_channels(common_channels: str):
+    common_channels = (common_channels or '').strip()
+    if not common_channels:
+        return {}
+    try:
+        stripped_channels = {}
+        for pair in re.split(r',|\n', common_channels):
+            stripped = pair.strip()
+            if stripped:
+                key, val = stripped.split(':')
+                stripped_channels[key.strip()] = val.strip()
+    except Exception as e:
+        demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
+        raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') \
+            from e
+    return stripped_channels
 
 
 def print_thread_dump():
@@ -2886,7 +2940,8 @@ def slack_get_integration_context():
         'ContentsFormat': EntryFormat.MARKDOWN,
         'Contents': readable_stats,
     })
-    return_results(fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
+    return_results(
+        fileResult('slack_integration_context.json', json.dumps(integration_context), EntryType.ENTRY_INFO_FILE))
 
 
 def slack_get_integration_context_statistics():
@@ -2972,13 +3027,16 @@ def main() -> None:
         demisto.info(f'{command_name} started.')
         command_func = commands[command_name]
         init_globals(command_name)
+        demisto.info('after init globals')
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
         support_multithreading()
-        command_func()
+        command_func()  # type: ignore
     except Exception as e:
-        demisto.debug(e)
+        demisto.error(f'Error occured error: {e}')
+        demisto.error(traceback.format_exc())
         return_error(str(e))
+
     finally:
         demisto.info(f'{command_name} completed.')  # type: ignore
         if EXTENSIVE_LOGGING:

@@ -18,6 +18,7 @@ This integration was integrated and tested with version 1 of CiscoAMP.
     | Incident severity to fetch. |  | False |
     | First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
     | Event types | Comma-separated list of Event Type IDs. | False |
+    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands

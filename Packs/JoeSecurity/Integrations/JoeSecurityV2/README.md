@@ -719,7 +719,7 @@ Retrieve the submission info.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| submission_ids | A comma-separated list of submission IDs. | Optional | 
+| submission_ids | A comma-separated list of submission IDs. | Required | 
 | full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 
 
@@ -882,6 +882,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | entry_id | The War Room entry ID of the file to submit. | Required | 
+| file_name | The filename of the submitted sample | Optional |
 | full_display | When set to true, indicators information, including their DBot Scores, will be displayed. Possible values are: true, false. Default is true. | Optional | 
 | timeout | The timeout for the polling in seconds. Default is 1200. | Optional | 
 | hide_polling_output | Hide polling output. | Optional | 

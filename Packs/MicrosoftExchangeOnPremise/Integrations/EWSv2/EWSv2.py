@@ -1,17 +1,16 @@
 import email
 import hashlib
-import subprocess
-import warnings
 from multiprocessing import Process
 
 import dateparser  # type: ignore
 import exchangelib
+
 from CommonServerPython import *
 from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
                          EWSTimeZone, FileAttachment, Folder, HTMLBody,
-                         ItemAttachment, Version)
+                         ItemAttachment, Version, Body, FolderCollection)
 from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorInvalidIdMalformed,
                                 ErrorInvalidPropertyRequest,
@@ -21,12 +20,12 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorNameResolutionNoResults, RateLimitError,
                                 ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, Protocol
+from exchangelib.protocol import BaseProtocol, Protocol, FaultTolerance
 from exchangelib.services import EWSService
 from exchangelib.services.common import EWSAccountService
 from exchangelib.util import add_xml_child, create_element
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
-                                 EXCHANGE_2010_SP2, EXCHANGE_2013,
+                                 EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2013_SP1,
                                  EXCHANGE_2016, EXCHANGE_2019)
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
@@ -49,7 +48,13 @@ def our_fullname(self):  # pragma: no cover
 Version.fullname = our_fullname
 
 
-class exchangelibSSLAdapter(SSLAdapter):
+class exchangelibInsecureSSLAdapter(SSLAdapter):
+
+    def __init__(self, *args, **kwargs):
+        # Processing before init call
+        kwargs.pop('verify', None)
+        super().__init__(verify=False, **kwargs)
+
     def cert_verify(self, conn, url, verify, cert):
         # We're overriding a method, so we have to keep the signature, although verify is unused
         del verify
@@ -67,6 +72,7 @@ VERSIONS = {
     '2010': EXCHANGE_2010,
     '2010_SP2': EXCHANGE_2010_SP2,
     '2013': EXCHANGE_2013,
+    '2013_SP1': EXCHANGE_2013_SP1,
     '2016': EXCHANGE_2016,
     '2019': EXCHANGE_2019
 }
@@ -110,7 +116,7 @@ ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceive
 NON_SECURE = demisto.params().get('insecure', True)
 AUTH_METHOD_STR = demisto.params().get('authType', '')
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
-VERSION_STR = demisto.params().get('defaultServerVersion', None)
+VERSION_STR = demisto.params().get('defaultServerVersion', '')
 MANUAL_USERNAME = demisto.params().get('domainAndUserman', '')
 FOLDER_NAME = demisto.params().get('folder', 'Inbox')
 IS_PUBLIC_FOLDER = demisto.params().get('isPublicFolder', False)
@@ -125,211 +131,6 @@ MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
-
-START_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$query
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-# Generate a unique search name
-$searchName = [guid]::NewGuid().ToString() -replace '[-]'
-$searchName = "DemistoSearch" + $searchName
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-$compliance = New-ComplianceSearch -Name $searchName -ExchangeLocation All -ContentMatchQuery $query -Confirm:$false
-
-Start-ComplianceSearch -Identity $searchName
-
-$complianceSearchName = "Action status: " + $searchName
-
-$complianceSearchName | ConvertTo-Json
-
-# Close the session
-Remove-PSSession $session
-"""
-GET_COMPLIANCE = """[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName Get-ComplianceSearch -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-
-$searchStatus = Get-ComplianceSearch $searchName
-#"Search status: " + $searchStatus.Status
-$searchStatus.Status
-if ($searchStatus.Status -eq "Completed")
-{
-   $searchStatus.SuccessResults | ConvertTo-Json
-}
-
-# Close the session
-Remove-PSSession $session
-"""
-PURGE_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-# Delete mails based on an existing search criteria
-$newActionResult = New-ComplianceSearchAction -SearchName $searchName -Purge -PurgeType SoftDelete -Confirm:$false
-if (!$newActionResult)
-{
-   # Happens when there are no results from the search
-   "No action was created"
-}
-
-# Close the session
-Remove-PSSession $session
-return
-"""
-PURGE_STATUS_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-# open remote PS session to Office 365 Security & Compliance Center
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-$actionName = $searchName + "_Purge"
-$actionStatus = Get-ComplianceSearchAction $actionName
-""
-$actionStatus.Status
-
-# Close the session
-Remove-PSSession $session
-"""
-REMOVE_COMPLIANCE = """
-[CmdletBinding()]
-Param(
-[Parameter(Mandatory=$True)]
-[string]$username,
-
-[Parameter(Mandatory=$True)]
-[string]$searchName
-)
-
-$WarningPreference = "silentlyContinue"
-# Create Credential object
-$password = Read-Host
-$secpasswd = ConvertTo-SecureString $password -AsPlainText -Force
-$UserCredential = New-Object System.Management.Automation.PSCredential ($username, $secpasswd)
-
-
-# open remote PS session to Office 365 Security & Compliance Center
-
-$session = New-PSSession -ConfigurationName Microsoft.Exchange -ConnectionUri `
-https://ps.compliance.protection.outlook.com/powershell-liveid/ -Credential $UserCredential `
--Authentication Basic -AllowRedirection
-
-if (!$session)
-{
-   "Failed to create remote PS session"
-   return
-}
-
-
-Import-PSSession $session -CommandName *Compliance* -AllowClobber -DisableNameChecking -Verbose:$false | Out-Null
-
-# Remove the search
-Remove-ComplianceSearch $searchName -Confirm:$false
-
-# Close the session
-Remove-PSSession $session
-"""
 
 # initialized in main()
 EWS_SERVER = ''
@@ -377,7 +178,7 @@ def get_endpoint_autodiscover(context_dict):  # pragma: no cover
     return context_dict["service_endpoint"]
 
 
-def get_version(version_str):
+def get_version(version_str):  # pragma: no cover
     if version_str not in VERSIONS:
         raise Exception("{} is unsupported version: {}. Choose one of".format(version_str, "\\".join(list(VERSIONS.keys()))))
     return Version(VERSIONS[version_str])
@@ -415,10 +216,9 @@ def prepare_context(credentials):  # pragma: no cover
 
 def prepare():  # pragma: no cover
     if NON_SECURE:
-        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibSSLAdapter
+        BaseProtocol.HTTP_ADAPTER_CLS = exchangelibInsecureSSLAdapter
     else:
         BaseProtocol.HTTP_ADAPTER_CLS = requests.adapters.HTTPAdapter
-
     global AUTO_DISCOVERY, VERSION_STR, AUTH_METHOD_STR, USERNAME
     AUTO_DISCOVERY = not EWS_SERVER
     if AUTO_DISCOVERY:
@@ -451,8 +251,7 @@ def prepare():  # pragma: no cover
             config_args['service_endpoint'] = EWS_SERVER
         else:
             config_args['server'] = EWS_SERVER
-
-        return Configuration(**config_args), None
+        return Configuration(**config_args, retry_policy=FaultTolerance(max_wait=60)), None
 
 
 def construct_config_args(context_dict, credentials):  # pragma: no cover
@@ -482,12 +281,11 @@ def get_account_autodiscover(account_email, access_type=ACCESS_TYPE, time_zone=N
                 primary_smtp_address=account_email, autodiscover=False, config=Configuration(**config_args),
                 access_type=access_type, default_timezone=time_zone
             )
-            account.root.effective_rights.read  # pylint: disable=E1101
+            account.root.effective_rights.read  # noqa: B018 pylint: disable=E1101
             return account
         except Exception as e:
             # fixing flake8 correction where original_exc is assigned but unused
             original_exc = e
-            pass
 
     try:
         account = Account(
@@ -587,12 +385,7 @@ def filter_dict_null(d):  # pragma: no cover
 
 
 def is_empty_object(obj):
-    size = 0
-    if isinstance(obj, map):
-        size = obj.__sizeof__()
-    else:
-        size = len(obj)
-    return size == 0
+    return (obj.__sizeof__() if isinstance(obj, map) else len(obj)) == 0
 
 
 def get_time_zone() -> EWSTimeZone | None:
@@ -613,12 +406,28 @@ def get_attachment_name(attachment_name):  # pragma: no cover
     return attachment_name
 
 
-def get_entry_for_object(title, context_key, obj, headers=None):  # pragma: no cover
+def switch_hr_headers(obj, hr_header_changes):
+    """
+    Will swap keys according to hr_header_changes.
+    hr_header_changes: a dict, keys are the old value, value is the new value
+    """
+    if not isinstance(obj, dict):
+        return obj
+    obj_copy = obj.copy()
+    for old_header, new_header in hr_header_changes.items():
+        if old_header in obj:
+            obj_copy[new_header] = obj_copy.pop(old_header)
+    return obj_copy
+
+
+def get_entry_for_object(title, context_key, obj, headers=None, hr_header_changes={}):  # pragma: no cover
     if is_empty_object(obj):
         return "There is no output results"
     obj = filter_dict_null(obj)
+    hr_obj = switch_hr_headers(obj, hr_header_changes)
     if isinstance(obj, list):
         obj = [filter_dict_null(k) for k in obj]
+        hr_obj = [switch_hr_headers(k, hr_header_changes) for k in obj]
     if headers and isinstance(obj, dict):
         headers = list(set(headers).intersection(set(obj.keys())))
 
@@ -627,7 +436,7 @@ def get_entry_for_object(title, context_key, obj, headers=None):  # pragma: no c
         'Contents': obj,
         'ContentsFormat': formats['json'],
         'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown(title, obj, headers),
+        'HumanReadable': tableToMarkdown(title, hr_obj, headers),
         ENTRY_CONTEXT: {
             context_key: obj
         }
@@ -670,21 +479,17 @@ def get_folder_by_path(account, path, is_public=False):  # pragma: no cover
         if path in folders_map:
             return account.root._folders_map[path]
 
-    if is_public:
-        folder_result = account.public_folders_root
-    elif path == 'AllItems':
-        folder_result = account.root
-    else:
-        folder_result = account.inbox.parent  # Top of Information Store
+    folder = account.public_folders_root if is_public else account.root.tois
     path = path.replace("/", "\\")
     path = path.split('\\')
-    for sub_folder_name in path:
-        folder_filter_by_name = [x for x in folder_result.children if x.name.lower() == sub_folder_name.lower()]
-        if len(folder_filter_by_name) == 0:
-            raise Exception("No such folder %s" % path)
-        folder_result = folder_filter_by_name[0]
-
-    return folder_result
+    for part in path:
+        try:
+            demisto.debug(f'resolving {part=} {path=}')
+            folder = folder // part
+        except Exception as e:
+            demisto.debug(f'got error {e}')
+            raise ValueError(f'No such folder {path}')
+    return folder
 
 
 class MarkAsJunk(EWSAccountService):
@@ -710,12 +515,13 @@ class MarkAsJunk(EWSAccountService):
         return junk
 
 
-def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_body=None, attachments=None,
+def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_to, html_body=None, attachments=None,
                           raw_message=None, from_address=None):  # pragma: no cover
     """
     Send an email to a mailbox.
 
     Args:
+        body_type: type of the body. Can be 'html' or 'text' or None.
         account (Account): account from which to send an email.
         to (list[str]): a list of emails to send an email.
         subject (str): subject of the mail.
@@ -731,7 +537,7 @@ def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_bo
     """
     if not attachments:
         attachments = []
-    message_body = HTMLBody(html_body) if html_body else body
+    message_body = get_message_for_body_type(body, body_type, html_body)
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -756,6 +562,25 @@ def send_email_to_mailbox(account, to, subject, body, bcc, cc, reply_to, html_bo
     return m
 
 
+def get_message_for_body_type(body, body_type, html_body):
+    """
+    Compatibility with Data Collection - where body_type is not provided, we will use the html_body if it exists.
+    Compatibility with 'send-mail' command - where body_type should be provided, we will use the body_type to decide.
+    Args:
+        body_type: type of the body. Can be 'html' or 'text' or None.
+        body: plain text body.
+        html_body: HTML formatted content (body) of the email to be sent.
+
+    Returns:
+        Body: the body of the message.
+    """
+    if body_type is None:  # When called from a data collection task.
+        return HTMLBody(html_body) if html_body else Body(body)
+    if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
+        return HTMLBody(html_body)
+    return Body(body) if (body or not html_body) else HTMLBody(html_body)
+
+
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
                                 attachments=None, from_mailbox=None):  # pragma: no cover
     if attachments is None:
@@ -765,6 +590,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
         raise Exception(item_to_reply_to)
 
     subject = subject or item_to_reply_to.subject
+    # `reply-mail` command does not support body_type, so we will use the html_body if it exists.
     message_body = HTMLBody(html_body) if html_body else body
     reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to, cc_recipients=cc,
                                           bcc_recipients=bcc, author=from_mailbox)
@@ -778,7 +604,7 @@ def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bc
     return m
 
 
-class GetSearchableMailboxes(EWSService):
+class GetSearchableMailboxes(EWSService):  # pragma: no cover
     SERVICE_NAME = 'GetSearchableMailboxes'
     element_container_name = '{%s}SearchableMailboxes' % MNS
 
@@ -917,7 +743,7 @@ class ExpandGroup(EWSService):
                     non_dl_emails[member['mailbox']] = member
 
 
-def get_expanded_group(protocol, email_address, recursive_expansion=False):
+def get_expanded_group(protocol, email_address, recursive_expansion=False):  # pragma: no cover
     group_members = ExpandGroup(protocol=protocol).call(email_address, recursive_expansion)
     group_details = {
         "name": email_address,
@@ -928,7 +754,7 @@ def get_expanded_group(protocol, email_address, recursive_expansion=False):
     return entry_for_object
 
 
-def get_searchable_mailboxes(protocol):
+def get_searchable_mailboxes(protocol):  # pragma: no cover
     searchable_mailboxes = GetSearchableMailboxes(protocol=protocol).call()
     return get_entry_for_object("Searchable mailboxes", 'EWS.Mailboxes', searchable_mailboxes)
 
@@ -953,7 +779,6 @@ def search_mailboxes(protocol, filter, limit=100, mailbox_search_scope=None, ema
         entry = get_searchable_mailboxes(protocol)
         mailboxes = [x for x in entry[ENTRY_CONTEXT]['EWS.Mailboxes'] if MAILBOX_ID in list(x.keys())]
         mailbox_ids = [x[MAILBOX_ID] for x in mailboxes]  # type: ignore
-
     try:
         search_results = SearchMailboxes(protocol=protocol).call(filter, mailbox_ids)
         search_results = search_results[:limit]
@@ -1033,7 +858,7 @@ def fetch_last_emails(account, folder_name='Inbox', since_datetime=None, exclude
 
 def keys_to_camel_case(value):
     def str_to_camel_case(snake_str):
-        # Add condtion as Email object arrived in list and raised error
+        # Add condition as Email object arrived in list and raised error
         if not isinstance(snake_str, str):
             return snake_str
         components = snake_str.split('_')
@@ -1050,7 +875,7 @@ def keys_to_camel_case(value):
     return str_to_camel_case(value)
 
 
-def email_ec(item):
+def email_ec(item):  # pragma: no cover
     return {
         'CC': None if not item.cc_recipients else [mailbox.email_address for mailbox in item.cc_recipients],
         'BCC': None if not item.bcc_recipients else [mailbox.email_address for mailbox in item.bcc_recipients],
@@ -1073,25 +898,22 @@ def parse_object_as_dict_with_serialized_items(object):
                     json.dumps(v)
                     raw_dict[field.name] = v
             except (TypeError, OverflowError):
-                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field')
+                demisto.debug(f'Data in field {field.name} is not serilizable, skipped field value is \n{v}\n')
                 continue
     return raw_dict
 
 
-def parse_item_as_dict(item, email_address, camel_case=False, compact_fields=False):  # pragma: no cover
+def parse_item_as_dict(item, email_address=None, camel_case=False, compact_fields=False):  # pragma: no cover
     def parse_object_as_dict(object):
         raw_dict = {}
         if object is not None:
             for field in object.FIELDS:
-                raw_dict[field.name] = getattr(object, field.name, None)
-        return raw_dict
-
-    def parse_attachment_as_raw_json(attachment):
-        raw_dict = parse_object_as_dict(attachment)
-        if raw_dict['attachment_id']:
-            raw_dict['attachment_id'] = parse_object_as_dict(raw_dict['attachment_id'])
-        if raw_dict['last_modified_time']:
-            raw_dict['last_modified_time'] = raw_dict['last_modified_time'].ewsformat()
+                field_val = getattr(object, field.name, None)
+                try:
+                    json.dumps(field_val)
+                except TypeError:
+                    field_val = parse_object_as_dict(field_val)
+                raw_dict[field.name] = field_val
         return raw_dict
 
     def parse_folder_as_json(folder):  # pragma: no cover
@@ -1244,7 +1066,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 # save attachment to incident
                                 incident['attachment'].append({
                                     'path': file_result['FileID'],
-                                    'name': get_attachment_name(attachment.name)
+                                    'name': get_attachment_name(attachment.name),
+                                    "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                                 })
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
@@ -1277,7 +1100,7 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
 
                                 for header in attachment.item.headers:
                                     if (header.name, header.value) not in attached_email_headers \
-                                       and header.name != 'Content-Type':
+                                            and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
                             file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
@@ -1292,12 +1115,14 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment.name) + ".eml"
+                                'name': get_attachment_name(attachment.name) + ".eml",
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                         else:
                             incident['attachment'].append({
-                                'name': get_attachment_name(attachment.name) + ".eml"
+                                'name': get_attachment_name(attachment.name) + ".eml",
+                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
                             })
 
                     labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
@@ -1668,13 +1493,11 @@ def get_limited_number_of_messages_from_qs(qs, limit):  # pragma: no cover
 
 
 def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=100, target_mailbox=None,
-                            is_public=None, selected_fields='all'):  # pragma: no cover
+                            is_public=None, selected_fields='all', surround_id_with_angle_brackets=True):  # pragma: no cover
     if not query and not message_id:
         return_error("Missing required argument. Provide query or message-id")
-
-    if message_id and message_id[0] != '<' and message_id[-1] != '>':
+    if argToBoolean(surround_id_with_angle_brackets) and message_id and message_id[0] != '<' and message_id[-1] != '>':
         message_id = f'<{message_id}>'
-
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     limit = int(limit)
     if folder_path.lower() == 'inbox':
@@ -1683,11 +1506,9 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         is_public = is_default_folder(folder_path, is_public)
         folders = [get_folder_by_path(account, folder_path, is_public)]
     else:
-        folders = account.inbox.parent.walk()  # pylint: disable=E1101
-
+        folders = FolderCollection(account=account, folders=[account.root.tois]).find_folders()  # pylint: disable=E1101
     items = []  # type: ignore
     selected_all_fields = (selected_fields == 'all')
-
     if selected_all_fields:
         restricted_fields = {x.name for x in Message.FIELDS}  # type: ignore
     else:
@@ -1704,11 +1525,9 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         items += get_limited_number_of_messages_from_qs(items_qs, limit)
         if len(items) >= limit:
             break
-
     items = items[:limit]
     searched_items_result = [parse_item_as_dict(item, account.primary_smtp_address, camel_case=True,
                                                 compact_fields=selected_all_fields) for item in items]
-
     if not selected_all_fields:
         # we show id as 'itemId' for BC
         restricted_fields.remove('id')
@@ -1716,7 +1535,6 @@ def search_items_in_mailbox(query=None, message_id=None, folder_path='', limit=1
         searched_items_result = [
             {k: v for (k, v) in i.items()
              if k in keys_to_camel_case(restricted_fields)} for i in searched_items_result]
-
     return get_entry_for_object('Searched items',
                                 CONTEXT_UPDATE_EWS_ITEM,
                                 searched_items_result,
@@ -1763,50 +1581,56 @@ def recover_soft_delete_item(message_ids, target_folder_path="Inbox", target_mai
                                 recovered_messages)
 
 
+def parse_physical_address(address):
+    result = {}
+    for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
+        result[attr] = getattr(address, attr, None)
+    return result
+
+
+def parse_phone_number(phone_number):
+    result = {
+        attr: getattr(phone_number, attr, None)
+        for attr in ['label', 'phone_number']
+    }
+    return result if result.get('phone_number') else {}
+
+
+def is_jsonable(x):
+    try:
+        json.dumps(x)
+        return True
+    except Exception:
+        return False
+
+
+def parse_contact(contact):
+    contact_dict = parse_object_as_dict_with_serialized_items(contact)
+    for k in contact_dict:
+        v = contact_dict[k]
+        if isinstance(v, EWSDateTime):
+            contact_dict[k] = v.ewsformat()  # pylint: disable=E4702
+
+    contact_dict['id'] = contact.id
+    if isinstance(contact, Contact) and contact.physical_addresses:
+        contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
+    if isinstance(contact, Contact) and contact.phone_numbers:
+        contact_dict['phone_numbers'] = [elt for elt in map(parse_phone_number, contact.phone_numbers) if elt]
+    if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
+        contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
+    contact_dict = keys_to_camel_case(contact_dict)
+    contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
+    return contact_dict
+
+
 def get_contacts(limit, target_mailbox=None):  # pragma: no cover
-    def parse_physical_address(address):
-        result = {}
-        for attr in ['city', 'country', 'label', 'state', 'street', 'zipcode']:
-            result[attr] = getattr(address, attr, None)
-        return result
-
-    def parse_phone_number(phone_number):
-        result = {}
-        for attr in ['label', 'phone_number']:
-            result[attr] = getattr(phone_number, attr, None)
-        return result
-
-    def is_jsonable(x):
-        try:
-            json.dumps(x)
-            return True
-        except Exception:
-            return False
-
-    def parse_contact(contact):
-        contact_dict = parse_object_as_dict_with_serialized_items(contact)
-        for k in contact_dict:
-            v = contact_dict[k]
-            if isinstance(v, EWSDateTime):
-                contact_dict[k] = v.ewsformat()  # pylint: disable=E4702
-
-        contact_dict['id'] = contact.id
-        if isinstance(contact, Contact) and contact.physical_addresses:
-            contact_dict['physical_addresses'] = list(map(parse_physical_address, contact.physical_addresses))
-        if isinstance(contact, Contact) and contact.phone_numbers:
-            contact_dict['phone_numbers'] = list(map(parse_phone_number, contact.phone_numbers))
-        if isinstance(contact, Contact) and contact.email_addresses and len(contact.email_addresses) > 0:
-            contact_dict['emailAddresses'] = [x.email for x in contact.email_addresses]
-        contact_dict = keys_to_camel_case(contact_dict)
-        contact_dict = {k: v for k, v in contact_dict.items() if (v and is_jsonable(v))}
-        contact_dict['originMailbox'] = target_mailbox
-        return contact_dict
-
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     contacts = []
 
     for contact in account.contacts.all()[:int(limit)]:  # pylint: disable=E1101
-        contacts.append(parse_contact(contact))
+        contact = parse_contact(contact)
+        contact['originMailbox'] = target_mailbox
+        contacts.append(contact)
     return get_entry_for_object(f'Email contacts for {target_mailbox or ACCOUNT_EMAIL}',
                                 'Account.Email(val.Address == obj.originMailbox).EwsContacts',
                                 contacts)
@@ -1829,21 +1653,21 @@ def create_folder(new_folder_name, folder_path, target_mailbox=None):  # pragma:
 
 def find_folders(target_mailbox=None, is_public=None):  # pragma: no cover
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
-    root = account.root
-    if is_public:
-        root = account.public_folders_root
+    root = account.public_folders_root if is_public else account.root.tois  # pylint: disable=E1101
+    root_collection = FolderCollection(account=account, folders=[root])
     folders = []
-    for f in root.walk():  # pylint: disable=E1101
+    for f in root_collection.find_folders():  # pylint: disable=E1101
         folder = folder_to_context_entry(f)
         folders.append(folder)
-    folders_tree = root.tree()  # pylint: disable=E1101
+
+    readable_output = root.tree()  # pylint: disable=E1101
 
     return {
         'Type': entryTypes['note'],
         'Contents': folders,
         'ContentsFormat': formats['json'],
-        'ReadableContentsFormat': formats['text'],
-        'HumanReadable': folders_tree,
+        'ReadableContentsFormat': formats['markdown'],
+        'HumanReadable': readable_output,
         ENTRY_CONTEXT: {
             'EWS.Folders(val.id == obj.id)': folders
         }
@@ -1931,7 +1755,7 @@ def get_folder(folder_path, target_mailbox=None, is_public=None):  # pragma: no 
     return get_entry_for_object(f"Folder {folder_path}", CONTEXT_UPDATE_FOLDER, folder)
 
 
-def folder_to_context_entry(f):
+def folder_to_context_entry(f):  # pragma: no cover
     f_entry = {
         'name': f.name,
         'totalCount': f.total_count,
@@ -1950,7 +1774,7 @@ def check_cs_prereqs():  # pragma: no cover
         raise Exception("This command is only supported for Office 365")
 
 
-def get_cs_error(stderr):
+def get_cs_error(stderr):  # pragma: no cover
     return {
         "Type": entryTypes["error"],
         "ContentsFormat": formats["text"],
@@ -1958,7 +1782,7 @@ def get_cs_error(stderr):
     } if stderr else None
 
 
-def get_cs_status(search_name, status):
+def get_cs_status(search_name, status):  # pragma: no cover
     return {
         'Type': entryTypes['note'],
         'ContentsFormat': formats['text'],
@@ -1967,157 +1791,6 @@ def get_cs_status(search_name, status):
             'EWS.ComplianceSearch(val.Name === obj.Name)': {'Name': search_name, 'Status': status}
         }
     }
-
-
-def start_compliance_search(query):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("startcompliancesearch2.ps1", "w+") as f:
-            f.write(START_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "startcompliancesearch2.ps1", USERNAME, query],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("startcompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    prefix = '"Action status: '
-    pref_ind = stdout.find(prefix)
-    sub_start = pref_ind + len(prefix)
-    sub_end = sub_start + 45
-    search_name = stdout[sub_start:sub_end]
-
-    return {
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['text'],
-        'Contents': f'Search started: {search_name!r}',
-        'EntryContext': {
-            'EWS.ComplianceSearch': {'Name': search_name, 'Status': 'Starting'}
-        }
-    }
-
-
-def get_compliance_search(search_name, show_only_recipients):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("getcompliancesearch2.ps1", "w+") as f:
-            f.write(GET_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "getcompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("getcompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    # Get search status
-    stdout = stdout[len(PASSWORD):]
-    stdout = stdout.split('\n', 1)  # type: ignore
-
-    results = [get_cs_status(search_name, stdout[0])]
-
-    # Parse search results from script output if the search has completed. Output to warroom as table.
-    if stdout[0] == 'Completed':
-        if stdout[1] and stdout[1] != '{}':
-            res = [r[:-1].split(', ') if r[-1] == ',' else r.split(', ') for r in stdout[1][2:-3].split(r'\r\n')]
-            res = [dict(s.split(': ') for s in x) for x in res]
-            entry = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': stdout,
-                'ReadableContentsFormat': formats['markdown'],
-            }
-            if show_only_recipients == 'True':
-                res = [x for x in res if int(x['Item count']) > 0]
-
-                entry['EntryContext'] = {
-                    'EWS.ComplianceSearch(val.Name == obj.Name)': {
-                        'Name': search_name,
-                        'Results': res
-                    }
-                }
-
-            entry['HumanReadable'] = tableToMarkdown('Office 365 Compliance search results', res,
-                                                     ['Location', 'Item count', 'Total size'])
-        else:
-            entry = {
-                'Type': entryTypes['note'],
-                'ContentsFormat': formats['text'],
-                'Contents': stdout,
-                'ReadableContentsFormat': formats['markdown'],
-                'HumanReadable': "The compliance search didn't return any results."
-            }
-
-        results.append(entry)
-    return results
-
-
-def purge_compliance_search(search_name):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("purgecompliancesearch2.ps1", "w+") as f:
-            f.write(PURGE_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "purgecompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        _, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("purgecompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    return get_cs_status(search_name, 'Purging')
-
-
-def check_purge_compliance_search(search_name):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("purgestatuscompliancesearch2.ps1", "w+") as f:
-            f.write(PURGE_STATUS_COMPLIANCE)
-
-        output = subprocess.Popen(["pwsh", "purgestatuscompliancesearch2.ps1", USERNAME, search_name],
-                                  stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-        stdout = stdout[len(PASSWORD):]
-
-    finally:
-        os.remove("purgestatuscompliancesearch2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    return get_cs_status(search_name, 'Purged' if stdout.split('\n')[-2] == 'Completed' else 'Purging')
-
-
-def remove_compliance_search(search_name):  # pragma: no cover
-    check_cs_prereqs()
-    try:
-        with open("removecompliance2.ps1", "w+") as f:
-            f.write(REMOVE_COMPLIANCE)
-
-        output = subprocess.Popen(
-            ["pwsh", "removecompliance2.ps1", USERNAME, search_name],
-            stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, encoding='utf8')
-        stdout, stderr = output.communicate(input=PASSWORD)
-
-    finally:
-        os.remove("removecompliance2.ps1")
-
-    if stderr:
-        return get_cs_error(stderr)
-
-    return get_cs_status(search_name, 'Removed')
 
 
 def get_autodiscovery_config():  # pragma: no cover
@@ -2129,6 +1802,40 @@ def get_autodiscovery_config():  # pragma: no cover
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown('Auto-Discovery Exchange Configuration', config_dict)
     }
+
+
+def format_identifier(identifier):
+    """
+    Exchangelib has a default smtp routing type. If there's no given routingtype, add explicitly so that
+    exchangelib can be searched by secondary email addresses without making cusomter add it manually
+    """
+    return f'smtp:{identifier}' if '@' in identifier and ':' not in identifier else identifier
+
+
+def resolve_name_command(args, protocol):  # pragma: no cover
+    unresolved_entry = format_identifier(args['identifier'])
+    full_contact_data = argToBoolean(args.get('full_contact_data', True))
+    resolved_names = protocol.resolve_names([unresolved_entry], return_full_contact_data=full_contact_data, search_scope='')
+    demisto.debug(f'{len(resolved_names)=}')
+
+    output = []
+    for rn in resolved_names:
+        if isinstance(rn, ErrorNameResolutionNoResults):
+            demisto.info(f'got ErrorNameResolutionNoResults error, {str(rn)}')
+            return 'No results were found.'
+        elif isinstance(rn, tuple):
+            mail, contact = rn
+        else:
+            mail, contact = rn, None
+        mail_context = parse_item_as_dict(mail)
+        if contact:
+            mail_context['FullContactInfo'] = parse_contact(contact)
+        output.append(mail_context)
+    return get_entry_for_object('Resolved Names',
+                                'EWS.ResolvedNames(val.email_address && val.email_address == obj.email_address)',
+                                remove_empty_elements(output),  # noqa: F405
+                                headers=['primary_email_address', 'name', 'mailbox_type', 'routing_type'],
+                                hr_header_changes={'email_address': 'primary_email_address'})
 
 
 def mark_item_as_read(item_ids, operation='read', target_mailbox=None):  # pragma: no cover
@@ -2263,8 +1970,9 @@ def send_email(args):
     attachments, attachments_names = process_attachments(args.get('attachCIDs', ''), args.get('attachIDs', ''),
                                                          args.get('attachNames', ''), args.get('manualAttachObj') or [])
 
+    body_type = args.get('bodyType', args.get('body_type'))
     send_email_to_mailbox(
-        account=account, to=to, subject=subject, body=args.get('body'), bcc=bcc, cc=cc, reply_to=replyTo,
+        account=account, to=to, subject=subject, body=args.get('body'), body_type=body_type, bcc=bcc, cc=cc, reply_to=replyTo,
         html_body=args.get('htmlBody'), attachments=attachments, raw_message=args.get('raw_message'),
         from_address=args.get('from')
     )
@@ -2351,7 +2059,7 @@ def get_protocol():  # pragma: no cover
     return protocol
 
 
-def encode_and_submit_results(obj):
+def encode_and_submit_results(obj):  # pragma: no cover
     demisto.results(obj)
 
 
@@ -2364,7 +2072,6 @@ def sub_main():  # pragma: no cover
     PASSWORD = demisto.params()['credentials']['password']
     config, credentials = prepare()
     args = prepare_args(demisto.args())
-
     fix_2010()
     try:
         protocol = get_protocol()
@@ -2407,28 +2114,22 @@ def sub_main():  # pragma: no cover
             encode_and_submit_results(get_items(**args))
         elif demisto.command() == 'ews-get-folder':
             encode_and_submit_results(get_folder(**args))
-        elif demisto.command() == 'ews-o365-start-compliance-search':
-            encode_and_submit_results(start_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-get-compliance-search':
-            encode_and_submit_results(get_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-purge-compliance-search-results':
-            encode_and_submit_results(purge_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-get-compliance-search-purge-status':
-            encode_and_submit_results(check_purge_compliance_search(**args))
-        elif demisto.command() == 'ews-o365-remove-compliance-search':
-            encode_and_submit_results(remove_compliance_search(**args))
         elif demisto.command() == 'ews-get-autodiscovery-config':
             encode_and_submit_results(get_autodiscovery_config())
         elif demisto.command() == 'ews-expand-group':
             encode_and_submit_results(get_expanded_group(protocol, **args))
         elif demisto.command() == 'ews-mark-items-as-read':
             encode_and_submit_results(mark_item_as_read(**args))
+        elif demisto.command() == 'ews-resolve-name':
+            encode_and_submit_results(resolve_name_command(args, protocol))
         elif demisto.command() == 'ews-get-items-as-eml':
             encode_and_submit_results(get_item_as_eml(**args))
         elif demisto.command() == 'send-mail':
             encode_and_submit_results(send_email(args))
         elif demisto.command() == 'reply-mail':
             encode_and_submit_results(reply_email(args))
+        else:
+            return_error(f'Command: "{demisto.command()}" was not recognized by this integration')
 
     except Exception as e:
         import time
@@ -2517,7 +2218,7 @@ def sub_main():  # pragma: no cover
                 demisto.error(f"EWS: unexpected exception when trying to remove log handler: {ex}")
 
 
-def process_main():
+def process_main():  # pragma: no cover
     """setup stdin to fd=0 so we can read from the server"""
     sys.stdin = os.fdopen(0, "r")
     sub_main()
@@ -2546,5 +2247,5 @@ def main():  # pragma: no cover
 
 
 # python2 uses __builtin__ python3 uses builtins
-if __name__ in ("__builtin__", "builtins", "__main__"):
+if __name__ in ("__builtin__", "builtins", "__main__"):  # pragma: no cover
     main()

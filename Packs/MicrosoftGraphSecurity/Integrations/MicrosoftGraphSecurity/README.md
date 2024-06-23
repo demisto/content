@@ -3,32 +3,49 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph.
 
 ## Authentication
 
-For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)
-Note: eDiscovery commands only support the `Delegated (work or school account)` permission type.
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication)  
+*Note*: [The eDiscovery](#ediscovery-commands) and [Threat Assessment](#threat-assessment-commands) commands are only supported when using the `Authorization Code flow` with `Delegated (work or school account)` permission type.
 
 ## Important Notes:
 - Due to API limitations, the ***message-search-alerts*** command does not filter Office 365 provider alerts.\
 For more information, see: https://github.com/microsoftgraph/security-api-solutions/issues/56.
 - When using Alerts V2, only the following properties are supported as filters for the *Fetched incidents filter* parameter and *filter* arguments: assignedTo, classification, determination, createdDateTime, lastUpdateDateTime, severity, serviceSource and status. See [Microsoft optional query parameters](https://learn.microsoft.com/en-us/graph/api/security-list-alerts_v2?view=graph-rest-1.0&tabs=http#optional-query-parameters).
 - As of July 2023, Microsoft Graph API does **not support** a solution to search for and delete emails. To do this, refer to the [Security & Compliance](https://xsoar.pan.dev/docs/reference/integrations/security-and-compliance) integration. 
+- When using Threat Assessment, only the following properties are supported as filters for *filter* parameter: expectedAssessment, ContentType ,status and requestSource.
+- When using Threat Assessment, for information protection, The following limits apply to any request on /informationProtection:
+    - For email, the resource is a unique network message ID/recipient pair. For example, submitting an email with the same message ID sent to the same person multiple times in a 15 minutes period will trigger the limit per resource limits listed in the following table. However, you can submit up to 150 unique emails every 15 minutes (tenant limit).
+     
+  | **Operation** | **Limit per tenant** | **Limit per resource (email, URL, file)** |
+    | --- | --- | --- |
+    | POST | 150 requests per 15 minutes and 10000 requests per 24 hours. | 1 request per 15 minutes and 3 requests per 24 hours. |
+
 
 ### Required Permissions
 
-Legacy Alerts:
+**Legacy Alerts**:
 
 1. SecurityEvents.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityEvents.ReadWrite.All - Application (required for updating alerts with the command: `msg-update-alert`)
 3. User.Read.All - Application (Only required if using the deprecated commands: `msg-get-user` and `msg-get-users`)
+4. SecurityIncident.Read.All - Delegated or Application (required for the command `msg-list-security-incident`)
+5. SecurityIncident.ReadWrite.All - Delegated or Application (required for the command `msg-update-security-incident`)
+6. ThreatHunting.Read.All - Delegated or Application (required for the command `msg-advanced-hunting`)
 
-Alerts v2:
+**Alerts v2**:
 
 1. SecurityAlert.Read.All - Application (required for the commands: `msg-search-alerts` and `msg-get-alert-details`)
 2. SecurityAlert.ReadWrite.All - Application (required for updating alerts with the commands: `msg-update-alert` and `msg-create-alert-comment`)
 
-EDiscovery:
+**eDiscovery**:
 
 1. eDiscovery.Read.All - Delegated (Required for the `list-ediscovery` commands)
 2. eDiscovery.ReadWrite.All - Delegated (Required for the `create/update-ediscovery` commands)
+
+**Threat Assessment**:
+
+1. Mail.Read.Shared - Delegated
+2. ThreatAssessment.ReadWrite.All - Delegated
+3. User.Read.All - Delegated
 
 ## Configure Microsoft Graph Security on Cortex XSOAR
 
@@ -59,6 +76,7 @@ EDiscovery:
     | Fetch incidents of the given providers only. | Relevant only for Legacy Alerts. Multiple providers can be inserted separated by a comma, for example "\{first_provider\},\{second_provider\}". If empty, incidents of all providers will be fetched. | False |
     | Fetch incidents of the given service sources only. | Relevant only for Alerts v2. Multiple serviceSource can be inserted separated by a comma, for example "microsoftDefenderForEndpoint,microsoftCloudAppSecurity",. If empty, incidents of all providers will be fetched. | False |
     | Fetched incidents filter | Use this field to filter fetched incidents according to any of the alert properties. Overrides the providers list, if given. Filter should be in the format "\{property\} eq '\{property-value\}'". Multiple filters can be applied separated with " and ", for example "createdDateTime eq YYYY-MM-DD and severity eq 'high'". | False |
+    | Microsoft 365 Defender context | Check to save the hunt query result to also in the Microsoft 365 Defender context path. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -362,19 +380,19 @@ Update an editable alert property within any integrated solution to keep alert s
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| alert_id | The Alert ID. Provider-generated GUID/unique identifier. | Required | 
-| assigned_to | Name of the analyst the alert is assigned to for triage, investigation, or remediation. | Optional | 
-| closed_date_time | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY. | Optional | 
-| comments | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management). | Optional | 
-| feedback | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional | 
-| status | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new. | Optional | 
-| tags | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW). | Optional | 
-| vendor_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft. | Optional | 
-| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP. | Optional | 
-| classification | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, benignPositive. | Optional | 
-| determination | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, apt, malware, phishing, other, securityPersonnel, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional | 
+| **Argument Name**    | **Description**                                                                                                                                                                                                                                  | **Required** |
+|----------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
+| alert_id             | The Alert ID. Provider-generated GUID/unique identifier.                                                                                                                                                                                         | Required     | 
+| assigned_to          | Name of the analyst the alert is assigned to for triage, investigation, or remediation.                                                                                                                                                          | Optional     | 
+| closed_date_time     | Relevant only for Legacy Alerts. Time the alert was closed in the string format MM/DD/YYYY.                                                                                                                                                      | Optional     | 
+| comments             | Relevant only for Legacy Alerts. Analyst comments on the alert (for customer alert management).                                                                                                                                                  | Optional     | 
+| feedback             | Relevant only for Legacy Alerts. Analyst feedback on the alert. Possible values are: unknown, truePositive, falsePositive, benignPositive.                                                                                                       | Optional     | 
+| status               | Alert lifecycle status (stage). Possible values are: unknown, newAlert, inProgress, resolved, new.                                                                                                                                               | Optional     | 
+| tags                 | Relevant only for Legacy Alerts. User-definable labels that can be applied to an alert and can serve as filter conditions, for example "HVA", "SAW).                                                                                             | Optional     | 
+| vendor_information   | Relevant only for Legacy Alerts. Details about the security service vendor, for example Microsoft.                                                                                                                                               | Optional     | 
+| provider_information | Relevant only for Legacy Alerts. Details about the security service vendor, for example Windows Defender ATP.                                                                                                                                    | Optional     | 
+| classification       | Relevant only for Alerts v2. Use this field to update the alert's classification. Possible values are: unknown, truePositive, falsePositive, informationalExpectedActivity.                                                                      | Optional     | 
+| determination        | Relevant only for Alerts v2. Use this field to update the alert's determination. Possible values are: unknown, malware, phishing, other, securityTesting, multiStagedAttack, maliciousUserActivity, lineOfBusinessApplication, unwantedSoftware. | Optional     | 
 
 #### Context Output
 
@@ -439,6 +457,8 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
+### eDiscovery Commands
 ### msg-list-ediscovery-cases
 
 ***
@@ -1686,10 +1706,459 @@ There is no context output for this command.
 
 >eDiscovery search e7282eff-ba81-43cb-9027-522a343f6692 was deleted successfully.
 
+
+### Threat Assessment Commands
+### msg-create-mail-assessment-request
+
+***
+Create and retrieve a mail threat assessment.
+
+Note:
+- The message given in the command's argument *message_id* has to contain *X-MS-Exchange-Organization-Network-Message-Id* header in the message or in the *X-MS-Office365-Filtering-Correlation-Id* header in quarantined messages.
+- Delegated Mail permissions (Mail.Read or Mail.Read.Shared) are required to access the mail received by the user (recipient email and message user), which means that if the authenticated user is different from the user specified in the recipient_email and message_user, then *Read and manage permissions* on behalf of the given user need to be added for the authenticated user via [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+
+  - Go to [Microsoft 365 admin center](https://admin.microsoft.com/Adminportal/Home#/users).
+  - Choose the user email which will be provided in the command's arguments.
+  - Click on *Manage product licenses*.
+  - Go to *Mail*.
+  - Under *Mailbox permissions*, click on *Read and manage permissions*.
+  - click on *Add permissions*.
+  - Choose the authenticated user email from the list of given users.
+  - Click on *add*.
+
+#### Base Command
+
+`msg-create-mail-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| recipient_email | The email of the user who recieved the mail. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+| message_user | Message user, the user's id or the user's email. | Required | 
+| message_id | Message id, Message has to contain 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. | Required |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.MailAssessment.ID | String | Request id. |
+| MSGraphMail.MailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.MailAssessment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.MailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.MailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.MailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.MailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.MailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
+| MSGraphMail.MailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
+| MSGraphMail.MailAssessment.MessageID | String | Extracted from the message URI which is The resource URI of the mail message for assessment. | 
+| MSGraphMail.MailAssessment.CreatedUserID | String | User id. | 
+| MSGraphMail.MailAssessment.CreatedUsername | String | Username. | 
+| MSGraphMail.MailAssessment.ResultType | String | Result of the request. | 
+| MSGraphMail.MailAssessment.ResultMessage | String | Message of the result. | 
+
+#### Command example
+
+```!msg-create-mail-assessment-request recipient_email="avishai@demistodev.onmicrosoft.com" expectedAssessment=unblock category=spam user_id=3fa9f28b-eb0e-463a-ba7b-8089fe9991e2 user_message=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEJAADrxRwRjq-zTrN6vWSzK4OWAAY5aBb-AAA=```
+
+#### Context Example
+
+```json
+{
+
+    "id": "11922306-b25b-4605-ff0d-08d772fcf996",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "mail",
+    "expectedAssessment": "unblock",
+    "category": "spam",
+    "status": "completed",
+    "requestSource": "administrator",
+    "recipientEmail": "avishai@demistodev.onmicrosoft.com",
+    "destinationRoutingReason": "notJunk",
+    "messageUri": "",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "No policy was hit."
+        },
+        {
+            "id": "d38c2448-79eb-467e-2495-08d772fdb7d1",
+            "createdDateTime": "2019-11-27T05:50:33.243Z",
+            "resultType": "rescan",
+            "message": "Not Spam"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 11922306-b25b-4605-ff0d-08d772fcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| spam| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|No policy was hit.|
+
+
+### msg-create-email-file-assessment-request
+
+***
+Create and retrieve an email file threat assessment.
+
+Note: File has to contain X-MS-Exchange-Organization-Network-Message-Id header in the message or in the X-MS-Office365-Filtering-Correlation-Id header in quarantined messages.
+
+#### Base Command
+
+`msg-create-email-file-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| recipient_email | The email of the user who recieved the mail. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+| content_data | content of an email file. | Optional | 
+| entry_id | entry id of file uploaded in the war room. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.EmailAssessment.ID | String | Request id. |
+| MSGraphMail.EmailAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.EmailAssessment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.EmailAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.EmailAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.EmailAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.EmailAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.EmailAssessment.RecipientEmail | String | The mail recipient whose policies are used to assess the mail. | 
+| MSGraphMail.EmailAssessment.DestinationRoutingReason | String | The reason for mail routed to its destination. Possible values are: none, mailFlowRule, safeSender, blockedSender, advancedSpamFiltering, domainAllowList, domainBlockList, notInAddressBook, firstTimeSender, autoPurgeToInbox, autoPurgeToJunk, autoPurgeToDeleted, outbound, notJunk, junk. | 
+| MSGraphMail.EmailAssessment.CreatedUserID | String | User id. | 
+| MSGraphMail.EmailAssessment.CreatedUsername | String | Username. | 
+| MSGraphMail.EmailAssessment.ResultType | String | Result of the request. | 
+| MSGraphMail.EmailAssessment.ResultMessage | String | Message of the result. | 
+
+#### Command example
+
+```!msg-create-email-file-assessment-request recipient_email="avishai@demistodev.onmicrosoft.com" expectedAssessment=unblock category=phishing entry_id=12359704829584```
+
+#### Context Example
+
+```json
+{
+
+    "id": "76598306-b25b-4605-ff0d-03kgmtfcf996",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "mail",
+    "expectedAssessment": "unblock",
+    "category": "phishing",
+    "status": "completed",
+    "requestSource": "administrator",
+    "recipientEmail": "avishai@demistodev.onmicrosoft.com",
+    "destinationRoutingReason": "notJunk",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "Phishing attempt."
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Destination Routing Reason|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 76598306-b25b-4605-ff0d-03kgmtfcf996 | "2019-11-27T05:45:14.0962061Z"| mail | unblock| phishing| completed | administrator | avishai@demistodev.onmicrosoft.com |notJunk|63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
+
+
+### msg-create-file-assessment-request
+
+***
+Create and retrieve a file threat assessment.
+
+#### Base Command
+
+`msg-create-file-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_name | The file name. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+| content_data | content of an email file. | Optional | 
+| entry_id | entry id of file uploaded in the war room. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.FileAssessment.ID | String | Request id. |
+| MSGraphMail.FileAssessment.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.FileAssessment.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.FileAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.FileAssessment.Category | String | The threat category. Possible values are: phishing, malware. | 
+| MSGraphMail.FileAssessment.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.FileAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.FileAssessment.FileName | String | The file name. | 
+| MSGraphMail.FileAssessment.CreatedUserID | String | User id. | 
+| MSGraphMail.FileAssessment.CreatedUsername | String | Username. | 
+| MSGraphMail.FileAssessment.ResultType | String | Result of the request. | 
+| MSGraphMail.FileAssessment.ResultMessage | String | Message of the result. | 
+
+#### Command example
+
+```!msg-create-file-assessment-request file_name="test_file.txt" expectedAssessment=block category=phishing entry_id=1235970482958bkf4```
+
+#### Context Example
+
+```json
+{
+
+    "id": "0796306-b456-4605-ff0d-03kgmtfcf876",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "file",
+    "expectedAssessment": "block",
+    "category": "phishing",
+    "status": "completed",
+    "requestSource": "administrator",
+    "fileName": "test_file.txt",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "Phishing attempt."
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|File Name|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 0796306-b456-4605-ff0d-03kgmtfcf876 | "2019-11-27T05:45:14.0962061Z"| file | block| phishing| completed | administrator | test_file.txt |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Phishing attempt.|
+
+### msg-create-url-assessment-request
+
+***
+Create and retrieve url threat assessment.
+
+#### Base Command
+
+`msg-create-url-assessment-request`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | The URL. | Required | 
+| expected_assessment | the expected assessment: blocked or unblocked | Required | 
+| category | The category of the threat: phishing, malware or spam. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.UrlAssessment.ID | String | Request id. |
+| MSGraphMail.UrlAssessment.CreatedDateTime | Date | Created data of the threat assessment request. |
+| MSGraphMail.UrlAssessment.ContentType | String | The content type of threat assessment. |
+| MSGraphMail.UrlAssessment.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. |
+| MSGraphMail.UrlAssessment.Category | String | The threat category. Possible values are: spam, phishing, malware. |
+| MSGraphMail.UrlAssessment.Status | String | The assessment process status. Possible values are: pending, completed. |
+| MSGraphMail.UrlAssessment.RequestSource | String | The source of threat assessment request. Possible values are: administrator. |
+| MSGraphMail.UrlAssessment.Url | String | The url. |
+| MSGraphMail.UrlAssessment.CreatedUserID | String | User id. |
+| MSGraphMail.UrlAssessment.CreatedUsername | String | Username. |
+| MSGraphMail.UrlAssessment.ResultType | String | Result of the request. |
+| MSGraphMail.UrlAssessment.ResultMessage | String | Message of the result. |
+| MSGraphMail.UrlAssessment.RecipientEmail | String | Recipient Email. |
+| MSGraphMail.UrlAssessment.DestinationRoutingReason | String | Destination Routing Reason. |
+
+
+#### Command example
+
+```!msg-create-url-assessment-request url="httpp://support.clean-mx.de/clean-mx/viruses.php" expectedAssessment=block category=malware```
+
+#### Context Example
+
+```json
+{
+
+    "id": "0796306-b456-4605-ff0d-03okmtgcf876",
+    "createdDateTime": "2019-11-27T05:45:14.0962061Z",
+    "contentType": "url",
+    "expectedAssessment": "block",
+    "category": "malware",
+    "status": "completed",
+    "requestSource": "administrator",
+    "url": "httpp://support.clean-mx.de/clean-mx/viruses.php",
+    "createdBy": {
+      "user": {
+        "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+        "displayName": "Ronald Admin"
+      }
+    },
+    "results": [
+        {
+            "id": "63798129-a62c-4f9e-2c6d-08d772fcfb0e",
+            "createdDateTime": "2019-11-27T05:45:16.55Z",
+            "resultType": "checkPolicy",
+            "message": "Malware attempt."
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|URL|Created User ID|Created Username|
+>|---|---|---|---|---|---|---|---|---|---|
+>| 0796306-b456-4605-ff0d-03okmtgcf876 | "2019-11-27T05:45:14.0962061Z"| url | block| malware| completed | administrator | httpp://support.clean-mx.de/clean-mx/viruses.php |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|
+
+
+### msg-list-threat-assessment-requests
+
+***
+Retrieve all threat assessment requests.
+
+#### Base Command
+
+`msg-list-threat-assessment-requests`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_id | The request id. | Optional | 
+| filter | Available fields for filter  are:expectedAssessment,ContentType,status,requestSource. Example:category eq 'malware’| Optional | 
+| order_by | Drop -down: id, createdDateTime, ContentType, expectedAssessment, category, status, requestSource, category | Optional | 
+| sort_order | desc or asc. | Optional |
+| limit | Default is 50. | Optional |
+| next_token | the retrieved token from first run when there's more data to retrieve. | Optional |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.AssessmentRequest.ID | String | Request id. |
+| MSGraphMail.AssessmentRequest.CreatedDateTime | Date | Created data of the threat assessment request. | 
+| MSGraphMail.AssessmentRequest.ContentType | String | The content type of threat assessment. | 
+| MSGraphMail.AssessmentRequest.ExpectedAssessment | String | The expected assessment from submitter. Possible values are: block, unblock. | 
+| MSGraphMail.AssessmentRequest.Category | String | The threat category. Possible values are: spam, phishing, malware. | 
+| MSGraphMail.AssessmentRequest.Status | String | The assessment process status. Possible values are: pending, completed. | 
+| MSGraphMail.AssessmentRequest.RequestSource | String | The source of threat assessment request. Possible values are: administrator. | 
+| MSGraphMail.AssessmentRequest.DestinationRoutingReason | String | The destination Routing Reason. |
+| MSGraphMail.AssessmentRequest.RecipientEmail | String | The recipient email. |
+| MSGraphMail.AssessmentRequest.URL | String | The url. |
+| MSGraphMail.AssessmentRequest.FileName | String | The file name. |
+| MSGraphMail.AssessmentRequest.CreatedUserID | String | User id. | 
+| MSGraphMail.AssessmentRequest.CreatedUsername | String | Username. | 
+| MSGraphMail.AssessmentRequest.ResultType | String | Result of the request. | 
+| MSGraphMail.AssessmentRequest.ResultMessage | String | Message of the result. | 
+| MsGraph.AssessmentRequestNextToken.next_token |String |the next token from the previous run.|
+
+#### Command example
+
+```!msg-list-threat-assessment-requests```
+
+#### Context Example
+
+```json
+{
+  "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#informationProtection/threatAssessmentRequests",
+  "@odata.nextLink": "https://graph.microsoft.com/v1.0/informationProtection/threatAssessmentRequests?$skiptoken=eyJQYWdlQ29va2llIjoiPHJvdyBpZF9JZGVudGl0",
+  "value": [
+    {
+      "@odata.type": "#microsoft.graph.mailAssessmentRequest",
+      "id": "49c5ef5b-1f65-444a-e6b9-08d772ea2059",
+      "createdDateTime": "2019-11-27T03:30:18.6890937Z",
+      "contentType": "mail",
+      "expectedAssessment": "block",
+      "category": "spam",
+      "status": "pending",
+      "requestSource": "administrator",
+      "recipientEmail": "avishaibrandies@microsoft.com",
+      "destinationRoutingReason": "notJunk",
+      "messageUri": "https://graph.microsoft.com/v1.0/users/c52ce8db-3e4b-4181-93c4-7d6b6bffaf60/messages/AAMkADU3MWUxOTU0LWNlOTEt=",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Ronald Admin"
+        }
+      }
+    },
+    {
+      "@odata.type": "#microsoft.graph.emailFileAssessmentRequest",
+      "id": "ab2ad9b3-2213-4091-ae0c-08d76ddbcacf",
+      "createdDateTime": "2019-11-20T17:05:06.4088076Z",
+      "contentType": "mail",
+      "expectedAssessment": "block",
+      "category": "malware",
+      "status": "completed",
+      "requestSource": "administrator",
+      "recipientEmail": "tifc@a830edad9050849EQTPWBJZXODQ.onmicrosoft.com",
+      "destinationRoutingReason": "notJunk",
+      "contentData": "",
+      "createdBy": {
+        "user": {
+          "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+          "displayName": "Ronald Admin"
+        }
+      }
+    }
+  ]
+}
+```
+
+#### Human Readable Output
+>###Next Token is: eyJQYWdlQ29va2llIjoiPHJvdyBpZF9JZGVudGl
+>### Mail assessment request:
+
+>|ID|Created DateTime|Content Type|Expected Assessment|Category|Status|Request Source|Recipient Email|Created User ID|Created Username|destinationRoutingReason|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| 49c5ef5b-1f65-444a-e6b9-08d772ea2059 | "2019-11-27T03:30:18.6890937Z"| mail | block| spam| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|spam attempt.|notJunk|
+>| ab2ad9b3-2213-4091-ae0c-08d76ddbcacf | 2019-11-20T17:05:06.4088076Z| mail | block| malware| pending| administrator | avishaibrandies@microsoft.com |63798129-a62c-4f9e-2c6d-08d772fcfb0e|Malware attempt.|notJunk|
+
+
 ### msg-generate-login-url
 
 ***
-Generate the login URL used for authorization code flow.
+Generate the login URL used for the authorization code flow.
 
 #### Base Command
 
@@ -1705,10 +2174,241 @@ Generate the login URL used for authorization code flow.
 There is no context output for this command.
 
 #### Human Readable Output
-
 >### Authorization instructions
 >1. Click on the [login URL]() to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
 You will be automatically redirected to a link with the following structure:
 >```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
 >2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
 and paste it in your instance configuration under the **Authorization code** parameter.
+
+### msg-advanced-hunting
+
+***
+Advanced hunting is a threat-hunting tool that uses specially constructed queries to examine the past 30 days of event data in Microsoft Graph Security.
+To save result in context to 'Microsoft365Defender' as well, you can check the 'Microsoft 365 Defender context' checkbox in Instance Setting.
+
+#### Base Command
+
+`msg-advanced-hunting`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Advanced hunting query. | Required | 
+| limit | Number of entries. Enter -1 for unlimited query, In case a limit also appears in the query, priority will be given to the query. | Optional | 
+| timeout | The time limit in seconds for the http request to run | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Hunt.query | String | The query used, also acted as a key. | 
+| MsGraph.Hunt.results | Unknown | The results of the query. | 
+| Microsoft365Defender.Hunt.query | String | The query used, also acted as a key. | 
+| Microsoft365Defender.Hunt.results | Unknown | The results of the query. | 
+
+#### Command example
+```!msg-advanced-hunting query=AlertInfo limit=1```
+#### Context Example
+```json
+{
+    "Microsoft365Defender": {
+        "Hunt": {
+            "query": "AlertInfo | limit 1 ",
+            "results": [
+                {
+                    "AlertId": "abc123",
+                    "AttackTechniques": "",
+                    "Category": "Exfiltration",
+                    "DetectionSource": "Microsoft Data Loss Prevention",
+                    "ServiceSource": "Microsoft Data Loss Prevention",
+                    "Severity": "Medium",
+                    "Timestamp": "2024-03-19T03:00:08Z",
+                    "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)"
+                }
+            ]
+        }
+    },
+    "MsGraph": {
+        "Hunt": {
+            "query": "AlertInfo | limit 1 ",
+            "results": [
+                {
+                    "AlertId": "abc123",
+                    "AttackTechniques": "",
+                    "Category": "Exfiltration",
+                    "DetectionSource": "Microsoft Data Loss Prevention",
+                    "ServiceSource": "Microsoft Data Loss Prevention",
+                    "Severity": "Medium",
+                    "Timestamp": "2024-03-19T03:00:08Z",
+                    "Title": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min)"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>See Results Above
+
+### msg-list-security-incident
+
+***
+Get a list of incident objects that Microsoft 365 Defender created to track attacks in an organization. If you want a specific incident, enter an incident ID.
+
+#### Base Command
+
+`msg-list-security-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident's ID. | Optional | 
+| limit | Number of incidents in the list. Maximum is 50. Default is 50. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+| status | The status of the incident. Possible values are: active, redirected, resolved, inProgress, unknownFutureValue, awaitingAction. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| severity | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are: unknown, informational, low, medium, high, unknownFutureValue. | Optional | 
+| classification | The specification for the incident. | Optional | 
+| odata | Filter incidents using 'odata' query. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Incident.assignedTo | string | Owner of the incident, or null if no owner is assigned. Free editable text. | 
+| MsGraph.Incident.classification | string | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
+| MsGraph.Incident.comments | string | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
+| MsGraph.Incident.createdDateTime | date | Time when the incident was first created. | 
+| MsGraph.Incident.customTags | string | Array of custom tags associated with an incident. | 
+| MsGraph.Incident.description | string | Description of the incident. | 
+| MsGraph.Incident.determination | string | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
+| MsGraph.Incident.displayName | string | The incident name. | 
+| MsGraph.Incident.id | number | Unique identifier to represent the incident. | 
+| MsGraph.Incident.incidentWebUrl | string | The URL for the incident page in the Microsoft 365 Defender portal. | 
+| MsGraph.Incident.lastModifiedBy | string | The identity that last modified the incident. | 
+| MsGraph.Incident.lastUpdateDateTime | string | Time when the incident was last updated. | 
+| MsGraph.Incident.redirectIncidentId | string | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
+| MsGraph.Incident.severity | string | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.status | string | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
+| MsGraph.Incident.tenantId | string | The Microsoft Entra tenant in which the alert was created. | 
+| MsGraph.Incident.systemTags | string | The system tags associated with the incident. | 
+
+#### Command example
+```!msg-list-security-incident limit=1```
+#### Context Example
+```json
+{
+    "MsGraph": {
+        "Incident": {
+            "@odata.count": 26176,
+            "value": [
+                {
+                    "Assigned to": null,
+                    "Classification": "unknown",
+                    "Created date time": "2024-03-19T08:08:33.2533333Z",
+                    "Custom tags": "",
+                    "Determination": "unknown",
+                    "Display name": "DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user",
+                    "Severity": "medium",
+                    "Status": "active",
+                    "System tags": "",
+                    "Updated date time": "2024-03-19T08:08:33.36Z",
+                    "id": "12345"
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Incidents:
+>|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| DLP policy (Custom policy) matched for email with subject (Splunk Report: High Or Critical Priority Host With Malware - 15 min) involving one user | 12345 | medium | active |  |  |  | unknown | unknown | 2024-03-19T08:08:33.2533333Z | 2024-03-19T08:08:33.36Z |
+
+
+### msg-update-security-incident
+
+***
+Update the incident with the given ID.
+
+#### Base Command
+
+`msg-update-security-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| incident_id | Incident's ID. | Required | 
+| status | Categorize incidents (as Active, Resolved, or Redirected). Possible values are: active, resolved, redirected, unknownFutureValue. | Optional | 
+| assigned_to | Owner of the incident. | Optional | 
+| determination | Determination of the incident. Possible values are: unknown, apt, malware, securityPersonnel, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, notMalicious. | Optional | 
+| classification | The specification for the incident. Possible values are: unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | Optional | 
+| custom_tags | Array of custom tags associated with an incident. | Optional | 
+| timeout | The time limit in seconds for the http request to run. Default is 50. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MsGraph.Incident.assignedTo | String | Owner of the incident, or null if no owner is assigned. Free editable text. | 
+| MsGraph.Incident.classification | String | The specification for the incident. Possible values are unknown, falsePositive, truePositive, informationalExpectedActivity, unknownFutureValue. | 
+| MsGraph.Incident.comments | String | Array of comments created by the Security Operations \(SecOps\) team when the incident is managed. | 
+| MsGraph.Incident.createdDateTime | Date | Time when the incident was first created. | 
+| MsGraph.Incident.customTags | String | Array of custom tags associated with an incident. | 
+| MsGraph.Incident.description | String | Description of the incident. | 
+| MsGraph.Incident.determination | String | Specifies the determination of the incident. Possible values are unknown, apt, malware, securityPersonnel, securityTesting, unwantedSoftware, other, multiStagedAttack, compromisedUser, phishing, maliciousUserActivity, clean, insufficientData, confirmedUserActivity, lineOfBusinessApplication, unknownFutureValue. | 
+| MsGraph.Incident.displayName | String | The incident name. | 
+| MsGraph.Incident.id | String | Unique identifier to represent the incident. | 
+| MsGraph.Incident.incidentWebUrl | String | The URL for the incident page in the Microsoft 365 Defender portal. | 
+| MsGraph.Incident.lastModifiedBy | String | The identity that last modified the incident. | 
+| MsGraph.Incident.lastUpdateDateTime | Date | Time when the incident was last updated. | 
+| MsGraph.Incident.redirectIncidentId | String | Only populated in case an incident is grouped with another incident, as part of the logic that processes incidents. In such a case, the status property is redirected. | 
+| MsGraph.Incident.severity | String | Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention. Possible values are unknown, informational, low, medium, high, unknownFutureValue. | 
+| MsGraph.Incident.status | String | The status of the incident. Possible values are active, resolved, inProgress, redirected, unknownFutureValue, and awaitingAction. | 
+| MsGraph.Incident.tenantId | String | The Microsoft Entra tenant in which the alert was created. | 
+| MsGraph.Incident.systemTags | String collection | The system tags associated with the incident. | 
+
+#### Command example
+```!msg-update-security-incident incident_id=12345```
+#### Context Example
+```json
+{
+    "MsGraph": {
+        "Incidents": {
+            "assignedTo": "test5",
+            "classification": "unknown",
+            "comments": [],
+            "createdDateTime": "2024-03-17T15:50:31.9033333Z",
+            "customTags": [],
+            "description": null,
+            "determination": "unknown",
+            "displayName": "Exfiltration incident involving one user",
+            "id": "12345",
+            "incidentWebUrl": "https://security.microsoft.com/incidents/12345?tid=abc123",
+            "lastModifiedBy": "Microsoft 365 Defender-AlertCorrelation",
+            "lastUpdateDateTime": "2024-03-19T07:24:34.7066667Z",
+            "redirectIncidentId": null,
+            "severity": "medium",
+            "status": "active",
+            "systemTags": [],
+            "tenantId": "abc123"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated incident No. 12345:
+>|Display name|id|Severity|Status|Assigned to|Custom tags|System tags|Classification|Determination|Created date time|Updated date time|
+>|---|---|---|---|---|---|---|---|---|---|---|
+>| Exfiltration incident involving one user | 12345 | medium | active | test5 |  |  | unknown | unknown | 2024-03-17T15:50:31.9033333Z | 2024-03-19T07:24:34.7066667Z |

@@ -16,12 +16,16 @@ def main():
     ooo_list = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
 
     # check if the list exists, if not create it:
-    if "Item not found" in ooo_list:
+    if any(ele in ooo_list for ele in ["Item not found", 'null']):
         demisto.executeCommand("createList", {"listName": list_name, "listData": []})
-        ooo_list = demisto.executeCommand("getList", {"listName": list_name})[0]["Contents"]
+        result = demisto.executeCommand("getList", {"listName": list_name})
+        if result and isinstance(result, list):
+            ooo_list = result[0]["Contents"]
+        else:
+            ooo_list = ''
 
     # check status of the list, and add/remove the user from it.
-    if not ooo_list:
+    if not ooo_list or ooo_list == 'null':
         list_data = []
     else:
         list_data = json.loads(ooo_list)

@@ -10,7 +10,6 @@ You must add at least a Unit Test function for every XSOAR command
 you are implementing with your integration
 """
 
-import io
 import json
 from datetime import datetime, timezone, timedelta
 
@@ -20,7 +19,7 @@ import demistomock as demisto
 
 
 def util_load_json(path):
-    with io.open("test_data/" + path, mode='r', encoding='utf-8') as f:
+    with open("test_data/" + path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -189,7 +188,11 @@ def test_get_alert(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
+    collections = ["random_collections", "Darkweb Marketplaces", "Data Breaches", "Compromised Endpoints", "Compromised Cards"]
+    incident_severity = ["Low", "Medium", "High"]
+
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, collections, incident_severity, False)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -197,7 +200,7 @@ def test_get_alert(requests_mock):
 
 @pytest.mark.parametrize(
     "offset,limit", [
-        ('0', '1289'), ('0', '-2')
+        ('0', '1789'), ('0', '-2')
     ]
 )
 def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
@@ -221,10 +224,14 @@ def test_limit_cyble_vision_fetch_detail(requests_mock, capfd, offset, limit):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"The limit argument should contain a positive number, up to 1000, limit: {limit}"):
-            cyble_events(client, 'POST', "some_random_token", url, args, "https://test.com", {}, True)
+    collections = ["random_collections", "Darkweb Marketplaces", "Data Breaches", "Compromised Endpoints", "Compromised Cards"]
+    incident_severity = ["Low", "Medium", "High"]
+
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match="The limit argument should contain a positive number,"
+                                               f" up to 1000, limit: {limit}"):
+        cyble_events(client, 'POST', "some_random_token", url, args, {},
+                     False, collections, incident_severity, True)
 
 
 def test_limit_validate_input(capfd):
@@ -236,11 +243,10 @@ def test_limit_validate_input(capfd):
         'from': '0',
         'limit': '-1',
     }
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"The limit argument should contain a positive number,"
-                                 f" up to 1000, limit: {args.get('limit', '50')}"):
-            validate_input(args=args)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match="The limit argument should contain a positive number,"
+                                               f" up to 1000, limit: {args.get('limit', '50')}"):
+        validate_input(args=args)
 
 
 def test_limit_validate_ioc_input(capfd):
@@ -252,11 +258,10 @@ def test_limit_validate_ioc_input(capfd):
         'from': '0',
         'limit': '-1',
     }
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"The limit argument should contain a positive number, "
-                                 f"up to 1000, limit: {args.get('limit', '50')}"):
-            validate_input(args=args, is_iocs=True)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match="The limit argument should contain a positive number,"
+                                               f" up to 1000, limit: {args.get('limit', '50')}"):
+        validate_input(args=args, is_iocs=True)
 
 
 def test_datecheck_validate_input(capfd):
@@ -269,11 +274,10 @@ def test_datecheck_validate_input(capfd):
         'limit': '1'
     }
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match=f"Start date {args.get('start_date')} cannot "
-                                 f"be after end date {args.get('end_date')}"):
-            validate_input(args=args, is_iocs=True)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match=f"Start date {args.get('start_date')} cannot "
+                                         f"be after end date {args.get('end_date')}"):
+        validate_input(args=args, is_iocs=True)
 
 
 def test_edate_validate_input(capfd):
@@ -289,7 +293,7 @@ def test_edate_validate_input(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args)
-        assert str("End date must be a date before or equal to") in str(excinfo)
+        assert "End date must be a date before or equal to" in str(excinfo)
 
 
 def test_date_validate_input(capfd):
@@ -305,7 +309,7 @@ def test_date_validate_input(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args)
-        assert str("cannot be after end date") in str(excinfo)
+        assert "cannot be after end date" in str(excinfo)
 
 
 def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
@@ -338,12 +342,11 @@ def test_offset_cyble_vision_fetch_detail(requests_mock, capfd):
     }
 
     url = "https://test.com/apollo/api/v1/y/alerts"
-    base_url = "https://test.com"
 
-    with capfd.disabled():
-        with pytest.raises(ValueError,
-                           match="The parameter from has a negative value, from: -1'"):
-            cyble_events(client, 'POST', "some_random_token", url, args, base_url, {}, True)
+    with capfd.disabled(), pytest.raises(ValueError,
+                                         match=f"The parameter from has a negative value, from: {args.get('from')}'"):
+        cyble_events(client, 'POST', "some_random_token", url, args, {},
+                     True, [], [], True)
 
 
 def test_get_alert_fetch(requests_mock):
@@ -362,9 +365,49 @@ def test_get_alert_fetch(requests_mock):
         verify=False
     )
 
+    args = {
+        'from': 1,
+        'limit': 1,
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    }
+
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, {}, 'https://test.com', {}, False)
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, [], [], False)
+
+    assert isinstance(response, list)
+    assert len(response) == 1
+
+
+def test_get_alert_fetch2(requests_mock):
+    """
+    Test the module fetch details
+    :param requests_mock:
+    :return:
+    """
+    from CybleEventsV2 import Client, cyble_events
+
+    mock_response_1 = util_load_json("dummy_fetch_incidents.json")
+    requests_mock.post('https://test.com/apollo/api/v1/y/alerts', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'from': 1,
+        'limit': 1,
+        'start_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z"),
+        'end_date': datetime.now(tz=timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+    }
+
+    url = "https://test.com/apollo/api/v1/y/alerts"
+
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, [], [], True)
 
     assert isinstance(response, list)
     assert len(response) == 1
@@ -395,7 +438,8 @@ def test_get_alert_output(requests_mock):
 
     url = "https://test.com/apollo/api/v1/y/alerts"
 
-    response, next = cyble_events(client, 'POST', "some_random_token", url, args, 'https://test.com', {})
+    response, next = cyble_events(client, 'POST', "some_random_token", url, args, {},
+                                  False, [], [], False)
 
     assert isinstance(response, list)
     assert response[0]['alert_group_id'] == '00000000-0000-0000-0000-000000000000'
@@ -416,7 +460,7 @@ def test_data_alert_invalidate_date(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args)
-        assert str("does not match format") in str(excinfo)
+        assert "does not match format" in str(excinfo)
 
 
 def test_data_alert_iocs_date(capfd):
@@ -432,7 +476,7 @@ def test_data_alert_iocs_date(capfd):
     with capfd.disabled():
         with pytest.raises(ValueError) as excinfo:
             validate_input(args=args, is_iocs=True)
-        assert str("unconverted data remains") in str(excinfo)
+        assert "unconverted data remains" in str(excinfo)
 
 
 def test_get_subscribed_services_for_other_alert(requests_mock):
@@ -453,3 +497,35 @@ def test_get_subscribed_services_for_other_alert(requests_mock):
     response = fetch_subscribed_services_alert(client, 'GET', 'https://test.com', "some_random_token").outputs
     assert isinstance(response, list)
     assert response[0]['name'] == 'name_1'
+
+
+def test_update_incident(requests_mock):
+    """
+    Test the module update-remote-system
+    :param requests_mock:
+    :return:
+    """
+    from CybleEventsV2 import Client, cyble_events
+
+    mock_response_1 = util_load_json("dummy_update_incident.json")
+    requests_mock.put('https://test.com/apollo/api/v1/y/alerts', json=mock_response_1)
+
+    client = Client(
+        base_url='https://test.com',
+        verify=False
+    )
+
+    args = {
+        'from': 0,
+        'limit': 1,
+        'start_date': '2023-09-18T00:00:00+00:00',
+        'end_date': '2023-09-19T00:00:00+00:00'
+    }
+
+    url = "https://test.com/apollo/api/v1/y/alerts"
+
+    response, next = cyble_events(client, 'PUT', "some_random_token", url, args, {},
+                                  False, [], [], False)
+
+    assert isinstance(response, list)
+    assert len(response) == 1

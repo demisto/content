@@ -197,8 +197,19 @@
                             ]
                         ],
                         "root": "Headers",
-                        "transformers": []
-                    },
+						"transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]                    },
                     "simple": ""
                 },
                 "Email Return Path": {
@@ -304,6 +315,27 @@
                     },
                     "simple": ""
                 },
+                "Email BCC": {
+					"complex": {
+						"accessor": "",
+						"filters": [],
+						"root": "Bcc",
+						"transformers": [
+                            {
+                                "args": {
+                                    "separator": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": ","
+                                        }
+                                    }
+                                },
+                                "operator": "join"
+                            }
+                        ]
+					},
+					"simple": ""
+				},
                 "Email To Count": {
                     "complex": {
                         "accessor": "",

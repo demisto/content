@@ -1,3 +1,4 @@
+from pytest_mock import MockerFixture
 import demistomock as demisto
 import os
 
@@ -10,6 +11,70 @@ CWD = os.getcwd() if os.getcwd().endswith('test_data') else f'{os.getcwd()}/test
 def open_html_file(file):
     with open(file, encoding='utf-8') as f:
         return f.read()
+
+
+def test_extract_hash_contexts():
+    """
+    Given
+        - A PDF with hashes in it.
+    When
+        - Trying extract the hashes from the file.
+    Then
+        - Validate that the hashes were extracted successfully.
+    """
+    from ReadPDFFileV2 import extract_hash_contexts_from_pdf_file, get_pdf_text
+    expected_hash_contexts = [{'type': 'SHA1', 'value': 'aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d'},
+                              {'type': 'SHA256', 'value': '2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824'},
+                              {'type': 'SHA256', 'value': '8732331accf45f86a00ca823cb24d9806ec1380846a337ac86b4fe6f9d06f1f5'},
+                              {'type': 'MD5', 'value': '5d41402abc4b2a76b9719d911017c592'}]
+    # We first extract the file's text, and then extract the hashes
+    pdf_text_output_path = f"{CWD}/PDFText.txt"
+    file_text = get_pdf_text(f'{CWD}/pdf-with-hashes.pdf', pdf_text_output_path)
+    hash_contexts = extract_hash_contexts_from_pdf_file(file_text)
+    assert len(hash_contexts) == len(expected_hash_contexts)
+    for hash_context in hash_contexts:
+        assert hash_context in expected_hash_contexts
+
+
+def test_hash_contexts_in_return_results():
+    """
+    Given
+        - A hash context to add to the entry context.
+    When
+        - Building the entry context.
+    Then
+        - Validate that the hash context was added.
+    """
+    from ReadPDFFileV2 import build_readpdf_entry_context
+    hashes = {'Hashes': [
+        {'type': 'SHA1', 'value': 'aaf4c61ddcc5e8a2dabede0f3b482cd9aea9434d'},
+        {'type': 'MD5', 'value': '5d41402abc4b2a76b9719d911017c592'}]}
+    entry_context = build_readpdf_entry_context(hashes)
+    assert entry_context == hashes
+
+
+UNESCAPE_CASES = [
+    (False, {'http://example.com/abc&#34;&#160;xmlns:xsi=&#34;http://example.com/abc&#34;&#160;',
+             'http://www.w3.org/1999/xhtml',
+             'http://example.com/abc&#160;http://example.com/abc/v1.2/1_2.xsd&#34;&gt;&#160;'}),
+    (True, {'http://www.w3.org/1999/xhtml', 'http://example.com/abc/v1.2/1_2.xsd', 'http://example.com/abc'})
+]
+
+
+@pytest.mark.parametrize('unescape_url, urls_set', UNESCAPE_CASES)
+def test_urls_are_unescaped(unescape_url, urls_set):
+    """
+    Given
+        - A pdf file that has xml content in it.
+        - Whether to unescape the html content or no.
+    When
+        - Trying extract the urls from an html with escaping characters.
+    Then
+        - The set of urls are extracted correctly, with respect to whether to unescape them or not.
+    """
+    from ReadPDFFileV2 import get_urls_and_emails_from_pdf_html_content
+    urls, _ = get_urls_and_emails_from_pdf_html_content(f'{CWD}/xml_with_urls.pdf', CWD, unescape_url)
+    assert urls == urls_set
 
 
 def test_urls_are_found_correctly(mocker):
@@ -27,6 +92,51 @@ def test_urls_are_found_correctly(mocker):
     assert urls == {'http://www.w3.org/1999/xhtml'}
 
 
+def test_run_shell_command_using_owner_password_error():
+    """
+    Given
+        - An encrypted pdf file (where the user and owner password are not the same) and an owner password.
+    When
+        - Trying to decrypt the file with the owner password using the [upw] flag (which specifies a user password).
+    Then
+        - Raise an exception since we need to use the [opw] flag (which specifies an owner password).
+    """
+    from ReadPDFFileV2 import run_shell_command
+    with pytest.raises(PdfInvalidCredentialsException) as e:
+        run_shell_command("pdfinfo", "-upw", '123456!', f'{CWD}/dummy-with-owner-pass.pdf')
+    assert 'Incorrect password' in str(e)
+
+
+def test_run_shell_command_using_owner_password():
+    """
+    Given
+        - An encrypted pdf file (where the user and owner password are not the same) and an owner password.
+    When
+        - Decrypting the file with the owner password using the [opw] flag (which specifies an owner password).
+    Then
+        - Validate that the function did not raise any errors.
+    """
+    from ReadPDFFileV2 import run_shell_command
+    run_shell_command("pdfinfo", "-opw", '123456!', f'{CWD}/dummy-with-owner-pass.pdf')
+
+
+def test_get_pdf_metadata_using_owner_password(mocker: MockerFixture):
+    """
+    Given
+        - An encrypted pdf file (where the user and owner password are not the same) and an owner password.
+    When
+        - Extracting the metadata of the file.
+    Then
+        - Validate that pdfinfo was first called using the [upw] flag, and then the [opw] flag.
+    """
+    from ReadPDFFileV2 import get_pdf_metadata, run_shell_command
+    run_shell_command_mocker = mocker.patch('ReadPDFFileV2.run_shell_command', side_effect=run_shell_command)
+    get_pdf_metadata(file_path=f'{CWD}/dummy-with-owner-pass.pdf', user_or_owner_password='123456!')
+    assert run_shell_command_mocker.call_count == 2
+    assert run_shell_command_mocker.call_args_list[0][0][0:2] == ('pdfinfo', '-upw')
+    assert run_shell_command_mocker.call_args_list[1][0][0:2] == ('pdfinfo', '-opw')
+
+
 def test_incorrect_authentication():
     """
     Given
@@ -41,7 +151,7 @@ def test_incorrect_authentication():
     dec_file_path = f'{CWD}/decrypted.pdf'
 
     with pytest.raises(PdfInvalidCredentialsException) as e:
-        get_pdf_metadata(file_path=file_path, user_password='12')
+        get_pdf_metadata(file_path=file_path, user_or_owner_password='12')
     assert 'Incorrect password' in str(e)
 
     with pytest.raises(PdfInvalidCredentialsException) as e:
@@ -86,7 +196,7 @@ def test_get_pdf_metadata_with_encrypted(mocker, raw_result, expected_result):
     from ReadPDFFileV2 import get_pdf_metadata
     file_path = f'{CWD}/encrypted.pdf'
     mocker.patch('ReadPDFFileV2.run_shell_command', return_value=raw_result)
-    metadata = get_pdf_metadata(file_path, user_password='1234')
+    metadata = get_pdf_metadata(file_path, user_or_owner_password='1234')
     assert metadata == expected_result
 
 

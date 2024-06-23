@@ -1,0 +1,18 @@
+{
+  "trigger_id": "b1d5915dea04d48f8aff2eff41ad8351",
+  "playbook_id": "Prisma Cloud Remediation - Azure Network Misconfiguration v2",
+  "suggestion_reason": "Recommended for Azure Network Misconfiguration alerts",
+  "description": "This trigger is responsible for handling Azure Network Misconfiguration alerts",
+  "trigger_name": "Azure Network Misconfiguration",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+          "SEARCH_FIELD": "alert_type",
+          "SEARCH_TYPE": "EQ",
+          "SEARCH_VALUE": "Azure Network Misconfiguration"
+        }
+      ]
+    }
+  }
+}

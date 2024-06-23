@@ -1,0 +1,92 @@
+{
+    "items": [
+        {
+            "data": {
+                "actorOrgName": "panw",
+                "eventDescription": "A user attempted logging in",
+                "actorName": "admin@example.com",
+                "actorEmail": "admin@example.com",
+                "authenticationMethod": "Non-Interactive",
+                "trackingId": "123456",
+                "eventStatus": "SUCCESS",
+                "actorOauthClient": "111111",
+                "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "eventCategory": "LOGINS",
+                "actorIp": "1.1.1.1",
+                "actorClientName": "Developer Portal",
+                "actionText": "admin@example.com attempted logging into panw using client (Developer Portal) and Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36. Login status: SUCCESS.  ",
+                "failedReason": " "
+            },
+            "created": "2023-12-19T07:01:26.486Z",
+            "actorOrgId": "222222",
+            "id": "333333",
+            "actorId": "444444"
+        },
+        {
+            "data": {
+                "actorOrgName": "panw",
+                "eventDescription": "A user attempted logging in",
+                "actorName": "admin@example.com",
+                "actorEmail": "admin@example.com",
+                "authenticationMethod": "Non-Interactive",
+                "trackingId": "123456",
+                "eventStatus": "SUCCESS",
+                "actorOauthClient": "111111",
+                "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "eventCategory": "LOGINS",
+                "actorIp": "1.1.1.1",
+                "actorClientName": "Developer Portal",
+                "actionText": "admin@example.com attempted logging into panw using client (Developer Portal) and Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36. Login status: SUCCESS.  ",
+                "failedReason": " "
+            },
+            "created": "2023-12-19T06:49:44.950Z",
+            "actorOrgId": "222222",
+            "id": "555555",
+            "actorId": "444444"
+        },
+        {
+            "data": {
+                "actorOrgName": "panw",
+                "eventDescription": "A user attempted logging in",
+                "actorName": "admin@example.com",
+                "actorEmail": "admin@example.com",
+                "authenticationMethod": "Password",
+                "trackingId": "123456",
+                "eventStatus": "SUCCESS",
+                "actorOauthClient": "C80fb9c7096bd8474627317ee1d7a817eff372ca9c9cee3ce43c3ea3e8d1511ec",
+                "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "eventCategory": "LOGINS",
+                "actorIp": "1.1.1.1",
+                "actorClientName": "Webex Admin Portal",
+                "actionText": "admin@example.com attempted logging into panw using client (Webex Admin Portal) and Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36. Login status: SUCCESS.  ",
+                "failedReason": " "
+            },
+            "created": "2023-12-19T06:48:49.282Z",
+            "actorOrgId": "222222",
+            "id": "666666",
+            "actorId": "444444"
+        },
+        {
+            "data": {
+                "actorOrgName": "panw",
+                "eventDescription": "A user attempted logging in",
+                "actorName": "admin@example.com",
+                "actorEmail": "admin@example.com",
+                "authenticationMethod": "Password",
+                "trackingId": "123456",
+                "eventStatus": "FAILURE",
+                "actorOauthClient": "NA",
+                "actorUserAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+                "eventCategory": "LOGINS",
+                "actorIp": "1.1.1.1",
+                "actorClientName": "NA",
+                "actionText": "admin@example.com attempted logging into panw using client (NA) and Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36. Login status: FAILURE. Invalid Password.",
+                "failedReason": "Invalid Password."
+            },
+            "created": "2023-12-19T06:47:38.173Z",
+            "actorOrgId": "222222",
+            "id": "777777",
+            "actorId": "444444"
+        }
+    ]
+}

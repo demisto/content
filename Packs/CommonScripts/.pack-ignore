@@ -107,6 +107,8 @@ ignore=RN114
 ignore=SC106,BA124
 
 [known_words]
+pyminizip
+pyzipper
 unzipfile
 zipstrings
 extractinbetween
@@ -169,6 +171,12 @@ parses
 yaml
 indexerror
 gTLD
+qr
+cv
+unescape_url
+unescape
+hyperlinks
+Auth
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124
@@ -255,4 +263,7 @@ DockerHardeningCheck
 ignore=BA124
 
 [file:ContextContains.yml]
+ignore=BA124
+
+[file:VerdictResult.yml]
 ignore=BA124

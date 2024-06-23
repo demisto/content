@@ -1,0 +1,121 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Netcraft Incoming Mapper",
+    "mapping": {
+        "Netcraft Attack": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Source": {
+                    "simple": "report_source"
+                },
+                "Country Code": {
+                    "simple": "country_code"
+                },
+                "Detected IPs": {
+                    "simple": "ip"
+                },
+                "Domain Name": {
+                    "simple": "domain"
+                },
+                "Escalation": {
+                    "complex": {
+                        "filters": [],
+                        "root": "escalated",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "input_values": {
+                                        "value": {
+                                            "simple": "0,1"
+                                        }
+                                    },
+                                    "mapped_values": {
+                                        "value": {
+                                            "simple": "false,true"
+                                        }
+                                    }
+                                },
+                                "operator": "MapValuesTransformer"
+                            }
+                        ]
+                    }
+                },
+                "Event Type": {
+                    "simple": "attack_type"
+                },
+                "Group ID": {
+                    "simple": "group_id"
+                },
+                "Hostnames": {
+                    "simple": "hostname"
+                },
+                "Last Update Time": {
+                    "simple": "last_updated"
+                },
+                "Region": {
+                    "simple": "region"
+                },
+                "Source Created By": {
+                    "simple": "reporter"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "Tags": {
+                    "simple": "tags"
+                },
+                "URLs": {
+                    "simple": "${reported_url},${attack_url}"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "date_submitted",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "add_utc_timezone": {},
+                                    "dayfirst": {},
+                                    "fuzzy": {},
+                                    "yearfirst": {}
+                                },
+                                "operator": "DateStringToISOFormat"
+                            }
+                        ]
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": ".",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "conditions": {
+                                        "value": {
+                                            "simple": "[{\"default\": 0}]"
+                                        }
+                                    },
+                                    "flags": {}
+                                },
+                                "operator": "If-Elif"
+                            }
+                        ]
+                    }
+                }
+            }
+        },
+        "dbot_classification_incident_type_all": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {}
+        }
+    },
+    "name": "Netcraft Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

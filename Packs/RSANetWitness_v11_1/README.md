@@ -8,3 +8,7 @@ RSA NetWitness provides your security team with the visibility it needs to detec
 - Get snapshots for a given host.
 - List all related file information from a specific endpoint server and downloading files.
 - Scan a host.
+
+Note: Support for this Pack moved to the partner on 04, 17, 2024.
+
+Please contact the partner directly via the support link on the right.

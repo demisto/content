@@ -12,10 +12,12 @@ import importlib
 import uuid
 import copy
 import random
+import math
+import string
 import urllib.parse
 import WebFileRepository
 import freezegun
-from typing import Dict, Any, Tuple
+from typing import Any
 
 
 def equals_object(obj1, obj2) -> bool:
@@ -31,7 +33,7 @@ def equals_object(obj1, obj2) -> bool:
     elif isinstance(obj1, list):
         # Compare lists (ignore order)
         list2 = list(obj2)
-        for i1, v1 in enumerate(obj1):
+        for _i1, v1 in enumerate(obj1):
             for i2, v2 in enumerate(list2):
                 if equals_object(v1, v2):
                     list2.pop(i2)
@@ -45,20 +47,21 @@ def equals_object(obj1, obj2) -> bool:
 
 class MockIntegrationContext:
     @staticmethod
-    def encode_values(ctx: Dict[str, Any]) -> Dict[str, str]:
+    def encode_values(ctx: dict[str, Any]) -> dict[str, str]:
         return {
             k: json.dumps(v) if k.startswith(os.sep) and not isinstance(v, str) else v
             for k, v in ctx.items()
         }
 
-    def decode_values(ctx: Dict[str, Any]) -> Dict[str, Any]:
+    @staticmethod
+    def decode_values(ctx: dict[str, Any]) -> dict[str, Any]:
         return {
             k: json.loads(v) if k.startswith(os.sep) and isinstance(v, str) else v
             for k, v in ctx.items()
         }
 
     def __init__(self,
-                 ctx: Dict[str, Any],
+                 ctx: dict[str, Any],
                  mocker: Optional[pytest_mock.plugin.MockerFixture] = None):
         self.__ctx = MockIntegrationContext.encode_values(ctx)
         if mocker:
@@ -67,13 +70,13 @@ class MockIntegrationContext:
             mocker.patch('WebFileRepository.set_integration_context',
                          side_effect=self.set_integration_context)
 
-    def get_integration_context(self) -> Dict[str, str]:
+    def get_integration_context(self) -> dict[str, str]:
         return copy.deepcopy(self.__ctx)
 
-    def set_integration_context(self, ctx: Dict[str, str]):
+    def set_integration_context(self, ctx: dict[str, str]):
         self.__ctx = copy.deepcopy(ctx)
 
-    def equals(self, ctx: Dict[str, Any]) -> bool:
+    def equals(self, ctx: dict[str, Any]) -> bool:
         return equals_object(MockIntegrationContext.decode_values(self.__ctx),
                              MockIntegrationContext.decode_values(ctx))
 
@@ -96,7 +99,7 @@ class MockUUID:
 class MockBaseClient:
     def __init__(self,
                  mocker: pytest_mock.plugin.MockerFixture,
-                 headers: Dict[str, str],
+                 headers: dict[str, str],
                  content: bytes = None,
                  json_data: Any = None):
         self.__headers = headers
@@ -110,7 +113,7 @@ class MockBaseClient:
                       error_handler=None, empty_valid_codes=None, **kwargs):
 
         class MockRequestsResponse:
-            def __init__(self, headers: Dict[str, str], content: bytes):
+            def __init__(self, headers: dict[str, str], content: bytes):
                 self.headers = headers
                 self.content = content
 
@@ -225,7 +228,7 @@ def test_process_root_get_status(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename, 'r') as f:
+    with open(integration_context_filename) as f:
         MockIntegrationContext(json.load(f), mocker)
 
     bottle.request = bottle.LocalRequest()
@@ -275,10 +278,10 @@ def test_process_root_get_ls(mocker, integration_context_filename, dir_name, rec
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename, 'r') as f:
+    with open(integration_context_filename) as f:
         MockIntegrationContext(json.load(f), mocker)
 
-    with open(output_filename, 'r') as f:
+    with open(output_filename) as f:
         expected = json.load(f)
 
     bottle.request = bottle.LocalRequest()
@@ -330,7 +333,7 @@ def test_process_root_get_download(mocker, integration_context_filename, path, o
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename, 'r') as f:
+    with open(integration_context_filename) as f:
         MockIntegrationContext(json.load(f), mocker)
 
     bottle.request = bottle.LocalRequest()
@@ -372,7 +375,7 @@ def test_process_root_get_download_not_found(mocker, integration_context_filenam
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename, 'r') as f:
+    with open(integration_context_filename) as f:
         MockIntegrationContext(json.load(f), mocker)
 
     bottle.request = bottle.LocalRequest()
@@ -424,7 +427,7 @@ def test_process_root_get_archive_zip(mocker, integration_context_filename, file
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename, 'r') as f:
+    with open(integration_context_filename) as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
         ctx = integration_context.get_integration_context()
 
@@ -554,7 +557,7 @@ def test_process_root_post_health(mocker,
     rw_auth_header = f"Basic {base64.b64encode(b'RWuser:password').decode()}"
     ro_auth_header = f"Basic {base64.b64encode(b'ROuser:password').decode()}"
 
-    with open(integration_context_filename, 'r') as f:
+    with open(integration_context_filename) as f:
         MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -622,7 +625,7 @@ def test_process_root_post_cleanup(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename, 'r') as f:
+    with open(integration_context_filename) as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -698,7 +701,7 @@ def test_process_root_post_reset(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename_before, 'r') as f:
+    with open(integration_context_filename_before) as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     # Modify the repository
@@ -737,7 +740,7 @@ def test_process_root_post_reset(mocker,
     response = WebFileRepository.process_root_post()
     assert response.status_code == 200
     assert response.body.get('success') is True
-    with open(integration_context_filename_after, 'r') as f:
+    with open(integration_context_filename_after) as f:
         assert integration_context.equals(json.load(f))
 
 
@@ -766,7 +769,7 @@ def test_process_root_post_reset_in_read_only(mocker):
     })
     importlib.reload(WebFileRepository)
 
-    with open('./test_data/integration_ctx_common.json', 'r') as f:
+    with open('./test_data/integration_ctx_common.json') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     # Reset the repository
@@ -834,7 +837,7 @@ def test_process_root_post_delete(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename_before, 'r') as f:
+    with open(integration_context_filename_before) as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -854,7 +857,7 @@ def test_process_root_post_delete(mocker,
     response = WebFileRepository.process_root_post()
     assert response.status_code == 200
     assert response.body.get('success') is True
-    with open(integration_context_filename_after, 'r') as f:
+    with open(integration_context_filename_after) as f:
         assert integration_context.equals(json.load(f))
 
 
@@ -883,7 +886,7 @@ def test_process_root_post_delete_in_read_only(mocker):
     })
     importlib.reload(WebFileRepository)
 
-    with open('./test_data/integration_ctx_common.json', 'r') as f:
+    with open('./test_data/integration_ctx_common.json') as f:
         MockIntegrationContext(json.load(f), mocker)
 
     post_data = json.dumps({
@@ -976,7 +979,7 @@ def test_process_root_post_upload(mocker,
 
     importlib.reload(WebFileRepository)
 
-    with open(integration_context_filename_before, 'r') as f:
+    with open(integration_context_filename_before) as f:
         integration_context = MockIntegrationContext(json.load(f), mocker)
 
     boundary = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
@@ -1032,7 +1035,160 @@ def test_process_root_post_upload(mocker,
     response = WebFileRepository.process_root_post()
     assert response.status_code == 200
     assert response.body.get('success') is True
-    with open(integration_context_filename_after, 'r') as f:
+    with open(integration_context_filename_after) as f:
+        assert integration_context.equals(json.load(f))
+
+
+@freezegun.freeze_time('2022-01-23 12:34:56')
+@pytest.mark.parametrize(
+    argnames=(
+        'integration_context_filename_before, '
+        'file_list, '
+        'upload_dir, '
+        'extract_archive, '
+        'integration_context_filename_after'
+    ),
+    argvalues=[
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.txt'],
+            '/',
+            False,
+            './test_data/upload_out_01.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.txt', './test_data/upload_file.dat'],
+            '/',
+            False,
+            './test_data/upload_out_02.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.zip'],
+            '/',
+            True,
+            './test_data/upload_out_03.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.tar.gz'],
+            '/',
+            True,
+            './test_data/upload_out_04.json',
+        ),
+        (
+            './test_data/integration_ctx_empty.json',
+            ['./test_data/upload_file.txt'],
+            '/あいうえお',
+            False,
+            './test_data/upload_out_05.json',
+        ),
+    ]
+)
+def test_process_root_post_upload_chunk(
+    mocker,
+    integration_context_filename_before,
+    file_list,
+    upload_dir,
+    extract_archive,
+    integration_context_filename_after
+):
+    """
+        Given:
+            The repository and request parameters with 'upload'
+
+        When:
+            Running script to send a request.
+
+        Then:
+            Validate the right response returns.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'longRunningPort': '8000',
+        'rwCredentials': {},
+        'authenticationMethod': None,
+        'publicReadAccess': True,
+        'mimeTypes': None,
+        'mergeMimeTypes': True,
+        'attachmentExtensions': None,
+        'storageProtection': 'read/write',
+        'maxStorageSize': None,
+        'maxSandboxSize': None,
+    })
+    MockUUID(mocker)
+
+    importlib.reload(WebFileRepository)
+
+    with open(integration_context_filename_before) as f:
+        integration_context = MockIntegrationContext(json.load(f), mocker)
+
+    for file_path in file_list:
+        file_name = os.path.basename(file_path)
+        file_size = os.path.getsize(file_path)
+
+        with open(file_path, 'rb') as f:
+            chunk_size = int(file_size / 3)
+            chunk_num = math.ceil(file_size / chunk_size)
+            chunk_sid = ''.join([random.choice(string.digits) for i in range(16)])
+
+            for chunk_index in range(0, chunk_num):
+                chunk = f.read(chunk_size)
+
+                boundary = 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX'
+                post_data = '\r\n'.join([
+                    '',
+                    f'--{boundary}',
+                    f'Content-Disposition: form-data; name="file"; filename="{file_name}"',
+                    'Content-Type: application/octet-stream',
+                    '\r\n',
+                ]).encode()
+
+                post_data += chunk
+
+                if chunk_index < chunk_num - 1:
+                    form_params = {
+                        'q': 'upload',
+                        'dir': upload_dir,
+                        'chunk_sid': chunk_sid,
+                        'chunk_index': chunk_index,
+                    }
+                else:
+                    form_params = {
+                        'q': 'upload',
+                        'dir': upload_dir,
+                        'chunk_sid': chunk_sid,
+                        'chunk_index': chunk_index,
+                        'last_chunk': 'true',
+                        'file_size': file_size,
+                        'extract': 'true' if extract_archive else 'false'
+                    }
+
+                for k, v in form_params.items():
+                    post_data += '\r\n'.join([
+                        '',
+                        f'--{boundary}',
+                        f'Content-Disposition: form-data; name="{k}"',
+                        '',
+                        str(v)
+                    ]).encode()
+
+                post_data += f'\r\n--{boundary}--\r\n'.encode()
+
+                environ = {
+                    'REQUEST_METHOD': 'POST',
+                    'CONTENT_LENGTH': len(post_data),
+                    'PATH_INFO': '/',
+                    'CONTENT_TYPE': f'multipart/form-data; boundary={boundary}',
+                    'wsgi.input': io.BytesIO(post_data),
+                }
+                bottle.request = bottle.LocalRequest(environ)
+
+                response = WebFileRepository.process_root_post()
+                assert response.status_code == 200
+                assert response.body.get('success') is True
+
+    with open(integration_context_filename_after) as f:
         assert integration_context.equals(json.load(f))
 
 
@@ -1323,6 +1479,115 @@ def test_command_reset(mocker):
     assert 'Done' in res
 
 
+@pytest.mark.parametrize(argnames='file_name, '
+                                  'input_data, '
+                                  'encoding, '
+                                  'file_data',
+                         argvalues=[
+                             ('test.txt', 'aaaa', 'utf-8', b'aaaa'),
+                             ('test.txt', None, 'utf-8', b''),
+                             ('test.bin', 'aaaa', 'base64', b'\x69\xA6\x9A'),
+                             ('test.bin', None, 'base64', b''),
+                         ])
+def test_command_upload_as_file(mocker, file_name, input_data, encoding, file_data):
+    """
+        Given:
+            Some data patterns for command_upload_as_file
+
+        When:
+            Running script to send a request.
+
+        Then:
+            Validate the right response returns.
+    """
+    params = {
+        'longRunningPort': '8000',
+        'rwCredentials': {},
+        'authenticationMethod': None,
+        'publicReadAccess': True,
+        'mimeTypes': None,
+        'mergeMimeTypes': True,
+        'attachmentExtensions': None,
+        'storageProtection': 'read/write',
+        'maxStorageSize': None,
+        'maxSandboxSize': None,
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    class _MockBaseClient:
+        def __init__(
+            self,
+            mocker: pytest_mock.plugin.MockerFixture,
+            headers: dict[str, str],
+            file_name: str,
+            file_data: bytes,
+            json_data: Any
+        ):
+            self.__headers = headers
+            self.__file_name = file_name
+            self.__file_data = file_data
+            self.__content = json.dumps(json_data).encode()
+            mocker.patch('CommonServerPython.BaseClient._http_request', side_effect=self._http_request)
+
+        def _http_request(
+            self, method, url_suffix='', full_url=None, headers=None, auth=None, json_data=None,
+            params=None, data=None, files=None, timeout=None, resp_type='json', ok_codes=None,
+            return_empty_response=False, retries=0, status_list_to_retry=None,
+            backoff_factor=5, raise_on_redirect=False, raise_on_status=False,
+            error_handler=None, empty_valid_codes=None, **kwargs
+        ):
+            class MockRequestsResponse:
+                def __init__(self, headers: dict[str, str], content: bytes):
+                    self.headers = headers
+                    self.content = content
+
+                def json(self):
+                    return json.loads(self.content.decode())
+
+            if len(files) != 1:
+                raise ValueError(f'Invalid number of files - {len(files)}')
+
+            key, (name, data) = files[0]
+            if key != 'file':
+                raise ValueError('file is not given.')
+
+            if name != self.__file_name:
+                raise ValueError(f'file name is invalid - {name}')
+
+            if data != self.__file_data:
+                raise ValueError(f'file data is invalid - {data}')
+
+            if resp_type == 'json':
+                return json.loads(self.__content.decode())
+            elif resp_type == 'json':
+                return self.__content
+            else:
+                return MockRequestsResponse(headers=self.__headers,
+                                            content=self.__content)
+
+    client = _MockBaseClient(mocker,
+                             headers={},
+                             file_name=file_name,
+                             file_data=file_data,
+                             json_data={
+                                 'success': True,
+                                 'message': ''
+                             }
+                             )
+    mocker.patch.object(WebFileRepository, 'new_client', return_value=client)
+
+    importlib.reload(WebFileRepository)
+
+    args = assign_params(
+        file_name=file_name,
+        data=input_data,
+        encoding=encoding
+    )
+    settings = WebFileRepository.Settings(params)
+    res = WebFileRepository.command_upload_as_file(args, settings)
+    assert 'Done' in res
+
+
 @pytest.mark.parametrize(argnames='entry_id, '
                                   'name',
                          argvalues=[
@@ -1469,7 +1734,7 @@ def test_command_list_files(mocker,
     }
     mocker.patch.object(demisto, 'params', return_value=params)
 
-    with open(response_filename, 'r') as f:
+    with open(response_filename) as f:
         server_resp = json.load(f)
 
     client = MockBaseClient(mocker, headers={}, json_data=server_resp)
@@ -1486,7 +1751,7 @@ def test_command_list_files(mocker,
     res = WebFileRepository.command_list_files(args, settings).to_context()
     res = {k: v for k, v in res.items() if k in keys}
 
-    with open(results_filename, 'r') as f:
+    with open(results_filename) as f:
         expected = {k: v for k, v in json.load(f).items() if k in keys}
 
     assert equals_object(res, expected)
@@ -1607,6 +1872,88 @@ def test_command_download_file(mocker, path, save_as, content_filename):
     assert res['File'] == filename
 
 
+@pytest.mark.parametrize(argnames='path, '
+                                  'encoding, '
+                                  'content, '
+                                  'results_filename',
+                         argvalues=[
+                             ('/test.dat',
+                              None,
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('/test.dat',
+                              'utf-8',
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('/test.dat',
+                              'base64',
+                              'Hello!',
+                              'test_data/download_as_text_02.json'
+                              ),
+                             ('test.dat',
+                              None,
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('test.dat',
+                              'utf-8',
+                              'Hello!',
+                              'test_data/download_as_text_01.json'
+                              ),
+                             ('test.dat',
+                              'base64',
+                              'Hello!',
+                              'test_data/download_as_text_02.json'
+                              ),
+                         ])
+def test_command_download_as_text(mocker, path, encoding, content, results_filename):
+    """
+        Given:
+            Some patterns of parameters for command_download_as_text
+
+        When:
+            Running script to send a request.
+
+        Then:
+            Validate the right response returns.
+    """
+    params = {
+        'longRunningPort': '8000',
+        'rwCredentials': {},
+        'authenticationMethod': None,
+        'publicReadAccess': True,
+        'mimeTypes': None,
+        'mergeMimeTypes': True,
+        'attachmentExtensions': None,
+        'storageProtection': 'read/write',
+        'maxStorageSize': None,
+        'maxSandboxSize': None,
+    }
+    mocker.patch.object(demisto, 'params', return_value=params)
+
+    client = MockBaseClient(mocker, headers={}, content=content.encode('utf-8'))
+    mocker.patch.object(WebFileRepository, 'new_client', return_value=client)
+
+    importlib.reload(WebFileRepository)
+
+    args = assign_params(
+        path=path,
+        encoding=encoding
+    )
+    settings = WebFileRepository.Settings(params)
+    res = WebFileRepository.command_download_as_text(args, settings).to_context()
+
+    keys = ('Type', 'ContentFormat', 'Contents', 'EntryContext')
+    res = {k: v for k, v in res.items() if k in keys}
+
+    with open(results_filename) as f:
+        expected = {k: v for k, v in json.load(f).items() if k in keys}
+
+    assert equals_object(res, expected)
+
+
 @pytest.mark.parametrize(argnames='save_as, '
                                   'content_filename',
                          argvalues=[
@@ -1713,7 +2060,7 @@ def test_parse_mime_types(mocker,
         Then:
             Validate the right response returns.
     """
-    with open(mimetypes_input_filename, 'r') as f:
+    with open(mimetypes_input_filename) as f:
         input_mime_types = f.read()
 
     mocker.patch.object(demisto, 'params', return_value={
@@ -1729,7 +2076,7 @@ def test_parse_mime_types(mocker,
     })
     importlib.reload(WebFileRepository)
 
-    with open(mimetypes_output_filename, 'r') as f:
+    with open(mimetypes_output_filename) as f:
         assert equals_object(WebFileRepository.SETTINGS.ext_to_mimetype, json.loads(f.read()))
 
 
@@ -2203,7 +2550,7 @@ def test_handle_auth(mocker,
 
     auth_method, _, auth_value = auth_header.partition(' ')
     if auth_method == 'Digest':
-        def __new_nonce(nonce) -> Tuple[int, str]:
+        def __new_nonce(nonce) -> tuple[int, str]:
             gen_time, _, _ = nonce.partition(':')
             return int(gen_time), nonce
 

@@ -4,11 +4,10 @@ from Okta_v2 import Client, get_user_command, get_group_members_command, create_
     create_group_command, assign_group_to_app_command, get_after_tag, delete_limit_param, set_password_command
 import pytest
 import json
-import io
 import requests_mock
 
 
-client = Client(base_url="demisto.com")
+client = Client(base_url="demisto.com", api_token="XXX")
 
 user_data = {
     "id": "TestID",
@@ -602,12 +601,18 @@ okta_zone = {
     "type": "IP"
 }
 
+LOGS = [
+    {'mock_log1': 'mock_value1'},
+    {'mock_log2': 'mock_value2'},
+    {'mock_log3': 'mock_value3'}
+]
+
 
 def util_load_json(path: str):
     """
     Utility to load json data from a local folder.
     """
-    with io.open(path, mode='r', encoding='utf-8') as file:
+    with open(path, encoding='utf-8') as file:
         return json.loads(file.read())
 
 
@@ -766,7 +771,7 @@ def test_get_groups_for_user_command(mocker, args):
     mocker.patch.object(client, 'get_groups_for_user', return_value=group_data)
     _, outputs, _ = get_groups_for_user_command(client, args)
     assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('Group')[0] == expected_context
-    assert 'TestID' == outputs.get('Account(val.ID && val.ID === obj.ID)').get('ID')
+    assert outputs.get('Account(val.ID && val.ID === obj.ID)').get('ID') == 'TestID'
 
 
 @pytest.mark.parametrize(
@@ -848,14 +853,14 @@ def test_get_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     readable, outputs, _ = get_zone_command(client, args)
     assert 'Test Zone' in readable
-    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '') == 'nzoqsmcx1qWYJ6wYF7q0'
 
 
 def test_list_zones_command(mocker):
     mocker.patch.object(client, 'list_zones', return_value=okta_zone)
     readable, outputs, _ = list_zones_command(client, {})
     assert 'Test Zone' in readable
-    assert 'nzoqsmcx1qWYJ6wYF7q0' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('id', '') == 'nzoqsmcx1qWYJ6wYF7q0'
 
 
 @pytest.mark.parametrize(
@@ -869,7 +874,7 @@ def test_update_zone_command(mocker, args):
     mocker.patch.object(client, 'get_zone', return_value=okta_zone)
     mocker.patch.object(client, 'update_zone', return_value=my_okta_zone)
     readable, outputs, _ = update_zone_command(client, args)
-    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '') == 'NewZoneName'
 
 
 @pytest.mark.parametrize(
@@ -882,7 +887,7 @@ def test_create_zone_command(mocker, args):
     my_okta_zone['name'] = 'NewZoneName'
     mocker.patch.object(client, 'create_zone', return_value=okta_zone)
     readable, outputs, _ = create_zone_command(client, args)
-    assert 'NewZoneName' == outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '')
+    assert outputs.get('Okta.Zone(val.id && val.id === obj.id)').get('name', '') == 'NewZoneName'
 
 
 EXPEXTED_LOGS_RESULT = \
@@ -924,10 +929,10 @@ def test_get_readable_logs():
 
 
 def test_set_password_command():
-    client = Client('https://demisto.com')
+    client = Client(base_url='https://demisto.com', api_token="XXX")
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
-        mock_request = m.post('https://demisto.com/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        mock_request = m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2020-03-26T13:57:13.000Z'})
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3'})
 
@@ -936,12 +941,49 @@ def test_set_password_command():
 
 
 def test_set_temp_password_command():
-    client = Client('https://demisto.com')
+    client = Client(base_url='https://demisto.com', api_token="XXX")
     with requests_mock.Mocker() as m:
-        m.get('https://demisto.com/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
-        m.post('https://demisto.com/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
-        m.post('https://demisto.com/users/1234/lifecycle/expire_password', json={})
+        m.get('https://demisto.com/api/v1/users?filter=profile.login eq "test"', json=[{'id': '1234'}])
+        m.post('https://demisto.com/api/v1/users/1234', json={'passwordChanged': '2023-03-22T10:15:26.000Z'})
+        m.post('https://demisto.com/api/v1/users/1234/lifecycle/expire_password', json={})
 
         result = set_password_command(client, {'username': 'test', 'password': 'a1b2c3', 'temporary_password': 'true'})
 
     assert result[0] == 'test password was last changed on 2023-03-22T10:15:26.000Z'
+
+
+def mock_get_paged_results(url_suffix='', query_params=None, max_limit=None):
+    if max_limit:
+        return LOGS[:max_limit]
+    else:
+        return LOGS
+
+
+LOGS_WITH_LIMIT = [
+    (None, 3),
+    (1, 1),
+    (3, 3),
+    (1001, 3)
+]
+
+
+@pytest.mark.parametrize('limit, logs_amount', LOGS_WITH_LIMIT)
+def test_get_logs_command_with_limit(mocker, requests_mock, limit, logs_amount):
+    """
+    Given:
+        - An Okta IAM client object.
+    When:
+        - Calling function okta-get-logs
+        - Events should come in two batches of two events in the first batch, and one event in the second batch.
+    Then:
+        - Ensure three events are returned in incident the correct format.
+    """
+    from Okta_v2 import get_logs_command
+
+    client = Client(base_url='https://demisto.com', api_token="XXX")
+    mocker.patch.object(Client, 'get_paged_results', side_effect=mock_get_paged_results)
+    mocker.patch.object(Client, 'get_readable_logs', side_effect=mock_get_paged_results)
+    requests_mock.get(f"https://demisto.com/api/v1/logs?limit={limit}", json=LOGS[:limit])
+    args = {'limit': limit}
+    readable, outputs, raw_response = get_logs_command(client=client, args=args)
+    assert len(outputs.get('Okta.Logs.Events(val.uuid && val.uuid === obj.uuid)')) == logs_amount

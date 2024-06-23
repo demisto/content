@@ -35,7 +35,6 @@ PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get('credentials', {}).get('identifier', '') or PARAMS.get('bot_id', '')
 BOT_PASSWORD: str = PARAMS.get('credentials', {}).get('password', '') or PARAMS.get('bot_password', '')
 TENANT_ID: str = PARAMS.get('tenant_id', '')
-USE_SSL: bool = not PARAMS.get('insecure', False)
 APP: Flask = Flask('demisto-teams')
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = 'https://graph.microsoft.com'
@@ -104,6 +103,9 @@ MAX_SAMPLES = 10
 TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, }  # See: https://login.microsoftonline.com/error?code=
 REGEX_SEARCH_ERROR_DESC = r"^[^:]*:\s(?P<desc>.*?\.)"
 
+# must be synced with ones in TeamsAsk
+MS_TEAMS_ASK_MESSAGE_KEYS = {'message_text', 'options', 'entitlement', 'investigation_id', 'task_id', 'form_type'}
+
 
 class Handler:
     @staticmethod
@@ -119,6 +121,25 @@ class ErrorHandler:
 
 DEMISTO_LOGGER: Handler = Handler()
 ERROR_LOGGER: ErrorHandler = ErrorHandler()
+
+
+def handle_teams_proxy_and_ssl():
+    proxies = None
+    use_ssl = not PARAMS.get('insecure', False)
+    if not is_demisto_version_ge('8.0.0'):
+        return proxies, use_ssl
+    CRTX_HTTP_PROXY = os.environ.get('CRTX_HTTP_PROXY', None)
+    if CRTX_HTTP_PROXY:
+        proxies = {
+            "http": CRTX_HTTP_PROXY,
+            "https": CRTX_HTTP_PROXY
+        }
+        use_ssl = True
+    return proxies, use_ssl
+
+
+PROXIES, USE_SSL = handle_teams_proxy_and_ssl()
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -164,24 +185,27 @@ def error_parser(resp_err: requests.Response, api: str = 'graph') -> str:
         return resp_err.text
 
 
-def reset_graph_auth(error_codes: list, error_desc: str):
+def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     """
     Reset the Graph API authorization in the integration context.
-    This function clears the current authorization data and informs the user to regenerate the Authorization code.
-    :raises DemistoException: Raised with a message instructing the user to regenerate the authorization code.
+    This function clears the current graph authorization data: current_refresh_token, graph_access_token, graph_valid_until
     """
-    integration_context: dict = get_integration_context()
 
+    integration_context: dict = get_integration_context()
     integration_context['current_refresh_token'] = ''
     integration_context['graph_access_token'] = ''
     integration_context['graph_valid_until'] = ''
     set_integration_context(integration_context)
 
-    demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
-    re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
-    err_str = re_search['desc'] if re_search else ""
-    raise DemistoException(f"{err_str} Please regenerate the 'Authorization code' "
-                           "parameter and then run !microsoft-teams-auth-test to re-authenticate")
+    if error_codes or error_desc:
+        demisto.debug(f"Detected Error: {error_codes}, Successfully reset the current_refresh_token and graph_access_token.")
+        re_search = re.search(REGEX_SEARCH_ERROR_DESC, error_desc)
+        err_str = re_search['desc'] if re_search else ""
+        raise DemistoException(f"{err_str} Please regenerate the 'Authorization code' "
+                               "parameter and then run !microsoft-teams-auth-test to re-authenticate")
+
+    demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
+    return_results(CommandResults(readable_output='Authorization was reset successfully.'))
 
 
 def translate_severity(severity: str) -> float:
@@ -291,8 +315,9 @@ def process_incident_create_message(demisto_user: dict, message: str, request_bo
         created_incident = cast(dict[Any, Any], created_incident)
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
+        server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
         data = f"Successfully created incident {created_incident.get('name', '')}.\n" \
-               f"View it on: {server_link}/#/WarRoom/{created_incident.get('id', '')}"
+               f"View it on: {server_link}/WarRoom/{created_incident.get('id', '')}"
 
     return data
 
@@ -483,6 +508,14 @@ def process_mirror_or_unknown_message(message: str) -> dict:
     return create_adaptive_card(body)
 
 
+def is_teams_ask_message(msg: str) -> bool:
+    try:
+        message: dict = json.loads(msg)
+        return message.keys() == MS_TEAMS_ASK_MESSAGE_KEYS
+    except json.decoder.JSONDecodeError:
+        return False
+
+
 def process_ask_user(message: str) -> dict:
     """
     Processes ask user message and creates adaptive card
@@ -582,7 +615,8 @@ def get_bot_access_token() -> str:
     response: requests.Response = requests.post(
         url,
         data=data,
-        verify=USE_SSL
+        verify=USE_SSL,
+        proxies=PROXIES
     )
     if not response.ok:
         error = error_parser(response, 'bot')
@@ -627,7 +661,7 @@ def get_graph_access_token() -> str:
     if access_token and valid_until and epoch_seconds() < valid_until:
         demisto.debug('Using access token from integration context')
         return access_token
-    tenant_id: str = integration_context.get('tenant_id', '')
+    tenant_id = integration_context.get('tenant_id')
     if not tenant_id:
         raise ValueError(
             'Did not receive tenant ID from Microsoft Teams, verify the messaging endpoint is configured correctly. '
@@ -659,6 +693,7 @@ def get_graph_access_token() -> str:
         url,
         data=data,
         verify=USE_SSL,
+        proxies=PROXIES,
         headers=headers
     )
     if not response.ok:
@@ -713,6 +748,7 @@ def http_request(
             headers=headers,
             json=json_,
             verify=USE_SSL,
+            proxies=PROXIES,
             params=params,
         )
 
@@ -836,13 +872,13 @@ def validate_auth_header(headers: dict) -> bool:
         # Didn't find requested key in cache, getting new keys
         try:
             open_id_url: str = 'https://login.botframework.com/v1/.well-known/openidconfiguration'
-            response: requests.Response = requests.get(open_id_url, verify=USE_SSL)
+            response: requests.Response = requests.get(open_id_url, verify=USE_SSL, proxies=PROXIES)
             if not response.ok:
                 demisto.info(f'Authorization header validation failed to fetch open ID config - {response.reason}')
                 return False
             response_json: dict = response.json()
             jwks_uri: str = response_json.get('jwks_uri', '')
-            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL)
+            keys_response: requests.Response = requests.get(jwks_uri, verify=USE_SSL, proxies=PROXIES)
             if not keys_response.ok:
                 demisto.info(f'Authorization header validation failed to fetch keys - {response.reason}')
                 return False
@@ -886,6 +922,7 @@ def validate_auth_header(headers: dict) -> bool:
 
     audience_claim: str = decoded_payload.get('aud', '')
     if audience_claim != BOT_ID:
+        demisto.debug(f"failed to verify audience_claim: {audience_claim} with BOT_ID: {BOT_ID}.")
         demisto.info('Authorization header validation - failed to verify audience_claim')
         return False
 
@@ -1978,7 +2015,7 @@ def send_message():
     message: str = demisto.args().get('message', '')
     external_form_url_header: str | None = demisto.args().get(
         'external_form_url_header') or demisto.params().get('external_form_url_header')
-    demisto.debug("Send message")
+    demisto.debug(f"in send message with message type: {message_type}, and channel name:{demisto.args().get('channel')}")
     try:
         adaptive_card: dict = json.loads(demisto.args().get('adaptive_card', '{}'))
     except ValueError:
@@ -1992,6 +2029,7 @@ def send_message():
 
     if (not channel_name and message_type in {MESSAGE_TYPES['status_changed'], MESSAGE_TYPES['incident_opened']}) \
             or channel_name == INCIDENT_NOTIFICATIONS_CHANNEL:
+        demisto.debug("Got a notification from server.")
         # Got a notification from server
         channel_name = demisto.params().get('incident_notifications_channel', 'General')
         severity: float = float(demisto.args().get('severity'))
@@ -2040,7 +2078,7 @@ def send_message():
 
     if message:
         entitlement_match: Match[str] | None = re.search(ENTITLEMENT_REGEX, message)
-        if entitlement_match:
+        if entitlement_match and is_teams_ask_message(message):
             # In TeamsAsk process
             adaptive_card = process_ask_user(message)
             conversation = {
@@ -2141,7 +2179,8 @@ def mirror_investigation():
         service_url: str = integration_context.get('service_url', '')
         server_links: dict = demisto.demistoUrls()
         server_link: str = server_links.get('server', '')
-        warroom_link = f'{server_link}/#/WarRoom/{investigation_id}'
+        server_link = server_link + '/#' if not is_demisto_version_ge('8.0.0') else server_link
+        warroom_link = f"{server_link}/WarRoom/{investigation_id}"
         conversation: dict = {
             'type': 'message',
             'text': f'This channel was created to mirror [incident {investigation_id}]({warroom_link}) '
@@ -2708,7 +2747,11 @@ def test_module():
 
 
 def generate_login_url_command():
-    login_url = f'https://login.microsoftonline.com/{TENANT_ID}/oauth2/v2.0/authorize?' \
+    tenant_id = get_integration_context().get('tenant_id')
+    if not tenant_id:
+        raise Exception("Tenant ID is missing, please make sure that the messaging endpoint is configured correctly,"
+                        " and the bot is added to a team.")
+    login_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                 f'response_type=code&scope=offline_access%20https://graph.microsoft.com/.default' \
                 f'&client_id={BOT_ID}&redirect_uri={REDIRECT_URI}'
 
@@ -2752,7 +2795,8 @@ def main():   # pragma: no cover
         'microsoft-teams-create-meeting': create_meeting_command,
         'microsoft-teams-channel-user-list': channel_user_list_command,
         'microsoft-teams-user-remove-from-channel': user_remove_from_channel_command,
-        'microsoft-teams-generate-login-url': generate_login_url_command
+        'microsoft-teams-generate-login-url': generate_login_url_command,
+        'microsoft-teams-auth-reset': reset_graph_auth
 
     }
 

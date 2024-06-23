@@ -1,767 +1,188 @@
 id: Fortigate Test
 version: -1
+vcShouldKeepItemLegacyProdMachine: false
 name: Fortigate Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 12d204b1-baaf-4a20-8287-86a4c64face3
+    taskid: 7b636a56-5408-43a2-84bf-94f777949551
     type: start
     task:
-      id: 12d204b1-baaf-4a20-8287-86a4c64face3
+      id: 7b636a56-5408-43a2-84bf-94f777949551
       version: -1
       name: ""
       iscommand: false
       brand: ""
     nexttasks:
       '#none#':
-      - "18"
+      - "1"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 50
+          "y": -1570
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 26dac48e-6315-4ea9-84b9-6fddf1e98411
+    taskid: daf04c41-0788-48f5-8551-1d96897e2693
     type: regular
     task:
-      id: 26dac48e-6315-4ea9-84b9-6fddf1e98411
-      version: -1
-      name: fortigate-get-addresses
-      script: '|||fortigate-get-addresses'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-    scriptarguments:
-      address: {}
-      name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 370
-        }
-      }
-    note: false
-  "2":
-    id: "2"
-    taskid: 65b28155-589c-4217-850a-9e6007731b18
-    type: regular
-    task:
-      id: 65b28155-589c-4217-850a-9e6007731b18
-      version: -1
-      name: fortigate-get-service-groups
-      script: '|||fortigate-get-service-groups'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "20"
-    scriptarguments:
-      name: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 720
-        }
-      }
-    note: false
-  "3":
-    id: "3"
-    taskid: b73137cf-2849-4592-860c-3d09118a7775
-    type: regular
-    task:
-      id: b73137cf-2849-4592-860c-3d09118a7775
-      version: -1
-      name: fortigate-update-service-group ADD
-      script: '|||fortigate-update-service-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "21"
-    scriptarguments:
-      action:
-        simple: add
-      groupName:
-        simple: Maya
-      serviceName:
-        simple: HTTPS
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-  "4":
-    id: "4"
-    taskid: 26d35ac4-a4c4-415b-8788-eb140bd1ac6f
-    type: regular
-    task:
-      id: 26d35ac4-a4c4-415b-8788-eb140bd1ac6f
-      version: -1
-      name: fortigate-update-service-group REMOVE
-      script: '|||fortigate-update-service-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "22"
-    scriptarguments:
-      action:
-        simple: remove
-      groupName:
-        simple: Maya
-      serviceName:
-        simple: HTTPS
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1420
-        }
-      }
-    note: false
-  "5":
-    id: "5"
-    taskid: 18c289cf-24d7-4594-8b13-c055bfe5a7b9
-    type: regular
-    task:
-      id: 18c289cf-24d7-4594-8b13-c055bfe5a7b9
-      version: -1
-      name: fortigate-get-firewall-service
-      script: '|||fortigate-get-firewall-service'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "23"
-    scriptarguments:
-      serviceName: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1770
-        }
-      }
-    note: false
-  "6":
-    id: "6"
-    taskid: ee4e5228-5a13-4233-8113-45bce2cf36a5
-    type: regular
-    task:
-      id: ee4e5228-5a13-4233-8113-45bce2cf36a5
-      version: -1
-      name: fortigate-create-firewall-service
-      script: '|||fortigate-create-firewall-service'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "24"
-    scriptarguments:
-      serviceName:
-        complex:
-          root: incident
-          accessor: occurred
-          transformers:
-          - operator: toUnix
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: SERVICE
-              suffix: {}
-      tcpRange:
-        simple: "1"
-      udpRange:
-        simple: "2"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2120
-        }
-      }
-    note: false
-  "7":
-    id: "7"
-    taskid: 600b4f04-1645-4369-8d45-a408cf3c01c5
-    type: regular
-    task:
-      id: 600b4f04-1645-4369-8d45-a408cf3c01c5
-      version: -1
-      name: fortigate-get-policy
-      script: '|||fortigate-get-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "25"
-    scriptarguments:
-      policyID: {}
-      policyName: {}
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2470
-        }
-      }
-    note: false
-  "8":
-    id: "8"
-    taskid: 10cff81c-62cd-45f7-8a88-3b46fe9f9d36
-    type: regular
-    task:
-      id: 10cff81c-62cd-45f7-8a88-3b46fe9f9d36
-      version: -1
-      name: fortigate-update-policy
-      script: '|||fortigate-update-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      field:
-        simple: description
-      policyID:
-        simple: "6"
-      value:
-        simple: TEST DEMISTO
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 2820
-        }
-      }
-    note: false
-  "9":
-    id: "9"
-    taskid: 6b1a8476-f5a7-4fa8-83e1-59ab91b3de32
-    type: regular
-    task:
-      id: 6b1a8476-f5a7-4fa8-83e1-59ab91b3de32
-      version: -1
-      name: fortigate-create-policy
-      script: '|||fortigate-create-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "27"
-    scriptarguments:
-      action:
-        simple: accept
-      description:
-        simple: TEST DEMISTO
-      destination:
-        simple: all
-      dstIntf:
-        simple: port2
-      log:
-        simple: disable
-      nat:
-        simple: disable
-      policyName:
-        complex:
-          root: incident
-          accessor: occurred
-          transformers:
-          - operator: toUnix
-          - operator: concat
-            args:
-              prefix:
-                value:
-                  simple: POLICY
-              suffix: {}
-      service:
-        simple: HTTP
-      source:
-        simple: all
-      sourceIntf:
-        simple: port2
-      status:
-        simple: enable
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3170
-        }
-      }
-    note: false
-  "10":
-    id: "10"
-    taskid: 01879da4-0b64-477e-800a-4ad969db97a5
-    type: regular
-    task:
-      id: 01879da4-0b64-477e-800a-4ad969db97a5
-      version: -1
-      name: fortigate-move-policy
-      script: '|||fortigate-move-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "28"
-    scriptarguments:
-      neighbor:
-        simple: "35"
-      policyID:
-        simple: "34"
-      position:
-        simple: after
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3520
-        }
-      }
-    note: false
-  "11":
-    id: "11"
-    taskid: 588f330a-fc24-4dad-829a-ca91443b7b56
-    type: regular
-    task:
-      id: 588f330a-fc24-4dad-829a-ca91443b7b56
-      version: -1
-      name: fortigate-delete-policy
-      script: '|||fortigate-delete-policy'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "29"
-    scriptarguments:
-      policyID:
-        complex:
-          root: Fortigate
-          accessor: Policy.ID
-          transformers:
-          - operator: ReverseList
-          - operator: atIndex
-            args:
-              index:
-                value:
-                  simple: "1"
-          - operator: Stringify
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 3870
-        }
-      }
-    note: false
-  "12":
-    id: "12"
-    taskid: 604078f6-1664-4459-8478-de61b03e5a21
-    type: regular
-    task:
-      id: 604078f6-1664-4459-8478-de61b03e5a21
-      version: -1
-      name: fortigate-get-address-groups
-      script: '|||fortigate-get-address-groups'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "30"
-    scriptarguments:
-      groupName:
-        simple: YARDEN
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4220
-        }
-      }
-    note: false
-  "13":
-    id: "13"
-    taskid: a3e13224-a5e9-4773-8611-08ec5a9bed60
-    type: regular
-    task:
-      id: a3e13224-a5e9-4773-8611-08ec5a9bed60
-      version: -1
-      name: fortigate-update-address-group ADD
-      script: '|||fortigate-update-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "31"
-    scriptarguments:
-      action:
-        simple: add
-      address:
-        simple: all
-      groupName:
-        simple: YARDEN
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4570
-        }
-      }
-    note: false
-  "14":
-    id: "14"
-    taskid: 263b3fac-1ffa-41af-8b52-5807c38c3b8a
-    type: regular
-    task:
-      id: 263b3fac-1ffa-41af-8b52-5807c38c3b8a
-      version: -1
-      name: fortigate-update-address-group REMOVE
-      script: '|||fortigate-update-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "32"
-    scriptarguments:
-      action:
-        simple: remove
-      address:
-        simple: all
-      groupName:
-        simple: YARDEN
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4920
-        }
-      }
-    note: false
-  "15":
-    id: "15"
-    taskid: da4219af-671c-401a-86a2-a14a6b85ded0
-    type: regular
-    task:
-      id: da4219af-671c-401a-86a2-a14a6b85ded0
-      version: -1
-      name: fortigate-create-address-group
-      script: '|||fortigate-create-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "33"
-    scriptarguments:
-      address:
-        simple: all
-      groupName:
-        complex:
-          root: incident
-          accessor: occurred
-          transformers:
-          - operator: toUnix
-          - operator: Stringify
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5270
-        }
-      }
-    note: false
-  "16":
-    id: "16"
-    taskid: 63e0882c-3321-4810-83a4-4a76762083f7
-    type: regular
-    task:
-      id: 63e0882c-3321-4810-83a4-4a76762083f7
-      version: -1
-      name: fortigate-delete-address-group
-      script: '|||fortigate-delete-address-group'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "34"
-    scriptarguments:
-      name:
-        complex:
-          root: incident
-          accessor: occurred
-          transformers:
-          - operator: toUnix
-          - operator: Stringify
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5620
-        }
-      }
-    note: false
-  "17":
-    id: "17"
-    taskid: 25a6c5f2-f150-490c-8a8c-b82af99283e7
-    type: title
-    task:
-      id: 25a6c5f2-f150-490c-8a8c-b82af99283e7
-      version: -1
-      name: TEST done
-      type: title
-      iscommand: false
-      brand: ""
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 5970
-        }
-      }
-    note: false
-  "18":
-    id: "18"
-    taskid: 37df81c8-6121-40ce-8345-b7ccbbbcf9a1
-    type: regular
-    task:
-      id: 37df81c8-6121-40ce-8345-b7ccbbbcf9a1
+      id: daf04c41-0788-48f5-8551-1d96897e2693
       version: -1
       name: DeleteContext
-      scriptName: DeleteContext
+      script: DeleteContext
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "123"
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 195
+          "y": -1420
         }
       }
     note: false
-  "19":
-    id: "19"
-    taskid: af6c42fc-bc35-4c99-81dd-634cb0490841
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: f5c8f899-a3b2-4b76-8553-2b8b7d628a4e
+    type: regular
+    task:
+      id: f5c8f899-a3b2-4b76-8553-2b8b7d628a4e
+      version: -1
+      name: fortigate-get-addresses
+      script: FortiGate|||fortigate-get-addresses
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 210
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 17463d36-84dd-4665-8b39-f92a6896d33a
     type: condition
     task:
-      id: af6c42fc-bc35-4c99-81dd-634cb0490841
+      id: 17463d36-84dd-4665-8b39-f92a6896d33a
       version: -1
-      name: Test get addresses context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "2"
+      - "34"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
               simple: Fortigate.Address.Name
             iscontext: true
           right:
-            value:
-              simple: all
+            value: {}
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 545
+          "y": 400
         }
       }
     note: false
-  "20":
-    id: "20"
-    taskid: e112859d-a385-4385-89fb-af07b096717d
-    type: condition
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: af2ebc9e-84b4-43a0-8509-f1bc79ab886a
+    type: regular
     task:
-      id: e112859d-a385-4385-89fb-af07b096717d
+      id: af2ebc9e-84b4-43a0-8509-f1bc79ab886a
       version: -1
-      name: Test get service groups context
-      type: condition
-      iscommand: false
-      brand: ""
+      name: fortigate-get-service-groups
+      script: FortiGate|||fortigate-get-service-groups
+      type: regular
+      iscommand: true
+      brand: FortiGate
     nexttasks:
-      "yes":
-      - "3"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Fortigate.ServiceGroup.Member.Name
-            iscontext: true
-          right:
-            value:
-              simple: DNS
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 895
-        }
-      }
-    note: false
-  "21":
-    id: "21"
-    taskid: 72106f3f-0910-4e8f-8779-a2a16e35f1b2
-    type: condition
-    task:
-      id: 72106f3f-0910-4e8f-8779-a2a16e35f1b2
-      version: -1
-      name: TEST fortigate-update-service-group ADD context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "4"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              complex:
-                root: Fortigate
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Fortigate.ServiceGroup.Name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Maya
-                accessor: ServiceGroup.Service.Name
-            iscontext: true
-          right:
-            value:
-              simple: HTTPS
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1245
-        }
-      }
-    note: false
-  "22":
-    id: "22"
-    taskid: ebc92d72-76b5-471d-8cbc-f133c5be3a43
-    type: condition
-    task:
-      id: ebc92d72-76b5-471d-8cbc-f133c5be3a43
-      version: -1
-      name: TEST fortigate-update-service-group REMOVE context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
+      '#none#':
       - "5"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.ServiceGroup.Name}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: notContainsGeneral
-          left:
-            value:
-              complex:
-                root: Fortigate
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Fortigate.ServiceGroup.Name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Maya
-                accessor: ServiceGroup.Service.Name
-            iscontext: true
-          right:
-            value:
-              simple: HTTPS
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1595
+          "y": 3480
         }
       }
     note: false
-  "23":
-    id: "23"
-    taskid: aa733746-33f8-4d87-83e5-c79ac5af60fb
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 81625ce3-be30-4f48-891e-73eb82f5bf5b
     type: condition
     task:
-      id: aa733746-33f8-4d87-83e5-c79ac5af60fb
+      id: 81625ce3-be30-4f48-891e-73eb82f5bf5b
       version: -1
-      name: TEST fortigate-get-firewall-service context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -772,76 +193,77 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Fortigate.Service.Name
+              simple: Fortigate.ServiceGroup.Name
             iscontext: true
-          right:
+      - - operator: isNotEmpty
+          left:
             value:
-              simple: ALL
+              simple: Fortigate.ServiceGroup.Member.Name
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1945
+          "y": 3660
         }
       }
     note: false
-  "24":
-    id: "24"
-    taskid: c60e9d02-3d99-4cc6-823d-94c9c4de1c72
-    type: condition
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 8f6b6196-bd2b-4509-82f8-53cf36e00d5c
+    type: regular
     task:
-      id: c60e9d02-3d99-4cc6-823d-94c9c4de1c72
+      id: 8f6b6196-bd2b-4509-82f8-53cf36e00d5c
       version: -1
-      name: TEST fortigate-create-firewall-service context
-      type: condition
-      iscommand: false
-      brand: ""
+      name: fortigate-update-service-group
+      script: FortiGate|||fortigate-update-service-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
     nexttasks:
-      "yes":
+      '#none#':
       - "7"
+    scriptarguments:
+      action:
+        simple: remove
+      groupName:
+        simple: ${Fortigate.ServiceGroup.Name}
+      serviceName:
+        simple: playbook-service-1
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Fortigate.Service.Name
-            iscontext: true
-          right:
-            value:
-              complex:
-                root: incident
-                accessor: occurred
-                transformers:
-                - operator: toUnix
-                - operator: concat
-                  args:
-                    prefix:
-                      value:
-                        simple: SERVICE
-                    suffix: {}
-                - operator: Stringify
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2295
+          "y": 3860
         }
       }
     note: false
-  "25":
-    id: "25"
-    taskid: 67805b27-2b85-4557-860d-cf3d5f19cb58
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: bcc731d2-8fe6-43ab-85e5-ee8923723b82
     type: condition
     task:
-      id: 67805b27-2b85-4557-860d-cf3d5f19cb58
+      id: bcc731d2-8fe6-43ab-85e5-ee8923723b82
       version: -1
-      name: TEST fortigate-get-policy context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -852,217 +274,229 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Fortigate.Policy.Security
+              simple: Fortigate.ServiceGroup.Name
             iscontext: true
-          right:
+      - - operator: isNotEmpty
+          left:
             value:
-              simple: default
+              simple: Fortigate.ServiceGroup.Service.Name
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2645
+          "y": 4030
         }
       }
     note: false
-  "26":
-    id: "26"
-    taskid: 9a9cf917-03d6-4b5e-85c4-e583530910f2
-    type: condition
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 1edbcbff-012c-42ed-8acc-3465c1c1f192
+    type: regular
     task:
-      id: 9a9cf917-03d6-4b5e-85c4-e583530910f2
+      id: 1edbcbff-012c-42ed-8acc-3465c1c1f192
       version: -1
-      name: TESt fortigate-update-policy context
-      type: condition
-      iscommand: false
-      brand: ""
+      name: fortigate-delete-service-group
+      script: FortiGate|||fortigate-delete-service-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
     nexttasks:
-      "yes":
+      '#none#':
       - "9"
+    scriptarguments:
+      groupName:
+        simple: ${Fortigate.ServiceGroup.Name}
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: containsGeneral
-          left:
-            value:
-              simple: Fortigate.Policy.Description
-            iscontext: true
-          right:
-            value:
-              simple: TEST DEMISTO
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2995
+          "y": 4230
         }
       }
     note: false
-  "27":
-    id: "27"
-    taskid: 171c79bd-aa6b-4179-897e-ae860a11580d
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 432da884-1c95-4880-8448-afe00914073e
     type: condition
     task:
-      id: 171c79bd-aa6b-4179-897e-ae860a11580d
+      id: 432da884-1c95-4880-8448-afe00914073e
       version: -1
-      name: TEST fortigate-create-policy context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "10"
+      - "127"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Fortigate.Policy.Name
+              simple: Fortigate.ServiceGroup.Name
             iscontext: true
-          right:
+      - - operator: isNotEmpty
+          left:
             value:
-              complex:
-                root: incident
-                accessor: occurred
-                transformers:
-                - operator: toUnix
-                - operator: concat
-                  args:
-                    prefix:
-                      value:
-                        simple: POLICY
-                    suffix: {}
-                - operator: Stringify
+              simple: Fortigate.ServiceGroup.Deleted
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3345
+          "y": 4410
         }
       }
     note: false
-  "28":
-    id: "28"
-    taskid: faff01ec-3bd1-4797-864d-e3fd0ff97610
-    type: condition
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: fa643404-dba5-4c26-89ca-c0c3b4a75fc5
+    type: regular
     task:
-      id: faff01ec-3bd1-4797-864d-e3fd0ff97610
+      id: fa643404-dba5-4c26-89ca-c0c3b4a75fc5
       version: -1
-      name: TEST fortigate-move-policy context
-      type: condition
-      iscommand: false
-      brand: ""
+      name: fortigate-get-firewall-service
+      script: FortiGate|||fortigate-get-firewall-service
+      type: regular
+      iscommand: true
+      brand: FortiGate
     nexttasks:
-      "yes":
+      '#none#':
       - "11"
+    scriptarguments:
+      serviceName:
+        simple: playbook-service-1
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isTrue
-          left:
-            value:
-              complex:
-                root: Fortigate
-                filters:
-                - - operator: isEqualNumber
-                    left:
-                      value:
-                        simple: Fortigate.Policy.ID
-                      iscontext: true
-                    right:
-                      value:
-                        simple: "34"
-                accessor: Policy.Moved
-            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 3695
+          "y": 2710
         }
       }
     note: false
-  "29":
-    id: "29"
-    taskid: ac464d42-3207-404a-8a53-923d4f2e0edc
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 356c9cd9-3b38-4c1a-849e-6ac2635e77f2
     type: condition
     task:
-      id: ac464d42-3207-404a-8a53-923d4f2e0edc
+      id: 356c9cd9-3b38-4c1a-849e-6ac2635e77f2
       version: -1
-      name: TEST fortigate-delete-policy context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "12"
+      - "94"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isTrue
+      - - operator: isNotEmpty
           left:
             value:
-              simple: Fortigate.Policy.Deleted
-            iscontext: true
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4045
-        }
-      }
-    note: false
-  "30":
-    id: "30"
-    taskid: 37f30844-d288-4038-8894-fe3a927d6bc1
-    type: condition
-    task:
-      id: 37f30844-d288-4038-8894-fe3a927d6bc1
-      version: -1
-      name: TEST fortigate-get-address-groups context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "13"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: Fortigate.AddressGroup.Name
+              simple: Fortigate.Service.Name
             iscontext: true
           right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
             value:
-              simple: YARDEN
+              simple: Fortigate.Service.Ports.TCP
+            iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 4395
+          "y": 2910
         }
       }
     note: false
-  "31":
-    id: "31"
-    taskid: c10c3b1a-6c22-4da8-8e24-6f6cca48e157
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 6bd1986f-e817-406f-8fee-b82ea2ee7163
+    type: regular
+    task:
+      id: 6bd1986f-e817-406f-8fee-b82ea2ee7163
+      version: -1
+      name: fortigate-get-policy
+      script: FortiGate|||fortigate-get-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      policyName:
+        simple: ${Fortigate.Policy.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c1d3034a-d567-4912-816d-796314765c80
     type: condition
     task:
-      id: c10c3b1a-6c22-4da8-8e24-6f6cca48e157
+      id: c1d3034a-d567-4912-816d-796314765c80
       version: -1
-      name: TEST fortigate-update-address-group ADD context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
@@ -1073,141 +507,5168 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Log
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Security
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 98924d58-dbf0-4a00-8878-b60928b36ead
+    type: regular
+    task:
+      id: 98924d58-dbf0-4a00-8878-b60928b36ead
+      version: -1
+      name: fortigate-update-policy
+      script: FortiGate|||fortigate-update-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      field:
+        simple: description
+      policyID:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: Stringify
+      value:
+        simple: helloworld
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 007e477d-1691-4c7c-8ecd-b9a157c8a448
+    type: condition
+    task:
+      id: 007e477d-1691-4c7c-8ecd-b9a157c8a448
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "128"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Log
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5590
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: c3b2c7e4-222d-404b-882b-9ce9d849bd5b
+    type: regular
+    task:
+      id: c3b2c7e4-222d-404b-882b-9ce9d849bd5b
+      version: -1
+      name: fortigate-create-policy
+      script: FortiGate|||fortigate-create-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      action:
+        simple: accept
+      destination:
+        simple: playbook-address-ipv4-2
+      dstIntf:
+        simple: port2
+      policyName:
+        simple: playbook-policy
+      service:
+        simple: playbook-service-1
+      source:
+        simple: playbook-address-ipv4-1
+      sourceIntf:
+        simple: port1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 6eceb192-0be2-428e-8461-5aa13c37cdec
+    type: condition
+    task:
+      id: 6eceb192-0be2-428e-8461-5aa13c37cdec
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination.Address
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Log
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source.Interface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination.Interface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.NAT
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c2ea457a-e19c-4044-8d92-913b5814ff83
+    type: regular
+    task:
+      id: c2ea457a-e19c-4044-8d92-913b5814ff83
+      version: -1
+      name: fortigate-move-policy
+      script: FortiGate|||fortigate-move-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      neighbor:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+          - operator: Stringify
+      policyID:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: Stringify
+      position:
+        simple: after
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 973fc751-cdeb-47d6-8b66-0860f020cdc8
+    type: condition
+    task:
+      id: 973fc751-cdeb-47d6-8b66-0860f020cdc8
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "130"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Moved
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: a90a1a98-791f-4d1b-863b-6d83ed858ca8
+    type: regular
+    task:
+      id: a90a1a98-791f-4d1b-863b-6d83ed858ca8
+      version: -1
+      name: fortigate-delete-policy
+      script: FortiGate|||fortigate-delete-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "21"
+    scriptarguments:
+      policyID:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6620
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: c38baf65-5bf7-433e-88c0-e0203c8e232d
+    type: condition
+    task:
+      id: c38baf65-5bf7-433e-88c0-e0203c8e232d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 59380a0e-8719-4eb8-8e67-36d364b5766c
+    type: regular
+    task:
+      id: 59380a0e-8719-4eb8-8e67-36d364b5766c
+      version: -1
+      name: fortigate-get-address-groups
+      script: FortiGate|||fortigate-get-address-groups
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      groupName:
+        simple: ${Fortigate.AddressGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: c5cc3dfc-b5c7-4330-8b30-2bd932a8ed08
+    type: condition
+    task:
+      id: c5cc3dfc-b5c7-4330-8b30-2bd932a8ed08
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "24"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Member.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.UUID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: b1b0a754-2cd9-49bc-8870-520f885f77b8
+    type: regular
+    task:
+      id: b1b0a754-2cd9-49bc-8870-520f885f77b8
+      version: -1
+      name: fortigate-update-address-group
+      script: FortiGate|||fortigate-update-address-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      action:
+        simple: add
+      address:
+        simple: playbook-address-ipv4-2
+      groupName:
+        simple: ${Fortigate.AddressGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 4a7b8e33-9df1-4335-8eb9-c5bf2ca8b39c
+    type: condition
+    task:
+      id: 4a7b8e33-9df1-4335-8eb9-c5bf2ca8b39c
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "28"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
           left:
             value:
               simple: Fortigate.AddressGroup.Address.Name
             iscontext: true
-          right:
-            value:
-              simple: all
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 4745
-        }
-      }
-    note: false
-  "32":
-    id: "32"
-    taskid: 30829d39-396e-4e84-8e14-69084784b526
-    type: condition
-    task:
-      id: 30829d39-396e-4e84-8e14-69084784b526
-      version: -1
-      name: TEST fortigate-update-address-group REMOVE context
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      "yes":
-      - "15"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: notContainsGeneral
+      - - operator: isNotEmpty
           left:
             value:
-              complex:
-                root: Fortigate
-                filters:
-                - - operator: isEqualString
-                    left:
-                      value:
-                        simple: Fortigate.AddressGroup.Name
-                      iscontext: true
-                    right:
-                      value:
-                        simple: YARDEN
-                accessor: AddressGroup.Address.Name
+              simple: Fortigate.AddressGroup.UUID
             iscontext: true
-          right:
-            value:
-              simple: all
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5095
+          "y": 2060
         }
       }
     note: false
-  "33":
-    id: "33"
-    taskid: 457cf325-0b2c-4bf9-80de-78ea7f5dc067
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 3fb7551a-c1db-47c6-86d7-e0c8be67dbb6
+    type: regular
+    task:
+      id: 3fb7551a-c1db-47c6-86d7-e0c8be67dbb6
+      version: -1
+      name: fortigate-create-address-group
+      script: FortiGate|||fortigate-create-address-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      address:
+        simple: playbook-address-ipv4-1
+      groupName:
+        simple: playbook-address-ipv4-group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 856a137e-d215-40fc-8acb-9158e6c43171
     type: condition
     task:
-      id: 457cf325-0b2c-4bf9-80de-78ea7f5dc067
+      id: 856a137e-d215-40fc-8acb-9158e6c43171
       version: -1
-      name: TEST fortigate-create-address-group context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "16"
+      - "22"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: containsGeneral
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
           left:
             value:
               simple: Fortigate.AddressGroup.Address
             iscontext: true
-          right:
-            value:
-              simple: all
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5445
+          "y": 1190
         }
       }
     note: false
-  "34":
-    id: "34"
-    taskid: 7263ef0d-9ddd-4d2e-8b82-3a91b2e908d3
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 445f5eed-174e-44ba-821d-18ec4eebd469
+    type: regular
+    task:
+      id: 445f5eed-174e-44ba-821d-18ec4eebd469
+      version: -1
+      name: fortigate-delete-address-group
+      script: FortiGate|||fortigate-delete-address-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.AddressGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 34c35c91-439f-4419-8a79-621855f73457
     type: condition
     task:
-      id: 7263ef0d-9ddd-4d2e-8b82-3a91b2e908d3
+      id: 34c35c91-439f-4419-8a79-621855f73457
       version: -1
-      name: TEST fortigate-delete-address-group context
+      name: Verify Outputs
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
       "yes":
-      - "17"
+      - "10"
     separatecontext: false
     conditions:
     - label: "yes"
       condition:
-      - - operator: isTrue
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
           left:
             value:
               simple: Fortigate.AddressGroup.Deleted
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 5795
+          "y": 2480
         }
       }
     note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: a975deef-d19e-4c6d-8cf7-1652b102296a
+    type: regular
+    task:
+      id: a975deef-d19e-4c6d-8cf7-1652b102296a
+      version: -1
+      name: fortigate-get-banned-ips
+      script: FortiGate|||fortigate-get-banned-ips
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 947b9884-0e76-4e77-828b-462f631dfc71
+    type: condition
+    task:
+      id: 947b9884-0e76-4e77-828b-462f631dfc71
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "134"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.IP
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.Created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.Source
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 97d12347-dd5d-47fc-81a2-4bd965f1f826
+    type: regular
+    task:
+      id: 97d12347-dd5d-47fc-81a2-4bd965f1f826
+      version: -1
+      name: fortigate-create-address
+      script: FortiGate|||fortigate-create-address
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      fqdn:
+        simple: helloworld
+      name:
+        simple: playbook-address-ipv4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: b15e2733-87e4-421d-8454-631575e47a00
+    type: condition
+    task:
+      id: b15e2733-87e4-421d-8454-631575e47a00
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.FQDN
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -20
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: aed25e92-c4da-4362-840b-b5f96b0c2191
+    type: regular
+    task:
+      id: aed25e92-c4da-4362-840b-b5f96b0c2191
+      version: -1
+      name: fortigate-delete-address
+      script: FortiGate|||fortigate-delete-address
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: df9b9f4b-e627-469d-8ccc-78a5dbbf0dc7
+    type: condition
+    task:
+      id: df9b9f4b-e627-469d-8ccc-78a5dbbf0dc7
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "26"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 15d01af7-4fc4-46c5-8c4c-1272c0dcee2c
+    type: regular
+    task:
+      id: 15d01af7-4fc4-46c5-8c4c-1272c0dcee2c
+      version: -1
+      name: fortigate-list-firewall-address-ipv4s
+      script: FortiGate|||fortigate-list-firewall-address-ipv4s
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: 0cbaf37e-3939-4b5f-8763-2b3f9251cf1f
+    type: condition
+    task:
+      id: 0cbaf37e-3939-4b5f-8763-2b3f9251cf1f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 71755c5d-68ba-4f24-844e-1049472a3cfd
+    type: regular
+    task:
+      id: 71755c5d-68ba-4f24-844e-1049472a3cfd
+      version: -1
+      name: fortigate-create-firewall-address-ipv4
+      script: FortiGate|||fortigate-create-firewall-address-ipv4
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "135"
+    scriptarguments:
+      country:
+        simple: il
+      name:
+        simple: playbook-address-ipv4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 56503a39-d4b5-44dd-8a08-0c53e81ac1b6
+    type: regular
+    task:
+      id: 56503a39-d4b5-44dd-8a08-0c53e81ac1b6
+      version: -1
+      name: fortigate-update-firewall-address-ipv4
+      script: FortiGate|||fortigate-update-firewall-address-ipv4
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "137"
+    scriptarguments:
+      comment:
+        simple: helloworld
+      name:
+        simple: ${Fortigate.Address.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: 771b4c12-9912-4c36-86ed-555d4d1bbf56
+    type: regular
+    task:
+      id: 771b4c12-9912-4c36-86ed-555d4d1bbf56
+      version: -1
+      name: fortigate-delete-firewall-address-ipv4
+      script: FortiGate|||fortigate-delete-firewall-address-ipv4
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "136"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: eb38c727-7433-4b07-8373-9432483df53a
+    type: regular
+    task:
+      id: eb38c727-7433-4b07-8373-9432483df53a
+      version: -1
+      name: fortigate-list-firewall-address-ipv6s
+      script: FortiGate|||fortigate-list-firewall-address-ipv6s
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "45"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address6.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: 5266478d-3259-416d-863d-f93e63e8322e
+    type: condition
+    task:
+      id: 5266478d-3259-416d-863d-f93e63e8322e
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "48"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: 07c1a5ad-1680-4076-8f4c-ab782293acb0
+    type: regular
+    task:
+      id: 07c1a5ad-1680-4076-8f4c-ab782293acb0
+      version: -1
+      name: fortigate-create-firewall-address-ipv6
+      script: FortiGate|||fortigate-create-firewall-address-ipv6
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      country:
+        simple: il
+      name:
+        simple: playbook-address-ipv6
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: a38f9f6e-657b-410f-85f0-01583e66c55f
+    type: condition
+    task:
+      id: a38f9f6e-657b-410f-85f0-01583e66c55f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "44"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 25a25040-313b-4d56-8b86-bfaba5b4a14c
+    type: regular
+    task:
+      id: 25a25040-313b-4d56-8b86-bfaba5b4a14c
+      version: -1
+      name: fortigate-update-firewall-address-ipv6
+      script: FortiGate|||fortigate-update-firewall-address-ipv6
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "138"
+    scriptarguments:
+      comment:
+        simple: helloworld
+      name:
+        simple: ${Fortigate.Address6.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: 7334ea87-4cce-4b5d-8230-8147330a831f
+    type: regular
+    task:
+      id: 7334ea87-4cce-4b5d-8230-8147330a831f
+      version: -1
+      name: fortigate-delete-firewall-address-ipv6
+      script: FortiGate|||fortigate-delete-firewall-address-ipv6
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "51"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address6.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: 74df9f8a-4239-40f0-8a2a-28d36c49b6ae
+    type: condition
+    task:
+      id: 74df9f8a-4239-40f0-8a2a-28d36c49b6ae
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.Address6.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "52":
+    id: "52"
+    taskid: 32440a69-309e-4e43-8e6c-d91950e6b8e9
+    type: regular
+    task:
+      id: 32440a69-309e-4e43-8e6c-d91950e6b8e9
+      version: -1
+      name: fortigate-list-firewall-address-ipv4-multicasts
+      script: FortiGate|||fortigate-list-firewall-address-ipv4-multicasts
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.AddressMulticast.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: 0f1d82bb-e4fe-4dce-83c9-0802bc5ce6ae
+    type: condition
+    task:
+      id: 0f1d82bb-e4fe-4dce-83c9-0802bc5ce6ae
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "56"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressMulticast.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressMulticast.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressMulticast.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: a454ea1b-f53c-4a96-8d99-bc10a0564e45
+    type: regular
+    task:
+      id: a454ea1b-f53c-4a96-8d99-bc10a0564e45
+      version: -1
+      name: fortigate-create-firewall-address-ipv4-multicast
+      script: FortiGate|||fortigate-create-firewall-address-ipv4-multicast
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      final_ip:
+        simple: 0.0.0.0
+      first_ip:
+        simple: 0.0.0.0
+      name:
+        simple: playbook-address-ipv4-multicast
+      type:
+        simple: Broadcast Subnet
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 73386dfa-fcc0-46eb-8079-7e5e00ef2949
+    type: condition
+    task:
+      id: 73386dfa-fcc0-46eb-8079-7e5e00ef2949
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "52"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressMulticast.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 10530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: cf5294ea-078d-447c-8380-a9235e489b64
+    type: regular
+    task:
+      id: cf5294ea-078d-447c-8380-a9235e489b64
+      version: -1
+      name: fortigate-update-firewall-address-ipv4-multicast
+      script: FortiGate|||fortigate-update-firewall-address-ipv4-multicast
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      comment:
+        simple: helloworld
+      name:
+        simple: ${Fortigate.AddressMulticast.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11150
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: f5c6c1b3-20d6-4726-8d8f-605913d7dc36
+    type: condition
+    task:
+      id: f5c6c1b3-20d6-4726-8d8f-605913d7dc36
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "58"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressMulticast.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 7b8f35dc-fa6b-41bb-8756-7e1727376ad2
+    type: regular
+    task:
+      id: 7b8f35dc-fa6b-41bb-8756-7e1727376ad2
+      version: -1
+      name: fortigate-delete-firewall-address-ipv4-multicast
+      script: FortiGate|||fortigate-delete-firewall-address-ipv4-multicast
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "59"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.AddressMulticast.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: f9c9f004-a57e-455a-8b9b-f1f336537687
+    type: condition
+    task:
+      id: f9c9f004-a57e-455a-8b9b-f1f336537687
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "62"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressMulticast.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.AddressMulticast.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "60":
+    id: "60"
+    taskid: 53106a59-db6d-4446-8fda-cdb7430687f4
+    type: regular
+    task:
+      id: 53106a59-db6d-4446-8fda-cdb7430687f4
+      version: -1
+      name: fortigate-list-firewall-address-ipv6-multicasts
+      script: FortiGate|||fortigate-list-firewall-address-ipv6-multicasts
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "61"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address6Multicast.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 85f19ed4-ad26-4353-8363-45b9018492ba
+    type: condition
+    task:
+      id: 85f19ed4-ad26-4353-8363-45b9018492ba
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "64"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Multicast.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Multicast.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: ce1df1d1-ee58-4404-8ea7-cf924395ba2d
+    type: regular
+    task:
+      id: ce1df1d1-ee58-4404-8ea7-cf924395ba2d
+      version: -1
+      name: fortigate-create-firewall-address-ipv6-multicast
+      script: FortiGate|||fortigate-create-firewall-address-ipv6-multicast
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "63"
+    scriptarguments:
+      address:
+        simple: 'ff00::'
+      mask:
+        simple: "8"
+      name:
+        simple: playbook-address-ipv6-multicast
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 11940
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: be85086b-dd99-4349-8dfb-b4ed0b020c51
+    type: condition
+    task:
+      id: be85086b-dd99-4349-8dfb-b4ed0b020c51
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "60"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Multicast.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12140
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: b8bf232e-d2ca-4be4-87a0-5fbee06dba1d
+    type: regular
+    task:
+      id: b8bf232e-d2ca-4be4-87a0-5fbee06dba1d
+      version: -1
+      name: fortigate-update-firewall-address-ipv6-multicast
+      script: FortiGate|||fortigate-update-firewall-address-ipv6-multicast
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "65"
+    scriptarguments:
+      comment:
+        simple: helloworld
+      name:
+        simple: ${Fortigate.Address6Multicast.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "65":
+    id: "65"
+    taskid: 46a31086-62bb-484e-82e8-e705863d83c1
+    type: condition
+    task:
+      id: 46a31086-62bb-484e-82e8-e705863d83c1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "66"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Multicast.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 12930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "66":
+    id: "66"
+    taskid: 7401aa9c-2638-4a0a-8338-d05b2f44e423
+    type: regular
+    task:
+      id: 7401aa9c-2638-4a0a-8338-d05b2f44e423
+      version: -1
+      name: fortigate-delete-firewall-address-ipv6-multicast
+      script: FortiGate|||fortigate-delete-firewall-address-ipv6-multicast
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "67"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address6Multicast.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "67":
+    id: "67"
+    taskid: 163679de-47e7-46fc-8336-f92a6bf6f7fe
+    type: condition
+    task:
+      id: 163679de-47e7-46fc-8336-f92a6bf6f7fe
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Multicast.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.Address6Multicast.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "68":
+    id: "68"
+    taskid: e2a310a8-e8e0-4622-81c0-fbe238664200
+    type: regular
+    task:
+      id: e2a310a8-e8e0-4622-81c0-fbe238664200
+      version: -1
+      name: fortigate-list-firewall-address-ipv4-groups
+      script: FortiGate|||fortigate-list-firewall-address-ipv4-groups
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "69"
+    scriptarguments:
+      groupName:
+        simple: ${Fortigate.AddressGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "69":
+    id: "69"
+    taskid: 9adac010-dfb8-4a98-87b2-2f2a60cee604
+    type: condition
+    task:
+      id: 9adac010-dfb8-4a98-87b2-2f2a60cee604
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "72"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Type
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "70":
+    id: "70"
+    taskid: 6b8f36d0-8393-4ef0-82c8-b6d56b74e80f
+    type: regular
+    task:
+      id: 6b8f36d0-8393-4ef0-82c8-b6d56b74e80f
+      version: -1
+      name: fortigate-create-firewall-address-ipv4-group
+      script: FortiGate|||fortigate-create-firewall-address-ipv4-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "71"
+    scriptarguments:
+      address:
+        simple: playbook-address-ipv4-1
+      groupName:
+        simple: playbook-address-ipv4-group
+      type:
+        simple: group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13510
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "71":
+    id: "71"
+    taskid: 214eb8b6-9087-4eb9-8e94-4835e3fb1900
+    type: condition
+    task:
+      id: 214eb8b6-9087-4eb9-8e94-4835e3fb1900
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "68"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 13710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "72":
+    id: "72"
+    taskid: 9a343c99-c8d2-4ed8-8951-4f8ac28eb2b6
+    type: regular
+    task:
+      id: 9a343c99-c8d2-4ed8-8951-4f8ac28eb2b6
+      version: -1
+      name: fortigate-update-firewall-address-ipv4-group
+      script: FortiGate|||fortigate-update-firewall-address-ipv4-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "73"
+    scriptarguments:
+      action:
+        simple: add
+      address:
+        simple: playbook-address-ipv4-2
+      groupName:
+        simple: ${Fortigate.AddressGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "73":
+    id: "73"
+    taskid: 3026c627-8522-4c1b-845a-888aa443e0be
+    type: condition
+    task:
+      id: 3026c627-8522-4c1b-845a-888aa443e0be
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "74"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "74":
+    id: "74"
+    taskid: b5017241-51e0-4881-8a58-dd45b417d5cd
+    type: regular
+    task:
+      id: b5017241-51e0-4881-8a58-dd45b417d5cd
+      version: -1
+      name: fortigate-delete-firewall-address-ipv4-group
+      script: FortiGate|||fortigate-delete-firewall-address-ipv4-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "75"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.AddressGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "75":
+    id: "75"
+    taskid: 4cc6becd-1c98-40b7-8470-836d64bcc725
+    type: condition
+    task:
+      id: 4cc6becd-1c98-40b7-8470-836d64bcc725
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "78"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.AddressGroup.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 14920
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "76":
+    id: "76"
+    taskid: fcfd7b0b-a35b-4bd5-80e9-72b9f15ac1b2
+    type: regular
+    task:
+      id: fcfd7b0b-a35b-4bd5-80e9-72b9f15ac1b2
+      version: -1
+      name: fortigate-list-firewall-address-ipv6-groups
+      script: FortiGate|||fortigate-list-firewall-address-ipv6-groups
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "77"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address6Group.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15490
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "77":
+    id: "77"
+    taskid: d8f77812-bbd8-4886-8099-9d1295c412e1
+    type: condition
+    task:
+      id: d8f77812-bbd8-4886-8099-9d1295c412e1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "80"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Group.UUID
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Group.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Group.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "78":
+    id: "78"
+    taskid: ba044015-7601-4d08-8792-1137a2cc8e07
+    type: regular
+    task:
+      id: ba044015-7601-4d08-8792-1137a2cc8e07
+      version: -1
+      name: fortigate-create-firewall-address-ipv6-group
+      script: FortiGate|||fortigate-create-firewall-address-ipv6-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "79"
+    scriptarguments:
+      name:
+        simple: playbook-address-ipv6-group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15100
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "79":
+    id: "79"
+    taskid: 12c9e06d-43fa-49d3-8b74-6b701230a2d1
+    type: condition
+    task:
+      id: 12c9e06d-43fa-49d3-8b74-6b701230a2d1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "76"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Group.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15300
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "80":
+    id: "80"
+    taskid: a2b7ef90-aec7-403b-817a-cd333a1ccfda
+    type: regular
+    task:
+      id: a2b7ef90-aec7-403b-817a-cd333a1ccfda
+      version: -1
+      name: fortigate-update-firewall-address-ipv6-group
+      script: FortiGate|||fortigate-update-firewall-address-ipv6-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "81"
+    scriptarguments:
+      comment:
+        simple: helloworld
+      name:
+        simple: ${Fortigate.Address6Group.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 15880
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "81":
+    id: "81"
+    taskid: 6085507b-9827-48a1-811f-9cb15be68f2a
+    type: condition
+    task:
+      id: 6085507b-9827-48a1-811f-9cb15be68f2a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "82"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Group.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: 5f15b30a-a1a2-43c0-84c8-cbe29096b6f9
+    type: regular
+    task:
+      id: 5f15b30a-a1a2-43c0-84c8-cbe29096b6f9
+      version: -1
+      name: fortigate-delete-firewall-address-ipv6-group
+      script: FortiGate|||fortigate-delete-firewall-address-ipv6-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "83"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Address6Group.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "83":
+    id: "83"
+    taskid: 525fdef7-2d63-4610-82b2-edb1597190f3
+    type: condition
+    task:
+      id: 525fdef7-2d63-4610-82b2-edb1597190f3
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "86"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6Group.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.Address6Group.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "84":
+    id: "84"
+    taskid: b3d12969-fc78-4cf5-8272-9c923b93db2c
+    type: regular
+    task:
+      id: b3d12969-fc78-4cf5-8272-9c923b93db2c
+      version: -1
+      name: fortigate-list-firewall-services
+      script: FortiGate|||fortigate-list-firewall-services
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "85"
+    scriptarguments:
+      serviceName:
+        simple: ${Fortigate.Service.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "85":
+    id: "85"
+    taskid: 3f71fe67-eaea-4f2b-8970-4f6482397643
+    type: condition
+    task:
+      id: 3f71fe67-eaea-4f2b-8970-4f6482397643
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "88"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Service.Protocol
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Service.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Service.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "86":
+    id: "86"
+    taskid: b719a0a2-0bc6-4c85-8b47-7497fbbc07df
+    type: regular
+    task:
+      id: b719a0a2-0bc6-4c85-8b47-7497fbbc07df
+      version: -1
+      name: fortigate-create-firewall-service
+      script: FortiGate|||fortigate-create-firewall-service
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "87"
+    scriptarguments:
+      sctpRange:
+        simple: 5-6
+      serviceName:
+        simple: playbook-service
+      tcpRange:
+        simple: 1-2
+      udpRange:
+        simple: 3-4
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16670
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "87":
+    id: "87"
+    taskid: e3069ffb-fddb-4690-8fca-d80d93803e2d
+    type: condition
+    task:
+      id: e3069ffb-fddb-4690-8fca-d80d93803e2d
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "84"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Service.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 16870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "88":
+    id: "88"
+    taskid: 8a616371-0180-40da-893f-9306f209bcc6
+    type: regular
+    task:
+      id: 8a616371-0180-40da-893f-9306f209bcc6
+      version: -1
+      name: fortigate-update-firewall-service
+      script: FortiGate|||fortigate-update-firewall-service
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "89"
+    scriptarguments:
+      comment:
+        simple: helloworld
+      name:
+        simple: ${Fortigate.Service.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 50abd072-0e43-4832-81e3-6fd5afc44ae6
+    type: condition
+    task:
+      id: 50abd072-0e43-4832-81e3-6fd5afc44ae6
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "90"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Service.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "90":
+    id: "90"
+    taskid: 9bc9fefe-3fd2-4a0b-8ef9-3bc8a56dd253
+    type: regular
+    task:
+      id: 9bc9fefe-3fd2-4a0b-8ef9-3bc8a56dd253
+      version: -1
+      name: fortigate-delete-firewall-service
+      script: FortiGate|||fortigate-delete-firewall-service
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "91"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.Service.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 17860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "91":
+    id: "91"
+    taskid: 5c009dc5-81b0-48e5-8b41-abc81ca516d4
+    type: condition
+    task:
+      id: 5c009dc5-81b0-48e5-8b41-abc81ca516d4
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "117"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Service.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.Service.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 18060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "92":
+    id: "92"
+    taskid: 3ef8fba2-82c0-4dce-8ecc-c661810e2c85
+    type: regular
+    task:
+      id: 3ef8fba2-82c0-4dce-8ecc-c661810e2c85
+      version: -1
+      name: fortigate-list-firewall-service-groups
+      script: FortiGate|||fortigate-list-firewall-service-groups
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "93"
+    scriptarguments:
+      name:
+        simple: ${Fortigate.ServiceGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 18640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "93":
+    id: "93"
+    taskid: 3ef2db9b-b533-4710-821b-8b34d050aba9
+    type: condition
+    task:
+      id: 3ef2db9b-b533-4710-821b-8b34d050aba9
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "96"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 18840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 75350e4d-9967-4ac3-84a5-c6b981070317
+    type: regular
+    task:
+      id: 75350e4d-9967-4ac3-84a5-c6b981070317
+      version: -1
+      name: fortigate-create-firewall-service-group
+      script: FortiGate|||fortigate-create-firewall-service-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "95"
+    scriptarguments:
+      members:
+        simple: playbook-service-1
+      name:
+        simple: playbook-service-group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "95":
+    id: "95"
+    taskid: 7582eaab-2d3f-4b5e-8000-d30bf41cd53f
+    type: condition
+    task:
+      id: 7582eaab-2d3f-4b5e-8000-d30bf41cd53f
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Members
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 3280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "96":
+    id: "96"
+    taskid: 00329a96-040c-4c8c-8eec-7123e91b2675
+    type: regular
+    task:
+      id: 00329a96-040c-4c8c-8eec-7123e91b2675
+      version: -1
+      name: fortigate-update-firewall-service-group
+      script: FortiGate|||fortigate-update-firewall-service-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "97"
+    scriptarguments:
+      comment:
+        simple: helloworld
+      groupName:
+        simple: ${Fortigate.ServiceGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 19060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "97":
+    id: "97"
+    taskid: 62f843e3-4b69-48c9-8736-75c1b76349b1
+    type: condition
+    task:
+      id: 62f843e3-4b69-48c9-8736-75c1b76349b1
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "98"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 19260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "98":
+    id: "98"
+    taskid: 9c39e898-0ca2-43ad-842d-c1104487f3ea
+    type: regular
+    task:
+      id: 9c39e898-0ca2-43ad-842d-c1104487f3ea
+      version: -1
+      name: fortigate-delete-firewall-service-group
+      script: FortiGate|||fortigate-delete-firewall-service-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "99"
+    scriptarguments:
+      groupName:
+        simple: ${Fortigate.ServiceGroup.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 19460
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "99":
+    id: "99"
+    taskid: 26c8da84-07b3-4729-874c-dae78878708a
+    type: condition
+    task:
+      id: 26c8da84-07b3-4729-874c-dae78878708a
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "102"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Name
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 19660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 6b1b0258-4e9f-49b3-81a8-33efdf542a91
+    type: regular
+    task:
+      id: 6b1b0258-4e9f-49b3-81a8-33efdf542a91
+      version: -1
+      name: fortigate-list-firewall-policies
+      script: FortiGate|||fortigate-list-firewall-policies
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "101"
+    scriptarguments:
+      policyName:
+        simple: ${Fortigate.Policy.Name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "101":
+    id: "101"
+    taskid: 51aaf904-88d7-4c5d-84e0-b248a83da864
+    type: condition
+    task:
+      id: 51aaf904-88d7-4c5d-84e0-b248a83da864
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "104"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ServiceNegate
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination6Negate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.DestinationNegate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source6Negate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.SourceNegate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.NAT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.LogStart
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Log
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.DestinationInterface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.SourceInterface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Security
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.VDOM
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Schedule
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "102":
+    id: "102"
+    taskid: 3b80030f-a639-444c-8c68-f459c6e5131d
+    type: regular
+    task:
+      id: 3b80030f-a639-444c-8c68-f459c6e5131d
+      version: -1
+      name: fortigate-create-firewall-policy
+      script: FortiGate|||fortigate-create-firewall-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "103"
+    scriptarguments:
+      action:
+        simple: accept
+      destination:
+        simple: playbook-address-ipv4-2
+      dstIntf:
+        simple: port2
+      policyName:
+        simple: playbook-policy
+      service:
+        simple: playbook-service-1
+      source:
+        simple: playbook-address-ipv4-1
+      sourceIntf:
+        simple: port1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 19840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "103":
+    id: "103"
+    taskid: 38954437-7798-4424-8baf-5eaa6d0173d0
+    type: condition
+    task:
+      id: 38954437-7798-4424-8baf-5eaa6d0173d0
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "100"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "104":
+    id: "104"
+    taskid: 9efba991-fe15-4be1-846d-ed4dce1fb81a
+    type: regular
+    task:
+      id: 9efba991-fe15-4be1-846d-ed4dce1fb81a
+      version: -1
+      name: fortigate-update-firewall-policy
+      script: FortiGate|||fortigate-update-firewall-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "105"
+    scriptarguments:
+      field:
+        simple: description
+      policyID:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: Stringify
+      value:
+        simple: helloworld
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20610
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "105":
+    id: "105"
+    taskid: e20d1068-9e53-4697-8d1b-8d662990b662
+    type: condition
+    task:
+      id: e20d1068-9e53-4697-8d1b-8d662990b662
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "132"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ServiceNegate
+            iscontext: true
+          right:
+            value: {}
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination6Negate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.DestinationNegate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source6Negate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.SourceNegate
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.NAT
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.LogStart
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Log
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Service
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Destination
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Action
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.DestinationInterface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.SourceInterface
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.UUID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Status
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Description
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Security
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.Schedule
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "106":
+    id: "106"
+    taskid: 78eed7b1-0634-4c01-87a9-5d5fc2fa2675
+    type: regular
+    task:
+      id: 78eed7b1-0634-4c01-87a9-5d5fc2fa2675
+      version: -1
+      name: fortigate-move-firewall-policy
+      script: FortiGate|||fortigate-move-firewall-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "107"
+    scriptarguments:
+      neighbor:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "1"
+          - operator: Stringify
+      policyID:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: Stringify
+      position:
+        simple: after
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 21180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "107":
+    id: "107"
+    taskid: 3384778d-a1a6-4ec0-8ad6-41e10c571d94
+    type: condition
+    task:
+      id: 3384778d-a1a6-4ec0-8ad6-41e10c571d94
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "108"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.Policy.Moved
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 21380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "108":
+    id: "108"
+    taskid: 0e0044e0-5c24-4417-8132-c0e17ecc226f
+    type: regular
+    task:
+      id: 0e0044e0-5c24-4417-8132-c0e17ecc226f
+      version: -1
+      name: fortigate-delete-firewall-policy
+      script: FortiGate|||fortigate-delete-firewall-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "109"
+    scriptarguments:
+      policyID:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 21580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "109":
+    id: "109"
+    taskid: 759d7c8f-bef5-44f7-8af2-75e79074e665
+    type: condition
+    task:
+      id: 759d7c8f-bef5-44f7-8af2-75e79074e665
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "110"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Policy.ID
+            iscontext: true
+      - - operator: isExists
+          left:
+            value:
+              simple: Fortigate.Policy.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 21780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "110":
+    id: "110"
+    taskid: 39cc682d-2765-4b18-8caf-0d6348c531a7
+    type: regular
+    task:
+      id: 39cc682d-2765-4b18-8caf-0d6348c531a7
+      version: -1
+      name: fortigate-list-system-vdoms
+      script: FortiGate|||fortigate-list-system-vdoms
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "111"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 21960
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "111":
+    id: "111"
+    taskid: baf33f87-ecb4-437c-8c96-51c583156bfd
+    type: condition
+    task:
+      id: baf33f87-ecb4-437c-8c96-51c583156bfd
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "114"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.VDOM.VClusterID
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.VDOM.ShortName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.VDOM.Name
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 22160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "112":
+    id: "112"
+    taskid: e5e1440d-4bfa-48ec-8394-0f142a3badcb
+    type: regular
+    task:
+      id: e5e1440d-4bfa-48ec-8394-0f142a3badcb
+      version: -1
+      name: fortigate-list-banned-ips
+      script: FortiGate|||fortigate-list-banned-ips
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "113"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 22530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 2542f4a0-dc85-4b0a-8128-5862635afc79
+    type: condition
+    task:
+      id: 2542f4a0-dc85-4b0a-8128-5862635afc79
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "115"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.IsV6
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.Source
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.IP
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.Created
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.BannedIP.VDOM
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 22730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "114":
+    id: "114"
+    taskid: 09b8b9e4-e56c-4fe6-88e9-ba552e7e98ed
+    type: regular
+    task:
+      id: 09b8b9e4-e56c-4fe6-88e9-ba552e7e98ed
+      version: -1
+      name: fortigate-ban-ip
+      script: FortiGate|||fortigate-ban-ip
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "112"
+    scriptarguments:
+      expiry:
+        simple: "120"
+      ip_address:
+        simple: 0.0.0.0
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 22340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "115":
+    id: "115"
+    taskid: 84ef6960-5bc6-4454-8633-7a3aa59a035b
+    type: regular
+    task:
+      id: 84ef6960-5bc6-4454-8633-7a3aa59a035b
+      version: -1
+      name: fortigate-unban-ip
+      script: FortiGate|||fortigate-unban-ip
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "139"
+    scriptarguments:
+      ip_address:
+        simple: 0.0.0.0
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 22910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 32280333-4161-4895-801d-c7b18438521a
+    type: title
+    task:
+      id: 32280333-4161-4895-801d-c7b18438521a
+      version: -1
+      name: Test Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 24190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: f64d490f-f786-4d81-8afc-499f468fdff8
+    type: regular
+    task:
+      id: f64d490f-f786-4d81-8afc-499f468fdff8
+      version: -1
+      name: fortigate-create-firewall-service-group
+      script: FortiGate|||fortigate-create-firewall-service-group
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      members:
+        simple: playbook-service-1
+      name:
+        simple: playbook-service-group
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 18250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "118":
+    id: "118"
+    taskid: 04d7f363-b494-4370-8e3d-1baeb154a6bf
+    type: condition
+    task:
+      id: 04d7f363-b494-4370-8e3d-1baeb154a6bf
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "92"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.ServiceGroup.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 18450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: d6ee9135-5f69-4a35-84c1-d23a28127215
+    type: regular
+    task:
+      id: d6ee9135-5f69-4a35-84c1-d23a28127215
+      version: -1
+      name: fortigate-create-firewall-address-ipv4
+      script: FortiGate|||fortigate-create-firewall-address-ipv4
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "124"
+    scriptarguments:
+      country:
+        simple: il
+      name:
+        simple: playbook-address-ipv4-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: 8e517740-3012-4785-85be-02e1f173a4be
+    type: regular
+    task:
+      id: 8e517740-3012-4785-85be-02e1f173a4be
+      version: -1
+      name: fortigate-create-firewall-address-ipv4
+      script: FortiGate|||fortigate-create-firewall-address-ipv4
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "125"
+    scriptarguments:
+      country:
+        simple: il
+      name:
+        simple: playbook-address-ipv4-2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "125":
+    id: "125"
+    taskid: 5cc160d6-8531-4e32-89ba-f49046db1b8c
+    type: regular
+    task:
+      id: 5cc160d6-8531-4e32-89ba-f49046db1b8c
+      version: -1
+      name: fortigate-create-firewall-service
+      script: FortiGate|||fortigate-create-firewall-service
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "126"
+    scriptarguments:
+      serviceName:
+        simple: playbook-service-1
+      tcpRange:
+        simple: 1-2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "126":
+    id: "126"
+    taskid: c6499d0b-aaca-442f-8b2d-108f553243fc
+    type: regular
+    task:
+      id: c6499d0b-aaca-442f-8b2d-108f553243fc
+      version: -1
+      name: fortigate-create-firewall-policy
+      script: FortiGate|||fortigate-create-firewall-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "133"
+    scriptarguments:
+      action:
+        simple: accept
+      destination:
+        simple: playbook-address-ipv4-2
+      dstIntf:
+        simple: port2
+      policyName:
+        simple: playbook-policy-1
+      service:
+        simple: playbook-service-1
+      source:
+        simple: playbook-address-ipv4-1
+      sourceIntf:
+        simple: port1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -640
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "127":
+    id: "127"
+    taskid: 20a8879f-d8ef-4304-8e2f-241e7418cd8c
+    type: regular
+    task:
+      id: 20a8879f-d8ef-4304-8e2f-241e7418cd8c
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: 28e15fe2-b54d-4852-8141-37245ca1bb5a
+    type: regular
+    task:
+      id: 28e15fe2-b54d-4852-8141-37245ca1bb5a
+      version: -1
+      name: fortigate-get-policy
+      script: FortiGate|||fortigate-get-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      policyName:
+        simple: playbook-policy-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 5780
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "130":
+    id: "130"
+    taskid: 2348e042-b2a0-4750-8a3c-9d1ada03f7d0
+    type: regular
+    task:
+      id: 2348e042-b2a0-4750-8a3c-9d1ada03f7d0
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "131"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6280
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "131":
+    id: "131"
+    taskid: f3fa9451-b212-4d21-8450-f1e04a289440
+    type: regular
+    task:
+      id: f3fa9451-b212-4d21-8450-f1e04a289440
+      version: -1
+      name: fortigate-get-policy
+      script: FortiGate|||fortigate-get-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      policyName:
+        simple: playbook-policy
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 6450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "132":
+    id: "132"
+    taskid: 2d9a7317-1b69-41df-85d7-54afc0b7e16b
+    type: regular
+    task:
+      id: 2d9a7317-1b69-41df-85d7-54afc0b7e16b
+      version: -1
+      name: fortigate-list-firewall-policies
+      script: FortiGate|||fortigate-list-firewall-policies
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "106"
+    scriptarguments:
+      policyName:
+        simple: playbook-policy-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 20990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: 69307cbe-1f43-4236-89cf-b0be79d3fc11
+    type: regular
+    task:
+      id: 69307cbe-1f43-4236-89cf-b0be79d3fc11
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "134":
+    id: "134"
+    taskid: 547c224c-b7d6-4db4-8821-fd169d64e107
+    type: regular
+    task:
+      id: 547c224c-b7d6-4db4-8821-fd169d64e107
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "135":
+    id: "135"
+    taskid: 00e70486-00bc-424d-8876-be1b5321dd61
+    type: condition
+    task:
+      id: 00e70486-00bc-424d-8876-be1b5321dd61
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "36"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 7550
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: ed7d676f-7715-457e-8808-41863d2f2026
+    type: condition
+    task:
+      id: ed7d676f-7715-457e-8808-41863d2f2026
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "46"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Name
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Deleted
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8600
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "137":
+    id: "137"
+    taskid: 4b7fe1ea-133e-4ead-8caf-9c1ec19babef
+    type: condition
+    task:
+      id: 4b7fe1ea-133e-4ead-8caf-9c1ec19babef
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "42"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 8250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "138":
+    id: "138"
+    taskid: e56d923a-835f-4d74-8525-29d0107096ed
+    type: condition
+    task:
+      id: e56d923a-835f-4d74-8525-29d0107096ed
+      version: -1
+      name: Verify Outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "50"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Fortigate.Address6.Name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 9730
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "139":
+    id: "139"
+    taskid: 62768e48-64fb-497f-8279-ab982813efc3
+    type: regular
+    task:
+      id: 62768e48-64fb-497f-8279-ab982813efc3
+      version: -1
+      name: DeleteContext
+      script: DeleteContext
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "144"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 23090
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "140":
+    id: "140"
+    taskid: 05c3a33e-ad97-4faa-80b6-85d89a6d1fc4
+    type: regular
+    task:
+      id: 05c3a33e-ad97-4faa-80b6-85d89a6d1fc4
+      version: -1
+      name: fortigate-delete-firewall-address-ipv4
+      script: FortiGate|||fortigate-delete-firewall-address-ipv4
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "116"
+    scriptarguments:
+      name:
+        simple: playbook-address-ipv4-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 24000
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "141":
+    id: "141"
+    taskid: ac25572f-cfaa-4f1a-8ecf-ecd3abbbceb4
+    type: regular
+    task:
+      id: ac25572f-cfaa-4f1a-8ecf-ecd3abbbceb4
+      version: -1
+      name: fortigate-delete-firewall-service
+      script: FortiGate|||fortigate-delete-firewall-service
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "145"
+    scriptarguments:
+      name:
+        simple: playbook-service-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 23635
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: fccdca64-c94f-4cdb-8b4d-73d943496ac7
+    type: regular
+    task:
+      id: fccdca64-c94f-4cdb-8b4d-73d943496ac7
+      version: -1
+      name: fortigate-list-firewall-policies
+      script: FortiGate|||fortigate-list-firewall-policies
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "146"
+    scriptarguments:
+      policyName:
+        simple: playbook-policy-1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 23260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: b4e36c01-1749-4f2f-8e57-1b5e1b754478
+    type: regular
+    task:
+      id: b4e36c01-1749-4f2f-8e57-1b5e1b754478
+      version: -1
+      name: fortigate-delete-firewall-address-ipv4
+      script: FortiGate|||fortigate-delete-firewall-address-ipv4
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "140"
+    scriptarguments:
+      name:
+        simple: playbook-address-ipv4-2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 23815
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "146":
+    id: "146"
+    taskid: b21f7706-579d-4e68-8950-6b765ac16832
+    type: regular
+    task:
+      id: b21f7706-579d-4e68-8950-6b765ac16832
+      version: -1
+      name: fortigate-delete-firewall-policy
+      script: FortiGate|||fortigate-delete-firewall-policy
+      type: regular
+      iscommand: true
+      brand: FortiGate
+    nexttasks:
+      '#none#':
+      - "141"
+    scriptarguments:
+      policyID:
+        complex:
+          root: Fortigate.Policy
+          accessor: ID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+          - operator: Stringify
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 23430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 5985,
+        "height": 25825,
         "width": 380,
         "x": 50,
-        "y": 50
+        "y": -1570
       }
     }
   }

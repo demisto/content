@@ -1,7 +1,4 @@
 category: Endpoint
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Carbon Black Enterprise EDR
   version: -1
@@ -68,8 +65,13 @@ configuration:
   type: 0
   section: Collect
   required: false
-description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter)
-display: VMware Carbon Black Enterprise EDR
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter).
+display: Carbon Black Enterprise EDR
 name: Carbon Black Enterprise EDR
 script:
   commands:
@@ -177,16 +179,16 @@ script:
       - LIVE
     - description: Device operation system. Supports comma-separated values.
       name: device_os
-    - description: 'Device start last contact time. For example: 2019-01-01T11:00:00.157Z'
+    - description: 'Device start last contact time. For example: 2019-01-01T11:00:00.157Z.'
       name: start_time
-    - description: 'Device end last contact time. For example: 2019-01-01T11:00:00.157Z'
+    - description: 'Device end last contact time. For example: 2019-01-01T11:00:00.157Z.'
       name: end_time
-    - description: Active directory group ID. Supports comma-separated values
+    - description: Active directory group ID. Supports comma-separated values.
       name: ad_group_id
     - description: The policy ID. Supports comma-separated values.
       name: policy_id
     - auto: PREDEFINED
-      description: Device target priority. Supports comma-separated values
+      description: Device target priority. Supports comma-separated values.
       name: target_priority
       predefined:
       - LOW
@@ -197,7 +199,7 @@ script:
       description: Maximum number of rows to return.
       name: limit
     - auto: PREDEFINED
-      description: Sort Fields
+      description: Sort Fields.
       name: sort_field
       predefined:
       - target_priority
@@ -294,7 +296,7 @@ script:
       description: Sensor version.
       type: String
     - contextPath: CarbonBlackEEDR.Device.virtual_machine
-      description: Is the device virtual machine
+      description: Is the device virtual machine.
       type: Boolean
     - contextPath: CarbonBlackEEDR.Device.last_name
       description: Last name.
@@ -568,7 +570,7 @@ script:
       description: Alert workflow - remediation.
       type: String
     - contextPath: CarbonBlackEEDR.Alert.workflow.state
-      description: Alert workflow - state
+      description: Alert workflow - state.
       type: String
   - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
@@ -597,6 +599,7 @@ script:
     - contextPath: CarbonBlackEEDR.Watchlist.description
       description: Watchlist description.
       type: String
+    arguments: []
   - arguments:
     - description: The watchlist ID. Get the ID from the watchlist-list command.
       name: watchlist_id
@@ -662,7 +665,7 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Enable watchlist alerts
+      description: Enable watchlist alerts.
       name: alerts_enabled
       predefined:
       - 'true'
@@ -804,7 +807,7 @@ script:
     - description: Report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-    - description: IOC ID. Get the ID from get_report command
+    - description: IOC ID. Get the ID from get_report command.
       name: ioc_id
       required: true
     description: Gets the current ignore status for IOC ioc_id in report report_id.
@@ -822,7 +825,7 @@ script:
     - description: Report ID. Get the ID from the watchlist-list command.
       name: report_id
       required: true
-    - description: IOC ID. Get the ID from get_report command
+    - description: IOC ID. Get the ID from get_report command.
       name: ioc_id
       required: true
     description: IOC ioc_id for report report_id will match future events for all watchlists.
@@ -867,7 +870,7 @@ script:
       name: ipv4
     - description: 'The IOC query for the report, for example: (netconn_ipv4:2.2.2.2). Supports comma-separated values.'
       name: ioc_query
-    - description: 'The report timestamp. For example: 2020-01-19T09:16:16'
+    - description: 'The report timestamp. For example: 2020-01-19T09:16:16.'
       name: timestamp
       required: true
     - description: IOCs of type IPv6. Supports comma-separated values.
@@ -883,7 +886,7 @@ script:
       description: The report ID.
       type: String
     - contextPath: CarbonBlackEEDR.Report.IOCs
-      description: The report IOCs
+      description: The report IOCs.
       type: String
     - contextPath: CarbonBlackEEDR.Report.Link
       description: Report link.
@@ -941,7 +944,7 @@ script:
       description: The report ID.
       type: String
     - contextPath: CarbonBlackEEDR.Report.IOCs
-      description: The report IOC's
+      description: The report IOC's.
       type: String
     - contextPath: CarbonBlackEEDR.Report.Link
       description: Report link.
@@ -1021,7 +1024,7 @@ script:
       description: The Language ID value from the Windows VERSIONINFO resource.
       type: String
     - contextPath: CarbonBlackEEDR.File.company_name
-      description: Company name from FileVersionInformation
+      description: Company name from FileVersionInformation.
       type: String
     - contextPath: CarbonBlackEEDR.File.internal_name
       description: Internal name from FileVersionInformation.
@@ -1039,7 +1042,7 @@ script:
       description: Comments from FileVersionInformation.
       type: String
     - contextPath: CarbonBlackEEDR.File.os_type
-      description: 'The OS that this file is designed for. This may contain one or more of the following values: WINDOWS, ANDROID, MAC, IOS, LINUX, and OTHER'
+      description: 'The OS that this file is designed for. This may contain one or more of the following values: WINDOWS, ANDROID, MAC, IOS, LINUX, and OTHER.'
       type: String
     - contextPath: CarbonBlackEEDR.File.original_filename
       description: Original filename from FileVersionInformation.
@@ -1074,7 +1077,7 @@ script:
     name: cb-eedr-files-download-link-get
     outputs:
     - contextPath: CarbonBlackEEDR.File.found.sha256
-      description: SHA256 hash of file that is available to be downloaded
+      description: SHA256 hash of file that is available to be downloaded.
       type: String
     - contextPath: CarbonBlackEEDR.File.found.url
       description: An AWS S3 pre-signed URL for this file. Perform a GET on this URL to download the file.
@@ -1089,7 +1092,7 @@ script:
     - description: The requested SHA256 hash to obtain information for. Supports comma-separated values.
       name: sha256
       required: true
-    description: Return a summary of the observed file paths
+    description: Return a summary of the observed file paths.
     name: cb-eedr-file-paths
     outputs:
     - contextPath: CarbonBlackEEDR.File.file_path_count
@@ -1260,7 +1263,7 @@ script:
       description: The cumulative count of file modifications since process tracking started.
       type: Number
     - contextPath: CarbonBlackEEDR.SearchProcess.results.ingress_time
-      description: Unknown
+      description: Unknown.
       type: Date
     - contextPath: CarbonBlackEEDR.SearchProcess.results.legacy
       description: True if the process document came from the legacy data stream (deprecated, use enriched).
@@ -1301,10 +1304,64 @@ script:
     - contextPath: CarbonBlackEEDR.SearchProcess.results.scriptload_count
       description: The cumulative count of loaded scripts since process tracking started.
       type: Number
-  dockerimage: demisto/python3:3.10.13.72123
+  - arguments:
+    - description: Threat ID.
+      name: threat_id
+      required: true
+    - description: Comma-separated list of tags.
+      isArray: true
+      name: tags
+      required: true
+    description: Update threat ID tags.
+    name: cb-eedr-add-threat-tags
+    outputs:
+    - contextPath: CarbonBlackEEDR.Threat.ThreatID
+      description: Threat ID.
+    - contextPath: CarbonBlackEEDR.Threat.Tags
+      description: Threat ID tags.
+  - arguments:
+    - description: Threat ID.
+      name: threat_id
+      required: true
+    - description: Notes to be added to the provided threat ID.
+      name: notes
+      required: true
+    description: Update threat ID notes.
+    name: cb-eedr-add-threat-notes
+    outputs:
+    - contextPath: CarbonBlackEEDR.Threat.ThreatID
+      description: Threat ID.
+    - contextPath: CarbonBlackEEDR.Threat.Notes
+      description: Threat ID notes.
+  - arguments:
+    - description: Alert ID to add the notes to.
+      name: alert_id
+      required: true
+    - description: Notes to be added to the provided alert ID.
+      name: notes
+      required: true
+    description: Update alert ID notes.
+    name: cb-eedr-add-alert-notes
+    outputs:
+    - contextPath: CarbonBlackEEDR.Alert.AlertID
+      description: The alert ID.
+    - contextPath: CarbonBlackEEDR.Alert.Notes
+      description: Alert notes.
+  - arguments:
+    - description: The threat ID for which we wish to get the tags.
+      name: threat_id
+      required: true
+    description: Output a list of tags for the provided threat ID.
+    name: cb-eedr-get-threat-tags
+    outputs:
+    - contextPath: CarbonBlackEEDR.Threat.ThreatID
+      description: Threat ID.
+    - contextPath: CarbonBlackEEDR.Threat.Tags
+      description: Threat tags.
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:

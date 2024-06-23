@@ -24,7 +24,7 @@ if (ids && ids.length > 0) {
     ids.forEach(function(id) {
         var uri = account + '/investigation/' + id + '/deleteuser/' + username;
         addEntry('Leaving investigation ' + id + '...');
-        var res = executeCommand('demisto-api-post', {uri: uri, body: {}});
+        var res = executeCommand('core-api-post', {uri: uri, body: {}});
         if (isError(res[0])) {
             errors.push(res[0]);
         }

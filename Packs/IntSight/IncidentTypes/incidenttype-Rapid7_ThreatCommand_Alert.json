@@ -25,6 +25,7 @@
     "locked": false,
     "name": "Rapid7 ThreatCommand Alert",
     "onChangeRepAlg": 0,
+    "playbookId": "Retrieve Alert Attachments - Rapid7 ThreatCommand",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

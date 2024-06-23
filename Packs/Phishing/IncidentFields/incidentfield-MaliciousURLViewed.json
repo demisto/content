@@ -4,7 +4,7 @@
     "modified": "2022-12-25T08:52:45.407835633Z",
     "name": "Malicious URL Viewed",
     "ownerOnly": false,
-    "description": "Whether a malicious url was viewed by the user, for example in a scenario where  a user clicked on a malicious url inside an email and was able to view a malicious site.",
+    "description": "Whether a malicious url was viewed by the user, for example in a scenario where  a user clicked on a malicious url inside an email and was able to view a malicious site. The value will be True also in a scenario where the URL was blocked initially, but the user decided to proceed and view the URL anyway.",
     "cliName": "maliciousurlviewed",
     "type": "shortText",
     "closeForm": false,

@@ -1,1 +1,1 @@
-return executeCommand('demisto-api-download', {uri: '/log/bundle'});
+return executeCommand('core-api-download', {uri: '/log/bundle'});

@@ -194,6 +194,10 @@ script:
       description: The sample hash.
       name: hash
       required: true
+    - name: max_results
+      description: Maximum number of results to return.
+      required: false
+      defaultValue: 5000
     description: List files extracted from a sample.
     name: reversinglabs-a1000-list-extracted-files
     outputs:
@@ -393,7 +397,7 @@ script:
     - contextPath: ReversingLabs.a1000_ip_urls
       description: A1000 URL-s hosted on an IP address.
       type: Unknown
-  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.72317
+  dockerimage: demisto/reversinglabs-sdk-py3:2.0.0.86428
   runonce: false
   script: '-'
   subtype: python3

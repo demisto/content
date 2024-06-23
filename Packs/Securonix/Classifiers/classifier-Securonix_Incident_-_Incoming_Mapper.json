@@ -124,6 +124,13 @@
                         "transformers": []
                     }
                 },
+                "Securonix Policy Type": {
+                    "complex": {
+                        "filters": [],
+                        "root": "policy_type",
+                        "transformers": []
+                    }
+                },
                 "Securonix Reason": {
                     "complex": {
                         "filters": [],
@@ -180,20 +187,7 @@
                     "complex": {
                         "filters": [],
                         "root": "solrquery",
-                        "transformers": [
-							{
-								"args": {
-									"limit": {},
-									"replaceWith": {},
-									"toReplace": {
-										"value": {
-											"simple": "@"
-										}
-									}
-								},
-								"operator": "replace"
-							}
-						]
+                        "transformers": []
                     }
                 },
                 "Securonix Violator ID": {

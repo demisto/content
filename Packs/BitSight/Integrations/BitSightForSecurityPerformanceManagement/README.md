@@ -1,10 +1,10 @@
-Use the "BitSight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
-This integration was integrated and tested with version 01 of BitSight for Security Performance Management
+Use the "Bitsight for Security Performance Management" Integration to get company guid, details, and findings. This integration also allows to fetch the findings by using the fetch incidents capability.
+This integration was integrated and tested with version 01 of Bitsight for Security Performance Management
 
-## Configure BitSight for Security Performance Management on Cortex XSOAR
+## Configure Bitsight for Security Performance Management on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BitSight for Security Performance Management.
+2. Search for Bitsight for Security Performance Management.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -28,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### bitsight-company-details-get
 ***
-BitSight command to get company details based on the provided GUID. The details include rating details, rating history, and grades for individual risk vectors.
+Bitsight command to get company details based on the provided GUID. The details include rating details, rating history, and grades for individual risk vectors.
 
 
 #### Base Command
@@ -59,19 +59,19 @@ BitSight command to get company details based on the provided GUID. The details 
 | BitSight.Company.homePage | string | The URL of this company's primary external website. | 
 | BitSight.Company.primaryDomain | string | The name of this company's primary domain. | 
 | BitSight.Company.type | string | The type of rating. | 
-| BitSight.Company.displayURL | string | The URL to this company's overview page in the BitSight platform. | 
+| BitSight.Company.displayURL | string | The URL to this company's overview page in the Bitsight platform. | 
 | BitSight.Company.ratingDetails.name | string | The name of this risk vector. | 
 | BitSight.Company.ratingDetails.rating | number | Internal rating of this risk vector. | 
 | BitSight.Company.ratingDetails.grade | string | The letter grade of this risk vector. | 
 | BitSight.Company.ratingDetails.percentile | number | This company's performance on this risk vector against their peers. | 
 | BitSight.Company.ratingDetails.gradeColor | string | The hex code to display letter grade colors in HTML applications. | 
 | BitSight.Company.ratingDetails.category | string | The risk category of this risk vector. | 
-| BitSight.Company.ratingDetails.categoryOrder | number | Used to visually sort this risk category in the BitSight platform. | 
+| BitSight.Company.ratingDetails.categoryOrder | number | Used to visually sort this risk category in the Bitsight platform. | 
 | BitSight.Company.ratingDetails.beta | boolean | A true value indicates this risk vector is in beta and does not affect this company's security rating. | 
-| BitSight.Company.ratingDetails.order | number | Used to visually sort this risk vector in the BitSight platform. | 
-| BitSight.Company.ratingDetails.displayUrl | string | The URL in the BitSight platform that contains the details of this risk vector. | 
-| BitSight.Company.ratings.ratingDate | date | The date when this BitSight Security Rating Report was generated. | 
-| BitSight.Company.ratings.rating | number | The BitSight Security Rating of this company on this day. | 
+| BitSight.Company.ratingDetails.order | number | Used to visually sort this risk vector in the Bitsight platform. | 
+| BitSight.Company.ratingDetails.displayUrl | string | The URL in the Bitsight platform that contains the details of this risk vector. | 
+| BitSight.Company.ratings.ratingDate | date | The date when this Bitsight Security Rating Report was generated. | 
+| BitSight.Company.ratings.rating | number | The Bitsight Security Rating of this company on this day. | 
 | BitSight.Company.ratings.range | string | The rating category of this company on this day. | 
 | BitSight.Company.ratings.ratingColor | string | The hex code to display rating category colors in HTML applications. | 
 | BitSight.Company.searchCount | number | The number of times this company has been listed in search results. | 
@@ -82,28 +82,28 @@ BitSight command to get company details based on the provided GUID. The details 
 | BitSight.Company.bulkEmailSenderStatus | string | A FULL value indicates this company provides bulk email sending services, which excludes this company from the Spam Propagation risk vector. | 
 | BitSight.Company.serviceProvider | boolean | A true value indicates this company is a service provider. | 
 | BitSight.Company.customerMonitoringCount | number | The number of companies that are monitoring this company. | 
-| BitSight.Company.availableUpgradeTypes | string | For internal BitSight use. | 
+| BitSight.Company.availableUpgradeTypes | string | For internal Bitsight use. | 
 | BitSight.Company.hasCompanyTree | boolean | A true value indicates this company has a Ratings Tree. | 
-| BitSight.Company.hasPreferredContact | boolean | For internal BitSight use. | 
+| BitSight.Company.hasPreferredContact | boolean | For internal Bitsight use. | 
 | BitSight.Company.isBundle | boolean | A true value indicates this company is part of a ratings bundle. | 
 | BitSight.Company.ratingIndustryMedian | string | Indicates this company's position in the peer group distribution chart. | 
 | BitSight.Company.primaryCompany.guid | string | The unique identifier of this organization's primary company. | 
 | BitSight.Company.primaryCompany.name | string | The name of this organization's primary company. | 
-| BitSight.Company.permissions.canDownloadCompanyReport | boolean | A true value indicates you can view and download BitSight Security Rating Reports \(PDF\). | 
+| BitSight.Company.permissions.canDownloadCompanyReport | boolean | A true value indicates you can view and download Bitsight Security Rating Reports \(PDF\). | 
 | BitSight.Company.permissions.canViewForensics | boolean | A true value indicates you have the Event Forensics add-on package. | 
-| BitSight.Company.permissions.canViewServiceProviders | boolean | A true value indicates you can access BitSight for Fourth Party Risk Management. | 
+| BitSight.Company.permissions.canViewServiceProviders | boolean | A true value indicates you can access Bitsight for Fourth Party Risk Management. | 
 | BitSight.Company.permissions.canRequestSelfPublishedEntity | boolean | A true value indicates you can request the creation of a self-published rating. | 
 | BitSight.Company.permissions.canViewInfrastructure | boolean | A true value indicates you can view your infrastructure attribution. | 
 | BitSight.Company.permissions.canAnnotate | boolean | A true value indicates you can identify assets and segment your network with infrastructure tags. | 
-| BitSight.Company.permissions.canViewCompanyReports | boolean | A true value indicates you can view BitSight Security Rating Reports. | 
+| BitSight.Company.permissions.canViewCompanyReports | boolean | A true value indicates you can view Bitsight Security Rating Reports. | 
 | BitSight.Company.permissions.canManagePrimaryCompany | boolean | A true value indicates you can highlight a primary for your organization. | 
-| BitSight.Company.permissions.hasControl | boolean | For internal BitSight use. | 
+| BitSight.Company.permissions.hasControl | boolean | For internal Bitsight use. | 
 | BitSight.Company.permissions.canEnableVendorAccess | boolean | A true value indicates you can modify vendor access. | 
 | BitSight.Company.isPrimary | boolean | A true value indicates your company is the primary for your organization. | 
-| BitSight.Company.securityGrade | string | For internal BitSight use. | 
+| BitSight.Company.securityGrade | string | For internal Bitsight use. | 
 | BitSight.Company.inSpmPortfolio | boolean | A true value indicates this company is in your Security Performance Management portfolio \(My Company, SPM Subsidiary, etc.\). | 
-| BitSight.Company.isMycompMysubsBundle | string | For internal BitSight use. | 
-| BitSight.Company.companyFeatures | string | For internal BitSight use. | 
+| BitSight.Company.isMycompMysubsBundle | string | For internal Bitsight use. | 
+| BitSight.Company.companyFeatures | string | For internal Bitsight use. | 
 
 #### Command example
 ```!bitsight-company-details-get guid=00000000-0000-0000-0000-000000000001```
@@ -475,7 +475,7 @@ BitSight command to get company details based on the provided GUID. The details 
 
 ### bitsight-company-findings-get
 ***
-BitSight command to get company findings.
+Bitsight command to get company findings.
 
 
 #### Base Command
@@ -505,8 +505,8 @@ BitSight command to get company findings.
 | BitSight.Company.CompanyFinding.affectsRating | boolean | Indicates if this finding has an impact on the letter grade. | 
 | BitSight.Company.CompanyFinding.assets.asset | string | The asset \(IP address or domain\) associated with this finding. | 
 | BitSight.Company.CompanyFinding.assets.identifier | string | Identifier associated with the asset. | 
-| BitSight.Company.CompanyFinding.assets.category | string | The BitSight-calculated asset importance. | 
-| BitSight.Company.CompanyFinding.assets.importance | number | For internal BitSight use. | 
+| BitSight.Company.CompanyFinding.assets.category | string | The Bitsight-calculated asset importance. | 
+| BitSight.Company.CompanyFinding.assets.importance | number | For internal Bitsight use. | 
 | BitSight.Company.CompanyFinding.assets.isIp | boolean | A true value indicates this asset is an IP address. | 
 | BitSight.Company.CompanyFinding.details | string | Details of this finding. The included keys vary, depending on the following risk types Compromised Systems, Diligence, File Sharing. | 
 | BitSight.Company.CompanyFinding.evidenceKey | string | The company's asset \(domain or IP address\) that's attributed to the finding. | 
@@ -520,9 +520,9 @@ BitSight command to get company findings.
 | BitSight.Company.CompanyFinding.severity | number | The severity of the finding, which is the measured risk that this finding introduces. | 
 | BitSight.Company.CompanyFinding.severityCategory | string | The slug name of the finding severity. | 
 | BitSight.Company.CompanyFinding.tags | string | Infrastructure tags that help identify this asset. | 
-| BitSight.Company.CompanyFinding.duration | string | For internal BitSight use. | 
+| BitSight.Company.CompanyFinding.duration | string | For internal Bitsight use. | 
 | BitSight.Company.CompanyFinding.comments | string | A thread of finding comments. | 
-| BitSight.Company.CompanyFinding.remainingDecay | number | For internal BitSight use. | 
+| BitSight.Company.CompanyFinding.remainingDecay | number | For internal Bitsight use. | 
 | BitSight.Company.CompanyFinding.remediationHistory.lastRequestedRefreshDate | date | The date when a record refresh that included this finding was last requested. | 
 | BitSight.Company.CompanyFinding.remediationHistory.lastRefreshStatusDate | date | The date when a refresh of the remediation status of this finding was last requested. | 
 | BitSight.Company.CompanyFinding.remediationHistory.lastRefreshStatusLabel | string | The current record refresh status of this finding. | 
@@ -533,7 +533,7 @@ BitSight command to get company findings.
 | BitSight.Company.CompanyFinding.remediationHistory.lastRemediationStatusUpdatedBy | string | The name of the user who updated the remediation status of this finding. | 
 | BitSight.Company.CompanyFinding.assetOverrides.asset | string | The domain or IP address of the overridden asset. | 
 | BitSight.Company.CompanyFinding.assetOverrides.importance | string | The user-assigned asset importance. | 
-| BitSight.Company.CompanyFinding.assetOverrides.overrideImportance | unknown | For internal BitSight use. | 
+| BitSight.Company.CompanyFinding.assetOverrides.overrideImportance | unknown | For internal Bitsight use. | 
 | BitSight.Company.CompanyFinding.attributedCompanies.guid | string | The unique identifier of the company attributed to the finding. | 
 | BitSight.Company.CompanyFinding.attributedCompanies.name | string | The name of the company that is attributed to the finding. | 
 | BitSight.Page.name | String | Name of the command. | 
@@ -679,7 +679,7 @@ BitSight command to get company findings.
 
 ### bitsight-companies-guid-get
 ***
-BitSight command to get list of companies and GUID.
+Bitsight command to get list of companies and GUID.
 
 
 #### Base Command
@@ -706,16 +706,16 @@ There are no input arguments for this command.
 | BitSight.Company.subIndustry | String | The sub-industry of this company. | 
 | BitSight.Company.subIndustrySlug | String | The slug name of this company's sub-industry. | 
 | BitSight.Company.type | String | The rating type. | 
-| BitSight.Company.logo | String | The URL in the BitSight platform to this company's logo image. | 
-| BitSight.Company.sparkline | String | The URL in the BitSight platform to this company's historical ratings trend line. | 
+| BitSight.Company.logo | String | The URL in the Bitsight platform to this company's logo image. | 
+| BitSight.Company.sparkline | String | The URL in the Bitsight platform to this company's historical ratings trend line. | 
 | BitSight.Company.externalId | Number | The external ID assigned to this company. | 
 | BitSight.Company.subscriptionType | String | The subscription type used to monitor this company. | 
 | BitSight.Company.subscriptionTypeKey | String | The slug name of the subscription type used to monitor this company. | 
 | BitSight.Company.primaryDomain | String | The primary domain of this company. | 
-| BitSight.Company.securityGrade | String | For internal BitSight use. | 
-| BitSight.Company.gradeDate | Date | For internal BitSight use. | 
-| BitSight.Company.displayURL | String | The URL in the BitSight platform to this company's overview page. | 
-| BitSight.Company.href | String | The URL in the BitSight platform to this company's page. | 
+| BitSight.Company.securityGrade | String | For internal Bitsight use. | 
+| BitSight.Company.gradeDate | Date | For internal Bitsight use. | 
+| BitSight.Company.displayURL | String | The URL in the Bitsight platform to this company's overview page. | 
+| BitSight.Company.href | String | The URL in the Bitsight platform to this company's page. | 
 | BitSight.MyCompany.guid | String | The unique identifier of my company. | 
 
 #### Command example

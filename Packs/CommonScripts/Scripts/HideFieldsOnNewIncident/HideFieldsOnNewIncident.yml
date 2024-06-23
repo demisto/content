@@ -12,10 +12,10 @@ comment: When you apply this script to an incident field, that incident field is
 enabled: true
 args:
 - name: incident
-  description: Incident object
+  description: Incident object.
 - name: field
-  description: Field definition object
+  description: Field definition object.
 scripttarget: 0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No tests (auto formatted)

@@ -65,16 +65,16 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Ransomware Advanced Analysis
-* Ticket Management - Generic
 * Enrichment for Verdict
-* Endpoint Investigation Plan
-* Recovery Plan
-* Eradication Plan
-* Containment Plan
 * Account Enrichment - Generic v2.1
 * Handle False Positive Alerts
+* Containment Plan
 * Ransomware Enrich and Contain
+* Eradication Plan
+* Recovery Plan
+* Ransomware Advanced Analysis
+* Ticket Management - Generic
+* Endpoint Investigation Plan
 
 ### Integrations
 

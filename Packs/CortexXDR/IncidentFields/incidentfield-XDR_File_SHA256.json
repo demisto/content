@@ -4,7 +4,8 @@
         "Cortex XDR Device Control Violations",
         "Cortex XDR Disconnected endpoints",
         "Cortex XDR Incident",
-        "Cortex XDR Port Scan"
+        "Cortex XDR Port Scan",
+        "Cortex XDR - Lite"
     ],
     "caseInsensitive": true,
     "cliName": "xdrfilesha256",

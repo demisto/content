@@ -13,6 +13,7 @@ from datetime import datetime
 from dateutil import parser
 from typing import *
 
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -37,7 +38,7 @@ class Client(object):
         self.feedReliability = params.get('feedReliability', "")
         self.tlp_color = params.get('tlp_color', "")
         self.initial_interval = arg_to_number(params.get('initial_interval', '1'))
-        self.limit = arg_to_number(params.get('limit', ''))
+        self.limit = arg_to_number(params.get('limit', '30'))
         self.verify_certificate = not argToBoolean(params.get('insecure', False))
         self.proxy = argToBoolean(params.get('proxy', False))
 
@@ -86,42 +87,45 @@ class Client(object):
             indicator_obj = {
                 "service": "Cyble Feed"
             }
-            for eachtype in FeedIndicatorType.list_all_supported_indicators():
-                if eachtype.lower() in args.get('collection').lower():      # type: ignore
-                    indicator_obj['type'] = eachtype
-                    break
             multi_data = True
             try:
-                data = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
-                if not data:
-                    data = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
+                data_r = self.get_recursively(eachres['indicators'][0]['observable'], 'value')
+                if not data_r:
+                    data_r = self.get_recursively(eachres['indicators'][0]['observable'], 'address_value')
             except Exception:
-                data = self.get_recursively(eachres['observables']['observables'][0], 'value')
+                try:
+                    data_r = self.get_recursively(eachres['observables']['observables'][0], 'value')
+                except Exception:
+                    demisto.debug(f'Found indicator without observable field: {eachres}')
+                    continue
+
+            if not data_r:
+                continue
 
             if multi_data:
                 ind_val = {}
-                for eachindicator in data:
+                for eachindicator in data_r:
                     typeval = auto_detect_indicator_type(eachindicator)
                     indicator_obj['type'] = typeval
                     if typeval:
                         ind_val[typeval] = eachindicator
 
-                if len(data) == 1:
-                    indicator_obj['value'] = str(data[0])
+                if len(data_r) == 1:
+                    indicator_obj['value'] = str(data_r[0])
                 elif indicator_obj['type'] in list(ind_val.keys()):
                     indicator_obj['value'] = str(ind_val[indicator_obj['type']])
                 elif len(ind_val) != 0:
                     indicator_obj['type'] = list(ind_val.keys())[0]
                     indicator_obj['value'] = ind_val[list(ind_val.keys())[0]]
-            #
+
             if eachres.get('indicators'):
-                for eachindicator in eachres.get('indicators'):
-                    indicator_obj['title'] = eachindicator.get('title')
-                    indicator_obj['time'] = eachindicator.get('timestamp')
+                ind_content = eachres.get('indicators')
             else:
-                for eachindicator in eachres.get('ttps').get('ttps'):
-                    indicator_obj['title'] = eachindicator.get('title')
-                    indicator_obj['time'] = eachindicator.get('timestamp')
+                ind_content = eachres.get('ttps').get('ttps')
+
+            for eachindicator in ind_content:
+                indicator_obj['title'] = eachindicator.get('title')
+                indicator_obj['time'] = eachindicator.get('timestamp')
 
             indicator_obj['rawJSON'] = eachres
             indicators.append(indicator_obj)
@@ -139,17 +143,24 @@ class Client(object):
         else:
             return {}
 
-    def get_taxii(self, args: Dict[str, Any]):
+    def get_taxii(self, args: Dict[str, Any], is_first_fetch: bool = False):
         """
         Fetch Taxii events for the given parameters
         :param args: arguments which would be used to fetch feed
+        :param is_first_fetch: indicates whether this is the first run or a subsequent run
         :return:
         """
         taxii_data = []
-        save_fetch_time = None
+        save_fetch_time: str = str(args.get('begin'))
         count = 0
+
         try:
+
+            if 'begin' not in args or 'end' not in args:
+                raise ValueError("Last fetch time retrieval failed.")
+
             for data in self.fetch(args.get('begin'), args.get('end'), args.get('collection')):
+                skip = False
                 response = self.parse_to_json(data)
 
                 if response.get('indicators') or False:
@@ -157,17 +168,24 @@ class Client(object):
                 elif response.get('ttps') or False:
                     content = response.get('ttps').get('ttps')
                 else:
-                    raise ValueError("Last fetch time retrieval failed.")
+                    continue
 
                 for eachone in content:
-                    save_fetch_time = parser.parse(eachone['timestamp']).replace(tzinfo=pytz.UTC).strftime(
-                        DATETIME_FORMAT)
+                    if eachone.get('confidence'):
+                        current_timestamp = parser.parse(
+                            eachone['confidence']['timestamp']).replace(tzinfo=pytz.UTC).strftime(DATETIME_FORMAT)
+                        if is_first_fetch or datetime.fromisoformat(current_timestamp) > datetime.fromisoformat(save_fetch_time):
+                            save_fetch_time = current_timestamp
+                        else:
+                            skip = True
 
-                taxii_data.append(response)
+                if not skip:
+                    taxii_data.append(response)
 
-                count += 1
-                if count == arg_to_number(args.get('limit', 1)):
-                    break
+                    count += 1
+                    if count == args.get('limit'):
+                        break
+
         except Exception as e:
             demisto.error("Failed to fetch feed details, exception:{}".format(e))
             raise e
@@ -277,15 +295,17 @@ def fetch_indicators(client: Client):
 
     if last_fetch_time:
         args['begin'] = str(parser.parse(last_fetch_time).replace(tzinfo=pytz.UTC))
+        is_first_fetch = False
     else:
         last_fetch_time = datetime.utcnow() - timedelta(days=client.initial_interval)      # type: ignore
         args['begin'] = str(last_fetch_time.replace(tzinfo=pytz.UTC))
+        is_first_fetch = True
 
     args['end'] = str(datetime.utcnow().replace(tzinfo=pytz.UTC))
 
     args['collection'] = client.collection_name
     args['limit'] = client.limit       # type: ignore
-    indicator, save_fetch_time = client.get_taxii(args)
+    indicator, save_fetch_time = client.get_taxii(args, is_first_fetch)
     indicators = client.build_indicators(args, indicator)
 
     if save_fetch_time:
@@ -329,7 +349,7 @@ def validate_input(args: Dict[str, Any]):
         raise e
 
 
-def main():
+def main():  # pragma: no cover
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
     """

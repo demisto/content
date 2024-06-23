@@ -2,13 +2,15 @@
 
 This integration was created and tested with version *11.0.0* of MobileIronCORE
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## MobileIron Core - Getting Started
 
 1. Log in to the MobileIron Core Admin console.
 2. Open the `Users` top section.
 3. Click on the `create local user` button. It is recommended to create a new user for the Cortex XSOAR integration specifically and not reuse
 an existing one.
-4. Make sure you enter all the details and keep note of the User ID (ex. demisto-api-user) and the password specifically.
+4. Make sure you enter all the details and keep note of the User ID (ex. core-api-user) and the password specifically.
 5. Click on the `Admins` top section.
 6. Add the user you just created as an admin to the instance.
 6. When setting up the Cortex XSOAR integration use User ID as the username and the password you defined as the MobileIron tenant credentials
@@ -60,10 +62,14 @@ Here is an example image of the rule
     | isFetch | Fetch incidents | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### mobileiron-core-send-message
+
 ***
 Sends a message to the particular device based on the device ID.
 
@@ -71,6 +77,7 @@ Sends a message to the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-send-message`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -82,6 +89,7 @@ Sends a message to the particular device based on the device ID.
 
 
 ### mobileiron-core-update-os
+
 ***
 Updates the operating system on the particular device based on the device ID.
 
@@ -89,6 +97,7 @@ Updates the operating system on the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-update-os`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -98,6 +107,7 @@ Updates the operating system on the particular device based on the device ID.
 
 
 ### mobileiron-core-unlock-device-only
+
 ***
 Unlocks the particular device based on the device ID.
 
@@ -105,6 +115,7 @@ Unlocks the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-unlock-device-only`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -113,6 +124,7 @@ Unlocks the particular device based on the device ID.
 
 
 ### mobileiron-core-enable-voice-roaming
+
 ***
 Enables voice roaming on the particular device based on the device ID.
 
@@ -120,6 +132,7 @@ Enables voice roaming on the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-enable-voice-roaming`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -128,6 +141,7 @@ Enables voice roaming on the particular device based on the device ID.
 
 
 ### mobileiron-core-disable-voice-roaming
+
 ***
 Disables voice roaming on the particular device based on the device ID.
 
@@ -135,6 +149,7 @@ Disables voice roaming on the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-disable-voice-roaming`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -143,6 +158,7 @@ Disables voice roaming on the particular device based on the device ID.
 
 
 ### mobileiron-core-enable-data-roaming
+
 ***
 Enables data roaming on the particular device based on the device ID.
 
@@ -150,6 +166,7 @@ Enables data roaming on the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-enable-data-roaming`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -158,6 +175,7 @@ Enables data roaming on the particular device based on the device ID.
 
 
 ### mobileiron-core-disable-data-roaming
+
 ***
 Disables data roaming on the particular device based on the device ID.
 
@@ -165,6 +183,7 @@ Disables data roaming on the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-disable-data-roaming`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -173,6 +192,7 @@ Disables data roaming on the particular device based on the device ID.
 
 
 ### mobileiron-core-enable-personal-hotspot
+
 ***
 Enables a personal hotspot on the particular device based on the device ID.
 
@@ -180,6 +200,7 @@ Enables a personal hotspot on the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-enable-personal-hotspot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -188,6 +209,7 @@ Enables a personal hotspot on the particular device based on the device ID.
 
 
 ### mobileiron-core-disable-personal-hotspot
+
 ***
 Disables a personal hotspot on the particular device based on the device ID.
 
@@ -195,6 +217,7 @@ Disables a personal hotspot on the particular device based on the device ID.
 #### Base Command
 
 `mobileiron-core-disable-personal-hotspot`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -203,6 +226,7 @@ Disables a personal hotspot on the particular device based on the device ID.
 
 
 ### mobileiron-core-unlock-app-connect-container
+
 ***
 Unlocks an app connect container on the particular device based on the device ID.
 
@@ -210,6 +234,7 @@ Unlocks an app connect container on the particular device based on the device ID
 #### Base Command
 
 `mobileiron-core-unlock-app-connect-container`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -218,6 +243,7 @@ Unlocks an app connect container on the particular device based on the device ID
 
 
 ### mobileiron-core-retire-device
+
 ***
 Retires a device based on the device ID.
 
@@ -225,6 +251,7 @@ Retires a device based on the device ID.
 #### Base Command
 
 `mobileiron-core-retire-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -233,6 +260,7 @@ Retires a device based on the device ID.
 
 
 ### mobileiron-core-wipe-device
+
 ***
 Wipes a device based on the device ID.
 
@@ -240,6 +268,7 @@ Wipes a device based on the device ID.
 #### Base Command
 
 `mobileiron-core-wipe-device`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -248,6 +277,7 @@ Wipes a device based on the device ID.
 
 
 ### mobileiron-core-force-checkin
+
 ***
 Forces check in to the device based on the device ID.
 
@@ -255,6 +285,7 @@ Forces check in to the device based on the device ID.
 #### Base Command
 
 `mobileiron-core-force-checkin`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -263,12 +294,14 @@ Forces check in to the device based on the device ID.
 
 
 ### mobileiron-core-get-devices-data
+
 ***
 Gets a list of devices matching the provided query.
 
 #### Base Command
 
 `mobileiron-core-get-devices-data`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -317,9 +350,11 @@ Gets a list of devices matching the provided query.
 
 
 #### Command Example
+
 ```!mobileiron-core-get-devices-data```
 
 #### Context Example
+
 ```json
 {
     "MobileIronCore": {
@@ -359,6 +394,7 @@ Gets a list of devices matching the provided query.
 
 
 ### mobileiron-core-get-device-by-uuid
+
 ***
 Gets a single device based on the device UUID.
 
@@ -366,6 +402,7 @@ Gets a single device based on the device UUID.
 #### Base Command
 
 `mobileiron-core-get-device-by-uuid`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -413,9 +450,11 @@ Gets a single device based on the device UUID.
 
 
 #### Command Example
+
 ```!mobileiron-core-get-device-by-uuid device_uuid=9b0da853-9f9b-483c-97ef-f4b5457299cf```
 
 #### Context Example
+
 ```json
 {
     "MobileIronCore": {
@@ -452,12 +491,14 @@ Gets a single device based on the device UUID.
 ```
 
 ### mobileiron-core-get-device-by-serial
+
 ***
 Gets a single device based on the device serial number.
 
 #### Base Command
 
 `mobileiron-core-get-device-by-serial`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -505,10 +546,12 @@ Gets a single device based on the device serial number.
 
 
 #### Command Example
+
 ```!mobileiron-core-get-device-by-serial device_serial=EXAMPLE```
 
 
 #### Context Example
+
 ```json
 {
     "MobileIronCore": {
@@ -545,6 +588,7 @@ Gets a single device based on the device serial number.
 ```
 
 ### mobileiron-core-get-device-by-mac
+
 ***
 Gets a single device based on the device WiFi MAC address.
 
@@ -600,10 +644,12 @@ Gets a single device based on the device WiFi MAC address.
 
 
 #### Command Example
+
 ```!mobileiron-core-get-device-by-mac device_mac=EXAMPLE```
 
 
 #### Context Example
+
 ```json
 {
     "MobileIronCore": {
@@ -640,12 +686,14 @@ Gets a single device based on the device WiFi MAC address.
 ```
 
 ### mobileiron-core-get-device-by-ip
+
 ***
 Gets a single device based on the device IP address.
 
 #### Base Command
 
 `mobileiron-core-get-device-by-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -693,10 +741,12 @@ Gets a single device based on the device IP address.
 
 
 #### Command Example
+
 ```!mobileiron-core-get-device-by-ip device_id=IP```
 
 
 #### Context Example
+
 ```json
 {
     "MobileIronCore": {

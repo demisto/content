@@ -185,7 +185,7 @@ script:
         sbrs in [3.5, 2.6]
         domain_reputation is not null
         sbrs gt 3
-        sbrs>=3 and domain_tags eq internal
+        sbrs>=3 and domain_tags eq internal.
       name: search
     description: Retrieves a list of messages.
     name: apd-list-message-data
@@ -323,7 +323,7 @@ script:
       required: true
     description: Remediate suspected message.
     name: apd-remediate-message
-  dockerimage: demisto/python3:3.10.12.68714
+  dockerimage: demisto/python3:3.10.13.84405
   isfetch: true
   runonce: false
   script: '-'

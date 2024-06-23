@@ -35,6 +35,11 @@
             "name": "Cohesity Helios Cluster Name"
         },
         {
+            "cliName": "prismacloudcomputecluster",
+            "type": "shortText",
+            "name": "Prisma Cloud Compute Cluster"
+        },
+        {
             "cliName": "proofpointtapcluster",
             "type": "shortText",
             "name": "Proofpoint TAP Cluster"

@@ -9,14 +9,16 @@ Please refer to ServiceNow documentation for additional information. We especial
 
 This integration was integrated and tested with the Orlando version of ServiceNow.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Use cases
 1. Get, update, create, and delete ServiceNow tickets, as well as add links and comments, or upload files to the tickets.
 2. Fetch newly created incidents.
 3. Get, update, create, delete records from any ServiceNow table.
 
 ## Required Permissions
-To use ServiceNow on Cortex XSOAR, ensure your user account has the *rest_api_explorer* and *web_service_admin* roles.
- These roles are required to make API calls.
+To use ServiceNow on Cortex XSOAR, ensure your user account has the *snc_platform_rest_api_access* role.
+ This role is required to make API calls.
  Also add to your user account the specific tables that you want to have access to.
  However, these permissions may not suffice for managing records in some tables. Make sure you have the correct role so you have permissions to work with the relevant table.
  
@@ -39,8 +41,8 @@ These scripts are wrapped around the incident table, so to wrap them around anot
    3. Under **Mapper (incoming)**, select ServiceNow - Incoming Mapper.
    4. Under **Mapper (outgoing)**, select ServiceNow - Outgoing Mapper.
    5. To enable mirroring to close a ticket in Cortex XSOAR, under the **Mirrored XSOAR Ticket closure method** dropdown, select the ticket closing method,
-      or set the *Mirrored XSOAR Ticket custom close state code* parameter, in order to override the default closure method with a custom state.
-      In order to use *Mirrored XSOAR Ticket custom close state code* parameter, it must follow this format: "custom_state_code1=custom_label1,custom_state_code2=custom_label2,...",
+      or set the *Mirrored XSOAR Ticket custom close resolution code* or *Mirrored XSOAR Ticket custom close state code* parameter, in order to override the default closure method with a custom close code or custom state.
+      In order to use *Mirrored XSOAR Ticket custom close resolution code* or *Mirrored XSOAR Ticket custom close state code* parameter, it must follow this format: "custom_state_code1=custom_label1,custom_state_code2=custom_label2,...",
       for example: “10=Design,11=Development,12=Testing”.
       Also, a matching user-defined list of customized incident close reasons must be configured as a "Server configuration" in Cortex XSOAR. (Meaning each Service Now custom state label will have a matching Cortex XSOAR custom close reason with the same name). ***Not following this format will result in a server error!***
       For more information about Customize Incident Close Reasons, see [this link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Customize-Incident-Close-Reasons).
@@ -97,7 +99,7 @@ If MFA is enabled for your user, follow the next steps:
     | Get incident attachments |  | False |
     | Incident Mirroring Direction | Choose the direction to mirror the incident: Incoming \(from ServiceNow to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to ServiceNow\), or Incoming and Outgoing \(from/to Cortex XSOAR and ServiceNow\). | False |
     | Use Display Value | Select this checkbox to retrieve comments and work notes without accessing the \`sys_field_journal\` table. | False |
-    | Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. | False |
+    | Instance Date Format | Select the date format of your ServiceNow instance. Mandatory when using the \`Use Display Value\` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM. | False |
     | Comment Entry Tag | Choose the tag to add to an entry to mirror it as a comment in ServiceNow. | False |
     | Work Note Entry Tag | Choose the tag to add to an entry to mirror it as a work note in ServiceNow. | False |
     | File Entry Tag To ServiceNow | Choose the tag to add to an entry to mirror it as a file in ServiceNow. | False |
@@ -107,8 +109,10 @@ If MFA is enabled for your user, follow the next steps:
     | Custom Fields to Mirror | Custom \(user defined\) fields in the format: u_fieldname1,u_fieldname2 custom fields start with a 'u_'. These fields will be included in the mirroring capabilities, if added here. | False |
     | Mirrored XSOAR Ticket closure method | Define how to close the mirrored tickets in Cortex XSOAR. Choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. Choose 'None' to disable closing the mirrored tickets in Cortex XSOAR. | False |
     | Mirrored XSOAR Ticket custom close state code | Define how to close the mirrored tickets in Cortex XSOAR with a custom state. Enter here a comma-separated list of custom closure state codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
+    | Mirrored XSOAR Ticket custom close resolution code | Define how to close the mirrored tickets in Cortex XSOAR with a custom resolution code. Enter a comma-separated list of custom resolution codes and their labels (acceptable format example: “10=Design,11=Development,12=Testing”) to override the default closure method. Note that a matching user-defined list of custom close reasons must be configured as a "Server configuration" in Cortex XSOAR. Not following this format will result in closing the incident with a default close reason. | False |
     | Mirrored ServiceNow Ticket closure method | Define how to close the mirrored tickets in ServiceNow, choose 'resolved' to enable reopening from the UI. Otherwise, choose 'closed'. | False |
     | Mirrored ServiceNow Ticket custom close state code | Define how to close the mirrored tickets in ServiceNow with custom state. Enter here the custom closure state code \(should be an integer\) to override the default closure method. If the closure code does not exist, the default one will be used instead. | False |
+    | Mirror Existing Notes For New Fetched Incidents | When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present. | False |
     | Use system proxy settings |  | False |
     | Trust any certificate (not secure) |  | False |
     | Incidents Fetch Interval |  | False |
@@ -1098,7 +1102,29 @@ Uploads a file to the specified ticket.
 
 #### Human Readable Output
 
+### servicenow-delete-file
 
+***
+Delete an attachment from a ticket.
+
+#### Base Command
+
+`servicenow-delete-file`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| file_sys_id | Attachment File ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!servicenow-delete-file file_sys_id=1234```
+#### Human Readable Output
+
+>Attachment with Sys ID 1234 was successfully deleted.
 
 ### servicenow-get-record
 ***
@@ -1904,23 +1930,24 @@ Gets table names by a label to use in commands.
 
 
 ### servicenow-get-ticket-notes
-***
-Gets notes from the specified ServiceNow ticket. Can be used by providing "Read permissions" for the sys_journal_field table, or by setting use_display_value=true.
 
+***
+Gets notes from the specified ServiceNow ticket. Notes can be retrieved either by granting Read permissions for the sys_journal_field table, or by setting the `use_display_value` parameter to true.
 
 #### Base Command
 
 `servicenow-get-ticket-notes`
+
 #### Input
 
-| **Argument Name** | **Description**        | **Required** |
-|--------|--------| --- |
-| id  | Ticket System ID. | Required | 
-| limit  | Maximum number of ticket notes. Default is 10.     | Optional | 
-| offset | Offset of the ticket notes.    | Optional |
-| use_display_value | Whether to retrieve notes using display values from ServiceNow or by accessing the sys_journal_field table. Defaults to the value set in the Cortex XSOAR instance configuration. | Optional |
-| ticket_type   | The type of the ticket for which notes should be retrieved when using the `use_display_value` option. Defaults to the ticket type set in the Cortex XSOAR instance configuration. | Optional |
-
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| id | Ticket System ID. | Required | 
+| limit | Maximum number of ticket notes. Default is 10. | Optional | 
+| offset | Offset of the ticket notes. Default is 0. | Optional | 
+| use_display_value | Whether to use `sysparm_display_value` to retrieve comments and work notes. Overrides the value set in the instance configuration. Possible values are: true, false. | Optional | 
+| ticket_type | The ticket type that notes should be retrieved for when using the `use_display_value` option. Possible values are: incident, problem, change_request, sc_request, sc_task, sc_req_item, sn_si_incident. Default is incident. | Optional | 
+| add_as_entry | Whether to add ticket notes and work notes as notes in the War Room. Possible values are true, false. | Optional | 
 
 #### Context Output
 
@@ -2322,7 +2349,8 @@ Create a change request from a template.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| template | Template for creating a standard change request. | Required | 
+| template | Template for creating a standard change request. | Required |
+| force_default_url | Whether to force-use the default api version (not versioned), ignoring the API version parameter. Default is false | Optional | 
 
 
 #### Context Output

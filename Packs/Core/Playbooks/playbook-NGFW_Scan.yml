@@ -131,7 +131,7 @@ tasks:
       {
         "position": {
           "x": 20,
-          "y": 3010
+          "y": 3180
         }
       }
     note: false
@@ -251,7 +251,7 @@ tasks:
       '#default#':
       - "46"
       "yes":
-      - "19"
+      - "61"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -315,8 +315,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1000,
-          "y": 1840
+          "x": 1250,
+          "y": 2010
         }
       }
     note: false
@@ -705,7 +705,7 @@ tasks:
         complex:
           root: inputs.HostAutoContainment
       IAMUserDomain:
-        simple: '@demisto.com'
+        simple: ''
       UserContainment:
         simple: Fasle
     separatecontext: true
@@ -718,7 +718,7 @@ tasks:
       {
         "position": {
           "x": 1000,
-          "y": 2010
+          "y": 2180
         }
       }
     note: false
@@ -750,7 +750,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2840
+          "y": 3010
         }
       }
     note: false
@@ -796,7 +796,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2315
+          "y": 2485
         }
       }
     note: false
@@ -844,7 +844,7 @@ tasks:
       {
         "position": {
           "x": 1000,
-          "y": 2490
+          "y": 2660
         }
       }
     note: false
@@ -875,7 +875,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2180
+          "y": 2350
         }
       }
     note: false
@@ -1061,8 +1061,6 @@ tasks:
       attackerRemoteIP:
         complex:
           root: inputs.scannerIP
-      timeRange:
-        simple: 2 hours ago
     separatecontext: false
     loop:
       iscommand: false
@@ -1437,7 +1435,48 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2665
+          "y": 2835
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "61":
+    id: "61"
+    taskid: 0d9c70b9-65ea-4f19-8289-36ba6b10d480
+    type: condition
+    task:
+      id: 0d9c70b9-65ea-4f19-8289-36ba6b10d480
+      version: -1
+      name: SOC Email exist?
+      description: Checks if the SOC Email exist.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "40"
+      "yes":
+      - "19"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: inputs.SOCEmailAddress
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1000,
+          "y": 1840
         }
       }
     note: false
@@ -1450,7 +1489,6 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "17_19_yes": 0.49,
       "26_28_#default#": 0.47,
       "26_57_yes": 0.48,
       "28_47_#default#": 0.51,
@@ -1465,12 +1503,13 @@ view: |-
       "56_14_#default#": 0.43,
       "56_54_yes": 0.5,
       "60_41_yes": 0.63,
-      "60_5_#default#": 0.43
+      "60_5_#default#": 0.43,
+      "61_40_#default#": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 4215,
-        "width": 1620,
+        "height": 4385,
+        "width": 1870,
         "x": -240,
         "y": -1140
       }
@@ -1639,6 +1678,51 @@ inputs:
     Possible values: True/False.  Default: True.
     Whether to provide user verification for blocking IP addresses.
   playbookInputQuery:
+inputSections:
+- inputs:
+  - SOCEmailAddress
+  - AutoCloseAlert
+  name: Alert Management
+  description: Alert management settings and data, including escalation processes, and user engagements.
+- inputs:
+  - scannerIP
+  name: Investigation
+  description: Investigation settings and data, including any deep dive alert investigation and verdict determination.
+- inputs:
+  - blockKnownScanner
+  - reportIPAddress
+  - AutoContainment
+  - UserVerification
+  - HostAutoContainment
+  - AutoRecovery
+  name: Remediation
+  description: Remediation settings and data, including containment, eradication, and recovery.
+- inputs:
+  - ShouldOpenTicket
+  - serviceNowShortDescription
+  - serviceNowImpact
+  - serviceNowUrgency
+  - serviceNowSeverity
+  - serviceNowTicketType
+  - serviceNowCategory
+  - serviceNowAssignmentGroup
+  - ZendeskPriority
+  - ZendeskRequester
+  - ZendeskStatus
+  - ZendeskSubject
+  - ZendeskTags
+  - ZendeskType
+  - ZendeskAssigne
+  - ZendeskCollaborators
+  - description
+  - addCommentPerEndpoint
+  - CommentToAdd
+  name: Ticket Management
+  description: Ticket management settings and data.
+outputSections:
+- outputs: []
+  name: General (Outputs group)
+  description: Generic group for outputs
 outputs: []
 tests:
 - Test Playbook - NGFW Scan

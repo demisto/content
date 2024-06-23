@@ -317,7 +317,7 @@ tasks:
           left:
             value:
               complex:
-                root: alertJson.raw_abioc.event
+                root: Core.OriginalAlert.event
                 accessor: cloud_agent_external_ip_days_seen_count
             iscontext: true
           right:
@@ -327,7 +327,7 @@ tasks:
           left:
             value:
               complex:
-                root: alertJson.raw_abioc.event
+                root: Core.OriginalAlert.event
                 accessor: cloud_caller_ip_asn_count_distinct_cloud_best_identity
             iscontext: true
           right:

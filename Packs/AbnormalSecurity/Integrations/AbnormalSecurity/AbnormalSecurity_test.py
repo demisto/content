@@ -1,6 +1,5 @@
 import pytest
 import demistomock as demisto
-import io
 import json
 from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on_a_case_command,
                               check_the_status_of_an_action_requested_on_a_threat_command,
@@ -44,12 +43,12 @@ class MockResponse:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_response(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return MockResponse(f.read(), 200)
 
 
@@ -150,7 +149,7 @@ def test_get_a_list_of_threats_command(mocker):
     """
     client = mock_client(mocker, util_load_json('test_data/test_get_list_of_abnormal_threats.json'))
     results = get_a_list_of_threats_command(client, {})
-    assert results.outputs.get('threats')[0].get('threatId') == '184712ab-6d8b-47b3-89d3-a314efef79e2'
+    assert results.outputs.get('threats')[0].get('threatId') == 'asdf097sdf907'
     assert results.outputs_prefix == 'AbnormalSecurity.inline_response_200'
 
 
@@ -412,7 +411,7 @@ def test_get_details_of_an_abuse_mailbox_campaign_command(mocker):
     results = get_details_of_an_abuse_mailbox_campaign_command(client, {})
     assert results.outputs.get('campaignId') == 'fff51768-c446-34e1-97a8-9802c29c3ebd'
     assert results.outputs.get('attackType') == 'Attack Type: Spam'
-    assert results.outputs_prefix == 'AbnormalSecurity.AbuseCampaign.campaigns'
+    assert results.outputs_prefix == 'AbnormalSecurity.AbuseCampaign'
 
 
 def test_get_employee_identity_analysis_genome_data_command(mocker):
@@ -473,10 +472,23 @@ def test_provides_the_analysis_and_timeline_details_of_a_case_command(mocker):
     assert results.outputs_prefix == 'AbnormalSecurity.CaseAnalysis'
 
 
-def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request,
-                         mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request,
-                         mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request):
-    client = mock_client(mocker, util_load_json('test_data/test_get_case_analysis_and_timeline.json'))
+def test_fetch_threat_incidents(mocker, mock_get_a_list_of_threats_request):
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_a_threat.json'))
+    first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
+        first_fetch_time=first_fetch_time,
+        max_incidents_to_fetch=200,
+        fetch_account_takeover_cases=False,
+        fetch_abuse_campaigns=False,
+        fetch_threats=True
+    )
+    assert len(incidents) == 1
+
+
+def test_fetch_cases_incidents(mocker, mock_get_a_list_of_abnormal_cases_identified_by_abnormal_security_request):
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_an_abnormal_case.json'))
     first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
     next_run, incidents = fetch_incidents(
         client=client,
@@ -484,7 +496,22 @@ def test_fetch_incidents(mocker, mock_get_a_list_of_threats_request,
         first_fetch_time=first_fetch_time,
         max_incidents_to_fetch=200,
         fetch_account_takeover_cases=True,
-        fetch_abuse_campaigns=True,
-        fetch_threats=True
+        fetch_abuse_campaigns=False,
+        fetch_threats=False
     )
-    assert len(incidents) == 4
+    assert len(incidents) == 1
+
+
+def test_fetch_abuse_campaign_incidents(mocker, mock_get_a_list_of_campaigns_submitted_to_abuse_mailbox_request):
+    client = mock_client(mocker, util_load_json('test_data/test_get_details_of_abuse_campaign.json'))
+    first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
+    next_run, incidents = fetch_incidents(
+        client=client,
+        last_run={"last_fetch": "2023-09-17T14:43:09Z"},
+        first_fetch_time=first_fetch_time,
+        max_incidents_to_fetch=200,
+        fetch_account_takeover_cases=False,
+        fetch_abuse_campaigns=True,
+        fetch_threats=False
+    )
+    assert len(incidents) == 1

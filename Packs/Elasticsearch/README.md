@@ -3,12 +3,9 @@ Elasticsearch offers speed and flexibility to handle data in a wide variety of u
 
 
 ## What does this pack do?
-- Add a search box to an app or website.
-- Store and analyze logs, metrics, and security event data.
-- Use machine learning to automatically model the behavior of your data in real time.
-- Automate business workflows using Elasticsearch as a storage engine.
-- Manage, integrate, and analyze spatial information using Elasticsearch as a geographic information system (GIS).
-- Store and process genetic data using Elasticsearch as a bioinformatics research tool.
+This pack provides an integration with the Elasticsearch API and allows you to
+- Query Elasticsearch instances using DSL, EQL and Lucene syntaxes.
+- Search an index in Elasticsearch
+- Index a document into an Elastisearch index.
 
-This pack provides an integration with the Elasticsearch API and allows you to query Elasticsearch instances using DSL, EQL and Lucene syntaxes. 
 In addition, you can fetch incidents with predefined query.

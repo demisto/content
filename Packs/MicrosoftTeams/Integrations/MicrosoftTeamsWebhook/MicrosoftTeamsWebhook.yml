@@ -31,18 +31,18 @@ script:
   commands:
   - arguments:
     - defaultValue: None
-      description: 'The message to send.  For example: "This is a message from Cortex XSOAR,"'
+      description: 'The message to send.  For example: "This is a message from Cortex XSOAR,".'
       name: message
     - description: The alternative webhook for a different team.  If not defined, the integration's default webhook is used.
       name: team_webhook
     - description: The alternative URL to send in place of the link to the XSOAR Investigation.
       name: alternative_url
     - defaultValue: Cortex XSOAR URL
-      description: The title for the link, defaults to "Cortex XSOAR URL"
+      description: The title for the link, defaults to "Cortex XSOAR URL".
       name: url_title
-    description: Send a message to Microsoft Teams via Incoming Webhook
+    description: Send a message to Microsoft Teams via Incoming Webhook.
     name: ms-teams-message
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: ''
   subtype: python3

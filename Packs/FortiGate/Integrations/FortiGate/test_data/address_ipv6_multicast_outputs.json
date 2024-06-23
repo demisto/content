@@ -1,0 +1,14 @@
+[
+    {
+        "Comment": "",
+        "IPv6": "0000::/8",
+        "Name": "Mario",
+        "VDOM": "root"
+    },
+    {
+        "Comment": "aaaa",
+        "IPv6": "0000:0000:0000:0000:0000:0000:0000:0000/128",
+        "Name": "Luigi",
+        "VDOM": "root"
+    }
+]

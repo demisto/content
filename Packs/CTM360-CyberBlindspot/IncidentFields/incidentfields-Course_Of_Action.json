@@ -1,0 +1,31 @@
+{
+    "id": "incident_ctm360_cyberblindspot_courseofaction",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "name": "CTM360 CyberBlindspot Course of Action",
+    "ownerOnly": false,
+    "description": "Actions that can be taken on a CyberBlindspot incident.",
+    "cliName": "ctm360cyberblindspotcourseofaction",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "CyberBlindspot Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": false,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

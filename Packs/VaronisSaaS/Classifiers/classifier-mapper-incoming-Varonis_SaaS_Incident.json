@@ -1,0 +1,192 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Varonis SaaS Incident - Incoming Mapper",
+    "mapping": {
+        "Varonis SaaS Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert Category": {
+                    "simple": "Category"
+                },
+                "Alert ID": {
+                    "simple": "ID"
+                },
+                "Alert Name": {
+                    "simple": "Name"
+                },
+                "Varonis SaaS Alert Status": {
+                    "simple": "Status"
+                },
+                "Threat Name": {
+                    "simple": "IPThreatTypes"
+                },
+                "Incident Link": {
+                    "simple": "Url"
+                },
+                "Varonis SaaS Close Reason": {
+                    "simple": "CloseReason"
+                },
+                "Varonis SaaS Contains Flagged Data": {
+                    "complex": {
+                        "accessor": "ContainsFlaggedData",
+                        "filters": [],
+                        "root": "On",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis SaaS Contains Malicious External IP": {
+                    "complex": {
+                        "accessor": "ContainMaliciousExternalIP",
+                        "filters": [],
+                        "root": "Device",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis SaaS Contains Sensitive Data": {
+                    "complex": {
+                        "accessor": "ContainsSensitiveData",
+                        "filters": [],
+                        "root": "On",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "condition": {},
+                                    "else": {
+                                        "value": {
+                                            "simple": "false"
+                                        }
+                                    },
+                                    "equals": {
+                                        "value": {
+                                            "simple": "Yes"
+                                        }
+                                    },
+                                    "lhs": {},
+                                    "options": {},
+                                    "rhs": {},
+                                    "then": {
+                                        "value": {
+                                            "simple": "true"
+                                        }
+                                    }
+                                },
+                                "operator": "If-Then-Else"
+                            }
+                        ]
+                    }
+                },
+                "Varonis SaaS Number of Events": {
+                    "simple": "NumOfAlertedEvents"
+                },
+                "Varonis SaaS Devices": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Devices",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Varonis SaaS Locations": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Locations",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Varonis SaaS Users": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Users",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "Varonis SaaS Sources": {
+                    "complex": {
+                        "filters": [],
+                        "root": "Sources",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "ID"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        }
+    },
+    "name": "Varonis SaaS Incident - Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.0.0"
+}

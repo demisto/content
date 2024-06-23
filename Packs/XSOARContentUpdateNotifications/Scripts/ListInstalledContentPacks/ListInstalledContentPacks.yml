@@ -12,19 +12,19 @@ commonfields:
   version: -1
 dependson:
   must:
-  - '|||demisto-api-get'
-dockerimage: demisto/python3:3.10.12.63474
+  - '|||core-api-get'
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: ListInstalledContentPacks
 outputs:
 - contextPath: InstalledPacks.Name
-  description: Pack Name
+  description: Pack Name.
   type: string
 - contextPath: InstalledPacks.Version
-  description: Pack Version
+  description: Pack Version.
   type: string
 - contextPath: InstalledPacks.Update
-  description: Is there an update available
+  description: Is there an update available.
   type: boolean
 runas: DBotWeakRole
 script: ''

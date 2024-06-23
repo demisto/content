@@ -1,0 +1,433 @@
+id: SpyCloud - Breach Investigation
+version: -1
+name: SpyCloud - Breach Investigation
+description: SpyCloud Breach playbook gets executed on the occurrence of the incident SpyCloud Breach Data type.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 3f6f6416-3d1c-4fb8-815c-c7bb9a58e8af
+    type: start
+    task:
+      id: 3f6f6416-3d1c-4fb8-815c-c7bb9a58e8af
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 960e0fb8-b13d-45f0-86f7-9598b8b84237
+    type: condition
+    task:
+      id: 960e0fb8-b13d-45f0-86f7-9598b8b84237
+      version: -1
+      name: Check if the user is currently an active employee
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.spycloudemailusername
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: incident.spycloudemailusername
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 5c56588f-6838-4fe9-8c4c-ca7e3ef51c7f
+    type: condition
+    task:
+      id: 5c56588f-6838-4fe9-8c4c-ca7e3ef51c7f
+      version: -1
+      name: Check if the exposed password is in use on the network
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7bcc7236-d5cc-4459-877c-22b210167b6d
+    type: condition
+    task:
+      id: 7bcc7236-d5cc-4459-877c-22b210167b6d
+      version: -1
+      name: Perform a password reset and escalate
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+          right:
+            value: {}
+        - operator: isEmpty
+          left:
+            value:
+              simple: incident.spycloudpasswordplaintext
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 6a28c1e4-051a-4b15-8d3b-e9d42018464a
+    type: regular
+    task:
+      id: 6a28c1e4-051a-4b15-8d3b-e9d42018464a
+      version: -1
+      name: Add comments to the incident
+      description: Change the properties of an incident
+      script: Builtin|||setIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      comment:
+        simple: Password Reset Done
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6ce03d48-6db2-466a-84c4-07a79a582b75
+    type: title
+    task:
+      id: 6ce03d48-6db2-466a-84c4-07a79a582b75
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 910,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 515428a3-f3be-4ee7-8930-368d4208ab84
+    type: title
+    task:
+      id: 515428a3-f3be-4ee7-8930-368d4208ab84
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 910
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d2db17e9-6407-40cb-86d8-9e7b9a0d66fd
+    type: condition
+    task:
+      id: d2db17e9-6407-40cb-86d8-9e7b9a0d66fd
+      version: -1
+      name: Check Password Length
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: StringLength.Result
+            iscontext: true
+          right:
+            value:
+              simple: inputs.Minimum Password Length
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 2
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3ea7cf69-349f-4fb5-8393-45b6f193fd46
+    type: regular
+    task:
+      id: 3ea7cf69-349f-4fb5-8393-45b6f193fd46
+      version: -1
+      name: Incident Password Length
+      description: Returns the length of  the string passed as the argument
+      scriptName: StringLength
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      str:
+        complex:
+          root: incident
+          accessor: spycloudpasswordplaintext
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 05622ca1-14fe-4e38-8abe-60399553dca7
+    type: title
+    task:
+      id: 05622ca1-14fe-4e38-8abe-60399553dca7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 32955f7b-90b8-403d-8dc6-9f178330a429
+    type: title
+    task:
+      id: 32955f7b-90b8-403d-8dc6-9f178330a429
+      version: -1
+      name: END
+      type: title
+      iscommand: false
+      brand: ""
+      description: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 695,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "3_4_yes": 0.83
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1260,
+        "width": 1240,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs:
+- key: Minimum Password Length
+  value:
+    simple: "5"
+  required: true
+  description: Minimum length of password
+  playbookInputQuery:
+outputs: []
+quiet: true
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

@@ -32,7 +32,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 80
+          "y": -90
         }
       }
     note: false
@@ -184,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 920
+          "y": 750
         }
       }
     note: false
@@ -219,7 +219,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1100
+          "y": 930
         }
       }
     note: false
@@ -244,7 +244,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "5"
+      - "33"
     scriptarguments:
       initiatorsha256:
         simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
@@ -254,7 +254,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 1280
+          "y": 1110
         }
       }
     note: false
@@ -294,7 +294,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 220
+          "y": 50
         }
       }
     note: false
@@ -470,7 +470,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 390
+          "y": 220
         }
       }
     note: false
@@ -523,7 +523,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 560
+          "y": 390
         }
       }
     note: false
@@ -558,7 +558,44 @@ tasks:
       {
         "position": {
           "x": 710,
-          "y": 730
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: fcb7ca7b-a852-49c5-85ad-016986cc926f
+    type: regular
+    task:
+      id: fcb7ca7b-a852-49c5-85ad-016986cc926f
+      version: -1
+      name: Create new indicator
+      description: commands.local.cmd.new.indicator
+      script: Builtin|||createNewIndicator
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      type:
+        simple: File
+      value:
+        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1280
         }
       }
     note: false
@@ -573,10 +610,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1995,
+        "height": 2165,
         "width": 700,
         "x": 440,
-        "y": 80
+        "y": -90
       }
     }
   }

@@ -9,170 +9,162 @@ configuration:
   type: 0
 - display: Account username
   name: credentials
-  required: true
+  required: false
   type: 9
+- display: API Key
+  name: api_key
+  required: false
+  type: 9
+  hiddenusername: true
+  displaypassword: API Key
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
-- defaultvalue: 'false'
-  display: Use system proxy settings
+- display: Use system proxy settings
   name: proxy
   type: 8
   required: false
-description: Manage FortiGate Firewall
+  defaultvalue: 'false'
+description: 'FortiGate provides flawless convergence that can scale to any location: remote office, branch, campus, data center, and cloud. FortiGate always delivered on the concept of hybrid mesh firewalls with FortiManager for unified management and consistent security across complex hybrid environments. The Fortinet FortiOS operating system provides deep visibility and security across a variety of form factors.'
 display: FortiGate
 name: FortiGate
 script:
   commands:
   - arguments:
     - defaultValue: root
-      description: Filter by address (ip or domain)
+      description: Filter by address (ip or domain).
       name: address
-    - description: Filter by address name
+    - description: Filter by address name.
       name: name
-    description: Get all address objects from your firewall
+    deprecated: true
+    description: Deprecated. Use `fortigate-list-firewall-address-ipv4s` instead. Get all address objects from your firewall.
     name: fortigate-get-addresses
     outputs:
     - contextPath: Fortigate.Address.Name
-      description: Address name
+      description: Address name.
       type: string
     - contextPath: Fortigate.Address.Subnet
-      description: Address subnet
+      description: Address subnet.
       type: string
     - contextPath: Fortigate.Address.StartIP
-      description: Address object start IP address
+      description: Address object start IP address.
       type: string
     - contextPath: Fortigate.Address.EndIP
-      description: Address object end IP address
+      description: Address object end IP address.
       type: string
   - arguments:
-    - description: Filter by group name
+    - description: Filter by group name.
       name: name
-    description: Get information about FortiGate service groups
+    deprecated: true
+    description: Deprecated. Use `fortigate-list-firewall-service-groups` instead. Get information about FortiGate service groups.
     name: fortigate-get-service-groups
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
-      description: Service Group name
+      description: Service Group name.
       type: string
     - contextPath: Fortigate.ServiceGroup.Member.Name
-      description: Service Group member name
+      description: Service Group member name.
       type: string
   - arguments:
-    - description: Group name to update
+    - description: Group name to update.
       name: groupName
       required: true
-    - description: Service name to update from the group (If providing data argument value does not matter)
+    - description: Service name to update from the group (If providing data argument value does not matter).
       name: serviceName
       required: true
     - auto: PREDEFINED
-      description: Action to take on the service
+      description: Action to take on the service.
       name: action
       predefined:
       - add
       - remove
       required: true
-    description: Update a FortiGate service group
+    deprecated: true
+    description: Deprecated. Use `fortigate-update-firewall-service-group` instead. Update a FortiGate service group.
     name: fortigate-update-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
-      description: Service group name
+      description: Service group name.
       type: string
     - contextPath: Fortigate.ServiceGroup.Service.Name
-      description: Service name
+      description: Service name.
       type: string
   - arguments:
-    - description: Group name of the group you would like to delete
+    - description: Group name of the group you would like to delete.
       name: groupName
       required: true
-    description: Delete a service group from FortiGate
+    deprecated: true
+    description: Deprecated. Use `fortigate-delete-firewall-service-group` instead. Delete a service group from FortiGate.
     name: fortigate-delete-service-group
     outputs:
     - contextPath: Fortigate.ServiceGroup.Name
-      description: Service group name
+      description: Service group name.
       type: string
     - contextPath: Fortigate.ServiceGroup.Deleted
-      description: Was service group deleted
+      description: Was service group deleted.
       type: boolean
   - arguments:
-    - description: Service name
+    - description: Service name.
       name: serviceName
-    description: Get information about a service from FortiGate Firewall
+    deprecated: true
+    description: Deprecated. Use `fortigate-list-firewall-services` instead. Get information about a service from FortiGate Firewall.
     name: fortigate-get-firewall-service
     outputs:
     - contextPath: Fortigate.Service.Name
-      description: Service name
+      description: Service name.
       type: string
     - contextPath: Fortigate.Service.Ports.TCP
-      description: TCP Port range included for the service
+      description: TCP Port range included for the service.
       type: string
     - contextPath: Fortigate.Service.Ports.UDP
-      description: UDP Port range included for the service
+      description: UDP Port range included for the service.
       type: string
   - arguments:
-    - description: Service name
-      name: serviceName
-      required: true
-    - description: 'TCP Port range for the service. Example: 100-120 or simply a single port.'
-      name: tcpRange
-    - description: 'UDP Port range for the service. Example: 100-120, or simply a single port.'
-      name: udpRange
-    description: Create a service in FortiGate firewall
-    name: fortigate-create-firewall-service
-    outputs:
-    - contextPath: Fortigate.Service.Name
-      description: Service name
-      type: string
-    - contextPath: Fortigate.Service.Ports.TCP
-      description: TCP Port range included for the service
-      type: string
-    - contextPath: Fortigate.Service.Ports.UDP
-      description: UDP Port range included for the service
-      type: string
-  - arguments:
-    - description: Policy name
+    - description: Policy name.
       name: policyName
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
-    description: Get information about a firewall policy on FortiGate
+    deprecated: true
+    description: Deprecated. Use `fortigate-list-firewall-policies` instead. Get information about a firewall policy on FortiGate.
     name: fortigate-get-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: string
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Description
-      description: Policy description
+      description: Policy description.
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the policy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled).
       type: string
     - contextPath: Fortigate.Policy.Source
-      description: Source address
+      description: Source address.
       type: string
     - contextPath: Fortigate.Policy.Destination
-      description: Destination address
+      description: Destination address.
       type: string
     - contextPath: Fortigate.Policy.Service
-      description: Service for the policy (for example HTTP)
+      description: Service for the policy (for example HTTP).
       type: string
     - contextPath: Fortigate.Policy.Action
-      description: Policy action (Allow, Block)
+      description: Policy action (Allow, Block).
       type: string
     - contextPath: Fortigate.Policy.Log
-      description: Does the policy log the traffic or not
+      description: Does the policy log the traffic or not.
       type: string
     - contextPath: Fortigate.Policy.Security
-      description: Policy attached security profile
+      description: Policy attached security profile.
       type: string
   - arguments:
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
       required: true
     - auto: PREDEFINED
-      description: Field parameter to update
+      description: Field parameter to update.
       name: field
       predefined:
       - description
@@ -184,75 +176,76 @@ script:
       - log
       - nat
       required: true
-    - description: Value of field parameter to update
+    - description: Value of field parameter to update.
       name: value
       required: true
     - auto: PREDEFINED
-      description: Whether to keep the original data or not. Only relevant if the updated field is "source" or "destination". If the supplied value is 'True', the current data will not be replaced. Instead, the supplied addresses will be added / removed from the existing data.
+      description: Whether to keep the original data or not. Only relevant if the updated field is "source" or "destination". If the supplied value is `True`, the current data will not be replaced. Instead, the supplied addresses will be added / removed from the existing data.
       name: keep_original_data
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      description: Whether to add or remove the supplied addresses from the existing data. Only relevant in case the field to update is "source" or "destination", and keep_original_data is specified to 'True'.
+      description: Whether to add or remove the supplied addresses from the existing data. Only relevant in case the field to update is "source" or "destination", and keep_original_data is specified to `True`.
       name: add_or_remove
       predefined:
       - add
       - remove
-    description: Update a firewall policy on FortiGate
+    deprecated: true
+    description: Deprecated. Use `fortigate-update-firewall-policy` instead. Update a firewall policy on FortiGate.
     execution: true
     name: fortigate-update-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: string
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Description
-      description: Policy description
+      description: Policy description.
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the policy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled).
       type: string
     - contextPath: Fortigate.Policy.Source
-      description: Source address
+      description: Source address.
       type: string
     - contextPath: Fortigate.Policy.Destination
-      description: Destination address
+      description: Destination address.
       type: string
     - contextPath: Fortigate.Policy.Service
-      description: Service for the policy (for example HTTP)
+      description: Service for the policy (for example HTTP).
       type: string
     - contextPath: Fortigate.Policy.Action
-      description: Policy action (Allow, Block)
+      description: Policy action (Allow, Block).
       type: string
     - contextPath: Fortigate.Policy.Log
-      description: Does the policy log the traffic or not
+      description: Does the policy log the traffic or not.
       type: boolean
   - arguments:
-    - description: Policy name
+    - description: Policy name.
       name: policyName
       required: true
-    - description: Description for the policy
+    - description: Description for the policy.
       name: description
-    - description: 'Source interface  (examples : port1, port2 or port3)'
+    - description: 'Source interface  (examples : port1, port2 or port3).'
       name: sourceIntf
       required: true
-    - description: 'Destination interface (examples : port1, port2 or port3)'
+    - description: 'Destination interface (examples : port1, port2 or port3).'
       name: dstIntf
       required: true
-    - description: 'Source IP address, range or domain (examples : all, update.microsoft.com)'
+    - description: 'Source IP address, range or domain (examples : all, update.microsoft.com).'
       name: source
       required: true
-    - description: 'Destination IP address, range or domain (examples : all, update.microsoft.com)'
+    - description: 'Destination IP address, range or domain (examples : all, update.microsoft.com).'
       name: destination
       required: true
-    - description: Service for the policy (for example HTTP)
+    - description: Service for the policy (for example HTTP).
       name: service
       required: true
     - auto: PREDEFINED
-      description: Action to take
+      description: Action to take.
       name: action
       predefined:
       - accept
@@ -260,14 +253,14 @@ script:
       required: true
     - auto: PREDEFINED
       defaultValue: enable
-      description: policy status
+      description: policy status.
       name: status
       predefined:
       - enable
       - disable
     - auto: PREDEFINED
       defaultValue: enable
-      description: Will the policy log the traffic or not
+      description: Will the policy log the traffic or not.
       name: log
       predefined:
       - all
@@ -275,172 +268,164 @@ script:
       - disable
     - auto: PREDEFINED
       defaultValue: enable
-      description: enable/disable NAT
+      description: enable/disable NAT.
       name: nat
       predefined:
       - enable
       - disable
-    description: Create a firewall policy (rule) on FortiGate
+    deprecated: true
+    description: Deprecated. Use `fortigate-create-firewall-policy` instead. Create a firewall policy (rule) on FortiGate.
     execution: true
     name: fortigate-create-policy
     outputs:
     - contextPath: Fortigate.Policy.Name
-      description: Policy name
+      description: Policy name.
       type: string
     - contextPath: Fortigate.Policy.Description
-      description: Policy description
+      description: Policy description.
       type: string
     - contextPath: Fortigate.Policy.Status
-      description: The status of the policy (Enabled or Disabled)
+      description: The status of the policy (Enabled or Disabled).
       type: string
     - contextPath: Fortigate.Policy.Source.Address
-      description: Source address
+      description: Source address.
       type: string
     - contextPath: Fortigate.Policy.Destination.Address
-      description: Destination address
+      description: Destination address.
       type: string
     - contextPath: Fortigate.Policy.Service
-      description: Service for the policy (for example HTTP)
+      description: Service for the policy (for example HTTP).
       type: string
     - contextPath: Fortigate.Policy.Action
-      description: Policy action (Allow, Block)
+      description: Policy action (Allow, Block).
       type: string
     - contextPath: Fortigate.Policy.Log
-      description: Does the policy log the traffic or not
+      description: Does the policy log the traffic or not.
       type: boolean
     - contextPath: Fortigate.Policy.Source.Intf
-      description: Source interface
+      description: Source interface.
       type: string
     - contextPath: Fortigate.Policy.Destination.Intf
-      description: Destination interface
+      description: Destination interface.
       type: string
     - contextPath: Fortigate.Policy.NAT
-      description: Policy NAT
+      description: Policy NAT.
       type: string
   - arguments:
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
       required: true
     - auto: PREDEFINED
-      description: Position for the policy (before or after)
+      description: Position for the policy (before or after).
       name: position
       predefined:
       - before
       - after
       required: true
-    - description: The ID of the policy being used as a positional anchor
+    - description: The ID of the policy being used as a positional anchor.
       name: neighbor
       required: true
-    description: Move a firewall policy rule to a different position
+    deprecated: true
+    description: Deprecated. Use `fortigate-move-firewall-policy` instead. Move a firewall policy rule to a different position.
     name: fortigate-move-policy
     outputs:
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Moved
-      description: Was policy moved successfully
+      description: Was policy moved successfully.
       type: boolean
   - arguments:
-    - description: Policy ID
+    - description: Policy ID.
       name: policyID
       required: true
-    description: Delete a policy from FortiGate firewall
+    deprecated: true
+    description: Deprecated. Use `fortigate-delete-firewall-policy` instead. Delete a policy from FortiGate firewall.
     execution: true
     name: fortigate-delete-policy
     outputs:
     - contextPath: Fortigate.Policy.ID
-      description: Policy ID
+      description: Policy ID.
       type: number
     - contextPath: Fortigate.Policy.Deleted
-      description: Was policy deleted successfully
+      description: Was policy deleted successfully.
       type: boolean
   - arguments:
-    - description: Filter by group name
+    - description: Filter by group name.
       name: groupName
-    description: Get information about address groups from FortiGate
+    deprecated: true
+    description: Deprecated. Use `fortigate-list-firewall-address-ipv4-groups` instead. Get information about address groups from FortiGate.
     name: fortigate-get-address-groups
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address Group name
+      description: Address Group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Member.Name
-      description: Address Group member name
+      description: Address Group member name.
       type: string
     - contextPath: Fortigate.AddressGroup.UUID
-      description: Address Group UUID
+      description: Address Group UUID.
       type: string
   - arguments:
-    - description: Group name
+    - description: Group name.
       name: groupName
       required: true
-    - description: An address to add or remove from the group (If providing data argument, value does not matter)
+    - description: An address to add or remove from the group (If providing data argument, value does not matter).
       name: address
       required: true
     - auto: PREDEFINED
-      description: Action to take on the service
+      description: Action to take on the service.
       name: action
       predefined:
       - add
       - remove
       required: true
-    description: Update an address group on FortiGate firewall
+    deprecated: true
+    description: Deprecated. Use `fortigate-update-firewall-address-ipv4-group` instead. Update an address group on FortiGate firewall.
     name: fortigate-update-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address group name
+      description: Address group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Address.Name
-      description: Address name
+      description: Address name.
       type: string
     - contextPath: Fortigate.AddressGroup.UUID
-      description: Address group UUID
+      description: Address group UUID.
       type: Unknown
   - arguments:
-    - description: Group name
+    - description: Group name.
       name: groupName
       required: true
-    - description: Address member to add to the group
+    - description: Address member to add to the group.
       name: address
       required: true
-    description: Create an address group in FortiGate firewall
+    deprecated: true
+    description: Deprecated. Use `fortigate-create-firewall-address-ipv4-group` instead. Create an address group in FortiGate firewall.
     name: fortigate-create-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address group name
+      description: Address group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Address
-      description: Address group member address
+      description: Address group member address.
       type: string
   - arguments:
-    - description: Address group name
+    - description: Address group name.
       name: name
       required: true
-    description: Delete an address group from FortiGate firewall
+    deprecated: true
+    description: Deprecated. Use `fortigate-delete-firewall-address-ipv4-group` instead. Delete an address group from FortiGate firewall.
     name: fortigate-delete-address-group
     outputs:
     - contextPath: Fortigate.AddressGroup.Name
-      description: Address group name
+      description: Address group name.
       type: string
     - contextPath: Fortigate.AddressGroup.Deleted
-      description: Was address group deleted
+      description: Was address group deleted.
       type: boolean
-  - arguments:
-    - description: CSV list of IP addresses to ban. IPv4 and IPv6 addresses are supported. For example, "1.1.1.1,6.7.8.9".
-      isArray: true
-      name: ip_address
-      required: true
-    - description: Time until ban expires in seconds. 0 for indefinite ban.
-      name: expiry
-    description: Adds IP addresses to the banned list.
-    name: fortigate-ban-ip
-  - arguments:
-    - description: CSV list of banned user IP addresses to clear. IPv4 and IPv6 addresses are supported. For example, "1.1.1.1,6.7.8.9".
-      isArray: true
-      name: ip_address
-      required: true
-    description: Clears a list of specific banned IP addresses.
-    name: fortigate-unban-ip
-  - description: Returns a list of banned IP addresses.
+  - description: Deprecated. Use `fortigate-list-banned-ips` instead. Returns a list of banned IP addresses.
+    deprecated: true
     name: fortigate-get-banned-ips
     outputs:
     - contextPath: Fortigate.BannedIP.IP
@@ -459,14 +444,15 @@ script:
     - description: The address name.
       name: name
       required: true
-    - description: 'The IP Address, example: 1.1.1.1 .'
+    - description: 'The IP Address, example: 1.1.1.1.'
       name: address
-    - defaultValue: 255.255.255.255
+    - defaultValue: '255.255.255.255'
       description: 'The address mask,example: 255.255.255.0 , Default is 255.255.255.255.'
       name: mask
     - description: 'The domain name, example: example.com.'
       name: fqdn
-    description: Creates a new address object.
+    deprecated: true
+    description: Deprecated. Use `fortigate-create-firewall-address-ipv4` instead. Creates a new address object.
     name: fortigate-create-address
     outputs:
     - contextPath: Fortigate.Address.Name
@@ -482,7 +468,8 @@ script:
     - description: The address name.
       name: name
       required: true
-    description: Deletes an address by name.
+    deprecated: true
+    description: Deprecated. Use `fortigate-delete-firewall-address-ipv4` instead. Deletes an address by name.
     name: fortigate-delete-address
     outputs:
     - contextPath: Fortigate.Address.Name
@@ -491,7 +478,1778 @@ script:
     - contextPath: Fortigate.Address.Deleted
       description: The address deletion status.
       type: String
-  dockerimage: demisto/python3:3.10.12.63474
+  - name: fortigate-list-firewall-address-ipv4s
+    description: Retrieve firewall IPv4 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc.
+    arguments:
+    - name: name
+      description: Name of a specific address to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/220620/config-firewall-address`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/220620/config-firewall-address`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.Address.Name
+      description: Address name.
+      type: String
+    - contextPath: Fortigate.Address.Subnet
+      description: IP address and subnet mask of address.
+      type: String
+    - contextPath: Fortigate.Address.StartIP
+      description: First IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Fortigate.Address.EndIP
+      description: Final IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Fortigate.Address.FQDN
+      description: Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Fortigate.Address.MACAddresses
+      description: Multiple MAC address ranges <start>[-<end>] separated by a space.
+      type: String
+    - contextPath: Fortigate.Address.Type
+      description: 'Type of the address. Can be: `ipmask`, `iprange`, `fqdn`, `geography`, `wildcard`, `dynamic`, `interface-subnet` or `mac`.'
+      type: String
+    - contextPath: Fortigate.Address.FabricObject
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      type: String
+    - contextPath: Fortigate.Address.AllowRouting
+      description: Enable/disable use of this address in the static route configuration.
+      type: String
+    - contextPath: Fortigate.Address.Tagging
+      description: List of tags associated to the object.
+      type: String
+    - contextPath: Fortigate.Address.IPs
+      description: List of IP addresses.
+      type: String
+    - contextPath: Fortigate.Address.SDNAddressType
+      description: 'Type of addresses to collect. Can be: `private`, `public`, or `all`.'
+      type: String
+    - contextPath: Fortigate.Address.AssociatedInterface
+      description: Network interface associated with the address.
+      type: String
+    - contextPath: Fortigate.Address.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Fortigate.Address.Dirty
+      description: Whether the object is clean.
+      type: String
+    - contextPath: Fortigate.Address.TagType
+      description: Tag type of dynamic address object.
+      type: String
+    - contextPath: Fortigate.Address.TagDetectionLevel
+      description: Tag detection level of dynamic address object.
+      type: String
+    - contextPath: Fortigate.Address.ObjectType
+      description: IP or MAC address.
+      type: String
+    - contextPath: Fortigate.Address.Interface
+      description: Name of the interface whose IP address is to be used.
+      type: String
+    - contextPath: Fortigate.Address.FSSOGroup
+      description: Fortinet Single Sign-On group name.
+      type: String
+    - contextPath: Fortigate.Address.SDN
+      description: Software-defined networking.
+      type: String
+    - contextPath: Fortigate.Address.SDNTag
+      description: Software-defined networking tag.
+      type: String
+    - contextPath: Fortigate.Address.CacheTTL
+      description: Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds.
+      type: Number
+    - contextPath: Fortigate.Address.Country
+      description: IP addresses associated to a specific country.
+      type: String
+    - contextPath: Fortigate.Address.ClearpassSPT
+      description: 'System Posture Token value. Can be: `unknown`, `healthy`, `quarantine`, `checkup`, `transient` or `infected`.'
+      type: String
+    - contextPath: Fortigate.Address.SubType
+      description: 'Sub-type of address. Can be: `sdn`, `clearpass-spt`, `fsso`, `ems-tag`, `fortivoice-tag`, `fortinac-tag`, `fortipolicy-tag` or `swc-tag`.'
+      type: String
+    - contextPath: Fortigate.Address.UUID
+      description: Universally Unique Identifier.
+      type: String
+    - contextPath: Fortigate.Address.ObjectTag
+      description: Tag of dynamic address object.
+      type: String
+    - contextPath: Fortigate.Address.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-address-ipv4
+    description: 'Create firewall IPv4 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc. The command parameters can be used only in the following combinations: All-[vdom,name,comment,associated_interface], Subnet-[address,mask,allow_routing], IP Range-[start_ip,end_ip], FQDN-[fqdn,allow_routing], Geography-[country], Device (Mac Address)-[mac_addresses].'
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: The name of the address to create.
+      required: true
+    - name: address
+      description: The IP address.
+    - name: mask
+      description: 'The subnet mask as an IP address. Default value: `255.255.255.255`.'
+    - name: fqdn
+      description: Fully Qualified Domain Name address.
+    - name: start_ip
+      description: First IP address (inclusive) in the range for the address.
+    - name: end_ip
+      description: Final IP address (inclusive) in the range for the address.
+    - name: country
+      description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
+    - name: mac_addresses
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for examlpe: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      isArray: true
+    - name: associated_interface
+      description: Network interface associated with address.
+    - name: allow_routing
+      description: Enable/disable use of this address in the static route configuration.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: comment
+      description: A comment for the address.
+    outputs:
+    - contextPath: Frotigate.Address.Name
+      description: The name of the updated address.
+      type: String
+    - contextPath: Frotigate.Address.IPAddress
+      description: The IP address.
+      type: String
+    - contextPath: Frotigate.Address.Mask
+      description: The subnet mask of the address.
+      type: String
+    - contextPath: Frotigate.Address.FQDN
+      description: The Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Frotigate.Address.StartIP
+      description: First IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address.EndIP
+      description: Final IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address.Country
+      description: IP addresses associated to a specific country.
+      type: String
+    - contextPath: Frotigate.Address.MAC
+      description: MAC addresses.
+      type: String
+  - name: fortigate-update-firewall-address-ipv4
+    description: 'Update firewall IPv4 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc. The command parameters can be used only in the following combinations: All-[vdom,name,comment,associated_interface,type], Subnet-[address,mask,allow_routing], IP Range-[start_ip,end_ip], FQDN-[fqdn,allow_routing], Geography-[country], Device (Mac Address)-[mac_addresses].'
+    arguments:
+    - name: name
+      description: The name of the address to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4s`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: address
+      description: The IP address.
+    - name: mask
+      description: The subnet mask of the address.
+    - name: fqdn
+      description: Fully Qualified Domain Name address.
+    - name: start_ip
+      description: First IP address (inclusive) in the range for the address.
+    - name: end_ip
+      description: Final IP address (inclusive) in the range for the address.
+    - name: country
+      description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
+    - name: mac_addresses
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      isArray: true
+    - name: associated_interface
+      description: Network interface associated with address.
+    - name: allow_routing
+      description: Enable/disable use of this address in the static route configuration.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: comment
+      description: A comment for the address.
+    outputs:
+    - contextPath: Frotigate.Address.Name
+      description: The name of the created address.
+      type: String
+    - contextPath: Frotigate.Address.IPAddress
+      description: The IP address.
+      type: String
+    - contextPath: Frotigate.Address.Mask
+      description: The subnet mask of the address.
+      type: String
+    - contextPath: Frotigate.Address.FQDN
+      description: The Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Frotigate.Address.StartIP
+      description: First IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address.EndIP
+      description: Final IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address.Country
+      description: IP addresses associated to a specific country.
+      type: String
+    - contextPath: Frotigate.Address.MAC
+      description: MAC addresses.
+      type: String
+  - name: fortigate-delete-firewall-address-ipv4
+    description: Delete firewall IPv4 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc.
+    arguments:
+    - name: name
+      description: Name of the address to delete. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4s`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Frotigate.Address.Name
+      description: The name of the deleted address.
+      type: String
+    - contextPath: Frotigate.Address.Deleted
+      description: Whether the address was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-address-ipv6s
+    description: Retrieve firewall IPv6 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc.
+    arguments:
+    - name: name
+      description: Name of a specific address to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/223620/config-firewall-address6`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/223620/config-firewall-address6`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.Address6.FabricObject
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      type: String
+    - contextPath: Fortigate.Address6.SDNTag
+      description: Software-defined networking tag.
+      type: String
+    - contextPath: Fortigate.Address6.Tenant
+      description: Specifies the instance or environment in a multi-tenancy setup for configuring address objects.
+      type: String
+    - contextPath: Fortigate.Address6.HostType
+      description: Can be a wildcard or a specific host address.
+      type: String
+    - contextPath: Fortigate.Address6.SubnetSegment.Name
+      description: The subnet segment name.
+      type: String
+    - contextPath: Fortigate.Address6.SubnetSegment.Type
+      description: The subnet segment type. Can be a wildcard or a specific address.
+      type: String
+    - contextPath: Fortigate.Address6.SubnetSegment.Value
+      description: The subnet segment value.
+      type: String
+    - contextPath: Fortigate.Address6.Template
+      description: IPv6 address template.
+      type: String
+    - contextPath: Fortigate.Address6.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Fortigate.Address6.Tagging
+      description: List of tags associated to the object.
+      type: String
+    - contextPath: Fortigate.Address6.IPs
+      description: List of IP addresses.
+      type: String
+    - contextPath: Fortigate.Address6.Country
+      description: IP addresses associated to a specific country.
+      type: String
+    - contextPath: Fortigate.Address6.FQDN
+      description: Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Fortigate.Address6.StartIP
+      description: First IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Fortigate.Address6.EndIP
+      description: Final IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Fortigate.Address6.IPv6
+      description: IPv6 address prefix.
+      type: String
+    - contextPath: Fortigate.Address6.SDN
+      description: Software-defined networking.
+      type: String
+    - contextPath: Fortigate.Address6.MACAddresses
+      description: Multiple MAC address ranges <start>[-<end>] separated by a space.
+      type: Unknown
+    - contextPath: Fortigate.Address6.Type
+      description: 'Type of IPv6 address object. Can be: `ipprefix`, `iprange`, `fqdn`, `geography`, `dynamic`, `template`, `mac`.'
+      type: String
+    - contextPath: Fortigate.Address6.UUID
+      description: Universally Unique Identifier.
+      type: String
+    - contextPath: Fortigate.Address6.Name
+      description: Address name.
+      type: String
+    - contextPath: Fortigate.Address6.Host
+      description: Host address.
+      type: String
+    - contextPath: Fortigate.Address6.CacheTTL
+      description: Defines the minimal TTL of individual IP addresses in FQDN cache measured in seconds.
+      type: Number
+    - contextPath: Fortigate.Address6.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-address-ipv6
+    description: 'Create firewall IPv6 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc. The command parameters can be used only in the following combinations: All-[vdom,name,comment], Subnet-[address,mask], IP Range-[start_ip,end_ip], FQDN-[fqdn], Geography-[country], Fabric Connector Address-[sdn_connector], Device (Mac Address)-[mac_addresses].'
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the address to create.
+      required: true
+    - name: address
+      description: 'IPv6 address prefix. Can be in short form (e.g., 2001:db8::) or long form (e.g., 0000:0000:0000:0000:0000:0000:0000:0000).'
+    - name: mask
+      description: 'Subnet mask indicating the prefix length (format: xxx, range: 0-128).'
+    - name: fqdn
+      description: Fully Qualified Domain Name address.
+    - name: start_ip
+      description: First IP address (inclusive) in the range for the address.
+    - name: end_ip
+      description: Final IP address (inclusive) in the range for the address.
+    - name: country
+      description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
+    - name: mac_addresses
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      isArray: true
+    - name: sdn_connector
+      description: 'Software-defined networking connector enables to interact with SDN controllers. For more information, go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors.'
+    - name: comment
+      description: A comment for the address.
+    outputs:
+    - contextPath: Frotigate.Address6.Name
+      description: The name of the updated address.
+      type: String
+    - contextPath: Frotigate.Address6.IPAddress
+      description: The IP address.
+      type: String
+    - contextPath: Frotigate.Address6.Mask
+      description: The subnet mask of the address.
+      type: String
+    - contextPath: Frotigate.Address6.FQDN
+      description: The Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Frotigate.Address6.StartIP
+      description: First IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address6.EndIP
+      description: Final IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address6.Country
+      description: IP addresses associated to a specific country.
+      type: String
+    - contextPath: Frotigate.Address6.MAC
+      description: MAC addresses.
+      type: String
+    - contextPath: Frotigate.Address6.SDN
+      description: Software-defined networking.
+      type: String
+  - name: fortigate-update-firewall-address-ipv6
+    description: 'Update firewall IPv6 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc. The command parameters can be used only in the following combinations: All-[vdom,name,comment,associated_interface], Subnet-[address,mask], IP Range-[start_ip,end_ip], FQDN-[fqdn], Geography-[country], Fabric Connector Address-[sdn_connector], Device (Mac Address)-[mac_addresses].'
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the address to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv6s`.
+      required: true
+      default: true
+    - name: type
+      description: The type of the address to update.
+      auto: PREDEFINED
+      predefined:
+      - Subnet
+      - IP Range
+      - FQDN
+      - Geography
+      - Device (Mac Address)
+      - Fabric Connector Address
+    - name: address
+      description: The IP address.
+    - name: mask
+      description: The subnet mask of the address.
+    - name: fqdn
+      description: Fully Qualified Domain Name address.
+    - name: start_ip
+      description: First IP address (inclusive) in the range for the address.
+    - name: end_ip
+      description: Final IP address (inclusive) in the range for the address.
+    - name: country
+      description: 'IP addresses associated to a specific country. Input must be according to the two-letter counter codes, for example: `IL`.'
+    - name: mac_addresses
+      description: 'Comma-separated list of MAC addresses. Can be single or range. Range must be separated by `-`, for example: `00:00:00:00:00:00` or `00:00:00:00:00:00-FF:FF:FF:FF:FF:FF`.'
+      isArray: true
+    - name: sdn_connector
+      description: 'Software-defined networking connector enables to interact with SDN controllers. For more information, go to: https://docs.fortinet.com/document/fortigate/7.2.5/administration-guide/753961/public-and-private-sdn-connectors.'
+    - name: comment
+      description: A comment for the address.
+    outputs:
+    - contextPath: Frotigate.Address6.Name
+      description: The name of the updated address.
+      type: String
+    - contextPath: Frotigate.Address6.IPAddress
+      description: The IP address.
+      type: String
+    - contextPath: Frotigate.Address6.Mask
+      description: The subnet mask of the address.
+      type: String
+    - contextPath: Frotigate.Address6.FQDN
+      description: The Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Frotigate.Address6.StartIP
+      description: First IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address6.EndIP
+      description: Final IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Frotigate.Address6.Country
+      description: IP addresses associated to a specific country.
+      type: String
+    - contextPath: Frotigate.Address6.MAC
+      description: MAC addresses.
+      type: String
+    - contextPath: Frotigate.Address6.SDN
+      description: Software-defined networking.
+      type: String
+  - name: fortigate-delete-firewall-address-ipv6
+    description: Delete firewall IPv6 addresses. Addresses define sources and destinations of network traffic and can be used in many functions such as firewall policies, ZTNA, etc.
+    arguments:
+    - name: name
+      description: Name of the address to delete. Names can be retrieved with the command `fortigate-list-firewall-address-ipv6s`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.Address6.Name
+      description: The name of the address.
+      type: String
+    - contextPath: Fortigate.Address6.Deleted
+      description: Whether the address was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-address-ipv4-multicasts
+    description: Retrieve firewall IPv4 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It is suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.
+    arguments:
+    - name: name
+      description: Name of a specific address to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/221620/config-firewall-multicast-address`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/221620/config-firewall-multicast-address`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.AddressMulticast.Tagging
+      description: List of tags associated to the object.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.AssociatedInterface
+      description: Network interface associated with address.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.EndIP
+      description: Final IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.StartIP
+      description: First IP address (inclusive) in the range for the address.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.Subnet
+      description: Broadcast address and subnet.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.Type
+      description: 'Type of the address multicast. Can be: `multicastrange` or `broadcastmask`.'
+      type: String
+    - contextPath: Fortigate.AddressMulticast.Name
+      description: Address multicast name.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-address-ipv4-multicast
+    description: 'Create firewall IPv4 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It`s suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.'
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the address multicast to create.
+      required: true
+    - name: comment
+      description: A comment for the address.
+    - name: associated_interface
+      description: Network interface associated with address.
+    - name: type
+      description: Specifies the format of the multicast address.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - Broadcast Subnet
+      - Multicast IP Range
+    - name: first_ip
+      description: For `Broadcast Subnet`, this is the network address. For `Multicast IP Range`, (inclusive) this is the beginning of the IP range.
+      required: true
+    - name: final_ip
+      description: 'For `Broadcast Subnet` this should be the network mask as an IP address. For `Multicast IP Range`, (inclusive) this is the end of the IP range.'
+      required: true
+    outputs:
+    - contextPath: Frotigate.AddressMulticast.Name
+      description: The name of the updated address multicast.
+      type: String
+    - contextPath: Frotigate.AddressMulticast.Type
+      description: Specifies the format of the multicast address.
+      type: String
+    - contextPath: Frotigate.AddressMulticast.FirstIP
+      description: First input IP address.
+      type: String
+    - contextPath: Frotigate.AddressMulticast.FinalIP
+      description: Final input IP address.
+      type: String
+  - name: fortigate-update-firewall-address-ipv4-multicast
+    description: 'Update firewall IPv4 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It`s suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.'
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the address multicast to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4-multicasts`.
+      required: true
+      default: true
+    - name: comment
+      description: A comment for the address.
+    - name: associated_interface
+      description: Network interface associated with address.
+    - name: type
+      description: Specifies the format of the multicast address.
+      auto: PREDEFINED
+      predefined:
+      - Broadcast Subnet
+      - Multicast IP Range
+    - name: first_ip
+      description: For 'Broadcast Subnet', this is the network address. For 'Multicast IP Range', (inclusive) this is the beginning of the IP range.
+    - name: final_ip
+      description: For 'Broadcast Subnet' this should be the network mask as an IP address. For `Multicast IP Range`, (inclusive) this is the end of the IP range.
+    outputs:
+    - contextPath: Frotigate.AddressMulticast.Name
+      description: The name of the updated address multicast.
+      type: String
+    - contextPath: Frotigate.AddressMulticast.Type
+      description: Specifies the format of the multicast address.
+      type: String
+    - contextPath: Frotigate.AddressMulticast.FirstIP
+      description: First input IP address.
+      type: String
+    - contextPath: Frotigate.AddressMulticast.FinalIP
+      description: Final input IP address.
+      type: String
+  - name: fortigate-delete-firewall-address-ipv4-multicast
+    description: Delete firewall IPv4 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It is suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.
+    arguments:
+    - name: name
+      description: Name of the address multicast to delete. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4-multicasts`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.AddressMulticast.Name
+      description: The name of the address multicast.
+      type: String
+    - contextPath: Fortigate.AddressMulticast.Deleted
+      description: Whether the address multicast was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-address-ipv6-multicasts
+    description: Retrieve firewall IPv6 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It is suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.
+    arguments:
+    - name: name
+      description: Name of a specific address multicast to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/224620/config-firewall-multicast-address6`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/224620/config-firewall-multicast-address6`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.Address6Multicast.Tagging
+      description: List of tags associated to the object.
+      type: String
+    - contextPath: Fortigate.Address6Multicast.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Fortigate.Address6Multicast.IPv6
+      description: Broadcast address and subnet.
+      type: String
+    - contextPath: Fortigate.Address6Multicast.Name
+      description: Address multicast name.
+      type: String
+    - contextPath: Fortigate.Address6Multicast.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-address-ipv6-multicast
+    description: Create firewall IPv6 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It is suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the address multicast to create.
+      required: true
+    - name: comment
+      description: A comment for the address.
+    - name: address
+      description: 'IPv6 address prefix. Can be in short form (e.g., 2001:db8::) or long form (e.g., 0000:0000:0000:0000:0000:0000:0000:0000).'
+      required: true
+    - name: mask
+      description: 'Subnet mask indicating the prefix length (format: xxx, range: 0-128).'
+      required: true
+    outputs:
+    - contextPath: Frotigate.Address6Multicast.Name
+      description: The name of the updated address multicast.
+      type: String
+    - contextPath: Frotigate.Address6Multicast.IPAddress
+      description: The IP address.
+      type: String
+    - contextPath: Frotigate.Address6Multicast.Mask
+      description: The subnet mask of the address.
+      type: String
+  - name: fortigate-update-firewall-address-ipv6-multicast
+    description: Update firewall IPv6 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It is suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.
+    arguments:
+    - name: name
+      description: Name of the address multicast to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv6-multicasts`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: comment
+      description: A comment for the address.
+    - name: address
+      description: 'IPv6 address prefix. Can be in short form (e.g., 2001:db8::) or long form (e.g., 0000:0000:0000:0000:0000:0000:0000:0000).'
+    - name: mask
+      description: 'Subnet mask indicating the prefix length (format: xxx, range: 0-128).'
+    outputs:
+    - contextPath: Frotigate.Address6Multicast.Name
+      description: The name of the updated address multicast.
+      type: String
+    - contextPath: Frotigate.Address6Multicast.IPAddress
+      description: The IP address.
+      type: String
+    - contextPath: Frotigate.Address6Multicast.Mask
+      description: The subnet mask of the address.
+      type: String
+  - name: fortigate-delete-firewall-address-ipv6-multicast
+    description: Delete firewall IPv6 multicast addresses. Multicasting allows a single source to send data to multiple receivers efficiently, conserving bandwidth and minimizing network traffic. It is suitable for media streaming, news feeds, financial updates, and certain dynamic routing protocols like RIPv2, OSPF, and EIGRP.
+    arguments:
+    - name: name
+      description: Name of the address multicast to delete. Names can be retrieved with the command `fortigate-list-firewall-address-ipv6-multicasts`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.Address6Multicast.Name
+      description: The name of the address multicast.
+      type: String
+    - contextPath: Fortigate.Address6Multicast.Deleted
+      description: Whether the address multicast was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-address-ipv4-groups
+    description: Retrieve firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device.
+    arguments:
+    - name: groupName
+      description: Name of a specific address group to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/225620/config-firewall-addrgrp`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/225620/config-firewall-addrgrp`.'
+      isArray: true
+    outputs:
+    - contextPath: Frotigate.AddressGroup.FabricObject
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      type: String
+    - contextPath: Frotigate.AddressGroup.AllowRouting
+      description: Enable/disable use of this address in the static route configuration.
+      type: String
+    - contextPath: Frotigate.AddressGroup.Tagging
+      description: List of tags associated to the object.
+      type: String
+    - contextPath: Frotigate.AddressGroup.ExcludeMember
+      description: Address name exclusion member.
+      type: String
+    - contextPath: Frotigate.AddressGroup.Exclude
+      description: Enable/disable address exclusion.
+      type: String
+    - contextPath: Frotigate.AddressGroup.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Frotigate.AddressGroup.Member.Name
+      description: Address objects contained within the group.
+      type: String
+    - contextPath: Frotigate.AddressGroup.UUID
+      description: Universally Unique Identifier.
+      type: String
+    - contextPath: Frotigate.AddressGroup.Category
+      description: 'Address group category. `default`: Default address group category (cannot be used as ztna-ems-tag/ztna-geo-tag in policy). `ztna-ems-tag`: Members must be ztna-ems-tag group or ems-tag address. Can be used as ztna-ems-tag in policy. `ztna-geo-tag`: Members must be ztna-geo-tag group or geographic address. Can be used as ztna-geo-tag in policy.'
+      type: String
+    - contextPath: Frotigate.AddressGroup.Type
+      description: Address group type. Default address group type (address may belong to multiple groups). Address folder group (members may not belong to any other group).
+      type: String
+    - contextPath: Frotigate.AddressGroup.Name
+      description: Address group name.
+      type: String
+    - contextPath: Fortigate.AddressGroup.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-address-ipv4-group
+    description: Create firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: groupName
+      description: Name of the address group to create.
+      required: true
+    - name: type
+      description: 'Address group type. `group`: Default address group type (address may belong to multiple groups). `folder`: Address folder group (members may not belong to any other group).'
+      defaultValue: group
+      auto: PREDEFINED
+      predefined:
+      - group
+      - folder
+    - name: address
+      description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+    - name: excluded_addresses
+      description: Comma-separated list of address names to exclude. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+    - name: allow_routing
+      description: Enable/disable use of this address in the static route configuration.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: comment
+      description: A comment for the address group.
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: The address group name.
+      type: String
+    - contextPath: Fortigate.AddressGroup.Address
+      description: The address group members.
+      type: String
+  - name: fortigate-update-firewall-address-ipv4-group
+    description: Update firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device. New members will override the existing members within the group incase of a conflict.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: groupName
+      description: Name of the address group to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4-groups`.
+      required: true
+    - name: address
+      description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      isArray: true
+    - name: excluded_addresses
+      description: Comma-separated list of address names to exclude. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      isArray: true
+    - name: allow_routing
+      description: Enable/disable use of this address in the static route configuration.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: comment
+      description: A comment for the address group.
+    - name: action
+      description: Whether to add or remove members or excluded_members from address group.
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: The address group name.
+      type: String
+    - contextPath: Fortigate.AddressGroup.Address.Name
+      description: The address group members.
+      type: String
+    - contextPath: Frotigate.AddressGroup.UUID
+      description: Universally Unique Identifier.
+      type: String
+  - name: fortigate-delete-firewall-address-ipv4-group
+    description: Delete firewall IPv4 address groups. Address groups are designed for ease of use in the administration of the device.
+    arguments:
+    - name: name
+      description: Name of the address group to delete. Names can be retrieved with the command `fortigate-list-firewall-address-ipv4-groups`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.AddressGroup.Name
+      description: The name of the address group.
+      type: String
+    - contextPath: Fortigate.AddressGroup.Deleted
+      description: Whether the address group was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-address-ipv6-groups
+    description: Retrieve firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device.
+    arguments:
+    - name: name
+      description: Name of a specific address group to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/226620/config-firewall-addrgrp6`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/226620/config-firewall-addrgrp6`.'
+      isArray: true
+    outputs:
+    - contextPath: Frotigate.Address6Group.FabricObject
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      type: String
+    - contextPath: Frotigate.Address6Group.Tagging
+      description: List of tags associated to the object.
+      type: String
+    - contextPath: Frotigate.Address6Group.Member.Name
+      description: Address objects contained within the group.
+      type: String
+    - contextPath: Frotigate.Address6Group.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Frotigate.Address6Group.UUID
+      description: Universally Unique Identifier.
+      type: String
+    - contextPath: Frotigate.Address6Group.Name
+      description: Address group name.
+      type: String
+    - contextPath: Fortigate.Address6Group.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-address-ipv6-group
+    description: Create firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the address group to create.
+      required: true
+    - name: members
+      description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv6s`, `fortigate-list-firewall-address-ipv6-multicasts` and `fortigate-list-firewall-address-ipv6-groups`.
+    - name: comment
+      description: A comment for the address group.
+    outputs:
+    - contextPath: Fortigate.Address6Group.Name
+      description: The address group name.
+      type: String
+    - contextPath: Fortigate.Address6Group.Address
+      description: The address group members.
+      type: String
+  - name: fortigate-update-firewall-address-ipv6-group
+    description: Update firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device. New members will override the existing members within the group incase of a conflict.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the address group to update. Names can be retrieved with the command `fortigate-list-firewall-address-ipv6-groups`.
+      required: true
+    - name: members
+      description: Comma-separated list of address names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv6s`, `fortigate-list-firewall-address-ipv6-multicasts` and `fortigate-list-firewall-address-ipv6-groups`.
+    - name: comment
+      description: A comment for the address group.
+    - name: action
+      description: Whether to add or remove members from address group.
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+    outputs:
+    - contextPath: Fortigate.Address6Group.Name
+      description: The address group name.
+      type: String
+    - contextPath: Fortigate.Address6Group.Address
+      description: The address group members.
+      type: String
+  - name: fortigate-delete-firewall-address-ipv6-group
+    description: Delete firewall IPv6 address groups. Address groups are designed for ease of use in the administration of the device.
+    arguments:
+    - name: name
+      description: Name of the address group to delete. Names can be retrieved with the command `fortigate-list-firewall-address-ipv6-groups`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.Address6Group.Name
+      description: The name of the deleted address group.
+      type: String
+    - contextPath: Fortigate.Address6Group.Deleted
+      description: Whether the address group was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-services
+    description: Retrieve firewall services. A service is the combination of network protocols and port numbers that define traffic sources or destinations.
+    arguments:
+    - name: serviceName
+      description: Name of a specific service to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/231620/config-firewall-service-custom`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/231620/config-firewall-service-custom`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.Service.FabricObject
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      type: String
+    - contextPath: Fortigate.Service.Application
+      description: The application ID.
+      type: Number
+    - contextPath: Fortigate.Service.AppCategory
+      description: Application category ID.
+      type: Number
+    - contextPath: Fortigate.Service.AppServiceType
+      description: 'Application service type. Can be: `disable`, `app-id` or `app-category`.'
+      type: String
+    - contextPath: Fortigate.Service.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Fortigate.Service.CheckResetRange
+      description: The configuration type of ICMP error message verification.
+      type: String
+    - contextPath: Fortigate.Service.SessionTTL
+      description: Session time to live.
+      type: String
+    - contextPath: Fortigate.Service.UDPIdleTimer
+      description: Number of seconds before an idle UDP connection times out.
+      type: Number
+    - contextPath: Fortigate.Service.TCPRSTTimer
+      description: Set the length of the TCP CLOSE state in seconds.
+      type: Number
+    - contextPath: Fortigate.Service.TCPTimewaitTimer
+      description: Set the length of the TCP TIME-WAIT state in seconds.
+      type: Number
+    - contextPath: Fortigate.Service.TCPHalfopenTimer
+      description: Wait time to close a TCP session waiting for an unanswered open session packet.
+      type: Number
+    - contextPath: Fortigate.Service.TCPHalfcloseTimer
+      description: Wait time to close a TCP session waiting for an unanswered open session packet.
+      type: Number
+    - contextPath: Fortigate.Service.Ports.SCTP
+      description: Multiple SCTP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.Ports.UDP
+      description: Multiple UDP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.Ports.TCP
+      description: Multiple TCP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.FQDN
+      description: Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Fortigate.Service.IPRange
+      description: Start and end of the IP range associated with the service.
+      type: String
+    - contextPath: Fortigate.Service.Helper
+      description: Helper protocol name.
+      type: String
+    - contextPath: Fortigate.Service.Protocol
+      description: Protocol type based on IANA numbers.
+      type: String
+    - contextPath: Fortigate.Service.Category
+      description: The service category.
+      type: String
+    - contextPath: Fortigate.Service.Proxy
+      description: Enable/disable web proxy service.
+      type: String
+    - contextPath: Fortigate.Service.Name
+      description: The service name.
+      type: String
+    - contextPath: Fortigate.Service.ICMPCode
+      description: ICMP code.
+      type: Number
+    - contextPath: Fortigate.Service.ICMPType
+      description: ICMP type.
+      type: Number
+    - contextPath: Fortigate.Service.ProtocolNumber
+      description: IP protocol number.
+      type: Number
+    - contextPath: Fortigate.Service.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-service
+    description: 'Create firewall services. A service is the combination of network protocols and port numbers that define traffic sources or destinations. The command parameters can be used only in the following combinations: All-[vdom,name,comment,category], TCP/UDP/SCTP-[(start_ip,end_ip or fqdn),tcpRange,udpRange,sctpRange], IP-[ip_protocol], ICMP/ICMP6-[icmp_version,icmp_code,icmp_type].'
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: serviceName
+      description: Name of the service to create.
+      required: true
+    - name: comment
+      description: A comment for the service.
+      isArray: true
+    - name: category
+      description: Service category.
+    - name: start_ip
+      description: Start of the IP range associated with the service.
+    - name: end_ip
+      description: End of the IP range associated with the service.
+    - name: fqdn
+      description: Fully Qualified Domain Name address.
+    - name: tcpRange
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      isArray: true
+    - name: udpRange
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      isArray: true
+    - name: sctpRange
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      isArray: true
+    - name: icmp_type
+      description: Specifies the ICMP message type, defining the purpose or condition of the message.
+    - name: icmp_code
+      description: Identifies the variant or additional information for the corresponding ICMP message type.
+    - name: icmp_version
+      description: Determines the version of the Internet Control Message Protocol, either ICMP or ICMP6.
+      auto: PREDEFINED
+      predefined:
+      - ICMP
+      - ICMP6
+    - name: ip_protocol
+      description: IP protocol number.
+    outputs:
+    - contextPath: Fortigate.Service.Ports.SCTP
+      description: Multiple SCTP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.Ports.UDP
+      description: Multiple UDP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.Ports.TCP
+      description: Multiple TCP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.FQDN
+      description: Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Fortigate.Service.StartIP
+      description: Start of the IP range associated with the service.
+      type: String
+    - contextPath: Fortigate.Service.EndIP
+      description: End of the IP range associated with the service.
+      type: String
+    - contextPath: Fortigate.Service.ICMPCode
+      description: ICMP code.
+      type: Number
+    - contextPath: Fortigate.Service.ICMPType
+      description: ICMP type.
+      type: Number
+    - contextPath: Fortigate.Service.ProtocolNumber
+      description: IP protocol number.
+      type: Number
+    - contextPath: Fortigate.Service.Name
+      description: The service name.
+      type: String
+  - name: fortigate-update-firewall-service
+    description: 'Update firewall services. A service is the combination of network protocols and port numbers that define traffic sources or destinations. The command parameters can be used only in the following combinations: All-[vdom,name,comment,category], TCP/UDP/SCTP-[(start_ip,end_ip or fqdn),tcpRange,udpRange,sctpRange], IP-[ip_protocol], ICMP/ICMP6-[icmp_version,icmp_code,icmp_type].'
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the service to update. Names can be retrieved with the command `fortigate-list-firewall-services`.
+      required: true
+      default: true
+    - name: comment
+      description: A comment for the service.
+      isArray: true
+    - name: category
+      description: Service category.
+    - name: start_ip
+      description: Start of the IP range associated with the service.
+    - name: end_ip
+      description: End of the IP range associated with the service.
+    - name: fqdn
+      description: Fully Qualified Domain Name address.
+    - name: tcpRange
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      isArray: true
+    - name: udpRange
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      isArray: true
+    - name: sctpRange
+      description: 'Comma-separated list of TCP ports. Must be in the following template: {single} for example 5, {start}-{end} for example 1-50 or {start_source}-{end_source}:{start_destination}-{end_destinatinon} for example 1-3:6-9.'
+      isArray: true
+    - name: action
+      description: Whether to add or remove destination and source ports from TCP/UDP/SCTP.
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+    - name: icmp_type
+      description: Specifies the ICMP message type, defining the purpose or condition of the message.
+    - name: icmp_code
+      description: Identifies the variant or additional information for the corresponding ICMP message type.
+    - name: icmp_version
+      description: Determines the version of the Internet Control Message Protocol, either ICMPv4 or ICMPv6.
+      auto: PREDEFINED
+      predefined:
+      - icmp4
+      - icmp6
+    - name: ip_protocol
+      description: IP protocol number.
+    outputs:
+    - contextPath: Fortigate.Service.Ports.SCTP
+      description: Multiple SCTP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.Ports.UDP
+      description: Multiple UDP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.Ports.TCP
+      description: Multiple TCP port ranges.
+      type: String
+    - contextPath: Fortigate.Service.FQDN
+      description: Fully Qualified Domain Name address.
+      type: String
+    - contextPath: Fortigate.Service.IPRange
+      description: Start and end of the IP range associated with the service.
+      type: String
+    - contextPath: Fortigate.Service.ICMPCode
+      description: ICMP code.
+      type: Number
+    - contextPath: Fortigate.Service.ICMPType
+      description: ICMP type.
+      type: Number
+    - contextPath: Fortigate.Service.ProtocolNumber
+      description: IP protocol number.
+      type: Number
+    - contextPath: Fortigate.Service.Name
+      description: The service name.
+      type: String
+  - name: fortigate-delete-firewall-service
+    description: Delete firewall services. A service is the combination of network protocols and port numbers that define traffic sources or destinations.
+    arguments:
+    - name: name
+      description: Name of the service to delete. Names can be retrieved with the command `fortigate-list-firewall-services`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.Service.Name
+      description: The name of the deleted service.
+      type: String
+    - contextPath: Fortigate.Service.Deleted
+      description: Whether the service was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-service-groups
+    description: Retrieve firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy.
+    arguments:
+    - name: name
+      description: Name of a specific service group to return.
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/232620/config-firewall-service-group`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/232620/config-firewall-service-group`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.ServiceGroup.FabricObject
+      description: Security Fabric global object setting. Can be `enable` or `disable`. If `enable`, the object is set as a security fabric-wide global object, otherwise the object is local to this security fabric member.
+      type: String
+    - contextPath: Fortigate.ServiceGroup.Comment
+      description: The object`s comment.
+      type: String
+    - contextPath: Fortigate.ServiceGroup.Proxy
+      description: Enable/disable web proxy service.
+      type: String
+    - contextPath: Fortigate.ServiceGroup.Name
+      description: The service group name.
+      type: String
+    - contextPath: Frotigate.ServiceGroup.Member.Name
+      description: Service objects contained within the group.
+      type: String
+    - contextPath: Fortigate.ServiceGroup.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-create-firewall-service-group
+    description: Create firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: name
+      description: Name of the service group to create.
+      required: true
+    - name: comment
+      description: A comment for the service group.
+    - name: members
+      description: Comma-separated list of service and service group names. Names can be retrieved with the commands `fortigate-list-firewall-services` and `fortigate-list-firewall-service-groups`.
+      required: true
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.ServiceGroup.Name
+      description: The service group name.
+      type: String
+    - contextPath: Fortigate.ServiceGroup.Members
+      description: Service objects contained within the group.
+      type: String
+  - name: fortigate-update-firewall-service-group
+    description: Update firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy. New members will override the existing members within the group incase of a conflict.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: groupName
+      description: Name of the service group to update. Names can be retrieved with the command `fortigate-list-firewall-service-groups`.
+      required: true
+      default: true
+    - name: comment
+      description: A comment for the service group.
+    - name: serviceName
+      description: Comma-separated list of service and service group names. Names can be retrieved with the commands `fortigate-list-firewall-services` and `fortigate-list-firewall-service-groups`.
+      isArray: true
+    - name: action
+      description: Whether to add or remove members from the service group.
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+    outputs:
+    - contextPath: Fortigate.ServiceGroup.Name
+      description: The service group name.
+      type: String
+    - contextPath: Fortigate.ServiceGroup.Service.Name
+      description: Service objects contained within the group.
+      type: String
+  - name: fortigate-delete-firewall-service-group
+    description: Delete firewall service groups. Service groups are collections of predefined services. Service groups can be used as the source and destination of the policy.
+    arguments:
+    - name: groupName
+      description: Name of the service group to delete. Names can be retrieved with the command `fortigate-list-firewall-service-groups`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.ServiceGroup.Name
+      description: The name of the deleted service group.
+      type: String
+    - contextPath: Fortigate.ServiceGroup.Deleted
+      description: Whether the service group was deleted.
+      type: Boolean
+  - name: fortigate-list-firewall-policies
+    description: Retrieve firewall policies. Firewall policies dictate the traffic flow and its processing. They are integral to most of the firewall functions, ensuring that every piece of traffic passing through the unit adheres to a specific policy. These policies determine the direction of the traffic, processing method, and its permission to traverse the firewall.
+    arguments:
+    - name: policyID
+      description: ID of a specific policy to return.
+      default: true
+    - name: policyName
+      description: Name of a specific policy to return.
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/287620/config-firewall-policy`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/287620/config-firewall-policy`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.Policy.ServiceNegate
+      description: When enabled specifies what the service must not be.
+      type: String
+    - contextPath: Fortigate.Policy.Destination6Negate
+      description: When enabled, specifies what the destination IPv6 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.DestinationNegate
+      description: When enabled, specifies what the destination IPv4 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.Source6Negate
+      description: When enabled, specifies what the source IPv6 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.SourceNegate
+      description: When enabled, specifies what the source IPv4 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.NAT
+      description: Whether the source NAT is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.LogStart
+      description: Whether recording logs when a session starts is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.Log
+      description: All log sessions or security profile sessions.
+      type: String
+    - contextPath: Fortigate.Policy.Service
+      description: Service and service group names.
+      type: String
+    - contextPath: Fortigate.Policy.Source6
+      description: Source IPv6 address name and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Destination6
+      description: Destination IPv6 address name and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Destination
+      description: Destination IPv4 address and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Source
+      description: Source IPv4 address and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Action
+      description: Policy action (accept/deny/ipsec).
+      type: String
+    - contextPath: Fortigate.Policy.DestinationInterface
+      description: Outgoing (egress) interface.
+      type: String
+    - contextPath: Fortigate.Policy.SourceInterface
+      description: Incoming (ingress) interface.
+      type: String
+    - contextPath: Fortigate.Policy.UUID
+      description: Universally Unique Identifier.
+      type: String
+    - contextPath: Fortigate.Policy.Name
+      description: The policy name.
+      type: String
+    - contextPath: Fortigate.Policy.Status
+      description: Whether this policy is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.ID
+      description: The policy ID.
+      type: Number
+    - contextPath: Fortigate.Policy.Description
+      description: The policy description.
+      type: String
+    - contextPath: Fortigate.Policy.Security
+      description: Policy attached security profile.
+      type: String
+    - contextPath: Fortigate.Policy.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+    - contextPath: Fortigate.Policy.Schedule
+      description: The name of the schedule.
+      type: String
+  - name: fortigate-create-firewall-policy
+    description: Create firewall policies. Firewall policies dictate the traffic flow and its processing. They are integral to most of the firewall functions, ensuring that every piece of traffic passing through the unit adheres to a specific policy. These policies determine the direction of the traffic, processing method, and its permission to traverse the firewall.
+    execution: true
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: policyName
+      description: Name of the policy to create.
+      required: true
+    - name: description
+      description: The policy description.
+    - name: sourceIntf
+      description: Comma-separated list of incoming (ingress) interfaces.
+      required: true
+      isArray: true
+    - name: dstIntf
+      description: Comma-separated list of outgoing (egress) interfaces.
+      required: true
+      isArray: true
+    - name: source
+      description: Comma-separated list of source IPv4 address and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      isArray: true
+    - name: source6
+      description: Comma-separated list of source IPv6 address name and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv6s`, `fortigate-list-firewall-address-ipv6-multicasts` and `fortigate-list-firewall-address-ipv6-groups`.
+      isArray: true
+    - name: destination
+      description: Comma-separated list of destination IPv4 address and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv4s`, `fortigate-list-firewall-address-ipv4-multicasts` and `fortigate-list-firewall-address-ipv4-groups`.
+      isArray: true
+    - name: destination6
+      description: Comma-separated list of destination IPv6 address name and address group names. Names can be retrieved with the commands `fortigate-list-firewall-address-ipv6s`, `fortigate-list-firewall-address-ipv6-multicasts` and `fortigate-list-firewall-address-ipv6-groups`.
+      isArray: true
+    - name: negate_source_address
+      description: When enabled, the source address specifies what the source address must not be.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: negate_destination_address
+      description: When enabled, the destination address specifies what the destination address must not be.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: service
+      description: Comma-separated list of service and service group names. Names can be retrieved with the commands `fortigate-list-firewall-services` and `fortigate-list-firewall-service-groups`.
+      required: true
+      isArray: true
+    - name: negate_service
+      description: When enabled, the service specifies what the service must not be.
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: action
+      description: Whether to accept or deny sessions that match the firewall policy.
+      auto: PREDEFINED
+      predefined:
+      - accept
+      - block
+      required: true
+    - name: status
+      description: Enable or disable this policy.
+      defaultValue: enable
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    - name: log
+      description: Enable or disable logging. Log all sessions or security profile sessions.
+      defaultValue: enable
+      auto: PREDEFINED
+      predefined:
+      - all
+      - utm
+      - disable
+    - name: schedule
+      description: The schedule name. This is a time frame that is applied to the policy.
+      defaultValue: always
+    - name: nat
+      description: Enable/disable source Network Address Translation.
+      defaultValue: enable
+      auto: PREDEFINED
+      predefined:
+      - enable
+      - disable
+    outputs:
+    - contextPath: Fortigate.Policy.NAT
+      description: Whether the source NAT is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.Log
+      description: All log sessions or security profile sessions.
+      type: String
+    - contextPath: Fortigate.Policy.Service
+      description: Service and service group names.
+      type: String
+    - contextPath: Fortigate.Policy.Source.Address6.name
+      description: Source IPv6 address name and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Destination.Address6.name
+      description: Destination IPv6 address name and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Destination.Address.name
+      description: Destination IPv4 address and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Source.Address.name
+      description: Source IPv4 address and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Action
+      description: Policy action (accept/deny/ipsec).
+      type: String
+    - contextPath: Fortigate.Policy.Destination.Interface
+      description: Outgoing (egress) interface.
+      type: String
+    - contextPath: Fortigate.Policy.Source.Interface
+      description: Incoming (ingress) interface.
+      type: String
+    - contextPath: Fortigate.Policy.Name
+      description: The policy name.
+      type: String
+    - contextPath: Fortigate.Policy.Status
+      description: Whether this policy is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.Description
+      description: The policy description.
+      type: String
+  - name: fortigate-update-firewall-policy
+    description: Update firewall policies. Firewall policies dictate the traffic flow and its processing. They are integral to most of the firewall functions, ensuring that every piece of traffic passing through the unit adheres to a specific policy. These policies determine the direction of the traffic, processing method, and its permission to traverse the firewall.
+    execution: true
+    arguments:
+    - name: policyID
+      description: ID of the policy to update. IDs can be retrieved with the command `fortigate-list-firewall-policies`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: field
+      description: Field parameter to update.
+      auto: PREDEFINED
+      predefined:
+      - source_interface
+      - destination_interface
+      - description
+      - status
+      - source
+      - destination
+      - service
+      - schedule
+      - action
+      - log
+      - nat
+      - source6
+      - destination6
+      - negate_source
+      - negate_destination
+      - negate_source6
+      - negate_destination6
+      - negate_service
+      required: true
+    - name: value
+      description: Value of the field parameter to update.
+      required: true
+    - name: keep_original_data
+      description: Whether to keep the original data or not. Only relevant if the updated field is "source" or "destination". If the supplied value is `True`, the current data will not be replaced. Instead, the supplied addresses will be added / removed from the existing data.
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - name: add_or_remove
+      description: Whether to add or remove the supplied addresses from the existing data. Only relevant in case the field to update is "source" or "destination", and keep_original_data is specified to `True`.
+      auto: PREDEFINED
+      predefined:
+      - add
+      - remove
+    outputs:
+    - contextPath: Fortigate.Policy.ServiceNegate
+      description: When enabled, specifies what the service must not be.
+      type: String
+    - contextPath: Fortigate.Policy.Destination6Negate
+      description: When enabled, specifies what the destination IPv6 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.DestinationNegate
+      description: When enabled, specifies what the destination IPv4 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.Source6Negate
+      description: When enabled, specifies what the source IPv6 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.SourceNegate
+      description: When enabled, specifies what the source IPv4 address must not be.
+      type: String
+    - contextPath: Fortigate.Policy.NAT
+      description: Whether the source NAT is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.LogStart
+      description: Whether recording logs when a session starts is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.Log
+      description: All log sessions or security profile sessions.
+      type: String
+    - contextPath: Fortigate.Policy.Service
+      description: Service and service group names.
+      type: String
+    - contextPath: Fortigate.Policy.Source6
+      description: Source IPv6 address name and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Destination6
+      description: Destination IPv6 address name and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Destination
+      description: Destination IPv4 address and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Source
+      description: Source IPv4 address and address group names.
+      type: String
+    - contextPath: Fortigate.Policy.Action
+      description: Policy action (accept/deny/ipsec).
+      type: String
+    - contextPath: Fortigate.Policy.DestinationInterface
+      description: Outgoing (egress) interface.
+      type: String
+    - contextPath: Fortigate.Policy.SourceInterface
+      description: Incoming (ingress) interface.
+      type: String
+    - contextPath: Fortigate.Policy.UUID
+      description: Universally Unique Identifier.
+      type: String
+    - contextPath: Fortigate.Policy.Name
+      description: The policy name.
+      type: String
+    - contextPath: Fortigate.Policy.Status
+      description: Whether this policy is enabled or disabled.
+      type: String
+    - contextPath: Fortigate.Policy.ID
+      description: The policy ID.
+      type: Number
+    - contextPath: Fortigate.Policy.Description
+      description: The policy description.
+      type: String
+    - contextPath: Fortigate.Policy.Security
+      description: Policy attached security profile.
+      type: String
+    - contextPath: Fortigate.Policy.Schedule
+      description: The name of the schedule.
+      type: String
+  - name: fortigate-move-firewall-policy
+    description: Move the position of firewall policies. Firewall policies dictate the traffic flow and its processing. They are integral to most of the firewall functions, ensuring that every piece of traffic passing through the unit adheres to a specific policy. These policies determine the direction of the traffic, processing method, and its permission to traverse the firewall.
+    arguments:
+    - name: policyID
+      description: ID of the policy to move. IDs can be retrieved with the command `fortigate-list-firewall-policies`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: position
+      description: Whether to position the policy before or after its neighbor.
+      auto: PREDEFINED
+      predefined:
+      - before
+      - after
+      required: true
+    - name: neighbor
+      description: The ID of the neighbor policy. IDs can be retrieved with the command `fortigate-list-firewall-policies`.
+      required: true
+    outputs:
+    - contextPath: Fortigate.Policy.ID
+      description: The policy ID.
+      type: Number
+    - contextPath: Fortigate.Policy.Moved
+      description: Whether the policy was moved.
+      type: Boolean
+  - name: fortigate-delete-firewall-policy
+    description: Delete firewall policies. Firewall policies dictate the traffic flow and its processing. They are integral to most of the firewall functions, ensuring that every piece of traffic passing through the unit adheres to a specific policy. These policies determine the direction of the traffic, processing method, and its permission to traverse the firewall.
+    execution: true
+    arguments:
+    - name: policyID
+      description: ID of the policy to delete. IDs can be retrieved with the command `fortigate-list-firewall-policies`.
+      required: true
+      default: true
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    outputs:
+    - contextPath: Fortigate.Policy.ID
+      description: The policy ID.
+      type: Number
+    - contextPath: Fortigate.Policy.Deleted
+      description: Whether the policy was deleted.
+      type: Boolean
+  - name: fortigate-list-system-vdoms
+    description: Retrieve system VDOMs. Virtual Domains (VDOMs) are used to divide a FortiGate into two or more virtual units that function independently. VDOMs can provide separate security policies and, in NAT mode, completely separate configurations for routing and VPN services for each connected network. Multiple VDOMs can be created and managed as independent units in multi VDOM mode.
+    arguments:
+    - name: filter_field
+      description: 'Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/620/config-system-vdom`.'
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`. Reference to possible fields: `https://docs.fortinet.com/document/fortigate/7.2.5/cli-reference/620/config-system-vdom`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.VDOM.VClusterID
+      description: Virtual cluster ID.
+      type: Number
+    - contextPath: Fortigate.VDOM.ShortName
+      description: The virtual domain short name.
+      type: String
+    - contextPath: Fortigate.VDOM.Name
+      description: The virtual domain name.
+      type: String
+  - name: fortigate-list-banned-ips
+    description: Retrieve Banned IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigation.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: filter_field
+      description: Specifies the field to be searched, such as `name` or `comment`, to narrow down the search criteria within the objects. Fields must be written as they are in the `raw_response`.
+    - name: filter_value
+      description: Indicates the value or partial value, for example `Sales`, that the API should look for within the specified field to find matching objects.
+    - name: format_fields
+      description: 'Comma-separated fields to format the API call to display certain information. Fields must be written as they are in the `raw_response`, for example: `name` or `comment`.'
+      isArray: true
+    outputs:
+    - contextPath: Fortigate.BannedIP.IsV6
+      description: Whether the IP is IPv4 (0) or IPv6 (1).
+      type: Number
+    - contextPath: Fortigate.BannedIP.Source
+      description: Source of the ban.
+      type: String
+    - contextPath: Fortigate.BannedIP.IP
+      description: The IPv4 address.
+      type: String
+    - contextPath: Fortigate.BannedIP.Created
+      description: Date/time the IP address was added to the banned list.
+      type: Number
+    - contextPath: Fortigate.BannedIP.Expires
+      description: Date/time the IP address expires from the banned list.
+      type: Number
+    - contextPath: Fortigate.BannedIP.VDOM
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units.
+      type: String
+  - name: fortigate-ban-ip
+    description: Ban IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigations.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: ip_address
+      description: Comma-separated list of IPs to ban. Both IPv4 and IPv6 addresses are supported.
+      required: true
+      isArray: true
+    - name: expiry
+      description: Time until the ban expires in seconds. `0` for indefinite ban.
+      defaultValue: '0'
+  - name: fortigate-unban-ip
+    description: Unban IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigations.
+    arguments:
+    - name: vdom
+      description: Virtual domains (VDOMs) enable you to partition and use your FortiGate unit as if it were multiple units. Use `*` to retrieve all virtual domains. VDOMs can be retrieved with the command `fortigate-list-system-vdoms`.
+      defaultValue: root
+    - name: ip_address
+      description: Comma-separated list of IPs to unban. Both IPv4 and IPv6 addresses are supported. IPs can be retrieved with the command `fortigate-list-banned-ips`.
+      required: true
+      isArray: true
+  dockerimage: demisto/python3:3.10.13.87159
   runonce: false
   script: '-'
   subtype: python3

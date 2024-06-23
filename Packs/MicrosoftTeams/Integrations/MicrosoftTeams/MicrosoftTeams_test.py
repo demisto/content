@@ -464,7 +464,17 @@ def test_send_message_raising_errors(mocker, args, result):
     assert str(e.value) == result
 
 
-def test_send_message_with_user(mocker, requests_mock):
+@pytest.mark.parametrize('message', ['MESSAGE', '891f1e9d-b8c3-4e24-bfbb-c44bcca4d586',
+                                     'testing 891f1e9d-b8c3-4e24-bfbb-c44bcca4d586 testing'])
+def test_send_message_with_user(mocker, requests_mock, message):
+    """
+    Given:
+        - a message as a basic string and a  message that contains GUID.
+    When:
+        - running send message function.
+    Then:
+        - The message is sent successfully in both cases.
+    """
     # verify message is sent properly given user to send to
     from MicrosoftTeams import send_message
     mocker.patch.object(demisto, 'results')
@@ -475,7 +485,7 @@ def test_send_message_with_user(mocker, requests_mock):
         'args',
         return_value={
             'team_member': 'Denzel Washington',
-            'message': 'MESSAGE'
+            'message': message
         }
     )
     requests_mock.post(
@@ -550,7 +560,8 @@ def test_send_message_with_entitlement(mocker, requests_mock):
         'options': ['yes', 'no', 'maybe'],
         'entitlement': '4404dae8-2d45-46bd-85fa-64779c12abe8',
         'investigation_id': '72',
-        'task_id': '23'
+        'task_id': '23',
+        'form_type': 'predefined-options'
     }
     mocker.patch.object(
         demisto,
@@ -2251,10 +2262,10 @@ def test_generate_login_url(mocker):
     mocked_params = {
         'REDIRECT_URI': redirect_uri,
         'AUTH_TYPE': 'Authorization Code',
-        'TENANT_ID': tenant_id,
         'BOT_ID': client_id
     }
     mocker.patch.dict(MicrosoftTeams.__dict__, MicrosoftTeams.__dict__ | mocked_params)
+    mocker.patch.object(MicrosoftTeams, "get_integration_context", return_value={'tenant_id': 'tenant_id'})
     mocker.patch.object(MicrosoftTeams, 'return_results')
     mocker.patch.object(MicrosoftTeams, 'support_multithreading')
     mocker.patch.object(demisto, 'command', return_value='microsoft-teams-generate-login-url')
@@ -2317,3 +2328,51 @@ def test_error_parser_with_exception(mocker, error_content, status_code, expecte
     assert demisto.setIntegrationContext.call_count == 1
 
     assert str(ex.value) == expected_response
+
+
+@pytest.mark.parametrize('is_xsoar_8, expected_result', [
+    (True, ({"http": "xsoar_8_proxy", "https": "xsoar_8_proxy"}, True)),
+    (False, (None, False))
+])
+def test_handle_teams_proxy_and_ssl(mocker, is_xsoar_8, expected_result):
+    """
+    Given:
+        - If the xsoar version is greater or less than 8, and the expected reuslts of the integration proxies.
+    When:
+        - The version of xsoar is greater than 8 or less than 8
+    Then:
+        - Assert that when the version is greater than 8, proxies dict is not empty and use_ssl is true
+        - Assert that when the version is less than 8, proxies dict is empty and use_ssl is false.
+    """
+    import MicrosoftTeams as ms_teams
+    os.environ['CRTX_HTTP_PROXY'] = 'xsoar_8_proxy'
+    mocker.patch.object(ms_teams, 'is_demisto_version_ge', return_value=is_xsoar_8)
+    mocker.patch.object(ms_teams, 'PARAMS', return_value={'insecure': True})
+
+    proxies, use_ssl = ms_teams.handle_teams_proxy_and_ssl()
+    assert (proxies, use_ssl) == expected_result
+
+
+DUMMY_ASK_MESSAGE = {"message_text": "message", "options": [
+    "option"], "entitlement": "id", "investigation_id": "inv_id", "task_id": "task", "form_type": "form"}
+
+
+@pytest.mark.parametrize('message, result', [
+    (json.dumps(DUMMY_ASK_MESSAGE), True),
+    (json.dumps(DUMMY_ASK_MESSAGE | {"extra_key": "extra"}), False),
+    ("non json message", False)
+])
+def test_is_teams_ask_message(message, result):
+    """
+    Given:
+        - input message string
+    When:
+        - Running is_teams_ask_message.
+    Then:
+        - Assert only ask_teams messages return True
+    If the test fails, please update the first message param in the test to have the same keys as MS_TEAMS_ASK_MESSAGE_KEYS
+     constant in MicrosoftTeams.
+    """
+    from MicrosoftTeams import is_teams_ask_message
+
+    assert is_teams_ask_message(message) == result

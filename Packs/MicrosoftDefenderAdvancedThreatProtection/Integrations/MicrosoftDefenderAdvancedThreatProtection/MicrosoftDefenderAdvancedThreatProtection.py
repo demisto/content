@@ -1263,6 +1263,20 @@ class MsClient:
 
         return self.ms_client.http_request(method='GET', url_suffix=cmd_url, params=params)
 
+    def get_machines_for_get_machine_by_ip_command(self, filter_req):
+        """
+
+        Args:
+            filter_req string: a query request to use to filter machines,
+            for example: "(ip='8.8.8.8',timestamp=2024-05-19T01:00:05Z)".
+            Link to documentation: https://learn.microsoft.com/en-us/defender-endpoint/api/find-machines-by-ip?view=o365-worldwide
+        Returns:
+            dict: Machines info
+        """
+        demisto.debug(f'current request is: api/machines/findbyip{filter_req}')
+        cmd_url = 'machines/findbyip' + filter_req
+        return self.ms_client.http_request(method='GET', url_suffix=cmd_url)
+
     def get_file_related_machines(self, file):
         """Retrieves a collection of Machines related to a given file hash.
 
@@ -1976,7 +1990,7 @@ class MsClient:
             A response from the API.
         """
         cmd_url = urljoin(indicators_endpoint, indicator_id)
-        return self.indicators_http_request('DELETE', None, full_url=cmd_url, ok_codes=(204,),
+        return self.indicators_http_request('DELETE', None, full_url=cmd_url,
                                             resp_type='response', should_use_security_center=use_security_center)
 
     def get_live_response_result(self, machine_action_id, command_index=0, overwrite_rate_limit_retry=False):
@@ -1993,7 +2007,7 @@ class MsClient:
 
     def download_file(self, url_link):
         try:
-            response = requests.get(url=url_link, verify=self.ms_client.verify)
+            response = requests.get(url=url_link, verify=self.ms_client.verify, timeout=300)
         except Exception as e:
             raise Exception(f'Could not download file. {url_link=}. error: {str(e)}')
         return response
@@ -2918,6 +2932,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
     machine_id = remove_duplicates_from_list_arg(args, 'machine_id')
     type = args.get('type', '')
     requestor = args.get('requestor', '')
+    filters = args.get('filters', '')
     limit = arg_to_number(args.get('limit', 50))
     if action_id:
         for index in range(3):
@@ -2943,7 +2958,7 @@ def get_machine_action_by_id_command(client: MsClient, args: dict):
             'type': type,
             'requestor': requestor
         }
-        filter_req = reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
+        filter_req = filters or reformat_filter_with_list_arg(fields_to_filter_by, "machineId")
         response = client.get_machine_actions(filter_req, limit)
         machine_actions_list = []
         for machine_action in response['value']:
@@ -5079,21 +5094,19 @@ def validate_args_endpoint_command(hostnames, ips, ids):
             f'{INTEGRATION_NAME} - In order to run this command, please provide valid id, ip or hostname')
 
 
-def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
-    """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
-
+def handle_machines(machines_response: list) -> list[CommandResults]:
+    """Converts the raw response of the API to a CommandResults list with relevant keys.
+    Args:
+        The raw API response, a list of machines.
     Returns:
         CommandResults list.
     """
+
     headers = ['ID', 'Hostname', 'OS', 'OSVersion', 'IPAddress', 'Status', 'MACAddress', 'Vendor']
-    hostnames = argToList(args.get('hostname', ''))
-    ips = argToList(args.get('ip', ''))
-    ids = argToList(args.get('id', ''))
-    validate_args_endpoint_command(hostnames, ips, ids)
-    machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
+
     machines_outputs = []
 
-    for machine in machines_response.get('value', []):
+    for machine in machines_response:
         machine_data = get_machine_data(machine)
         machine_data['MACAddress'] = get_machine_mac_address(machine)
         endpoint_indicator = create_endpoint_verdict(machine_data)
@@ -5115,6 +5128,47 @@ def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
             raw_response=machines_response,
         ))
     return machines_outputs
+
+
+def get_machine_by_ip_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """Retreives Machines that were seen with the requested internal IP
+    in the time range of 15 minutes prior and aftera given timestamp.
+    Args:
+        client: MsClient
+        args: dict
+    Returns:
+        CommandResults list.
+    """
+    ip = args['ip']
+    timestamp = args['timestamp']
+    limit = arg_to_number(args.get('limit', 50))
+    should_limit_result = not argToBoolean(args.get('all_results', False))
+
+    filter = f"(ip='{ip}',timestamp={timestamp})"
+
+    machines_response = client.get_machines_for_get_machine_by_ip_command(filter)
+    machines_response = machines_response.get('value', [])
+
+    demisto.debug(f'limit is set to: {limit}')
+    limited_machines_response = machines_response[:limit] if should_limit_result else machines_response
+
+    demisto.debug('Calling handle_machines function to convert raw response to CommandResults list')
+    return handle_machines(limited_machines_response)
+
+
+def endpoint_command(client: MsClient, args: dict) -> list[CommandResults]:
+    """Retrieves a collection of machines that have communicated with WDATP cloud on the last 30 days
+
+    Returns:
+        CommandResults list.
+    """
+    hostnames = argToList(args.get('hostname', ''))
+    ips = argToList(args.get('ip', ''))
+    ids = argToList(args.get('id', ''))
+    validate_args_endpoint_command(hostnames, ips, ids)
+    machines_response = client.get_machines(create_filter_for_endpoint_command(hostnames, ips, ids))
+
+    return handle_machines(machines_response.get('value', []))
 
 
 def get_machine_users_command(client: MsClient, args: dict) -> CommandResults:
@@ -5565,6 +5619,9 @@ def main():  # pragma: no cover
             incidents, last_run = fetch_incidents(client, last_run, fetch_evidence)
             demisto.setLastRun(last_run)
             demisto.incidents(incidents)
+
+        elif command == 'microsoft-atp-get-machine-by-ip':
+            return_results(get_machine_by_ip_command(client, args))
 
         elif command == 'microsoft-atp-isolate-machine':
             return_outputs(*isolate_machine_command(client, args))

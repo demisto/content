@@ -1,0 +1,428 @@
+id: Prisma SASE - Quarantine Host With Active Threat
+version: -1
+name: Prisma SASE - Quarantine a SentinelOne Host With Active Threat
+description: |
+  ## Goal
+  This playbook is designed to automatically quarantine a SentinelOne host in response to a new threat incident trigger using Prisma SASE.
+
+  ## Playbook Flow
+  - **Trigger**: The playbook activates upon the creation of a new SentinelOne Threat incident.
+  - **Process**:
+    1. Retrieves the Host ID from Cortex Data Lake.
+    2. Loads detailed information about the agent.
+    3. If the Host ID is found and the agent is not decommissioned, it initiates quarantine through Prisma SASE.
+
+  ## Dependencies and Configuration
+  - This playbook requires being set as the default in the SentinelOne instance configuration.
+  - It specifically responds to events categorized as 'Threats'.
+  - Ensure that the Prisma SASE, Cortex Data Lake and SentinelOne integrations are properly configured and operational for seamless execution of this playbook.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: d11573fb-1ab8-48c2-8915-7fe01aadd5c7
+    type: start
+    task:
+      id: d11573fb-1ab8-48c2-8915-7fe01aadd5c7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e6a6b01b-5d40-4bfb-8ccb-bc761acfe500
+    type: regular
+    task:
+      id: e6a6b01b-5d40-4bfb-8ccb-bc761acfe500
+      version: -1
+      name: Get Host ID from CDL Logs
+      description: Runs a query on any table or field.
+      script: '|||cdl-query-logs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      limit:
+        simple: "100000"
+      query:
+        complex:
+          root: incident
+          accessor: devicename
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: SELECT  DISTINCT host_id,endpoint_device_name FROM `firewall.globalprotect` where event_id.value = 'gateway-connected'  and endpoint_device_name='
+              suffix:
+                value:
+                  simple: ''''
+      transform_results:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7f2ad353-eb6f-4110-837d-d21daf4a93d2
+    type: condition
+    task:
+      id: 7f2ad353-eb6f-4110-837d-d21daf4a93d2
+      version: -1
+      name: Was the host ID found?
+      description: Checks whether the host ID was found in the CDL logs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: CDL.Logging.host_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 4df18bfe-7246-42cc-8450-e2f834e7ba6c
+    type: condition
+    task:
+      id: 4df18bfe-7246-42cc-8450-e2f834e7ba6c
+      version: -1
+      name: Is the agent decommissioned?
+      description: Checks whether the agent is decommissioned.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      "yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: SentinelOne.agentDetails.agentRealtimeInfo.agentIsDecommissioned
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 87a99122-3a73-4bee-8218-568891f0afa2
+    type: regular
+    task:
+      id: 87a99122-3a73-4bee-8218-568891f0afa2
+      version: -1
+      name: Quarantine host via Prisma SASE
+      description: Quarantine a host.
+      script: '|||prisma-sase-quarantine-host'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "9"
+      '#none#':
+      - "7"
+    scriptarguments:
+      host_id:
+        complex:
+          root: CDL.Logging
+          accessor: host_id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: b76a1b66-af59-4a57-80eb-e4957c866a64
+    type: title
+    task:
+      id: b76a1b66-af59-4a57-80eb-e4957c866a64
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -200,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: ce581bda-eae3-4ae7-80b2-6172c932b51e
+    type: regular
+    task:
+      id: ce581bda-eae3-4ae7-80b2-6172c932b51e
+      version: -1
+      name: Load SentinelOne agent details
+      description: Loads a JSON from a string input, and returns a JSON object result.
+      scriptName: LoadJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      extend-context:
+        simple: SentinelOne.agentDetails=
+      ignore-outputs:
+        simple: "true"
+      input:
+        complex:
+          root: incident
+          accessor: details
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d729bc95-fdeb-4819-8349-8aef1a7c3ba5
+    type: regular
+    task:
+      id: d729bc95-fdeb-4819-8349-8aef1a7c3ba5
+      version: -1
+      name: 'Error: Could not quarantine host'
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: The host couldn't be quarantined. It might have already been quarantined, or an error was encountered during the quarantine execution.
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: dc4da1ed-848a-4a18-84c4-971c8cb12133
+    type: condition
+    task:
+      id: dc4da1ed-848a-4a18-84c4-971c8cb12133
+      version: -1
+      name: Is Cortex Data Lake Integration Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: Cortex Data Lake
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 70b3a700-03a9-4fb5-80ee-f60c4cd6904b
+    type: condition
+    task:
+      id: 70b3a700-03a9-4fb5-80ee-f60c4cd6904b
+      version: -1
+      name: Is Prisma SASE Enabled?
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "7"
+      "yes":
+      - "6"
+    scriptarguments:
+      brandname:
+        simple: Palo Alto Networks - Prisma SASE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_3_yes": 0.42,
+      "10_7_no": 0.28,
+      "11_6_yes": 0.36,
+      "11_7_no": 0.34,
+      "4_5_yes": 0.31,
+      "4_7_#default#": 0.28,
+      "5_11_#default#": 0.4,
+      "5_7_yes": 0.27,
+      "6_9_#error#": 0.64
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1460,
+        "width": 940,
+        "x": -200,
+        "y": 40
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

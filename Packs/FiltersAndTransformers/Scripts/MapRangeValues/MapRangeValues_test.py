@@ -33,6 +33,9 @@ data_test_get_typed_value = [
     ('a', str),
     ('1', int),
     (1, int),
+    ('1.5', float),
+    (1.5, float),
+    ('10.0', int)
 ]
 
 
@@ -101,6 +104,7 @@ def test_get_replace_list(map_from, map_to, sep, expected_replace_list):
 data_test_replace_values = [
     (['1'], [Replace('1', '2')], [2]),
     (['3', '4', '5'], [RangeReplace('3', '5', '4')], [4] * 3),
+    (['0.5', '2'], [RangeReplace('0.3', '0.6', 'test'), Replace('2', 'test2')], ['test', 'test2']),
     ([str(i) for i in range(1, 6)], [Replace('1', '2'), RangeReplace('3', '5', '4')], [2, 2, 4, 4, 4]),
 ]
 

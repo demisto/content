@@ -17,7 +17,15 @@ Wrapper for the **StixParser** automation. This automation creates indicators an
 | **Argument Name** | **Description** |
 | --- | --- |
 | entry_id | The entry ID of the STIX file. |
+| add_context | Adds indicators to context. |
+| tags | A comma-separated list of tags to add to indicators.  |
 
 ## Outputs
+
 ---
-There are no outputs for this script.
+
+| **Path** | **Description** | **Type** |
+| --- | --- | --- |
+| StixIndicators.type | Type of the indicator. | String |
+| StixIndicators.value | Value of the indicator. | String |
+| StixIndicators.tags | Tags of the indicator. | Unknown |

@@ -12,7 +12,7 @@ scripttarget: 0
 runas: DBotWeakRole
 dependson:
   must:
-  - demisto-api-post
+  - core-api-post
 tests:
 - No test
 fromversion: 5.0.0

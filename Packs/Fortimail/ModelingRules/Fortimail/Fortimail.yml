@@ -1,0 +1,6 @@
+fromversion: 8.4.0
+id: Fortimail_ModelingRule
+name: Fortimail Modeling Rule
+rules: ''
+schema: ''
+tags: Fortimail

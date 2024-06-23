@@ -1,0 +1,327 @@
+{
+    "data": {
+        "listAlerts": {
+            "items": [
+                {
+                    "json": {
+                        "host": {
+                            "os": "Version 12.6.1 (Build 21G207)",
+                            "ips": [
+                                "1.1.1.1"
+                            ],
+                            "serial": "aaaaaaaaaaaaa",
+                            "hostname": "macOS12-VM",
+                            "protectVersion": "1.1.1.1",
+                            "provisioningUDID": "11111111-1111-1111-1111-111111111111"
+                        },
+                        "match": {
+                            "tags": [],
+                            "uuid": "1",
+                            "event": {
+                                "uuid": "1",
+                                "blocked": true,
+                                "process": {
+                                    "gid": 1,
+                                    "pid": 1,
+                                    "uid": 1,
+                                    "args": [
+                                        "./Calculator"
+                                    ],
+                                    "name": "Calculator",
+                                    "path": "./Calculator",
+                                    "pgid": 1,
+                                    "ppid": 1,
+                                    "rgid": 1,
+                                    "ruid": 1,
+                                    "uuid": "1",
+                                    "flags": [],
+                                    "appPath": "./Calculator.app",
+                                    "processType": "Example",
+                                    "signingInfo": {
+                                        "appid": "calculator",
+                                        "cdhash": "1",
+                                        "status": 1,
+                                        "teamid": "",
+                                        "signerType": 1,
+                                        "authorities": [
+                                        ],
+                                        "entitlements": [
+                                        ],
+                                        "statusMessage": "No error.",
+                                        "informationStage": "extended"
+                                    },
+                                    "inheritedFlags": [],
+                                    "responsiblePID": 1,
+                                    "startTimestamp": 1,
+                                    "originalParentPID": 1,
+                                    "processIdentifier": 1
+                                },
+                                "matchType": "signingID",
+                                "timestamp": 1,
+                                "matchValue": "calculator"
+                            },
+                            "facts": [
+                                {
+                                    "name": "PreventedExecution",
+                                    "tags": [
+                                        "PreventedExecution"
+                                    ],
+                                    "uuid": "1",
+                                    "human": "A process has been denied execution.",
+                                    "actions": [
+                                    ],
+                                    "context": [],
+                                    "version": 0,
+                                    "severity": 1
+                                }
+                            ],
+                            "custom": false,
+                            "actions": [
+                            ],
+                            "context": [],
+                            "severity": 1
+                        },
+                        "related": {
+                            "files": [],
+                            "users": [
+                                {
+                                    "uid": 1,
+                                    "name": "root",
+                                    "uuid": "1"
+                                }
+                            ],
+                            "groups": [
+                                {
+                                    "gid": 1,
+                                    "name": "staff",
+                                    "uuid": "1"
+                                }
+                            ],
+                            "binaries": [
+                            ],
+                            "processes": [
+                            ]
+                        },
+                        "eventType": "GPPreventedExecutionEvent"
+                    },
+                    "severity": "Low",
+                    "Computer": {
+                        "hostName": "macOS12-VM"
+                    },
+                    "created": "2023-09-20T14:33:12.000Z"
+                },
+                {
+                    "json": {
+                        "host": {
+                            "os": "Version 12.6.1 (Build 21G207)",
+                            "ips": [
+                                "2.2.2.2"
+                            ],
+                            "serial": "aaaaaaaaaaaaa",
+                            "hostname": "macOS12-VM",
+                            "protectVersion": "2.2.2.2",
+                            "provisioningUDID": "22222222-2222-2222-2222-222222222222"
+                        },
+                        "match": {
+                            "tags": [],
+                            "uuid": "2",
+                            "event": {
+                                "uuid": "2",
+                                "blocked": true,
+                                "process": {
+                                    "gid": 2,
+                                    "pid": 2,
+                                    "uid": 2,
+                                    "args": [
+                                        "./Calculator"
+                                    ],
+                                    "name": "Calculator",
+                                    "path": "./Calculator",
+                                    "pgid": 2,
+                                    "ppid": 2,
+                                    "rgid": 2,
+                                    "ruid": 2,
+                                    "uuid": "2",
+                                    "flags": [],
+                                    "appPath": "./Calculator.app",
+                                    "processType": "Example",
+                                    "signingInfo": {
+                                        "appid": "calculator",
+                                        "cdhash": "2",
+                                        "status": 2,
+                                        "teamid": "",
+                                        "signerType": 2,
+                                        "authorities": [
+                                        ],
+                                        "entitlements": [
+                                        ],
+                                        "statusMessage": "No error.",
+                                        "informationStage": "extended"
+                                    },
+                                    "inheritedFlags": [],
+                                    "responsiblePID": 2,
+                                    "startTimestamp": 2,
+                                    "originalParentPID": 2,
+                                    "processIdentifier": 2
+                                },
+                                "matchType": "signingID",
+                                "timestamp": 2,
+                                "matchValue": "calculator"
+                            },
+                            "facts": [
+                                {
+                                    "name": "PreventedExecution",
+                                    "tags": [
+                                        "PreventedExecution"
+                                    ],
+                                    "uuid": "2",
+                                    "human": "A process has been denied execution.",
+                                    "actions": [
+                                    ],
+                                    "context": [],
+                                    "version": 0,
+                                    "severity": 2
+                                }
+                            ],
+                            "custom": false,
+                            "actions": [
+                            ],
+                            "context": [],
+                            "severity": 2
+                        },
+                        "related": {
+                            "files": [],
+                            "users": [
+                                {
+                                    "uid": 2,
+                                    "name": "root",
+                                    "uuid": "2"
+                                }
+                            ],
+                            "groups": [
+                                {
+                                    "gid": 2,
+                                    "name": "staff",
+                                    "uuid": "2"
+                                }
+                            ],
+                            "binaries": [
+                            ],
+                            "processes": [
+                            ]
+                        },
+                        "eventType": "GPPreventedExecutionEvent"
+                    },
+                    "severity": "Low",
+                    "Computer": {
+                        "hostName": "macOS12-VM"
+                    },
+                    "created": "2024-01-01T14:33:12.000Z"
+                },
+                {
+                    "json": {
+                        "host": {
+                            "os": "Version 12.6.1 (Build 21G207)",
+                            "ips": [
+                                "3.3.3.3"
+                            ],
+                            "serial": "aaaaaaaaaaaaa",
+                            "hostname": "macOS12-VM",
+                            "protectVersion": "3.3.3.3",
+                            "provisioningUDID": "33333333-3333-3333-3333-333333333333"
+                        },
+                        "match": {
+                            "tags": [],
+                            "uuid": "3",
+                            "event": {
+                                "uuid": "3",
+                                "blocked": true,
+                                "process": {
+                                    "gid": 3,
+                                    "pid": 3,
+                                    "uid": 3,
+                                    "args": [
+                                        "./Calculator"
+                                    ],
+                                    "name": "Calculator",
+                                    "path": "./Calculator",
+                                    "pgid": 3,
+                                    "ppid": 3,
+                                    "rgid": 3,
+                                    "ruid": 3,
+                                    "uuid": "3",
+                                    "flags": [],
+                                    "appPath": "./Calculator.app",
+                                    "processType": "Example",
+                                    "signingInfo": {
+                                        "appid": "calculator",
+                                        "cdhash": "3",
+                                        "status": 3,
+                                        "teamid": "",
+                                        "signerType": 3,
+                                        "authorities": [],
+                                        "entitlements": [],
+                                        "statusMessage": "No error.",
+                                        "informationStage": "extended"
+                                    },
+                                    "inheritedFlags": [],
+                                    "responsiblePID": 3,
+                                    "startTimestamp": 3,
+                                    "originalParentPID": 3,
+                                    "processIdentifier": 3
+                                },
+                                "matchType": "signingID",
+                                "timestamp": 3,
+                                "matchValue": "calculator"
+                            },
+                            "facts": [
+                                {
+                                    "name": "PreventedExecution",
+                                    "tags": [
+                                        "PreventedExecution"
+                                    ],
+                                    "uuid": "3",
+                                    "human": "A process has been denied execution.",
+                                    "actions": [],
+                                    "context": [],
+                                    "version": 0,
+                                    "severity": 3
+                                }
+                            ],
+                            "custom": false,
+                            "actions": [],
+                            "context": [],
+                            "severity": 3
+                        },
+                        "related": {
+                            "files": [],
+                            "users": [
+                                {
+                                    "uid": 3,
+                                    "name": "root",
+                                    "uuid": "3"
+                                }
+                            ],
+                            "groups": [
+                                {
+                                    "gid": 3,
+                                    "name": "staff",
+                                    "uuid": "3"
+                                }
+                            ],
+                            "binaries": [],
+                            "processes": []
+                        },
+                        "eventType": "GPPreventedExecutionEvent"
+                    },
+                    "severity": "Low",
+                    "Computer": {
+                        "hostName": "macOS12-VM"
+                    },
+                    "created": "2024-01-01T14:33:12.000Z"
+                }
+            ],
+            "pageInfo": {}
+        }
+    }
+}

@@ -1,10 +1,9 @@
-from typing import Tuple
 
 from CommonServerPython import *
 
 
 def get_configurations_from_xsoar() -> dict:
-    res = demisto.executeCommand('demisto-api-post', {
+    res = demisto.executeCommand('core-api-post', {
         'uri': 'settings/integration/search',
         'body': """{"size": 500}"""
     })
@@ -13,7 +12,7 @@ def get_configurations_from_xsoar() -> dict:
     return res[0]['Contents']['response']
 
 
-def get_conf(name: str) -> Tuple[dict, dict]:
+def get_conf(name: str) -> tuple[dict, dict]:
     configurations = get_configurations_from_xsoar()
     try:
         instance_config = list(filter(lambda item: item['name'] == name, configurations['instances']))[0]
@@ -35,7 +34,7 @@ def get_proxy_key(instance: dict) -> Optional[str]:
     return proxy_key
 
 
-def get_proxy_key_value(instance: dict) -> Tuple[Optional[str], Optional[bool]]:
+def get_proxy_key_value(instance: dict) -> tuple[Optional[str], Optional[bool]]:
     # Try to find any param named proxy
     if (proxy_key := get_proxy_key(instance)) is not None:
         return proxy_key, bool(instance[proxy_key])
@@ -52,7 +51,7 @@ def get_insecure_key(instance: dict) -> Optional[str]:
     return None
 
 
-def get_insecure_key_value(instance: dict) -> Tuple[Optional[str], Optional[bool]]:
+def get_insecure_key_value(instance: dict) -> tuple[Optional[str], Optional[bool]]:
     if (key := get_insecure_key(instance)) is not None:
         return key, bool(instance[key])
     else:
@@ -73,7 +72,7 @@ def build_parameters(integration_config: dict, instance_config: dict) -> dict:
     if data := instance_config.get('data'):
         instance = {field['name']: field['value'] for field in data}
     else:
-        instance = dict()
+        instance = {}
     instance['engine'] = instance_config['engine']
     try:
         del instance['credentials']

@@ -1,0 +1,6 @@
+name: Mcafee Web Gateway Parsing Rule
+id: Mcafee_Web_Gateway_ParsingRule
+fromversion: 8.4.0
+tags: []
+rules: ''
+samples: ''

@@ -1,0 +1,611 @@
+id: MSG-Threat-Assessment-test
+version: 6
+name: MSG-Threat-Assessment-test
+fromversion: 5.0.0
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 945f2a4f-cf3d-435b-80d0-3d7d8b7ba13a
+    type: start
+    task:
+      id: 945f2a4f-cf3d-435b-80d0-3d7d8b7ba13a
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 973e318d-d379-4077-8947-79b05c58d5b2
+    type: regular
+    task:
+      id: 973e318d-d379-4077-8947-79b05c58d5b2
+      version: -1
+      name: auth test
+      description: Tests connectivity to Microsoft Graph Security.
+      script: '|||msg-auth-test'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      permission_type:
+        simple: threat assessment
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 2893b9ef-a3ac-437f-8c49-9a1213884cf3
+    type: regular
+    task:
+      id: 2893b9ef-a3ac-437f-8c49-9a1213884cf3
+      version: -1
+      name: create URL assessment request
+      description: Create url assessment request.
+      script: '|||msg-create-url-assessment-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      category:
+        simple: malware
+      expected_assessment:
+        simple: block
+      url:
+        simple: api.interfacecache.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: e4876147-087a-4614-8d2a-592b85e9b9c1
+    type: condition
+    task:
+      id: e4876147-087a-4614-8d2a-592b85e9b9c1
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.UrlAssessment.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: url
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.UrlAssessment.ExpectedAssessment
+            iscontext: true
+          right:
+            value:
+              simple: block
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.UrlAssessment.Category
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5c8a057d-1ac1-41b7-860a-01cb51d74d0c
+    type: regular
+    task:
+      id: 5c8a057d-1ac1-41b7-860a-01cb51d74d0c
+      version: -1
+      name: Create file assessment request
+      description: Create file assessment request.
+      script: '|||msg-create-file-assessment-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      category:
+        simple: malware
+      content_data:
+        simple: VGhpcyBpcyBhIHRlc3QgZmlsZQ==
+      expected_assessment:
+        simple: unblock
+      file_name:
+        simple: test.txt
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 450ddad6-e43e-4ee0-8e23-b084dadf6ed6
+    type: condition
+    task:
+      id: 450ddad6-e43e-4ee0-8e23-b084dadf6ed6
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.FileAssessment.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.FileAssessment.FileName
+            iscontext: true
+          right:
+            value:
+              simple: test.txt
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.FileAssessment.Category
+            iscontext: true
+          right:
+            value:
+              simple: malware
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 1380e4c1-ee3f-4a98-87b6-3cd19e2f2888
+    type: regular
+    task:
+      id: 1380e4c1-ee3f-4a98-87b6-3cd19e2f2888
+      version: -1
+      name: List theat assessment requests with request id
+      description: Create url assessment request.
+      script: '|||msg-list-threat-assessment-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      request_id:
+        simple: 3e8c68f-9a57-4332-1739-08dbd2e880ba
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: e4b9ae7c-2a5d-409d-8cff-b4373de5c3da
+    type: condition
+    task:
+      id: e4b9ae7c-2a5d-409d-8cff-b4373de5c3da
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.AssesmentRequest.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: file
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.AssesmentRequest.ID
+            iscontext: true
+          right:
+            value:
+              simple: 3e8c68f-9a57-4332-1739-08dbd2e880ba
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.AssesmentRequest.FileName
+            iscontext: true
+          right:
+            value:
+              simple: test.txt
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: a04d8a64-b816-4f82-8680-3395a0a905e6
+    type: regular
+    task:
+      id: a04d8a64-b816-4f82-8680-3395a0a905e6
+      version: -1
+      name: List all threat assessment requests
+      description: Create url assessment request.
+      script: '|||msg-list-threat-assessment-requests'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 9007910c-ca69-41a7-8f0f-1adb3ead0d9c
+    type: title
+    task:
+      id: 9007910c-ca69-41a7-8f0f-1adb3ead0d9c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 94f99d6b-15be-4e38-8b52-73636b5ccf4f
+    type: regular
+    task:
+      id: 94f99d6b-15be-4e38-8b52-73636b5ccf4f
+      version: -1
+      name: Create mail assessment request
+      description: Create and retrieve a mail threat assessment.
+      script: '|||msg-create-mail-assessment-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      category:
+        simple: phishing
+      expected_assessment:
+        simple: unblock
+      message_id:
+        simple: AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq-zTrN6vWSzK4OWAAZ7vnHVAAA=
+      message_user:
+        simple: 3fa9f28b-eb0e-463a-ba7b-8089fe9991e2
+      recipient_email:
+        simple: avishai@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: c6bfb4e2-0e8d-49b6-8201-0636fe97052b
+    type: condition
+    task:
+      id: c6bfb4e2-0e8d-49b6-8201-0636fe97052b
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.MailAssessment.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: mail
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.MailAssessment.MessageID
+            iscontext: true
+          right:
+            value:
+              simple: AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq-zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq-zTrN6vWSzK4OWAAZ7vnHVAAA=
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: ba0d17cb-eda5-4d3d-88a4-15de07975701
+    type: regular
+    task:
+      id: ba0d17cb-eda5-4d3d-88a4-15de07975701
+      version: -1
+      name: Create email file assessment request
+      description: Create email file assessment request.
+      script: '|||msg-create-email-file-assessment-request'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      category:
+        simple: phishing
+      content_data:
+        simple: UmVjZWl2ZWQ6IGZyb20gVkkxUFIwN01CMTAwNjUuZXVycHJkMDcucHJvZC5vdXRsb29rLmNvbQ0KICgyNjAzOjEwYTY6ODAwOjExOTo6MjIpIGJ5IFBBWFBSMDdNQjgzOTguZXVycHJkMDcucHJvZC5vdXRsb29rLmNvbSB3aXRoDQogSFRUUFM7IFN1biwgMTMgQXVnIDIwMjMgMTU6MjA6NTAgKzAwMDANClJlY2VpdmVkOiBmcm9tIFBBWFBSMDdNQjgzOTguZXVycHJkMDcucHJvZC5vdXRsb29rLmNvbSAoMjYwMzoxMGE2OjEwMjoyYmM6OjYpDQogYnkgVkkxUFIwN01CMTAwNjUuZXVycHJkMDcucHJvZC5vdXRsb29rLmNvbSAoMjYwMzoxMGE2OjgwMDoxMTk6OjIyKSB3aXRoDQogTWljcm9zb2Z0IFNNVFAgU2VydmVyICh2ZXJzaW9uPVRMUzFfMiwNCiBjaXBoZXI9VExTX0VDREhFX1JTQV9XSVRIX0FFU18yNTZfR0NNX1NIQTM4NCkgaWQgMTUuMjAuNjY3OC4yNDsgU3VuLCAxMyBBdWcNCiAyMDIzIDE1OjIwOjQ4ICswMDAwDQpSZWNlaXZlZDogZnJvbSBQQVhQUjA3TUI4Mzk4LmV1cnByZDA3LnByb2Qub3V0bG9vay5jb20NCiAoW2ZlODA6OmFiOTE6NWFhMDo5YzVlOjRlYTFdKSBieSBQQVhQUjA3TUI4Mzk4LmV1cnByZDA3LnByb2Qub3V0bG9vay5jb20NCiAoW2ZlODA6OmFiOTE6NWFhMDo5YzVlOjRlYTElNF0pIHdpdGggbWFwaSBpZCAxNS4yMC42Njc4LjAyMjsgU3VuLCAxMyBBdWcgMjAyMw0KIDE1OjIwOjQ4ICswMDAwDQpGcm9tOiBBdmlzaGFpIEJyYW5kZWlzIDxhdmlzaGFpQGRlbWlzdG9kZXYub25taWNyb3NvZnQuY29tPg0KVG86IEF2aXNoYWkgQnJhbmRlaXMgPGF2aXNoYWlAZGVtaXN0b2Rldi5vbm1pY3Jvc29mdC5jb20+DQpTdWJqZWN0OiBGdzogdGVzdCBtYWlsIHRvIHJhdGUgdGVzdA0KVGhyZWFkLVRvcGljOiB0ZXN0IG1haWwgdG8gcmF0ZSB0ZXN0DQpUaHJlYWQtSW5kZXg6IEFRSFp6Zm04SnA3OFRSZVFDa21sa0FxUnlOZWJydz09DQpEYXRlOiBTdW4sIDEzIEF1ZyAyMDIzIDE1OjIwOjQ4ICswMDAwDQpNZXNzYWdlLUlEOg0KCTxQQVhQUjA3TUI4Mzk4OERERjRDNTU1RjMxQzU5NDY3QkM5OTE2QUBQQVhQUjA3TUI4Mzk4LmV1cnByZDA3LnByb2Qub3V0bG9vay5jb20+DQpBY2NlcHQtTGFuZ3VhZ2U6IGVuLVVTDQpDb250ZW50LUxhbmd1YWdlOiBlbi1VUw0KWC1NUy1FeGNoYW5nZS1Pcmdhbml6YXRpb24tQXV0aEFzOiBJbnRlcm5hbA0KWC1NUy1FeGNoYW5nZS1Pcmdhbml6YXRpb24tQXV0aE1lY2hhbmlzbTogMDQNClgtTVMtRXhjaGFuZ2UtT3JnYW5pemF0aW9uLUF1dGhTb3VyY2U6IFBBWFBSMDdNQjgzOTguZXVycHJkMDcucHJvZC5vdXRsb29rLmNvbQ0KWC1NUy1IYXMtQXR0YWNoOg0KWC1NUy1FeGNoYW5nZS1Pcmdhbml6YXRpb24tTmV0d29yay1NZXNzYWdlLUlkOg0KCTgwMTMzY2Y3LWI0OTMtNGMwYS1mOTZhLTA4ZGI5YzEwZGY1Yg0KWC1NUy1FeGNoYW5nZS1Pcmdhbml6YXRpb24tU0NMOiAxDQpYLU1TLVRORUYtQ29ycmVsYXRvcjoNClgtTVMtRXhjaGFuZ2UtT3JnYW5pemF0aW9uLVJlY29yZFJldmlld0NmbVR5cGU6IDANCm1zaXBfbGFiZWxzOg0KeC1tcy1wdWJsaWN0cmFmZmljdHlwZTogRW1haWwNCngtZm9yZWZyb250LWFudGlzcGFtLXJlcG9ydDoNCglDSVA6MjU1LjI1NS4yNTUuMjU1O0NUUlk6O0xBTkc6ZW47U0NMOjE7U1JWOjtJUFY6TkxJO1NGVjpOU1BNO0g6UEFYUFIwN01CODM5OC5ldXJwcmQwNy5wcm9kLm91dGxvb2suY29tO1BUUjo7Q0FUOk5PTkU7U0ZTOjtESVI6SU5UOw0KYXV0aGVudGljYXRpb24tcmVzdWx0czogZGtpbT1ub25lIChtZXNzYWdlIG5vdCBzaWduZWQpDQogaGVhZGVyLmQ9bm9uZTtkbWFyYz1ub25lIGFjdGlvbj1ub25lIGhlYWRlci5mcm9tPWRlbWlzdG9kZXYub25taWNyb3NvZnQuY29tOw0KeC1taWNyb3NvZnQtYW50aXNwYW06IEJDTDowOw0KeC1tcy1vZmZpY2UzNjUtZmlsdGVyaW5nLWNvcnJlbGF0aW9uLWlkOiA4MDEzM2NmNy1iNDkzLTRjMGEtZjk2YS0wOGRiOWMxMGRmNWINCngtbXMtdHJhZmZpY3R5cGVkaWFnbm9zdGljOg0KCVBBWFBSMDdNQjgzOTg6RUVffFZJMVBSMDdNQjEwMDY1OkVFX3xQQVhQUjA3TUI4Mzk4OkVFXw0KeC1tcy1leGNoYW5nZS1jcm9zc3RlbmFudC1uZXR3b3JrLW1lc3NhZ2UtaWQ6DQoJODAxMzNjZjctYjQ5My00YzBhLWY5NmEtMDhkYjljMTBkZjViDQp4LW1zLWV4Y2hhbmdlLWNyb3NzdGVuYW50LWZyb21lbnRpdHloZWFkZXI6IEhvc3RlZA0KeC1tcy1leGNoYW5nZS1jcm9zc3RlbmFudC1pZDogZWJhYzFhMTYtODFiZi00NDliLThkNDMtNTczMmMzYzFkOTk5DQp4LW1zLWV4Y2hhbmdlLWNyb3NzdGVuYW50LW9yaWdpbmFsYXJyaXZhbHRpbWU6IDEzIEF1ZyAyMDIzIDE1OjIwOjQ4LjMzMzQgKFVUQykNCngtbXMtZXhjaGFuZ2UtdHJhbnNwb3J0LWNyb3NzdGVuYW50aGVhZGVyc3N0YW1wZWQ6IFZJMVBSMDdNQjEwMDY1DQp4LW1zLWV4Y2hhbmdlLWNyb3NzdGVuYW50LW1haWxib3h0eXBlOiBIT1NURUQNCngtbXMtZXhjaGFuZ2UtY3Jvc3N0ZW5hbnQtdXNlcnByaW5jaXBhbG5hbWU6DQoJL2h0ZTdnODBaOFFZWjlqZDk0eGE5QzRaMytmb3dNTkk1NWFwVWo0ZzJOelk5UVJpTCtkRGR0WFRjMFpWdEFsYXFmK0xObVVkRWw3SFo2NEcxeTViRjVvZGxpZ2RQYUc1bElqNEIvZFI1dktLUC9Ic2FhVkNvQ0l1MTZNM0R1Nm4NCngtbXMtZXhjaGFuZ2UtdHJhbnNwb3J0LWVuZHRvZW5kbGF0ZW5jeTogMDA6MDA6MDIuNjQxMzc1MA0KeC1tcy1leGNoYW5nZS1hdHBtZXNzYWdlcHJvcGVydGllczogU0wNCngtbXMtZXhjaGFuZ2UtcHJvY2Vzc2VkLWJ5LWJjY2ZvbGRlcmluZzogMTUuMjAuNjY3OC4wMjINCngtbXMtZXhjaGFuZ2UtY3Jvc3N0ZW5hbnQtYXV0aGFzOiBJbnRlcm5hbA0KeC1tcy1leGNoYW5nZS1jcm9zc3RlbmFudC1hdXRoc291cmNlOiBQQVhQUjA3TUI4Mzk4LmV1cnByZDA3LnByb2Qub3V0bG9vay5jb20NClgtTWljcm9zb2Z0LUFudGlzcGFtLU1haWxib3gtRGVsaXZlcnk6DQoJdWNmOjA7am1yOjA7YXV0aDowO2Rlc3Q6STtFTkc6KDkxMDAwMSkoOTQ0NTA2NDc4KSg5NDQ2MjY2MDQpKDkyMDA5NykoNDI1MDAxKSg5MzAwOTcpKDE0MDAwMykoMTQyMDEwMyk7DQpYLU1pY3Jvc29mdC1BbnRpc3BhbS1NZXNzYWdlLUluZm86DQoJOUkvZnlpRm9pSlNzaittanR0aEZvZEdzdkRMQzVmOVA4eVpDUmovT0NWdXFLQ294SFpqY0tFR2JGcU1rT1QyUFJFV3VSRnNCQnh5TFEzY2xhUkxhQVoyNEw2WGNKQXZ4MnUvZG02NjluRk5halNHeEprUDlMTHpvQUFpVTRzQUxtN1YxMmpyYVRjcDNOaFM5UHpXZlBLRUlBS3NNT3ZDcUdmeURNd29uSjVveTJBOHUxT2dVNnQ1QlkyK0FDR2ZZVERPS1lhOXBUMUgwbFBBS1VTL0ZzYmgydVE5UmhUYVJhOVV4UkFtakhuTUh1UmxxS0JtSGRQQXV1MEl1STVWV01aRThkMFFnSnExbmFNOXFDOTM5MmxsKzd0eFRDa0dlSlZhbGovaExjdlVOa3dnSlZrMW5LREJkOWROTm8vV0FQYzVjaU9Hb3FSclAzNUxDREpsSVdraGdHQ25RSy9NNzAzSjBRTVBteFpRN2FrcEE3a2VoeTAxb21iYmhGOUxhQmIwTDVyYVlTbWZhWmNDVlNKY1ViYnIyaWw0SU82UG0xRWVFMnREMnFCSXlYcHU3dCs5V0pSRlFhTHZueFoyMnh1bDZoMllaMzdidW5Ocm5KZFdNZ0lMa1ZETnB1Und3VTd0dmk4Q1h3blBrSUlGK2dOWnBsaS85b0U4encySFV0U25vaEhFSERvTXMyRE1hSHh2d2VOU1oyTmJkbzNUb1dPbXJCSDV6cGlaWnVzbWJkN294RDBKTm1HeFNGRzhtNjdrZ2pFbnJWRUgwQUl0RjJTMmRoU0l1WVpGZUo5SWgrc1hsZzNXNDdZSmw0eTlGK1FITDMyc2NKd3FHMTg1MVBJVjEyVFBHWHhkWDBVZUMreWkvQlZrTDI0em42akNBeEJwUnp0eVArNEw3akVNK1dXcWlXdWgxK0NmU0Q3bDBWeG1VdHBQbWxUYndxdGpKK1pscEk3WGNwdEV6ZnNoR3pVejNkUEhXSWFTWmRTWGxBQXdXMDRlaEtWbHUvdEtEDQpDb250ZW50LVR5cGU6IG11bHRpcGFydC9hbHRlcm5hdGl2ZTsNCglib3VuZGFyeT0iXzAwMF9QQVhQUjA3TUI4Mzk4OERERjRDNTU1RjMxQzU5NDY3QkM5OTE2QVBBWFBSMDdNQjgzOThldXJwXyINCk1JTUUtVmVyc2lvbjogMS4wDQoNCi0tXzAwMF9QQVhQUjA3TUI4Mzk4OERERjRDNTU1RjMxQzU5NDY3QkM5OTE2QVBBWFBSMDdNQjgzOThldXJwXw0KQ29udGVudC1UeXBlOiB0ZXh0L3BsYWluOyBjaGFyc2V0PSJpc28tODg1OS0xIg0KQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogcXVvdGVkLXByaW50YWJsZQ0KDQoNCl9fX19fX19fX19fX19fX19fX19fX19fX19fX19fX19fDQpGcm9tOiBBdmlzaGFpIEJyYW5kZWlzDQpTZW50OiBTdW5kYXksIEF1Z3VzdCAxMywgMjAyMyA1OjU1IFBNDQpUbzogcmF0ZSB0ZXN0IDEgPHJhdGV0ZXN0MUBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbT4NCkNjOiBDb250ZW50IFRlc3QgPENvbnRlbnRUZXN0QGRlbWlzdG9kZXYub25taWNyb3NvZnQuY29tPg0KU3ViamVjdDogdGVzdCBtYWlsIHRvIHJhdGUgdGVzdA0KDQp0ZXN0IG1haWwgdG8gcmF0ZSB0ZXN0ICAxDQpsaW5rIHRvIGNoZWNrIHlvdXIgY3JlZGl0IGNhcmQNCmh0dHBzOi8vd3d3Lmhvb2tzZWN1cml0eS5jby9waGlzaGluZy1lbWFpbC1leGFtcGxlczxodHRwczovL2V1cjAxLnNhZmVsaW5rcz0NCi5wcm90ZWN0aW9uLm91dGxvb2suY29tLz91cmw9M0RodHRwcyUzQSUyRiUyRnd3dy5ob29rc2VjdXJpdHkuY28lMkZwaGlzaGluZz0NCi1lbWFpbC1leGFtcGxlcyZkYXRhPTNEMDUlN0MwMSU3Q2F2aXNoYWklNDBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbSU3QzgwMT0NCjMzY2Y3YjQ5MzRjMGFmOTZhMDhkYjljMTBkZjViJTdDZWJhYzFhMTY4MWJmNDQ5YjhkNDM1NzMyYzNjMWQ5OTklN0MxJTdDMCU3Qz0NCjYzODI3NTM2ODUxMTE1MzE2NiU3Q1Vua25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJam9pVjJsdT0NCk16SWlMQ0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0MzMDAwJTdDJTdDJTdDJnNkYXRhPTNEVUlBSkYzdjBJbWNTNTJyNT0NCnRNQUx5UndxNTMyRENZZU44Q2lMSVVyMEloUSUzRCZyZXNlcnZlZD0zRDA+DQo1MCsgUGhpc2hpbmcgRW1haWwgRXhhbXBsZXMgLSBDb21tb24gVHlwZXMgYW5kIEV4YW1wbGVzIG9mIFBoaXNoaW5nPGh0dHBzOi89DQovZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD0zRGh0dHBzJTNBJTJGJTJGd3d3Lmhvb2tzZWN1cmk9DQp0eS5jbyUyRnBoaXNoaW5nLWVtYWlsLWV4YW1wbGVzJmRhdGE9M0QwNSU3QzAxJTdDYXZpc2hhaSU0MGRlbWlzdG9kZXYub25taWM9DQpyb3NvZnQuY29tJTdDODAxMzNjZjdiNDkzNGMwYWY5NmEwOGRiOWMxMGRmNWIlN0NlYmFjMWExNjgxYmY0NDliOGQ0MzU3MzJjM2M9DQoxZDk5OSU3QzElN0MwJTdDNjM4Mjc1MzY4NTExMzA5ODQ0JTdDVW5rbm93biU3Q1RXRnBiR1pzYjNkOGV5SldJam9pTUM0d0xqQXc9DQpNREFpTENKUUlqb2lWMmx1TXpJaUxDSkJUaUk2SWsxaGFXd2lMQ0pYVkNJNk1uMCUzRCU3QzMwMDAlN0MlN0MlN0Mmc2RhdGE9M0Q9DQp3dnBiaWtad1NHd3ZzdGpmV3ZUaTBrRFQ5OEtKV3dDcyUyQmFmU3FuUEZYQW8lM0QmcmVzZXJ2ZWQ9M0QwPg0KVmlldyBvdXIgbGFyZ2UgY29sbGVjdGlvbiBvZiBwaGlzaGluZyBlbWFpbCBleGFtcGxlcywgZnJvbSBVYmVyIHRvIFBheXBhbCBhPQ0KbmQgbW9yZSwgYW5kIGxlYXJuIGhvdyB0byB1c2UgdGhlIGNvbW1vbiByZWQgZmxhZ3Mgb2YgcGhpc2hpbmcgdG8gYXZvaWQgY2xpPQ0KY2tpbmcgb24gcmVhbCBwaGlzaGluZyBlbWFpbHMuDQp3d3cuaG9va3NlY3VyaXR5LmNvDQoNCg0KDQotLV8wMDBfUEFYUFIwN01CODM5ODhEREY0QzU1NUYzMUM1OTQ2N0JDOTkxNkFQQVhQUjA3TUI4Mzk4ZXVycF8NCkNvbnRlbnQtVHlwZTogdGV4dC9odG1sOyBjaGFyc2V0PSJpc28tODg1OS0xIg0KQ29udGVudC1UcmFuc2Zlci1FbmNvZGluZzogcXVvdGVkLXByaW50YWJsZQ0KDQo8aHRtbD4NCjxoZWFkPg0KPG1ldGEgaHR0cC1lcXVpdj0zRCJDb250ZW50LVR5cGUiIGNvbnRlbnQ9M0QidGV4dC9odG1sOyBjaGFyc2V0PTNEaXNvLTg4NTktPQ0KMSI+DQo8c3R5bGUgdHlwZT0zRCJ0ZXh0L2NzcyIgc3R5bGU9M0QiZGlzcGxheTpub25lOyI+IFAge21hcmdpbi10b3A6MDttYXJnaW4tYm89DQp0dG9tOjA7fSA8L3N0eWxlPg0KPC9oZWFkPg0KPGJvZHkgZGlyPTNEImx0ciI+DQo8ZGl2IHN0eWxlPTNEImZvbnQtZmFtaWx5OiBDYWxpYnJpLCBBcmlhbCwgSGVsdmV0aWNhLCBzYW5zLXNlcmlmOyBmb250LXNpemU9DQo6IDEycHQ7IGNvbG9yOiByZ2IoMCwgMCwgMCk7IiBjbGFzcz0zRCJlbGVtZW50VG9Qcm9vZiI+DQo8YnI+DQo8L2Rpdj4NCjxkaXYgaWQ9M0QiYXBwZW5kb25zZW5kIj48L2Rpdj4NCjxociBzdHlsZT0zRCJkaXNwbGF5OmlubGluZS1ibG9jazt3aWR0aDo5OCUiIHRhYmluZGV4PTNEIi0xIj4NCjxkaXYgaWQ9M0QiZGl2UnBseUZ3ZE1zZyIgZGlyPTNEImx0ciI+PGZvbnQgZmFjZT0zRCJDYWxpYnJpLCBzYW5zLXNlcmlmIiBzdD0NCnlsZT0zRCJmb250LXNpemU6MTFwdCIgY29sb3I9M0QiIzAwMDAwMCI+PGI+RnJvbTo8L2I+IEF2aXNoYWkgQnJhbmRlaXM8YnI+DQo8Yj5TZW50OjwvYj4gU3VuZGF5LCBBdWd1c3QgMTMsIDIwMjMgNTo1NSBQTTxicj4NCjxiPlRvOjwvYj4gcmF0ZSB0ZXN0IDEgJmx0O3JhdGV0ZXN0MUBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbSZndDs8YnI+DQo8Yj5DYzo8L2I+IENvbnRlbnQgVGVzdCAmbHQ7Q29udGVudFRlc3RAZGVtaXN0b2Rldi5vbm1pY3Jvc29mdC5jb20mZ3Q7PGJyPg0KPGI+U3ViamVjdDo8L2I+IHRlc3QgbWFpbCB0byByYXRlIHRlc3Q8L2ZvbnQ+DQo8ZGl2PiZuYnNwOzwvZGl2Pg0KPC9kaXY+DQo8c3R5bGUgdHlwZT0zRCJ0ZXh0L2NzcyIgc3R5bGU9M0QiZGlzcGxheTpub25lIj4NCjwhLS0NCnANCgl7bWFyZ2luLXRvcDowOw0KCW1hcmdpbi1ib3R0b206MH0NCi0tPg0KPC9zdHlsZT4NCjxkaXYgZGlyPTNEImx0ciI+DQo8ZGl2IGNsYXNzPTNEInhfZWxlbWVudFRvUHJvb2YiIHN0eWxlPTNEImZvbnQtZmFtaWx5OkNhbGlicmksQXJpYWwsSGVsdmV0aWM9DQphLHNhbnMtc2VyaWY7IGZvbnQtc2l6ZToxMnB0OyBjb2xvcjpyZ2IoMCwwLDApIj4NCnRlc3QgbWFpbCB0byByYXRlIHRlc3QmbmJzcDsgMSZuYnNwOzwvZGl2Pg0KPGRpdiBjbGFzcz0zRCJ4X2VsZW1lbnRUb1Byb29mIiBzdHlsZT0zRCJmb250LWZhbWlseTpDYWxpYnJpLEFyaWFsLEhlbHZldGljPQ0KYSxzYW5zLXNlcmlmOyBmb250LXNpemU6MTJwdDsgY29sb3I6cmdiKDAsMCwwKSI+DQpsaW5rIHRvIGNoZWNrIHlvdXIgY3JlZGl0IGNhcmQ8L2Rpdj4NCjxkaXYgY2xhc3M9M0QieF9lbGVtZW50VG9Qcm9vZiB4X0NvbnRlbnRQYXN0ZWQwIiBzdHlsZT0zRCJmb250LWZhbWlseTpDYWxpYj0NCnJpLEFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmOyBmb250LXNpemU6MTJwdDsgY29sb3I6cmdiKDAsMCwwKSI+DQo8YSBocmVmPTNEImh0dHBzOi8vZXVyMDEuc2FmZWxpbmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD0zRGh0dHBzJTNBJTI9DQpGJTJGd3d3Lmhvb2tzZWN1cml0eS5jbyUyRnBoaXNoaW5nLWVtYWlsLWV4YW1wbGVzJmFtcDtkYXRhPTNEMDUlN0MwMSU3Q2F2aXM9DQpoYWklNDBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbSU3QzgwMTMzY2Y3YjQ5MzRjMGFmOTZhMDhkYjljMTBkZjViJTdDZWJhYzE9DQphMTY4MWJmNDQ5YjhkNDM1NzMyYzNjMWQ5OTklN0MxJTdDMCU3QzYzODI3NTM2ODUxMTE1MzE2NiU3Q1Vua25vd24lN0NUV0ZwYkc9DQpac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJam9pVjJsdU16SWlMQ0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0M9DQozMDAwJTdDJTdDJTdDJmFtcDtzZGF0YT0zRFVJQUpGM3YwSW1jUzUycjV0TUFMeVJ3cTUzMkRDWWVOOENpTElVcjBJaFElM0QmYW09DQpwO3Jlc2VydmVkPTNEMCIgb3JpZ2luYWxzcmM9M0QiaHR0cHM6Ly93d3cuaG9va3NlY3VyaXR5LmNvL3BoaXNoaW5nLWVtYWlsLWU9DQp4YW1wbGVzIiBzaGFzaD0zRCJyVng2eWNUUXFpaFRla3k1UG9xT3A2UnpFaTVoTmlqL1E3UFFnYUlWRUJjckQvQW1sNVlMcXprQ1E9DQpFSldpcU9uMEtUTVl4RTZNTytFUWIxUUcrNEw0aHZPaTRuM2lHVHV0NXRTaFBYa0xSM0RXc1JNNG5UOUFsekRzOXR3MHpEOU91WGQ9DQoyU3MxYzNTSDg1R3R3MkFWZ1lqNkg0KzJwRnVBb3hPalkrN250Nm89M0QiIGlkPTNEIkxQbG5rT1dBTGlua1ByZXZpZXciPmh0dHA9DQpzOi8vd3d3Lmhvb2tzZWN1cml0eS5jby9waGlzaGluZy1lbWFpbC1leGFtcGxlczwvYT48YnI+DQo8L2Rpdj4NCjxkaXYgY2xhc3M9M0QieF9fRW50aXR5IHhfX0VUeXBlX09XQUxpbmtQcmV2aWV3IHhfX0VJZF9PV0FMaW5rUHJldmlldyB4X19FUj0NCmVhZG9ubHlfMSI+DQo8ZGl2IGlkPTNEIkxQQm9yZGVyX0dUYUhSMGNITTZMeTkzZDNjdWFHOXZhM05sWTNWeWFYUjVMbU52TDNCb2FYTm9hVzVuTFdWdFk9DQpXbHNMV1Y0WVcxd2JHVnoiIGNsYXNzPTNEInhfTFBCb3JkZXIxNTk0OTkiIHN0eWxlPTNEIndpZHRoOjEwMCU7IG1hcmdpbi10b3A9DQo6MTZweDsgbWFyZ2luLWJvdHRvbToxNnB4OyBtYXgtd2lkdGg6ODAwcHg7IG1pbi13aWR0aDo0MjRweCI+DQo8dGFibGUgaWQ9M0QiTFBDb250YWluZXIxNTk0OTkiIHJvbGU9M0QicHJlc2VudGF0aW9uIiBzdHlsZT0zRCJwYWRkaW5nOjEycHg9DQogMzZweCAxMnB4IDEycHg7IHdpZHRoOjEwMCU7IGJvcmRlci13aWR0aDoxcHg7IGJvcmRlci1zdHlsZTpzb2xpZDsgYm9yZGVyLWM9DQpvbG9yOnJnYigyMDAsMjAwLDIwMCk7IGJvcmRlci1yYWRpdXM6MnB4Ij4NCjx0Ym9keT4NCjx0ciB2YWxpZ249M0QidG9wIiBzdHlsZT0zRCJib3JkZXItc3BhY2luZzowcHgiPg0KPHRkIHN0eWxlPTNEIndpZHRoOjEwMCUiPg0KPGRpdiBpZD0zRCJMUFRpdGxlMTU5NDk5IiBzdHlsZT0zRCJmb250LXNpemU6MjFweDsgZm9udC13ZWlnaHQ6MzAwOyBtYXJnaW4tPQ0KcmlnaHQ6OHB4OyBmb250LWZhbWlseTp3Zl9zZWdvZS11aV9saWdodCwmcXVvdDtTZWdvZSBVSSBMaWdodCZxdW90OywmcXVvdDtTPQ0KZWdvZSBXUCBMaWdodCZxdW90OywmcXVvdDtTZWdvZSBVSSZxdW90OywmcXVvdDtTZWdvZSBXUCZxdW90OyxUYWhvbWEsQXJpYWwsPQ0Kc2Fucy1zZXJpZjsgbWFyZ2luLWJvdHRvbToxMnB4Ij4NCjxhIHRhcmdldD0zRCJfYmxhbmsiIGlkPTNEIkxQVXJsQW5jaG9yMTU5NDk5IiBocmVmPTNEImh0dHBzOi8vZXVyMDEuc2FmZWxpbj0NCmtzLnByb3RlY3Rpb24ub3V0bG9vay5jb20vP3VybD0zRGh0dHBzJTNBJTJGJTJGd3d3Lmhvb2tzZWN1cml0eS5jbyUyRnBoaXNoaT0NCm5nLWVtYWlsLWV4YW1wbGVzJmFtcDtkYXRhPTNEMDUlN0MwMSU3Q2F2aXNoYWklNDBkZW1pc3RvZGV2Lm9ubWljcm9zb2Z0LmNvbT0NCiU3QzgwMTMzY2Y3YjQ5MzRjMGFmOTZhMDhkYjljMTBkZjViJTdDZWJhYzFhMTY4MWJmNDQ5YjhkNDM1NzMyYzNjMWQ5OTklN0MxJT0NCjdDMCU3QzYzODI3NTM2ODUxMTMwOTg0NCU3Q1Vua25vd24lN0NUV0ZwYkdac2IzZDhleUpXSWpvaU1DNHdMakF3TURBaUxDSlFJaj0NCm9pVjJsdU16SWlMQ0pCVGlJNklrMWhhV3dpTENKWFZDSTZNbjAlM0QlN0MzMDAwJTdDJTdDJTdDJmFtcDtzZGF0YT0zRHd2cGJpaz0NClp3U0d3dnN0amZXdlRpMGtEVDk4S0pXd0NzJTJCYWZTcW5QRlhBbyUzRCZhbXA7cmVzZXJ2ZWQ9M0QwIiBvcmlnaW5hbHNyYz0zRD0NCiJodHRwczovL3d3dy5ob29rc2VjdXJpdHkuY28vcGhpc2hpbmctZW1haWwtZXhhbXBsZXMiIHNoYXNoPTNEIlQyUTU1M0YzeWNQTT0NCk80b2dnZVVWNE9vOGFhWEVNMHNKUmdmdFRPSU1WRzlkQ2JMVklKdmlvT1ZxaEx6T3Jxa3BnV09nVzUzTXh2dk9UUE1rRWVwOVZXdD0NCnY4TG85ZXFseC9iY1ZCdytnR2paYkZSZFJmc3JGSVRZWlJCVDk4OWpDeDFZRFh3am5aZGo0MEZ3ZS9HSzZhKzI4REVNLzBTUEw4Tj0NClJ4Zkk1VFJrQT0zRCIgc3R5bGU9M0QidGV4dC1kZWNvcmF0aW9uOm5vbmUiPjUwKw0KIFBoaXNoaW5nIEVtYWlsIEV4YW1wbGVzIC0gQ29tbW9uIFR5cGVzIGFuZCBFeGFtcGxlcyBvZiBQaGlzaGluZzwvYT48L2Rpdj4NCjxkaXYgaWQ9M0QiTFBEZXNjcmlwdGlvbjE1OTQ5OSIgc3R5bGU9M0QiZm9udC1zaXplOjE0cHg7IG1heC1oZWlnaHQ6MTAwcHg7ID0NCmZvbnQtZmFtaWx5OndmX3NlZ29lLXVpX25vcm1hbCwmcXVvdDtTZWdvZSBVSSZxdW90OywmcXVvdDtTZWdvZSBXUCZxdW90OyxUYT0NCmhvbWEsQXJpYWwsc2Fucy1zZXJpZjsgbWFyZ2luLWJvdHRvbToxMnB4OyBtYXJnaW4tcmlnaHQ6OHB4OyBvdmVyZmxvdzpoaWRkZT0NCm47IGNvbG9yOnJnYigxMDIsMTAyLDEwMikiPg0KVmlldyBvdXIgbGFyZ2UgY29sbGVjdGlvbiBvZiBwaGlzaGluZyBlbWFpbCBleGFtcGxlcywgZnJvbSBVYmVyIHRvIFBheXBhbCBhPQ0KbmQgbW9yZSwgYW5kIGxlYXJuIGhvdyB0byB1c2UgdGhlIGNvbW1vbiByZWQgZmxhZ3Mgb2YgcGhpc2hpbmcgdG8gYXZvaWQgY2xpPQ0KY2tpbmcgb24gcmVhbCBwaGlzaGluZyBlbWFpbHMuPC9kaXY+DQo8ZGl2IGlkPTNEIkxQTWV0YWRhdGExNTk0OTkiIHN0eWxlPTNEImZvbnQtc2l6ZToxNHB4OyBmb250LXdlaWdodDo0MDA7IGZvbnQ9DQotZmFtaWx5OndmX3NlZ29lLXVpX25vcm1hbCwmcXVvdDtTZWdvZSBVSSZxdW90OywmcXVvdDtTZWdvZSBXUCZxdW90OyxUYWhvbWE9DQosQXJpYWwsc2Fucy1zZXJpZjsgY29sb3I6cmdiKDE2NiwxNjYsMTY2KSI+DQp3d3cuaG9va3NlY3VyaXR5LmNvPC9kaXY+DQo8L3RkPg0KPC90cj4NCjwvdGJvZHk+DQo8L3RhYmxlPg0KPC9kaXY+DQo8L2Rpdj4NCjxkaXYgc3R5bGU9M0QiZm9udC1mYW1pbHk6Q2FsaWJyaSxBcmlhbCxIZWx2ZXRpY2Esc2Fucy1zZXJpZjsgZm9udC1zaXplOjEycD0NCnQ7IGNvbG9yOnJnYigwLDAsMCkiPg0KPGJyPg0KPC9kaXY+DQo8ZGl2IGNsYXNzPTNEInhfZWxlbWVudFRvUHJvb2YiIHN0eWxlPTNEImZvbnQtZmFtaWx5OkNhbGlicmksQXJpYWwsSGVsdmV0aWM9DQphLHNhbnMtc2VyaWY7IGZvbnQtc2l6ZToxMnB0OyBjb2xvcjpyZ2IoMCwwLDApIj4NCjxicj4NCjwvZGl2Pg0KPC9kaXY+DQo8L2JvZHk+DQo8L2h0bWw+DQoNCi0tXzAwMF9QQVhQUjA3TUI4Mzk4OERERjRDNTU1RjMxQzU5NDY3QkM5OTE2QVBBWFBSMDdNQjgzOThldXJwXy0tDQo=
+      expected_assessment:
+        simple: unblock
+      recipient_email:
+        simple: avishai@demistodev.onmicrosoft.com
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: f4d525b2-4641-4538-8c73-2af8170f8885
+    type: condition
+    task:
+      id: f4d525b2-4641-4538-8c73-2af8170f8885
+      version: -1
+      name: Check outputs
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "2"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.EmailAssessment.ContentType
+            iscontext: true
+          right:
+            value:
+              simple: mail
+      - - operator: isEqualString
+          left:
+            value:
+              simple: MSGraphMail.EmailAssessment.RecipientEmail
+            iscontext: true
+          right:
+            value:
+              simple: avishai@demistodev.onmicrosoft.com
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2310,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []

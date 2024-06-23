@@ -1,0 +1,36 @@
+{
+    "version": -1,
+    "fromVersion": "6.0.0",
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Varonis SaaS Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "varonissaasalertstatus",
+    "closeForm": false,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_varonissaasalertstatus",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Varonis SaaS Alert Status",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "selectValues": [
+        "new",
+        "under investigation",
+        "closed",
+        "action required",
+        "auto-resolved"
+    ],
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false
+}

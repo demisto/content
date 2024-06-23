@@ -2,11 +2,11 @@ import json
 import pytest
 from FeedTAXII2 import *
 
-with open('test_data/results.json', 'r') as f:
+with open('test_data/results.json') as f:
     RESULTS_JSON = json.load(f)
-with open('test_data/cortex_indicators_1.json', 'r') as f:
+with open('test_data/cortex_indicators_1.json') as f:
     CORTEX_IOCS_1 = json.load(f)
-with open('test_data/cortex_indicators_1.json', 'r') as f:
+with open('test_data/cortex_indicators_1.json') as f:
     CORTEX_IOCS_2 = json.load(f)
 
 
@@ -43,9 +43,10 @@ class TestFetchIndicators:
         mock_client.collections = [MockCollection(default_id, 'default'), MockCollection(nondefault_id, 'not_default')]
 
         mock_client.collection_to_fetch = mock_client.collections[0]
-        mocker.patch.object(mock_client, 'build_iterator', return_value=RESULTS_JSON)
+        result = RESULTS_JSON.get("Contents")
+        mocker.patch.object(mock_client, 'build_iterator', return_value=result)
         indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, {})
-        assert indicators == RESULTS_JSON
+        assert indicators == result
         assert mock_client.collection_to_fetch.id in last_run
 
     def test_single_with_context(self, mocker):
@@ -72,9 +73,10 @@ class TestFetchIndicators:
 
         mock_client.collection_to_fetch = mock_client.collections[0]
         last_run = {mock_client.collections[1]: 'test'}
-        mocker.patch.object(mock_client, 'build_iterator', return_value=RESULTS_JSON)
+        result = RESULTS_JSON.get("Contents")
+        mocker.patch.object(mock_client, 'build_iterator', return_value=result)
         indicators, last_run = fetch_indicators_command(mock_client, '1 day', -1, last_run)
-        assert indicators == RESULTS_JSON
+        assert indicators == result
         assert mock_client.collection_to_fetch.id in last_run
         assert last_run.get(mock_client.collections[1]) == 'test'
 
@@ -325,3 +327,73 @@ class TestHelperFunctions:
             initial_interval = 'initial_mock'
 
             assert get_added_after(fetch_full_feed, initial_interval, last_fetch_time) == initial_interval
+
+    @pytest.mark.parametrize("indicators, last_run, new_indicators", [
+        (
+            [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
+             {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}],
+            {},
+            [{'value': 'one', 'type': 'IP', "rawJSON": {'id': 'test_one', "modified": '2023-06-14T13:18:21.598591Z'}},
+             {'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}]
+        ),
+        (
+            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}}],
+            {"latest_indicators":
+             [{'test_one': '2023-06-14T13:18:21.598591Z'},
+              {'test_two': '2023-07-06T08:59:57.339606Z'},
+              {'test_three': '2023-07-06T08:59:57.339606Z'}
+              ]},
+            []
+        ),
+        (
+            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
+             {'value': 'three', 'type': 'Domain', "rawJSON": {'id': 'test_three', "modified": '2023-07-06T08:59:57.339606Z'}},
+             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}],
+            {"latest_indicators":
+             [{'test_two': '2023-07-06T08:59:57.339606Z'},
+              {'test_three': '2023-07-06T08:59:57.339606Z'},
+              {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}
+              ]},
+            [{'value': 'two', 'type': 'IP', "rawJSON": {'id': 'test_two', "modified": '2023-10-02T05:34:45.339145Z'}},
+             {'value': 'four', 'type': 'Domain', "rawJSON": {'id': 'test_four', "modified": '2023-10-02T05:34:28.339145Z'}},
+             {'value': '$$DummyIndicator$$', 'relationships': [{}, {}, {}]}]
+        )
+
+    ])
+    def test_filter_previously_fetched_indicators(self, indicators, last_run, new_indicators):
+        """
+        Scenario: Test filtering indicators received from the fetch call before sending indicators to server
+
+        Given:
+        - list of indicators returned from the fetch call with empty lastrun object.
+        - list of indicators returned from the fetch call with lastrun containing the same indicators (they were fetched
+         in the previous fetch call).
+        - list of indicators returned from the fetch call, and lastrun containing an indicator that was
+         modified in the fetch call.
+
+        When:
+        - running filter_indicators command.
+
+        Then:
+        - all fetched indicators are returned, lastrun is updated with all fetched indicators ids and modified date.
+        - non of the fetched indicators returned, lastrun is updated with all fetched indicators ids and modified date.
+        - only the new and modified indicators are returned, lastrun is updated with all
+         fetched indicators ids and modified dates.
+        """
+
+        from FeedTAXII2 import filter_previously_fetched_indicators
+
+        next_latest_indicators = [{obj.get('rawJSON', {}).get("id"): obj.get('rawJSON', {}).get("modified")}
+                                  if obj.get("value") != "$$DummyIndicator$$" else obj
+                                  for obj in indicators]
+
+        result = filter_previously_fetched_indicators(indicators, last_run)
+
+        assert result == new_indicators
+        assert last_run.get("latest_indicators") == next_latest_indicators

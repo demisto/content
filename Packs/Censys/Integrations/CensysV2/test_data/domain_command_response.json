@@ -1,0 +1,139 @@
+{
+    "code": 200,
+    "status": "OK",
+    "result": {
+      "query": "dns.names=amazon.com",
+      "total": 3,
+      "duration": 239,
+      "hits": [
+        {
+          "location": {
+            "province": "Virginia",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "timezone": "America/New_York",
+            "country_code": "US",
+            "continent": "North America",
+            "postal_code": "20147",
+            "city": "Ashburn"
+          },
+          "autonomous_system": {
+            "description": "AMAZON-02",
+            "bgp_prefix": "1.1.1.1",
+            "name": "AMAZON-02",
+            "country_code": "US",
+            "asn": 16509
+          },
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "transport_protocol": "TCP",
+              "certificate": "XXXXXX",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "ip": "1.1.1.1"
+        },
+        {
+          "ip": "8.8.8.8",
+          "services": [
+            {
+              "port": 80,
+              "transport_protocol": "TCP",
+              "service_name": "HTTP",
+              "extended_service_name": "HTTP"
+            },
+            {
+              "port": 443,
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTPS",
+              "service_name": "HTTP",
+              "certificate": "XXXXXX"
+            }
+          ],
+          "dns": {
+            "reverse_dns": {
+              "names": [
+                "s3-console-us-standard.console.aws.amazon.com"
+              ]
+            }
+          },
+          "location": {
+            "province": "Virginia",
+            "postal_code": "20147",
+            "country": "United States",
+            "timezone": "America/New_York",
+            "continent": "North America",
+            "city": "Ashburn",
+            "country_code": "US",
+            "coordinates": {
+              "latitude": 39.04372,
+              "longitude": -77.48749
+            }
+          },
+          "autonomous_system": {
+            "country_code": "US",
+            "bgp_prefix": "1.1.1.1",
+            "asn": 16509,
+            "description": "AMAZON-02",
+            "name": "AMAZON-02"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.171Z"
+        },
+        {
+          "location": {
+            "postal_code": "20147",
+            "province": "Virginia",
+            "country_code": "US",
+            "timezone": "America/New_York",
+            "country": "United States",
+            "coordinates": {
+              "longitude": -77.48749,
+              "latitude": 39.04372
+            },
+            "continent": "North America",
+            "city": "Ashburn"
+          },
+          "last_updated_at": "2024-04-06T16:57:13.170Z",
+          "autonomous_system": {
+            "country_code": "US",
+            "asn": 16509,
+            "name": "AMAZON-02",
+            "bgp_prefix": "1.1.1.1",
+            "description": "AMAZON-02"
+          },
+          "services": [
+            {
+              "transport_protocol": "TCP",
+              "extended_service_name": "HTTP",
+              "port": 80,
+              "service_name": "HTTP"
+            },
+            {
+              "extended_service_name": "HTTPS",
+              "transport_protocol": "TCP",
+              "certificate": "XXXXXX",
+              "service_name": "HTTP",
+              "port": 443
+            }
+          ],
+          "ip": "8.8.4.4"
+        }
+      ],
+      "links": {
+        "next": "",
+        "prev": ""
+      }
+    }
+  }

@@ -12,59 +12,61 @@ system: true
 args:
 - name: email
   default: true
-  description: The email of the user to ask
+  description: The email of the user to ask.
 - name: subject
   required: true
-  description: The subject for the email
+  description: The subject for the email.
 - name: message
   required: true
-  description: The message to the user to ask
+  description: The message to the user to ask.
 - name: option1
   description: First option for a user reply. "yes" is the default.
 - name: option2
   description: Second option for the user reply. "no" is the default.
 - name: additionalOptions
-  description: A comma delimited list of additional options if you have more than 2
+  description: A comma delimited list of additional options if you have more than 2.
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
 - name: roles
-  description: Send mail to all users of these roles (csv list)
+  description: Send mail to all users of these roles (csv list).
 - name: attachIds
-  description: Attachments
+  description: Attachments.
+- name: attachCIDs
+  description: A comma-separated list of CIDs to embed attachments within the actual email.
 - name: bodyType
   auto: PREDEFINED
   predefined:
-  - text
-  - html
-  description: Type of email body to send - text ot HTML
-  defaultValue: text
+  - "text"
+  - "html"
+  description: Type of email body to send - text ot HTML.
+  defaultValue: "text"
 - name: renderBody
+  description: Indicates whether to render the email body.
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Indicates whether to render the email body
   defaultValue: "false"
 - name: replyAddress
-  description: Address of reply for html links
+  description: Address of reply for html links.
 - name: replyEntriesTag
-  description: Tag to add on email reply entries
+  description: Tag to add on email reply entries.
 - name: persistent
+  description: Indicates whether to use one-time entitlement or a persistent one.
+  defaultValue: "false"
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Indicates whether to use one-time entitlement or a persistent one
-  defaultValue: "false"
 - name: retries
-  description: Indicates how many times to try and create an entitlement in case of failure
+  description: Indicates how many times to try and create an entitlement in case of failure.
   defaultValue: "10"
 - name: cc
-  description: The CC email address
+  description: The CC email address.
 - name: bcc
-  description: The BCC email address
+  description: The BCC email address.
 - name: playbookTaskID
-  description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all` to complete all tasks from all playbooks
+  description: Subplaybook ID, use ${currentPlaybookID} to get it from context, `all` to complete all tasks from all playbooks.
   defaultValue: ${currentPlaybookID}
 scripttarget: 0
 marketplaces:

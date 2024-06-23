@@ -1,0 +1,42 @@
+{
+    "http_method": "GET",
+    "size": 1,
+    "matched_count": 1,
+    "next_idx": 0,
+    "revision": "12345",
+    "results": [
+        {
+            "name": "Lucario",
+            "q_origin_key": "Lucario",
+            "uuid": "00000000-0000-0000-0000-000000000000",
+            "type": "ipprefix",
+            "macaddr": [],
+            "sdn": "",
+            "ip6": "0000:0000::/120",
+            "end-ip": "::",
+            "fqdn": "",
+            "country": "",
+            "cache-ttl": 0,
+            "color": 0,
+            "obj-id": "",
+            "list": [],
+            "tagging": [],
+            "comment": "",
+            "template": "",
+            "subnet-segment": [],
+            "host-type": "any",
+            "tenant": "",
+            "epg-name": "",
+            "sdn-tag": "",
+            "fabric-object": "disable"
+        }
+    ],
+    "vdom": "root",
+    "path": "firewall",
+    "name": "address6",
+    "status": "success",
+    "http_status": 200,
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}

@@ -24,25 +24,46 @@ needs to be a global administrator or needs to be assigned the Role Management r
 Organization Management role group). The Role Management role allows users to view, create, and modify role groups.
 *Clarification:* The account which is used by the integration, does _not_ require Global Administrator permissions.
 
-1. Login into the [Security & Compliance Center](https://ps.compliance.protection.outlook.com):
+1. Login into the [Compliance Center](https://compliance.microsoft.com/):
 
-2. From the side menu, click **Permissions**.
+2. From the side menu navigate to **Role & Scopes** -> **Permissions** under **Microsoft Purview solutions** click on **Roles**.
 
-   ![side-menu](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-side-menu.png)
+   ![SecAndComp-roles](../../doc_files/SecAndComp-roles.png)
 
-3. Search for and select the **Data Investigator** role.
+3. Click **Create role group**.
+    
+    ![SecAndComp-add-role](../../doc_files/SecAndComp-add-role.png)
 
-4. Click **Edit role group**. 
+4. Give a name and description (optional). 
 
-   ![roles-edit-1](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-1.png)
+   ![SecAndComp-role-name](../../doc_files/SecAndComp-role-name.png)
 
-5. Click **Choose Members** and click **Edit**. Add the user you intend to be used in the integration:
+5. Click **Choose roles**.
 
-   ![roles-edit-2](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-2.png)
-6. Click **Add**.
-   ![roles-edit-3](https://github.com/demisto/content/raw/master/Packs/MicrosoftExchangeOnline/doc_files/security-and-compliance-edit-3.png)
-7. Choose which members to add from the displayed list and click **Add**.
-8. Click **Done**.
+   ![SecAndComp-choose-roles](../../doc_files/SecAndComp-choose-roles.png)
+
+6. Select the following roles:
+   * Case Management
+   * Communication
+   * Compliance Search
+   * Custodian
+   * Data Investigation Management
+   * Export
+   * Hold
+   * Preview
+   * Review
+   * RMS Decrypt
+   * Search And Purge
+
+7. Click **Choose users**.
+
+   ![SecAndComp-choose-users](../../doc_files/SecAndComp-choose-users.png)
+
+8. Select one or more users to add to the role group.
+
+9. Click **Create**.
+
+    ![SecAndComp-create-role](../../doc_files/SecAndComp-create-role.png)
 
 The username and password for the user which you intend to use for the investigation will need to be added to the *UPN/Email* and *Delegated Password* fields of the integration instance configuration.
 
@@ -685,6 +706,8 @@ There is no context output for this command.
 ***
 After you create a content search using the ***o365-sc-new-search*** command and run it using the ***o365-sc-start-search*** command, you assign a search action to the search using the ***o365-sc-new-search-action*** command.
 
+Please note that when performing the *Delete* action, items which are deleted will still follow your EWS365 data retention policies. Some data retention policies will move emails to the "Purges" or "Recoverable Items" folder.
+
 
 #### Base Command
 
@@ -693,10 +716,16 @@ After you create a content search using the ***o365-sc-new-search*** command and
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_name | The name of the compliance search. | Required |
-| action | Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview". | Optional |
-| purge_type | Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete". | Optional |
-
+| search_name | The name of the compliance search. | Required | 
+| action | Search action to perform. Possible values are: Preview, Purge, Export. Default is Preview. | Optional | 
+| purge_type | Purge type. Possible values are: SoftDelete, HardDelete. Default is SoftDelete. | Optional | 
+| share_point_archive_format | Specifies how to export SharePoint and OneDrive search results. Possible values are: IndividualMessage, PerUserZip, SingleZip. IndividualMessage: Export the files uncompressed. This is the default value. PerUserZip: One ZIP file for each user. Each ZIP file contains the exported files for the user. SingleZip: One ZIP file for all users. The ZIP file contains all exported files from all users. This output setting is available only in PowerShell. To specify the format for Exchange search results, use the exchange_archive_format parameter.  | Optional | 
+| format | The Format parameter specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files. Possible values are: FxStream, Mime, Msg. | Optional | 
+| include_sharepoint_document_versions | Specifies whether to export previous versions of the document when you use the Export action. Possible values are: true, false. | Optional | 
+| notify_email | Specifies the email address target for the search results when you use the Export action. | Optional | 
+| notify_email_cc | Specifies the cc email address target for the search results when you use the Export action. | Optional | 
+| scenario | Specifies the scenario type when you use the Export action. Possible values are: AnalyzeWithZoom, General, GenerateReportsOnly, Inventory, RetentionReports, TriagePreview. | Optional | 
+| scope | Specifies the items to include when the action is Export. Possible values are: IndexedItemsOnly, UnindexedItemsOnly, BothIndexedAndUnindexedItems. | Optional | 
 
 #### Context Output
 

@@ -1,5 +1,11 @@
 import pytest
 import CarbonBlackEnterpriseEDR as cbe
+from CarbonBlackEnterpriseEDR import (
+    get_threat_tags_command,
+    add_threat_tags_command,
+    add_threat_notes_command,
+    add_alert_notes_command,
+)
 import demistomock as demisto
 from freezegun import freeze_time
 
@@ -171,3 +177,154 @@ def test_event_by_process_failing(mocker, requests_mock, demisto_args, expected_
     with pytest.raises(Exception) as e:
         client.create_search_event_by_process_request(**demisto_args)
     assert str(e.value) == expected_error_msg
+
+
+MOCK_UPDATE_THREAT_TAGS_RESPONSE = {
+    'tags': ['tag1', 'tag2']
+}
+
+
+def test_add_threat_tags_command(mocker):
+    """
+    Given:
+        - args with threat_id and tags.
+
+    When:
+        - Calling add_threat_tags_command.
+
+    Then:
+        - validate that the returned results were parsed as expected.
+
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
+    mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_THREAT_TAGS_RESPONSE)
+
+    args = {'threat_id': '123456', 'tags': ['tag1', 'tag2']}
+    result = add_threat_tags_command(client, args)
+
+    assert result.outputs == {'ThreatID': '123456', 'Tags': ['tag1', 'tag2']}
+    assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
+    assert result.outputs_key_field == 'tags'
+
+    assert "Successfully updated threat: \"123456\"" in result.readable_output
+    assert result.raw_response == MOCK_UPDATE_THREAT_TAGS_RESPONSE
+
+
+MOCK_CREATE_THREAT_NOTES_RESPONSE = {
+    'notes': 'These are threat notes'
+}
+
+
+def test_add_threat_notes_command(mocker):
+    """
+    Given:
+        - args with threat_id and notes.
+
+    When:
+        - Calling add_threat_notes_command.
+
+    Then:
+        - validate that the returned results were parsed as expected.
+
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
+    mocker.patch.object(client, '_http_request', return_value=MOCK_CREATE_THREAT_NOTES_RESPONSE)
+
+    args = {'threat_id': '123456', 'notes': 'These are threat notes'}
+    result = add_threat_notes_command(client, args)
+
+    assert result.outputs == {'ThreatID': '123456', 'Notes': 'These are threat notes'}
+    assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
+    assert result.outputs_key_field == 'ThreatID'
+
+    assert "Successfully added notes to threat: \"123456\"" in result.readable_output
+    assert result.raw_response == MOCK_CREATE_THREAT_NOTES_RESPONSE
+
+
+MOCK_GET_THREAT_TAGS_RESPONSE = {
+    'list': [
+        {'tag': 'malware'},
+        {'tag': 'suspicious'}
+    ]
+}
+
+
+def test_get_threat_tags_command(mocker):
+    """
+    Given:
+        - args with thread_it.
+
+    When:
+        - Calling get_threat_tags_command.
+
+    Then:
+        - validate that the returned results was parsed as expected.
+
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
+    mocker.patch.object(client, '_http_request', return_value=MOCK_GET_THREAT_TAGS_RESPONSE)
+
+    args = {'threat_id': '123456'}
+    result = get_threat_tags_command(client, args)
+
+    assert result.outputs == {'ThreatID': '123456', 'Tags': [{'tag': 'malware'}, {'tag': 'suspicious'}]}
+    assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
+    assert result.outputs_key_field == 'ThreatID'
+
+    assert "Successfully sent for threat: \"123456\"" in result.readable_output
+    assert result.raw_response == MOCK_GET_THREAT_TAGS_RESPONSE
+
+
+MOCK_UPDATE_ALERT_NOTES_RESPONSE = {
+    'notes': 'These are alert notes'
+}
+
+
+def test_add_alert_notes_command(mocker):
+    """
+    Given:
+        - args with alert_id and notes.
+
+    When:
+        - Calling add_alert_notes_command.
+
+    Then:
+        - validate that the returned results were parsed as expected.
+
+    """
+    client = cbe.Client(
+        base_url='https://server_url.com',
+        use_ssl=False,
+        use_proxy=False,
+        token=None,
+        cb_org_key="123")
+
+    mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_ALERT_NOTES_RESPONSE)
+
+    args = {'alert_id': '789012', 'notes': 'These are alert notes'}
+    result = add_alert_notes_command(client, args)
+
+    assert result.outputs == {'AlertID': '789012', 'Notes': 'These are alert notes'}
+    assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
+    assert result.outputs_key_field == 'AlertID'
+
+    assert "Successfully added notes to alert: \"789012\"" in result.readable_output
+    assert result.raw_response == MOCK_UPDATE_ALERT_NOTES_RESPONSE

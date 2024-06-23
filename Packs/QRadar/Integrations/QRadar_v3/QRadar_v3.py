@@ -3,13 +3,13 @@ import secrets
 from enum import Enum
 from ipaddress import ip_address
 from urllib import parse
-import dateparser
+import uuid
 
 import pytz
 import urllib3
 from CommonServerUserPython import *  # noqa
 
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -17,7 +17,7 @@ urllib3.disable_warnings()  # pylint: disable=no-member
 ''' ADVANCED GLOBAL PARAMETERS '''
 
 FAILURE_SLEEP = 20  # sleep between consecutive failures events fetch
-FETCH_SLEEP = 60  # sleep between fetches
+FETCH_SLEEP = arg_to_number(demisto.params().get("fetch_interval")) or 60  # sleep between fetches
 BATCH_SIZE = 100  # batch size used for offense ip enrichment
 OFF_ENRCH_LIMIT = BATCH_SIZE * 10  # max amount of IPs to enrich per offense
 MAX_WORKERS = 8  # max concurrent workers used for events enriching
@@ -37,6 +37,9 @@ EVENTS_MODIFIED_SECS = 5  # interval between events status polling in modified
 EVENTS_SEARCH_TRIES = 3  # number of retries for creating a new search
 EVENTS_POLLING_TRIES = 10  # number of retries for events polling
 EVENTS_SEARCH_RETRY_SECONDS = 100  # seconds between retries to create a new search
+CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
+CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
+
 
 ADVANCED_PARAMETERS_STRING_NAMES = [
     'DOMAIN_ENRCH_FLG',
@@ -82,6 +85,8 @@ MIRRORED_OFFENSES_FINISHED_CTX_KEY = 'mirrored_offenses_finished'
 MIRRORED_OFFENSES_FETCHED_CTX_KEY = 'mirrored_offenses_fetched'
 
 LAST_MIRROR_KEY = 'last_mirror_update'
+LAST_MIRROR_CLOSED_KEY = 'last_mirror_closed_update'
+
 UTC_TIMEZONE = pytz.timezone('utc')
 ID_QUERY_REGEX = re.compile(r'(?:\s+|^)id((\s)*)>(=?)((\s)*)((\d)+)(?:\s+|$)')
 NAME_AND_GROUP_REGEX = re.compile(r'^[\w-]+$')
@@ -89,6 +94,7 @@ ASCENDING_ID_ORDER = '+id'
 EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS)
 
 DEFAULT_EVENTS_COLUMNS = """QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME("creEventList"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime"""  # noqa: E501
+DEFAULT_ASSETS_LIMIT = 100
 
 ''' OUTPUT FIELDS REPLACEMENT MAPS '''
 OFFENSE_OLD_NEW_NAMES_MAP = {
@@ -122,21 +128,21 @@ OFFENSE_OLD_NEW_NAMES_MAP = {
     'assets': 'Assets'
 }
 
-CLOSING_REASONS_OLD_NEW_MAP = {
+CLOSING_REASONS_RAW_FORMATTED = {
     'id': 'ID',
     'text': 'Name',
     'is_reserved': 'IsReserved',
     'is_deleted': 'IsDeleted'
 }
 
-NOTES_OLD_NEW_MAP = {
+NOTES_RAW_FORMATTED = {
     'id': 'ID',
     'note_text': 'Text',
     'create_time': 'CreateTime',
     'username': 'CreatedBy'
 }
 
-RULES_OLD_NEW_MAP = {
+RULES_RAW_FORMATTED = {
     'owner': 'Owner',
     'base_host_id': 'BaseHostID',
     'capacity_timestamp': 'CapacityTimestamp',
@@ -151,7 +157,7 @@ RULES_OLD_NEW_MAP = {
     'base_capacity': 'BaseCapacity'
 }
 
-RULES_GROUP_OLD_NEW_MAP = {
+RULES_GROUP_RAW_FORMATTED = {
     'owner': 'Owner',
     'modified_time': 'ModifiedTime',
     'level': 'Level',
@@ -164,7 +170,7 @@ RULES_GROUP_OLD_NEW_MAP = {
     'parent_id': 'ParentID'
 }
 
-ASSET_OLD_NEW_MAP = {
+ASSET_RAW_FORMATTED = {
     'vulnerability_count': 'VulnerabilityCount',
     'interfaces': 'Interfaces',
     'risk_score_sum': 'RiskScoreSum',
@@ -176,9 +182,9 @@ ASSET_OLD_NEW_MAP = {
     'products': 'Products'
 }
 
-SEARCH_OLD_NEW_MAP = {'search_id': 'ID', 'status': 'Status'}
+SEARCH_RAW_FORMATTED = {'search_id': 'ID', 'status': 'Status'}
 
-REFERENCE_SETS_OLD_NEW_MAP = {
+REFERENCE_SETS_RAW_FORMATTED = {
     'number_of_elements': 'NumberOfElements',
     'name': 'Name',
     'creation_time': 'CreationTime',
@@ -187,14 +193,14 @@ REFERENCE_SETS_OLD_NEW_MAP = {
     'timeout_type': 'TimeoutType',
     'data': 'Data',
 }
-REFERENCE_SET_DATA_OLD_NEW_MAP = {
+REFERENCE_SET_DATA_RAW_FORMATTED = {
     'last_seen': 'LastSeen',
     'source': 'Source',
     'value': 'Value',
     'first_seen': 'FirstSeen'
 }
 
-DOMAIN_OLD_NEW_MAP = {
+DOMAIN_RAW_FORMATTED = {
     'asset_scanner_ids': 'AssetScannerIDs',
     'custom_properties': 'CustomProperties',
     'deleted': 'Deleted',
@@ -210,7 +216,7 @@ DOMAIN_OLD_NEW_MAP = {
     'tenant_id': 'TenantID'
 }
 
-SAVED_SEARCH_OLD_NEW_MAP = {
+SAVED_SEARCH_RAW_FORMATTED = {
     'owner': 'Owner',
     'description': 'Description',
     'creation_date': 'CreationDate',
@@ -224,7 +230,7 @@ SAVED_SEARCH_OLD_NEW_MAP = {
     'is_shared': 'IsShared'
 }
 
-IP_GEOLOCATION_OLD_NEW_MAP = {
+IP_GEOLOCATION_RAW_FORMATTED = {
     'continent': 'Continent',
     'traits': 'Traits',
     'geo_json': 'Geolocation',
@@ -239,7 +245,7 @@ IP_GEOLOCATION_OLD_NEW_MAP = {
     'subdivisions': 'SubDivisions'
 }
 
-LOG_SOURCES_OLD_NEW_MAP = {
+LOG_SOURCES_RAW_FORMATTED = {
     'sending_ip': 'SendingIP',
     'internal': 'Internal',
     'protocol_parameters': 'ProtocolParameters',
@@ -256,7 +262,8 @@ LOG_SOURCES_OLD_NEW_MAP = {
     'type_id': 'TypeID',
     'last_event_time': 'LastEventTime',
     'gateway': 'Gateway',
-    'status': 'Status'
+    'status': 'Status',
+    'target_event_collector_id': 'TargetEventCollectorID'
 }
 
 USECS_ENTRIES = {'last_persisted_time',
@@ -284,7 +291,7 @@ USECS_ENTRIES = {'last_persisted_time',
                  'first_event_flow_seen',
                  'last_event_flow_seen'}
 
-LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
+LOCAL_DESTINATION_IPS_RAW_FORMATTED = {
     'domain_id': 'DomainID',
     'event_flow_count': 'EventFlowCount',
     'first_event_flow_seen': 'FirstEventFlowSeen',
@@ -296,7 +303,7 @@ LOCAL_DESTINATION_IPS_OLD_NEW_MAP = {
     'offense_ids': 'OffenseIDs',
     'source_address_ids': 'SourceAddressIDs'
 }
-SOURCE_IPS_OLD_NEW_MAP = {
+SOURCE_IPS_RAW_FORMATTED = {
     'domain_id': 'DomainID',
     'event_flow_count': 'EventFlowCount',
     'first_event_flow_seen': 'FirstEventFlowSeen',
@@ -308,6 +315,80 @@ SOURCE_IPS_OLD_NEW_MAP = {
     'offense_ids': 'OffenseIDs',
     'source_ip': 'SourceIP'
 }
+
+EVENT_COLLECTOR_RAW_FORMATTED = {
+    'component_name': 'ComponentName',
+    'host_id': 'HostID',
+    'id': 'ID',
+    'name': 'Name'
+}
+
+WINCOLLECT_DESTINATION_RAW_FORMATTED = {
+    'id': 'ID',
+    'name': 'Name',
+    'host': 'Host',
+    'tls_certificate': 'TlsCertificate',
+    'port': 'Port',
+    'transport_protocol': 'TransportProtocol',
+    'inernal': 'IsInternal',
+    'event_rate_throttle': 'EventRateThrottle'
+}
+
+DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED = {
+    'id': 'ID',
+    'name': 'Name',
+    'description': 'Description',
+    'protocol': 'Protocol',
+    'uuid': 'UUID',
+    'version': 'Version'
+}
+
+LOG_SOURCE_TYPES_RAW_FORMATTED = {
+    'id': 'ID',
+    'name': 'Name',
+    'custom': 'Custom',
+    'version': 'Version',
+    'uuid': 'UUID',
+    'supported_language_ids': 'SupportedLanguageIDs',
+    'protocol_types': 'ProtocolTypes',
+    'default_protocol_id': 'DefaultProtocolID',
+    'internal': 'Internal',
+    'latest_version': 'LatestVersion',
+    'log_source_extension_id': 'LogSourceExtensionID',
+}
+
+LOG_SOURCE_PROTOCOL_TYPE_RAW_FORMATTED = {
+    'id': 'ID',
+    'name': 'Name',
+    'version': 'Version',
+    'latest_version': 'LatestVersion',
+    'gateway_supported': 'GatewaySupported',
+    'inbound': 'Inbound',
+    'parameters': 'Parameters',
+    'parameter_groups': 'ParameterGroups',
+    'testing_capabilities': 'TestingCapabilities'
+}
+
+LOG_SOURCE_EXTENSION_RAW_FORMATTED = {
+    'id': 'ID',
+    'name': 'Name',
+    'description': 'Description',
+    'uuid': 'UUID',
+}
+
+LOG_SOURCE_LANGUAGE_RAW_FORMATTED = {
+    'id': 'ID',
+    'name': 'Name'
+}
+
+LOG_SOURCE_GROUP_RAW_FORMATTED = {
+    'id': 'ID',
+    'name': 'GroupName',
+    'description': 'Description',
+    'parent_id': 'ParentID',
+    'assignable': 'Assignable'
+}
+
 ''' ENRICHMENT MAPS '''
 
 ASSET_PROPERTIES_NAME_MAP = {
@@ -358,7 +439,9 @@ FIELDS_MIRRORING = 'id,start_time,event_count,last_persisted_time,close_time'
 
 class Client(BaseClient):
 
-    def __init__(self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict):
+    def __init__(
+        self, server: str, verify: bool, proxy: bool, api_version: str, credentials: dict, timeout: Optional[int] = None
+    ):
         username = credentials.get('identifier')
         password = credentials.get('password')
         if username == API_USERNAME:
@@ -369,23 +452,41 @@ class Client(BaseClient):
             self.base_headers = {'Version': api_version}
         base_url = urljoin(server, '/api')
         super().__init__(base_url=base_url, verify=verify, proxy=proxy, auth=auth)
+        self.timeout = timeout  # type: ignore[assignment]
         self.password = password
         self.server = server
 
     def http_request(self, method: str, url_suffix: str, params: Optional[dict] = None,
-                     json_data: Optional[dict] = None, additional_headers: Optional[dict] = None,
-                     timeout: Optional[int] = None, resp_type: str = 'json'):
+                     json_data: Optional[dict | list[dict]] = None, data: Optional[dict] = None,
+                     additional_headers: Optional[dict] = None,
+                     timeout: Optional[int] = None, resp_type: str = 'json') -> Any:
         headers = {**additional_headers, **self.base_headers} if additional_headers else self.base_headers
-        return self._http_request(
-            method=method,
-            url_suffix=url_suffix,
-            params=params,
-            json_data=json_data,
-            headers=headers,
-            error_handler=self.qradar_error_handler,
-            timeout=timeout,
-            resp_type=resp_type
-        )
+        for _time in range(1, CONNECTION_ERRORS_RETRIES + 1):
+            try:
+                return self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    json_data=json_data,
+                    data=data,
+                    headers=headers,
+                    error_handler=self.qradar_error_handler,
+                    timeout=timeout or self.timeout,
+                    resp_type=resp_type,
+                    with_metrics=True
+                )
+            except (DemistoException, requests.ReadTimeout) as error:
+                demisto.error(f'Error {error} in time {_time}')
+                if (
+                    isinstance(
+                        error, DemistoException
+                    ) and not isinstance(
+                        error.exception, requests.ConnectionError) or _time == CONNECTION_ERRORS_RETRIES
+                ):
+                    raise
+                else:
+                    time.sleep(CONNECTION_ERRORS_INTERVAL)  # pylint: disable=sleep-exists
+        return None
 
     @staticmethod
     def qradar_error_handler(res: requests.Response):
@@ -555,6 +656,18 @@ class Client(BaseClient):
             url_suffix=f'/ariel/searches/{search_id}',
         )
 
+    def search_delete(self, search_id: str):
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'/ariel/searches/{search_id}',
+        )
+
+    def search_cancel(self, search_id: str):
+        return self.http_request(
+            method='POST',
+            url_suffix=f'/ariel/searches/{search_id}?status=CANCELED',
+        )
+
     def search_results_get(self, search_id: str, range_: Optional[str] = None):
         return self.http_request(
             method='GET',
@@ -565,8 +678,8 @@ class Client(BaseClient):
     def reference_sets_list(self, range_: Optional[str] = None, ref_name: Optional[str] = None,
                             filter_: Optional[str] = None, fields: Optional[str] = None):
         name_suffix = f'/{parse.quote(ref_name, safe="")}' if ref_name else ''
-        params = assign_params(fields=fields) if ref_name else assign_params(filter=filter_, fields=fields)
-        additional_headers = {'Range': range_} if not ref_name else None
+        params = assign_params(filter=filter_, fields=fields)
+        additional_headers = {'Range': range_}
         return self.http_request(
             method='GET',
             url_suffix=f'/reference_data/sets{name_suffix}',
@@ -591,7 +704,7 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
+            url_suffix=f'/reference_data/sets/{parse.quote(parse.quote(ref_name, safe=""), safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields)
         )
 
@@ -604,9 +717,11 @@ class Client(BaseClient):
         )
 
     def reference_set_value_delete(self, ref_name: str, value: str):
+        double_encoded_value = parse.quote(parse.quote(value, safe=""), safe="")
+        double_encoded_ref_name = parse.quote(parse.quote(ref_name, safe=""), safe="")
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}/{value}'
+            url_suffix=f'/reference_data/sets/{double_encoded_ref_name}/{double_encoded_value}'
         )
 
     def domains_list(self, domain_id: Optional[int] = None, range_: Optional[str] = None, filter_: Optional[str] = None,
@@ -634,7 +749,14 @@ class Client(BaseClient):
             additional_headers=headers
         )
 
-    def reference_set_entries(self, ref_name: str, indicators: Any, fields: Optional[str] = None, source: Optional[str] = None):
+    def reference_set_entries(
+        self,
+        ref_name: str,
+        indicators: Any,
+        fields: Optional[str] = None,
+        source: Optional[str] = None,
+        timeout: Optional[int] = None
+    ):
         headers = {
             'Content-Type': 'application/json'
         }
@@ -650,7 +772,8 @@ class Client(BaseClient):
             url_suffix='/reference_data_collections/set_entries',
             json_data=[{"collection_id": set_id, "value": str(indicator), "source": source}
                        for indicator in indicators],  # type: ignore[arg-type]
-            additional_headers=headers
+            additional_headers=headers,
+            timeout=timeout
         )
 
     def get_reference_data_bulk_task_status(self, task_id: int):
@@ -676,6 +799,18 @@ class Client(BaseClient):
                 'x-qrd-encryption-algorithm': qrd_encryption_algorithm,
                 'x-qrd-encryption-password': qrd_encryption_password,
                 'Range': range_
+            }
+        )
+
+    def get_log_source(self, qrd_encryption_algorithm: str, qrd_encryption_password: str, id: str,
+                       fields: Optional[str] = None):
+        return self.http_request(
+            method='GET',
+            url_suffix=f'/config/event_sources/log_source_management/log_sources/{id}',
+            params=assign_params(fields=fields),
+            additional_headers={
+                'x-qrd-encryption-algorithm': qrd_encryption_algorithm,
+                'x-qrd-encryption-password': qrd_encryption_password
             }
         )
 
@@ -739,6 +874,80 @@ class Client(BaseClient):
             json_data=body
         )
 
+    def get_resource_list(
+            self,
+            range_: str,
+            endpoint: str,
+            filter_: Optional[str] = None,
+            fields: Optional[str] = None,
+            additional_headers_: Optional[dict] = None):
+        """
+        Retrieve a list of resources from a specified endpoint.
+
+        Args:
+            range_ (str): The range of resources to retrieve. eg. items=0-49
+            endpoint (str): The API endpoint to retrieve resources from.
+            filter_ (Optional[str], optional): Optional filter query for the request. Defaults to None.
+            fields (Optional[str], optional): The fields that the API should return. Defaults to None.
+            additional_headers_ (Optional[dict], optional): Optional additional headers for the request. Defaults to None.
+
+        Returns:
+            Response: The response object from the HTTP request.
+        """
+        return self.http_request(
+            method='GET',
+            url_suffix=endpoint,
+            params=assign_params(filter=filter_, fields=fields),
+            additional_headers={
+                'Range': range_
+            } if additional_headers_ is None
+            else {
+                'Range': range_,
+                **additional_headers_
+            }
+        )
+
+    def get_resource_by_id(self, id: str, endpoint: str, fields: Optional[str] = None, additional_headers: Optional[dict] = None):
+        return self.http_request(
+            method='GET',
+            url_suffix=endpoint + f'/{id}',
+            params=assign_params(fields=fields),
+            additional_headers=additional_headers
+        )
+
+    def get_resource(
+            self,
+            id,
+            range_: str,
+            endpoint: str,
+            filter_: Optional[str] = None,
+            fields: Optional[str] = None,
+            additional_headers_: Optional[dict] = None):
+        return self.get_resource_list(range_, endpoint, filter_, fields, additional_headers_) if id is None \
+            else [self.get_resource_by_id(id, endpoint, fields, additional_headers_)]
+
+    def delete_log_source(self, id: str) -> requests.Response:
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'/config/event_sources/log_source_management/log_sources/{id}',
+            resp_type='response'
+        )
+
+    def create_log_source(self, log_source: dict):
+        return self.http_request(
+            method='POST',
+            url_suffix='/config/event_sources/log_source_management/log_sources',
+            json_data=log_source
+        )
+
+    def update_log_source(self, log_source: dict[str, Any]):
+        return self.http_request(
+            method='PATCH',
+            url_suffix='/config/event_sources/log_source_management/log_sources',
+            json_data=[log_source],
+            resp_type='response'
+        )
+
     def test_connection(self):
         """
         Test connection with databases (should always be up)
@@ -785,56 +994,68 @@ def insert_values_to_reference_set_polling(client: Client,
     response = {}
     use_old_api = get_major_version(api_version) <= 15
     ref_name = args.get('ref_name', '')
-    if use_old_api or 'task_id' not in args:
-        if from_indicators:
-            query = args.get('query')
-            limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
-            page = arg_to_number(args.get('page', 0))
+    try:
+        if use_old_api or 'task_id' not in args:
+            if from_indicators:
+                query = args.get('query')
+                limit = arg_to_number(args.get('limit', DEFAULT_LIMIT_VALUE))
+                page = arg_to_number(args.get('page', 0))
 
-            # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
-            element_type = args.get('element_type', '')
-            timeout_type = args.get('timeout_type')
-            time_to_live = args.get('time_to_live')
-            try:
-                client.reference_sets_list(ref_name=ref_name)
-            except DemistoException as e:
-                # Create reference set if does not exist
-                if e.message and f'{ref_name} does not exist' in e.message:
-                    # if this call fails, raise an error and stop command execution
-                    client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
-                else:
-                    raise e
+                # Backward compatibility for QRadar V2 command. Create reference set for given 'ref_name' if does not exist.
+                element_type = args.get('element_type', '')
+                timeout_type = args.get('timeout_type')
+                time_to_live = args.get('time_to_live')
+                try:
+                    client.reference_sets_list(ref_name=ref_name)
+                except DemistoException as e:
+                    # Create reference set if does not exist
+                    if e.message and f'{ref_name} does not exist' in e.message:
+                        # if this call fails, raise an error and stop command execution
+                        client.reference_set_create(ref_name, element_type, timeout_type, time_to_live)
+                    else:
+                        raise e
 
-            search_indicators = IndicatorsSearcher(page=page)
-            indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
-            indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
-                               for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
-            values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
-            if not indicators_data:
-                return PollResult(CommandResults(
-                    readable_output=f'No indicators were found for reference set {ref_name}',
-                ))
+                search_indicators = IndicatorsSearcher(page=page)
+                indicators = search_indicators.search_indicators_by_version(query=query, size=limit).get('iocs', [])
+                indicators_data = [{'Indicator Value': indicator.get('value'), 'Indicator Type': indicator.get('indicator_type')}
+                                   for indicator in indicators if 'value' in indicator and 'indicator_type' in indicator]
+                values = [indicator.get('Indicator Value', '') for indicator in indicators_data]
+                if not indicators_data:
+                    return PollResult(CommandResults(
+                        readable_output=f'No indicators were found for reference set {ref_name}',
+                    ))
 
-        if not values:
-            raise DemistoException('Value to insert must be given.')
-        source = args.get('source')
-        date_value = argToBoolean(args.get('date_value', False))
-        fields = args.get('fields')
+            if not values:
+                raise DemistoException('Value to insert must be given.')
+            source = args.get('source')
+            date_value = argToBoolean(args.get('date_value', False))
+            fields = args.get('fields')
 
-        if date_value:
-            values = [get_time_parameter(value, epoch_format=True) for value in values]
-        if use_old_api:
-            response = client.reference_set_bulk_load(ref_name, values, fields)
+            if date_value:
+                values = [get_time_parameter(value, epoch_format=True) for value in values]
+            if use_old_api:
+                response = client.reference_set_bulk_load(ref_name, values, fields)
+            else:
+                response = client.reference_set_entries(ref_name, values, fields, source, timeout=300)
+                args['task_id'] = response.get('id')
+        if not use_old_api:
+            response = client.get_reference_data_bulk_task_status(args["task_id"])
+    except (DemistoException, requests.Timeout) as e:
+        if 'task_id' in args:
+            print_debug_msg(
+                f"Polling task status {args['task_id']} failed due to {e}. "
+                f"Will try to poll task status again in the next interval."
+            )
         else:
-            response = client.reference_set_entries(ref_name, values, fields, source)
-            args['task_id'] = response.get('id')
-    if not use_old_api:
-        response = client.get_reference_data_bulk_task_status(args["task_id"])
+            print_debug_msg(
+                f"Failed inserting values to reference due to {e}, will retry in the insert in the next interval"
+            )
+        response = {}
     if use_old_api or response.get("status") == "COMPLETED":
         if not use_old_api:
             # get the reference set data
             response = client.reference_sets_list(ref_name=ref_name)
-        outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+        outputs = sanitize_outputs(response, REFERENCE_SETS_RAW_FORMATTED)
 
         command_results = CommandResults(
             readable_output=tableToMarkdown('Reference Update Create', outputs, removeNull=True),
@@ -973,7 +1194,8 @@ def insert_to_updated_context(context_data: dict,
                                  'samples': context_data.get('samples', [])})
 
     if should_update_last_mirror:
-        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0))})
+        new_context_data.update({LAST_MIRROR_KEY: int(context_data.get(LAST_MIRROR_KEY, 0)),
+                                 LAST_MIRROR_CLOSED_KEY: int(context_data.get(LAST_MIRROR_CLOSED_KEY, 0))})
     return new_context_data, version
 
 
@@ -1023,6 +1245,7 @@ def safely_update_context_data(
                                                                      should_update_last_mirror,
                                                                      should_add_reset_key,
                                                                      should_force_update)
+            print_debug_msg(f"{updated_context=}")
 
             set_integration_context(updated_context, version=new_version)
             print_debug_msg(f'Updated integration context after version {new_version}.')
@@ -1289,7 +1512,7 @@ def create_single_asset_for_offense_enrichment(asset: dict) -> dict:
     return add_iso_entries_to_asset(dict(offense_without_properties, **properties, **interfaces))
 
 
-def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[dict]:
+def enrich_offense_with_assets(client: Client, offense_ips: List[str], assets_limit: int | None = 100) -> List[dict]:
     """
     Receives list of offense's IPs, and performs API call to QRadar service to retrieve assets correlated to IPs given.
     Args:
@@ -1310,14 +1533,18 @@ def enrich_offense_with_assets(client: Client, offense_ips: List[str]) -> List[d
 
     offense_ips = [offense_ip for offense_ip in offense_ips if is_valid_ip(offense_ip)]
     # Submit addresses in batches to avoid overloading QRadar service
-    assets = [asset for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE))
-              for asset in get_assets_for_ips_batch(b)]
+    assets: List = []
+    for b in batch(offense_ips[:OFF_ENRCH_LIMIT], batch_size=int(BATCH_SIZE)):
+        assets.extend(get_assets_for_ips_batch(b))
+        if assets_limit and len(assets) >= assets_limit:
+            assets = assets[:assets_limit]
+            break
 
     return [create_single_asset_for_offense_enrichment(asset) for asset in assets]
 
 
 def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: bool,
-                           enrich_assets: bool) -> List[dict]:
+                           enrich_assets: bool, assets_limit: int | None = None) -> List[dict]:
     """
     Receives list of offenses, and enriches the offenses with the following:
     - Changes offense_type value from the offense type ID to the offense type name.
@@ -1332,6 +1559,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
         offenses (Any): List of all of the offenses to enrich.
         enrich_ip_addresses (bool): Whether to enrich the offense source/destination IP addresses.
         enrich_assets (bool): Whether to enrich the offense with assets.
+        assets_limit (int): The limit of assets to enrich the offense with.
 
     Returns:
         (List[Dict]): The enriched offenses.
@@ -1386,7 +1614,7 @@ def enrich_offenses_result(client: Client, offenses: Any, enrich_ip_addresses: b
             source_ips: List = source_addresses_enrich.get('source_address_ids', [])
             destination_ips: List = destination_addresses_enrich.get('local_destination_address_ids', [])
             all_ips: List = source_ips + destination_ips
-            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips)}
+            asset_enrich = {'assets': enrich_offense_with_assets(client, all_ips, assets_limit)}
         else:
             asset_enrich = {}
 
@@ -1547,6 +1775,59 @@ def get_min_id_from_first_fetch(first_fetch: str, client: Client):
     return int(raw_offenses[0].get('id')) - 1 if raw_offenses else 0
 
 
+def arg_to_real_number(arg, arg_name=None, required=False):
+    # type: (Any, Optional[str], bool) -> Optional[int | float]
+    """Converts an XSOAR argument to a Python int or float
+
+    This function acts exactly like CommonServerPython's arg_to_number, but is able to return float
+    :type arg: ``Any``
+    :param arg: argument to convert
+
+    :type arg_name: ``str``
+    :param arg_name: argument name
+
+    :type required: ``bool``
+    :param required:
+        throws exception if ``True`` and argument provided is None
+
+    :return:
+        returns an ``int | float`` if arg can be converted
+        returns ``None`` if arg is ``None`` and required is set to ``False``
+        otherwise throws an Exception
+    :rtype: ``Optional[int | float]``
+    """
+
+    if arg is None or arg == '':
+        if required is True:
+            if arg_name:
+                raise ValueError(f'Missing "{arg_name}"')
+            else:
+                raise ValueError('Missing required argument')
+
+        return None
+
+    arg = encode_string_results(arg)
+
+    if isinstance(arg, str):
+        if arg.isdigit():
+            return int(arg)
+
+        try:
+            return float(arg)
+        except Exception:
+            if arg_name:
+                raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+            else:
+                raise ValueError(f'"{arg}" is not a valid number')
+    if isinstance(arg, int):
+        return arg
+
+    if arg_name:
+        raise ValueError(f'Invalid number: "{arg_name}"="{arg}"')
+    else:
+        raise ValueError(f'"{arg}" is not a valid number')
+
+
 def convert_start_fetch_to_milliseconds(fetch_start_time: str):
     """
     Convert a timestamp string to milliseconds
@@ -1561,6 +1842,108 @@ def convert_start_fetch_to_milliseconds(fetch_start_time: str):
         # if date is None it means dateparser failed to parse it
         raise ValueError(f'Invalid first_fetch format: {fetch_start_time}')
     return int(date.timestamp() * 1000)
+
+
+def convert_dict_to_actual_values(input_dict: dict) -> dict[str, Any]:
+    """
+    Recursively converts string representations of values in a dictionary to their actual data types.
+
+    Args:
+        input_dict (dict): A dictionary with string representations of values.
+
+    Returns:
+        dict: A dictionary with actual values (numbers, booleans, etc.).
+    """
+    output_dict: dict[str, Any] = {}
+    for key, value in input_dict.items():
+        if isinstance(value, dict):
+            output_dict[key] = convert_dict_to_actual_values(value)
+        elif isinstance(value, list):
+            output_dict[key] = convert_list_to_actual_values(value)
+        elif isinstance(value, str):
+            try:
+                output_dict[key] = argToBoolean(value)
+            except ValueError:
+                try:
+                    output_dict[key] = arg_to_real_number(value)
+                except ValueError:
+                    output_dict[key] = value
+        else:
+            output_dict[key] = value
+    return output_dict
+
+
+def convert_list_to_actual_values(input_list: list) -> list[Any]:
+    """
+    Recursively converts string representations of values in a list to their actual data types.
+
+    Args:
+        input_list (list): A list with string representations of values.
+
+    Returns:
+        dict: A list with actual values (numbers, booleans, etc.).
+    """
+    output_list: list[Any] = []
+    for value in input_list:
+        if isinstance(value, dict):
+            output_list.append(convert_dict_to_actual_values(value))
+        elif isinstance(value, list):
+            output_list.append(convert_list_to_actual_values(value))
+        elif isinstance(value, str):
+            try:
+                output_list.append(argToBoolean(value))
+            except ValueError:
+                try:
+                    output_list.append(arg_to_real_number(value))
+                except ValueError:
+                    output_list.append(value)
+        else:
+            output_list.append(value)
+    return output_list
+
+
+def parse_log_source(create_args: dict[str, Any]):
+    pp_pairs = create_args.get('protocol_parameters', '').split(',')
+    protocol_parameters = []
+    group_ids = create_args.get('group_ids', '').split(',') if create_args.get('group_ids') else []
+    wincollect_external_destination_ids = (
+        create_args.get('wincollect_external_destination_ids', '').split(',') if create_args.get('group_ids')
+        else []
+    )
+    for pair in pp_pairs:
+        # Split the pair into name and value using '=' as delimiter
+        name, value = pair.split('=')
+        # Add the pair to the dictionary
+        protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
+    return convert_dict_to_actual_values({
+        **create_args,
+        'protocol_parameters': protocol_parameters,
+        'group_ids': group_ids,
+        'wincollect_external_destination_ids': wincollect_external_destination_ids
+    })
+
+
+def parse_partial_log_source(update_args: dict[str, Any]):
+    protocol_parameters = update_args.get('protocol_parameters', '').split(',') if update_args.get('protocol_parameters') else []
+    group_ids = update_args.get('group_ids', '').split(',') if update_args.get('group_ids') else None
+    wincollect_external_destination_ids = (
+        update_args.get('wincollect_external_destination_ids', '').split(',') if update_args.get('group_ids')
+        else None
+    )
+    if protocol_parameters:
+        for pair in protocol_parameters:
+            # Split the pair into name and value using '=' as delimiter
+            name, value = pair.split('=')
+            # Add the pair to the dictionary
+            protocol_parameters.append({'name': name.strip(), 'value': value.strip()})
+    log_source_str = {**update_args}
+    if protocol_parameters:
+        log_source_str['protocol_parameters'] = protocol_parameters
+    if group_ids:
+        log_source_str['group_ids'] = group_ids
+    if wincollect_external_destination_ids:
+        log_source_str['wincollect_external_destination_ids'] = wincollect_external_destination_ids
+    return convert_dict_to_actual_values(log_source_str)
 
 
 def get_offense_enrichment(enrichment: str) -> tuple[bool, bool]:
@@ -1589,21 +1972,27 @@ def print_debug_msg(msg: str):
     demisto.debug(f'QRadarMsg - {msg}')
 
 
-def is_reset_triggered():
+def is_reset_triggered(ctx: dict | None = None, version: Any = None):
     """
     Checks if reset of integration context have been made by the user.
     Because fetch is long running execution, user communicates with us
     by calling 'qradar-reset-last-run' command which sets reset flag in
     context.
 
+    Args:
+        ctx (dict | None): The context data to check. If it is None it will get the context from the platform.
+        version: The context data version.
     Returns:
         (bool):
         - True if reset flag was set. If 'handle_reset' is true, also resets integration context.
         - False if reset flag was not found in integration context.
     """
-    ctx, version = get_integration_context_with_version()
+    if not ctx or not version:
+        ctx, version = get_integration_context_with_version()
     if ctx and RESET_KEY in ctx:
+        # if we need to reset we have to get the version of the context
         print_debug_msg('Reset fetch-incidents.')
+        demisto.setLastRun({LAST_FETCH_KEY: 0})
         context_data: dict[str, Any] = {MIRRORED_OFFENSES_QUERIED_CTX_KEY: {},
                                         MIRRORED_OFFENSES_FINISHED_CTX_KEY: {},
                                         'samples': []}
@@ -1712,38 +2101,13 @@ def test_module_command(client: Client, params: dict) -> str:
         - (str): 'ok' if test passed
         - raises DemistoException if something had failed the test.
     """
-    global EVENTS_SEARCH_TRIES, EVENTS_POLLING_TRIES
-    EVENTS_SEARCH_TRIES = 1
-    EVENTS_POLLING_TRIES = 1
     try:
         ctx = get_integration_context()
         print_context_data_stats(ctx, "Test Module")
         is_long_running = params.get('longRunning')
-        mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
-        mirror_direction = MIRROR_DIRECTION.get(mirror_options)
-
         if is_long_running:
             validate_long_running_params(params)
-            ip_enrich, asset_enrich = get_offense_enrichment(params.get('enrichment', 'IPs And Assets'))
-            # Try to retrieve the last successfully retrieved offense
-            last_highest_id = max(ctx.get(LAST_FETCH_KEY, 0) - 1, 0)
-            get_incidents_long_running_execution(
-                client=client,
-                offenses_per_fetch=1,
-                user_query=params.get('query', ''),
-                fetch_mode=params.get('fetch_mode', ''),
-                events_columns=params.get('events_columns') or DEFAULT_EVENTS_COLUMNS,
-                events_limit=0,
-                ip_enrich=ip_enrich,
-                asset_enrich=asset_enrich,
-                last_highest_id=last_highest_id,
-                incident_type=params.get('incident_type'),
-                mirror_direction=mirror_direction,
-                first_fetch=params.get('first_fetch', '3 days'),
-                mirror_options=params.get('mirror_options', '')
-            )
-        else:
-            client.offenses_list(range_="items=0-0")
+        client.offenses_list(range_="items=0-0")
         message = 'ok'
     except DemistoException as e:
         err_msg = str(e)
@@ -1873,7 +2237,9 @@ def poll_offense_events_with_retry(
         if retry < max_retries - 1:
             time.sleep(EVENTS_INTERVAL_SECS)
 
-    print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
+    print_debug_msg(f'Max retries for getting events for offense {offense_id}. Cancel query search_id: {search_id}')
+    # need to cancel query
+    client.search_cancel(search_id=search_id)
     return [], 'Fetching events is in progress'
 
 
@@ -1987,7 +2353,7 @@ def is_all_events_fetched(client: Client, fetch_mode: FetchMode, offense_id: str
 def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int, user_query: str, fetch_mode: str,
                                          events_columns: str, events_limit: int, ip_enrich: bool, asset_enrich: bool,
                                          last_highest_id: int, incident_type: Optional[str], mirror_direction: Optional[str],
-                                         first_fetch: str, mirror_options: str) \
+                                         first_fetch: str, mirror_options: str, assets_limit: int) \
         -> tuple[Optional[List[dict]], Optional[int]]:
     """
     Gets offenses from QRadar service, and transforms them to incidents in a long running execution.
@@ -2057,7 +2423,7 @@ def get_incidents_long_running_execution(client: Client, offenses_per_fetch: int
         dict(offense, mirror_direction=mirror_direction, mirror_instance=demisto.integrationInstance())
         for offense in offenses] if mirror_direction else offenses
 
-    enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich)
+    enriched_offenses = enrich_offenses_result(client, offenses_with_mirror, ip_enrich, asset_enrich, assets_limit)
     final_offenses = sanitize_outputs(enriched_offenses)
     incidents = create_incidents_from_offenses(final_offenses, incident_type)
     return incidents, new_highest_offense_id
@@ -2116,6 +2482,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
     print_debug_msg(f'{waiting_for_update=}')
     last_fetch_key = context_data.get(LAST_FETCH_KEY, 'Missing')
     last_mirror_update = context_data.get(LAST_MIRROR_KEY, 0)
+    last_mirror_update_closed = context_data.get(LAST_MIRROR_CLOSED_KEY, 0)
     concurrent_mirroring_searches = get_current_concurrent_searches(context_data)
     samples = context_data.get('samples', [])
     sample_length = 0
@@ -2127,6 +2494,7 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
                     f"\n Offenses ids waiting for update: {not_updated_ids}"
                     f"\n Concurrent mirroring events searches: {concurrent_mirroring_searches}"
                     f"\n Last Fetch Key {last_fetch_key}, Last mirror update {last_mirror_update}, "
+                    f"Last mirror update closed: {last_mirror_update_closed}, "
                     f"sample length {sample_length}")
     return set(not_updated_ids + finished_queries_ids)
 
@@ -2134,10 +2502,14 @@ def print_context_data_stats(context_data: dict, stage: str) -> set[str]:
 def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mode: str,
                               user_query: str, events_columns: str, events_limit: int, ip_enrich: bool,
                               asset_enrich: bool, incident_type: Optional[str], mirror_direction: Optional[str],
-                              first_fetch: str, mirror_options: str):
-    is_reset_triggered()
-    context_data, _ = get_integration_context_with_version()
-    print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode}.')
+                              first_fetch: str, mirror_options: str, assets_limit: int, long_running_container_id: str):
+    context_data, version = get_integration_context_with_version()
+
+    if is_reset_triggered(context_data, version):
+        last_highest_id = 0
+    else:
+        last_highest_id = int(context_data.get(LAST_FETCH_KEY, 0))
+    print_debug_msg(f'Starting fetch loop. Fetch mode: {fetch_mode} on Container:{long_running_container_id}.')
     incidents, new_highest_id = get_incidents_long_running_execution(
         client=client,
         offenses_per_fetch=offenses_per_fetch,
@@ -2147,11 +2519,12 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
         events_limit=events_limit,
         ip_enrich=ip_enrich,
         asset_enrich=asset_enrich,
-        last_highest_id=int(context_data.get(LAST_FETCH_KEY, '0')),
+        last_highest_id=last_highest_id,
         incident_type=incident_type,
         mirror_direction=mirror_direction,
         first_fetch=first_fetch,
         mirror_options=mirror_options,
+        assets_limit=assets_limit
     )
     print_debug_msg(f'Got incidents, Creating incidents and updating context data. new highest id is {new_highest_id}')
     context_data, ctx_version = get_integration_context_with_version()
@@ -2162,13 +2535,34 @@ def perform_long_running_loop(client: Client, offenses_per_fetch: int, fetch_mod
             context_data.update({'samples': incident_batch_for_sample, LAST_FETCH_KEY: int(new_highest_id)})
 
         # if incident creation fails, it'll drop the data and try again in the next iteration
-        demisto.createIncidents(incidents)
+        demisto.createIncidents(incidents, {LAST_FETCH_KEY: str(new_highest_id)})
         safely_update_context_data(context_data=context_data,
                                    version=ctx_version,
                                    should_update_last_fetch=True)
 
         print_debug_msg(
             f'Successfully Created {len(incidents)} incidents. Incidents created: {[incident["name"] for incident in incidents]}')
+
+
+def recover_from_last_run(ctx: dict | None = None, version: Any = None):
+    """
+    This recovers the integration context from the last run, if there is inconsistency between last run and context.
+    It happens when the container crashes after `demisto.createIncidents` and the integration context is not updated.
+    """
+    if not ctx or not version:
+        ctx, version = get_integration_context_with_version()
+    assert isinstance(ctx, dict)
+    last_run = demisto.getLastRun() or {}
+    last_highest_id_last_run = int(last_run.get(LAST_FETCH_KEY, 0))
+    print_debug_msg(f'Last highest ID from last run: {last_highest_id_last_run}')
+    last_highest_id_context = int(ctx.get(LAST_FETCH_KEY, 0))
+    if last_highest_id_last_run != last_highest_id_context and last_highest_id_last_run > 0:
+        # if there is inconsistency between last run and context, we need to update the context
+        print_debug_msg(
+            f'Updating context data with last highest ID from last run: {last_highest_id_last_run}.'
+            f'ID from context: {last_highest_id_context}')
+        safely_update_context_data(ctx | {LAST_FETCH_KEY: int(last_highest_id_last_run)},
+                                   version, should_update_last_fetch=True)
 
 
 def long_running_execution_command(client: Client, params: dict):
@@ -2197,8 +2591,14 @@ def long_running_execution_command(client: Client, params: dict):
     mirror_options = params.get('mirror_options', DEFAULT_MIRRORING_DIRECTION)
     mirror_direction = MIRROR_DIRECTION.get(mirror_options)
     mirror_options = params.get('mirror_options', '')
+    assets_limit = int(params.get('assets_limit', DEFAULT_ASSETS_LIMIT))
     if not argToBoolean(params.get('retry_events_fetch', True)):
         EVENTS_SEARCH_TRIES = 1
+    context_data, version = get_integration_context_with_version()
+    is_reset_triggered(context_data, version)
+    recover_from_last_run(context_data, version)
+    long_running_container_id = str(uuid.uuid4())
+    print_debug_msg(f'Starting container with UUID: {long_running_container_id}')
     while True:
         try:
             perform_long_running_loop(
@@ -2214,6 +2614,8 @@ def long_running_execution_command(client: Client, params: dict):
                 mirror_direction=mirror_direction,
                 first_fetch=first_fetch,
                 mirror_options=mirror_options,
+                assets_limit=assets_limit,
+                long_running_container_id=long_running_container_id
             )
             demisto.updateModuleHealth('')
 
@@ -2365,8 +2767,8 @@ def qradar_closing_reasons_list_command(client: Client, args: dict) -> CommandRe
     # if this call fails, raise an error and stop command execution
     response = client.closing_reasons_list(closing_reason_id, include_reserved, include_deleted, range_, filter_,
                                            fields)
-    outputs = sanitize_outputs(response, CLOSING_REASONS_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name'], set(CLOSING_REASONS_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, CLOSING_REASONS_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name'], set(CLOSING_REASONS_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Closing Reasons', outputs, headers=headers, removeNull=True),
@@ -2405,8 +2807,8 @@ def qradar_offense_notes_list_command(client: Client, args: dict) -> CommandResu
 
     # if this call fails, raise an error and stop command execution
     response = client.offense_notes_list(offense_id, range_, note_id, filter_, fields)
-    outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, NOTES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Offense Notes List For Offense ID {offense_id}', outputs, headers,
@@ -2441,8 +2843,8 @@ def qradar_offense_notes_create_command(client: Client, args: dict) -> CommandRe
 
     # if this call fails, raise an error and stop command execution
     response = client.offense_notes_create(offense_id, note_text, fields)
-    outputs = sanitize_outputs(response, NOTES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, NOTES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Text', 'CreatedBy', 'CreateTime'], set(NOTES_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Create Note', outputs, headers, removeNull=True),
@@ -2484,8 +2886,8 @@ def qradar_rules_list_command(client: Client, args: dict) -> CommandResults:
 
     # if this call fails, raise an error and stop command execution
     response = client.rules_list(rule_id, range_, filter_, fields)
-    outputs = sanitize_outputs(response, RULES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Type'], set(RULES_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, RULES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Type'], set(RULES_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Rules List', outputs, headers=headers, removeNull=True),
@@ -2522,8 +2924,8 @@ def qradar_rule_groups_list_command(client: Client, args: dict) -> CommandResult
 
     # if this call fails, raise an error and stop command execution
     response = client.rule_groups_list(range_, rule_group_id, filter_, fields)
-    outputs = sanitize_outputs(response, RULES_GROUP_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Description', 'Owner'], set(RULES_GROUP_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, RULES_GROUP_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Description', 'Owner'], set(RULES_GROUP_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Rules Group List', outputs, headers, removeNull=True),
@@ -2574,7 +2976,7 @@ def qradar_assets_list_command(client: Client, args: dict) -> CommandResults:
         output['Asset']['hostnames'] = add_iso_entries_to_dict(output.get('Asset', {}).get('hostnames', []))
         output['Asset']['users'] = add_iso_entries_to_dict(output.get('Asset', {}).get('users', []))
         output['Asset']['products'] = add_iso_entries_to_dict(output.get('Asset', {}).get('products', []))
-        output['Asset'] = sanitize_outputs(output.get('Asset'), ASSET_OLD_NEW_MAP)[0]
+        output['Asset'] = sanitize_outputs(output.get('Asset'), ASSET_RAW_FORMATTED)[0]
         assets_hr.append(output['Asset'])
         assets_results[f'''QRadar.Asset(val.ID === "{output['Asset']['ID']}")'''] = output['Asset']
         sanitized_endpoint = remove_empty_elements(output.get('Endpoint', {}))
@@ -2621,8 +3023,8 @@ def qradar_saved_searches_list_command(client: Client, args: dict) -> CommandRes
 
     # if this call fails, raise an error and stop command execution
     response = client.saved_searches_list(range_, timeout, saved_search_id, filter_, fields)
-    outputs = sanitize_outputs(response, SAVED_SEARCH_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Description'], set(SAVED_SEARCH_OLD_NEW_MAP.values()))
+    outputs = sanitize_outputs(response, SAVED_SEARCH_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Description'], set(SAVED_SEARCH_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Saved Searches List', outputs, headers, removeNull=True),
@@ -2711,7 +3113,7 @@ def qradar_search_create_command(client: Client, params: dict, args: dict) -> Co
         if response == QueryStatus.ERROR.value:
             raise DemistoException(f'Could not create events search for offense_id: {offense_id}.')
 
-    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, SEARCH_RAW_FORMATTED)
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
         outputs_prefix='QRadar.Search',
@@ -2737,13 +3139,62 @@ def qradar_search_status_get_command(client: Client, args: dict) -> CommandResul
 
     # if this call fails, raise an error and stop command execution
     response = client.search_status_get(search_id)
-    outputs = sanitize_outputs(response, SEARCH_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, SEARCH_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown(f'Search Status For Search ID {search_id}', outputs),
         outputs_prefix='QRadar.Search',
         outputs_key_field='ID',
         outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_search_delete_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete search from QRadar service.
+    possible arguments:
+    - search_id (Required): The search ID to delete.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    search_id: str = args.get('search_id', '')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.search_delete(search_id)
+
+    return CommandResults(
+        readable_output=f'Search ID {search_id} was successfully deleted.',
+        raw_response=response
+    )
+
+
+def qradar_search_cancel_command(client: Client, args: dict) -> CommandResults:
+    """
+    Cancelled search from QRadar service.
+    possible arguments:
+    - search_id (Required): The search ID to delete.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    search_id: str = args.get('search_id', '')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.search_cancel(search_id)
+    if response.get('status') == 'COMPLETED':
+        output = f'Search ID {search_id} is already in a completed status.'
+    else:
+        output = f'Search ID {search_id} was successfully cancelled.'
+    return CommandResults(
+        readable_output=output,
         raw_response=response
     )
 
@@ -2816,13 +3267,13 @@ def qradar_reference_sets_list_command(client: Client, args: dict) -> CommandRes
         if convert_date_value and outputs.get('element_type') == 'DATE':
             for data_entry in outputs.get('data', []):
                 data_entry['value'] = get_time_parameter(data_entry.get('value'), iso_format=True)
-        outputs['data'] = sanitize_outputs(outputs.get('data', []), REFERENCE_SET_DATA_OLD_NEW_MAP)
+        outputs['data'] = sanitize_outputs(outputs.get('data', []), REFERENCE_SET_DATA_RAW_FORMATTED)
     else:
         outputs = response
 
-    final_outputs = sanitize_outputs(outputs, REFERENCE_SETS_OLD_NEW_MAP)
+    final_outputs = sanitize_outputs(outputs, REFERENCE_SETS_RAW_FORMATTED)
     headers = build_headers(['Name', 'ElementType', 'Data', 'TimeToLive', 'TimeoutType'],
-                            set(REFERENCE_SETS_OLD_NEW_MAP.values()))
+                            set(REFERENCE_SETS_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Sets List', final_outputs, headers, removeNull=True),
@@ -2862,9 +3313,9 @@ def qradar_reference_set_create_command(client: Client, args: dict) -> CommandRe
 
     # if this call fails, raise an error and stop command execution
     response = client.reference_set_create(ref_name, element_type, timeout_type, time_to_live, fields)
-    outputs = sanitize_outputs(response, REFERENCE_SETS_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, REFERENCE_SETS_RAW_FORMATTED)
     headers = build_headers(['Name', 'ElementType', 'Data', 'TimeToLive', 'TimeoutType'],
-                            set(REFERENCE_SETS_OLD_NEW_MAP.values()))
+                            set(REFERENCE_SETS_RAW_FORMATTED.values()))
 
     return CommandResults(
         readable_output=tableToMarkdown('Reference Set Create', outputs, headers, removeNull=True),
@@ -2953,8 +3404,7 @@ def qradar_reference_set_value_delete_command(client: Client, args: dict) -> Com
     original_value = value
 
     if date_value:
-        value = get_time_parameter(original_value, epoch_format=True)
-
+        value = str(get_time_parameter(original_value, epoch_format=True))
     # if this call fails, raise an error and stop command execution
     try:
         response = client.reference_set_value_delete(ref_name, value)
@@ -3000,7 +3450,7 @@ def qradar_domains_list_command(client: Client, args: dict) -> CommandResults:
 
     # if this call fails, raise an error and stop command execution
     response = client.domains_list(domain_id, range_, filter_, fields)
-    outputs = sanitize_outputs(response, DOMAIN_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, DOMAIN_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown('Domains List', outputs, removeNull=True),
@@ -3066,7 +3516,7 @@ def qradar_geolocations_for_ip_command(client: Client, args: dict) -> CommandRes
         CommandResults.
     """
     ips = argToList(args.get('ip'))
-    filter_ = f'''ip_address IN ({','.join((f'"{str(ip)}"' for ip in ips))})'''
+    filter_ = f'''ip_address IN ({','.join((f'"{str(ip)}"' for ip in ips))})'''  # noqa: UP034
     fields = args.get('fields')
 
     # if this call fails, raise an error and stop command execution
@@ -3124,6 +3574,7 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     - fields: If used, will filter all fields except for the specified ones.
               Use this parameter to specify which fields you would like to get back in the
               response. Fields that are not explicitly named are excluded.
+    - id: If used, will fetch only the specified log source.
     Args:
         client (Client): QRadar client to perform the API call.
         args (Dict): Demisto args.
@@ -3133,17 +3584,24 @@ def qradar_log_sources_list_command(client: Client, args: dict) -> CommandResult
     """
     qrd_encryption_algorithm: str = args.get('qrd_encryption_algorithm', 'AES128')
     qrd_encryption_password: str = args.get('qrd_encryption_password', secrets.token_urlsafe(20))
+    endpoint = '/config/event_sources/log_source_management/log_sources'
     range_ = f'''items={args.get('range', DEFAULT_RANGE_VALUE)}'''
     filter_ = args.get('filter')
     fields = args.get('fields')
+    additional_headers = {
+        'x-qrd-encryption-algorithm': qrd_encryption_algorithm,
+        'x-qrd-encryption-password': qrd_encryption_password
+    }
+    id = args.get('id')
 
     # if this call fails, raise an error and stop command execution
-    response = client.log_sources_list(qrd_encryption_algorithm, qrd_encryption_password, range_, filter_, fields)
-    outputs = sanitize_outputs(response, LOG_SOURCES_OLD_NEW_MAP)
-    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_OLD_NEW_MAP.values()))
+    response = client.get_resource(id, range_, endpoint, filter_, fields, additional_headers)
+    outputs = sanitize_outputs(response, LOG_SOURCES_RAW_FORMATTED)
+    readable_outputs = [{k: v for k, v in output.items() if k != 'ProtocolParameters'} for output in outputs]
+    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_RAW_FORMATTED.values()))
 
     return CommandResults(
-        readable_output=tableToMarkdown('Log Sources List', outputs, headers, removeNull=True),
+        readable_output=tableToMarkdown('Log Sources List', readable_outputs, headers, removeNull=True),
         outputs_prefix='QRadar.LogSource',
         outputs_key_field='ID',
         outputs=outputs,
@@ -3179,7 +3637,7 @@ def qradar_get_custom_properties_command(client: Client, args: dict) -> CommandR
     fields = args.get('fields')
     if not filter_:
         if field_names:
-            filter_ += f'''name IN ({','.join((f'"{str(name)}"' for name in field_names))})'''
+            filter_ += f'''name IN ({','.join(f'"{str(name)}"' for name in field_names)})'''
         if like_names:
             filter_ += ' or '.join(f' name ILIKE "%{like}%"' for like in like_names)
 
@@ -3239,7 +3697,7 @@ def qradar_ips_source_get_command(client: Client, args: dict[str, Any]) -> Comma
         (CommandResults).
     """
     response = perform_ips_command_request(client, args, is_destination_addresses=False)
-    outputs = sanitize_outputs(response, SOURCE_IPS_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, SOURCE_IPS_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown('Source IPs', outputs),
@@ -3261,7 +3719,7 @@ def qradar_ips_local_destination_get_command(client: Client, args: dict[str, Any
         (CommandResults).
     """
     response = perform_ips_command_request(client, args, is_destination_addresses=True)
-    outputs = sanitize_outputs(response, LOCAL_DESTINATION_IPS_OLD_NEW_MAP)
+    outputs = sanitize_outputs(response, LOCAL_DESTINATION_IPS_RAW_FORMATTED)
 
     return CommandResults(
         readable_output=tableToMarkdown('Local Destination IPs', outputs),
@@ -3502,28 +3960,29 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                                                              filter_=f'create_time >= {offense_close_time}')
             # In QRadar UI, when you close a reason, a note is added with the reason and more details. Try to get note
             # if exists, else fallback to closing reason only, as closing QRadar through an API call does not create a note.
-            close_reason_with_note = next((note.get('note_text') for note in closed_offense_notes if
-                                           note.get('note_text').startswith('This offense was closed with reason:')),
-                                          closing_reason)
-            if not close_reason_with_note:
+            closenotes = next((note.get('note_text') for note in closed_offense_notes if
+                               note.get('note_text').startswith('This offense was closed with reason:')),
+                              closing_reason)
+            if not closing_reason:
                 print_debug_msg(f'Could not find closing reason or closing note for offense with offense id {offense_id}')
-                close_reason_with_note = 'Unknown closing reason from QRadar'
-            else:
-                close_reason_with_note = f'From QRadar: {close_reason_with_note}'
+                closing_reason = 'Unknown closing reason from QRadar'
+                closenotes = 'Unknown closing note from QRadar'
+
         except Exception as e:
             demisto.error(f'Failed to get closing reason with error: {e}')
-            close_reason_with_note = 'Unknown closing reason from QRadar'
+            closing_reason = 'Unknown closing reason from QRadar'
+            closenotes = 'Unknown closing note from QRadar'
             time.sleep(FAILURE_SLEEP)
-
         entries.append({
             'Type': EntryType.NOTE,
             'Contents': {
                 'dbotIncidentClose': True,
-                'closeReason': close_reason_with_note
+                'closeReason': closing_reason,
+                'closeNotes': f'From QRadar: {closenotes}'
             },
             'ContentsFormat': EntryFormat.JSON
         })
-
+    already_mirrored = False
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
                 int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
@@ -3532,6 +3991,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                             f'Not fetching events again.')
             # delete the offense from the queue
             delete_offense_from_context(offense_id, context_data, context_version)
+            already_mirrored = True
         else:
             events, status = get_remote_events(client,
                                                offense_id,
@@ -3551,21 +4011,22 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
     final_offense_data = sanitize_outputs(enriched_offense)[0]
-    events_mirrored = get_num_events(final_offense_data.get('events', []))
-    print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
-    events_message = update_events_mirror_message(
-        mirror_options=mirror_options,
-        events_limit=events_limit,
-        events_count=int(final_offense_data.get('event_count', 0)),
-        events_mirrored=events_mirrored,
-        events_mirrored_collapsed=len(final_offense_data.get('events', [])),
-        fetch_mode=fetch_mode,
-        offense_id=int(offense_id),
-    )
-    print_debug_msg(f'offense {offense_id} events_message: {events_message}')
-    final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
-    final_offense_data['mirroring_events_message'] = events_message
-    final_offense_data['events_fetched'] = events_mirrored
+    if not already_mirrored:
+        events_mirrored = get_num_events(final_offense_data.get('events', []))
+        print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
+        events_message = update_events_mirror_message(
+            mirror_options=mirror_options,
+            events_limit=events_limit,
+            events_count=int(final_offense_data.get('event_count', 0)),
+            events_mirrored=events_mirrored,
+            events_mirrored_collapsed=len(final_offense_data.get('events', [])),
+            fetch_mode=fetch_mode,
+            offense_id=int(offense_id),
+        )
+        print_debug_msg(f'offense {offense_id} events_message: {events_message}')
+        final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
+        final_offense_data['mirroring_events_message'] = events_message
+        final_offense_data['events_fetched'] = events_mirrored
     return GetRemoteDataResponse(final_offense_data, entries)
 
 
@@ -3574,7 +4035,8 @@ def add_modified_remote_offenses(client: Client,
                                  version: str,
                                  mirror_options: str,
                                  new_modified_records_ids: set[str],
-                                 current_last_update: int,
+                                 new_last_update_modified: int,
+                                 new_last_update_closed: int,
                                  events_columns: str,
                                  events_limit: int,
                                  fetch_mode: str
@@ -3587,7 +4049,8 @@ def add_modified_remote_offenses(client: Client,
         version: The version of the context data to update.
         mirror_options: The mirror options for the integration.
         new_modified_records_ids: The new modified offenses ids.
-        current_last_update: The current last mirror update.
+        new_last_update_modified: The current last mirror update modified.
+        new_last_update_closed: The current last mirror update.
         events_columns: The events_columns param.
         events_limit: The events_limit param.
 
@@ -3639,7 +4102,7 @@ def add_modified_remote_offenses(client: Client,
         new_context_data.update({MIRRORED_OFFENSES_QUERIED_CTX_KEY: mirrored_offenses_queries})
         new_context_data.update({MIRRORED_OFFENSES_FINISHED_CTX_KEY: finished_offenses_queue})
 
-    new_context_data.update({LAST_MIRROR_KEY: current_last_update})
+    new_context_data.update({LAST_MIRROR_KEY: new_last_update_modified, LAST_MIRROR_CLOSED_KEY: new_last_update_closed})
     print_context_data_stats(new_context_data, "Get Modified Remote Data - After update")
     safely_update_context_data(
         new_context_data, version, offense_ids=changed_ids_ctx, should_update_last_mirror=True
@@ -3698,17 +4161,24 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
     """
     ctx, ctx_version = get_integration_context_with_version()
     remote_args = GetModifiedRemoteDataArgs(args)
+
     highest_fetched_id = ctx.get(LAST_FETCH_KEY, 0)
     limit: int = int(params.get('mirror_limit', MAXIMUM_MIRROR_LIMIT))
     fetch_mode = params.get('fetch_mode', '')
     range_ = f'items=0-{limit - 1}'
-    last_update_time = ctx.get(LAST_MIRROR_KEY, 0)
-    if not last_update_time:
-        last_update_time = remote_args.last_update
-    last_update = get_time_parameter(last_update_time, epoch_format=True)
-    assert isinstance(last_update, int)
-    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update}'
-    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update}'
+    last_update_modified = ctx.get(LAST_MIRROR_KEY, 0)
+    if not last_update_modified:
+        # This is the first mirror. We get the last update of the latest incident with a window of 5 minutes
+        last_update = dateparser.parse(remote_args.last_update)
+        if not last_update:
+            last_update = datetime.now()
+        last_update -= timedelta(minutes=5)
+        last_update_modified = int(last_update.timestamp() * 1000)
+    last_update_closed = ctx.get(LAST_MIRROR_CLOSED_KEY, last_update_modified)
+    assert isinstance(last_update_modified, int)
+    assert isinstance(last_update_closed, int)
+    filter_modified = f'id <= {highest_fetched_id} AND status!=closed AND last_persisted_time > {last_update_modified}'
+    filter_closed = f'id <= {highest_fetched_id} AND status=closed AND close_time > {last_update_closed}'
     print_debug_msg(f'Filter to get modified offenses is: {filter_modified}')
     print_debug_msg(f'Filter to get closed offenses is: {filter_closed}')
     # if this call fails, raise an error and stop command execution
@@ -3720,21 +4190,20 @@ def get_modified_remote_data_command(client: Client, params: dict[str, str],
                                            filter_=filter_closed,
                                            sort='+close_time',
                                            fields=FIELDS_MIRRORING)
-    last_update_modified, last_update_closed = last_update, last_update
     if offenses_modified:
         last_update_modified = int(offenses_modified[-1].get('last_persisted_time'))
     if offenses_closed:
         last_update_closed = int(offenses_closed[-1].get('close_time'))
     new_modified_records_ids = {str(offense.get('id')) for offense in offenses_modified + offenses_closed if 'id' in offense}
-    current_last_update = max(last_update_modified, last_update_closed)
-    print_debug_msg(f'Last update: {last_update}, current last update: {current_last_update}')
+    print_debug_msg(f'Last update modified: {last_update_modified}, Last update closed: {last_update_closed}')
     events_columns = params.get('events_columns') or DEFAULT_EVENTS_COLUMNS
     events_limit = int(params.get('events_limit') or DEFAULT_EVENTS_LIMIT)
 
     new_modified_records_ids = add_modified_remote_offenses(client=client, context_data=ctx, version=ctx_version,
                                                             mirror_options=params.get('mirror_options', ''),
                                                             new_modified_records_ids=new_modified_records_ids,
-                                                            current_last_update=current_last_update,
+                                                            new_last_update_modified=last_update_modified,
+                                                            new_last_update_closed=last_update_closed,
                                                             events_columns=events_columns,
                                                             events_limit=events_limit,
                                                             fetch_mode=fetch_mode,
@@ -3764,6 +4233,7 @@ def qradar_search_retrieve_events_command(
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     is_polling = argToBoolean(args.get('polling', True))
+    timeout_in_secs = int(args.get('timeout_in_seconds', 600))
     search_command_results = None
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
@@ -3776,7 +4246,20 @@ def qradar_search_retrieve_events_command(
     # determine if this is the last run of the polling command
     is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
-    events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id', ''))
+    try:
+        events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id'))
+    except (DemistoException, requests.Timeout) as e:
+        if is_last_run:
+            raise e
+        print_debug_msg(f"Polling event failed due to {e}. Will try to poll again in the next interval.")
+        events = []
+        status = QueryStatus.WAIT.value
+    if is_last_run and status == QueryStatus.WAIT.value:
+        print_debug_msg("Its the last run of the polling, will cancel the query request. ")
+        client.search_cancel(search_id=search_id)
+        return CommandResults(
+            readable_output='Got polling timeout. Quary got cancelled.',
+        )
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(
@@ -3796,14 +4279,15 @@ def qradar_search_retrieve_events_command(
             # return scheduled command result without search id to search again
             polling_args = {
                 'interval_in_seconds': interval_in_secs,
+                'timeout_in_seconds': timeout_in_secs,
                 'success': True,
                 **args
             }
-
             scheduled_command = ScheduledCommand(
                 command='qradar-search-retrieve-events',
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
+                timeout_in_seconds=timeout_in_secs
             )
             return CommandResults(scheduled_command=scheduled_command if is_polling else None,
                                   readable_output='Not all events were fetched. Searching again.',
@@ -3825,11 +4309,13 @@ def qradar_search_retrieve_events_command(
     polling_args = {
         'search_id': search_id,
         'interval_in_seconds': interval_in_secs,
+        'timeout_in_seconds': timeout_in_secs,
         **args
     }
     scheduled_command = ScheduledCommand(
         command='qradar-search-retrieve-events',
         next_run_in_seconds=interval_in_secs,
+        timeout_in_seconds=timeout_in_secs,
         args=polling_args,
     )
     outputs = {'ID': search_id, 'Status': QueryStatus.WAIT}
@@ -4056,6 +4542,478 @@ def qradar_remote_network_deploy_execution_command(client: Client, args):
     )
 
 
+def qradar_event_collectors_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of event collectors from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    id = args.get('id')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, '/config/event_sources/event_collectors', filter_, fields)
+    outputs = sanitize_outputs(response, EVENT_COLLECTOR_RAW_FORMATTED)
+    headers = build_headers(['ID'], set(EVENT_COLLECTOR_RAW_FORMATTED.values()))
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Event Collectors List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.EventCollector',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_wincollect_destinations_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of WinCollect destinations from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/wincollect/wincollect_destinations'
+    id = args.get('id')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, WINCOLLECT_DESTINATION_RAW_FORMATTED)
+    headers = build_headers(['ID'], set(WINCOLLECT_DESTINATION_RAW_FORMATTED.values()))
+
+    return CommandResults(
+        readable_output=tableToMarkdown('WinCollect Destinations List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.WinCollectDestination',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_disconnected_log_collectors_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of disconnected log collectors from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/disconnected_log_collectors'
+    id = args.get('id')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED)
+    headers = build_headers(['ID'], set(DISCONNECTED_LOG_COLLECTOR_RAW_FORMATTED.values()))
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Disconnected Log Collectors List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.DisconnectedLogCollector',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_log_source_types_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of log source types from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/log_source_management/log_source_types'
+    id = args.get('id')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_TYPES_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Custom', 'Version', 'UUID', 'SupportedLanguageIDs'], set())
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Types List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSourceTypesList',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_log_source_protocol_types_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of log source types from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/log_source_management/protocol_types'
+    id = args.get('id')
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_PROTOCOL_TYPE_RAW_FORMATTED)
+    headers = ['ID', 'Name', 'CanCollectEvents', 'Testable', 'CanAcceptSampleEvents']
+    readable_outputs = ([{
+        **protocol_type,
+        'CanCollectEvents': protocol_type['TestingCapabilities']['can_collect_events'],
+        'Testable': protocol_type['TestingCapabilities']['testable'],
+        'CanAcceptSampleEvents': protocol_type['TestingCapabilities']['can_accept_sample_events'],
+    } for protocol_type in outputs])
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Protocol Types', readable_outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSourceProtocolType',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_log_source_extensions_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of log source types from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/log_source_management/log_source_extensions'
+    id = args.get('id')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_EXTENSION_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name', 'Description', 'UUID'], set())
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Extensions List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSourceExtension',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_log_source_languages_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of log source types from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/log_source_management/log_source_languages'
+    id = args.get('id')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_LANGUAGE_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name'], set())
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Languages List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSourceLanguage',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_log_source_groups_list_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves a list of log source types from QRadar service.
+    possible arguments:
+    - range: Range of offenses to return (e.g.: 0-20, 3-5, 3-3).
+    - filter: Query filter to filter results returned by QRadar service. see
+              https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html
+              for more details.
+    - fields: Use this parameter to specify which fields you would like to get back in the response.
+              Fields that are not named are excluded.
+              Specify subfields in brackets and multiple fields in the same object are separated by commas.
+    - id: If used, will fetch only the specified log source.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    range_ = f"items={args.get('range', DEFAULT_RANGE_VALUE)}"
+    filter_ = args.get('filter')
+    fields = args.get('fields')
+    endpoint = '/config/event_sources/log_source_management/log_source_groups'
+    id = args.get('id')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.get_resource(id, range_, endpoint, filter_, fields)
+    outputs = sanitize_outputs(response, LOG_SOURCE_GROUP_RAW_FORMATTED)
+    headers = build_headers(['ID', 'Name'], set(LOG_SOURCE_GROUP_RAW_FORMATTED.values()))
+
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Groups List', outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSourceGroup',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_log_source_delete_command(client: Client, args: dict) -> CommandResults:
+    """
+    Deletes a log source by id or by name.
+    Possible arguments:
+    - name: The unique name of the log source to be deleted. If you don't provide this argument, id is required.
+    - id: The ID of the log source to be deleted. If you don't provide this argument, name is required.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+    Returns:
+        CommandResults.
+    """
+    name = args.get('name')
+    id = args.get('id')
+
+    if id is not None:
+        try:
+            client.delete_log_source(id)
+            return CommandResults(
+                readable_output=f'Log source {id} was deleted successfully'
+            )
+        except DemistoException as e:
+            if e.res.status_code == 404:
+                return CommandResults(
+                    readable_output=f'Log source with id {id} does not exist'
+                )
+    if name is not None:
+        log_source_list = client.get_resource_list(
+            'items=0-0',
+            'config/event_sources/log_source_management/log_sources',
+            f'name="{name}"'
+        )
+        if not log_source_list:
+            return CommandResults(
+                readable_output=f'Log source with name {name} does not exist'
+            )
+        relevant_log_source = log_source_list[0]
+        client.delete_log_source(relevant_log_source.get('id'))
+        return CommandResults(
+            readable_output=f'Log source {name} was deleted successfully'
+        )
+    raise Exception('At least one of the arguments: name, id must be provided.')
+
+
+def qradar_log_source_create_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a log source.
+    Possible arguments:
+    - name: Required. The unique name of the log source.
+    - sending_ip: The ip of the system which the log source is associated to, or fed by.
+    - protocol_type_id: Required. The type of protocol that is used by the log source.
+    - type_id: Required. The type of the log source. Must correspond to an existing log source type.
+      Must correspond to an existing protocol type.
+    - protocol_parameters: Required. The list of protocol parameters corresponding with the selected protocol type id. The syntax
+      for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name
+      should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the
+      protocol parameter.
+    - descrption: The description of the log source
+    - coalesce_events: Determines if events collected by this log source are coalesced based on common properties.
+      If each individual event is stored, then the condition is set to false. Defaults to true.
+    - enabled: Determines if the log source is enabled. Defaults to true.
+    - parsing_order: The order in which log sources will parse if multiple exists with a common identifier.
+    - group_ids: Required. The set of log source group IDs this log source is a member of.
+      Each ID must correspond to an existing log source group.
+    - credibility: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source
+    - store_event_payload: If the payloads of events that are collected by this log source are stored, the condition is set to
+      'true'. If only the normalized event records are stored, then the condition is set to 'false'.
+    - target_event_collector_id:  Required. The ID of the event collector where the log source sends its data.
+      The ID must correspond to an existing event collector.
+    - disconnected_log_collector_id:  The ID of the disconnected log collector where this log source will run.
+      The ID must correspond to an existing disconnected log collector.
+    - language_id: The language of the events that are being processed by this log source.
+      Must correspond to an existing log source language.
+    - requires_deploy: Set to 'true' if you need to deploy changes to enable the log source for use;
+      otherwise, set to 'false' if the log source is already active.
+    - wincollect_internal_destination_id : The internal WinCollect destination for this log source, if applicable.
+      Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination.
+    - wincollect_external_destination_ids: The set of external WinCollect destinations for this log source, if applicable.
+      Log Sources without an associated WinCollect agent have a null value.
+      Each ID must correspond to an existing WinCollect destination.
+    - gateway: If the log source is configured as a gateway, the condition is set to 'true';
+      otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration.
+      The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to
+      feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
+    """
+    log_source = parse_log_source(args)
+    response = client.create_log_source(log_source)
+    outputs = sanitize_outputs(response, LOG_SOURCES_RAW_FORMATTED)[0]
+    headers = build_headers(['ID', 'Name', 'Description'], set(LOG_SOURCES_RAW_FORMATTED.values()))
+    readable_outputs = {
+        'ID': outputs['ID'],
+        'Name': outputs['Name'],
+        'CreationDate': outputs['CreationDate'],
+        'Description': outputs['Description'],
+        'Enabled': outputs['Enabled'],
+        'Status': outputs['Status']['status'],
+        'StatusLastUpdated': outputs['Status'].get('last_updated', ''),
+        'StatusMessages': outputs['Status'].get('messages', ''),
+    }
+    return CommandResults(
+        readable_output=tableToMarkdown('Log Source Created', readable_outputs, headers, removeNull=True),
+        outputs_prefix='QRadar.LogSource',
+        outputs_key_field='ID',
+        outputs=outputs,
+        raw_response=response
+    )
+
+
+def qradar_log_source_update_command(client: Client, args: dict) -> CommandResults:
+    """
+    Creates a log source.
+    Possible arguments:
+    - id: Required. The id of the log source.
+    - name: The unique name of the log source.
+    - sending_ip: The ip of the system which the log source is associated to, or fed by.
+    - protocol_type_id: The type of protocol that is used by the log source.
+    - type_id: The type of the log source. Must correspond to an existing log source type.
+      Must correspond to an existing protocol type.
+    - protocol_parameters: The list of protocol parameters corresponding with the selected protocol type id. The syntax
+      for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name
+      should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the
+      protocol parameter.
+    - descrption: The description of the log source
+    - coalesce_events: Determines if events collected by this log source are coalesced based on common properties.
+      If each individual event is stored, then the condition is set to false. Defaults to true.
+    - enabled: Determines if the log source is enabled. Defaults to true.
+    - parsing_order: The order in which log sources will parse if multiple exists with a common identifier.
+    - group_ids: The set of log source group IDs this log source is a member of.
+      Each ID must correspond to an existing log source group.
+    - credibility: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source
+    - store_event_payload: If the payloads of events that are collected by this log source are stored, the condition is set to
+      'true'. If only the normalized event records are stored, then the condition is set to 'false'.
+    - target_event_collector_id:  The ID of the event collector where the log source sends its data.
+      The ID must correspond to an existing event collector.
+    - disconnected_log_collector_id:  The ID of the disconnected log collector where this log source will run.
+      The ID must correspond to an existing disconnected log collector.
+    - language_id: The language of the events that are being processed by this log source.
+      Must correspond to an existing log source language.
+    - requires_deploy: Set to 'true' if you need to deploy changes to enable the log source for use;
+      otherwise, set to 'false' if the log source is already active.
+    - wincollect_internal_destination_id : The internal WinCollect destination for this log source, if applicable.
+      Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination.
+    - wincollect_external_destination_ids: The set of external WinCollect destinations for this log source, if applicable.
+      Log Sources without an associated WinCollect agent have a null value.
+      Each ID must correspond to an existing WinCollect destination.
+    - gateway: If the log source is configured as a gateway, the condition is set to 'true';
+      otherwise, the condition is set to 'false'. A gateway log source is a stand-alone protocol configuration.
+      The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to
+      feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
+    """
+    id = args.get('id')
+    log_source = parse_partial_log_source(args)
+    client.update_log_source(log_source)
+    return CommandResults(readable_output=f'Log source {id} was updated successfully')
+
+
 def migrate_integration_ctx(ctx: dict) -> dict:
     """Migrates the old context to the current context
 
@@ -4171,6 +5129,7 @@ def main() -> None:  # pragma: no cover
     if api_version and float(api_version) < MINIMUM_API_VERSION:
         raise DemistoException(f'API version cannot be lower than {MINIMUM_API_VERSION}')
     credentials = params.get('credentials')
+    timeout = arg_to_number(params.get("timeout"))
 
     try:
 
@@ -4179,7 +5138,9 @@ def main() -> None:  # pragma: no cover
             verify=verify_certificate,
             proxy=proxy,
             api_version=api_version,
-            credentials=credentials)
+            credentials=credentials,
+            timeout=timeout
+        )
         # All command names with or are for supporting QRadar v2 command names for backward compatibility
         if command == 'test-module':
             validate_integration_context()
@@ -4242,6 +5203,12 @@ def main() -> None:  # pragma: no cover
             'qradar-get-search-results',
         ]:
             return_results(qradar_search_results_get_command(client, args))
+
+        elif command == 'qradar-search-cancel':
+            return_results(qradar_search_cancel_command(client, args))
+
+        elif command == 'qradar-search-delete':
+            return_results(qradar_search_delete_command(client, args))
 
         elif command in [
             'qradar-reference-sets-list',
@@ -4331,12 +5298,50 @@ def main() -> None:  # pragma: no cover
         elif command == 'qradar-remote-network-deploy-execution':
             return_results(qradar_remote_network_deploy_execution_command(client, args))
 
+        elif command == 'qradar-event-collectors-list':
+            return_results(qradar_event_collectors_list_command(client, args))
+
+        elif command == 'qradar-wincollect-destinations-list':
+            return_results(qradar_wincollect_destinations_list_command(client, args))
+
+        elif command == 'qradar-disconnected-log-collectors-list':
+            return_results(qradar_disconnected_log_collectors_list_command(client, args))
+
+        elif command == 'qradar-log-source-types-list':
+            return_results(qradar_log_source_types_list_command(client, args))
+
+        elif command == 'qradar-log-source-protocol-types-list':
+            return_results(qradar_log_source_protocol_types_list_command(client, args))
+
+        elif command == 'qradar-log-source-extensions-list':
+            return_results(qradar_log_source_extensions_list_command(client, args))
+
+        elif command == 'qradar-log-source-languages-list':
+            return_results(qradar_log_source_languages_list_command(client, args))
+
+        elif command == 'qradar-log-source-groups-list':
+            return_results(qradar_log_source_groups_list_command(client, args))
+
+        elif command == 'qradar-log-source-delete':
+            return_results(qradar_log_source_delete_command(client, args))
+
+        elif command == 'qradar-log-source-create':
+            return_results(qradar_log_source_create_command(client, args))
+
+        elif command == 'qradar-log-source-update':
+            return_results(qradar_log_source_update_command(client, args))
+
         else:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
 
-    except Exception:
+    except Exception as e:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}')
+        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}\nException is: {str(e)}')
+    finally:
+        #  CIAC-10628
+        if command not in ("test-module", "fetch-incidents", "long-running-execution"):
+            client._return_execution_metrics_results()
+            client.execution_metrics.metrics = None
 
 
 ''' ENTRY POINT '''

@@ -410,7 +410,6 @@ Retrieves a list of all Google roles for a specified user.
 ***
 Retrieves attachments from a sent Gmail message.
 
-
 #### Base Command
 
 `gmail-get-attachments`
@@ -419,14 +418,22 @@ Retrieves attachments from a sent Gmail message.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context.| Required | 
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-
 
 #### Context Output
 
-There is no context output for this command.
-
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.Name | String | The file name. | 
+| File.MD5 | String | The MD5 hash of the file. | 
+| File.SHA1 | String | The SHA1 hash of the file. | 
+| File.SHA256 | String | The SHA256 hash of the file. | 
+| File.Type | String | The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| File.Size | Number | The size of the file in bytes. | 
+| File.SSDeep | String | The SSDeep hash of the file \(same as displayed in file entries\). | 
+| File.EntryID | String | The EntryID of the file. |
+| File.Extension | String | The file extension. For example: "xls". | 
 
 #### Command Example
 
@@ -438,7 +445,6 @@ There is no context output for this command.
 ***
 Retrieves the Gmail message sent to a specified user.
 
-
 #### Base Command
 
 `gmail-get-mail`
@@ -448,9 +454,9 @@ Retrieves the Gmail message sent to a specified user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | user-id | The user's email address. The "me" special value can be used to indicate the authenticated user. | Required | 
-| message-id | The ID of the email to retrieve.  You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
+| message-id | The ID of the email to retrieve. You can get the ID by running the gmail-search command, or by fetching mails and copy the incident.labels.Email/ID value from the fetched incident context. | Required | 
 | format | The format to return the message. Can be: "full": Returns the full email message data with body content parsed in the payload field; the raw field is not used. (default) / "metadata": Returns only the email message ID, labels, and email headers / "minimal": Returns only the email message ID and labels; does not return the email headers, body, or payload / "raw": Returns the full email message data with body content in the raw field as a base64url encoded string; the payload field is not used. Possible values are: full, metadata, minimal, raw. Default is full. | Optional | 
-
+| include-attachments | Whether to include the attachment entries in the result or not. Possible values are: False, True. | Optional | 
 
 #### Context Output
 
@@ -462,25 +468,35 @@ Retrieves the Gmail message sent to a specified user.
 | Gmail.Labels | string | The labels of the specific email. | 
 | Gmail.To | String | The email address of the receiver. | 
 | Gmail.From | String | The email address of the sender. | 
-| Gmail.Cc | string | The additional recipient email address \(CC\). | 
-| Gmail.Bcc | string | The additional recipient email address \(BCC\). | 
+| Gmail.Cc | string | Additional recipient email address \(CC\). | 
+| Gmail.Bcc | string | Additional recipient email address \(BCC\). | 
 | Gmail.Subject | string | The subject of the email. | 
 | Gmail.Body | string | The content of the email. | 
-| Gmail.Attachments | unknown | The attachments of the email. Attachments IDs are separated by commas. | 
+| Gmail.Attachments.ID | String | The email attachment ID (as appear in gmail). | 
+| Gmail.Attachments.Name | String | The email attachment name. | 
 | Gmail.Headers | unknown | All headers of the specific email \(list\). | 
 | Gmail.Mailbox | string | The email mailbox. | 
 | Email.To | String | The recipient of the email. | 
 | Email.From | String | The sender of the email. | 
-| Email.CC | String | The additional recipient email address \(CC\). | 
-| Email.BCC | String | The additional recipient email address \(BCC\). | 
+| Email.CC | String | Additional recipient email address \(CC\). | 
+| Email.BCC | String | Additional recipient email address \(BCC\). | 
 | Email.Format | String | The format of the email. | 
 | Email.Body/HTML | String | The HTML version of the email. | 
 | Email.Body/Text | String | The plain-text version of the email. | 
 | Email.Subject | String | The subject of the email. | 
 | Email.Headers | String | The headers of the email. | 
-| Email.Attachments.entryID | Unknown | Comma-separated email attachment IDs. | 
-| Email.Date | String | The date the email was received. | 
-
+| Email.Attachments.ID | String | The email attachment ID (as appear in gmail). | 
+| Email.Attachments.Name | String | The email attachment name. | 
+| Email.Date | String | The date the email was received. |
+| File.Name | String | Relevant only when include-attachments is set to True. The file name. | 
+| File.MD5 | String | Relevant only when include-attachments is set to True. The MD5 hash of the file. | 
+| File.SHA1 | String | Relevant only when include-attachments is set to True. The SHA1 hash of the file. | 
+| File.SHA256 | String | Relevant only when include-attachments is set to True. The SHA256 hash of the file. | 
+| File.Type | String | Relevant only when include-attachments is set to True. The file type, as determined by libmagic \(same as displayed in file entries\). | 
+| File.Size | Number | Relevant only when include-attachments is set to True. The size of the file in bytes. | 
+| File.SSDeep | String | Relevant only when include-attachments is set to True. The SSDeep hash of the file \(same as displayed in file entries\). | 
+| File.EntryID | string | The EntryID of the file. |
+| File.Extension | String | The file extension. For example: "xls". |
 
 #### Command Example
 

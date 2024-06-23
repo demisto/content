@@ -101,9 +101,8 @@ class FireEyeClient(BaseClient):
         now_timestamp = datetime.timestamp(now)
         # if there is a key and valid_until, and the current time is smaller than the valid until
         # return the current token
-        if token and valid_until:
-            if now_timestamp < valid_until:
-                return token
+        if token and valid_until and now_timestamp < valid_until:
+            return token
 
         # else generate a token and update the integration context accordingly
         token = self._generate_token()
@@ -131,8 +130,9 @@ class FireEyeClient(BaseClient):
         return token
 
     @logger
-    def get_alerts_request(self, request_params: Dict[str, Any]) -> Dict[str, str]:
-        return self.http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json')
+    def get_alerts_request(self, request_params: Dict[str, Any], timeout: int = 120) -> Dict[str, str]:
+        return self.http_request(method='GET', url_suffix='alerts', params=request_params, resp_type='json',
+                                 timeout=timeout)
 
     @logger
     def get_alert_details_request(self, alert_id: str, timeout: int) -> Dict[str, str]:

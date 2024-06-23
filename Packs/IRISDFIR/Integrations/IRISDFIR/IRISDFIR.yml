@@ -1,0 +1,274 @@
+category: Case Management
+commonfields:
+  id: IRIS DFIR
+  version: -1
+configuration:
+- display: Server IP or Host Name (e.g., https://192.168.0.1)
+  name: host
+  required: true
+  section: Connect
+  type: 0
+- display: ""
+  displaypassword: API Key for authentication
+  hiddenusername: true
+  name: api_key
+  required: true
+  section: Connect
+  type: 9
+- advanced: true
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  section: Connect
+  type: 8
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- additionalinfo: Fetch all the cases starting from this value, not including it.
+  defaultvalue: "0"
+  display: Incident Last Case ID
+  name: incidentLastCaseID
+  required: false
+  type: 0
+description: IRIS is a collaborative platform aiming to help incident responders to share technical details during investigations. It's free and open-source.
+display: IRIS DFIR
+name: IRIS DFIR
+script:
+  commands:
+  - arguments: []
+    description: IRIS Command to get the last case information.
+    name: iris-get-last-case-id
+    outputs:
+    - contextPath: IRIS.case_soc_id
+      description: SOC ID ticket case.
+      type: string
+    - contextPath: IRIS.case_id
+      description: case ID ticket number.
+      type: number
+    - contextPath: IRIS.case_description
+      description: case description.
+      type: string
+    - contextPath: IRIS.opened_by
+      description: case opened by.
+    - contextPath: IRIS.owner
+      description: case owner.
+    - contextPath: IRIS.classification_id
+      description: case classification ID.
+      type: number
+    - contextPath: IRIS.state_name
+      description: case state name.
+      type: string
+    - contextPath: IRIS.case_open_date
+      description: case open date.
+    - contextPath: IRIS.case_name
+      description: case name.
+      type: string
+    - contextPath: IRIS.client_name
+      description: case client name.
+      type: string
+    - contextPath: IRIS.classification
+      description: case classification.
+      type: string
+    - contextPath: IRIS.case_uuid
+      description: case uuid.
+      type: string
+    - contextPath: IRIS.state_id
+      description: case state ID.
+      type: string
+    - contextPath: IRIS.access_level
+      description: case access level.
+      type: string
+  - arguments: []
+    description: Return a list of all IRIS DFIR cases.
+    name: iris-get-all-cases
+    outputs:
+    - contextPath: IRIS.case_soc_id
+      description: SOC ID ticket case.
+    - contextPath: IRIS.case_id
+      description: case ID ticket number.
+      type: number
+    - contextPath: IRIS.case_description
+      description: case description.
+    - contextPath: IRIS.opened_by
+      description: case opened by.
+    - contextPath: IRIS.owner
+      description: case owner.
+    - contextPath: IRIS.classification_id
+      description: case classification ID.
+      type: number
+    - contextPath: IRIS.state_name
+      description: case state name.
+    - contextPath: IRIS.case_open_date
+      description: case open date.
+    - contextPath: IRIS.case_name
+      description: case name.
+    - contextPath: IRIS.client_name
+      description: case client name.
+    - contextPath: IRIS.classification
+      description: case classification.
+    - contextPath: IRIS.case_uuid
+      description: case uuid.
+    - contextPath: IRIS.state_id
+      description: case state ID.
+    - contextPath: IRIS.access_level
+      description: case access level.
+  - arguments:
+    - description: Provide Case ID.
+      name: case_id
+      required: true
+      type: unknown
+    description: Close a specific case by ID.
+    name: iris-close-case-id
+    outputs:
+    - contextPath: IRIS.case_name
+      description: case name.
+    - contextPath: IRIS.case_soc_id
+      description: case soc ID.
+    - contextPath: IRIS.open_date
+      description: case open date.
+    - contextPath: IRIS.close_date
+      description: case close date.
+  - arguments:
+    - description: case ID.
+      name: case_id
+    description: Reopen a specific case by ID.
+    name: iris-reopen-case-id
+    outputs:
+    - contextPath: IRIS.case_soc_id
+      description: case soc ID.
+    - contextPath: IRIS.case_id
+      description: case ID.
+    - contextPath: IRIS.close_date
+      description: case close date.
+    - contextPath: IRIS.open_date
+      description: case open date.
+    - contextPath: IRIS.case_name
+      description: case name.
+    - contextPath: IRIS.closing_note
+      description: case closing note.
+  - arguments:
+    - description: Case ID.
+      name: case_id
+      required: true
+    - description: Case name.
+      name: case_name
+      required: true
+    - auto: PREDEFINED
+      description: Case state.
+      name: case_state
+      predefined:
+      - In progress
+      - Opened
+      - Containement
+      - Eradication
+      - Recovery
+      - Post-Incident
+      - Reporting
+      - Closed
+      required: true
+    description: Change case state status.
+    name: iris-change-case-state
+    outputs:
+    - contextPath: IRIS.case_id
+      description: Case ID.
+      type: number
+    - contextPath: IRIS.case_name
+      description: Case name.
+      type: string
+    - contextPath: IRIS.case_state
+      description: Case state.
+      type: string
+  - arguments:
+    - description: Case ID.
+      name: case_id
+      required: true
+    - description: Notes group tittle.
+      name: group_title
+      required: true
+    description: Creates notes group.
+    name: iris-create-notes-group
+  - arguments:
+    - description: Case ID.
+      name: case_id
+      required: true
+    - description: Note tittle.
+      name: note_title
+      required: true
+    - description: Note content.
+      name: note_content
+      required: true
+    - description: Group ID.
+      name: group_id
+      required: true
+    description: Add a new note to an existing group.
+    name: iris-add-new-note-to-group
+  - arguments:
+    - description: Case ID.
+      name: case_id
+      required: true
+    description: Get a list of the notes and groups.
+    name: iris-get-list-of-groups-and-notes
+  - arguments:
+    - description: Case ID.
+      name: case_id
+      required: true
+    description: Returns a list of IOCs as well as any existing linked with other cases.
+    name: iris-get-list-of-iocs
+    outputs:
+    - contextPath: IRIS.case_id
+      description: Case ID.
+      type: number
+    - contextPath: IRIS.case_name
+      description: Case Name.
+      type: string
+  - arguments:
+    - description: Case ID.
+      name: case_id
+      required: true
+    - description: IoC ID.
+      name: ioc_id
+      required: true
+    description: Fetch the content of an ioc.
+    name: iris-get-ioc-content
+    outputs:
+    - contextPath: IRIS.case_id
+      description: Case ID.
+      type: number
+    - contextPath: IRIS.ioc_description
+      description: IoC Description.
+      type: string
+    - contextPath: IRIS.ioc_id
+      description: IoC ID.
+      type: number
+    - contextPath: IRIS.ioc_value
+      description: IoC Value.
+      type: string
+    - contextPath: IRIS.ioc_type
+      description: IoC Type.
+      type: string
+  dockerimage: demisto/python3:3.10.13.86272
+  isFetchSamples: true
+  isfetch: true
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

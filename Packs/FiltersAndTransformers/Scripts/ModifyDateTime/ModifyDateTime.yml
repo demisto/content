@@ -2,7 +2,7 @@ args:
 - name: value
   required: true
   default: true
-  description: 'Input date or time in a format that is supported by the dateparser.parse() function as outlined here- https://dateparser.readthedocs.io/en/latest/#popular-formats. For example: ''2020-01-01'' or ''1999/02/03 12:01:59'''
+  description: 'Input date or time in a format that is supported by the dateparser.parse() function as outlined here- https://dateparser.readthedocs.io/en/latest/#popular-formats. For example: ''2020-01-01'' or ''1999/02/03 12:01:59''.'
 - name: variation
   required: true
   description: 'Variation of time (for example: ''in 1 day'', or ''3 months ago''). Must be supported by the dateparser.parse() function here - https://dateparser.readthedocs.io/en/latest/#relative-dates'
@@ -19,5 +19,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

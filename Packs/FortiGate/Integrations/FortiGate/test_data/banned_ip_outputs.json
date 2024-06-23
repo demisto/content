@@ -1,0 +1,26 @@
+[
+    {
+        "Created": "2023-08-28 03:57:54",
+        "Expires": "2032-05-31 18:51:45",
+        "IP": "0.0.0.0",
+        "IsV6": 0,
+        "Source": "Administrative",
+        "VDOM": "root"
+    },
+    {
+        "Created": "2023-11-20 19:06:53",
+        "Expires": "1970-01-01 00:00:00",
+        "IP": "0.0.0.0",
+        "IsV6": 0,
+        "Source": "Administrative",
+        "VDOM": "root"
+    },
+    {
+        "Created": "2023-11-20 19:06:53",
+        "Expires": "1970-01-01 00:00:00",
+        "IP": "0000:0000:0000:0000:0000:0000:0000:0000",
+        "IsV6": 1,
+        "Source": "Administrative",
+        "VDOM": "root"
+    }
+]

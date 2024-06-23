@@ -1,7 +1,10 @@
 [INGEST:vendor="Fortinet", product="Fortigate", target_dataset="fortinet_fortigate_raw", no_hit=keep]
-filter FTNTFGTeventtime ~= "\d{9}$"
+filter to_string(FTNTFGTeventtime) ~= "\d{9}$"
 | alter
-    tmp_remove_milli_secs = to_integer(replex(FTNTFGTeventtime, "\d{9}$", ""))
+    tmp_remove_milli_secs = to_integer(replex(FTNTFGTeventtime, "\d{9}$", "")),
+    tmp_check_duration = if(FTNTFGTduration = null, 0, to_integer(FTNTFGTduration))
 | alter
-    _time = to_timestamp(tmp_remove_milli_secs)
-| fields -tmp_remove_milli_secs;
+    tmp_substract_diff = subtract(tmp_remove_milli_secs, tmp_check_duration)
+| alter
+    _time = to_timestamp(tmp_substract_diff)
+| fields -tmp_remove_milli_secs, tmp_check_duration, tmp_substract_diff;

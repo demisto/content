@@ -28,12 +28,12 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "19"
       - "18"
       - "24"
       - "16"
       - "27"
       - "28"
+      - "29"
     separatecontext: false
     view: |-
       {
@@ -635,47 +635,6 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
-  "19":
-    id: "19"
-    taskid: 7347fd96-e6df-4a99-8bf1-7ba856806ec0
-    type: playbook
-    task:
-      id: 7347fd96-e6df-4a99-8bf1-7ba856806ec0
-      version: -1
-      name: Calculate Severity By Highest DBotScore
-      description: Calculates the incident severity level according to the highest indicator DBotScore.
-      playbookName: Calculate Severity By Highest DBotScore
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      DBotScore:
-        complex:
-          root: inputs.DBotScore
-    separatecontext: true
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 0
-    view: |-
-      {
-        "position": {
-          "x": 1370,
-          "y": 200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    continueonerrortype: ""
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "24":
     id: "24"
     taskid: 86c4ba1f-fddb-4f6b-8712-c5b0fc6bb55a
@@ -876,6 +835,60 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 92cbfafa-4642-43ae-8756-56081a975704
+    type: playbook
+    task:
+      id: 92cbfafa-4642-43ae-8756-56081a975704
+      version: -1
+      name: Calculate Severity By Highest DBotScore
+      description: Calculates the incident severity level according to the highest DBotScore.
+      playbookName: Calculate Severity By Highest DBotScore
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      DBotScoreIndicators:
+        complex:
+          root: inputs.DBotScoreIndicators
+          transformers:
+          - operator: uniq
+      DBotScoreMaxScore:
+        complex:
+          root: inputs.DBotScoreMaxScore
+          transformers:
+          - operator: sort
+            args:
+              descending:
+                value:
+                  simple: "true"
+          - operator: uniq
+          - operator: FirstArrayElement
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1360,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -896,12 +909,15 @@ view: |-
     }
   }
 inputs:
-- key: DBotScore
+- key: DBotScoreIndicators
   value:
     complex:
       root: DBotScore
+      accessor: Indicator
+      transformers:
+      - operator: uniq
   required: false
-  description: 'Array of all indicators associated with the incident. '
+  description: 'Array of all indicator values associated with the incident. '
   playbookInputQuery:
 - key: CriticalUsers
   value:
@@ -974,6 +990,22 @@ inputs:
       - operator: uniq
   required: false
   description: An object of risky hosts and their corresponding scores, as outputted by the "xdr-list-risky-hosts" command.
+  playbookInputQuery:
+- key: DBotScoreMaxScore
+  value:
+    complex:
+      root: DBotScore
+      accessor: Score
+      transformers:
+      - operator: sort
+        args:
+          descending:
+            value:
+              simple: "true"
+      - operator: uniq
+      - operator: FirstArrayElement
+  required: false
+  description: The highest score (number) that was given to a DBotScore indicator.
   playbookInputQuery:
 outputs:
 - contextPath: CriticalAssets

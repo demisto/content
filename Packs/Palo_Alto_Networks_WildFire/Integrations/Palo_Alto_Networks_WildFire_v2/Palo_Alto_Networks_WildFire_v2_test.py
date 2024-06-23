@@ -1,10 +1,11 @@
 import json
-import io
+from pytest_mock import MockerFixture
 from requests import Response
 import pytest
 
 import demistomock as demisto
 from Palo_Alto_Networks_WildFire_v2 import (
+    main,
     prettify_upload,
     prettify_report_entry,
     prettify_verdict,
@@ -22,25 +23,21 @@ from Palo_Alto_Networks_WildFire_v2 import (
     parse_file_report,
     parse_wildfire_object,
     wildfire_get_file_report,
-    wildfire_file_command,
+    wildfire_file_command, get_agent,
 )
 
 
-def test_will_return_ok():
-    assert 1 == 1
-
-
 def test_prettify_upload():
-    expected_upload_dict = dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'FileType': "pdf", 'Size': 5, 'Status': "Pending"})
+    expected_upload_dict = {
+        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'FileType': "pdf", 'Size': 5, 'Status': "Pending"}
     prettify_upload_res = prettify_upload(
         {'md5': "md5_hash", 'sha256': "sha256_hash", 'filetype': "pdf", 'size': 5})
     assert expected_upload_dict == prettify_upload_res
 
 
 def test_prettify_report_entry():
-    expected_report_dict = dict({
-        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'FileType': "pdf", 'Size': 5, 'Status': "Completed"})
+    expected_report_dict = {
+        'MD5': "md5_hash", 'SHA256': "sha256_hash", 'FileType': "pdf", 'Size': 5, 'Status': "Completed"}
     prettify_report_entry_res = prettify_report_entry(
         {'md5': "md5_hash", 'sha256': "sha256_hash", 'filetype': "pdf", 'size': 5})
     assert expected_report_dict == prettify_report_entry_res
@@ -68,8 +65,8 @@ def test_prettify_url_verdict():
     Then:
      - Verify that the dictionary is prettified.
     """
-    expected_verdict_dict = dict({'URL': 'www.some-url.com', 'Verdict': '0', 'VerdictDescription': 'benign',
-                                  'Valid': 'Yes', 'AnalysisTime': '2021-12-13T11:30:55Z'})
+    expected_verdict_dict = {'URL': 'www.some-url.com', 'Verdict': '0', 'VerdictDescription': 'benign',
+                             'Valid': 'Yes', 'AnalysisTime': '2021-12-13T11:30:55Z'}
     prettify_verdict_res = prettify_url_verdict(
         {'url': 'www.some-url.com', 'verdict': '0', 'analysis_time': '2021-12-13T11:30:55Z', 'valid': 'Yes'})
     assert expected_verdict_dict == prettify_verdict_res
@@ -169,7 +166,7 @@ def test_get_sample(mocker):
         'Content-Disposition': f'attachment; filename={filename}.000',
         'x-envoy-upstream-service-time': '258'
     }
-    get_sample_response._content = 'filecontent'.encode()
+    get_sample_response._content = 'filecontent'
     mocker.patch(
         'Palo_Alto_Networks_WildFire_v2.wildfire_get_sample',
         return_value=get_sample_response
@@ -285,7 +282,7 @@ def test_file_command_with_array(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -598,6 +595,76 @@ def test_tags_file_report_response(mocker, response, expected_output):
     assert command_results[0].indicator.tags == expected_output
 
 
+@pytest.mark.parametrize('response, expected_output', [
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>no</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', 1),
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>grayware</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', 2),
+    (b'<?xml version="1.0" encoding="UTF-8"?><wildfire><version>2.0</version><file_info>'
+     b'<file_signer>None</file_signer><malware>yes</malware><sha1></sha1><filetype>PDF'
+     b'</filetype><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256><md5>'
+     b'4b41a3475132bd861b30a878e30aa56a</md5><size>3028</size></file_info><task_info>'
+     b'<report><version>2.0</version><platform>100</platform><software>'
+     b'PDF Static Analyzer</software><sha256>'
+     b'8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51</sha256>'
+     b'<md5>4b41a3475132bd861b30a878e30aa56a</md5><malware>no</malware><summary/>'
+     b'</report></task_info></wildfire>', 3)
+])
+def test_score_file_report_response(mocker, response, expected_output):
+    """
+    Given:
+     - hash of a file with malware field which is set to no
+     - hash of a file with malware field which is set to grayware
+     - hash of a file with malware field which is set to yes
+
+    When:
+     - Running report command.
+
+    Then:
+    Check that the dbot_score assigned is correct.
+    """
+    mocker.patch.object(demisto, 'results')
+    get_sample_response = Response()
+    get_sample_response.status_code = 200
+    get_sample_response.headers = {
+        'Server': 'nginx',
+        'Date': 'Thu, 28 May 2020 15:03:35 GMT',
+        'Transfer-Encoding': 'chunked',
+        'Connection': 'keep-alive',
+        'x-envoy-upstream-service-time': '258'
+    }
+    get_sample_response._content = response
+    mocker.patch(
+        'requests.request',
+        return_value=get_sample_response
+    )
+    mocker.patch.object(demisto, "args",
+                        return_value={'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+                                      'format': 'xml'})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.URL", "https://wildfire.paloaltonetworks.com/publicapi")
+    command_results, status = wildfire_get_report_command(
+        {'hash': '8decc8571946d4cd70a024949e033a2a2a54377fe9f1c1b944c20f9ee11a9e51',
+         'format': 'xml'})
+    assert command_results[0].indicator.dbot_score.score == expected_output
+
+
 def test_wildfire_get_pending_file_report(mocker):
     """
     Given:
@@ -665,3 +732,70 @@ def test_invalid_argument_res(mocker):
         assert demisto.results.call_count == 1
         assert demisto.results.call_args[0][0]['Type'] == 4
         assert demisto.results.call_args[0][0]['Contents'] == 'Invalid argument'
+
+
+@pytest.mark.parametrize(
+    "api_key_source, platform, token, expected_agent, test_id",
+    [
+        # Happy path tests
+        ("xsoartim", "x2", "a" * 33, "xsoartim", "happy_path_xsoartim"),
+        ("xdr", "x2", "a" * 33, "xdr", "happy_path_xdr"),
+        ("pcc", "x2", "a" * 33, "pcc", "happy_path_pcc"),
+        ("prismaaccessapi", "x2", "a" * 33, "prismaaccessapi", "happy_path_prismaaccessapi"),
+
+        # Edge cases
+        ("", "x2", "a" * 33, "xdr", "edge_case_platform_x2"),
+        ("", "x3", "a" * 33, "", "edge_case_platform_other"),
+        ("", "x2", "a" * 32, "", "edge_case_token_length_32"),
+
+        # Error cases
+        ("unknown", "x2", "a" * 33, "", "error_case_unknown_api_key_source"),
+        ("xsoartim", "x2", "", "xsoartim", "error_case_empty_token"),
+
+        # Version specific cases
+        ("", "x2", "a" * 33, "xdr", "version_case_demisto_version_less_than_8"),
+    ],
+)
+def test_get_agent(api_key_source, platform, token, expected_agent, test_id, mocker):
+    # Mocking the is_demisto_version_ge function
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.is_demisto_version_ge",
+                 return_value=test_id == "version_case_demisto_version_less_than_8")
+
+    # Act
+    agent = get_agent(api_key_source, platform, token)
+
+    # Assert
+    assert agent == expected_agent, f"Test failed for {test_id}"
+
+
+@pytest.mark.parametrize(
+    "platform",
+    [
+        "x2",
+        "xsoar",
+        "xsoar-hosted"
+    ]
+)
+def test_empty_api_token_with_get_license(mocker: MockerFixture, platform: str):
+    """
+    Given:
+        - command, params, platform
+    When:
+        - run main function
+    Then:
+        - Ensure that `Tim license` supported for the integration for all platforms.
+    """
+    mocker.patch.object(demisto, 'command', return_value='test-module')
+    mocker.patch.object(demisto, 'params', return_value={'server': 'https://test.com/', 'token': ''})
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.get_demisto_version", return_value={"platform": platform})
+    mock_get_license = mocker.patch.object(
+        demisto,
+        'getLicenseCustomField',
+        return_value="".join(["X" for i in range(32)])
+    )
+
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.set_http_params")
+    mocker.patch("Palo_Alto_Networks_WildFire_v2.test_module")
+    main()
+
+    mock_get_license.assert_called()

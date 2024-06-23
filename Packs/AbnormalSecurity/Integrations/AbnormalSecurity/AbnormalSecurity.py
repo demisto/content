@@ -1,5 +1,8 @@
-from CommonServerPython import *
-from typing import Dict, Any
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+
+
+from typing import Any
 import logging
 from datetime import datetime
 
@@ -27,7 +30,6 @@ ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 
 class FetchIncidentsError(Exception):
     """Raised when there's an error in fetching incidents."""
-    pass
 
 
 class Client(BaseClient):
@@ -69,8 +71,11 @@ class Client(BaseClient):
         return response
 
     def get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(self, filter_='', page_size=None, page_number=None,
-                                                                   subtenant=None):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant)
+                                                                   subtenant=None, subject=None, sender=None, recipient=None,
+                                                                   reporter=None, attackType=None, threatType=None):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, subtenant=subtenant, subject=subject,
+                               sender=sender, recipient=recipient, reporter=reporter, attackType=attackType,
+                               threatType=threatType)
 
         headers = self._headers
 
@@ -78,8 +83,11 @@ class Client(BaseClient):
 
         return response
 
-    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None):
-        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant)
+    def get_a_list_of_threats_request(self, filter_='', page_size=None, page_number=None, source=None, subtenant=None,
+                                      subject=None, sender=None, recipient=None, topic=None, attackType=None, attackVector=None):
+        params = assign_params(filter=filter_, pageSize=page_size, pageNumber=page_number, source=source, subtenant=subtenant,
+                               subject=subject, sender=sender, recipient=recipient, topic=topic, attackType=attackType,
+                               attackVector=attackVector)
 
         headers = self._headers
 
@@ -89,7 +97,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_a_threat_request(self, threat_id, subtenant):
+    def get_details_of_a_threat_request(self, threat_id, subtenant=None):
         headers = self._headers
         params = assign_params(subtenant=subtenant)
 
@@ -97,7 +105,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_an_abnormal_case_request(self, case_id, subtenant):
+    def get_details_of_an_abnormal_case_request(self, case_id, subtenant=None):
         headers = self._headers
         params = assign_params(subtenant=subtenant)
 
@@ -105,7 +113,7 @@ class Client(BaseClient):
 
         return response
 
-    def get_details_of_an_abuse_mailbox_campaign_request(self, campaign_id, subtenant):
+    def get_details_of_an_abuse_mailbox_campaign_request(self, campaign_id, subtenant=None):
         headers = self._headers
         params = assign_params(subtenant=subtenant)
 
@@ -335,8 +343,15 @@ def get_a_list_of_campaigns_submitted_to_abuse_mailbox_command(client, args):
     page_size = args.get('page_size', None)
     page_number = args.get('page_number', None)
     subtenant = args.get('subtenant', None)
+    subject = args.get('subject', None)
+    sender = args.get('sender', None)
+    recipient = args.get('recipient', None)
+    reporter = args.get('reporter', None)
+    attackType = args.get('attackType', None)
+    threatType = args.get('threatType', None)
 
-    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(filter_, page_size, page_number, subtenant)
+    response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
+        filter_, page_size, page_number, subtenant, subject, sender, recipient, reporter, attackType, threatType)
     markdown = tableToMarkdown('Campaign IDs', response.get('campaigns', []), headers=['campaignId'], removeNull=True)
 
     command_results = CommandResults(
@@ -356,8 +371,15 @@ def get_a_list_of_threats_command(client, args):
     page_number = args.get('page_number', None)
     source = str(args.get('source', ''))
     subtenant = args.get('subtenant', None)
+    subject = args.get('subject', None)
+    sender = args.get('sender', None)
+    recipient = args.get('recipient', None)
+    topic = args.get('topic', None)
+    attackType = args.get('attackType', None)
+    attackVector = args.get('attackVector', None)
 
-    response = client.get_a_list_of_threats_request(filter_, page_size, page_number, source, subtenant)
+    response = client.get_a_list_of_threats_request(
+        filter_, page_size, page_number, source, subtenant, subject, sender, recipient, topic, attackType, attackVector)
     markdown = tableToMarkdown('Threat IDs', response.get('threats'), headers=['threatId'], removeNull=True)
     command_results = CommandResults(
         readable_output=markdown,
@@ -455,7 +477,7 @@ def get_details_of_an_abuse_mailbox_campaign_command(client, args):
 
     response = client.get_details_of_an_abuse_mailbox_campaign_request(campaign_id, subtenant)
     command_results = CommandResults(
-        outputs_prefix='AbnormalSecurity.AbuseCampaign.campaigns',
+        outputs_prefix='AbnormalSecurity.AbuseCampaign',
         outputs_key_field='campaignId',
         outputs=response,
         raw_response=response
@@ -611,7 +633,7 @@ def submit_an_inquiry_to_request_a_report_on_misjudgement_by_abnormal_security_c
 
 
 def submit_false_negative_report_command(client, args):
-    recipient_email = str(args.get('recipient_email;', ''))
+    recipient_email = str(args.get('recipient_email', ''))
     sender_email = str(args.get('sender_email', ''))
     subject = str(args.get('subject', ''))
     response = client.submit_false_negative_report_request(recipient_email, sender_email, subject)
@@ -624,7 +646,7 @@ def submit_false_negative_report_command(client, args):
 
 
 def submit_false_positive_report_command(client, args):
-    portal_link = str(args.get('portal_link;', ''))
+    portal_link = str(args.get('portal_link', ''))
     response = client.submit_false_positive_report_request(portal_link)
     command_results = CommandResults(
         readable_output=response,
@@ -730,36 +752,46 @@ def get_a_list_of_unanalyzed_abuse_mailbox_campaigns_command(client, args):
     return command_results
 
 
-def generate_threat_incidents(threats, current_iso_format_time):
+def generate_threat_incidents(client, threats):
     incidents = []
     for threat in threats:
-        incident = {"dbotMirrorId": str(threat["threatId"]), "name": "Threat", "occurred": current_iso_format_time,
-                    'details': "Threat"}
+        threat_details = client.get_details_of_a_threat_request(threat["threatId"])
+        incident = {
+            "dbotMirrorId": str(threat["threatId"]),
+            "name": "Threat",
+            "occurred": threat_details["messages"][0].get("receivedTime"),
+            "details": "Threat",
+            "rawJSON": json.dumps(threat_details) if threat_details else {}
+        }
         incidents.append(incident)
     return incidents
 
 
-def generate_abuse_campaign_incidents(campaigns, current_iso_format_time):
+def generate_abuse_campaign_incidents(client, campaigns):
     incidents = []
     for campaign in campaigns:
-        incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign", "occurred": current_iso_format_time,
-                    'details': "Abuse Campaign"}
+        campaign_details = client.get_details_of_an_abuse_mailbox_campaign_request(campaign["campaignId"])
+        incident = {"dbotMirrorId": str(campaign["campaignId"]), "name": "Abuse Campaign",
+                    "occurred": campaign_details["firstReported"], 'details': "Abuse Campaign",
+                    "rawJSON": json.dumps(campaign_details) if campaign_details else {}}
         incidents.append(incident)
     return incidents
 
 
-def generate_account_takeover_cases_incidents(cases, current_iso_format_time):
+def generate_account_takeover_cases_incidents(client, cases):
     incidents = []
     for case in cases:
-        incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case", "occurred": current_iso_format_time,
-                    'details': case['description']}
+        case_details = client.get_details_of_an_abnormal_case_request(case["caseId"])
+        incident = {"dbotMirrorId": str(case["caseId"]), "name": "Account Takeover Case",
+                    "occurred": case_details["firstObserved"], 'details': case['description'],
+                    "rawJSON": json.dumps(case_details) if case_details else {}}
         incidents.append(incident)
     return incidents
 
 
 def fetch_incidents(
         client: Client,
-        last_run: Dict[str, Any],
+        last_run: dict[str, Any],
         first_fetch_time: str,
         fetch_threats: bool,
         fetch_abuse_campaigns: bool,
@@ -791,21 +823,20 @@ def fetch_incidents(
         if fetch_threats:
             threats_filter = f"receivedTime gte {last_fetch}"
             threats_response = client.get_a_list_of_threats_request(filter_=threats_filter, page_size=100)
-            all_incidents += generate_threat_incidents(threats_response.get('threats', []), current_iso_format_time)
+            all_incidents += generate_threat_incidents(client, threats_response.get('threats', []))
 
         if fetch_abuse_campaigns:
             abuse_campaigns_filter = f"lastReportedTime gte {last_fetch}"
             abuse_campaigns_response = client.get_a_list_of_campaigns_submitted_to_abuse_mailbox_request(
                 filter_=abuse_campaigns_filter, page_size=100)
-            all_incidents += generate_abuse_campaign_incidents(abuse_campaigns_response.get('campaigns', []),
-                                                               current_iso_format_time)
+            all_incidents += generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
 
         if fetch_account_takeover_cases:
             account_takeover_cases_filter = f"lastModifiedTime gte {last_fetch}"
             account_takeover_cases_response = client.get_a_list_of_abnormal_cases_identified_by_abnormal_security_request(
                 filter_=account_takeover_cases_filter, page_size=100)
             all_incidents += generate_account_takeover_cases_incidents(
-                account_takeover_cases_response.get('cases', []), current_iso_format_time)
+                client, account_takeover_cases_response.get('cases', []))
 
     except Exception as e:
         logging.error(f"Failed fetching incidents: {e}")

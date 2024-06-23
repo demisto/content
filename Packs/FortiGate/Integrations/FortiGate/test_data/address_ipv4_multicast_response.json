@@ -1,0 +1,38 @@
+{
+    "http_method": "GET",
+    "size": 2,
+    "matched_count": 2,
+    "next_idx": 1,
+    "revision": "12345",
+    "results": [
+        {
+            "name": "Lior",
+            "q_origin_key": "Lior",
+            "type": "multicastrange",
+            "start-ip": "0.0.0.0",
+            "end-ip": "0.0.0.0",
+            "comment": "",
+            "associated-interface": "",
+            "color": 0,
+            "tagging": []
+        },
+        {
+            "name": "SB",
+            "q_origin_key": "SB",
+            "type": "broadcastmask",
+            "subnet": "0.0.0.0 0.0.0.0",
+            "comment": "",
+            "associated-interface": "port7",
+            "color": 0,
+            "tagging": []
+        }
+    ],
+    "vdom": "root",
+    "path": "firewall",
+    "name": "multicast-address",
+    "status": "success",
+    "http_status": 200,
+    "serial": "12345",
+    "version": "v7.2.5",
+    "build": 1517
+}

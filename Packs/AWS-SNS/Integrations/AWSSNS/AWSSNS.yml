@@ -6,7 +6,7 @@ configuration:
 - display: AWS Default Region
   name: defaultRegion
   type: 0
-  required: false
+  required: true
 - additionalinfo: When using Access Key and Secret Key, there is no need to use Role Arn
   display: Role Arn
   name: roleArn
@@ -17,28 +17,34 @@ configuration:
   type: 0
   required: false
 - display: Access Key
-  name: access_key
+  name: credentials
   required: true
-  type: 0
-- display: Secret Key
-  name: secret_key
-  required: true
-  type: 4
+  type: 9
+  displaypassword: Secret Key
 - display: Role Session Duration
   name: sessionDuration
-  type: 0
   required: false
-- additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
-  display: Timeout
+  type: 0
+- display: Timeout
   name: timeout
   type: 0
   required: false
+  additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
 - additionalinfo: 'The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time.'
-  defaultvalue: '5'
   display: Retries
   name: retries
   type: 0
   required: false
+  defaultvalue: '5'
+- additionalinfo: 'Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.'
+  display: AWS STS Regional Endpoints
+  name: sts_regional_endpoint
+  type: 15
+  required: false
+  options:
+  - legacy
+  - regional
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -47,7 +53,7 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: Amazon Web Services Simple Notification Service (SNS)
+description: Amazon Web Services Simple Notification Service (SNS).
 display: AWS - SNS
 name: AWS - SNS
 script:
@@ -90,7 +96,7 @@ script:
       - 'False'
     - description: When specified, sends undeliverable messages to the specified Amazon SQS dead-letter queue.
       name: redrivePolicy
-    - description: 'The ARN of the IAM role that has the following: 1. Permission to write to the Kinesis Data Firehose delivery stream 2. Amazon SNS listed as a trusted entity'
+    - description: 'The ARN of the IAM role that has the following: 1. Permission to write to the Kinesis Data Firehose delivery stream 2. Amazon SNS listed as a trusted entity.'
       name: subscriptionRoleArn
     - description: The AWS Region, if not specified the default region will be used.
       name: region
@@ -104,7 +110,7 @@ script:
     name: aws-sns-create-subscription
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
-      description: The Subscription Arn
+      description: The Subscription Arn.
       type: string
   - arguments:
     - description: Token returned by the previous ListTopics request.
@@ -121,7 +127,7 @@ script:
     name: aws-sns-list-topics
     outputs:
     - contextPath: AWS.SNS.Topics.TopicArn
-      description: The Topic ARN
+      description: The Topic ARN.
       type: string
   - arguments:
     - description: The topic you want to publish to. If you don't specify a value for the TopicArn parameter, you must specify a value for the PhoneNumber or TargetArn parameters.
@@ -224,8 +230,8 @@ script:
     name: aws-sns-list-subscriptions-by-topic
     outputs:
     - contextPath: AWS.SNS.Subscriptions.SubscriptionArn
-      description: The Subscription Arn
-  dockerimage: demisto/boto3py3:1.0.0.33827
+      description: The Subscription Arn.
+  dockerimage: demisto/boto3py3:1.0.0.98039
   script: ''
   subtype: python3
   type: python

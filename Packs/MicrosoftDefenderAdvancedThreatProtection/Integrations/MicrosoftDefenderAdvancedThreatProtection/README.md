@@ -77,9 +77,9 @@ Please add the following permissions to the app registration. Choose application
     | Application redirect URI (for authorization code mode)  |                                                                                                                               | False                                    |
     | Authorization code                                      | for user-auth mode - received from the authorization step. see Detailed Instructions section                                  | False                                    |
     | Azure Managed Identities Client ID                      | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.                | UUID                                     |
-    | Status to filter out alerts for fetching as incidents   | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved.          | New,In Progress,Resolved                 |
+    | Status for fetching alerts as incidents  | The property values are, "New", "InProgress" or "Resolved". Comma-separated lists are supported, e.g., New,Resolved.          | New,In Progress,Resolved                 |
     | DetecitonSource to filter out alters for fetching as incidents.  | The property values are, "Antivirus", "CustomDetection", "CustomTI", "EDR" and "MDO". Comma-separated lists are supported, e.g., Antivirus,EDR.          | CustomDetection,EDR   |
-    | Severity to filter out alerts for fetching as incidents | The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High                              |
+    | Severity for fetching alerts as incidents| The property values are, "Informational", "Low", "Medium" and "High". Comma-separated lists are supported, e.g., Medium,High. | Medium,High                              |
     | Maximum number of incidents to fetch                    | The maximum number of incidents to retrieve per fetch.                                                                        | 50                                       |
     | Trust any Certificate (Not Secure)                      | When selected, certificates are not checked.                                                                                  | N/A                                      |
     | Fetch alert evidence                                    | When selected, fetches alerts in Microsoft Defender.                                                                          | N/A                                      |
@@ -1683,6 +1683,7 @@ Machine.ReadWrite.All
 | type | The machine action type. Possible values are: RunAntiVirusScan, Offboard, CollectInvestigationPackage, Isolate, Unisolate, StopAndQuarantineFile, RestrictCodeExecution, UnrestrictCodeExecution. | Optional | 
 | requestor | The ID of the user that executed the action, only one can be added. | Optional | 
 | limit | The maximum number of machines to return. Default is 50. | Optional | 
+| filters | String representation of filters (Override every other filters). | Optional | 
 
 #### Context Output
 
@@ -7173,3 +7174,58 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+### microsoft-atp-get-machine-by-ip
+
+***
+Find Machines seen with the requested internal IP in the time range of 15 minutes prior and after a given timestamp.
+
+#### Base Command
+
+`microsoft-atp-get-machine-by-ip`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ip | The endpoint IP address. | Required | 
+| timestamp | The timestamp in witch the machines were seen with the internal ip address, 15 minutes before and after it. The given timestamp must be in the past 30 days. Timestamp format example- 2019-09-22T08:44:05Z. | Required | 
+| limit | Maximum number of results to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all results. If true, the "limit" argument will be ignored. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MicrosoftATP.Machine.ID | String | The machine ID. | 
+| MicrosoftATP.Machine.ComputerDNSName | String | The machine DNS name. | 
+| MicrosoftATP.Machine.FirstSeen | Date | The first date and time the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.LastSeen | Date | The last date and time the machine was observed by Microsoft Defender ATP. | 
+| MicrosoftATP.Machine.OSPlatform | String | The operating system platform. | 
+| MicrosoftATP.Machine.OSVersion | String | The operating system version. | 
+| MicrosoftATP.Machine.OSProcessor | String | The operating system processor. | 
+| MicrosoftATP.Machine.LastIPAddress | String | The last IP on the machine. | 
+| MicrosoftATP.Machine.LastExternalIPAddress | String | The last machine IP to access the internet. | 
+| MicrosoftATP.Machine.OSBuild | Number | The operating system build number. | 
+| MicrosoftATP.Machine.HealthStatus | String | The machine health status. | 
+| MicrosoftATP.Machine.RBACGroupID | Number | The machine RBAC group ID. | 
+| MicrosoftATP.Machine.RBACGroupName | String | The machine RBAC group name. | 
+| MicrosoftATP.Machine.RiskScore | String | The machine risk score. | 
+| MicrosoftATP.Machine.ExposureLevel | String | The machine exposure score. | 
+| MicrosoftATP.Machine.IsAADJoined | Boolean | True if machine is AAD joined, False otherwise. | 
+| MicrosoftATP.Machine.AADDeviceID | String | The AAD Device ID. | 
+| MicrosoftATP.Machine.MachineTags | String | Set of machine tags. | 
+| MicrosoftATP.Machine.IPAddresses.ipAddress | String | The machine IP address. | 
+| MicrosoftATP.Machine.IPAddresses.MACAddress | String | The machine MAC address. | 
+| MicrosoftATP.Machine.IPAddresses.operationalStatus | String | The machine operational status. | 
+| MicrosoftATP.Machine.IPAddresses.type | String | The machine IP address type. | 
+| MicrosoftATP.Machine.AgentVersion | String | The machine Agent version. | 
+
+#### Command example
+```!microsoft-atp-get-machine-by-ip ip=8.8.8.8 timestamp=2024-05-23T10:15:00Z```
+#### Human Readable Output
+
+>### Microsoft Defender ATP Machine:
+>
+>|ID|ComputerDNSName|OSPlatform|LastIPAddress|LastExternalIPAddress|HealthStatus|RiskScore|ExposureLevel|
+>|---|---|---|---|---|---|---|---|
+>| f3bba49a | ec2amaz-ua9hieu | WindowsServer2016 | 1.2.3.4 | 127.0.0.1 | Active | None | High |

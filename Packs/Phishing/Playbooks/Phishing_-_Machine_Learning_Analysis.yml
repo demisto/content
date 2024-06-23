@@ -1,7 +1,7 @@
 id: Phishing - Machine Learning Analysis
 version: -1
 name: Phishing - Machine Learning Analysis
-description: Runs various machine-learning based checks on phishing emails and URLs, in an attempt to predict whether they are phishing or benign.
+description: Runs various machine-learning based checks on phishing emails and URLs, in an attempt to predict whether they are phishing or benign. This playbook is available only on Cortex XSOAR.
 starttaskid: "0"
 tasks:
   "0":
@@ -34,6 +34,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 5e4e4a8f-7beb-4747-83ad-e5cb91005f28
@@ -88,6 +89,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: 5345d43a-b025-4330-8e87-98526f3d5741
@@ -139,6 +141,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: 303ac6fb-f6e4-420f-8c61-4ce748ff84de
@@ -195,6 +198,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: cdddceeb-fc75-4a43-8cce-e0d6eb1fde3b
@@ -241,6 +245,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 72983272-0f84-40fc-847a-9eb6276f724a
@@ -271,6 +276,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
     taskid: 31000bcf-f2bf-4cc0-8764-f40671c8aa6f
@@ -301,6 +307,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "7":
     id: "7"
     taskid: fed90362-cf65-406c-8c9a-0c7f95b96e0e
@@ -322,8 +329,6 @@ tasks:
     scriptarguments:
       brandname:
         simple: Rasterize
-    results:
-    - brandInstances
     separatecontext: false
     view: |-
       {
@@ -339,6 +344,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
     taskid: 87380172-9f96-4da1-8aad-9422659e770c
@@ -380,6 +386,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "9":
     id: "9"
     taskid: 948d42a3-3fd5-4592-8da5-3c02768ca950
@@ -431,6 +438,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 8ee3c6f5-93b4-4477-8f18-f76a1e55f0eb
@@ -458,6 +466,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {
@@ -516,3 +525,8 @@ outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.1.0
+contentitemexportablefields:
+  contentitemfields: {}
+system: true
+marketplaces:
+  - xsoar

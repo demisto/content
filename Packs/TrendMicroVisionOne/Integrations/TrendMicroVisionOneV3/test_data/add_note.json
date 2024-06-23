@@ -1,0 +1,3 @@
+{
+    "Location": "{{request.baseUrl}}/v3/workbench/alerts/{{request.pathSegments.[3]}}/notes/1"
+}

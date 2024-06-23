@@ -5,6 +5,7 @@ import pytest
 input_value = json.load(open("test_data/input.json", "r"))
 params = input_value['params']
 args = input_value['args']
+args2 = input_value['args2']
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S+00:00"
 
 
@@ -25,9 +26,10 @@ def test_get_recursively():
     client = Client(params)
 
     mock_response_1 = load_json_file("test.json")
-    val = Client.get_recursively(client, mock_response_1[0][0], "value")
+    val = Client.get_recursively(client, mock_response_1[0][0]['indicators'][0], "value")
     assert isinstance(val, list)
     assert 'URL Watchlist' in val
+    assert 'http://kbjunktest.com/path' in val
 
 
 def test_build_indicators():
@@ -73,7 +75,7 @@ def test_get_taxii_invalid(mocker, capfd):
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
     with capfd.disabled():
         try:
-            val, time = Client.get_taxii(client, args)
+            val, time = Client.get_taxii(client, args2)
         except Exception as e:
             error_val = e.args[0]
 
@@ -87,7 +89,6 @@ def test_get_taxii_failure(mocker):
     mocker.patch.object(client, 'fetch', return_value=[])
     val, time = Client.get_taxii(client, args)
     assert isinstance(val, list)
-    assert time is None
     assert [] == val
 
 

@@ -53,7 +53,7 @@ script:
   commands:
   - arguments:
     - default: true
-      description: IP entities to score. (IPv4 or IPv6)
+      description: IP entities to score. (IPv4 or IPv6).
       isArray: true
       name: ip
       required: true
@@ -193,7 +193,7 @@ script:
       description: The vendor used to calculate the indicator score.
       type: String
     - contextPath: IP.Address
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: IP.ASN
       description: 'The autonomous system name for the IP address, for example: "AS8948".'
@@ -334,7 +334,7 @@ script:
       description: The name of the registrant.
       type: String
     - contextPath: Domain.WHOIS.Registrar.Name
-      description: 'The name of the registrar, for example: "GoDaddy"'
+      description: 'The name of the registrar, for example: "GoDaddy".'
       type: String
     - contextPath: Domain.Geo.Country
       description: The country in which the domain address is located.
@@ -347,7 +347,7 @@ script:
       type: String
   - arguments:
     - default: true
-      description: Hash entities to score. (MD5 or SHA1)
+      description: Hash entities to score. (MD5 or SHA1).
       isArray: true
       name: file
       required: true
@@ -385,7 +385,7 @@ script:
       description: The SHA1 hash of the file.
       type: String
   - arguments:
-    - description: IP entity to score. (IPv4 or IPv6)
+    - description: IP entity to score. (IPv4 or IPv6).
       name: ip
       required: true
     description: Scores provided IP entity's reputation in SOCRadar ThreatFusion.
@@ -612,7 +612,7 @@ script:
       description: The vendor used to calculate the indicator score.
       type: String
   - arguments:
-    - description: Hash entity to score. (MD5 or SHA1)
+    - description: Hash entity to score. (MD5 or SHA1).
       name: hash
       required: true
     description: Scores provided hash entity's reputation in SOCRadar ThreatFusion.
@@ -642,7 +642,7 @@ script:
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the indicator score.
       type: String
-  dockerimage: demisto/python3:3.10.12.67728
+  dockerimage: demisto/python3:3.10.13.84405
   runonce: false
   script: '-'
   subtype: python3

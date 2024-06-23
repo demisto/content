@@ -1,0 +1,150 @@
+id: IsIntegrationAvailable - Test
+version: -1
+name: IsIntegrationAvailable - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 7786e292-6dce-4748-8730-eb212075a38e
+    type: start
+    task:
+      id: 7786e292-6dce-4748-8730-eb212075a38e
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d7c651dc-314c-407c-8325-96f56a1cc586
+    type: condition
+    task:
+      id: d7c651dc-314c-407c-8325-96f56a1cc586
+      version: -1
+      name: IsIntegrationAvailable - FCM or Rasterize - Yes
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: fcm,rasterize
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: a52b1ea9-0111-45e8-8dfa-298e80c0bb33
+    type: condition
+    task:
+      id: a52b1ea9-0111-45e8-8dfa-298e80c0bb33
+      version: -1
+      name: IsIntegrationAvailable - Something - No
+      description: Returns 'yes' if integration brand is available. Otherwise returns 'no'.
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "3"
+    scriptarguments:
+      brandname:
+        simple: something
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: f8e706df-2d0f-408e-8689-b24c1ff5c27e
+    type: title
+    task:
+      id: f8e706df-2d0f-408e-8689-b24c1ff5c27e
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 385,
+        "width": 810,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0
+description: Test for IsIntegrationAvailable automation

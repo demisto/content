@@ -62,15 +62,15 @@ tasks:
       '#none#':
       - "16"
       - "18"
-      - "19"
       - "20"
       - "30"
       - "40"
+      - "19"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 1480,
+          "x": 1330,
           "y": 410
         }
       }
@@ -145,7 +145,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1090
+          "y": 1030
         }
       }
     note: false
@@ -174,6 +174,21 @@ tasks:
       "yes":
       - "9"
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 1220,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
     conditions:
     - label: "yes"
       condition:
@@ -198,27 +213,12 @@ tasks:
             value:
               simple: active
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 950,
-          "y": 710
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 79f17c3a-2456-47d9-8e68-cc3d84ef01bd
+    taskid: 5e114375-db3d-4267-8f4d-0a411d4bb076
     type: regular
     task:
-      id: 79f17c3a-2456-47d9-8e68-cc3d84ef01bd
+      id: 5e114375-db3d-4267-8f4d-0a411d4bb076
       version: -1
       name: Get host information from Carbon Black Enterprise Response
       description: List the CarbonBlack sensors
@@ -238,18 +238,21 @@ tasks:
       id:
         complex:
           root: inputs.EndpointID
+          transformers:
+          - operator: uniq
       ip:
         complex:
           root: inputs.IPAddress
+          transformers:
+          - operator: uniq
     reputationcalc: 1
     continueonerror: true
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1110,
-          "y": 890
+          "x": 1410,
+          "y": 860
         }
       }
     note: false
@@ -259,6 +262,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "10":
     id: "10"
     taskid: 42f088e2-cb74-485a-8318-0dae68cde0f0
@@ -277,6 +281,21 @@ tasks:
       "yes":
       - "38"
     separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 2300,
+          "y": 690
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+    continueonerrortype: ""
     conditions:
     - label: "yes"
       condition:
@@ -301,21 +320,6 @@ tasks:
             value:
               simple: active
           ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 2460,
-          "y": 720
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "16":
     id: "16"
     taskid: d9d617d9-2efd-466e-8ce7-190f8db83b95
@@ -335,8 +339,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 575
+          "x": 680,
+          "y": 550
         }
       }
     note: false
@@ -366,8 +370,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 950,
-          "y": 575
+          "x": 1220,
+          "y": 550
         }
       }
     note: false
@@ -397,8 +401,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 575
+          "x": 270,
+          "y": 550
         }
       }
     note: false
@@ -428,8 +432,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2460,
-          "y": 575
+          "x": 2300,
+          "y": 550
         }
       }
     note: false
@@ -487,8 +491,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
-          "y": 710
+          "x": -180,
+          "y": 690
         }
       }
     note: false
@@ -507,7 +511,8 @@ tasks:
       id: 23c75906-3b4e-42e8-8e32-c883d5f06fb3
       version: -1
       name: Get host information from Active Directory
-      description: Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
+      description: |-
+        Retrieves detailed information about a computer account. The computer can be specified by name, email address, or as an Active Directory Distinguished Name (DN). If no filters are provided, all computers are returned.
       script: '|||ad-get-computer'
       type: regular
       iscommand: true
@@ -526,8 +531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -430,
-          "y": 890
+          "x": -370,
+          "y": 860
         }
       }
     note: false
@@ -557,8 +562,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -240,
-          "y": 580
+          "x": -180,
+          "y": 550
         }
       }
     note: false
@@ -600,8 +605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1480,
-          "y": 710
+          "x": 270,
+          "y": 690
         }
       }
     note: false
@@ -631,8 +636,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1940,
-          "y": 575
+          "x": 1760,
+          "y": 550
         }
       }
     note: false
@@ -687,8 +692,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1940,
-          "y": 710
+          "x": 1760,
+          "y": 690
         }
       }
     note: false
@@ -701,10 +706,10 @@ tasks:
     continueonerrortype: ""
   "32":
     id: "32"
-    taskid: 344e1330-e5f8-4292-83df-7a4fba147ebf
+    taskid: 641ba126-c256-4fc1-8631-9bdefec7e6f1
     type: regular
     task:
-      id: 344e1330-e5f8-4292-83df-7a4fba147ebf
+      id: 641ba126-c256-4fc1-8631-9bdefec7e6f1
       version: -1
       name: Get host information from ExtraHop Reveal(x)
       description: Search for devices in ExtraHop Reveal(x).
@@ -716,18 +721,22 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      ip:
-        complex:
-          root: inputs.IPAddress
       name:
         complex:
           root: inputs.Hostname
+          transformers:
+          - operator: uniq
+      ip:
+        complex:
+          root: inputs.IPAddress
+          transformers:
+          - operator: uniq
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 2100,
-          "y": 890
+          "x": 1950,
+          "y": 860
         }
       }
     note: false
@@ -740,13 +749,13 @@ tasks:
     continueonerrortype: ""
   "33":
     id: "33"
-    taskid: cb25c554-4bce-4f19-8bf1-974a6a51c57d
+    taskid: bf7d9316-446b-452b-843a-3e5a13b8b741
     type: condition
     task:
-      id: cb25c554-4bce-4f19-8bf1-974a6a51c57d
+      id: bf7d9316-446b-452b-843a-3e5a13b8b741
       version: -1
       name: is Mcafee ePolicy Orchestrator v2 enabled
-      description: "Gets a value and returns it. This is to be used in playbook conditional tasks - get a value from alert field, label or context, and act accordingly. \nIf an array is returned. the first value will be the decision making value."
+      description: "Checks if there is an active Mcafee ePolicy Orchestrator v2 integration instance enabled."
       type: condition
       iscommand: false
       brand: ""
@@ -786,8 +795,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 430,
-          "y": 710
+          "x": 680,
+          "y": 690
         }
       }
     note: false
@@ -800,10 +809,10 @@ tasks:
     continueonerrortype: ""
   "34":
     id: "34"
-    taskid: 968db0d2-282a-4a9b-8071-39de4a0b5b09
+    taskid: fdd8e9dc-984d-4b58-828e-faa525abc1a3
     type: regular
     task:
-      id: 968db0d2-282a-4a9b-8071-39de4a0b5b09
+      id: fdd8e9dc-984d-4b58-828e-faa525abc1a3
       version: -1
       name: Get- host information from McAfee ePO v2
       description: Finds systems in the McAfee ePO system tree.
@@ -818,14 +827,16 @@ tasks:
       searchText:
         complex:
           root: inputs.Hostname
+          transformers:
+          - operator: uniq
       verbose:
         simple: "false"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 580,
-          "y": 890
+          "x": 870,
+          "y": 860
         }
       }
     note: false
@@ -837,130 +848,136 @@ tasks:
     isautoswitchedtoquietmode: false
     continueonerrortype: ""
   "35":
+    continueonerrortype: ""
     id: "35"
-    taskid: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
-    type: title
-    task:
-      id: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
-      version: -1
-      name: Endpoint Reputation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "36"
+    note: false
+    quietmode: 0
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
+      iscommand: false
+      name: Endpoint Reputation
+      type: title
+      version: -1
+      description: ''
+    taskid: f2dbaff5-7c92-47ad-80cc-991bfd80ff98
+    timertriggers: []
+    type: title
     view: |-
       {
         "position": {
-          "x": -790,
-          "y": 580
+          "x": -730,
+          "y": 550
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "36":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.UseReputationCommand
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
     id: "36"
-    taskid: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
-    type: condition
-    task:
-      id: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
-      version: -1
-      name: Should use !endpoint command?
-      description: Check if should run endpoint reputation command
-      type: condition
-      iscommand: false
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#default#':
       - "4"
       "yes":
       - "37"
+    note: false
+    quietmode: 0
     separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.UseReputationCommand
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
+      iscommand: false
+      name: Should use !endpoint command?
+      description: Check if should run endpoint reputation command
+      type: condition
+      version: -1
+    taskid: 50fed99c-1eb9-4a6f-85d0-f9d5ee74bc5a
+    timertriggers: []
+    type: condition
     view: |-
       {
         "position": {
-          "x": -790,
-          "y": 720
+          "x": -730,
+          "y": 690
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "37":
+    continueonerrortype: ""
     id: "37"
-    taskid: fa1f603c-6fd1-4351-8741-59e7735c0429
-    type: regular
-    task:
-      id: fa1f603c-6fd1-4351-8741-59e7735c0429
-      version: -1
-      name: Check Reputation
-      description: Returns information about an endpoint.
-      script: '|||endpoint'
-      type: regular
-      iscommand: true
-      brand: ""
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
     nexttasks:
       '#none#':
       - "4"
+    note: false
+    quietmode: 0
     scriptarguments:
       hostname:
         complex:
           root: inputs.Hostname
+          transformers:
+          - operator: uniq
       id:
         complex:
           root: inputs.EndpointID
+          transformers:
+          - operator: uniq
       ip:
         complex:
           root: inputs.IPAddress
+          transformers:
+          - operator: uniq
     separatecontext: false
-    continueonerrortype: ""
+    skipunavailable: true
+    task:
+      brand: ""
+      description: Returns information about an endpoint.
+      id: 32b679b9-f8fc-4beb-8455-8ed5642c583a
+      iscommand: true
+      name: Check Reputation
+      script: '|||endpoint'
+      type: regular
+      version: -1
+    taskid: 32b679b9-f8fc-4beb-8455-8ed5642c583a
+    timertriggers: []
+    type: regular
     view: |-
       {
         "position": {
-          "x": -1000,
-          "y": 890
+          "x": -920,
+          "y": 860
         }
       }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: d61c7516-0a1b-4bce-8d01-489c74d9d260
+    taskid: 37d0e116-73c9-42ff-865d-319ae727a315
     type: regular
     task:
-      id: d61c7516-0a1b-4bce-8d01-489c74d9d260
+      id: 37d0e116-73c9-42ff-865d-319ae727a315
       version: -1
       name: Crowdstrike Search device
       description: Searches for a device that matches the query.
@@ -975,16 +992,20 @@ tasks:
       hostname:
         complex:
           root: inputs.Hostname
+          transformers:
+          - operator: uniq
       ids:
         complex:
           root: inputs.EndpointID
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 2630,
-          "y": 890
+          "x": 2480,
+          "y": 860
         }
       }
     note: false
@@ -1041,8 +1062,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3140,
-          "y": 720
+          "x": 2840,
+          "y": 690
         }
       }
     note: false
@@ -1073,8 +1094,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3460,
-          "y": 570
+          "x": 3180,
+          "y": 550
         }
       }
     note: false
@@ -1086,10 +1107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: e9a3bc82-f45c-41af-83d8-c0abc2f61a1c
+    taskid: c0e98160-b819-4b3e-82d7-0af4bdca7ea4
     type: regular
     task:
-      id: e9a3bc82-f45c-41af-83d8-c0abc2f61a1c
+      id: c0e98160-b819-4b3e-82d7-0af4bdca7ea4
       version: -1
       name: Cortex XDR Search device
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
@@ -1121,8 +1142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3310,
-          "y": 890
+          "x": 3030,
+          "y": 860
         }
       }
     note: false
@@ -1134,10 +1155,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7036bd6a-33c9-44da-8087-f9b8173cdbe4
+    taskid: c62d0cd0-fee1-4a0d-83ab-8386fb5fc485
     type: regular
     task:
-      id: 7036bd6a-33c9-44da-8087-f9b8173cdbe4
+      id: c62d0cd0-fee1-4a0d-83ab-8386fb5fc485
       version: -1
       name: Cortex XDR get endpoint risk score
       description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
@@ -1159,8 +1180,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 3710,
-          "y": 890
+          "x": 3420,
+          "y": 860
         }
       }
     note: false
@@ -1172,13 +1193,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 180545ff-78b8-4227-82ac-87e2855d8539
+    taskid: adb8d36c-cdb3-4676-8d4a-da7fbc43188c
     type: condition
     task:
-      id: 180545ff-78b8-4227-82ac-87e2855d8539
+      id: adb8d36c-cdb3-4676-8d4a-da7fbc43188c
       version: -1
       name: Is Cortex Core - IR integration enabled?
-      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      description: Checks if there is an active instance of the Cortex Core integration enabled.
       scriptName: IsIntegrationAvailable
       type: condition
       iscommand: false
@@ -1192,15 +1213,13 @@ tasks:
     scriptarguments:
       brandname:
         simple: Cortex Core - IR
-    results:
-    - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 4220,
-          "y": 720
+          "x": 3780,
+          "y": 690
         }
       }
     note: false
@@ -1212,10 +1231,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 6592c599-a3b8-4ce3-8840-b0077e5602ac
+    taskid: d40cb403-a862-4705-88a0-a1cde3679f83
     type: regular
     task:
-      id: 6592c599-a3b8-4ce3-8840-b0077e5602ac
+      id: d40cb403-a862-4705-88a0-a1cde3679f83
       version: -1
       name: Core IR Search device
       description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
@@ -1247,8 +1266,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4220,
-          "y": 890
+          "x": 3970,
+          "y": 860
         }
       }
     note: false
@@ -1285,8 +1304,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 4730,
-          "y": 890
+          "x": 4360,
+          "y": 860
         }
       }
     note: false
@@ -1310,27 +1329,28 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "10_4_#default#": 0.12,
+      "10_4_#default#": 0.1,
       "22_23_yes": 0.43,
       "22_4_#default#": 0.2,
       "31_32_yes": 0.64,
-      "31_4_#default#": 0.12,
+      "31_4_#default#": 0.1,
       "33_34_yes": 0.64,
-      "33_4_#default#": 0.2,
+      "33_4_#default#": 0.1,
       "36_37_yes": 0.49,
-      "36_4_#default#": 0.13,
+      "36_4_#default#": 0.1,
       "39_4_#default#": 0.1,
       "3_1_yes": 0.3,
       "3_24_yes": 0.41,
       "3_4_#default#": 0.12,
-      "8_4_#default#": 0.13,
+      "43_4_#default#": 0.1,
+      "8_4_#default#": 0.1,
       "8_9_yes": 0.62
     },
     "paper": {
       "dimensions": {
-        "height": 1075,
-        "width": 6110,
-        "x": -1000,
+        "height": 1015,
+        "width": 5660,
+        "x": -920,
         "y": 80
       }
     }
@@ -1359,12 +1379,22 @@ inputs:
   key: IPAddress
   playbookInputQuery:
   required: false
-  value: {}
+  value:
+    complex:
+      root: Endpoint
+      accessor: IPAddress
+      transformers:
+      - operator: uniq
 - description: The endpoint ID of the endpoint to enrich.
   key: EndpointID
   playbookInputQuery:
   required: false
-  value: {}
+  value:
+    complex:
+      root: Endpoint
+      accessor: ID
+      transformers:
+      - operator: uniq
 outputs:
 - contextPath: Endpoint
   description: The endpoint object of the endpoint that was enriched.
@@ -1842,6 +1872,116 @@ outputs:
   description: The incident status.
 - contextPath: Core.RiskyHost.reasons.points
   description: The score.
+- contextPath: McAfee.ePO.Endpoint.ParentID
+  description: Endpoint parent ID.
+- contextPath: McAfee.ePO.Endpoint.ComputerName
+  description: Endpoint computer name.
+- contextPath: McAfee.ePO.Endpoint.Description
+  description: Endpoint description.
+- contextPath: McAfee.ePO.Endpoint.SystemDescription
+  description: Endpoint system description.
+- contextPath: McAfee.ePO.Endpoint.TimeZone
+  description: Endpoint time zone.
+- contextPath: McAfee.ePO.Endpoint.DefaultLangID
+  description: Endpoint default language ID.
+- contextPath: McAfee.ePO.Endpoint.UserName
+  description: Endpoint username.
+- contextPath: McAfee.ePO.Endpoint.Domain
+  description: Endpoint domain name.
+- contextPath: McAfee.ePO.Endpoint.Hostname
+  description: Endpoint IP host name.
+- contextPath: McAfee.ePO.Endpoint.IPV6
+  description: Endpoint IPv6 address.
+- contextPath: McAfee.ePO.Endpoint.IPAddress
+  description: Endpoint IP address.
+- contextPath: McAfee.ePO.Endpoint.IPSubnet
+  description: Endpoint IP subnet.
+- contextPath: McAfee.ePO.Endpoint.IPSubnetMask
+  description: Endpoint IP subnet mask.
+- contextPath: McAfee.ePO.Endpoint.IPV4x
+  description: Endpoint IPV4x address.
+- contextPath: McAfee.ePO.Endpoint.IPXAddress
+  description: Endpoint IPX address.
+- contextPath: McAfee.ePO.Endpoint.SubnetAddress
+  description: Endpoint subnet address.
+- contextPath: McAfee.ePO.Endpoint.SubnetMask
+  description: Endpoint subnet mask.
+- contextPath: McAfee.ePO.Endpoint.NetAddress
+  description: Endpoint net address.
+- contextPath: McAfee.ePO.Endpoint.OSType
+  description: Endpoint OS type.
+- contextPath: McAfee.ePO.Endpoint.OSVersion
+  description: Endpoint OS version.
+- contextPath: McAfee.ePO.Endpoint.OSServicePackVer
+  description: Endpoint OS service pack version.
+- contextPath: McAfee.ePO.Endpoint.OSBuildNum
+  description: Endpoint OS build number.
+- contextPath: McAfee.ePO.Endpoint.OSPlatform
+  description: Endpoint OS platform.
+- contextPath: McAfee.ePO.Endpoint.OSOEMID
+  description: Endpoint OS OEM ID.
+- contextPath: McAfee.ePO.Endpoint.Processor
+  description: Endpoint CPU type.
+- contextPath: McAfee.ePO.Endpoint.CPUSpeed
+  description: Endpoint CPU speed.
+- contextPath: McAfee.ePO.Endpoint.Processors
+  description: Number of CPUs in the endpoint.
+- contextPath: McAfee.ePO.Endpoint.CPUSerialNum
+  description: Endpoint CPU serial number.
+- contextPath: McAfee.ePO.Endpoint.Memory
+  description: The total amount of physical memory in the endpoint.
+- contextPath: McAfee.ePO.Endpoint.FreeMemory
+  description: The amount of free memory in the endpoint.
+- contextPath: McAfee.ePO.Endpoint.FreeDiskSpace
+  description: The amount of free disk space in the endpoint.
+- contextPath: McAfee.ePO.Endpoint.TotalDiskSpace
+  description: The total amount of disk space in the endpoint.
+- contextPath: McAfee.ePO.Endpoint.UserProperty1
+  description: Endpoint user property 1.
+- contextPath: McAfee.ePO.Endpoint.UserProperty2
+  description: Endpoint user property 2.
+- contextPath: McAfee.ePO.Endpoint.UserProperty3
+  description: Endpoint user property 3.
+- contextPath: McAfee.ePO.Endpoint.UserProperty4
+  description: Endpoint user property 4.
+- contextPath: McAfee.ePO.Endpoint.SysvolFreeSpace
+  description: The amount of system volume free space in the endpoint.
+- contextPath: McAfee.ePO.Endpoint.SysvolTotalSpace
+  description: The total amount of system volume space in the endpoint.
+- contextPath: McAfee.ePO.Endpoint.Tags
+  description: Endpoint ePO tags.
+- contextPath: McAfee.ePO.Endpoint.ExcludedTags
+  description: Endpoint EPO excluded tags.
+- contextPath: McAfee.ePO.Endpoint.LastUpdate
+  description: The date the endpoint was last updated.
+- contextPath: McAfee.ePO.Endpoint.ManagedState
+  description: Endpoint managed state.
+- contextPath: McAfee.ePO.Endpoint.AgentGUID
+  description: Endpoint agent GUID.
+- contextPath: McAfee.ePO.Endpoint.AgentVersion
+  description: Endpoint agent version.
+- contextPath: McAfee.ePO.Endpoint.AutoID
+  description: Endpoint auto ID.
+- contextPath: CrowdStrike.Device.ID
+  description: The ID of the device.
+- contextPath: CrowdStrike.Device.LocalIP
+  description: The local IP address of the device.
+- contextPath: CrowdStrike.Device.ExternalIP
+  description: The external IP address of the device.
+- contextPath: CrowdStrike.Device.Hostname
+  description: The host name of the device.
+- contextPath: CrowdStrike.Device.OS
+  description: The operating system of the device.
+- contextPath: CrowdStrike.Device.MacAddress
+  description: The MAC address of the device.
+- contextPath: CrowdStrike.Device.FirstSeen
+  description: The first time the device was seen.
+- contextPath: CrowdStrike.Device.LastSeen
+  description: The last time the device was seen.
+- contextPath: CrowdStrike.Device.PolicyType
+  description: The policy type of the device.
+- contextPath: CrowdStrike.Device.Status
+  description: The device status.
 tests:
 - Endpoint Enrichment - Generic v2.1.6.8 - Test
 fromversion: 6.8.0

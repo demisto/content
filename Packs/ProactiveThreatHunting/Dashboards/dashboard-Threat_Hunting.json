@@ -1,0 +1,518 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Threat Hunting",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "9c1c65f0-050b-11ee-8890-e7fa67c22acb",
+            "id": "9c1c65f0-050b-11ee-8890-e7fa67c22acb",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "391b3dce-2c2a-4f2d-8bb9-a34873ff9223",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-06-07T08:16:29.933539185Z",
+                "name": "Most Common Suspicious Tool Usage",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "toolusagefound"
+                    ],
+                    "showOthers": true,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Most Common Suspicious Tool Usage",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Proactive Threat Hunting\" -toolusagefound:\"\"",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "cf12a9b0-050b-11ee-8890-e7fa67c22acb",
+            "id": "cf12a9b0-050b-11ee-8890-e7fa67c22acb",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d21cf6af-032d-4dd2-8621-cd2256d7c1b5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-06-07T08:17:55.628199525Z",
+                "name": "Top Users Involved In Suspicious Activity",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "affectedusers"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Top Hunten Attack Patterns",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Proactive Threat Hunting\" -affectedusers:\"\"",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 8,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "f2cf38f0-050b-11ee-8890-e7fa67c22acb",
+            "id": "f2cf38f0-050b-11ee-8890-e7fa67c22acb",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 30,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "38e7fad3-7aed-41a7-8fbd-faa73de440b5",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-06-07T08:18:55.625697851Z",
+                "name": "Latest Threat Hunting Sessions",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "enablePagination": true,
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "id",
+                            "width": 110
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name",
+                            "width": 300
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "status",
+                            "width": 80
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "occurred",
+                            "width": 200
+                        }
+                    ]
+                },
+                "prevName": "Latest Threat Hunting Sessions",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:\"Proactive Threat Hunting\"",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "sort": [
+                    {
+                        "asc": false,
+                        "field": "id",
+                        "fieldType": ""
+                    }
+                ],
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "8fcbf940-050c-11ee-8890-e7fa67c22acb",
+            "id": "8fcbf940-050c-11ee-8890-e7fa67c22acb",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "0001-01-01T00:00:00Z",
+                "name": "SDO Used In Hunting Sessions",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "indicator_type",
+                            "position": 1,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "value",
+                            "position": 2,
+                            "width": 300
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "score",
+                            "position": 4,
+                            "width": 120
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "firstSeen",
+                            "position": 5,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "lastSeen",
+                            "position": 6,
+                            "width": 275
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "timestamp",
+                            "position": 8,
+                            "width": 190
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "relatedIncCount",
+                            "position": 9,
+                            "width": 150
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceBrands",
+                            "position": 12,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "sourceInstances",
+                            "position": 13,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expirationStatus",
+                            "position": 14,
+                            "width": 175
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "expiration",
+                            "position": 15,
+                            "width": 190
+                        }
+                    ]
+                },
+                "prevName": "",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "incident.type:\"Proactive Threat Hunting\" AND (type:Campaign or type:\"Intrusion Set\" or type:\"Threat Actor\" or type:Malware)",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "table"
+            },
+            "x": 8,
+            "y": 3
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "295bbda0-051e-11ee-b130-6992e92c4ea8",
+            "id": "295bbda0-051e-11ee-b130-6992e92c4ea8",
+            "reflectDimensions": true,
+            "w": 8,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "81242adf-2860-4155-8a3a-bd8707ec7611",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-06-07T10:29:17.426061511Z",
+                "name": "Threat Hunting Sessions Executed",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Total count of Threat Hunting Session Executed",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "tags:\"Threat Hunting\"",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 2
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "73b93760-051e-11ee-b130-6992e92c4ea8",
+            "id": "73b93760-051e-11ee-b130-6992e92c4ea8",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "e9bde988-e523-40bc-837d-62c0aab15755",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-06-07T10:31:22.21854112Z",
+                "name": "Hosts Contains Suspicious Results",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "affectedhosts"
+                    ],
+                    "showOthers": true,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Hosts Contains Suspicious Results",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "tags:\"Threat Hunting\" -affectedhosts:\"\"",
+                "shouldCommit": false,
+                "size": 5,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "7f3c1370-05e4-11ee-bc53-7b0c7e963407",
+            "id": "7f3c1370-05e4-11ee-bc53-7b0c7e963407",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "created": "0001-01-01T00:00:00Z",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "aa5930da-310d-4bc5-8115-4c77d0be8b79",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-06-08T10:08:56.416795659Z",
+                "name": "Malicious Indicators Found During a Hunt",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Malicious Indicators Found During a Hunt",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "tags:\"Hunting Session - Exist In Environment\"",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 8,
+            "y": 2
+        }
+    ],
+    "name": "Threat Hunting",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": null,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.9.0",
+    "description": "",
+    "isPredefined": true
+}

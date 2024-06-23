@@ -808,7 +808,7 @@ script:
       name: rows
     - description: The first row to use for pagination.
       name: start
-    - description: 'The time window in which to restrict the search to match using device_timestamp as the reference. The window value will take priority over the start and end times if provided. For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp'
+    - description: 'The time window in which to restrict the search to match using device_timestamp as the reference. The window value will take priority over the start and end times if provided. For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp.'
       name: time_range
     description: 'Creates an enriched events search job. The results for the search job may be requested using the returned job ID. At least one of the arguments (not including: rows, start, time_range) is required).'
     name: cbd-find-events
@@ -1357,7 +1357,7 @@ script:
       - MONITORED
     - description: The device ID.
       name: device_id
-    - description: 'The time of the first event associated with the alert. The syntax is  {"start": "<dateTime>", "range": "<string>", "end": "<dateTime>" }. For example: { "start": "2010-09-25T00:10:50.277Z", "end": "2015-01-20T10:40:00.00Z"}'
+    - description: 'The time of the first event associated with the alert. The syntax is  {"start": "<dateTime>", "range": "<string>", "end": "<dateTime>" }. For example: { "start": "2010-09-25T00:10:50.277Z", "end": "2015-01-20T10:40:00.00Z"}.'
       name: first_event_time
     - description: The policy ID.
       name: policy_id
@@ -1567,7 +1567,7 @@ script:
     - contextPath: CarbonBlackDefense.Alert.policy_applied
       description: Whether a policy was applied. (APPLIED, NOT_APPLIED).
       type: String
-  dockerimage: demisto/python3:3.10.13.72123
+  dockerimage: demisto/python3:3.10.13.83255
   isfetch: true
   runonce: false
   script: '-'

@@ -547,6 +547,116 @@
                 }
             }
         },
+        "CrowdStrike Falcon Mobile Detection": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Agent ID": {
+					"simple": "agent_id"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+				"CrowdStrike Falcon Detection Type": {
+					"simple": "type"
+				},
+				"CrowdStrike Falcon Firmware Build Fingerprint": {
+					"simple": "firmware_build_fingerprint"
+				},
+				"CrowdStrike Falcon Firmware Build Time": {
+					"simple": "firmware_build_time"
+				},
+				"Behaviour Objective": {
+					"simple": "objective"
+				},
+				"Behaviour Scenario": {
+					"simple": "scenario"
+				},
+				"Behaviour Tactic": {
+					"simple": "tactic"
+				},
+				"CrowdStrike Falcon Mobile Manufacturer": {
+					"simple": "mobile_manufacturer"
+				},
+				"CrowdStrike Falcon Mobile Product": {
+					"simple": "mobile_product"
+				},
+				"CrowdStrike Falcon Mobile platform version": {
+					"simple": "platform_version"
+				},
+				"CrowdStrike Falcon Security patch level": {
+					"simple": "security_patch_level"
+				},
+				"Description": {
+					"simple": "description"
+				},
+				"Device Name": {
+					"simple": "computer_name"
+				},
+				"External Confidence": {
+					"simple": "confidence"
+				},
+				"Mobile Device Model": {
+					"simple": "mobile_model"
+				},
+				"OS": {
+					"simple": "platform"
+				},
+				"OS Version": {
+					"simple": "os_version"
+				},
+				"Tactic ID": {
+					"simple": "tactic_id"
+				},
+				"Technique": {
+					"simple": "technique"
+				},
+				"Technique ID": {
+					"simple": "tactic_id"
+				},
+				"Threat Name": {
+					"simple": "name"
+				},
+				"occurred": {
+					"simple": "created_timestamp"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+				"Display Name": {
+					"simple": "display_name"
+				},
+				"Email": {
+					"simple": "enrollment_email"
+				},
+				"Detection ID": {
+					"simple": "mobile_detection_id"
+				},
+				"Vendor Product": {
+					"simple": "product"
+				},
+				"Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                },
+                "name": {
+                    "simple": "composite_id"
+                }
+			}
+		},
         "dbot_classification_incident_type_all": {
             "dontMapEventToLabels": false,
             "internalMapping": {

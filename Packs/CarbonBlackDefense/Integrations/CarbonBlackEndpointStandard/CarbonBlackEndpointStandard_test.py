@@ -43,7 +43,8 @@ def test_device_search_command(mocker):
     When:
         get_devices is running
     Then:
-        Assert that the output is we are expected
+        - make sure that the output is what we expect
+        - make sure the body request is sent properly
     """
     mocker_result = {
         "results": [
@@ -56,13 +57,17 @@ def test_device_search_command(mocker):
         ]
     }
     client = create_client()
-    mocker.patch.object(client, 'get_devices', return_value=mocker_result)
+    http_request_mocker = mocker.patch.object(client, '_http_request', return_value=mocker_result)
+
     from CarbonBlackEndpointStandard import device_search_command
 
-    command_results = device_search_command(client, {'device_id': '1234', 'os': 'MAC', 'status': 'sleep'})
+    command_results = device_search_command(client, {'device_id': '1234', 'os': 'MAC', 'status': 'sleep', 'rows': '20'})
     output = command_results.to_context().get('EntryContext', {})
 
     assert output == expected_result
+    assert http_request_mocker.call_args.kwargs["json_data"] == {
+        'criteria': {'id': ['1234'], 'status': ['sleep'], 'os': ['MAC']}, 'rows': 20
+    }
 
 
 def test_find_events_command(mocker):

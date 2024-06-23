@@ -3,9 +3,11 @@ from ReversingLabsTitaniumCloudv2 import file_reputation_output, av_scanners_out
     rha1_analytics_output, uri_statistics_output, url_report_output, imphash_similarity_output, classification_to_score, \
     analyze_url_output, detonate_sample_output, yara_matches_feed_output, yara_retro_matches_feed_output, \
     functional_similarity_output, uri_index_output, advanced_search_output, expression_search_output, \
-    dynamic_analysis_results_output, certificate_analytics_output, reanalyze_sample_output, url_downloaded_files_output, \
+    sample_dynamic_analysis_results_output, certificate_analytics_output, reanalyze_sample_output, url_downloaded_files_output, \
     url_latest_analyses_feed_output, url_analyses_feed_from_date_output, yara_ruleset_output, yara_retro_actions_output, \
-    format_proxy
+    format_proxy, domain_report_output, domain_downloaded_files_output, domain_urls_output, domain_to_ip_output, \
+    domain_related_domains_output, ip_report_output, ip_downloaded_files_output, ip_urls_output, ip_to_domain_output, \
+    network_reputation_output, detonate_url_output, url_dynamic_analysis_results_output
 import demistomock as demisto
 import pytest
 
@@ -106,15 +108,6 @@ def test_analyze_url_output():
     assert result.to_context() == test_context
 
 
-def test_detonate_sample_output():
-    test_report = load_json("test_data/detonate_sample.json")
-    test_context = load_json("test_data/detonate_sample_context.json")
-
-    result = detonate_sample_output(response_json=test_report, sha1=sha1)
-
-    assert result.to_context() == test_context
-
-
 def test_yara_matches_feed_output():
     test_report = load_json("test_data/yara_feed.json")
     test_context = load_json("test_data/yara_feed_context.json")
@@ -165,15 +158,6 @@ def test_expression_search_output():
     test_context = load_json("test_data/expression_search_context.json")
 
     result, _ = expression_search_output(result_list=test_report)
-
-    assert result.to_context() == test_context
-
-
-def test_dynamic_analysis_results_output():
-    test_report = load_json("test_data/dynamic_results.json")
-    test_context = load_json("test_data/dynamic_results_context.json")
-
-    result, _ = dynamic_analysis_results_output(response_json=test_report, sha1=test_hash)
 
     assert result.to_context() == test_context
 
@@ -251,3 +235,134 @@ def test_format_proxy():
     correct_expected = "https://user1:pass1@proxy-address.com"
 
     assert formatted_correctly == correct_expected
+
+
+def test_domain_report_output():
+    test_report = load_json("test_data/domain_report.json")
+    test_context = load_json("test_data/domain_report_context.json")
+
+    result = domain_report_output(test_report, "bloom-artists.com")
+
+    assert result.to_context() == test_context
+
+
+def test_domain_downloaded_files_output():
+    test_report = load_json("test_data/domain_downloaded_files.json")
+    test_context = load_json("test_data/domain_downloaded_files_context.json")
+
+    result = domain_downloaded_files_output(test_report, "bloom-artists.com")
+
+    assert result.to_context() == test_context
+
+
+def test_domain_urls_output():
+    test_report = load_json("test_data/domain_urls.json")
+    test_context = load_json("test_data/domain_urls_context.json")
+
+    result = domain_urls_output(test_report, "bloom-artists.com")
+
+    assert result.to_context() == test_context
+
+
+def test_domain_to_ip_output():
+    test_report = load_json("test_data/domain_to_ip.json")
+    test_context = load_json("test_data/domain_to_ip_context.json")
+
+    result = domain_to_ip_output(test_report, "bloom-artists.com")
+
+    assert result.to_context() == test_context
+
+
+def test_domain_related_domains_output():
+    test_report = load_json("test_data/domain_related_domains.json")
+    test_context = load_json("test_data/domain_related_domains_context.json")
+
+    result = domain_related_domains_output(test_report, "smsv4.ufcfan.org")
+
+    assert result.to_context() == test_context
+
+
+def test_ip_report_output():
+    test_report = load_json("test_data/ip_report.json")
+    test_context = load_json("test_data/ip_report_context.json")
+
+    result = ip_report_output(test_report, "5.42.64.70")
+
+    assert result.to_context() == test_context
+
+
+def test_ip_downloaded_files_output():
+    test_report = load_json("test_data/ip_downloaded_files.json")
+    test_context = load_json("test_data/ip_downloaded_files_context.json")
+
+    result = ip_downloaded_files_output(test_report, "61.253.71.111")
+
+    assert result.to_context() == test_context
+
+
+def test_ip_urls_output():
+    test_report = load_json("test_data/ip_urls.json")
+    test_context = load_json("test_data/ip_urls_context.json")
+
+    result = ip_urls_output(test_report, "61.253.71.111")
+
+    assert result.to_context() == test_context
+
+
+def test_ip_to_domain_output():
+    test_report = load_json("test_data/ip_to_domain.json")
+    test_context = load_json("test_data/ip_to_domain_context.json")
+
+    result = ip_to_domain_output(test_report, "61.253.71.111")
+
+    assert result.to_context() == test_context
+
+
+def test_network_reputation_output():
+    test_report = load_json("test_data/network_reputation.json")
+    test_context = load_json("test_data/network_reputation_context.json")
+
+    result = network_reputation_output(test_report,
+                                       ["http://43.138.221.139/jquery-3.3.1.min.js", "61.253.71.111", "bloom-artists.com"]
+                                       )
+
+    assert result.to_context() == test_context
+
+
+def test_detonate_sample_output():
+    test_report = load_json("test_data/detonate_sample.json")
+    test_context = load_json("test_data/detonate_sample_context.json")
+
+    result = detonate_sample_output(response_json=test_report, sha1=test_hash)
+
+    assert result.to_context() == test_context
+
+
+def test_sample_dynamic_analysis_results_output():
+    test_report = load_json("test_data/sample_dynamic_response.json")
+    test_context = load_json("test_data/sample_dynamic_context.json")
+
+    result, _ = sample_dynamic_analysis_results_output(response_json=test_report, sha1=test_hash)
+
+    assert result.to_context() == test_context
+
+
+def test_detonate_url_output():
+    test_report = load_json("test_data/detonate_url.json")
+    test_context = load_json("test_data/detonate_url_context.json")
+
+    result = detonate_url_output(response_json=test_report, url=url2)
+
+    assert result.to_context() == test_context
+
+
+def test_url_dynamic_analysis_results_output():
+    test_report = load_json("test_data/url_dynamic_response.json")
+    test_context = load_json("test_data/url_dynamic_context.json")
+
+    result, _ = url_dynamic_analysis_results_output(
+        response_json=test_report,
+        passed_url="https://www.imdb.com/title/tt7740510/reviews?ref_=tt_urv"
+    )
+
+    assert result.to_context() == test_context

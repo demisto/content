@@ -1,4 +1,4 @@
-Loads a PDF file's content and metadata into context.
+Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 
 
 ## Script Data
@@ -18,6 +18,7 @@ Loads a PDF file's content and metadata into context.
 | entryID | The War Room entryID of the file to read. |
 | userPassword | The password for the file, if encrypted. |
 | maxImages | The maximum number of images to extract from the PDF file. |
+| unescape_url | To unescape URLs that have been escaped as part of the URLs extraction. Invalid characters will be ignored. Default is true.|
 
 ## Outputs
 ---
@@ -55,3 +56,5 @@ Loads a PDF file's content and metadata into context.
 | File.UserProperties | Indicates the presence of the structure elements that contain user properties attributes. | String |
 | File.Extension | The file's extension. | String |
 | Account.Email | The email address of the account. | String |
+| Hashes.type | The hash type extracted from the PDF file. | String |
+| Hashes.value | The hash value extracted from the PDF file. | String |

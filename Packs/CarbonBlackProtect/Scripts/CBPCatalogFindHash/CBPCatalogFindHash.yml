@@ -15,13 +15,13 @@ args:
 - name: md5
   required: true
   default: true
-  description: md5 hash to find
+  description: md5 hash to find.
 scripttarget: 0
 dependson:
   must:
   - cbp-fileCatalog-search
 timeout: 0s
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.68714
+dockerimage: demisto/python3:3.10.13.83255
 tests:
 - No test

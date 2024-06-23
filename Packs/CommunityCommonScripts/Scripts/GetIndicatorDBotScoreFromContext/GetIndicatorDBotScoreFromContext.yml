@@ -13,26 +13,26 @@ enabled: true
 args:
 - name: indicator_value
   required: true
-  description: The indicator value
+  description: The indicator value.
 outputs:
 - contextPath: FinalDBotScore.Indicator
-  description: The indicator value
+  description: The indicator value.
   type: string
 - contextPath: FinalDBotScore.Score
-  description: The indicator score
+  description: The indicator score.
   type: number
 - contextPath: FinalDBotScore.Type
-  description: The indicator type
+  description: The indicator type.
   type: string
 - contextPath: FinalDBotScore.Vendor
-  description: The source vendor of the verdict
+  description: The source vendor of the verdict.
   type: string
 - contextPath: FinalDBotScore.Reliability
-  description: The reliability of the indicator verdict
+  description: The reliability of the indicator verdict.
   type: string
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:

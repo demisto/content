@@ -14,6 +14,7 @@
 <li><strong>Source Reliability</strong>: Reliability of the source providing the intelligence data.</li>
 <li><strong>IP Threshold. Minimum score from AbuseIPDB analysis to consider the IP malicious. (&gt;20).</strong></li>
 <li><strong>Max reports age.</strong></li>
+<li><strong>Disable reputation lookups for private IP addresses</strong>: To reduce the number of lookups made to the AbuseIPDB API.</li>
 <li><strong>Disregard quota errors.</strong></li>
 </ul>
 </li>
@@ -63,6 +64,11 @@
 <td style="width: 532px;">Minimum score from AbuseIPDB to consider the IP malicious (must be greater than 20), default is 80</td>
 <td style="width: 71px;">Optional</td>
 </tr>
+<tr>
+<td style="width: 137px;">override_private_lookup</td>
+<td style="width: 532px;">Enrichment of private IP addresses will be conducted even if it has been disabled at the integration level, default is "false"</td>
+<td style="width: 71px;">Optional</td>
+</tr>
 </tbody>
 </table>
 <p> </p>
@@ -93,8 +99,48 @@
 </tr>
 <tr>
 <td style="width: 268px;">AbuseIPDB.IP.Geo.Country</td>
-<td style="width: 58px;">unknown</td>
+<td style="width: 58px;">String</td>
 <td style="width: 414px;">Country associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryCode</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Country code associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Hostnames</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The hostame(s) of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IpVersion</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The version of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsPublic</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address public.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsTor</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address a Tor IP.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsWhitelisted</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address whitelisted.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.LastReportedAt</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">When the IP address was last reported.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.NumDistinctUsers</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The distinct number of users.</td>
 </tr>
 <tr>
 <td style="width: 268px;">AbuseIPDB.IP.Address.Reports</td>
@@ -208,9 +254,49 @@
 <td style="width: 414px;">Confidence score fetched from AbuseIPDB</td>
 </tr>
 <tr>
-<td style="width: 271px;">AbuseIPDB.IP.Geo.Country</td>
-<td style="width: 55px;">unknown</td>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.Country</td>
+<td style="width: 58px;">String</td>
 <td style="width: 414px;">Country associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Geo.CountryCode</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Country code associated with this IP Address</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.Hostnames</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The hostame(s) of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IpVersion</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The version of the IP address.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsPublic</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address public.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsTor</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address a Tor IP.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.IsWhitelisted</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">Is the IP address whitelisted.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.LastReportedAt</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">When the IP address was last reported.</td>
+</tr>
+<tr>
+<td style="width: 268px;">AbuseIPDB.IP.NumDistinctUsers</td>
+<td style="width: 58px;">String</td>
+<td style="width: 414px;">The distinct number of users.</td>
 </tr>
 <tr>
 <td style="width: 271px;">AbuseIPDB.IP.TotalReports</td>

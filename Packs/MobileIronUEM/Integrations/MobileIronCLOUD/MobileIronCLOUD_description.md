@@ -3,7 +3,7 @@
 1. Log in to the MobileIron Cloud Admin console.
 2. Open the users section.
 3. Click the create user button and select the option to create a new API user. It is recommended to create a new user for the Cortex XSOAR integration specifically and not reuse an existing one.
-4. Fill in all the required details (i.e., use demisto-api-user as the username) and make sure you enter a strong password.
+4. Fill in all the required details (i.e., use core-api-user as the username) and make sure you enter a strong password.
 5. When setting up the Cortex XSOAR integration, use the auto-generated email address as the username and the password you 
 defined as the MobileIron tenant credentials.
 6. Click the `Test` button and ensure the connection can be established.

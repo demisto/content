@@ -1,0 +1,47 @@
+{
+    "name": "Ivanti Critical Vulnerabilities",
+    "description": "This pack handles CVE-2023-46805, CVE-2024-21887, CVE-2024-21888, and CVE-2024-21893 - Ivanti critical vulnerabilities",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Case Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [
+        "zero-day",
+        "0-day",
+        "Ivanti",
+        "Policy Secure",
+        "Connect Secure",
+        "RCE",
+        "Remote Code Execution",
+        "SSRF",
+        "IR",
+        "Incident Response",
+        "Response",
+        "CVE-2023-46805",
+        "CVE-2024-21887",
+        "CVE-2024-21888",
+        "CVE-2024-21893",
+        "46805",
+        "21887",
+        "21888",
+        "21893"
+
+
+    ],
+    "dependencies": {
+        "MajorBreachesInvestigationandResponse": {
+            "mandatory": true,
+            "display_name": "Rapid Breach Response"
+        }
+    },
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ]
+}

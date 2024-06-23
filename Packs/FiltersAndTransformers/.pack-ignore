@@ -5,6 +5,7 @@ ignore=RM112
 commonscripts
 urlencode
 substring
+matchexact
 
 [file:StripChar.yml]
 ignore=BA124
@@ -18,3 +19,5 @@ ignore=BA124
 [file:RegexGroups.yml]
 ignore=BA124
 
+[file:ExtractEmailTransformer_6_10.yml]
+ignore=BA108,BA109

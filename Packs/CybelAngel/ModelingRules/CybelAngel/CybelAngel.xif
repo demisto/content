@@ -1,0 +1,33 @@
+[MODEL: dataset = "cybelangel_platform_raw"]
+//this modeling rule is based on the following schema of CybelAngel: https://developers.cybelangel.com/docs/cybelangel-platform-api/615f27f828644-report-v2 
+alter
+     ipv4 = arrayindex(regextract(ip, "(?:\d{1,3}\.){3}\d{1,3}"),0),
+     ipv6 = arrayindex(regextract(ip,"(?:[a-fA-F0-9\:]{1,5}){7}[a-fA-F0-9\:]{1,5}"),0),
+     arr_risks = arraymap(risks -> [], "@element" -> type),
+     tags_list = arraymap(tags -> [],trim("@element","\"")),  //Tags placed on a report for data filtering
+     incident_status = liveness -> online,
+     hostnames_list = arraystring(arraymap(hostnames -> [], trim("@element", "\"")), ", "),
+     url = arraystring(arraymap(asset_urls ->[],trim("@element","\"")),", ")
+
+ | alter //XDM mapping
+     xdm.event.id = id,
+     xdm.alert.description = report_content,
+     xdm.event.description = if(abstract != null and abstract != "", abstract),
+     xdm.alert.category = category,
+     xdm.alert.original_alert_id = incident_id,
+     xdm.event.type = report_type,
+     xdm.target.ipv4 = ipv4,
+     xdm.target.ipv6 = ipv6,
+     xdm.event.is_completed = if(incident_status = "true",false, incident_status ="false",true),
+     xdm.target.host.hostname = if(machine_name != null and machine_name != "", machine_name, hostnames_list != null and hostnames_list != "", hostnames_list),
+     xdm.target.file.path = malware_location,
+     xdm.alert.original_threat_name = malware_name,
+     xdm.target.port = port,
+     xdm.alert.name = title,
+     xdm.alert.risks = arr_risks,
+     xdm.alert.severity = to_string(severity),
+     xdm.network.http.domain = threat, //The potentially malicious domain in question.
+     xdm.target.location.city = if(city != null and city != "",city),
+     xdm.target.location.country = if(location != null and location != "", location),
+     xdm.event.tags = tags_list,
+     xdm.target.url = if(url != null and url != "",url);

@@ -1,0 +1,24 @@
+{
+  "id": "url_id",
+  "createdDateTime": "2019-11-29T08:26:09.8196703Z",
+  "contentType": "url",
+  "expectedAssessment": "block",
+  "category": "phishing",
+  "status": "completed",
+  "requestSource": "administrator",
+  "url": "http://test.com",
+  "createdBy": {
+    "user": {
+      "id": "c52ce8db-3e4b-4181-93c4-7d6b6bffaf60",
+      "displayName": "Test Admin"
+    }
+  },
+        "results": [
+        {
+            "id": "id",
+            "createdDateTime": "2019-11-27T05:50:33.243Z",
+            "resultType": "checking",
+            "message": "Malware"
+        }
+    ]
+}

@@ -1,0 +1,536 @@
+id: Search And Block Software - Generic
+version: -1
+name: Search And Block Software - Generic
+description: "This playbook will search a file or process activity of a software by a given image file name. The analyst can then choose the files to block.\nThe following integrations are supported:\n\n- Cortex XDR XQL Engine \n- Microsoft Defender For Endpoint"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: db561466-7b5a-4cea-8350-4a871a84518c
+    type: start
+    task:
+      id: db561466-7b5a-4cea-8350-4a871a84518c
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "7"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: c1f24703-cccd-4aa8-894a-24936aeccb8f
+    type: condition
+    task:
+      id: c1f24703-cccd-4aa8-894a-24936aeccb8f
+      version: -1
+      name: Has filename and timeframe from inputs?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.FileName
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.TimeFrame
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 1d034069-83cc-4e4b-8d6c-d2faec53535a
+    type: collection
+    task:
+      id: 1d034069-83cc-4e4b-8d6c-d2faec53535a
+      version: -1
+      name: Please provide a software name to block and a timeframe
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 60,
+          "y": 350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+      subject:
+      body:
+      methods: []
+      format: ""
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: Please provide a software image file name
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: name.exe
+        tooltip: the software file name. NOTICE - name case is insensitive and it searches every file that contains the given image name
+        readonly: false
+      - id: "1"
+        label: ""
+        labelarg:
+          simple: Please provide a timeframe
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: 7 days
+        tooltip: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+        readonly: false
+      title: Please provide a software name to block and a timeframe
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7b4a666f-b896-4219-81f5-6af0f8aed8f6
+    type: title
+    task:
+      id: 7b4a666f-b896-4219-81f5-6af0f8aed8f6
+      version: -1
+      name: Search And Block Software
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+      - "6"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 51fcc25e-607e-43af-899b-d4e19570ddd0
+    type: playbook
+    task:
+      id: 51fcc25e-607e-43af-899b-d4e19570ddd0
+      version: -1
+      name: Cortex XDR - Search And Block Software - XQL Engine
+      description: This playbook will search a file or process activity of a software by a given image file name using Cortex XDR XQL Engine. The analyst can then choose the files to block.
+      playbookName: Cortex XDR - Search And Block Software - XQL Engine
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Filename:
+        complex:
+          root: inputs.FileName
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.0
+                iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
+          - operator: uniq
+      TimeFrame:
+        complex:
+          root: inputs.TimeFrame
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.1
+                iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 72d74415-fffc-4a35-88cc-2c11c3955b0c
+    type: title
+    task:
+      id: 72d74415-fffc-4a35-88cc-2c11c3955b0c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 6c6d4e63-db04-452b-8862-29e7093753f5
+    type: playbook
+    task:
+      id: 6c6d4e63-db04-452b-8862-29e7093753f5
+      version: -1
+      name: MDE - Search And Block Software
+      description: This playbook will search a file or process activity of a software by a given image file name using Microsoft Defender For Endpoint. The analyst can then choose the files to block.
+      playbookName: MDE - Search And Block Software
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      Defender Indicator Title:
+        simple: XSOAR Software Block
+      Filename:
+        complex:
+          root: inputs.FileName
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.0
+                iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
+          - operator: uniq
+      Indicator Expiration:
+        complex:
+          root: inputs.Indicator Expiration
+      TimeFrame:
+        complex:
+          root: inputs.TimeFrame
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: Please provide a software name to block and a timeframe.Answers.1
+                iscontext: true
+          - operator: StringifyArray
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '"'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: '['
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ']'
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: ','
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 11d21beb-8d7b-44c3-8b16-22a685bd134d
+    type: regular
+    task:
+      id: 11d21beb-8d7b-44c3-8b16-22a685bd134d
+      version: -1
+      name: Delete Context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: Please provide a software name to block and a timeframe
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1015,
+        "width": 1020,
+        "x": 60,
+        "y": -120
+      }
+    }
+  }
+inputs:
+- key: FileName
+  value: {}
+  required: false
+  description: File name to search
+  playbookInputQuery:
+- key: TimeFrame
+  value: {}
+  required: false
+  description: 'Time in relative date or range format (for example: "1 day", "3 weeks ago", "between 2021-01-01 12:34:56 +02:00 and 2021-02-01 12:34:56 +02:00"). The default is the last 24 hours.'
+  playbookInputQuery:
+- key: Indicator Expiration
+  value: {}
+  required: false
+  description: 'DateTime string indicating when the indicator expires. Format: (<number> <time unit>, e.g., 12 hours, 7 days).'
+  playbookInputQuery:
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.9.0

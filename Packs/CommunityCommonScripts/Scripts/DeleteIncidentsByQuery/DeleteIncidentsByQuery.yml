@@ -4,7 +4,7 @@ args:
 - description: The query should be in the same format as used in incident page.
   name: query
   required: true
-comment: Use this automation to delete incidents using query parameter with the same format as used in incidents search. Demisto REST API integration instance should be created.
+comment: Use this automation to delete incidents using query parameter with the same format as used in incidents search. Core REST API integration instance should be created.
 commonfields:
   id: DeleteIncidentsByQuery
   version: -1
@@ -13,7 +13,7 @@ contentitemexportablefields:
     fromServerVersion: ""
 dependson:
   must: []
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: DeleteIncidentsByQuery
 runas: DBotWeakRole

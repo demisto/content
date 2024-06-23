@@ -3,9 +3,11 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph M
 
 
 ## Fetch Incidents
+
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.
 
 ## OData Usage
+
 The OData parameter can be used to create different queries for the `msgraph-mail-list-emails` and `msgraph-mail-get-email` commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
 Examples:
 !msgraph-mail-list-emails odata=&quot;$select=from&quot;
@@ -16,21 +18,32 @@ Note:
 The query parameter `$filter` is not supported when using the `search` parameter.
 
 ## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-Note: For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
 
 ## Email Attachments Limitations
+
 * The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
 * The larger the attachment, the longer it would take for a command that supports adding attachments to run.
 * Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
 * When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
 
 ### Required Permissions
+
 The following permissions are required for all commands:
-- Mail.ReadWrite - Delegated
-- Mail.Send - Delegated
-- User.Read - Delegated 
+
+* Mail.ReadWrite - Delegated
+* Mail.Send - Delegated
+* User.Read - Delegated 
+* MailboxSettings.ReadWrite - Delegated 
+
+The following permissions are required for Shared Mailbox:
+
+* Mail.Read.Shared
+* Mail.ReadBasic.Shared
+* Mail.ReadWrite.Shared
+* Mail.Send.Shared
 
 ## Configure Microsoft Graph Mail Single User on Cortex XSOAR
 
@@ -596,3 +609,77 @@ Returns the folder list under the specified folder.
 | MSGraphMail.Folders.ParentFolderID | String | The parent folder ID. | 
 | MSGraphMail.Folders.TotalItemCount | Number | The total number of email messages in the folder. | 
 | MSGraphMail.Folders.UnreadItemCount | Number | The number of unread email messages in the folder. | 
+### msgraph-mail-list-rules
+
+***
+List email rules for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-list-rules`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| limit | Maximum number of results to return. Default is 50. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. | 
+| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. | 
+| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
+| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. | 
+| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. | 
+| MSGraphMail.Rule.id | String | The ID of the rule. | 
+| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
+| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
+| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+### msgraph-mail-get-rule
+
+***
+Get details of a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-get-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The ID of the rule to retrieve. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. | 
+| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. | 
+| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
+| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. | 
+| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. | 
+| MSGraphMail.Rule.id | String | The ID of the rule. | 
+| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
+| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
+| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
+### msgraph-mail-delete-rule
+
+***
+Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-mail-delete-rule`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| rule_id | The ID of the rule to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.

@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Abuse Inbox Management Detect & Respond](./../doc_files/Abuse_Inbox_Management_Detect_&_Respond.png)
+![Abuse Inbox Management Detect & Respond](./../doc_files/Abuse_Inbox_Management_Detect_and_Respond.png)

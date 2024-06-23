@@ -237,6 +237,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
         "PublicFolderLocationExclusion" = $search_action.PublicFolderLocationExclusion
         "Retry" = $search_action.Retry
         "RunspaceId" = $search_action.RunspaceId
+        "SearchStatus" = "Success"
         "SharePointLocation" = $search_action.SharePointLocation
         "SharePointLocationExclusion" = $search_action.SharePointLocationExclusion
         "Name" = $search_action.Name
@@ -267,7 +268,7 @@ function ParseSearchActionToEntryContext([psobject]$search_action, [int]$limit =
 
 #### OAuth Client - Access Token Management ####
 class OAuth2DeviceCodeClient {
-    [string]$application_id = "a0c73c16-a7e3-4564-9a95-2bdf47383716"
+    [string]$application_id
     [string]$application_scope = "offline_access%20https%3A//outlook.office365.com/.default"
     [string]$device_code
     [int]$device_code_expires_in
@@ -278,9 +279,11 @@ class OAuth2DeviceCodeClient {
     [int]$access_token_creation_time
     [bool]$insecure
     [bool]$proxy
+    [string]$app_secret
 
     OAuth2DeviceCodeClient([string]$device_code, [string]$device_code_expires_in, [string]$device_code_creation_time, [string]$access_token,
-                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time, [bool]$insecure, [bool]$proxy) {
+                            [string]$refresh_token,[string]$access_token_expires_in, [string]$access_token_creation_time,
+                           [bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret) {
         $this.device_code = $device_code
         $this.device_code_expires_in = $device_code_expires_in
         $this.device_code_creation_time = $device_code_creation_time
@@ -290,6 +293,8 @@ class OAuth2DeviceCodeClient {
         $this.access_token_creation_time = $access_token_creation_time
         $this.insecure = $insecure
         $this.proxy = $proxy
+        $this.application_id = $application_id
+        $this.app_secret = $app_secret
         <#
             .DESCRIPTION
             OAuth2DeviceCodeClient manage state of OAuth2.0 device-code flow described in https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code.
@@ -338,10 +343,10 @@ class OAuth2DeviceCodeClient {
         #>
     }
 
-    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy){
+    static [OAuth2DeviceCodeClient]CreateClientFromIntegrationContext([bool]$insecure, [bool]$proxy, [string]$application_id, [string]$app_secret) {
         $ic = GetIntegrationContext
         $client = [OAuth2DeviceCodeClient]::new($ic.DeviceCode, $ic.DeviceCodeExpiresIn, $ic.DeviceCodeCreationTime, $ic.AccessToken, $ic.RefreshToken,
-                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy)
+                                                $ic.AccessTokenExpiresIn, $ic.AccessTokenCreationTime, $insecure, $proxy, $application_id, $app_secret)
 
         return $client
         <#
@@ -365,7 +370,9 @@ class OAuth2DeviceCodeClient {
         $params = @{
             "URI" = "https://login.microsoftonline.com/organizations/oauth2/v2.0/devicecode"
             "Method" = "Post"
-            "Headers" = (New-Object "System.Collections.Generic.Dictionary[[String],[String]]").Add("Content-Type", "application/x-www-form-urlencoded")
+            "Headers" = @{
+                "Content-Type" = "application/x-www-form-urlencoded"
+            }
             "Body" = "client_id=$($this.application_id)&scope=$($this.application_scope)"
             "NoProxy" = !$this.proxy
             "SkipCertificateCheck" = $this.insecure
@@ -377,7 +384,7 @@ class OAuth2DeviceCodeClient {
         $this.device_code_creation_time = [int][double]::Parse((Get-Date -UFormat %s))
         $this.device_code_expires_in = [int]::Parse($response_body.expires_in)
 
-        return $response_body
+    return $response_body
 
         <#
             .DESCRIPTION
@@ -905,7 +912,10 @@ class SecurityAndComplianceClient {
         #>
     }
 
-    [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type) {
+    [psobject]NewSearchAction([string]$search_name, [string]$action, [string]$purge_type,
+                              [string]$share_point_archive_format, [string]$format,
+                              [bool]$include_sharepoint_document_versions, [string]$notify_email,
+                              [string]$notify_email_cc, [string]$scenario, [string]$scope) {
         # Establish session to remote
         $this.CreateDelegatedSession("New-ComplianceSearchAction")
         # Execute command
@@ -920,16 +930,34 @@ class SecurityAndComplianceClient {
             $cmd_params.PurgeType = $purge_type
             $cmd_params.Confirm = $false
             $cmd_params.Force = $true
+        } elseif ($action -eq "Export") {
+            $cmd_params.Export = $true
+            $cmd_params.Confirm = $false
+            if ($share_point_archive_format) {
+                $cmd_params.SharePointArchiveFormat = $share_point_archive_format
+            }
+            if ($format) {
+                $cmd_params.Format = $format
+            }
+            if ($include_sharepoint_document_versions -eq "true") {
+                $cmd_params.IncludeSharePointDocumentVersions = $true
+            }
+            if ($notify_email) {
+                $cmd_params.NotifyEmail = $notify_email
+            }
+            if ($notify_email_cc) {
+                $cmd_params.NotifyEmailCC = $notify_email_cc
+            }
+            if ($scenario) {
+                $cmd_params.Scenario = $scenario
+            }
+            if ($scope) {
+                $cmd_params.Scope = $scope
+            }
         } else {
-            throw "New action must include valid action - Preview/Purge"
+            throw "New action must include valid action - Preview/Purge/Export"
         }
         $response = New-ComplianceSearchAction @cmd_params
-        if (-not $response){
-            # Close session to remote
-            $this.DisconnectSession()
-
-            throw "The search action didn't return any results. Please check the search_name and consider running the o365-sc-start-search command before."
-        }
 
         # Close session to remote
         $this.DisconnectSession()
@@ -943,7 +971,7 @@ class SecurityAndComplianceClient {
             The name of the compliance search.
 
             .PARAMETER action
-            Search action type - Preview (Showing results) / Purge (Delete found emails)
+            Search action type - Preview (Showing results) / Purge (Delete found emails) / Export (Create Export file in UI)
 
             .PARAMETER purge_type
             Used if action type is purge, Search action purge type - SoftDelete (allow recover) / HardDelete (not recoverable).
@@ -951,6 +979,8 @@ class SecurityAndComplianceClient {
             .EXAMPLE
             $client.NewSearchAction("search-name", "Preview")
             $client.NewSearchAction("search-name", "Purge", "HardDelete")
+            $client.NewSearchAction("search-name", "Export")
+         #>
 
             .OUTPUTS
             psobject - Raw response.
@@ -1626,7 +1656,24 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     # Raw response
-    $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type)
+    $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type,
+                                            $kwargs.share_point_archive_format, $kwargs.format,
+                                            $kwargs.include_sharepoint_document_versions, $kwargs.notify_email,
+                                            $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
+
+    if ($null -eq $raw_response) {
+        # Handle the scenario if a search is not found:
+        $human_readable = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        $entry_context = @{
+            $script:SEARCH_ACTION_ENTRY_CONTEXT = @{
+                "SearchStatus" = "NotFound"
+                "Name" = $kwargs.search_name
+            }
+        }
+        $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
+        return $human_readable, $entry_context, $raw_response
+    }
+
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
     $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
@@ -1816,7 +1863,7 @@ function Main {
         $Demisto.Debug("Command being called is $Command")
 
         # Creating Compliance and search client
-        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false)
+        $oauth2_client = [OAuth2DeviceCodeClient]::CreateClientFromIntegrationContext($insecure, $false, $integration_params.app_id, $integration_params.app_secret)
 
         # Executing oauth2 commands
         switch ($command) {

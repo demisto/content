@@ -1,7 +1,7 @@
 id: RasterizeImageTest
 version: -1
 name: RasterizeImageTest
-description: Test rasterize-image command
+description: Test rasterize-image command.
 starttaskid: "0"
 tasks:
   "0":
@@ -14,6 +14,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "2"
@@ -101,10 +102,10 @@ tasks:
       id: 79b62c23-aae6-4e01-84e6-5f32da300ac9
       version: -1
       name: Rasterize
-      script: '|||rasterize-image'
+      script: 'Rasterize|||rasterize-image'
       type: regular
       iscommand: true
-      brand: ""
+      brand: "Rasterize"
     nexttasks:
       '#none#':
       - "4"
@@ -192,6 +193,7 @@ tasks:
       type: title
       iscommand: false
       brand: Builtin
+      description: ''
     separatecontext: false
     view: |-
       {

@@ -1,0 +1,24 @@
+[
+    {
+        "id": "8559a7ce-2b85-451b-8742-4b943ad76a22",
+        "action": "analyzeFile",
+        "status": 200,
+        "error": { "code": "", "message": "" },
+        "created_date_time": "2021-05-07T03:07:40Z",
+        "last_action_date_time": "2021-05-07T03:08:40Z",
+        "resource_location": "https://apimock-dev.trendmicro.com/v3.0/sandbox/analysisResults/012e4eac-9bd9-4e89-95db-77e02f75a6f3",
+        "is_cached": "true",
+        "digest": {
+            "md5": "4ac174730d4143a119037d9fda81c7a9",
+            "sha1": "fb5608fa03de204a12fe1e9e5275e4a682107471",
+            "sha256": "65b0f656e79ab84ca17807158e3eac206bd58be6689ddeb95956a48748d138f9"
+        },
+        "arguments": "LS10ZXN0IA==",
+        "type": "file",
+        "analysis_completion_date_time": "2021-05-07T03:08:40Z",
+        "risk_level": "high",
+        "detection_names": ["VAN_DROPPER.UMXX"],
+        "threat_types": ["Dropper"],
+        "true_file_type": "exe"
+    }
+]

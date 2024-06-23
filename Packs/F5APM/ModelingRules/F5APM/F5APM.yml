@@ -1,0 +1,6 @@
+fromversion: 8.3.0
+id: F5_APM_ModelingRule
+name: F5 APM Modeling Rule
+rules: ''
+schema: ''
+tags: F5 APM

@@ -14,7 +14,7 @@ Get the overall score for the indicator as calculated by DBot.
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| value | The single indicator value to check |
+| value | A comma-separated list of indicator values to check. |
 
 ## Outputs
 ---

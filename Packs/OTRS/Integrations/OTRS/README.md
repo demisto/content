@@ -157,7 +157,7 @@ Search for an OTRS ticket using search filters
 | created_after | Filter for a ticket created after this date. (formatted as &lt;number&gt; &lt;time unit&gt;, for example 1 day, 30 minutes, 2 weeks, 6 months, 1 year) | Optional | 
 | title | Ticket Title to filter for | Optional | 
 | queue | Ticket Queues to filter for in CSV format (for example Raw,Misc) | Optional | 
-| priority | Ticket priority to filter for in CSV format (for example 4High,5VeryHigh) | Optional | 
+| priority | Ticket priority to filter for in CSV format (for example 4High,5VeryHigh). For the use of a custom priority, you can specify a custom value outside the predefined set. | Optional | 
 | type | Ticket type to filter for | Optional | 
 
 
@@ -202,8 +202,8 @@ Create a new ticket in OTRS
 | --- | --- | --- |
 | title | Title to assign to the new ticket | Required | 
 | queue | Queue to place the new ticket in | Required | 
-| state | State to assign to the new ticket | Required | 
-| priority | Priority to assign to the new ticket | Required | 
+| state | State to assign to the new ticket. For the use of a custom state, you can specify a custom value outside the predefined set. | Required | 
+| priority | Priority to assign to the new ticket. For the use of a custom priority, you can specify a custom value outside the predefined set. | Required | 
 | customer_user | Customer user related to the new ticket | Required | 
 | article_subject | Article subject to apply to the new ticket | Required | 
 | article_body | Text to add to the article body of the new ticket | Required | 
@@ -273,14 +273,15 @@ Update an OTRS ticket
 | --- | --- | --- |
 | ticket_id | Ticket ID of the ticket to update | Required | 
 | title | Ticket title of the ticket to update | Optional | 
-| state | Ticket state of the ticket to update | Optional | 
-| priority | Priority of the ticket to update | Optional | 
+| state | Ticket state of the ticket to update. For the use of a custom state, you can specify a custom value outside the predefined set. | Optional | 
+| priority | Priority of the ticket to update. For the use of a custom priority, you can specify a custom value outside the predefined set. | Optional | 
 | article_subject | Article subject of the ticket to update | Optional | 
 | article_body | Article body of the ticket to update | Optional | 
 | queue | Queue that the ticket to update is in | Optional | 
 | type | Ticket type of the ticket to update | Optional | 
 | dynamic_fields | Dynamic fields to apply to the updated ticket, in the format: field1=value1,field2=value2. For example: ProcessManagementProcessID=1,ProcessManagementActivityStatus=2 | Optional | 
 | attachment | File entry ID of the file to add as an attachment to the updated ticket in CSV format. For example: 123@20,124@21  | Optional | 
+| lock | Wether to change the lock state of the ticket.  | Optional | 
 
 
 ##### Context Output

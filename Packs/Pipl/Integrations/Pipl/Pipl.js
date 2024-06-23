@@ -100,6 +100,17 @@ var createReputationEntry = function(response) {
     };
 };
 
+var email_command = function(args) {
+    var emails = args.email.split(',')
+    var results = new Array(emails.length)
+    for (var i = 0; i < emails.length; i++) {
+        args.email = emails[i]
+        var response = sendRequest(args);
+        results[i] = createReputationEntry(response)
+    }
+    return results;
+}
+
 var buildEC = function(data, i) {
     return {
         Addresses: data[i].Addresses,
@@ -215,8 +226,7 @@ switch (command) {
         var response = sendRequest(args);
         return createEntry(response);
     case 'email':
-        var response = sendRequest(args);
-        return createReputationEntry(response);
+        return email_command(args);
     default:
 
 }

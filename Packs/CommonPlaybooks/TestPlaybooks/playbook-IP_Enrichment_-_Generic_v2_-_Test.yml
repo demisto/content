@@ -314,7 +314,7 @@ tasks:
       id: 6cbfe571-2e22-4564-8ecc-d6fb52900451
       version: -1
       name: Was IP enriched using VirusTotal V3?
-      description: Checks whether Yahoo's IP was enriched using Threat Crowd.
+      description: Checks whether Yahoo's IP was enriched using VirusTotal (API v3).
       type: condition
       iscommand: false
       brand: ""

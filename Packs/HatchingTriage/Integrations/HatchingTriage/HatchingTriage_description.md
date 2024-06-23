@@ -11,4 +11,4 @@
 ### Connections
 
 
-Notice: Submitting indicators using the ***triage-submit-sample*** command of this integration might make the indicator data publicly available.  See the vendor’s documentation for more details.
+Notice: Submitting indicators using the ***triage-submit-sample*** command of this integration might make the indicator data publicly available. See the vendor’s documentation for more details.

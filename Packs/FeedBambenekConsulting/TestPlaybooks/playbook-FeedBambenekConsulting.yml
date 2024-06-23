@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "4"
@@ -188,3 +189,4 @@ inputs: []
 outputs: []
 sourceplaybookid: BambenekConsultingFeed_Test
 fromversion: 5.5.0
+description: ''

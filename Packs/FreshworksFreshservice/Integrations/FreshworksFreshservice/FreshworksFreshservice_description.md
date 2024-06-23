@@ -12,4 +12,3 @@ Note that the API key is generated with different permissions. For using the 'Te
 
 Enter your Server URL -
 If the Freshworks Freshservice name for your company is, for example, 'taltal', then the Server URL configuration parameter you would enter would be 'https://taltal.freshservice.com'.
-

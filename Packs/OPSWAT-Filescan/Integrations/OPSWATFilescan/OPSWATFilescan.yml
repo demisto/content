@@ -2,9 +2,10 @@ commonfields:
   id: OPSWAT Filescan
   version: -1
 name: OPSWAT Filescan
-display: OPSWAT Filescan Sandbox
+display: OPSWAT Filescan Sandbox (Deprecated)
 category: Forensics & Malware Analysis
-description: Unique adaptive threat analysis technology, enabling zero-day malware detection and more Indicator of Compromise (IOCs) extraction.
+description: Deprecated. Use MetaDefender Sandbox instead.
+deprecated: true
 configuration:
 - name: url
   display: Server URL (e.g. https://www.filescan.io/api)

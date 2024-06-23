@@ -1,0 +1,21 @@
+{
+  "Content": {
+    "Location": "test",
+    "CodeSha256": "test",
+    "CodeSize": 123,
+    "SigningProfileVersionArn": "test",
+    "SigningJobArn": "test"
+  },
+  "LayerArn": "test",
+  "LayerVersionArn": "test",
+  "Description": "test",
+  "CreatedDate": "test",
+  "Version": 123,
+  "CompatibleRuntimes": [
+    "nodejs"
+  ],
+  "LicenseInfo": "test",
+  "CompatibleArchitectures": [
+    "x86_64"
+  ]
+}

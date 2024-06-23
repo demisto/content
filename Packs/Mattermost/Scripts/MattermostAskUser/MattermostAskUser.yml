@@ -13,10 +13,10 @@ args:
 - name: user
   required: true
   default: true
-  description: The mattermost user to ask - can be either email or mattermost username
+  description: The mattermost user to ask - can be either email or mattermost username.
 - name: message
   required: true
-  description: The message ask the user
+  description: The message ask the user.
 - name: option1
   description: First option for a user reply. "yes" is the default.
 - name: option2
@@ -24,19 +24,25 @@ args:
 - name: task
   description: Which task should we close with the reply. If none then no playbook tasks will be closed.
 - name: replyEntriesTag
-  description: Tag to add on email reply entries
+  description: Tag to add on email reply entries.
 - name: persistent
   auto: PREDEFINED
   predefined:
   - "true"
   - "false"
-  description: Indicates whether to use one-time entitlement or a persistent one
+  description: Indicates whether to use one-time entitlement or a persistent one.
   defaultValue: "false"
+- defaultValue: Thank you **{user}**. You have answered **{response}** .
+  description: The reply to send to the user. Use the templates {user} and {response} to incorporate these in the reply. (i.e., "Thank you **{user}**. You have answered **{response}**.").
+  name: reply
+- defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires, a default response defined under the 'default_response' argument is sent.
+  name: lifetime
+- description: Default response in case the question expires.
+  name: default_response
+  defaultValue: No response was received from the user.
 scripttarget: 0
-dependson:
-  must:
-  - mattermost-send
 fromversion: 5.0.0
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.14.96411
 tests:
-- No tests (auto formatted)
+- MattermostAskUser_testplaybook

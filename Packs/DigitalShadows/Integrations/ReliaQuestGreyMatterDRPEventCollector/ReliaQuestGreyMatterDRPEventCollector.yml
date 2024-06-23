@@ -1,0 +1,76 @@
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: ReliaQuest GreyMatter DRP Event Collector
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  type: 0
+  defaultvalue: https://api.searchlight.app
+- display: Username
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Account ID
+  name: account_id
+  type: 0
+  required: true
+  section: Connect
+- display: Maximum number of events per fetch
+  name: max_fetch_events
+  type: 0
+  defaultvalue: '1000'
+  required: true
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+description: ReliaQuest GreyMatter DRP Event Collector monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
+display: ReliaQuest GreyMatter DRP Event Collector
+name: ReliaQuest GreyMatter DRP Event Collector
+script:
+  commands:
+  - arguments:
+    - name: start_time
+      description: 'From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (<number> <time unit>, e.g., 12 hours, 7 days). If not provided, will retrieve the oldest events available in case event_num_after argument is not provided.'
+      required: false
+      defaultValue: '3 days ago'
+    - name: end_time
+      description: 'Until which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (<number> <time unit>, e.g., 12 hours, 7 days).'
+      required: false
+    - name: limit
+      description: 'The maximum number of events to retrieve.'
+      required: false
+      defaultValue: '200'
+    - name: event_num_after
+      description: 'Fetch events that were created after a specific event-number.'
+      required: false
+    description: Manual command to fetch reila-quest events and display them.
+    name: relia-quest-get-events
+    outputs:
+    - contextPath: ReilaQuest.Events
+      description: A list of events.
+      type: Unknown
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.13.87159
+  isfetchevents: true
+fromversion: 8.0.0
+supportlevelheader: xsoar
+marketplaces:
+  - marketplacev2
+tests:
+- No tests (auto formatted)

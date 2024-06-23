@@ -12,7 +12,7 @@ forensic_files = file_entry_ids if isinstance(file_entry_ids, list) else file_en
 try:
     for entry in forensic_files:
         files_info = demisto.getFilePath(id=entry)
-        with open(files_info["path"], "r") as file_handle:
+        with open(files_info["path"]) as file_handle:
             file_content = file_handle.read()
 
             result = re.findall('hm rеvеnuе & custоms', file_content, re.IGNORECASE)
@@ -50,4 +50,4 @@ try:
             return_outputs(md, ec, ioc_cont)
 
 except Exception as ex:
-    return_error("Exception Occurred, {}".format(str(ex)))
+    return_error(f"Exception Occurred, {str(ex)}")

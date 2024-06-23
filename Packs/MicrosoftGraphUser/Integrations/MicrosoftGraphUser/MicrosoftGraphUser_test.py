@@ -95,7 +95,7 @@ def test_get_user_command_url_saved_chars(mocker):
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
-    assert 'users/dbot%5E' == http_mock.call_args[1]["url_suffix"]
+    assert http_mock.call_args[1]["url_suffix"] == 'users/dbot%5E'
 
 
 def test_get_unsupported_chars_in_user():
@@ -344,3 +344,38 @@ def test_generate_login_url(mocker):
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftGraphUser.return_results.call_args[0][0].readable_output
     assert expected_url in res
+
+
+@pytest.mark.parametrize('grant_type, self_deployed, expected_result, should_raise',
+                         [('authorization_code', False, 'ok', False),
+                          ('authorization_code', True, 'ok', True),
+                          ('client_credentials', False, 'ok', False),
+                          ('client_credentials', True, '```✅ Success!```', False)])
+def test_test_function(mocker, grant_type, self_deployed, expected_result, should_raise):
+    """
+        Given:
+            - Authentication method and self_deployed information.
+        When:
+            - Calling test_module.
+        Then:
+            - Ensure the output are as expected.
+    """
+    import demistomock as demisto
+    from MicrosoftGraphUser import test_function, MsGraphClient
+
+    client = MsGraphClient(base_url='https://graph.microsoft.com/v1.0', tenant_id='tenant-id',
+                           auth_id='auth_and_token_url', enc_key='enc_key', app_name='user',
+                           verify='use_ssl', proxy='proxies', self_deployed=self_deployed, handle_error=True,
+                           auth_code='', redirect_uri='')
+
+    client.ms_client.grant_type = grant_type
+    mocker.patch.object(demisto, 'params', return_value={'self_deployed': self_deployed})
+    mocker.patch.object(client.ms_client, 'http_request')
+
+    if should_raise:
+        with pytest.raises(Exception) as exc:
+            test_function(client, {})
+            assert 'Please enable the integration' in str(exc)
+    else:
+        result = test_function(client, {})
+        assert result[0] == expected_result

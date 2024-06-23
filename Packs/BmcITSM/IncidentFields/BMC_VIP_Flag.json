@@ -23,7 +23,8 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "BMC Incident"
+        "BMC Incident",
+        "BMC Work Order"
     ],
     "associatedToAll": false,
     "unmapped": false,

@@ -7,17 +7,17 @@ from typing import Any
 from pytest_mock import MockerFixture
 import pytest
 
+import demistomock
 import demistomock as demisto
 from CommonServerPython import Common, tableToMarkdown, pascalToSpace, DemistoException
-from CoreIRApiModule import CoreClient
+from CoreIRApiModule import CoreClient, handle_outgoing_issue_closure, XSOAR_RESOLVED_STATUS_TO_XDR
 from CoreIRApiModule import add_tag_to_endpoints_command, remove_tag_from_endpoints_command, quarantine_files_command, \
     isolate_endpoint_command, list_user_groups_command, parse_user_groups, list_users_command, list_roles_command, \
-    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role
+    change_user_role_command, list_risky_users_or_host_command, enrich_error_message_id_group_role, get_incidents_command
 
 test_client = CoreClient(
     base_url='https://test_api.com/public_api/v1', headers={}
 )
-
 
 Core_URL = 'https://api.xdrurl.com'
 
@@ -544,7 +544,7 @@ def test_allowlist_files_command_with_more_than_one_file(requests_mock):
     test_data = load_test_data('test_data/blocklist_allowlist_files_success.json')
     expected_command_result = {
         'CoreApiModule.allowlist.added_hashes.fileHash(val.fileHash == obj.fileHash)':
-        test_data['multi_command_args']['hash_list']
+            test_data['multi_command_args']['hash_list']
     }
     requests_mock.post(f'{Core_URL}/public_api/v1/hash_exceptions/allowlist/', json=test_data['api_response'])
 
@@ -845,6 +845,28 @@ def test_get_update_args_unassgning_user(mocker):
     assert update_args.get('assigned_user_mail') is None
     assert update_args.get('assigned_user_pretty_name') is None
     assert update_args.get('unassign_user') == 'true'
+
+
+def test_handle_outgoing_issue_closure_close_reason(mocker):
+    """
+    Given:
+        -  a dict indicating changed fields (delta)
+        - the incident status - set to set to 2 == Closed
+    When
+        - running handle_outgoing_issue_closure
+    Then
+        - Closing the issue with the resolved_security_testing status
+    """
+    from CoreIRApiModule import handle_outgoing_issue_closure
+    from CommonServerPython import UpdateRemoteSystemArgs
+    remote_args = UpdateRemoteSystemArgs({'delta': {'assigned_user_mail': 'None', 'closeReason': 'Security Testing'},
+                                          'status': 2, 'inc_status': 2, 'data': {'status': 'other'}})
+    request_data_log = mocker.patch.object(demisto, 'debug')
+    handle_outgoing_issue_closure(remote_args)
+
+    assert "handle_outgoing_issue_closure Closing Remote incident incident_id=None with status resolved_security_testing" in \
+           request_data_log.call_args[  # noqa: E501
+               0][0]
 
 
 def test_get_update_args_close_incident():
@@ -1752,7 +1774,7 @@ def test_get_script_execution_status_command(requests_mock):
     response = get_script_execution_status_command(client, args)
 
     api_response['reply']['action_id'] = int(action_id)
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'action_id': action_id
@@ -1931,7 +1953,7 @@ def test_run_script_delete_file_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -1978,7 +2000,7 @@ def test_run_script_delete_multiple_files_command(requests_mock):
 
     response = run_script_delete_file_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '548023b6e4a01ec51a495ba6e5d2a15d',
@@ -2038,7 +2060,7 @@ def test_run_script_file_exists_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2085,7 +2107,7 @@ def test_run_script_file_exists_multiple_files_command(requests_mock):
 
     response = run_script_file_exists_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': '414763381b5bfb7b05796c9fe690df46',
@@ -2145,7 +2167,7 @@ def test_run_script_kill_process_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
@@ -2192,7 +2214,7 @@ def test_run_script_kill_multiple_processes_command(requests_mock):
 
     response = run_script_kill_process_command(client, args)
 
-    assert response[0].outputs == api_response.get('reply')
+    assert response.outputs[0] == api_response.get('reply')
     assert requests_mock.request_history[0].json() == {
         'request_data': {
             'script_uid': 'fd0a544a99a9421222b4f57a11839481',
@@ -3147,8 +3169,8 @@ GRACEFULLY_FAILING = [
         },
         {
             "err_msg": "An error occurred while processing XDR public API - No endpoint "
-            "was found "
-            "for creating the requested action",
+                       "was found "
+                       "for creating the requested action",
             "status_code": 500,
         },
         False,
@@ -3423,7 +3445,7 @@ def test_parse_user_groups(data: dict[str, Any], expected_results: list[dict[str
     [
         ({"group_names": "test"}, "Error: Group test was not found. Full error message: Group 'test' was not found"),
         ({"group_names": "test, test2"}, "Error: Group test was not found. Note: If you sent more than one group name, "
-         "they may not exist either. Full error message: Group 'test' was not found")
+                                         "they may not exist either. Full error message: Group 'test' was not found")
     ]
 )
 def test_list_user_groups_command_raise_exception(mocker, test_data: dict[str, str], excepted_error: str):
@@ -3697,3 +3719,364 @@ def test_enrich_error_message_id_group_role(error_message: str, expected_error_m
         DemistoException(message=error_message, res=MockException(500)), "test", "test"
     )
     assert error_response == expected_error_message[0]
+
+
+def get_incident_by_status(incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
+                           lte_creation_time=None, gte_creation_time=None, starred=None,
+                           starred_incidents_fetch_window=None, status=None, sort_by_modification_time=None,
+                           sort_by_creation_time=None, page_number=0, limit=100, gte_creation_time_milliseconds=0):
+    """
+        The function simulate the client.get_incidents method for the test_fetch_incidents_filtered_by_status
+        and for the test_get_incident_list_by_status.
+        The function got the status as a string, and return from the json file only the incidents
+        that are in the given status.
+    """
+    incidents_list = load_test_data('./test_data/get_incidents_list.json')['reply']['incidents']
+    return [incident for incident in incidents_list if incident['status'] == status]
+
+
+class TestGetIncidents:
+
+    def test_get_incident_list(self, requests_mock):
+        """
+        Given: Incidents returned from client.
+        When: Running get_incidents_command.
+        Then: Ensure the outputs contain the incidents from the client.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+        requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/', json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day'
+        }
+        _, outputs, _ = get_incidents_command(client, args)
+
+        expected_output = {
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
+                get_incidents_list_response.get('reply').get('incidents')
+        }
+        assert expected_output == outputs
+
+    def test_get_incident_list_by_status(self, mocker):
+        """
+        Given: A status query, and incidents filtered by the query.
+        When: Running get_incidents_command.
+        Then: Ensure outputs contain the incidents from the client.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_incidents_list.json')
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'status': 'under_investigation,new'
+        }
+        mocker.patch.object(client, 'get_incidents', side_effect=get_incident_by_status)
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        expected_output = {
+            'CoreApiModule.Incident(val.incident_id==obj.incident_id)':
+                get_incidents_list_response.get('reply').get('incidents')
+        }
+        assert expected_output == outputs
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred, expected_starred',
+                             [(True, True),
+                              (False, False),
+                              ('true', True),
+                              ('false', False),
+                              (None, None),
+                              ('', None)])
+    def test_get_starred_incident_list_from_get(self, mocker, requests_mock, starred, expected_starred):
+        """
+        Given: A query with starred parameters.
+        When: Running get_incidents_command.
+        Then: Ensure the starred output is returned and the request filters are set correctly.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
+        mocker.patch.object(demisto, 'command', return_value='get-incidents')
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_filter_false = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': False
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        if expected_starred:
+            assert starred_filter_true in request_filters
+            assert starred_fetch_window_filter in request_filters
+            assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+        elif expected_starred is False:
+            assert starred_filter_false in request_filters
+            assert starred_fetch_window_filter not in request_filters
+        else:  # expected_starred is None
+            assert starred_filter_true not in request_filters
+            assert starred_filter_false not in request_filters
+            assert starred_fetch_window_filter not in request_filters
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred', [False, "False", 'false', None, ''])
+    def test_get_starred_false_incident_list_from_fetch(self, mocker, requests_mock, starred):
+        """
+        Given: A query with starred=false parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request doesn't filter on starred incidents.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        get_incidents_request = requests_mock.post(f'{Core_URL}/public_api/v1/incidents/get_incidents/',
+                                                   json=get_incidents_list_response)
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_filter_false = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': False
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        request_filters = get_incidents_request.last_request.json()['request_data']['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        assert starred_filter_true not in request_filters
+        assert starred_filter_false not in request_filters
+        assert starred_fetch_window_filter not in request_filters
+
+    @freeze_time("2024-01-15 17:00:00 UTC")
+    @pytest.mark.parametrize('starred', [True, 'true', "True"])
+    def test_get_starred_true_incident_list_from_fetch(self, mocker, starred):
+        """
+        Given: A query with starred=true parameter.
+        When: Running get_incidents_command from fetch-incidents.
+        Then: Ensure the request filters on starred incidents and contains the starred_fetch_window_filter filter.
+        """
+
+        get_incidents_list_response = load_test_data('./test_data/get_starred_incidents_list.json')
+        mocker.patch.object(demisto, 'command', return_value='fetch-incidents')
+        handle_fetch_starred_mock = mocker.patch.object(CoreClient,
+                                                        'handle_fetch_starred_incidents',
+                                                        return_value=get_incidents_list_response["reply"]['incidents'])
+
+        client = CoreClient(
+            base_url=f'{Core_URL}/public_api/v1', headers={}
+        )
+
+        args = {
+            'incident_id_list': '1 day',
+            'starred': starred,
+            'starred_incidents_fetch_window': '3 days'
+        }
+
+        starred_filter_true = {
+            'field': 'starred',
+            'operator': 'eq',
+            'value': True
+        }
+
+        starred_fetch_window_filter = {
+            'field': 'creation_time',
+            'operator': 'gte',
+            'value': 1705078800000
+        }
+
+        _, outputs, _ = get_incidents_command(client, args)
+
+        handle_fetch_starred_mock.assert_called()
+        request_filters = handle_fetch_starred_mock.call_args.args[2]['filters']
+        assert len(outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)']) >= 1
+        assert starred_filter_true in request_filters
+        assert starred_fetch_window_filter in request_filters
+        assert outputs['CoreApiModule.Incident(val.incident_id==obj.incident_id)'][0]['starred'] is True
+
+
+INPUT_test_handle_outgoing_issue_closure = load_test_data('./test_data/handle_outgoing_issue_closure_input.json')
+
+
+@pytest.mark.parametrize("args, expected_delta",
+                         [
+                             # close an incident from xsoar ui, and the incident type isn't cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_common_mapping"]["expected_delta"]),
+                             # close an incident from xsoar ui, and the incident type is cortex xdr incident
+                             (INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xsoar_ui_cortex_xdr_incident"]["expected_delta"]),
+                             # close an incident from XDR
+                             (INPUT_test_handle_outgoing_issue_closure["xdr"]["args"],
+                              INPUT_test_handle_outgoing_issue_closure["xdr"]["expected_delta"])
+                         ])
+def test_handle_outgoing_issue_closure(args, expected_delta):
+    """
+    Given: An UpdateRemoteSystemArgs object.
+    - case A: data & delta that match a case of closing an incident from xsoar ui, and the incident type isn't cortex xdr incident
+    - case B: data & delta that match a case of closing an incident from xsoar ui, and the incident type is cortex xdr incident
+    - case C: data & delta that match a case of closing an incident from XDR.
+    When: Closing an incident.
+    Then: Ensure the update_args has the expected value.
+    - case A: a status is added with the correct value.
+    - case B: a status is added with the correct value.
+    - case C: a status isn't added. (If the closing status came from XDR, there is no need to update it again)
+    """
+    from CommonServerPython import UpdateRemoteSystemArgs
+
+    remote_args = UpdateRemoteSystemArgs(args)
+    handle_outgoing_issue_closure(remote_args)
+    assert remote_args.delta == expected_delta
+
+
+@pytest.mark.parametrize('custom_mapping, expected_resolved_status',
+                         [
+                             ("Other=Other,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
+                              ["resolved_other", "resolved_other", "resolved_false_positive", "resolved_true_positive",
+                               "resolved_security_testing", "resolved_other"]),
+
+                             ("Other=True Positive,Duplicate=Other,False Positive=False Positive,Resolved=True Positive",
+                              ["resolved_true_positive", "resolved_other", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
+
+                             ("Duplicate=Other", ["resolved_other", "resolved_other", "resolved_false_positive",
+                                                  "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
+
+                             # Expecting default mapping to be used when no mapping provided.
+                             ("", ["resolved_other", "resolved_duplicate", "resolved_false_positive",
+                                   "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
+
+                             # Expecting default mapping to be used when improper mapping is provided.
+                             ("Duplicate=RANDOM1, Other=Random2",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
+
+                             ("Random1=Duplicate Incident",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
+
+                             # Expecting default mapping to be used when improper mapping *format* is provided.
+                             ("Duplicate=Other False Positive=Other",
+                              ["resolved_other", "resolved_duplicate", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
+
+                             # Expecting default mapping to be used for when improper key-value pair *format* is provided.
+                             ("Duplicate=Other, False Positive=Other True Positive=Other, Other=True Positive",
+                              ["resolved_true_positive", "resolved_other", "resolved_false_positive",
+                               "resolved_true_positive", "resolved_security_testing", "resolved_other"]),
+
+                         ],
+                         ids=["case-1", "case-2", "case-3", "empty-case", "improper-input-case-1", "improper-input-case-2",
+                              "improper-input-case-3", "improper-input-case-4"]
+                         )
+def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mapping, expected_resolved_status):
+    """
+    Given:
+        - A custom XSOAR->XDR close-reason mapping
+        - Expected resolved XDR status according to the custom mapping.
+    When
+        - Handling outgoing issue closure (handle_outgoing_issue_closure(...) executed).
+    Then
+        - The resolved XDR statuses match the expected statuses for all possible XSOAR close-reasons.
+    """
+    from CoreIRApiModule import handle_outgoing_issue_closure
+    from CommonServerPython import UpdateRemoteSystemArgs
+
+    mocker.patch.object(demisto, 'params', return_value={"mirror_direction": "Both",
+                                                         "custom_xsoar_to_xdr_close_reason_mapping": custom_mapping})
+
+    possible_xsoar_close_reasons = list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + ["CUSTOM_CLOSE_REASON"]
+    for i, close_reason in enumerate(possible_xsoar_close_reasons):
+        remote_args = UpdateRemoteSystemArgs({'delta': {'closeReason': close_reason},
+                                              'status': 2,
+                                              'inc_status': 2,
+                                              'data': {'status': 'other'}
+                                              })
+        # Overcoming expected non-empty stderr test failures (Errors are submitted to stderr when improper mapping is provided).
+        with capfd.disabled():
+            handle_outgoing_issue_closure(remote_args)
+
+        assert remote_args.delta.get('status')
+        assert remote_args.delta['status'] == expected_resolved_status[i]
+
+
+@pytest.mark.parametrize('data, expected_result',
+                         [('{"reply": {"container": ["1.1.1.1"]}}', {"reply": {"container": ["1.1.1.1"]}}),
+                          (b'XXXXXXX', b'XXXXXXX')])
+def test_http_request_demisto_call(mocker, data, expected_result):
+    """
+    Given:
+        - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
+    When:
+        - Calling the http_request method.
+    Then:
+        - Make sure demisto._apiCall() is being called and the method returns the expected result.
+        - converting to json is possible - do it and return json
+        - converting to json is impossible - catch the error and return the data as is
+    """
+    from CoreIRApiModule import CoreClient
+    client = CoreClient(
+        base_url=f'{Core_URL}/public_api/v1', headers={}
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
+                                                           'status': 200,
+                                                           'data': data})
+    res = client._http_request(method="POST",
+                               url_suffix="/distributions/get_versions/")
+    assert expected_result == res

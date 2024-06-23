@@ -10,23 +10,31 @@ Note: a user can provide a list of trusted signers of his own using the playbook
  
 
 ## Dependencies
+
 This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
+
 This playbook does not use any sub-playbooks.
 
 ### Integrations
+
 This playbook does not use any integrations.
 
 ### Scripts
+
+* Set
 * http
 * ParseJSON
-* Set
 
 ### Commands
+
+* wildfire-report
+* wildfire-get-verdict
 * file
 
 ## Playbook Inputs
+
 ---
 
 | **Name** | **Description** | **Default Value** | **Required** |
@@ -36,6 +44,7 @@ This playbook does not use any integrations.
 | FileSHA256 | The file SHA256. |  | Optional |
 
 ## Playbook Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -44,7 +53,11 @@ This playbook does not use any integrations.
 | NSRLFileVerdict | NSRL file verdict. | unknown |
 | VTFileSigners | VirusTotal file signers. | unknown |
 | XDRFileSigners | XDR file signers. | unknown |
+| WildFire.Report | WildFire report details. | unknown |
+| WildFire.Verdicts | WildFire verdict. | unknown |
 
 ## Playbook Image
+
 ---
-![File Reputation](https://raw.githubusercontent.com/demisto/content/48a7f1a1a628a2755201c55c24bc68d94e0dd49c/Packs/CommonPlaybooks/doc_files/File_Reputation.png)
+
+![File Reputation](../doc_files/File_Reputation.png)

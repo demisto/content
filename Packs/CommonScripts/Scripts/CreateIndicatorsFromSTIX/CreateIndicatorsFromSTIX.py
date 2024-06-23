@@ -34,7 +34,7 @@ def create_relationships_from_entity(indicator_relationships):
     return entity_relationships
 
 
-def create_indicators_loop(indicators):
+def create_indicators_loop(args, indicators):
     """ Create indicators using createNewIndicator automation
 
     :param indicators: parsed indicators
@@ -42,18 +42,45 @@ def create_indicators_loop(indicators):
     """
     relationships_objects = list()
     errors = list()
+    context_data = []
+    add_context = argToBoolean(args.get('add_context', False))
+    tags = argToList(args.get('tags'))
+
     for indicator in indicators:
         indicator['type'] = indicator.get('indicator_type')
         relationship_object = create_relationships_from_entity(indicator.get('relationships'))
         if relationship_object:
             relationships_objects.extend(relationship_object)
+
+        if len(tags) > 0:
+            if 'customFields' in indicator:
+                if 'tags' in indicator.get('customFields'):
+                    [indicator['customFields']['tags'].append(ntag) for ntag in tags]
+
+        context = {'value': indicator['value'], 'type': indicator['type']}
+        if 'tags' in indicator.get('customFields'):
+            context['tags'] = indicator['customFields']['tags']
+
         res = demisto.executeCommand("createNewIndicator", indicator)
+        context_data.append(context)
+
         if is_error(res[0]):
             errors.append(f'Error creating indicator - {(res[0]["Contents"])}')
-    result = CommandResults(
-        readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
-        relationships=relationships_objects
-    )
+
+    if add_context:
+        result = CommandResults(
+            readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
+            relationships=relationships_objects,
+            outputs_prefix='StixIndicators',
+            outputs_key_field='value',
+            outputs=context_data
+        )
+    else:
+        result = CommandResults(
+            readable_output=f"Create Indicators From STIX: {len(indicators) - len(errors)} indicators were created.",
+            relationships=relationships_objects
+        )
+
     return result, errors
 
 
@@ -61,7 +88,7 @@ def main():  # pragma: no cover
     args = demisto.args()
     entry_id = args.get("entry_id", "")
     indicators = parse_indicators_using_stix_parser(entry_id)
-    results, errors = create_indicators_loop(indicators)
+    results, errors = create_indicators_loop(args, indicators)
     return_results(results)
     if errors:
         return_error(json.dumps(errors, indent=4))

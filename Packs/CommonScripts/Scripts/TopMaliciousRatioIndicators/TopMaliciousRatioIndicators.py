@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from typing import Tuple
 
 
 def select_indicator_columns(indicator: dict) -> Dict:
@@ -24,10 +23,10 @@ def dedup_by_value(indicators: list) -> List:
     return result
 
 
-def find_indicators_with_mal_ratio(
-        max_indicators: int, min_number_of_invs: int, max_results: int, from_date: str) -> Tuple[str, list]:
-    indicators = execute_command("findIndicators", {'query': f'lastSeen:>={from_date}', 'size': max_indicators})
-    indicators = [i for i in indicators if len(i.get('investigationIDs') or []) >= min_number_of_invs]
+def find_indicators_with_mal_ratio(max_indicators: int, min_number_of_invs: int, max_results: int, from_date: str)\
+        -> tuple[str, list]:
+    indicators = execute_command(
+        "findIndicators", {'query': f'lastSeen:>={from_date} investigationsCount:>={min_number_of_invs}', 'size': max_indicators})
 
     if not indicators:
         return json.dumps({"total": 0, "data": []}), []

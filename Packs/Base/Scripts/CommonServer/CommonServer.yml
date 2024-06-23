@@ -7,11 +7,11 @@ type: javascript
 tags:
 - infra
 - server
-comment: Common code that will be merged into each server script when it runs
+comment: Common code that will be merged into each server script when it runs.
 system: true
 scripttarget: 0
 dependson: {}
 timeout: 0s
 tests:
 - 'Test CommonServer'
-fromversion: 5.0.0
+fromversion: 6.11.0

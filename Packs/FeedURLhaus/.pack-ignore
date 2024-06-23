@@ -1,3 +1,7 @@
 [file:FeedURLhaus.yml]
 ignore=BA124
 
+[known_words]
+URLhaus
+Lhaus
+haus

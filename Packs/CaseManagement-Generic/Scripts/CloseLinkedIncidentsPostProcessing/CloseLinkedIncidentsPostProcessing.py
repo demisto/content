@@ -9,7 +9,7 @@ def main():
     incident_id = incident.get("id")
     linked_incidents = incident.get("linkedIncidents")
 
-    if linked_incidents and not close_notes.startswith("Closed from parent Incident"):
+    if linked_incidents and not str(close_notes).startswith("Closed from parent Incident"):
         demisto.executeCommand("executeCommandAt",
                                {"command": "closeInvestigation",
                                 "arguments": {

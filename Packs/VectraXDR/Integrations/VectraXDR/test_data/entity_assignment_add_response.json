@@ -1,0 +1,68 @@
+[
+  {
+    "assignment": {
+      "id": 1,
+      "assigned_by": {
+        "id": 2,
+        "username": "test_user_2"
+      },
+      "date_assigned": "2023-07-24T08:52:59.367115Z",
+      "date_resolved": null,
+      "events": [
+        {
+          "assignment_id": 1,
+          "actor": 2,
+          "event_type": "created",
+          "datetime": "2023-07-24T08:52:59Z",
+          "context": {
+            "to": 1,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        }
+      ],
+      "outcome": null,
+      "resolved_by": null,
+      "triaged_detections": null,
+      "host_id": 1,
+      "account_id": null,
+      "assigned_to": {
+        "id": 1,
+        "username": "test.user@mail.com"
+      }
+    }
+  },
+  {
+    "assignment": {
+      "id": 2,
+      "assigned_by": {
+        "id": 2,
+        "username": "test_user_2"
+      },
+      "date_assigned": "2023-07-24T08:52:59.367115Z",
+      "date_resolved": null,
+      "events": [
+        {
+          "assignment_id": 2,
+          "actor": 2,
+          "event_type": "created",
+          "datetime": "2023-07-24T08:52:59Z",
+          "context": {
+            "to": 3,
+            "entity_t_score": 0,
+            "entity_c_score": 0
+          }
+        }
+      ],
+      "outcome": null,
+      "resolved_by": null,
+      "triaged_detections": null,
+      "account_id": 1,
+      "host_id": null,
+      "assigned_to": {
+        "id": 3,
+        "username": "test.user3@mail.com"
+      }
+    }
+  }
+]

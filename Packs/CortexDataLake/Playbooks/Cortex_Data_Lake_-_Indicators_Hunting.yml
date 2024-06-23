@@ -2,9 +2,9 @@ id: Cortex Data Lake - Indicators Hunting
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: Cortex Data Lake - Indicators Hunting
+name: Strata Logging Service - Indicators Hunting
 description: |-
-  The playbook facilitates threat hunting and detection of IOCs within Cortex Data Lake logs. The playbook and sub-playbooks query Cortex Data Lake for files, traffic, HTTP requests, and execution flows indicators.
+  The playbook facilitates threat hunting and detection of IOCs within Strata Logging Service logs. The playbook and sub-playbooks query Strata Logging Service for files, traffic, HTTP requests, and execution flows indicators.
 
   Note that multiple search values should be separated by commas only (without spaces or any special characters).
 
@@ -103,7 +103,7 @@ tasks:
     task:
       id: 2071167e-93f8-4e92-8335-e8a77940958f
       version: -1
-      name: Is Cortex Data Lake enabled?
+      name: Is Strata Logging Service enabled?
       description: Returns 'yes' if integration brand is available. Otherwise returns 'no'
       scriptName: IsIntegrationAvailable
       type: condition
@@ -189,8 +189,8 @@ tasks:
     task:
       id: 2a4e3170-fbb6-4b48-8697-cc833a768211
       version: -1
-      name: Query Cortex Data Lake - URL Logs
-      description: Searches the Cortex Data Lake URL log table.
+      name: Query Strata Logging Service - URL Logs
+      description: Searches the Strata Logging Service URL log table.
       script: Cortex Data Lake|||cdl-query-url-logs
       type: regular
       iscommand: true
@@ -418,7 +418,7 @@ tasks:
     task:
       id: 01cc515d-43c1-4cd3-80fa-0cede7490986
       version: -1
-      name: Query Cortex Data Lake - File Data Logs
+      name: Query Strata Logging Service - File Data Logs
       description: Searches the Cortex firewall.file_data table.
       script: Cortex Data Lake|||cdl-query-file-data
       type: regular
@@ -833,12 +833,12 @@ tasks:
     task:
       id: fcecdf9b-842e-475a-8b9b-e0f5615b275d
       version: -1
-      name: Cortex Data Lake - File Indicators Hunting
+      name: Strata Logging Service - File Indicators Hunting
       description: |-
-        This playbook queries Cortex Data Lake (CDL) for file indicators, including SHA256 hashes, file names, and file types.
+        This playbook queries Strata Logging Service (SLS) for file indicators, including SHA256 hashes, file names, and file types.
 
         Note that multiple search values should be separated by commas only (without spaces or any special characters).
-      playbookName: Cortex Data Lake - File Indicators Hunting
+      playbookName: Strata Logging Service - File Indicators Hunting
       type: playbook
       iscommand: false
       brand: ""
@@ -981,12 +981,12 @@ tasks:
     task:
       id: c7d3a37b-0bb0-4a2a-82dc-9b9631347776
       version: -1
-      name: Cortex Data Lake - Traffic Indicators Hunting
+      name: Strata Logging Service - Traffic Indicators Hunting
       description: |
-        This playbook queries Cortex Data Lake (CDL) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
+        This playbook queries Strata Logging Service (SLS) for traffic indicators, including IP addresses, geolocations, URLs, domains, and ports.
 
         Note that multiple search values should be separated by commas only (without spaces or any special characters).
-      playbookName: Cortex Data Lake - Traffic Indicators Hunting
+      playbookName: Strata Logging Service - Traffic Indicators Hunting
       type: playbook
       iscommand: false
       brand: ""
@@ -1206,7 +1206,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination IP addresses.
+    A single or multiple IP addresses to search for within Strata Logging Service. Used for both source and destination IP addresses.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1214,7 +1214,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple URLs and/or domains to search for  within Cortex Data Lake.
+    Single or multiple URLs and/or domains to search for  within Strata Logging Service.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1222,7 +1222,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple country names or codes to search for  within Cortex Data Lake. Used for both source and destination geolocations.
+    A single or multiple country names or codes to search for  within Strata Logging Service. Used for both source and destination geolocations.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1230,7 +1230,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple IP addresses to search for within Cortex Data Lake. Used for both source and destination ports.
+    A single or multiple IP addresses to search for within Strata Logging Service. Used for both source and destination ports.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1238,7 +1238,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple SHA256 file hashes to search for within Cortex Data Lake.
+    A single or multiple SHA256 file hashes to search for within Strata Logging Service.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1246,7 +1246,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file names to search for within Cortex Data Lake.
+    A single or multiple file names to search for within Strata Logging Service.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1254,7 +1254,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple file types to search for within Cortex Data Lake.
+    A single or multiple file types to search for within Strata Logging Service.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1262,7 +1262,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Single or multiple application names or codes to search for within Cortex Data Lake.
+    Single or multiple application names or codes to search for within Strata Logging Service.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1270,7 +1270,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    A single or multiple URIs to search for within Cortex Data Lake.
+    A single or multiple URIs to search for within Strata Logging Service.
     By default, a 'LIKE' search is used.
 
     Separate multiple search values by commas only (without spaces or any special characters).
@@ -1279,7 +1279,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the query start time at which to perform a search within Cortex Data Lake.
+    Specify the query start time at which to perform a search within Strata Logging Service.
 
     For example, start_time="2018-04-26 00:00:00"
   playbookInputQuery:
@@ -1287,7 +1287,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Specify the query end time at which to perform a search within Cortex Data Lake.
+    Specify the query end time at which to perform a search within Strata Logging Service.
 
     For example, end_time="2018-04-26 00:00:00"
   playbookInputQuery:
@@ -1313,7 +1313,7 @@ inputs:
   value: {}
   required: false
   description: |-
-    Filter network traffic logs that should be retrieved from Cortex Data Lake based on firewall action.
+    Filter network traffic logs that should be retrieved from Strata Logging Service based on firewall action.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
@@ -1321,19 +1321,19 @@ inputs:
   value: {}
   required: false
   description: |-
-    Filter network traffic logs to be retrieved from Cortex Data Lake based on security policy rule names that the network traffic matches.
+    Filter network traffic logs to be retrieved from Strata Logging Service based on security policy rule names that the network traffic matches.
 
     Separate multiple search values by commas only (without spaces or any special characters).
   playbookInputQuery:
 outputs:
 - contextPath: CDL.HuntingResults
-  description: Event log objects and fields that were retrieved from Cortex Data Lake (CDL).
+  description: Event log objects and fields that were retrieved from Strata Logging Service (SLS).
   type: string
 - contextPath: CDL.HuntingResults.TimeGenerated
   description: Time when the log was generated on the firewall's data plane.
   type: number
 - contextPath: CDL.HuntingResults.LogTime
-  description: Time the log was received in Cortex Data Lake.
+  description: Time the log was received in Strata Logging Service.
   type: number
 - contextPath: CDL.HuntingResults.IngestionTime
   description: Ingestion time of the log.

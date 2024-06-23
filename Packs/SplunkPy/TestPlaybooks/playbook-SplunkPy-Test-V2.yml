@@ -85,12 +85,12 @@ tasks:
         simple: demisto
       batch_limit: {}
       earliest_time:
-        simple: -1500d
+        simple: -10d
       event_limit:
         simple: "1"
       latest_time: {}
       query:
-        simple: sourcetype=pan:threat
+        simple: sourcetype=*
       update_context: {}
     separatecontext: false
     view: |-

@@ -62,7 +62,7 @@ function updateIncident() {
         }
     };
     if (args.customFields !== undefined){
-        fields = JSON.parse(args.customFields);
+        fields = parseCustomFields(args.customFields);
         for (var field in fields) {
             newIncident['Incident'][field] = fields[field]
         }
@@ -181,7 +181,7 @@ function createIncident() {
         }
     };
     if (args.customFields !== undefined){
-        fields = JSON.parse(args.customFields);
+        fields = parseCustomFields(args.customFields);
         for (var field in fields) {
             newIncident['Incident'][field] = fields[field]
         }
@@ -369,7 +369,7 @@ function updateResource() {
         }
 
     if (args.customFields !== undefined){
-        fields = JSON.parse(args.customFields);
+        fields = parseCustomFields(args.customFields);
         for (var field in fields) {
             newResource[resourceName][field] = fields[field]
         }
@@ -446,7 +446,7 @@ function createResource() {
             Title: args.title,
         }
     if (args.customFields !== undefined){
-        fields = JSON.parse(args.customFields);
+        fields = parseCustomFields(args.customFields);
         for (var field in fields) {
             newResource[resourceName][field] = fields[field]
         }
@@ -653,3 +653,12 @@ function doGet(queryPath, queryParams) {
 
     return res.Body;
 }
+
+function parseCustomFields(customFields) {
+    try {
+        return JSON.parse(customFields);
+    } catch (err) {
+        throw `Failed to parse customFields argument (expected a JSON string): ${customFields}\nError: ${err}`;
+    }
+}
+  

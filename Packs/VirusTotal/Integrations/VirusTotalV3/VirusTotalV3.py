@@ -127,7 +127,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'ip_addresses/{ip}?relationships={relationships}', ok_codes=(429, 200)
+            f'ip_addresses/{ip}?relationships={relationships}', ok_codes=(404, 429, 200)
         )
 
     def file(self, file: str, relationships: str = '') -> dict:
@@ -158,7 +158,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'urls/{encode_url_to_base64(url)}?relationships={relationships}', ok_codes=(429, 200)
+            f'urls/{encode_url_to_base64(url)}?relationships={relationships}', ok_codes=(404, 429, 200)
         )
 
     def domain(self, domain: str, relationships: str = '') -> dict:
@@ -168,7 +168,7 @@ class Client(BaseClient):
         """
         return self._http_request(
             'GET',
-            f'domains/{domain}?relationships={relationships}', ok_codes=(429, 200)
+            f'domains/{domain}?relationships={relationships}', ok_codes=(404, 429, 200)
         )
 
     # endregion
@@ -398,7 +398,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file_hash}/behaviours',
-            params={'limit': limit}
+            params={'limit': limit},
+            ok_codes=(404, 429, 200)
         )
 
     def passive_dns_data(self, id: dict, limit: int) -> dict:
@@ -621,6 +622,9 @@ class ScoreCalculator:
     """
     Calculating DBotScore of files, ip, etc.
     """
+    DEFAULT_SUSPICIOUS_THRESHOLD = 5
+    DEFAULT_RELATIONSHIP_SUSPICIOUS_THRESHOLD = 2
+
     logs: List[str]
 
     # General
@@ -628,53 +632,69 @@ class ScoreCalculator:
     trusted_vendors: List[str]
 
     # IP
-    ip_threshold: int
-    url_threshold: int
+    ip_threshold: dict[str, int]
+
+    # URL
+    url_threshold: dict[str, int]
 
     # Domain
-    domain_threshold: int
+    domain_threshold: dict[str, int]
     domain_popularity_ranking: int
 
     # File
-    file_threshold: int
+    file_threshold: dict[str, int]
     sigma_ids_threshold: int
     crowdsourced_yara_rules_enabled: bool
     crowdsourced_yara_rules_threshold: int
-    relationship_threshold: int
+    relationship_threshold: dict[str, int]
 
     def __init__(self, params: dict):
         self.trusted_vendors = argToList(params['preferredVendors'])
-        trusted_vendors_threshold = arg_to_number_must_int(
-            params['preferredVendorsThreshold'],
-            arg_name='Preferred Vendor Threshold',
-            required=True
-        )
-        assert isinstance(trusted_vendors_threshold, int)
         self.trusted_vendors_threshold = arg_to_number_must_int(
             params['preferredVendorsThreshold'],
             arg_name='Preferred Vendor Threshold',
             required=True
         )
-        self.file_threshold = arg_to_number_must_int(
-            params['fileThreshold'],
-            arg_name='File Threshold',
-            required=True
-        )
-        self.ip_threshold = arg_to_number_must_int(
-            params['ipThreshold'],
-            arg_name='IP Threshold',
-            required=True
-        )
-        self.url_threshold = arg_to_number_must_int(
-            params['urlThreshold'],
-            arg_name='URL Threshold',
-            required=True
-        )
-        self.domain_threshold = arg_to_number_must_int(
-            params['domainThreshold'],
-            arg_name='Domain Threshold',
-            required=True
-        )
+        self.file_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['fileThreshold'],
+                arg_name='File Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['fileSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+                arg_name='File Suspicious Threshold',
+                required=True)
+        }
+        self.ip_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['ipThreshold'],
+                arg_name='IP Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['ipSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+                arg_name='IP Suspicious Threshold',
+                required=True)
+        }
+        self.url_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['urlThreshold'],
+                arg_name='URL Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['urlSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+                arg_name='URL Suspicious Threshold',
+                required=True)
+        }
+        self.domain_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['domainThreshold'],
+                arg_name='Domain Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['domainSuspiciousThreshold'] or self.DEFAULT_SUSPICIOUS_THRESHOLD,
+                arg_name='Domain Suspicious Threshold',
+                required=True)
+        }
         self.crowdsourced_yara_rules_enabled = argToBoolean(params['crowdsourced_yara_rules_enabled'])
         self.crowdsourced_yara_rules_threshold = arg_to_number_must_int(params['yaraRulesThreshold'])
         self.sigma_ids_threshold = arg_to_number_must_int(
@@ -687,11 +707,16 @@ class ScoreCalculator:
             arg_name='Domain Popularity Ranking Threshold',
             required=True
         )
-        self.relationship_threshold = arg_to_number_must_int(
-            params['relationship_threshold'],
-            arg_name='Relationship Files Threshold',
-            required=True
-        )
+        self.relationship_threshold = {
+            'malicious': arg_to_number_must_int(
+                params['relationship_threshold'],
+                arg_name='Relationship Files Malicious Threshold',
+                required=True),
+            'suspicious': arg_to_number_must_int(
+                params['relationship_suspicious_threshold'] or self.DEFAULT_RELATIONSHIP_SUSPICIOUS_THRESHOLD,
+                arg_name='Relationship Files Suspicious Threshold',
+                required=True)
+        }
         self.logs = []
 
     def get_logs(self) -> str:
@@ -699,10 +724,33 @@ class ScoreCalculator:
         """
         return '\n'.join(self.logs)
 
+    def _is_by_threshold(self, analysis_stats: dict, threshold: int, suspicious: bool = False) -> bool:
+        """Determines whatever the indicator malicious/suspicious by threshold.
+        if number of malicious (+ suspicious) >= threshold -> Malicious (Suspicious)
+
+        Args:
+            analysis_stats: the analysis stats from the response.
+            threshold: the threshold of the indicator type.
+            suspicious: whether suspicious is also added.
+
+        Returns:
+            Whatever the indicator is malicious/suspicious by threshold.
+        """
+        total = analysis_stats.get('malicious', 0)
+        if suspicious:
+            total += analysis_stats.get('suspicious', 0)
+        veredict = 'suspicious' if suspicious else 'malicious'
+        self.logs.append(f'{total} vendors found {veredict}.\n'
+                         f'The {veredict} threshold is {threshold}.')
+        if total >= threshold:
+            self.logs.append(f'Found as {veredict}: {total} >= {threshold}.')
+            return True
+        self.logs.append(f'Not found {veredict} by threshold: {total} < {threshold}.')
+        return False
+
     def is_suspicious_by_threshold(self, analysis_stats: dict, threshold: int) -> bool:
         """Determines whatever the indicator suspicious by threshold.
-        if number of malicious >= threshold /2 ||
-        number of suspicious >= threshold -> Suspicious
+        if number of malicious + suspicious >= threshold -> Suspicious
 
         Args:
             analysis_stats: the analysis stats from the response
@@ -711,17 +759,7 @@ class ScoreCalculator:
         Returns:
             Whatever the indicator is suspicious by threshold.
         """
-        if analysis_stats.get('malicious', 0) >= threshold / 2:
-            self.logs.append(
-                f'Found at least suspicious by {(analysis_stats.get("malicious", 0) >= threshold / 2)=}. '
-            )
-            return True
-        elif analysis_stats.get('suspicious', 0) >= threshold:
-            self.logs.append(
-                f'Found at least suspicious by {(analysis_stats.get("suspicious", 0) >= threshold)=}. '
-            )
-            return True
-        return False
+        return self._is_by_threshold(analysis_stats, threshold, suspicious=True)
 
     def is_good_by_popularity_ranks(self, popularity_ranks: dict) -> Optional[bool]:
         """Analyzing popularity ranks.
@@ -733,13 +771,10 @@ class ScoreCalculator:
             Whatever the indicator is good or not by popularity rank.
         """
         if popularity_ranks:
-            self.logs.append(
-                'Found popularity ranks. Analyzing. '
-            )
+            self.logs.append('Found popularity ranks. Analyzing.')
             average = sum(rank.get('rank', 0) for rank in popularity_ranks.values()) / len(popularity_ranks)
             self.logs.append(
-                f'The average of the ranks is {average} and the threshold is {self.domain_popularity_ranking}'
-            )
+                f'The average of the ranks is {average} and the threshold is {self.domain_popularity_ranking}')
             if average <= self.domain_popularity_ranking:
                 self.logs.append('Indicator is good by popularity ranks.')
                 return True
@@ -754,7 +789,7 @@ class ScoreCalculator:
 
         crowdsourced_yara_results >= yara_rules_threshold ||
         sigma_analysis_stats.high + critical >= sigma_id_threshold ||
-         crowdsourced_ids_stats.high + critical >= sigma_id_threshold -> suspicious
+        crowdsourced_ids_stats.high + critical >= sigma_id_threshold -> suspicious
 
         Args:
             file_response: the file response
@@ -764,56 +799,37 @@ class ScoreCalculator:
         """
         data = file_response.get('data', {})
         if self.crowdsourced_yara_rules_enabled:
-            self.logs.append(
-                'Crowdsourced Yara Rules analyzing enabled. '
-            )
+            self.logs.append('Crowdsourced Yara Rules analyzing enabled.')
             if (total_yara_rules := len(
                     data.get('crowdsourced_yara_results', []))) >= self.crowdsourced_yara_rules_threshold:
                 self.logs.append(
                     'Found malicious by finding more Crowdsourced Yara Rules than threshold. \n'
-                    f'{total_yara_rules=} >= {self.crowdsourced_yara_rules_threshold=}'
-                )
+                    f'{total_yara_rules} >= {self.crowdsourced_yara_rules_threshold}')
                 return True
             if sigma_rules := data.get('sigma_analysis_stats'):
-                self.logs.append(
-                    'Found sigma rules, analyzing. '
-                )
+                self.logs.append('Found sigma rules, analyzing.')
                 sigma_high, sigma_critical = sigma_rules.get('high', 0), sigma_rules.get('critical', 0)
                 if (sigma_high + sigma_critical) >= self.sigma_ids_threshold:
                     self.logs.append(
-                        f'Found malicious, {(sigma_high + sigma_critical)=} >= {self.sigma_ids_threshold=}. '
-                    )
+                        f'Found malicious, {sigma_high + sigma_critical} >= {self.sigma_ids_threshold}. ')
                     return True
                 else:
-                    self.logs.append(
-                        'Not found malicious by sigma. '
-                    )
+                    self.logs.append('Not found malicious by sigma. ')
             else:
-                self.logs.append(
-                    'Not found sigma analysis. Skipping. '
-                )
+                self.logs.append('Not found sigma analysis. Skipping. ')
             if crowdsourced_ids_stats := data.get('crowdsourced_ids_stats'):
-                self.logs.append(
-                    'Found crowdsourced IDS analysis, analyzing. '
-                )
+                self.logs.append('Found crowdsourced IDS analysis, analyzing. ')
                 ids_high, ids_critical = crowdsourced_ids_stats.get('high'), crowdsourced_ids_stats.get('critical')
                 if (ids_high + ids_critical) >= self.sigma_ids_threshold:
                     self.logs.append(
-                        f'Found malicious, {((ids_high + ids_critical) >= self.sigma_ids_threshold)=}. '
-                    )
+                        f'Found malicious, {(ids_high + ids_critical) >= self.sigma_ids_threshold}.')
                     return True
                 else:
-                    self.logs.append(
-                        'Not found malicious by sigma. '
-                    )
+                    self.logs.append('Not found malicious by sigma.')
             else:
-                self.logs.append(
-                    'Not found crowdsourced IDS analysis. Skipping. '
-                )
+                self.logs.append('Not found crowdsourced IDS analysis. Skipping.')
         else:
-            self.logs.append(
-                'Crowdsourced Yara Rules analyzing is not enabled. Skipping. '
-            )
+            self.logs.append('Crowdsourced Yara Rules analyzing is not enabled. Skipping.')
         return False
 
     def is_preferred_vendors_pass_malicious(self, analysis_results: dict) -> bool:
@@ -850,7 +866,7 @@ class ScoreCalculator:
 
     def is_malicious_by_threshold(self, analysis_stats: dict, threshold: int) -> bool:
         """Determines whatever the indicator malicious by threshold.
-        if number of malicious >= threshold -< Malicious
+        if number of malicious >= threshold -> Malicious
 
         Args:
             analysis_stats: the analysis stats from the response
@@ -859,31 +875,22 @@ class ScoreCalculator:
         Returns:
             Whatever the indicator is malicious by threshold.
         """
-        total_malicious = analysis_stats.get('malicious', 0)
-        self.logs.append(
-            f'{total_malicious} vendors found malicious. \n'
-            f'The malicious threshold is {threshold}. '
-        )
-        if total_malicious >= threshold:
-            self.logs.append(f'Found as malicious: {total_malicious=} >= {threshold=}. ')
-            return True
-        self.logs.append(f'Not found malicious by threshold: {total_malicious=} >= {threshold=}. ')
-        return False
+        return self._is_by_threshold(analysis_stats, threshold)
 
-    def score_by_threshold(self, analysis_stats: dict, threshold: int) -> int:
+    def score_by_threshold(self, analysis_stats: dict, threshold: dict[str, int]) -> int:
         """Determines the DBOTSCORE of the indicator by threshold only.
 
         Returns:
             DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
             Common.DBotScore.GOOD
         """
-        if self.is_malicious_by_threshold(analysis_stats, threshold):
+        if self.is_malicious_by_threshold(analysis_stats, threshold['malicious']):
             return Common.DBotScore.BAD
-        if self.is_suspicious_by_threshold(analysis_stats, threshold):
+        if self.is_suspicious_by_threshold(analysis_stats, threshold['suspicious']):
             return Common.DBotScore.SUSPICIOUS
         return Common.DBotScore.GOOD
 
-    def score_by_results_and_stats(self, indicator: str, raw_response: dict, threshold: int) -> int:
+    def score_by_results_and_stats(self, indicator: str, raw_response: dict, threshold: dict[str, int]) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
 
         Args:
@@ -922,7 +929,7 @@ class ScoreCalculator:
             DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
             Common.DBotScore.GOOD
         """
-        self.logs.append(f'Analysing file hash {given_hash}. ')
+        self.logs.append(f'Analysing file hash {given_hash}.')
         data = raw_response.get('data', {})
         attributes = data.get('attributes', {})
         analysis_results = attributes.get('last_analysis_results', {})
@@ -939,23 +946,18 @@ class ScoreCalculator:
         suspicious_by_rules = self.is_suspicious_by_rules(raw_response)
         if score == Common.DBotScore.SUSPICIOUS and suspicious_by_rules:
             self.logs.append(
-                f'Hash: "{given_hash}" was found malicious as the hash is suspicious both by threshold and rules '
-                f'analysis.'
-            )
+                f'Hash: "{given_hash}" was found malicious as the '
+                'hash is suspicious both by threshold and rules analysis.')
             return Common.DBotScore.BAD
         elif suspicious_by_rules:
             self.logs.append(
-                f'Hash: "{given_hash}" was found suspicious by rules analysis.'
-            )
+                f'Hash: "{given_hash}" was found suspicious by rules analysis.')
             return Common.DBotScore.SUSPICIOUS
         elif score == Common.DBotScore.SUSPICIOUS:
             self.logs.append(
-                f'Hash: "{given_hash}" was found suspicious by passing the threshold analysis.'
-            )
+                f'Hash: "{given_hash}" was found suspicious by passing the threshold analysis.')
             return Common.DBotScore.SUSPICIOUS
-        self.logs.append(
-            f'Hash: "{given_hash}" was found good'
-        )
+        self.logs.append(f'Hash: "{given_hash}" was found good.')
         return Common.DBotScore.GOOD  # Nothing caught
 
     def ip_score(self, ip: str, raw_response: dict) -> int:
@@ -973,9 +975,7 @@ class ScoreCalculator:
             DBotScore of the indicator. Can by Common.DBotScore.BAD, Common.DBotScore.SUSPICIOUS or
             Common.DBotScore.GOOD
         """
-        return self.score_by_results_and_stats(
-            ip, raw_response, self.ip_threshold
-        )
+        return self.score_by_results_and_stats(ip, raw_response, self.ip_threshold)
 
     def url_score(self, indicator: str, raw_response: dict) -> int:
         """Determines indicator score by popularity preferred vendors and threshold.
@@ -1006,8 +1006,8 @@ class ScoreCalculator:
     # region Premium analysis
     def is_malicious_or_suspicious_by_relationship_files(self, relationship_files_response: dict, lookback=20) -> int:
         """Checks maliciousness of indicator on relationship files. Look on the recent 20 results returned.
-            if (number of relationship files that are malicious > threshold) -> Bad
-            if (number of relationship files that are malicious > threshold / 2) -> suspicious
+            if (number of relationship files that are malicious >= malicious threshold) -> Bad
+            if (number of relationship files that are malicious + suspicious >= suspicious threshold) -> suspicious
             else good
         Args:
             relationship_files_response: The raw_response of the relationship call
@@ -1019,24 +1019,25 @@ class ScoreCalculator:
         """
         files = relationship_files_response.get('data', [])[:lookback]  # lookback on recent 20 results. By design
         total_malicious = 0
+        total_suspicious = 0
         for file in files:
-            if (file_hash := file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))) and (
-                    self.file_score(file_hash, files) == Common.DBotScore.BAD):
+            file_hash = file.get('sha256', file.get('sha1', file.get('md5', file.get('ssdeep'))))
+            if file_hash and self.file_score(file_hash, files) == Common.DBotScore.BAD:
                 total_malicious += 1
+            elif file_hash and self.file_score(file_hash, files) == Common.DBotScore.SUSPICIOUS:
+                total_suspicious += 1
 
-        if total_malicious >= self.url_threshold:
+        if total_malicious >= self.relationship_threshold['malicious']:
             self.logs.append(
-                f'Found malicious by relationship files. {total_malicious=} >= {self.relationship_threshold}'
-            )
+                f'Found malicious by relationship files. {total_malicious} >= {self.relationship_threshold["malicious"]}')
             return Common.DBotScore.BAD
-        if total_malicious >= self.url_threshold / 2:
+        if total_suspicious >= self.relationship_threshold['suspicious']:
             self.logs.append(
-                f'Found suspicious by relationship files. {total_malicious=} >= {self.relationship_threshold}'
-            )
+                'Found suspicious by relationship files. '
+                f'{total_malicious + total_suspicious} >= {self.relationship_threshold["suspicious"]}')
             return Common.DBotScore.SUSPICIOUS
         self.logs.append(
-            f'Found safe by relationship files. {total_malicious=} >= {self.relationship_threshold}'
-        )
+            f'Found safe by relationship files. {total_malicious} < {self.relationship_threshold["suspicious"]}')
         return Common.DBotScore.GOOD
 
     def analyze_premium_scores(
@@ -1062,9 +1063,7 @@ class ScoreCalculator:
         is_suspicious = False
         for func in relationship_functions:
             self.logs.append(f'Analyzing by {func.__name__}')
-            premium_score = self.is_malicious_or_suspicious_by_relationship_files(
-                func(indicator)
-            )
+            premium_score = self.is_malicious_or_suspicious_by_relationship_files(func(indicator))
             if premium_score == Common.DBotScore.BAD:
                 return premium_score
             if premium_score == Common.DBotScore.SUSPICIOUS and base_score == Common.DBotScore.SUSPICIOUS:
@@ -1235,6 +1234,90 @@ def decrease_data_size(data: Union[dict, list]) -> Union[dict, list]:
             except KeyError:
                 pass
     return data
+
+
+def _get_error_result(client: Client, ioc_id: str, ioc_type: str, message: str) -> CommandResults:
+    dbot_type = ioc_type.upper()
+    assert dbot_type in ('FILE', 'DOMAIN', 'IP', 'URL')
+    common_type = dbot_type if dbot_type in ('IP', 'URL') else dbot_type.capitalize()
+    desc = f'{common_type} "{ioc_id}" {message}'
+    dbot = Common.DBotScore(ioc_id,
+                            getattr(DBotScoreType, dbot_type),
+                            INTEGRATION_NAME,
+                            Common.DBotScore.NONE,
+                            desc,
+                            client.reliability)
+    options: dict[str, Common.DBotScore | str] = {'dbot_score': dbot}
+    if dbot_type == 'FILE':
+        options[get_hash_type(ioc_id)] = ioc_id
+    else:
+        options[dbot_type.lower()] = ioc_id
+    return CommandResults(indicator=getattr(Common, common_type)(**options), readable_output=desc)
+
+
+def build_unknown_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:
+    return _get_error_result(client, ioc_id, ioc_type, 'was not found in VirusTotal')
+
+
+def build_quota_exceeded_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:
+    return _get_error_result(client, ioc_id, ioc_type, 'was not enriched. Quota was exceeded.')
+
+
+def build_error_output(client: Client, ioc_id: str, ioc_type: str) -> CommandResults:
+    return _get_error_result(client, ioc_id, ioc_type, 'could not be processed')
+
+
+def build_unknown_file_output(client: Client, file: str) -> CommandResults:
+    return build_unknown_output(client, file, 'file')
+
+
+def build_quota_exceeded_file_output(client: Client, file: str) -> CommandResults:
+    return build_quota_exceeded_output(client, file, 'file')
+
+
+def build_error_file_output(client: Client, file: str) -> CommandResults:
+    return build_error_output(client, file, 'file')
+
+
+def build_unknown_domain_output(client: Client, domain: str) -> CommandResults:
+    return build_unknown_output(client, domain, 'domain')
+
+
+def build_quota_exceeded_domain_output(client: Client, domain: str) -> CommandResults:
+    return build_quota_exceeded_output(client, domain, 'domain')
+
+
+def build_error_domain_output(client: Client, domain: str) -> CommandResults:
+    return build_error_output(client, domain, 'domain')
+
+
+def build_unknown_url_output(client: Client, url: str) -> CommandResults:
+    return build_unknown_output(client, url, 'url')
+
+
+def build_quota_exceeded_url_output(client: Client, url: str) -> CommandResults:
+    return build_quota_exceeded_output(client, url, 'url')
+
+
+def build_error_url_output(client: Client, url: str) -> CommandResults:
+    return build_error_output(client, url, 'url')
+
+
+def build_unknown_ip_output(client: Client, ip: str) -> CommandResults:
+    return build_unknown_output(client, ip, 'ip')
+
+
+def build_quota_exceeded_ip_output(client: Client, ip: str) -> CommandResults:
+    return build_quota_exceeded_output(client, ip, 'ip')
+
+
+def build_error_ip_output(client: Client, ip: str) -> CommandResults:
+    return build_error_output(client, ip, 'ip')
+
+
+def build_skipped_enrichment_ip_output(client: Client, ip: str) -> CommandResults:
+    return _get_error_result(client, ip, 'ip',
+                             'was not enriched. Reputation lookups have been disabled for private IP addresses.')
 
 
 def build_domain_output(
@@ -1522,12 +1605,6 @@ def build_file_output(
     )
 
 
-def build_unknown_file_output(client: Client, file_hash: str) -> CommandResults:
-    desc = f'File "{file_hash}" was not found in VirusTotal'
-    dbot = Common.DBotScore(file_hash, DBotScoreType.FILE, INTEGRATION_NAME, 0, desc, client.reliability)
-    return CommandResults(indicator=Common.File(dbot), readable_output=desc)
-
-
 def build_private_file_output(file_hash: str, raw_response: dict) -> CommandResults:
     data = raw_response.get('data', {})
     attributes = data.get('attributes', {})
@@ -1675,12 +1752,8 @@ def merge_two_dicts(dict_a, dict_b):
 # region Reputation commands
 
 
-def ip_command(client: Client,
-               score_calculator: ScoreCalculator,
-               args: dict,
-               relationships: str,
-               disable_private_ip_lookup: bool
-               ) -> List[CommandResults]:
+def ip_command(client: Client, score_calculator: ScoreCalculator, args: dict,
+               relationships: str, disable_private_ip_lookup: bool) -> List[CommandResults]:
     """
     1 API Call for regular
     1-4 API Calls for premium subscriptions
@@ -1688,35 +1761,32 @@ def ip_command(client: Client,
     ips = argToList(args['ip'])
     results: List[CommandResults] = []
     execution_metrics = ExecutionMetrics()
-    override_private_lookup = argToBoolean(args.get("override_private_lookup", "False"))
+    override_private_lookup = argToBoolean(args.get('override_private_lookup', False))
 
     for ip in ips:
         raise_if_ip_not_valid(ip)
+        if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
+            results.append(build_skipped_enrichment_ip_output(client, ip))
+            execution_metrics.success += 1
+            continue
         try:
-            if disable_private_ip_lookup and ipaddress.ip_address(ip).is_private and not override_private_lookup:
-                readable_output = (f'Reputation lookups have been disabled for private IP addresses.'
-                                   f'Enrichment skipped for {ip}')
-                result = CommandResults(readable_output=readable_output)
-                results.append(result)
-                execution_metrics.success += 1
-                continue
             raw_response = client.ip(ip, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for IP: {ip}')
-                results.append(result)
+                results.append(build_quota_exceeded_ip_output(client, ip))
                 continue
-        except Exception as exception:
+            if raw_response.get('error', {}).get('code') == 'NotFoundError':
+                results.append(build_unknown_ip_output(client, ip))
+                continue
+        except Exception as exc:
             # If anything happens, just keep going
-            demisto.debug(f'Could not process IP: "{ip}"\n {str(exception)}')
+            demisto.debug(f'Could not process IP: "{ip}"\n {str(exc)}')
             execution_metrics.general_error += 1
+            results.append(build_error_ip_output(client, ip))
             continue
         execution_metrics.success += 1
         results.append(
             build_ip_output(client, score_calculator, ip, raw_response, argToBoolean(args.get('extended_data', False))))
-    if len(results) == 0:
-        result = CommandResults(readable_output='No IPs were found.').to_context()
-        results.append(result)
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
         metric_results = cast(CommandResults, _metric_results)
@@ -1739,8 +1809,7 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             raw_response = client.file(file, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for file: {file}')
-                results.append(result)
+                results.append(build_quota_exceeded_file_output(client, file))
                 continue
             if raw_response.get('error', {}).get('code') == 'NotFoundError':
                 results.append(build_unknown_file_output(client, file))
@@ -1751,10 +1820,8 @@ def file_command(client: Client, score_calculator: ScoreCalculator, args: dict, 
             # If anything happens, just keep going
             demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
             execution_metrics.general_error += 1
+            results.append(build_error_file_output(client, file))
             continue
-    if len(results) == 0:
-        result = CommandResults(readable_output='No files were found.')
-        results.append(result)
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
         metric_results = cast(CommandResults, _metric_results)
@@ -1776,11 +1843,10 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
             raw_response = client.private_file(file)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for file: {file}')
-                results.append(result)
+                results.append(build_quota_exceeded_file_output(client, file))
                 continue
             if raw_response.get('error', {}).get('code') == 'NotFoundError':
-                results.append(CommandResults(readable_output=f'File "{file}" was not found in VirusTotal'))
+                results.append(build_unknown_file_output(client, file))
                 continue
             results.append(build_private_file_output(file, raw_response))
             execution_metrics.success += 1
@@ -1788,10 +1854,8 @@ def private_file_command(client: Client, args: dict) -> List[CommandResults]:
             # If anything happens, just keep going
             demisto.debug(f'Could not process file: "{file}"\n {str(exc)}')
             execution_metrics.general_error += 1
+            results.append(build_error_file_output(client, file))
             continue
-    if len(results) == 0:
-        result = CommandResults(readable_output='No files were found.')
-        results.append(result)
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
         metric_results = cast(CommandResults, _metric_results)
@@ -1813,19 +1877,19 @@ def url_command(client: Client, score_calculator: ScoreCalculator, args: dict, r
             raw_response = client.url(url, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for url: {url}')
-                results.append(result)
+                results.append(build_quota_exceeded_url_output(client, url))
                 continue
-        except Exception as exception:
+            if raw_response.get('error', {}).get('code') == 'NotFoundError':
+                results.append(build_unknown_url_output(client, url))
+                continue
+        except Exception as exc:
             # If anything happens, just keep going
-            demisto.debug(f'Could not process URL: "{url}".\n {str(exception)}')
+            demisto.debug(f'Could not process URL: "{url}".\n {str(exc)}')
             execution_metrics.general_error += 1
+            results.append(build_error_url_output(client, url))
             continue
         execution_metrics.success += 1
         results.append(build_url_output(client, score_calculator, url, raw_response, extended_data))
-    if len(results) == 0:
-        result = CommandResults(readable_output='No urls were found.')
-        results.append(result)
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
         metric_results = cast(CommandResults, _metric_results)
@@ -1846,20 +1910,20 @@ def domain_command(client: Client, score_calculator: ScoreCalculator, args: dict
             raw_response = client.domain(domain, relationships)
             if raw_response.get('error', {}).get('code') == "QuotaExceededError":
                 execution_metrics.quota_error += 1
-                result = CommandResults(readable_output=f'Quota exceeded for domain: {domain}')
-                results.append(result)
+                results.append(build_quota_exceeded_domain_output(client, domain))
                 continue
-        except Exception as exception:
+            if raw_response.get('error', {}).get('code') == 'NotFoundError':
+                results.append(build_unknown_domain_output(client, domain))
+                continue
+        except Exception as exc:
             # If anything happens, just keep going
-            demisto.debug(f'Could not process domain: "{domain}"\n {str(exception)}')
+            demisto.debug(f'Could not process domain: "{domain}"\n {str(exc)}')
             execution_metrics.general_error += 1
+            results.append(build_error_domain_output(client, domain))
             continue
         execution_metrics.success += 1
         result = build_domain_output(client, score_calculator, domain, raw_response,
                                      argToBoolean(args.get('extended_data', False)))
-        results.append(result)
-    if len(results) == 0:
-        result = CommandResults(readable_output='No domains were found.')
         results.append(result)
     if execution_metrics.is_supported():
         _metric_results = execution_metrics.metrics
@@ -2221,10 +2285,12 @@ def get_comments_by_id_command(client: Client, args: dict) -> CommandResults:
 
 # endregion
 
-def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
+def file_sandbox_report_command(client: Client, args: dict) -> List[CommandResults]:
     """
     1 API Call
     """
+    execution_metrics = ExecutionMetrics()
+    results: List[CommandResults] = []
     file_hash = args['file']
     limit = arg_to_number(
         args['limit'],
@@ -2234,26 +2300,42 @@ def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
     assert isinstance(limit, int)  # mypy fix
     raise_if_hash_not_valid(file_hash)
     raw_response = client.file_sandbox_report(file_hash, limit)
-    data = raw_response['data']
-    return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport',
-        'id',
-        readable_output=tableToMarkdown(
-            f'Sandbox Reports for file hash: {file_hash}',
-            [
-                {
-                    'id': item['id'],
-                    **item['attributes'],
-                    'link': item['links']['self']
-                } for item in data
-            ],
-            headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link'],
-            removeNull=True,
-            headerTransform=underscoreToCamelCase
-        ),
-        outputs=data,
-        raw_response=raw_response
-    )
+    if 'data' in raw_response:
+        data = raw_response['data']
+        execution_metrics.quota_error += 1
+        results.append(
+            CommandResults(
+                f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport',
+                'id',
+                readable_output=tableToMarkdown(
+                    f'Sandbox Reports for file hash: {file_hash}',
+                    [
+                        {
+                            'id': item['id'],
+                            **item['attributes'],
+                            'link': item['links']['self']
+                        } for item in data
+                    ],
+                    headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link'],
+                    removeNull=True,
+                    headerTransform=underscoreToCamelCase
+                ),
+                outputs=data,
+                raw_response=raw_response
+            )
+        )
+    elif raw_response.get('error', {}).get('code') == 'NotFoundError':
+        results.append(build_unknown_file_output(client, file_hash))
+    else:
+        execution_metrics.quota_error += 1
+        results.append(build_quota_exceeded_file_output(client, file_hash))
+
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
+
+    return results
 
 
 def passive_dns_data(client: Client, args: dict) -> CommandResults:
@@ -2478,7 +2560,7 @@ def main(params: dict, args: dict, command: str):
     domain_relationships = (','.join(argToList(params.get('domain_relationships')))).replace('* ', '').replace(" ", "_")
     file_relationships = (','.join(argToList(params.get('file_relationships')))).replace('* ', '').replace(" ", "_")
 
-    disable_private_ip_lookup = argToBoolean(params.get("disable_private_ip_lookup", "False"))
+    disable_private_ip_lookup = argToBoolean(params.get('disable_private_ip_lookup', False))
 
     demisto.debug(f'Command called {command}')
     if command == 'test-module':

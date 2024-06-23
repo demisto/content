@@ -1,0 +1,15 @@
+{
+    "id": "921674d0-9735-4f79-b7de-c852e00a003d",
+    "action": "analyzeUrl",
+    "digest": {
+        "md5": "8e2ef39aac9e466458557519b789a4e7",
+        "sha1": "22083a8a88396c95ed54ccdb40216048fd7d269e",
+        "sha256": "79b5ef7554f8d8031028e9d215ad08e1bbd23d2a96a02ecaff4462bbdedeccbd"
+    },
+    "status": "succeeded",
+    "arguments": "",
+    "is_cached": false,
+    "created_date_time": "2023-08-23T20:28:38Z",
+    "resource_location": "https://api.xdr.trendmicro.com/v3.0/sandbox/analysisResults/cdc33307-3b39-4650-a366-3a5add4501ad",
+    "last_action_date_time": "2023-08-23T20:32:48Z"
+}

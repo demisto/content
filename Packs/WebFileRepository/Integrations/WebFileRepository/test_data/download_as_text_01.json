@@ -1,0 +1,19 @@
+{
+    "Type": 1,
+    "Contents": {
+        "path": "/test.dat",
+        "name": "test.dat",
+        "data": "Hello!",
+        "size": 6,
+        "encoding": "utf-8"
+    },
+    "EntryContext": {
+        "WebFileRepository.Files(val.Path === obj.Path)": {
+            "Path": "/test.dat",
+            "Name": "test.dat",
+            "Data": "Hello!",
+            "Size": 6,
+            "Encoding": "utf-8"
+        }
+    }
+}

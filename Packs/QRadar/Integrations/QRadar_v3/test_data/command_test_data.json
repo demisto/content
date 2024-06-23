@@ -1,2433 +1,2567 @@
 {
- "offenses_list": {
-  "response": [
-   {
-    "username_count": 1,
-    "description": "Session Closed\n",
-    "rules": [
-     {
-      "id": 100405,
-      "type": "CRE_RULE"
-     }
-    ],
-    "event_count": 3,
-    "flow_count": 0,
-    "assigned_to": null,
-    "security_category_count": 1,
-    "follow_up": false,
-    "source_address_ids": [
-     10
-    ],
-    "source_count": 1,
-    "inactive": true,
-    "protected": false,
-    "closing_user": null,
-    "destination_networks": [
-     "Net-16-182-192.Net_182_10_0_0"
-    ],
-    "source_network": "other",
-    "category_count": 1,
-    "close_time": null,
-    "remote_destination_count": 0,
-    "start_time": 1613399051536,
-    "magnitude": 1,
-    "last_updated_time": 1613399051536,
-    "credibility": 2,
-    "id": 16,
-    "categories": [
-     "Session Closed"
-    ],
-    "severity": 2,
-    "policy_category_count": 0,
-    "log_sources": [
-     {
-      "type_name": "WindowsAuthServer",
-      "type_id": 12,
-      "name": "WindowsAuthServer @ 192.168.1.3",
-      "id": 112
-     }
-    ],
-    "closing_reason_id": null,
-    "device_count": 1,
-    "offense_type": 0,
-    "relevance": 0,
-    "domain_id": 0,
-    "offense_source": "192.168.1.3",
-    "local_destination_address_ids": [
-     1
-    ],
-    "local_destination_count": 1,
-    "status": "OPEN"
-   },
-   {
-    "username_count": 1,
-    "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
-    "rules": [
-     {
-      "id": 100056,
-      "type": "CRE_RULE"
-     }
-    ],
-    "event_count": 15,
-    "flow_count": 0,
-    "assigned_to": null,
-    "security_category_count": 2,
-    "follow_up": false,
-    "source_address_ids": [
-     2,
-     1
-    ],
-    "source_count": 2,
-    "inactive": true,
-    "protected": false,
-    "closing_user": null,
-    "destination_networks": [
-     "Net-16-182-192.Net_182_10_0_0"
-    ],
-    "source_network": "Net-16-182-192.Net_182_10_0_0",
-    "category_count": 2,
-    "close_time": null,
-    "remote_destination_count": 0,
-    "start_time": 1613395296537,
-    "magnitude": 1,
-    "last_updated_time": 1613395306948,
-    "credibility": 2,
-    "id": 15,
-    "categories": [
-     "General Authentication Failed",
-     "User Login Failure"
-    ],
-    "severity": 3,
-    "policy_category_count": 0,
-    "log_sources": [
-     {
-      "type_name": "WindowsAuthServer",
-      "type_id": 12,
-      "name": "WindowsAuthServer @ 192.168.1.3",
-      "id": 112
-     },
-     {
-      "type_name": "EventCRE",
-      "type_id": 18,
-      "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
-      "id": 63
-     }
-    ],
-    "closing_reason_id": null,
-    "device_count": 2,
-    "offense_type": 3,
-    "relevance": 0,
-    "domain_id": 0,
-    "offense_source": "yarden",
-    "local_destination_address_ids": [
-     1
-    ],
-    "local_destination_count": 1,
-    "status": "OPEN"
-   }
-  ],
-  "enrich_offenses_result": [
-   {
-    "username_count": 1,
-    "description": "Session Closed\n",
-    "rules": [
-     {
-      "id": 100405,
-      "type": "CRE_RULE",
-      "name": "Fake port scan"
-     }
-    ],
-    "event_count": 1,
-    "flow_count": 0,
-    "assigned_to": null,
-    "security_category_count": 1,
-    "follow_up": false,
-    "source_address_ids": [
-     10
-    ],
-    "source_count": 1,
-    "inactive": true,
-    "protected": false,
-    "closing_user": null,
-    "destination_networks": [
-     "Net-16-182-192.Net_182_10_0_0"
-    ],
-    "source_network": "other",
-    "category_count": 1,
-    "close_time": null,
-    "remote_destination_count": 0,
-    "start_time": 1613399051536,
-    "magnitude": 1,
-    "last_updated_time": 1613399051536,
-    "credibility": 2,
-    "id": 16,
-    "categories": [
-     "Session Closed"
-    ],
-    "severity": 2,
-    "policy_category_count": 0,
-    "log_sources": [
-     {
-      "type_name": "WindowsAuthServer",
-      "type_id": 12,
-      "name": "WindowsAuthServer @ 192.168.1.3",
-      "id": 112
-     }
-    ],
-    "closing_reason_id": null,
-    "device_count": 1,
-    "offense_type": "Source IP",
-    "relevance": 0,
-    "domain_id": 0,
-    "offense_source": "192.168.1.3",
-    "local_destination_address_ids": [
-     1
-    ],
-    "local_destination_count": 1,
-    "status": "OPEN",
-    "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
-   },
-   {
-    "username_count": 1,
-    "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
-    "rules": [
-     {
-      "id": 100056,
-      "type": "CRE_RULE",
-      "name": "Multiple Login Failures for Single Username"
-     }
-    ],
-    "event_count": 15,
-    "flow_count": 0,
-    "assigned_to": null,
-    "security_category_count": 2,
-    "follow_up": false,
-    "source_address_ids": [
-     2,
-     1
-    ],
-    "source_count": 2,
-    "inactive": true,
-    "protected": false,
-    "closing_user": null,
-    "destination_networks": [
-     "Net-16-182-192.Net_182_10_0_0"
-    ],
-    "source_network": "Net-16-182-192.Net_182_10_0_0",
-    "category_count": 2,
-    "close_time": null,
-    "remote_destination_count": 0,
-    "start_time": 1613395296537,
-    "magnitude": 1,
-    "last_updated_time": 1613395306948,
-    "credibility": 2,
-    "id": 15,
-    "categories": [
-     "General Authentication Failed",
-     "User Login Failure"
-    ],
-    "severity": 3,
-    "policy_category_count": 0,
-    "log_sources": [
-     {
-      "type_name": "EventCRE",
-      "type_id": 18,
-      "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
-      "id": 63
-     },
-     {
-      "type_name": "WindowsAuthServer",
-      "type_id": 12,
-      "name": "WindowsAuthServer @ 192.168.1.3",
-      "id": 112
-     }
-    ],
-    "closing_reason_id": null,
-    "device_count": 2,
-    "offense_type": "Username",
-    "relevance": 0,
-    "domain_id": 0,
-    "offense_source": "yarden",
-    "local_destination_address_ids": [
-     1
-    ],
-    "local_destination_count": 1,
-    "status": "OPEN",
-    "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=15"
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Offense",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Rules": [
-      {
-       "id": 100405,
-       "type": "CRE_RULE",
-       "name": "Fake port scan"
-      }
-     ],
-     "Description": "Session Closed\n",
-     "EventCount": 1,
-     "FlowCount": 0,
-     "Followup": false,
-     "SourceAddress": [
-      10
-     ],
-     "Protected": false,
-     "DestinationHostname": [
-      "Net-16-182-192.Net_182_10_0_0"
-     ],
-     "RemoteDestinationCount": 0,
-     "StartTime": "2021-02-15T14:24:11.536000+00:00",
-     "Magnitude": 1,
-     "LastUpdatedTime": "2021-02-15T14:24:11.536000+00:00",
-     "Credibility": 2,
-     "ID": 16,
-     "Categories": [
-      "Session Closed"
-     ],
-     "Severity": 2,
-     "OffenseType": "Source IP",
-     "Relevance": 0,
-     "OffenseSource": "192.168.1.3",
-     "DestinationAddress": [
-      1
-     ],
-     "Status": "OPEN",
-     "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
+    "offenses_list": {
+        "response": [
+            {
+                "username_count": 1,
+                "description": "Session Closed\n",
+                "rules": [
+                    {
+                        "id": 100405,
+                        "type": "CRE_RULE"
+                    }
+                ],
+                "event_count": 3,
+                "flow_count": 0,
+                "assigned_to": null,
+                "security_category_count": 1,
+                "follow_up": false,
+                "source_address_ids": [
+                    10
+                ],
+                "source_count": 1,
+                "inactive": true,
+                "protected": false,
+                "closing_user": null,
+                "destination_networks": [
+                    "Net-16-182-192.Net_182_10_0_0"
+                ],
+                "source_network": "other",
+                "category_count": 1,
+                "close_time": null,
+                "remote_destination_count": 0,
+                "start_time": 1613399051536,
+                "magnitude": 1,
+                "last_updated_time": 1613399051536,
+                "credibility": 2,
+                "id": 16,
+                "categories": [
+                    "Session Closed"
+                ],
+                "severity": 2,
+                "policy_category_count": 0,
+                "log_sources": [
+                    {
+                        "type_name": "WindowsAuthServer",
+                        "type_id": 12,
+                        "name": "WindowsAuthServer @ 192.168.1.3",
+                        "id": 112
+                    }
+                ],
+                "closing_reason_id": null,
+                "device_count": 1,
+                "offense_type": 0,
+                "relevance": 0,
+                "domain_id": 0,
+                "offense_source": "192.168.1.3",
+                "local_destination_address_ids": [
+                    1
+                ],
+                "local_destination_count": 1,
+                "status": "OPEN"
+            },
+            {
+                "username_count": 1,
+                "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+                "rules": [
+                    {
+                        "id": 100056,
+                        "type": "CRE_RULE"
+                    }
+                ],
+                "event_count": 15,
+                "flow_count": 0,
+                "assigned_to": null,
+                "security_category_count": 2,
+                "follow_up": false,
+                "source_address_ids": [
+                    2,
+                    1
+                ],
+                "source_count": 2,
+                "inactive": true,
+                "protected": false,
+                "closing_user": null,
+                "destination_networks": [
+                    "Net-16-182-192.Net_182_10_0_0"
+                ],
+                "source_network": "Net-16-182-192.Net_182_10_0_0",
+                "category_count": 2,
+                "close_time": null,
+                "remote_destination_count": 0,
+                "start_time": 1613395296537,
+                "magnitude": 1,
+                "last_updated_time": 1613395306948,
+                "credibility": 2,
+                "id": 15,
+                "categories": [
+                    "General Authentication Failed",
+                    "User Login Failure"
+                ],
+                "severity": 3,
+                "policy_category_count": 0,
+                "log_sources": [
+                    {
+                        "type_name": "WindowsAuthServer",
+                        "type_id": 12,
+                        "name": "WindowsAuthServer @ 192.168.1.3",
+                        "id": 112
+                    },
+                    {
+                        "type_name": "EventCRE",
+                        "type_id": 18,
+                        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+                        "id": 63
+                    }
+                ],
+                "closing_reason_id": null,
+                "device_count": 2,
+                "offense_type": 3,
+                "relevance": 0,
+                "domain_id": 0,
+                "offense_source": "yarden",
+                "local_destination_address_ids": [
+                    1
+                ],
+                "local_destination_count": 1,
+                "status": "OPEN"
+            }
+        ],
+        "enrich_offenses_result": [
+            {
+                "username_count": 1,
+                "description": "Session Closed\n",
+                "rules": [
+                    {
+                        "id": 100405,
+                        "type": "CRE_RULE",
+                        "name": "Fake port scan"
+                    }
+                ],
+                "event_count": 1,
+                "flow_count": 0,
+                "assigned_to": null,
+                "security_category_count": 1,
+                "follow_up": false,
+                "source_address_ids": [
+                    10
+                ],
+                "source_count": 1,
+                "inactive": true,
+                "protected": false,
+                "closing_user": null,
+                "destination_networks": [
+                    "Net-16-182-192.Net_182_10_0_0"
+                ],
+                "source_network": "other",
+                "category_count": 1,
+                "close_time": null,
+                "remote_destination_count": 0,
+                "start_time": 1613399051536,
+                "magnitude": 1,
+                "last_updated_time": 1613399051536,
+                "credibility": 2,
+                "id": 16,
+                "categories": [
+                    "Session Closed"
+                ],
+                "severity": 2,
+                "policy_category_count": 0,
+                "log_sources": [
+                    {
+                        "type_name": "WindowsAuthServer",
+                        "type_id": 12,
+                        "name": "WindowsAuthServer @ 192.168.1.3",
+                        "id": 112
+                    }
+                ],
+                "closing_reason_id": null,
+                "device_count": 1,
+                "offense_type": "Source IP",
+                "relevance": 0,
+                "domain_id": 0,
+                "offense_source": "192.168.1.3",
+                "local_destination_address_ids": [
+                    1
+                ],
+                "local_destination_count": 1,
+                "status": "OPEN",
+                "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
+            },
+            {
+                "username_count": 1,
+                "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+                "rules": [
+                    {
+                        "id": 100056,
+                        "type": "CRE_RULE",
+                        "name": "Multiple Login Failures for Single Username"
+                    }
+                ],
+                "event_count": 15,
+                "flow_count": 0,
+                "assigned_to": null,
+                "security_category_count": 2,
+                "follow_up": false,
+                "source_address_ids": [
+                    2,
+                    1
+                ],
+                "source_count": 2,
+                "inactive": true,
+                "protected": false,
+                "closing_user": null,
+                "destination_networks": [
+                    "Net-16-182-192.Net_182_10_0_0"
+                ],
+                "source_network": "Net-16-182-192.Net_182_10_0_0",
+                "category_count": 2,
+                "close_time": null,
+                "remote_destination_count": 0,
+                "start_time": 1613395296537,
+                "magnitude": 1,
+                "last_updated_time": 1613395306948,
+                "credibility": 2,
+                "id": 15,
+                "categories": [
+                    "General Authentication Failed",
+                    "User Login Failure"
+                ],
+                "severity": 3,
+                "policy_category_count": 0,
+                "log_sources": [
+                    {
+                        "type_name": "EventCRE",
+                        "type_id": 18,
+                        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+                        "id": 63
+                    },
+                    {
+                        "type_name": "WindowsAuthServer",
+                        "type_id": 12,
+                        "name": "WindowsAuthServer @ 192.168.1.3",
+                        "id": 112
+                    }
+                ],
+                "closing_reason_id": null,
+                "device_count": 2,
+                "offense_type": "Username",
+                "relevance": 0,
+                "domain_id": 0,
+                "offense_source": "yarden",
+                "local_destination_address_ids": [
+                    1
+                ],
+                "local_destination_count": 1,
+                "status": "OPEN",
+                "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=15"
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Offense",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Rules": [
+                        {
+                            "id": 100405,
+                            "type": "CRE_RULE",
+                            "name": "Fake port scan"
+                        }
+                    ],
+                    "Description": "Session Closed\n",
+                    "EventCount": 1,
+                    "FlowCount": 0,
+                    "Followup": false,
+                    "SourceAddress": [
+                        10
+                    ],
+                    "Protected": false,
+                    "DestinationHostname": [
+                        "Net-16-182-192.Net_182_10_0_0"
+                    ],
+                    "RemoteDestinationCount": 0,
+                    "StartTime": "2021-02-15T14:24:11.536000+00:00",
+                    "Magnitude": 1,
+                    "LastUpdatedTime": "2021-02-15T14:24:11.536000+00:00",
+                    "Credibility": 2,
+                    "ID": 16,
+                    "Categories": [
+                        "Session Closed"
+                    ],
+                    "Severity": 2,
+                    "OffenseType": "Source IP",
+                    "Relevance": 0,
+                    "OffenseSource": "192.168.1.3",
+                    "DestinationAddress": [
+                        1
+                    ],
+                    "Status": "OPEN",
+                    "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
+                },
+                {
+                    "Description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+                    "EventCount": 15,
+                    "Rules": [
+                        {
+                            "id": 100056,
+                            "type": "CRE_RULE",
+                            "name": "Multiple Login Failures for Single Username"
+                        }
+                    ],
+                    "FlowCount": 0,
+                    "Followup": false,
+                    "SourceAddress": [
+                        2,
+                        1
+                    ],
+                    "Protected": false,
+                    "DestinationHostname": [
+                        "Net-16-182-192.Net_182_10_0_0"
+                    ],
+                    "RemoteDestinationCount": 0,
+                    "StartTime": "2021-02-15T13:21:36.537000+00:00",
+                    "Magnitude": 1,
+                    "LastUpdatedTime": "2021-02-15T13:21:46.948000+00:00",
+                    "Credibility": 2,
+                    "ID": 15,
+                    "Categories": [
+                        "General Authentication Failed",
+                        "User Login Failure"
+                    ],
+                    "Severity": 3,
+                    "OffenseType": "Username",
+                    "Relevance": 0,
+                    "OffenseSource": "yarden",
+                    "DestinationAddress": [
+                        1
+                    ],
+                    "Status": "OPEN",
+                    "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=15"
+                }
+            ]
+        }
     },
-    {
-     "Description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
-     "EventCount": 15,
-     "Rules": [
-      {
-       "id": 100056,
-       "type": "CRE_RULE",
-       "name": "Multiple Login Failures for Single Username"
-      }
-     ],
-     "FlowCount": 0,
-     "Followup": false,
-     "SourceAddress": [
-      2,
-      1
-     ],
-     "Protected": false,
-     "DestinationHostname": [
-      "Net-16-182-192.Net_182_10_0_0"
-     ],
-     "RemoteDestinationCount": 0,
-     "StartTime": "2021-02-15T13:21:36.537000+00:00",
-     "Magnitude": 1,
-     "LastUpdatedTime": "2021-02-15T13:21:46.948000+00:00",
-     "Credibility": 2,
-     "ID": 15,
-     "Categories": [
-      "General Authentication Failed",
-      "User Login Failure"
-     ],
-     "Severity": 3,
-     "OffenseType": "Username",
-     "Relevance": 0,
-     "OffenseSource": "yarden",
-     "DestinationAddress": [
-      1
-     ],
-     "Status": "OPEN",
-     "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=15"
-    }
-   ]
-  }
- },
- "offense_update": {
-  "args": {
-   "offense_id": 0
-  },
-  "response": {
-   "username_count": 1,
-   "description": "Session Closed\n",
-   "rules": [
-    {
-     "id": 100405,
-     "type": "CRE_RULE"
-    }
-   ],
-   "event_count": 1,
-   "flow_count": 0,
-   "assigned_to": null,
-   "security_category_count": 1,
-   "follow_up": true,
-   "source_address_ids": [
-    10
-   ],
-   "source_count": 1,
-   "inactive": true,
-   "protected": false,
-   "closing_user": null,
-   "destination_networks": [
-    "Net-10-125-192.Net_125_12_0_0"
-   ],
-   "source_network": "other",
-   "category_count": 1,
-   "close_time": null,
-   "remote_destination_count": 0,
-   "start_time": 1613399051536,
-   "magnitude": 1,
-   "last_updated_time": 1613399051536,
-   "credibility": 2,
-   "id": 16,
-   "categories": [
-    "Session Closed"
-   ],
-   "severity": 2,
-   "policy_category_count": 0,
-   "closing_reason_id": null,
-   "device_count": 1,
-   "offense_type": 0,
-   "relevance": 0,
-   "domain_id": 0,
-   "offense_source": "192.168.1.3",
-   "local_destination_address_ids": [
-    1
-   ],
-   "local_destination_count": 1,
-   "status": "OPEN"
-  },
-  "enrich_offenses_result": [
-   {
-    "username_count": 1,
-    "description": "Session Closed\n",
-    "rules": [
-     {
-      "id": 100405,
-      "type": "CRE_RULE",
-      "name": "Fake port scan"
-     }
-    ],
-    "event_count": 1,
-    "flow_count": 0,
-    "assigned_to": null,
-    "security_category_count": 1,
-    "follow_up": true,
-    "source_address_ids": [
-     "192.168.1.3"
-    ],
-    "source_count": 1,
-    "inactive": true,
-    "protected": false,
-    "closing_user": null,
-    "destination_networks": [
-     "Net-10-125-192.Net_125_12_0_0"
-    ],
-    "source_network": "other",
-    "category_count": 1,
-    "close_time": null,
-    "remote_destination_count": 0,
-    "start_time": 1613399051536,
-    "magnitude": 1,
-    "last_updated_time": 1613399051536,
-    "credibility": 2,
-    "id": 16,
-    "categories": [
-     "Session Closed"
-    ],
-    "severity": 2,
-    "policy_category_count": 0,
-    "closing_reason_id": null,
-    "device_count": 1,
-    "offense_type": "Source IP",
-    "relevance": 0,
-    "domain_id": 0,
-    "offense_source": "192.168.1.3",
-    "local_destination_address_ids": [
-     "192.168.1.3"
-    ],
-    "local_destination_count": 1,
-    "status": "OPEN",
-    "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Offense",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Description": "Session Closed\n",
-     "Rules": [
-      {
-       "id": 100405,
-       "type": "CRE_RULE",
-       "name": "Fake port scan"
-      }
-     ],
-     "EventCount": 1,
-     "FlowCount": 0,
-     "Followup": true,
-     "SourceAddress": [
-      "192.168.1.3"
-     ],
-     "Protected": false,
-     "DestinationHostname": [
-      "Net-10-125-192.Net_125_12_0_0"
-     ],
-     "RemoteDestinationCount": 0,
-     "StartTime": "2021-02-15T14:24:11.536000+00:00",
-     "Magnitude": 1,
-     "LastUpdatedTime": "2021-02-15T14:24:11.536000+00:00",
-     "Credibility": 2,
-     "ID": 16,
-     "Categories": [
-      "Session Closed"
-     ],
-     "Severity": 2,
-     "OffenseType": "Source IP",
-     "Relevance": 0,
-     "OffenseSource": "192.168.1.3",
-     "DestinationAddress": [
-      "192.168.1.3"
-     ],
-     "Status": "OPEN",
-     "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
-    }
-   ]
-  }
- },
- "closing_reasons_list": {
-  "response": [
-   {
-    "is_deleted": false,
-    "is_reserved": false,
-    "text": "False-Positive, Tuned",
-    "id": 2
-   },
-   {
-    "is_deleted": false,
-    "is_reserved": false,
-    "text": "Non-Issue",
-    "id": 1
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Offense.ClosingReasons",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "IsDeleted": false,
-     "IsReserved": false,
-     "Name": "False-Positive, Tuned",
-     "ID": 2
+    "offense_update": {
+        "args": {
+            "offense_id": 0
+        },
+        "response": {
+            "username_count": 1,
+            "description": "Session Closed\n",
+            "rules": [
+                {
+                    "id": 100405,
+                    "type": "CRE_RULE"
+                }
+            ],
+            "event_count": 1,
+            "flow_count": 0,
+            "assigned_to": null,
+            "security_category_count": 1,
+            "follow_up": true,
+            "source_address_ids": [
+                10
+            ],
+            "source_count": 1,
+            "inactive": true,
+            "protected": false,
+            "closing_user": null,
+            "destination_networks": [
+                "Net-10-125-192.Net_125_12_0_0"
+            ],
+            "source_network": "other",
+            "category_count": 1,
+            "close_time": null,
+            "remote_destination_count": 0,
+            "start_time": 1613399051536,
+            "magnitude": 1,
+            "last_updated_time": 1613399051536,
+            "credibility": 2,
+            "id": 16,
+            "categories": [
+                "Session Closed"
+            ],
+            "severity": 2,
+            "policy_category_count": 0,
+            "closing_reason_id": null,
+            "device_count": 1,
+            "offense_type": 0,
+            "relevance": 0,
+            "domain_id": 0,
+            "offense_source": "192.168.1.3",
+            "local_destination_address_ids": [
+                1
+            ],
+            "local_destination_count": 1,
+            "status": "OPEN"
+        },
+        "enrich_offenses_result": [
+            {
+                "username_count": 1,
+                "description": "Session Closed\n",
+                "rules": [
+                    {
+                        "id": 100405,
+                        "type": "CRE_RULE",
+                        "name": "Fake port scan"
+                    }
+                ],
+                "event_count": 1,
+                "flow_count": 0,
+                "assigned_to": null,
+                "security_category_count": 1,
+                "follow_up": true,
+                "source_address_ids": [
+                    "192.168.1.3"
+                ],
+                "source_count": 1,
+                "inactive": true,
+                "protected": false,
+                "closing_user": null,
+                "destination_networks": [
+                    "Net-10-125-192.Net_125_12_0_0"
+                ],
+                "source_network": "other",
+                "category_count": 1,
+                "close_time": null,
+                "remote_destination_count": 0,
+                "start_time": 1613399051536,
+                "magnitude": 1,
+                "last_updated_time": 1613399051536,
+                "credibility": 2,
+                "id": 16,
+                "categories": [
+                    "Session Closed"
+                ],
+                "severity": 2,
+                "policy_category_count": 0,
+                "closing_reason_id": null,
+                "device_count": 1,
+                "offense_type": "Source IP",
+                "relevance": 0,
+                "domain_id": 0,
+                "offense_source": "192.168.1.3",
+                "local_destination_address_ids": [
+                    "192.168.1.3"
+                ],
+                "local_destination_count": 1,
+                "status": "OPEN",
+                "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Offense",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Description": "Session Closed\n",
+                    "Rules": [
+                        {
+                            "id": 100405,
+                            "type": "CRE_RULE",
+                            "name": "Fake port scan"
+                        }
+                    ],
+                    "EventCount": 1,
+                    "FlowCount": 0,
+                    "Followup": true,
+                    "SourceAddress": [
+                        "192.168.1.3"
+                    ],
+                    "Protected": false,
+                    "DestinationHostname": [
+                        "Net-10-125-192.Net_125_12_0_0"
+                    ],
+                    "RemoteDestinationCount": 0,
+                    "StartTime": "2021-02-15T14:24:11.536000+00:00",
+                    "Magnitude": 1,
+                    "LastUpdatedTime": "2021-02-15T14:24:11.536000+00:00",
+                    "Credibility": 2,
+                    "ID": 16,
+                    "Categories": [
+                        "Session Closed"
+                    ],
+                    "Severity": 2,
+                    "OffenseType": "Source IP",
+                    "Relevance": 0,
+                    "OffenseSource": "192.168.1.3",
+                    "DestinationAddress": [
+                        "192.168.1.3"
+                    ],
+                    "Status": "OPEN",
+                    "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
+                }
+            ]
+        }
     },
-    {
-     "IsDeleted": false,
-     "IsReserved": false,
-     "Name": "Non-Issue",
-     "ID": 1
-    }
-   ]
-  }
- },
- "offense_notes_list": {
-  "args": {
-   "offense_id": 0
-  },
-  "response": [
-   {
-    "note_text": "test note",
-    "create_time": 1612888858860,
-    "id": 1,
-    "username": "test_user"
-   },
-   {
-    "note_text": "test text message",
-    "create_time": 1613307141975,
-    "id": 5,
-    "username": "API_user: test_user"
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Note",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Text": "test note",
-     "CreateTime": "2021-02-09T16:40:58.860000+00:00",
-     "ID": 1,
-     "CreatedBy": "test_user"
+    "closing_reasons_list": {
+        "response": [
+            {
+                "is_deleted": false,
+                "is_reserved": false,
+                "text": "False-Positive, Tuned",
+                "id": 2
+            },
+            {
+                "is_deleted": false,
+                "is_reserved": false,
+                "text": "Non-Issue",
+                "id": 1
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Offense.ClosingReasons",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "IsDeleted": false,
+                    "IsReserved": false,
+                    "Name": "False-Positive, Tuned",
+                    "ID": 2
+                },
+                {
+                    "IsDeleted": false,
+                    "IsReserved": false,
+                    "Name": "Non-Issue",
+                    "ID": 1
+                }
+            ]
+        }
     },
-    {
-     "Text": "test text message",
-     "CreateTime": "2021-02-14T12:52:21.975000+00:00",
-     "ID": 5,
-     "CreatedBy": "API_user: test_user"
-    }
-   ]
-  }
- },
- "offense_notes_create": {
-  "args": {
-   "offense_id": 0
-  },
-  "response": {
-   "note_text": "test text message",
-   "create_time": 1614248976758,
-   "id": 6,
-   "username": "API_user: test_user"
-  },
-  "expected": {
-   "outputs_prefix": "QRadar.Note",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Text": "test text message",
-     "CreateTime": "2021-02-25T10:29:36.758000+00:00",
-     "ID": 6,
-     "CreatedBy": "API_user: test_user"
-    }
-   ]
-  }
- },
- "rules_list": {
-  "response": [
-   {
-    "owner": "admin",
-    "identifier": "SYSTEM-1443",
-    "base_host_id": 0,
-    "capacity_timestamp": 0,
-    "origin": "SYSTEM",
-    "creation_date": 1273171233573,
-    "type": "EVENT",
-    "enabled": false,
-    "modification_date": 1603050020699,
-    "linked_rule_identifier": null,
-    "name": "Devices with High Event Rates",
-    "average_capacity": 0,
-    "id": 100001,
-    "base_capacity": 0
-   },
-   {
-    "owner": "admin",
-    "identifier": "SYSTEM-1431",
-    "base_host_id": 0,
-    "capacity_timestamp": 0,
-    "origin": "SYSTEM",
-    "creation_date": 1186670307862,
-    "type": "EVENT",
-    "enabled": true,
-    "modification_date": 1603050021675,
-    "linked_rule_identifier": null,
-    "name": "Excessive Database Connections",
-    "average_capacity": 0,
-    "id": 100003,
-    "base_capacity": 0
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Rule",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Owner": "admin",
-     "BaseHostID": 0,
-     "CapacityTimestamp": 0,
-     "Origin": "SYSTEM",
-     "CreationDate": "2010-05-06T18:40:33.573000+00:00",
-     "Type": "EVENT",
-     "Enabled": false,
-     "ModificationDate": "2020-10-18T19:40:20.699000+00:00",
-     "Name": "Devices with High Event Rates",
-     "AverageCapacity": 0,
-     "ID": 100001,
-     "BaseCapacity": 0
+    "offense_notes_list": {
+        "args": {
+            "offense_id": 0
+        },
+        "response": [
+            {
+                "note_text": "test note",
+                "create_time": 1612888858860,
+                "id": 1,
+                "username": "test_user"
+            },
+            {
+                "note_text": "test text message",
+                "create_time": 1613307141975,
+                "id": 5,
+                "username": "API_user: test_user"
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Note",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Text": "test note",
+                    "CreateTime": "2021-02-09T16:40:58.860000+00:00",
+                    "ID": 1,
+                    "CreatedBy": "test_user"
+                },
+                {
+                    "Text": "test text message",
+                    "CreateTime": "2021-02-14T12:52:21.975000+00:00",
+                    "ID": 5,
+                    "CreatedBy": "API_user: test_user"
+                }
+            ]
+        }
     },
-    {
-     "Owner": "admin",
-     "BaseHostID": 0,
-     "CapacityTimestamp": 0,
-     "Origin": "SYSTEM",
-     "CreationDate": "2007-08-09T14:38:27.862000+00:00",
-     "Type": "EVENT",
-     "Enabled": true,
-     "ModificationDate": "2020-10-18T19:40:21.675000+00:00",
-     "Name": "Excessive Database Connections",
-     "AverageCapacity": 0,
-     "ID": 100003,
-     "BaseCapacity": 0
-    }
-   ]
-  }
- },
- "rule_groups_list": {
-  "response": [
-   {
-    "owner": "admin",
-    "modified_time": 1389021806060,
-    "level": 2,
-    "name": "Asset Reconciliation Exclusion",
-    "description": "Rules focused on detection of suspicious asset reconciliation behavior.",
-    "child_groups": [],
-    "id": 125,
-    "child_items": [
-     "1607",
-     "1608",
-     "1609",
-     "1610",
-     "1611",
-     "1612",
-     "1613",
-     "1614",
-     "1615",
-     "1616",
-     "1617",
-     "1618",
-     "100039",
-     "100041",
-     "100037",
-     "100040",
-     "100038",
-     "100035",
-     "100036",
-     "100044",
-     "100034",
-     "100042",
-     "100045",
-     "100043"
-    ],
-    "type": "RULE_GROUP",
-    "parent_id": 3
-   },
-   {
-    "owner": "admin",
-    "modified_time": 1603048224297,
-    "level": 1,
-    "name": "Response",
-    "description": "Sample rules for building email and other responses based on a rule.",
-    "child_groups": [],
-    "id": 100,
-    "child_items": [
-     "1209",
-     "1210",
-     "100237",
-     "100238"
-    ],
-    "type": "RULE_GROUP",
-    "parent_id": 3
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.RuleGroup",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Owner": "admin",
-     "ModifiedTime": "2014-01-06T15:23:26.060000+00:00",
-     "Level": 2,
-     "Name": "Asset Reconciliation Exclusion",
-     "Description": "Rules focused on detection of suspicious asset reconciliation behavior.",
-     "ID": 125,
-     "ChildItems": [
-      "1607",
-      "1608",
-      "1609",
-      "1610",
-      "1611",
-      "1612",
-      "1613",
-      "1614",
-      "1615",
-      "1616",
-      "1617",
-      "1618",
-      "100039",
-      "100041",
-      "100037",
-      "100040",
-      "100038",
-      "100035",
-      "100036",
-      "100044",
-      "100034",
-      "100042",
-      "100045",
-      "100043"
-     ],
-     "Type": "RULE_GROUP",
-     "ParentID": 3
+    "offense_notes_create": {
+        "args": {
+            "offense_id": 0
+        },
+        "response": {
+            "note_text": "test text message",
+            "create_time": 1614248976758,
+            "id": 6,
+            "username": "API_user: test_user"
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.Note",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Text": "test text message",
+                    "CreateTime": "2021-02-25T10:29:36.758000+00:00",
+                    "ID": 6,
+                    "CreatedBy": "API_user: test_user"
+                }
+            ]
+        }
     },
-    {
-     "Owner": "admin",
-     "ModifiedTime": "2020-10-18T19:10:24.297000+00:00",
-     "Level": 1,
-     "Name": "Response",
-     "Description": "Sample rules for building email and other responses based on a rule.",
-     "ID": 100,
-     "ChildItems": [
-      "1209",
-      "1210",
-      "100237",
-      "100238"
-     ],
-     "Type": "RULE_GROUP",
-     "ParentID": 3
-    }
-   ]
-  }
- },
- "assets_list": {
-  "enrich_assets_results": [
-   {
-    "Asset": {
-     "vulnerability_count": 0,
-     "interfaces": [],
-     "risk_score_sum": 0.0,
-     "hostnames": [
-      {
-       "last_seen_profiler": 1613395223530,
-       "created": 1612292712138,
-       "last_seen_scanner": null,
-       "name": "HOST1233X11",
-       "first_seen_scanner": null,
-       "id": 1007,
-       "type": "NETBIOS",
-       "first_seen_profiler": 1612292712138
-      }
-     ],
-     "id": 1007,
-     "users": [
-      {
-       "last_seen_profiler": 1613395223530,
-       "last_seen_scanner": null,
-       "first_seen_scanner": null,
-       "id": 1007,
-       "first_seen_profiler": 1612292712138,
-       "username": "Administrator"
-      }
-     ],
-     "domain_id": 0,
-     "properties": [
-      {
-       "last_reported": "2021-02-02T19:05:12.643000+00:00",
-       "name": "Unified Name",
-       "type_id": 1002,
-       "id": 1006,
-       "last_reported_by": "IDENTITY:112",
-       "value": "HOST1233X11"
-      }
-     ],
-     "Name": {
-      "Value": "HOST1233X11",
-      "LastUser": "IDENTITY:112"
-     },
-     "products": []
+    "rules_list": {
+        "response": [
+            {
+                "owner": "admin",
+                "identifier": "SYSTEM-1443",
+                "base_host_id": 0,
+                "capacity_timestamp": 0,
+                "origin": "SYSTEM",
+                "creation_date": 1273171233573,
+                "type": "EVENT",
+                "enabled": false,
+                "modification_date": 1603050020699,
+                "linked_rule_identifier": null,
+                "name": "Devices with High Event Rates",
+                "average_capacity": 0,
+                "id": 100001,
+                "base_capacity": 0
+            },
+            {
+                "owner": "admin",
+                "identifier": "SYSTEM-1431",
+                "base_host_id": 0,
+                "capacity_timestamp": 0,
+                "origin": "SYSTEM",
+                "creation_date": 1186670307862,
+                "type": "EVENT",
+                "enabled": true,
+                "modification_date": 1603050021675,
+                "linked_rule_identifier": null,
+                "name": "Excessive Database Connections",
+                "average_capacity": 0,
+                "id": 100003,
+                "base_capacity": 0
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Rule",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Owner": "admin",
+                    "BaseHostID": 0,
+                    "CapacityTimestamp": 0,
+                    "Origin": "SYSTEM",
+                    "CreationDate": "2010-05-06T18:40:33.573000+00:00",
+                    "Type": "EVENT",
+                    "Enabled": false,
+                    "ModificationDate": "2020-10-18T19:40:20.699000+00:00",
+                    "Name": "Devices with High Event Rates",
+                    "AverageCapacity": 0,
+                    "ID": 100001,
+                    "BaseCapacity": 0
+                },
+                {
+                    "Owner": "admin",
+                    "BaseHostID": 0,
+                    "CapacityTimestamp": 0,
+                    "Origin": "SYSTEM",
+                    "CreationDate": "2007-08-09T14:38:27.862000+00:00",
+                    "Type": "EVENT",
+                    "Enabled": true,
+                    "ModificationDate": "2020-10-18T19:40:21.675000+00:00",
+                    "Name": "Excessive Database Connections",
+                    "AverageCapacity": 0,
+                    "ID": 100003,
+                    "BaseCapacity": 0
+                }
+            ]
+        }
     },
-    "Endpoint": {
-     "IPAddress": []
-    }
-   },
-   {
-    "Asset": {
-     "vulnerability_count": 0,
-     "interfaces": [],
-     "risk_score_sum": 0.0,
-     "hostnames": [
-      {
-       "last_seen_profiler": 1613395223532,
-       "created": 1612292712139,
-       "last_seen_scanner": null,
-       "name": "-",
-       "first_seen_scanner": null,
-       "id": 1008,
-       "type": "NETBIOS",
-       "first_seen_profiler": 1612292712139
-      }
-     ],
-     "id": 1008,
-     "users": [
-      {
-       "last_seen_profiler": 1613395223532,
-       "last_seen_scanner": null,
-       "first_seen_scanner": null,
-       "id": 1008,
-       "first_seen_profiler": 1612292712139,
-       "username": "DWM-3"
-      }
-     ],
-     "domain_id": 0,
-     "properties": [
-      {
-       "last_reported": "2021-02-02T19:05:12.645000+00:00",
-       "name": "Unified Name",
-       "type_id": 1002,
-       "id": 1007,
-       "last_reported_by": "IDENTITY:112",
-       "value": "-"
-      }
-     ],
-     "products": [],
-     "Name": {
-      "Value": "-",
-      "LastUser": "IDENTITY:112"
-     }
+    "rule_groups_list": {
+        "response": [
+            {
+                "owner": "admin",
+                "modified_time": 1389021806060,
+                "level": 2,
+                "name": "Asset Reconciliation Exclusion",
+                "description": "Rules focused on detection of suspicious asset reconciliation behavior.",
+                "child_groups": [],
+                "id": 125,
+                "child_items": [
+                    "1607",
+                    "1608",
+                    "1609",
+                    "1610",
+                    "1611",
+                    "1612",
+                    "1613",
+                    "1614",
+                    "1615",
+                    "1616",
+                    "1617",
+                    "1618",
+                    "100039",
+                    "100041",
+                    "100037",
+                    "100040",
+                    "100038",
+                    "100035",
+                    "100036",
+                    "100044",
+                    "100034",
+                    "100042",
+                    "100045",
+                    "100043"
+                ],
+                "type": "RULE_GROUP",
+                "parent_id": 3
+            },
+            {
+                "owner": "admin",
+                "modified_time": 1603048224297,
+                "level": 1,
+                "name": "Response",
+                "description": "Sample rules for building email and other responses based on a rule.",
+                "child_groups": [],
+                "id": 100,
+                "child_items": [
+                    "1209",
+                    "1210",
+                    "100237",
+                    "100238"
+                ],
+                "type": "RULE_GROUP",
+                "parent_id": 3
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.RuleGroup",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Owner": "admin",
+                    "ModifiedTime": "2014-01-06T15:23:26.060000+00:00",
+                    "Level": 2,
+                    "Name": "Asset Reconciliation Exclusion",
+                    "Description": "Rules focused on detection of suspicious asset reconciliation behavior.",
+                    "ID": 125,
+                    "ChildItems": [
+                        "1607",
+                        "1608",
+                        "1609",
+                        "1610",
+                        "1611",
+                        "1612",
+                        "1613",
+                        "1614",
+                        "1615",
+                        "1616",
+                        "1617",
+                        "1618",
+                        "100039",
+                        "100041",
+                        "100037",
+                        "100040",
+                        "100038",
+                        "100035",
+                        "100036",
+                        "100044",
+                        "100034",
+                        "100042",
+                        "100045",
+                        "100043"
+                    ],
+                    "Type": "RULE_GROUP",
+                    "ParentID": 3
+                },
+                {
+                    "Owner": "admin",
+                    "ModifiedTime": "2020-10-18T19:10:24.297000+00:00",
+                    "Level": 1,
+                    "Name": "Response",
+                    "Description": "Sample rules for building email and other responses based on a rule.",
+                    "ID": 100,
+                    "ChildItems": [
+                        "1209",
+                        "1210",
+                        "100237",
+                        "100238"
+                    ],
+                    "Type": "RULE_GROUP",
+                    "ParentID": 3
+                }
+            ]
+        }
     },
-    "Endpoint": {
-     "IPAddress": []
-    }
-   }
-  ],
-  "response": [
-   {
-    "vulnerability_count": 0,
-    "interfaces": [],
-    "risk_score_sum": 0.0,
-    "hostnames": [
-     {
-      "last_seen_profiler": 1613395223530,
-      "created": 1612292712138,
-      "last_seen_scanner": null,
-      "name": "HOST1233X11",
-      "first_seen_scanner": null,
-      "id": 1007,
-      "type": "NETBIOS",
-      "first_seen_profiler": 1612292712138
-     }
-    ],
-    "id": 1007,
-    "users": [
-     {
-      "last_seen_profiler": 1613395223530,
-      "last_seen_scanner": null,
-      "first_seen_scanner": null,
-      "id": 1007,
-      "first_seen_profiler": 1612292712138,
-      "username": "Administrator"
-     }
-    ],
-    "domain_id": 0,
-    "properties": [
-     {
-      "last_reported": 1612292712643,
-      "name": "Unified Name",
-      "type_id": 1002,
-      "id": 1006,
-      "last_reported_by": "IDENTITY:112",
-      "value": "HOST1233X11"
-     }
-    ],
-    "products": []
-   },
-   {
-    "vulnerability_count": 0,
-    "interfaces": [],
-    "risk_score_sum": 0.0,
-    "hostnames": [
-     {
-      "last_seen_profiler": 1613395223532,
-      "created": 1612292712139,
-      "last_seen_scanner": null,
-      "name": "-",
-      "first_seen_scanner": null,
-      "id": 1008,
-      "type": "NETBIOS",
-      "first_seen_profiler": 1612292712139
-     }
-    ],
-    "id": 1008,
-    "users": [
-     {
-      "last_seen_profiler": 1613395223532,
-      "last_seen_scanner": null,
-      "first_seen_scanner": null,
-      "id": 1008,
-      "first_seen_profiler": 1612292712139,
-      "username": "DWM-3"
-     }
-    ],
-    "domain_id": 0,
-    "properties": [
-     {
-      "last_reported": 1612292712645,
-      "name": "Unified Name",
-      "type_id": 1002,
-      "id": 1007,
-      "last_reported_by": "IDENTITY:112",
-      "value": "-"
-     }
-    ],
-    "products": []
-   }
-  ],
-  "expected": {
-   "outputs_prefix": null,
-   "outputs_key_field": null,
-   "outputs": {
-     "QRadar.Asset(val.ID === \"1007\")": {
-      "VulnerabilityCount": 0,
-      "RiskScoreSum": 0.0,
-      "Hostnames": [
-       {
-        "last_seen_profiler": "2021-02-15T13:20:23.530000+00:00",
-        "created": "2021-02-02T19:05:12.138000+00:00",
-        "name": "HOST1233X11",
-        "id": 1007,
-        "type": "NETBIOS",
-        "first_seen_profiler": "2021-02-02T19:05:12.138000+00:00"
-       }
-      ],
-      "ID": 1007,
-      "Users": [
-       {
-        "last_seen_profiler": "2021-02-15T13:20:23.530000+00:00",
-        "id": 1007,
-        "first_seen_profiler": "2021-02-02T19:05:12.138000+00:00",
-        "username": "Administrator"
-       }
-      ],
-      "DomainID": 0,
-      "Properties": [
-       {
-        "last_reported": "2021-02-02T19:05:12.643000+00:00",
-        "name": "Unified Name",
-        "type_id": 1002,
-        "id": 1006,
-        "last_reported_by": "IDENTITY:112",
-        "value": "HOST1233X11"
-       }
-      ]
-     },
-    "QRadar.Asset(val.ID === \"1008\")": {
-      "VulnerabilityCount": 0,
-      "RiskScoreSum": 0.0,
-      "Hostnames": [
-       {
-        "last_seen_profiler": "2021-02-15T13:20:23.532000+00:00",
-        "created": "2021-02-02T19:05:12.139000+00:00",
-        "name": "-",
-        "id": 1008,
-        "type": "NETBIOS",
-        "first_seen_profiler": "2021-02-02T19:05:12.139000+00:00"
-       }
-      ],
-      "ID": 1008,
-      "Users": [
-       {
-        "last_seen_profiler": "2021-02-15T13:20:23.532000+00:00",
-        "id": 1008,
-        "first_seen_profiler": "2021-02-02T19:05:12.139000+00:00",
-        "username": "DWM-3"
-       }
-      ],
-      "DomainID": 0,
-      "Properties": [
-       {
-        "last_reported": "2021-02-02T19:05:12.645000+00:00",
-        "name": "Unified Name",
-        "type_id": 1002,
-        "id": 1007,
-        "last_reported_by": "IDENTITY:112",
-        "value": "-"
-       }
-      ]
-     }
-    }
-    }
- },
- "saved_searches_list": {
-  "response": [
-   {
-    "owner": "admin",
-    "is_dashboard": true,
-    "description": "",
-    "creation_date": 1280951091630,
-    "uid": "0e2sc103-53c3-4dbd-x63z-320cca195adc",
-    "database": "EVENTS",
-    "is_default": false,
-    "is_quick_search": true,
-    "name": "Remote Recon and Scanning Activity by Destination Port",
-    "modified_date": 1603049956160,
-    "id": 2776,
-    "is_aggregate": true,
-    "aql": "SELECT \"destinationPort\" AS 'Destination Port', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(qid) AS 'Event Name (Unique Count)', UniqueCount(logSourceId) AS 'Log Source (Unique Count)', UniqueCount(category) AS 'Low Level Category (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', UniqueCount(\"userName\") AS 'Username (Unique Count)', MAX(\"magnitude\") AS 'Magnitude (Maximum)', SUM(\"eventCount\") AS 'Event Count (Sum)', COUNT(*) AS 'Count' from events where ( (\"creEventList\"='100120') or (\"creEventList\"='100122') or (\"creEventList\"='100135') AND \"eventDirection\"='R2L' ) GROUP BY \"destinationPort\" order by \"Event Count (Sum)\" desc last 6 hours",
-    "is_shared": true
-   },
-   {
-    "owner": "admin",
-    "is_dashboard": true,
-    "description": "",
-    "creation_date": 1279819986761,
-    "uid": "0e2sc103-53c3-4dbd-x63z-320cca195adf",
-    "database": "FLOWS",
-    "is_default": false,
-    "is_quick_search": true,
-    "name": "Flow Bias",
-    "modified_date": 1603049956043,
-    "id": 2792,
-    "is_aggregate": true,
-    "aql": "SELECT \"flowBias\" AS 'Flow Bias', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(\"destinationPort\") AS 'Destination Port (Unique Count)', UniqueCount(APPLICATIONNAME(applicationid)) AS 'Application (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', SUM(\"sourceBytes\") AS 'Source Bytes (Sum)', SUM(\"destinationBytes\") AS 'Destination Bytes (Sum)', SUM((SourceBytes + DestinationBytes)) AS 'Total Bytes (Sum)', SUM(\"sourcePackets\") AS 'Source Packets (Sum)', SUM(\"destinationPackets\") AS 'Destination Packets (Sum)', SUM((SourcePackets + DestinationPackets)) AS 'Total Packets (Sum)', COUNT(*) AS 'Count' from flows where ( ( (\"flowDirection\"='L2R') or (\"flowDirection\"='R2L') or (\"flowDirection\"='R2R') AND \"endTime\">='1284540300000' ) AND \"endTime\"<='1284561900000' ) GROUP BY \"flowBias\" order by \"Total Bytes (Sum)\" desc last 6 hours",
-    "is_shared": true
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.SavedSearch",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Owner": "admin",
-     "Description": "",
-     "CreationDate": "2010-08-04T19:44:51.630000+00:00",
-     "UID": "0e2sc103-53c3-4dbd-x63z-320cca195adc",
-     "Database": "EVENTS",
-     "QuickSearch": true,
-     "Name": "Remote Recon and Scanning Activity by Destination Port",
-     "ModifiedDate": "2020-10-18T19:39:16.160000+00:00",
-     "ID": 2776,
-     "AQL": "SELECT \"destinationPort\" AS 'Destination Port', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(qid) AS 'Event Name (Unique Count)', UniqueCount(logSourceId) AS 'Log Source (Unique Count)', UniqueCount(category) AS 'Low Level Category (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', UniqueCount(\"userName\") AS 'Username (Unique Count)', MAX(\"magnitude\") AS 'Magnitude (Maximum)', SUM(\"eventCount\") AS 'Event Count (Sum)', COUNT(*) AS 'Count' from events where ( (\"creEventList\"='100120') or (\"creEventList\"='100122') or (\"creEventList\"='100135') AND \"eventDirection\"='R2L' ) GROUP BY \"destinationPort\" order by \"Event Count (Sum)\" desc last 6 hours",
-     "IsShared": true
+    "assets_list": {
+        "enrich_assets_results": [
+            {
+                "Asset": {
+                    "vulnerability_count": 0,
+                    "interfaces": [],
+                    "risk_score_sum": 0.0,
+                    "hostnames": [
+                        {
+                            "last_seen_profiler": 1613395223530,
+                            "created": 1612292712138,
+                            "last_seen_scanner": null,
+                            "name": "HOST1233X11",
+                            "first_seen_scanner": null,
+                            "id": 1007,
+                            "type": "NETBIOS",
+                            "first_seen_profiler": 1612292712138
+                        }
+                    ],
+                    "id": 1007,
+                    "users": [
+                        {
+                            "last_seen_profiler": 1613395223530,
+                            "last_seen_scanner": null,
+                            "first_seen_scanner": null,
+                            "id": 1007,
+                            "first_seen_profiler": 1612292712138,
+                            "username": "Administrator"
+                        }
+                    ],
+                    "domain_id": 0,
+                    "properties": [
+                        {
+                            "last_reported": "2021-02-02T19:05:12.643000+00:00",
+                            "name": "Unified Name",
+                            "type_id": 1002,
+                            "id": 1006,
+                            "last_reported_by": "IDENTITY:112",
+                            "value": "HOST1233X11"
+                        }
+                    ],
+                    "Name": {
+                        "Value": "HOST1233X11",
+                        "LastUser": "IDENTITY:112"
+                    },
+                    "products": []
+                },
+                "Endpoint": {
+                    "IPAddress": []
+                }
+            },
+            {
+                "Asset": {
+                    "vulnerability_count": 0,
+                    "interfaces": [],
+                    "risk_score_sum": 0.0,
+                    "hostnames": [
+                        {
+                            "last_seen_profiler": 1613395223532,
+                            "created": 1612292712139,
+                            "last_seen_scanner": null,
+                            "name": "-",
+                            "first_seen_scanner": null,
+                            "id": 1008,
+                            "type": "NETBIOS",
+                            "first_seen_profiler": 1612292712139
+                        }
+                    ],
+                    "id": 1008,
+                    "users": [
+                        {
+                            "last_seen_profiler": 1613395223532,
+                            "last_seen_scanner": null,
+                            "first_seen_scanner": null,
+                            "id": 1008,
+                            "first_seen_profiler": 1612292712139,
+                            "username": "DWM-3"
+                        }
+                    ],
+                    "domain_id": 0,
+                    "properties": [
+                        {
+                            "last_reported": "2021-02-02T19:05:12.645000+00:00",
+                            "name": "Unified Name",
+                            "type_id": 1002,
+                            "id": 1007,
+                            "last_reported_by": "IDENTITY:112",
+                            "value": "-"
+                        }
+                    ],
+                    "products": [],
+                    "Name": {
+                        "Value": "-",
+                        "LastUser": "IDENTITY:112"
+                    }
+                },
+                "Endpoint": {
+                    "IPAddress": []
+                }
+            }
+        ],
+        "response": [
+            {
+                "vulnerability_count": 0,
+                "interfaces": [],
+                "risk_score_sum": 0.0,
+                "hostnames": [
+                    {
+                        "last_seen_profiler": 1613395223530,
+                        "created": 1612292712138,
+                        "last_seen_scanner": null,
+                        "name": "HOST1233X11",
+                        "first_seen_scanner": null,
+                        "id": 1007,
+                        "type": "NETBIOS",
+                        "first_seen_profiler": 1612292712138
+                    }
+                ],
+                "id": 1007,
+                "users": [
+                    {
+                        "last_seen_profiler": 1613395223530,
+                        "last_seen_scanner": null,
+                        "first_seen_scanner": null,
+                        "id": 1007,
+                        "first_seen_profiler": 1612292712138,
+                        "username": "Administrator"
+                    }
+                ],
+                "domain_id": 0,
+                "properties": [
+                    {
+                        "last_reported": 1612292712643,
+                        "name": "Unified Name",
+                        "type_id": 1002,
+                        "id": 1006,
+                        "last_reported_by": "IDENTITY:112",
+                        "value": "HOST1233X11"
+                    }
+                ],
+                "products": []
+            },
+            {
+                "vulnerability_count": 0,
+                "interfaces": [],
+                "risk_score_sum": 0.0,
+                "hostnames": [
+                    {
+                        "last_seen_profiler": 1613395223532,
+                        "created": 1612292712139,
+                        "last_seen_scanner": null,
+                        "name": "-",
+                        "first_seen_scanner": null,
+                        "id": 1008,
+                        "type": "NETBIOS",
+                        "first_seen_profiler": 1612292712139
+                    }
+                ],
+                "id": 1008,
+                "users": [
+                    {
+                        "last_seen_profiler": 1613395223532,
+                        "last_seen_scanner": null,
+                        "first_seen_scanner": null,
+                        "id": 1008,
+                        "first_seen_profiler": 1612292712139,
+                        "username": "DWM-3"
+                    }
+                ],
+                "domain_id": 0,
+                "properties": [
+                    {
+                        "last_reported": 1612292712645,
+                        "name": "Unified Name",
+                        "type_id": 1002,
+                        "id": 1007,
+                        "last_reported_by": "IDENTITY:112",
+                        "value": "-"
+                    }
+                ],
+                "products": []
+            }
+        ],
+        "expected": {
+            "outputs_prefix": null,
+            "outputs_key_field": null,
+            "outputs": {
+                "QRadar.Asset(val.ID === \"1007\")": {
+                    "VulnerabilityCount": 0,
+                    "RiskScoreSum": 0.0,
+                    "Hostnames": [
+                        {
+                            "last_seen_profiler": "2021-02-15T13:20:23.530000+00:00",
+                            "created": "2021-02-02T19:05:12.138000+00:00",
+                            "name": "HOST1233X11",
+                            "id": 1007,
+                            "type": "NETBIOS",
+                            "first_seen_profiler": "2021-02-02T19:05:12.138000+00:00"
+                        }
+                    ],
+                    "ID": 1007,
+                    "Users": [
+                        {
+                            "last_seen_profiler": "2021-02-15T13:20:23.530000+00:00",
+                            "id": 1007,
+                            "first_seen_profiler": "2021-02-02T19:05:12.138000+00:00",
+                            "username": "Administrator"
+                        }
+                    ],
+                    "DomainID": 0,
+                    "Properties": [
+                        {
+                            "last_reported": "2021-02-02T19:05:12.643000+00:00",
+                            "name": "Unified Name",
+                            "type_id": 1002,
+                            "id": 1006,
+                            "last_reported_by": "IDENTITY:112",
+                            "value": "HOST1233X11"
+                        }
+                    ]
+                },
+                "QRadar.Asset(val.ID === \"1008\")": {
+                    "VulnerabilityCount": 0,
+                    "RiskScoreSum": 0.0,
+                    "Hostnames": [
+                        {
+                            "last_seen_profiler": "2021-02-15T13:20:23.532000+00:00",
+                            "created": "2021-02-02T19:05:12.139000+00:00",
+                            "name": "-",
+                            "id": 1008,
+                            "type": "NETBIOS",
+                            "first_seen_profiler": "2021-02-02T19:05:12.139000+00:00"
+                        }
+                    ],
+                    "ID": 1008,
+                    "Users": [
+                        {
+                            "last_seen_profiler": "2021-02-15T13:20:23.532000+00:00",
+                            "id": 1008,
+                            "first_seen_profiler": "2021-02-02T19:05:12.139000+00:00",
+                            "username": "DWM-3"
+                        }
+                    ],
+                    "DomainID": 0,
+                    "Properties": [
+                        {
+                            "last_reported": "2021-02-02T19:05:12.645000+00:00",
+                            "name": "Unified Name",
+                            "type_id": 1002,
+                            "id": 1007,
+                            "last_reported_by": "IDENTITY:112",
+                            "value": "-"
+                        }
+                    ]
+                }
+            }
+        }
     },
-    {
-     "Owner": "admin",
-     "Description": "",
-     "CreationDate": "2010-07-22T17:33:06.761000+00:00",
-     "UID": "0e2sc103-53c3-4dbd-x63z-320cca195adf",
-     "Database": "FLOWS",
-     "QuickSearch": true,
-     "Name": "Flow Bias",
-     "ModifiedDate": "2020-10-18T19:39:16.043000+00:00",
-     "ID": 2792,
-     "AQL": "SELECT \"flowBias\" AS 'Flow Bias', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(\"destinationPort\") AS 'Destination Port (Unique Count)', UniqueCount(APPLICATIONNAME(applicationid)) AS 'Application (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', SUM(\"sourceBytes\") AS 'Source Bytes (Sum)', SUM(\"destinationBytes\") AS 'Destination Bytes (Sum)', SUM((SourceBytes + DestinationBytes)) AS 'Total Bytes (Sum)', SUM(\"sourcePackets\") AS 'Source Packets (Sum)', SUM(\"destinationPackets\") AS 'Destination Packets (Sum)', SUM((SourcePackets + DestinationPackets)) AS 'Total Packets (Sum)', COUNT(*) AS 'Count' from flows where ( ( (\"flowDirection\"='L2R') or (\"flowDirection\"='R2L') or (\"flowDirection\"='R2R') AND \"endTime\">='1284540300000' ) AND \"endTime\"<='1284561900000' ) GROUP BY \"flowBias\" order by \"Total Bytes (Sum)\" desc last 6 hours",
-     "IsShared": true
-    }
-   ]
-  }
- },
- "searches_list": {
-  "response": [
-   "c6cc9784-082e-4195-bca8-dcab25387989",
-   "47b25c49-9dca-462c-8fe8-9c25e791a77c"
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.SearchID",
-   "outputs_key_field": "SearchID",
-   "outputs": [
-    {
-     "SearchID": "c6cc9784-082e-4195-bca8-dcab25387989"
+    "saved_searches_list": {
+        "response": [
+            {
+                "owner": "admin",
+                "is_dashboard": true,
+                "description": "",
+                "creation_date": 1280951091630,
+                "uid": "0e2sc103-53c3-4dbd-x63z-320cca195adc",
+                "database": "EVENTS",
+                "is_default": false,
+                "is_quick_search": true,
+                "name": "Remote Recon and Scanning Activity by Destination Port",
+                "modified_date": 1603049956160,
+                "id": 2776,
+                "is_aggregate": true,
+                "aql": "SELECT \"destinationPort\" AS 'Destination Port', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(qid) AS 'Event Name (Unique Count)', UniqueCount(logSourceId) AS 'Log Source (Unique Count)', UniqueCount(category) AS 'Low Level Category (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', UniqueCount(\"userName\") AS 'Username (Unique Count)', MAX(\"magnitude\") AS 'Magnitude (Maximum)', SUM(\"eventCount\") AS 'Event Count (Sum)', COUNT(*) AS 'Count' from events where ( (\"creEventList\"='100120') or (\"creEventList\"='100122') or (\"creEventList\"='100135') AND \"eventDirection\"='R2L' ) GROUP BY \"destinationPort\" order by \"Event Count (Sum)\" desc last 6 hours",
+                "is_shared": true
+            },
+            {
+                "owner": "admin",
+                "is_dashboard": true,
+                "description": "",
+                "creation_date": 1279819986761,
+                "uid": "0e2sc103-53c3-4dbd-x63z-320cca195adf",
+                "database": "FLOWS",
+                "is_default": false,
+                "is_quick_search": true,
+                "name": "Flow Bias",
+                "modified_date": 1603049956043,
+                "id": 2792,
+                "is_aggregate": true,
+                "aql": "SELECT \"flowBias\" AS 'Flow Bias', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(\"destinationPort\") AS 'Destination Port (Unique Count)', UniqueCount(APPLICATIONNAME(applicationid)) AS 'Application (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', SUM(\"sourceBytes\") AS 'Source Bytes (Sum)', SUM(\"destinationBytes\") AS 'Destination Bytes (Sum)', SUM((SourceBytes + DestinationBytes)) AS 'Total Bytes (Sum)', SUM(\"sourcePackets\") AS 'Source Packets (Sum)', SUM(\"destinationPackets\") AS 'Destination Packets (Sum)', SUM((SourcePackets + DestinationPackets)) AS 'Total Packets (Sum)', COUNT(*) AS 'Count' from flows where ( ( (\"flowDirection\"='L2R') or (\"flowDirection\"='R2L') or (\"flowDirection\"='R2R') AND \"endTime\">='1284540300000' ) AND \"endTime\"<='1284561900000' ) GROUP BY \"flowBias\" order by \"Total Bytes (Sum)\" desc last 6 hours",
+                "is_shared": true
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.SavedSearch",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Owner": "admin",
+                    "Description": "",
+                    "CreationDate": "2010-08-04T19:44:51.630000+00:00",
+                    "UID": "0e2sc103-53c3-4dbd-x63z-320cca195adc",
+                    "Database": "EVENTS",
+                    "QuickSearch": true,
+                    "Name": "Remote Recon and Scanning Activity by Destination Port",
+                    "ModifiedDate": "2020-10-18T19:39:16.160000+00:00",
+                    "ID": 2776,
+                    "AQL": "SELECT \"destinationPort\" AS 'Destination Port', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(qid) AS 'Event Name (Unique Count)', UniqueCount(logSourceId) AS 'Log Source (Unique Count)', UniqueCount(category) AS 'Low Level Category (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', UniqueCount(\"userName\") AS 'Username (Unique Count)', MAX(\"magnitude\") AS 'Magnitude (Maximum)', SUM(\"eventCount\") AS 'Event Count (Sum)', COUNT(*) AS 'Count' from events where ( (\"creEventList\"='100120') or (\"creEventList\"='100122') or (\"creEventList\"='100135') AND \"eventDirection\"='R2L' ) GROUP BY \"destinationPort\" order by \"Event Count (Sum)\" desc last 6 hours",
+                    "IsShared": true
+                },
+                {
+                    "Owner": "admin",
+                    "Description": "",
+                    "CreationDate": "2010-07-22T17:33:06.761000+00:00",
+                    "UID": "0e2sc103-53c3-4dbd-x63z-320cca195adf",
+                    "Database": "FLOWS",
+                    "QuickSearch": true,
+                    "Name": "Flow Bias",
+                    "ModifiedDate": "2020-10-18T19:39:16.043000+00:00",
+                    "ID": 2792,
+                    "AQL": "SELECT \"flowBias\" AS 'Flow Bias', UniqueCount(\"sourceIP\") AS 'Source IP (Unique Count)', UniqueCount(\"destinationIP\") AS 'Destination IP (Unique Count)', UniqueCount(\"destinationPort\") AS 'Destination Port (Unique Count)', UniqueCount(APPLICATIONNAME(applicationid)) AS 'Application (Unique Count)', UniqueCount(\"protocolId\") AS 'Protocol (Unique Count)', SUM(\"sourceBytes\") AS 'Source Bytes (Sum)', SUM(\"destinationBytes\") AS 'Destination Bytes (Sum)', SUM((SourceBytes + DestinationBytes)) AS 'Total Bytes (Sum)', SUM(\"sourcePackets\") AS 'Source Packets (Sum)', SUM(\"destinationPackets\") AS 'Destination Packets (Sum)', SUM((SourcePackets + DestinationPackets)) AS 'Total Packets (Sum)', COUNT(*) AS 'Count' from flows where ( ( (\"flowDirection\"='L2R') or (\"flowDirection\"='R2L') or (\"flowDirection\"='R2R') AND \"endTime\">='1284540300000' ) AND \"endTime\"<='1284561900000' ) GROUP BY \"flowBias\" order by \"Total Bytes (Sum)\" desc last 6 hours",
+                    "IsShared": true
+                }
+            ]
+        }
     },
-    {
-     "SearchID": "47b25c49-9dca-462c-8fe8-9c25e791a77c"
-    }
-   ]
-  }
- },
- "search_create": {
-  "response": {
-   "cursor_id": "19e90792-1a17-403b-ae5b-d0e60740b95e",
-   "status": "WAIT",
-   "compressed_data_file_count": 0,
-   "compressed_data_total_size": 0,
-   "data_file_count": 4,
-   "data_total_size": 456704,
-   "index_file_count": 0,
-   "index_total_size": 0,
-   "processed_record_count": 0,
-   "desired_retention_time_msec": 86400000,
-   "progress": 0,
-   "progress_details": [],
-   "query_execution_time": 0,
-   "query_string": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(2)  limit 20 START 1605046453426",
-   "record_count": 0,
-   "size_on_disk": 0,
-   "save_results": false,
-   "completed": false,
-   "subsearch_ids": [],
-   "snapshot": null,
-   "search_id": "19e90792-1a17-403b-ae5b-d0e60740b95e"
-  },
-  "args":{
-    "query_expression": "SELECT * from events WHERE INOFFENSE(1) limit 10 START 1605046453426"
-  },
-  "expected": {
-   "outputs_prefix": "QRadar.Search",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Status": "WAIT",
-     "ID": "19e90792-1a17-403b-ae5b-d0e60740b95e"
-    }
-   ]
-  }
- },
- "search_status_get": {
-  "response": {
-   "cursor_id": "19e90792-1a17-403b-ae5b-d0e60740b95e",
-   "status": "COMPLETED",
-   "compressed_data_file_count": 0,
-   "compressed_data_total_size": 0,
-   "data_file_count": 60,
-   "data_total_size": 6898958,
-   "index_file_count": 0,
-   "index_total_size": 0,
-   "processed_record_count": 26,
-   "desired_retention_time_msec": 86400000,
-   "progress": 100,
-   "progress_details": [],
-   "query_execution_time": 304,
-   "query_string": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(2)  limit 20 START 1605046453426",
-   "record_count": 20,
-   "size_on_disk": 22524,
-   "save_results": false,
-   "completed": true,
-   "subsearch_ids": [],
-   "snapshot": null,
-   "search_id": "19e90792-1a17-403b-ae5b-d0e60740b95e"
-  },
-  "expected": {
-   "outputs_prefix": "QRadar.Search",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Status": "COMPLETED",
-     "ID": "19e90792-1a17-403b-ae5b-d0e60740b95e"
-    }
-   ]
-  }
- },
- "search_results_get": {
-  "response": {
-   "events": [
-    {
-     "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
-     "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
-     "categoryname_highlevelcategory": "Access",
-     "categoryname_category": "Access Permitted",
-     "sourceip": "192.168.0.1",
-     "sourceport": 546,
-     "destinationip": "192.168.0.2",
-     "destinationport": 547,
-     "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
-     "username": null,
-     "protocolname_protocolid": "UDP",
-     "rulename_creEventList": [
-      "BB:ProtocolDefinition: Windows Protocols",
-      "Destination Asset Weight is Low",
-      "Source Asset Weight is Low",
-      "Fake port scan",
-      "BB:CategoryDefinition: Firewall or ACL Accept",
-      "Load Basic Building Blocks"
-     ],
-     "sourcegeographiclocation": "other",
-     "sourceMAC": "00:00:00:00:00:00",
-     "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
-     "destinationgeographiclocation": "other",
-     "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
-     "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
-     "credibility": 5,
-     "severity": 0,
-     "magnitude": 1,
-     "eventcount": 2,
-     "eventDirection": "R2R",
-     "postNatDestinationIP": "0.0.0.0",
-     "postNatDestinationPort": 0,
-     "postNatSourceIP": "0.0.0.0",
-     "postNatSourcePort": 0,
-     "preNatDestinationPort": 0,
-     "preNatSourceIP": "0.0.0.0",
-     "preNatSourcePort": 0,
-     "starttime": 1614067175962,
-     "devicetime": 1614067166000
+    "searches_list": {
+        "response": [
+            "c6cc9784-082e-4195-bca8-dcab25387989",
+            "47b25c49-9dca-462c-8fe8-9c25e791a77c"
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.SearchID",
+            "outputs_key_field": "SearchID",
+            "outputs": [
+                {
+                    "SearchID": "c6cc9784-082e-4195-bca8-dcab25387989"
+                },
+                {
+                    "SearchID": "47b25c49-9dca-462c-8fe8-9c25e791a77c"
+                }
+            ]
+        }
     },
-    {
-     "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
-     "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
-     "categoryname_highlevelcategory": "Access",
-     "categoryname_category": "Access Permitted",
-     "sourceip": "192.168.0.1",
-     "sourceport": 0,
-     "destinationip": "192.168.0.2",
-     "destinationport": 546,
-     "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
-     "username": null,
-     "protocolname_protocolid": "UDP",
-     "rulename_creEventList": [
-      "BB:ProtocolDefinition: Windows Protocols",
-      "Destination Asset Weight is Low",
-      "Source Asset Weight is Low",
-      "Context is Remote to Local",
-      "Fake port scan",
-      "BB:CategoryDefinition: Firewall or ACL Accept",
-      "Load Basic Building Blocks"
-     ],
-     "sourcegeographiclocation": "other",
-     "sourceMAC": "00:00:00:00:00:00",
-     "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
-     "destinationgeographiclocation": "other",
-     "destinationv6": "0:0:0:0:0:0:0:0",
-     "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
-     "credibility": 5,
-     "severity": 0,
-     "magnitude": 2,
-     "eventcount": 1,
-     "eventDirection": "R2L",
-     "postNatDestinationIP": "0.0.0.0",
-     "postNatDestinationPort": 0,
-     "postNatSourceIP": "0.0.0.0",
-     "postNatSourcePort": 0,
-     "preNatDestinationPort": 0,
-     "preNatSourceIP": "0.0.0.0",
-     "preNatSourcePort": 0,
-     "starttime": 1614067175962,
-     "devicetime": 1614067163000
-    }
-   ]
-  },
-  "expected": {
-   "outputs_prefix": "QRadar.Search(val.ID === \"abcd-1234\").Result.events",
-   "outputs_key_field": null,
-   "outputs": [
-    {
-     "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
-     "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
-     "categoryname_highlevelcategory": "Access",
-     "categoryname_category": "Access Permitted",
-     "sourceip": "192.168.0.1",
-     "sourceport": 546,
-     "destinationip": "192.168.0.2",
-     "destinationport": 547,
-     "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
-     "protocolname_protocolid": "UDP",
-     "rulename_creEventList": [
-      "BB:ProtocolDefinition: Windows Protocols",
-      "Destination Asset Weight is Low",
-      "Source Asset Weight is Low",
-      "Fake port scan",
-      "BB:CategoryDefinition: Firewall or ACL Accept",
-      "Load Basic Building Blocks"
-     ],
-     "sourcegeographiclocation": "other",
-     "sourceMAC": "00:00:00:00:00:00",
-     "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
-     "destinationgeographiclocation": "other",
-     "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
-     "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
-     "credibility": 5,
-     "severity": 0,
-     "magnitude": 1,
-     "eventcount": 2,
-     "eventDirection": "R2R",
-     "postNatDestinationIP": "0.0.0.0",
-     "postNatDestinationPort": 0,
-     "postNatSourceIP": "0.0.0.0",
-     "postNatSourcePort": 0,
-     "preNatDestinationPort": 0,
-     "preNatSourceIP": "0.0.0.0",
-     "preNatSourcePort": 0,
-     "starttime": "2021-02-23T07:59:35.962000+00:00",
-     "devicetime": "2021-02-23T07:59:26+00:00"
+    "search_create": {
+        "response": {
+            "cursor_id": "19e90792-1a17-403b-ae5b-d0e60740b95e",
+            "status": "WAIT",
+            "compressed_data_file_count": 0,
+            "compressed_data_total_size": 0,
+            "data_file_count": 4,
+            "data_total_size": 456704,
+            "index_file_count": 0,
+            "index_total_size": 0,
+            "processed_record_count": 0,
+            "desired_retention_time_msec": 86400000,
+            "progress": 0,
+            "progress_details": [],
+            "query_execution_time": 0,
+            "query_string": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(2)  limit 20 START 1605046453426",
+            "record_count": 0,
+            "size_on_disk": 0,
+            "save_results": false,
+            "completed": false,
+            "subsearch_ids": [],
+            "snapshot": null,
+            "search_id": "19e90792-1a17-403b-ae5b-d0e60740b95e"
+        },
+        "args": {
+            "query_expression": "SELECT * from events WHERE INOFFENSE(1) limit 10 START 1605046453426"
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.Search",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Status": "WAIT",
+                    "ID": "19e90792-1a17-403b-ae5b-d0e60740b95e"
+                }
+            ]
+        }
     },
-    {
-     "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
-     "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
-     "categoryname_highlevelcategory": "Access",
-     "categoryname_category": "Access Permitted",
-     "sourceip": "192.168.0.1",
-     "sourceport": 0,
-     "destinationip": "192.168.0.2",
-     "destinationport": 546,
-     "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
-     "protocolname_protocolid": "UDP",
-     "rulename_creEventList": [
-      "BB:ProtocolDefinition: Windows Protocols",
-      "Destination Asset Weight is Low",
-      "Source Asset Weight is Low",
-      "Context is Remote to Local",
-      "Fake port scan",
-      "BB:CategoryDefinition: Firewall or ACL Accept",
-      "Load Basic Building Blocks"
-     ],
-     "sourcegeographiclocation": "other",
-     "sourceMAC": "00:00:00:00:00:00",
-     "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
-     "destinationgeographiclocation": "other",
-     "destinationv6": "0:0:0:0:0:0:0:0",
-     "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
-     "credibility": 5,
-     "severity": 0,
-     "magnitude": 2,
-     "eventcount": 1,
-     "eventDirection": "R2L",
-     "postNatDestinationIP": "0.0.0.0",
-     "postNatDestinationPort": 0,
-     "postNatSourceIP": "0.0.0.0",
-     "postNatSourcePort": 0,
-     "preNatDestinationPort": 0,
-     "preNatSourceIP": "0.0.0.0",
-     "preNatSourcePort": 0,
-     "starttime": "2021-02-23T07:59:35.962000+00:00",
-     "devicetime": "2021-02-23T07:59:23+00:00"
-    }
-   ]
-  },
-  "args": {
-   "search_id": "abcd-1234"
-  }
- },
- "reference_sets_list": {
-  "response": [
-   {
-    "timeout_type": "FIRST_SEEN",
-    "number_of_elements": 3,
-    "creation_time": 1440703770114,
-    "name": "Mail Servers",
-    "element_type": "IP"
-   },
-   {
-    "timeout_type": "FIRST_SEEN",
-    "number_of_elements": 0,
-    "creation_time": 1440703846455,
-    "name": "Web Servers",
-    "element_type": "IP"
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Reference",
-   "outputs_key_field": "Name",
-   "outputs": [
-    {
-     "TimeoutType": "FIRST_SEEN",
-     "NumberOfElements": 3,
-     "CreationTime": "2015-08-27T19:29:30.114000+00:00",
-     "Name": "Mail Servers",
-     "ElementType": "IP"
+    "search_status_get": {
+        "response": {
+            "cursor_id": "19e90792-1a17-403b-ae5b-d0e60740b95e",
+            "status": "COMPLETED",
+            "compressed_data_file_count": 0,
+            "compressed_data_total_size": 0,
+            "data_file_count": 60,
+            "data_total_size": 6898958,
+            "index_file_count": 0,
+            "index_total_size": 0,
+            "processed_record_count": 26,
+            "desired_retention_time_msec": 86400000,
+            "progress": 100,
+            "progress_details": [],
+            "query_execution_time": 304,
+            "query_string": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(2)  limit 20 START 1605046453426",
+            "record_count": 20,
+            "size_on_disk": 22524,
+            "save_results": false,
+            "completed": true,
+            "subsearch_ids": [],
+            "snapshot": null,
+            "search_id": "19e90792-1a17-403b-ae5b-d0e60740b95e"
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.Search",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Status": "COMPLETED",
+                    "ID": "19e90792-1a17-403b-ae5b-d0e60740b95e"
+                }
+            ]
+        }
     },
-    {
-     "TimeoutType": "FIRST_SEEN",
-     "NumberOfElements": 0,
-     "CreationTime": "2015-08-27T19:30:46.455000+00:00",
-     "Name": "Web Servers",
-     "ElementType": "IP"
-    }
-   ]
-  }
- },
- "reference_set_create": {
-  "response": {
-   "timeout_type": "UNKNOWN",
-   "number_of_elements": 0,
-   "creation_time": 1614260106885,
-   "name": "# Email Servers",
-   "element_type": "IP"
-  },
-  "expected": {
-   "outputs_prefix": "QRadar.Reference",
-   "outputs_key_field": "Name",
-   "outputs": [
-    {
-     "TimeoutType": "UNKNOWN",
-     "NumberOfElements": 0,
-     "CreationTime": "2021-02-25T13:35:06.885000+00:00",
-     "Name": "# Email Servers",
-     "ElementType": "IP"
-    }
-   ]
-  }
- },
- "reference_set_delete": {
-  "response": {
-   "created_by": "test_user",
-   "created": 1614260272402,
-   "name": "Reference Data Deletion Task",
-   "modified": 1614260273029,
-   "started": null,
-   "completed": null,
-   "id": 93,
-   "message": "Searching for items that depend on the Reference Data.",
-   "status": "QUEUED"
-  },
-  "expected": {
-   "outputs_prefix": null,
-   "outputs_key_field": null,
-   "outputs": null
-  }
- },
- "reference_set_bulk_load": {
-  "response": {
-   "timeout_type": "FIRST_SEEN",
-   "number_of_elements": 3,
-   "creation_time": 1440703770114,
-   "name": "# Mail Servers",
-   "element_type": "IP"
-  },
-  "expected": {
-   "outputs_prefix": "QRadar.Reference",
-   "outputs_key_field": "Name",
-   "outputs": [
-    {
-     "TimeoutType": "FIRST_SEEN",
-     "NumberOfElements": 3,
-     "CreationTime": "2015-08-27T19:29:30.114000+00:00",
-     "Name": "# Mail Servers",
-     "ElementType": "IP"
-    }
-   ]
-  },
-  "args": {
-   "value": "1.2.3.4"
-  }
- },
- "reference_set_value_delete": {
-  "response": {
-   "timeout_type": "FIRST_SEEN",
-   "number_of_elements": 2,
-   "creation_time": 1440703770114,
-   "name": "Mail Servers",
-   "element_type": "IP"
-  },
-  "expected": {
-   "outputs_prefix": null,
-   "outputs_key_field": null,
-   "outputs": null
-  }
- },
- "domains_list": {
-  "response": [
-   {
-    "custom_properties": [],
-    "qvm_scanner_ids": [],
-    "asset_scanner_ids": [],
-    "flow_collector_ids": [],
-    "description": "",
-    "flow_source_ids": [],
-    "deleted": false,
-    "event_collector_ids": [],
-    "log_source_ids": [],
-    "name": "",
-    "tenant_id": 0,
-    "id": 0,
-    "log_source_group_ids": []
-   },
-   {
-    "custom_properties": [],
-    "qvm_scanner_ids": [],
-    "asset_scanner_ids": [],
-    "flow_collector_ids": [],
-    "description": "",
-    "flow_source_ids": [],
-    "deleted": true,
-    "event_collector_ids": [],
-    "log_source_ids": [],
-    "name": "QRadarWhiteListIP",
-    "tenant_id": 0,
-    "id": 1,
-    "log_source_group_ids": []
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Domains",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Description": "",
-     "Deleted": false,
-     "Name": "",
-     "TenantID": 0,
-     "ID": 0
+    "search_results_get": {
+        "response": {
+            "events": [
+                {
+                    "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+                    "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+                    "categoryname_highlevelcategory": "Access",
+                    "categoryname_category": "Access Permitted",
+                    "sourceip": "192.168.0.1",
+                    "sourceport": 546,
+                    "destinationip": "192.168.0.2",
+                    "destinationport": 547,
+                    "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+                    "username": null,
+                    "protocolname_protocolid": "UDP",
+                    "rulename_creEventList": [
+                        "BB:ProtocolDefinition: Windows Protocols",
+                        "Destination Asset Weight is Low",
+                        "Source Asset Weight is Low",
+                        "Fake port scan",
+                        "BB:CategoryDefinition: Firewall or ACL Accept",
+                        "Load Basic Building Blocks"
+                    ],
+                    "sourcegeographiclocation": "other",
+                    "sourceMAC": "00:00:00:00:00:00",
+                    "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+                    "destinationgeographiclocation": "other",
+                    "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+                    "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+                    "credibility": 5,
+                    "severity": 0,
+                    "magnitude": 1,
+                    "eventcount": 2,
+                    "eventDirection": "R2R",
+                    "postNatDestinationIP": "0.0.0.0",
+                    "postNatDestinationPort": 0,
+                    "postNatSourceIP": "0.0.0.0",
+                    "postNatSourcePort": 0,
+                    "preNatDestinationPort": 0,
+                    "preNatSourceIP": "0.0.0.0",
+                    "preNatSourcePort": 0,
+                    "starttime": 1614067175962,
+                    "devicetime": 1614067166000
+                },
+                {
+                    "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+                    "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+                    "categoryname_highlevelcategory": "Access",
+                    "categoryname_category": "Access Permitted",
+                    "sourceip": "192.168.0.1",
+                    "sourceport": 0,
+                    "destinationip": "192.168.0.2",
+                    "destinationport": 546,
+                    "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+                    "username": null,
+                    "protocolname_protocolid": "UDP",
+                    "rulename_creEventList": [
+                        "BB:ProtocolDefinition: Windows Protocols",
+                        "Destination Asset Weight is Low",
+                        "Source Asset Weight is Low",
+                        "Context is Remote to Local",
+                        "Fake port scan",
+                        "BB:CategoryDefinition: Firewall or ACL Accept",
+                        "Load Basic Building Blocks"
+                    ],
+                    "sourcegeographiclocation": "other",
+                    "sourceMAC": "00:00:00:00:00:00",
+                    "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+                    "destinationgeographiclocation": "other",
+                    "destinationv6": "0:0:0:0:0:0:0:0",
+                    "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+                    "credibility": 5,
+                    "severity": 0,
+                    "magnitude": 2,
+                    "eventcount": 1,
+                    "eventDirection": "R2L",
+                    "postNatDestinationIP": "0.0.0.0",
+                    "postNatDestinationPort": 0,
+                    "postNatSourceIP": "0.0.0.0",
+                    "postNatSourcePort": 0,
+                    "preNatDestinationPort": 0,
+                    "preNatSourceIP": "0.0.0.0",
+                    "preNatSourcePort": 0,
+                    "starttime": 1614067175962,
+                    "devicetime": 1614067163000
+                }
+            ]
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.Search(val.ID === \"abcd-1234\").Result.events",
+            "outputs_key_field": null,
+            "outputs": [
+                {
+                    "qidname_qid": "Success Audit: The Windows Filtering Platform has allowed a connection",
+                    "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+                    "categoryname_highlevelcategory": "Access",
+                    "categoryname_category": "Access Permitted",
+                    "sourceip": "192.168.0.1",
+                    "sourceport": 546,
+                    "destinationip": "192.168.0.2",
+                    "destinationport": 547,
+                    "qiddescription_qid": "Success Audit: The Windows Filtering Platform has allowed a connection.",
+                    "protocolname_protocolid": "UDP",
+                    "rulename_creEventList": [
+                        "BB:ProtocolDefinition: Windows Protocols",
+                        "Destination Asset Weight is Low",
+                        "Source Asset Weight is Low",
+                        "Fake port scan",
+                        "BB:CategoryDefinition: Firewall or ACL Accept",
+                        "Load Basic Building Blocks"
+                    ],
+                    "sourcegeographiclocation": "other",
+                    "sourceMAC": "00:00:00:00:00:00",
+                    "sourcev6": "ab12:1:4:1:106b:2121:xz15:361a",
+                    "destinationgeographiclocation": "other",
+                    "destinationv6": "ab13:1:1:1:126b:2121:qz55:361b",
+                    "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+                    "credibility": 5,
+                    "severity": 0,
+                    "magnitude": 1,
+                    "eventcount": 2,
+                    "eventDirection": "R2R",
+                    "postNatDestinationIP": "0.0.0.0",
+                    "postNatDestinationPort": 0,
+                    "postNatSourceIP": "0.0.0.0",
+                    "postNatSourcePort": 0,
+                    "preNatDestinationPort": 0,
+                    "preNatSourceIP": "0.0.0.0",
+                    "preNatSourcePort": 0,
+                    "starttime": "2021-02-23T07:59:35.962000+00:00",
+                    "devicetime": "2021-02-23T07:59:26+00:00"
+                },
+                {
+                    "qidname_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port",
+                    "logsourcename_logsourceid": "WindowsAuthServer @ 192.168.0.1",
+                    "categoryname_highlevelcategory": "Access",
+                    "categoryname_category": "Access Permitted",
+                    "sourceip": "192.168.0.1",
+                    "sourceport": 0,
+                    "destinationip": "192.168.0.2",
+                    "destinationport": 546,
+                    "qiddescription_qid": "Success Audit: The Windows Filtering Platform has permitted a bind to a local port.",
+                    "protocolname_protocolid": "UDP",
+                    "rulename_creEventList": [
+                        "BB:ProtocolDefinition: Windows Protocols",
+                        "Destination Asset Weight is Low",
+                        "Source Asset Weight is Low",
+                        "Context is Remote to Local",
+                        "Fake port scan",
+                        "BB:CategoryDefinition: Firewall or ACL Accept",
+                        "Load Basic Building Blocks"
+                    ],
+                    "sourcegeographiclocation": "other",
+                    "sourceMAC": "00:00:00:00:00:00",
+                    "sourcev6": "fb12:1:4:1:106b:2121:xz15:361a",
+                    "destinationgeographiclocation": "other",
+                    "destinationv6": "0:0:0:0:0:0:0:0",
+                    "logsourcetypename_devicetype": "Microsoft Windows Security Event Log",
+                    "credibility": 5,
+                    "severity": 0,
+                    "magnitude": 2,
+                    "eventcount": 1,
+                    "eventDirection": "R2L",
+                    "postNatDestinationIP": "0.0.0.0",
+                    "postNatDestinationPort": 0,
+                    "postNatSourceIP": "0.0.0.0",
+                    "postNatSourcePort": 0,
+                    "preNatDestinationPort": 0,
+                    "preNatSourceIP": "0.0.0.0",
+                    "preNatSourcePort": 0,
+                    "starttime": "2021-02-23T07:59:35.962000+00:00",
+                    "devicetime": "2021-02-23T07:59:23+00:00"
+                }
+            ]
+        },
+        "args": {
+            "search_id": "abcd-1234"
+        }
     },
-    {
-     "Description": "",
-     "Deleted": true,
-     "Name": "QRadarWhiteListIP",
-     "TenantID": 0,
-     "ID": 1
-    }
-   ]
-  }
- },
- "indicators_upload": {
-  "response": {
-  },
-  "expected": {
-   "outputs_prefix": {
-   },
-   "outputs_key_field": {
-   },
-   "outputs": {
-   }
-  }
- },
- "geolocations_for_ip": {
-  "response": [
-   {
-    "continent": {
-     "code": "NA",
-     "geo_id": 6255149,
-     "name": "NorthAmerica"
+    "search_cancel":{
+        "response":{
+            "cursor_id":"abcd-1234",
+            "status":"SORTING",
+            "compressed_data_file_count":0,
+            "compressed_data_total_size":0,
+            "data_file_count":8560,
+            "data_total_size":876521343,
+            "index_file_count":0,
+            "index_total_size":0,
+            "processed_record_count":0,
+            "desired_retention_time_msec":86400000,
+            "progress":8,
+            "progress_details":[
+               
+            ],
+            "query_execution_time":18767,
+            "query_string":"SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime FROM events WHERE INOFFENSE(210)  limit 20 START 1713099871139",
+            "record_count":0,
+            "size_on_disk":24,
+            "save_results":false,
+            "completed":true,
+            "subsearch_ids":[
+               
+            ],
+            "snapshot":"None",
+            "search_id":"abcd-1234"
+         },
+         "expected": {},
+         "args": {
+            "search_id": "abcd-1234"
+        }
     },
-    "traits": {
-     "internet_service_provider": null,
-     "domain": null,
-     "organization": null,
-     "user_type": null,
-     "autonomous_system_number": null,
-     "autonomous_system_organization": null
+    "reference_sets_list": {
+        "response": [
+            {
+                "timeout_type": "FIRST_SEEN",
+                "number_of_elements": 3,
+                "creation_time": 1440703770114,
+                "name": "Mail Servers",
+                "element_type": "IP"
+            },
+            {
+                "timeout_type": "FIRST_SEEN",
+                "number_of_elements": 0,
+                "creation_time": 1440703846455,
+                "name": "Web Servers",
+                "element_type": "IP"
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Reference",
+            "outputs_key_field": "Name",
+            "outputs": [
+                {
+                    "TimeoutType": "FIRST_SEEN",
+                    "NumberOfElements": 3,
+                    "CreationTime": "2015-08-27T19:29:30.114000+00:00",
+                    "Name": "Mail Servers",
+                    "ElementType": "IP"
+                },
+                {
+                    "TimeoutType": "FIRST_SEEN",
+                    "NumberOfElements": 0,
+                    "CreationTime": "2015-08-27T19:30:46.455000+00:00",
+                    "Name": "Web Servers",
+                    "ElementType": "IP"
+                }
+            ]
+        }
     },
-    "geo_json": {
-     "coordinates": [
-      47.913,
-      -122.3042
-     ],
-     "type": "Point"
+    "reference_set_create": {
+        "response": {
+            "timeout_type": "UNKNOWN",
+            "number_of_elements": 0,
+            "creation_time": 1614260106885,
+            "name": "# Email Servers",
+            "element_type": "IP"
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.Reference",
+            "outputs_key_field": "Name",
+            "outputs": [
+                {
+                    "TimeoutType": "UNKNOWN",
+                    "NumberOfElements": 0,
+                    "CreationTime": "2021-02-25T13:35:06.885000+00:00",
+                    "Name": "# Email Servers",
+                    "ElementType": "IP"
+                }
+            ]
+        }
     },
-    "city": {
-     "geo_id": 5804306,
-     "confidence": null,
-     "name": "Mukilteo"
+    "reference_set_delete": {
+        "response": {
+            "created_by": "test_user",
+            "created": 1614260272402,
+            "name": "Reference Data Deletion Task",
+            "modified": 1614260273029,
+            "started": null,
+            "completed": null,
+            "id": 93,
+            "message": "Searching for items that depend on the Reference Data.",
+            "status": "QUEUED"
+        },
+        "expected": {
+            "outputs_prefix": null,
+            "outputs_key_field": null,
+            "outputs": null
+        }
     },
-    "ip_address": "1.2.3.4",
-    "represented_country": {
-     "iso_code": null,
-     "geo_id": null,
-     "confidence": null,
-     "name": null
+    "reference_set_bulk_load": {
+        "response": {
+            "timeout_type": "FIRST_SEEN",
+            "number_of_elements": 3,
+            "creation_time": 1440703770114,
+            "name": "# Mail Servers",
+            "element_type": "IP"
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.Reference",
+            "outputs_key_field": "Name",
+            "outputs": [
+                {
+                    "TimeoutType": "FIRST_SEEN",
+                    "NumberOfElements": 3,
+                    "CreationTime": "2015-08-27T19:29:30.114000+00:00",
+                    "Name": "# Mail Servers",
+                    "ElementType": "IP"
+                }
+            ]
+        },
+        "args": {
+            "value": "1.2.3.4"
+        }
     },
-    "registered_country": {
-     "iso_code": "US",
-     "geo_id": 6252001,
-     "confidence": null,
-     "name": "United States"
+    "reference_set_value_delete": {
+        "response": {
+            "timeout_type": "FIRST_SEEN",
+            "number_of_elements": 2,
+            "creation_time": 1440703770114,
+            "name": "Mail Servers",
+            "element_type": "IP"
+        },
+        "expected": {
+            "outputs_prefix": null,
+            "outputs_key_field": null,
+            "outputs": null
+        }
     },
-    "is_local": false,
-    "location": {
-     "accuracy_radius": 1000,
-     "timezone": "America/Los_Angeles",
-     "latitude": 47.913,
-     "metro_code": 819,
-     "average_income": null,
-     "population_density": null,
-     "longitude": -122.3042
+    "domains_list": {
+        "response": [
+            {
+                "custom_properties": [],
+                "qvm_scanner_ids": [],
+                "asset_scanner_ids": [],
+                "flow_collector_ids": [],
+                "description": "",
+                "flow_source_ids": [],
+                "deleted": false,
+                "event_collector_ids": [],
+                "log_source_ids": [],
+                "name": "",
+                "tenant_id": 0,
+                "id": 0,
+                "log_source_group_ids": []
+            },
+            {
+                "custom_properties": [],
+                "qvm_scanner_ids": [],
+                "asset_scanner_ids": [],
+                "flow_collector_ids": [],
+                "description": "",
+                "flow_source_ids": [],
+                "deleted": true,
+                "event_collector_ids": [],
+                "log_source_ids": [],
+                "name": "QRadarWhiteListIP",
+                "tenant_id": 0,
+                "id": 1,
+                "log_source_group_ids": []
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Domains",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Description": "",
+                    "Deleted": false,
+                    "Name": "",
+                    "TenantID": 0,
+                    "ID": 0
+                },
+                {
+                    "Description": "",
+                    "Deleted": true,
+                    "Name": "QRadarWhiteListIP",
+                    "TenantID": 0,
+                    "ID": 1
+                }
+            ]
+        }
     },
-    "postal": {
-     "postal_code": "98275",
-     "confidence": null
+    "indicators_upload": {
+        "response": {
+        },
+        "expected": {
+            "outputs_prefix": {
+            },
+            "outputs_key_field": {
+            },
+            "outputs": {
+            }
+        }
     },
-    "physical_country": {
-     "iso_code": "US",
-     "geo_id": 6252001,
-     "confidence": null,
-     "name": "United States"
+    "geolocations_for_ip": {
+        "response": [
+            {
+                "continent": {
+                    "code": "NA",
+                    "geo_id": 6255149,
+                    "name": "NorthAmerica"
+                },
+                "traits": {
+                    "internet_service_provider": null,
+                    "domain": null,
+                    "organization": null,
+                    "user_type": null,
+                    "autonomous_system_number": null,
+                    "autonomous_system_organization": null
+                },
+                "geo_json": {
+                    "coordinates": [
+                        47.913,
+                        -122.3042
+                    ],
+                    "type": "Point"
+                },
+                "city": {
+                    "geo_id": 5804306,
+                    "confidence": null,
+                    "name": "Mukilteo"
+                },
+                "ip_address": "1.2.3.4",
+                "represented_country": {
+                    "iso_code": null,
+                    "geo_id": null,
+                    "confidence": null,
+                    "name": null
+                },
+                "registered_country": {
+                    "iso_code": "US",
+                    "geo_id": 6252001,
+                    "confidence": null,
+                    "name": "United States"
+                },
+                "is_local": false,
+                "location": {
+                    "accuracy_radius": 1000,
+                    "timezone": "America/Los_Angeles",
+                    "latitude": 47.913,
+                    "metro_code": 819,
+                    "average_income": null,
+                    "population_density": null,
+                    "longitude": -122.3042
+                },
+                "postal": {
+                    "postal_code": "98275",
+                    "confidence": null
+                },
+                "physical_country": {
+                    "iso_code": "US",
+                    "geo_id": 6252001,
+                    "confidence": null,
+                    "name": "United States"
+                },
+                "subdivisions": []
+            },
+            {
+                "continent": {
+                    "code": "NA",
+                    "geo_id": 6255149,
+                    "name": "NorthAmerica"
+                },
+                "traits": {
+                    "internet_service_provider": null,
+                    "domain": null,
+                    "organization": null,
+                    "user_type": null,
+                    "autonomous_system_number": null,
+                    "autonomous_system_organization": null
+                },
+                "geo_json": {
+                    "coordinates": [
+                        47.913,
+                        -122.3042
+                    ],
+                    "type": "Point"
+                },
+                "city": {
+                    "geo_id": 5804306,
+                    "confidence": null,
+                    "name": "Mukilteo"
+                },
+                "ip_address": "1.2.3.5",
+                "represented_country": {
+                    "iso_code": null,
+                    "geo_id": null,
+                    "confidence": null,
+                    "name": null
+                },
+                "registered_country": {
+                    "iso_code": "US",
+                    "geo_id": 6252001,
+                    "confidence": null,
+                    "name": "United States"
+                },
+                "is_local": false,
+                "location": {
+                    "accuracy_radius": 1000,
+                    "timezone": "America/Los_Angeles",
+                    "latitude": 47.913,
+                    "metro_code": 819,
+                    "average_income": null,
+                    "population_density": null,
+                    "longitude": -122.3042
+                },
+                "postal": {
+                    "postal_code": "98275",
+                    "confidence": null
+                },
+                "physical_country": {
+                    "iso_code": "US",
+                    "geo_id": 6252001,
+                    "confidence": null,
+                    "name": "United States"
+                },
+                "subdivisions": []
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.GeoForIP",
+            "outputs_key_field": "IPAddress",
+            "outputs": [
+                {
+                    "CityName": "Mukilteo",
+                    "ContinentName": "NorthAmerica",
+                    "LocationAccuracyRadius": 1000,
+                    "LocationLatitude": 47.913,
+                    "LocationLongitude": -122.3042,
+                    "LocationMetroCode": 819,
+                    "LocationTimezone": "America/Los_Angeles",
+                    "PhysicalCountryIsoCode": "US",
+                    "PhysicalCountryName": "United States",
+                    "RegisteredCountryIsoCode": "US",
+                    "RegisteredCountryName": "United States",
+                    "IPAddress": "1.2.3.4",
+                    "Coordinates": [
+                        47.913,
+                        -122.3042
+                    ],
+                    "PostalCode": "98275"
+                },
+                {
+                    "CityName": "Mukilteo",
+                    "ContinentName": "NorthAmerica",
+                    "LocationAccuracyRadius": 1000,
+                    "LocationLatitude": 47.913,
+                    "LocationLongitude": -122.3042,
+                    "LocationMetroCode": 819,
+                    "LocationTimezone": "America/Los_Angeles",
+                    "PhysicalCountryIsoCode": "US",
+                    "PhysicalCountryName": "United States",
+                    "RegisteredCountryIsoCode": "US",
+                    "RegisteredCountryName": "United States",
+                    "IPAddress": "1.2.3.5",
+                    "Coordinates": [
+                        47.913,
+                        -122.3042
+                    ],
+                    "PostalCode": "98275"
+                }
+            ]
+        },
+        "args": {
+            "ips": "1.2.3.4,1.2.3.5"
+        }
     },
-    "subdivisions": []
-   },
-   {
-    "continent": {
-     "code": "NA",
-     "geo_id": 6255149,
-     "name": "NorthAmerica"
+    "log_sources_list": {
+        "response": [
+            {
+                "sending_ip": null,
+                "internal": true,
+                "protocol_parameters": [
+                    {
+                        "name": "identifier",
+                        "id": 0,
+                        "value": "192.168.1.3"
+                    },
+                    {
+                        "name": "incomingPayloadEncoding",
+                        "id": 1,
+                        "value": "UTF-8"
+                    }
+                ],
+                "description": "Custom Rule Engine",
+                "coalesce_events": true,
+                "enabled": true,
+                "parsing_order": 0,
+                "average_eps": 0,
+                "group_ids": [
+                    0
+                ],
+                "credibility": 8,
+                "id": 63,
+                "store_event_payload": true,
+                "target_event_collector_id": 7,
+                "protocol_type_id": 0,
+                "language_id": 1,
+                "creation_date": 1603050019695,
+                "wincollect_external_destination_ids": null,
+                "log_source_extension_id": null,
+                "name": "Custom Rule Engine-8 :: ip-126-64-12-85",
+                "modified_date": 1603050019695,
+                "auto_discovered": false,
+                "type_id": 18,
+                "last_event_time": 1613549676451,
+                "requires_deploy": false,
+                "gateway": false,
+                "wincollect_internal_destination_id": null,
+                "status": {
+                    "last_updated": 0,
+                    "messages": [
+                        {
+                            "severity": "ERROR",
+                            "text": "Events have not been received from this Log Source in over 720 minutes.",
+                            "timestamp": null
+                        }
+                    ],
+                    "status": "ERROR"
+                }
+            },
+            {
+                "sending_ip": "192.168.1.3",
+                "internal": false,
+                "protocol_parameters": [
+                    {
+                        "name": "identifier",
+                        "id": 0,
+                        "value": "192.168.1.3"
+                    },
+                    {
+                        "name": "incomingPayloadEncoding",
+                        "id": 1,
+                        "value": "UTF-8"
+                    }
+                ],
+                "description": "WindowsAuthServer device",
+                "coalesce_events": true,
+                "enabled": true,
+                "parsing_order": 1,
+                "average_eps": 2,
+                "group_ids": [
+                    0
+                ],
+                "credibility": 5,
+                "id": 112,
+                "store_event_payload": true,
+                "target_event_collector_id": 7,
+                "protocol_type_id": 0,
+                "language_id": 1,
+                "creation_date": 1603821114515,
+                "wincollect_external_destination_ids": null,
+                "log_source_extension_id": null,
+                "name": "WindowsAuthServer @ 192.168.1.3",
+                "modified_date": 1603821114515,
+                "auto_discovered": true,
+                "type_id": 12,
+                "last_event_time": 1614262265073,
+                "requires_deploy": false,
+                "gateway": false,
+                "wincollect_internal_destination_id": null,
+                "status": {
+                    "last_updated": 0,
+                    "messages": null,
+                    "status": "SUCCESS"
+                }
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.LogSource",
+            "outputs_key_field": "ID",
+            "outputs": [
+                {
+                    "Internal": true,
+                    "ProtocolParameters": [
+                        {
+                            "name": "identifier",
+                            "id": 0,
+                            "value": "192.168.1.3"
+                        },
+                        {
+                            "name": "incomingPayloadEncoding",
+                            "id": 1,
+                            "value": "UTF-8"
+                        }
+                    ],
+                    "Description": "Custom Rule Engine",
+                    "Enabled": true,
+                    "GroupIDs": [
+                        0
+                    ],
+                    "Credibility": 8,
+                    "ID": 63,
+                    "ProtocolTypeID": 0,
+                    "CreationDate": "2020-10-18T19:40:19.695000+00:00",
+                    "Name": "Custom Rule Engine-8 :: ip-126-64-12-85",
+                    "ModifiedDate": "2020-10-18T19:40:19.695000+00:00",
+                    "AutoDiscovered": false,
+                    "TypeID": 18,
+                    "LastEventTime": "2021-02-17T08:14:36.451000+00:00",
+                    "Gateway": false,
+                    "Status": {
+                        "last_updated": 0,
+                        "messages": [
+                            {
+                                "severity": "ERROR",
+                                "text": "Events have not been received from this Log Source in over 720 minutes."
+                            }
+                        ],
+                        "status": "ERROR"
+                    }
+                },
+                {
+                    "SendingIP": "192.168.1.3",
+                    "Internal": false,
+                    "ProtocolParameters": [
+                        {
+                            "name": "identifier",
+                            "id": 0,
+                            "value": "192.168.1.3"
+                        },
+                        {
+                            "name": "incomingPayloadEncoding",
+                            "id": 1,
+                            "value": "UTF-8"
+                        }
+                    ],
+                    "Description": "WindowsAuthServer device",
+                    "Enabled": true,
+                    "GroupIDs": [
+                        0
+                    ],
+                    "Credibility": 5,
+                    "ID": 112,
+                    "ProtocolTypeID": 0,
+                    "CreationDate": "2020-10-27T17:51:54.515000+00:00",
+                    "Name": "WindowsAuthServer @ 192.168.1.3",
+                    "ModifiedDate": "2020-10-27T17:51:54.515000+00:00",
+                    "AutoDiscovered": true,
+                    "TypeID": 12,
+                    "LastEventTime": "2021-02-25T14:11:05.073000+00:00",
+                    "Gateway": false,
+                    "Status": {
+                        "last_updated": 0,
+                        "status": "SUCCESS"
+                    }
+                }
+            ]
+        }
     },
-    "traits": {
-     "internet_service_provider": null,
-     "domain": null,
-     "organization": null,
-     "user_type": null,
-     "autonomous_system_number": null,
-     "autonomous_system_organization": null
+    "custom_properties": {
+        "response": [
+            {
+                "identifier": "DEFAULT_ACF2_RULE_KEY",
+                "modification_date": 1341421502000,
+                "datetime_format": null,
+                "property_type": "string",
+                "name": "ACF2 rule key",
+                "auto_discovered": false,
+                "description": "",
+                "id": 212,
+                "use_for_rule_engine": true,
+                "creation_date": 1341421502000,
+                "locale": null,
+                "username": "admin"
+            },
+            {
+                "identifier": "DEFAULTCUSTOMEVENT34",
+                "modification_date": 1252100557199,
+                "datetime_format": null,
+                "property_type": "string",
+                "name": "AVT-App-Category",
+                "auto_discovered": false,
+                "description": "",
+                "id": 129,
+                "use_for_rule_engine": false,
+                "creation_date": 1252100557199,
+                "locale": null,
+                "username": "admin"
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.Properties",
+            "outputs_key_field": "identifier",
+            "outputs": [
+                {
+                    "identifier": "DEFAULT_ACF2_RULE_KEY",
+                    "modification_date": "2012-07-04T17:05:02+00:00",
+                    "property_type": "string",
+                    "name": "ACF2 rule key",
+                    "auto_discovered": false,
+                    "description": "",
+                    "id": 212,
+                    "use_for_rule_engine": true,
+                    "creation_date": "2012-07-04T17:05:02+00:00",
+                    "username": "admin"
+                },
+                {
+                    "identifier": "DEFAULTCUSTOMEVENT34",
+                    "modification_date": "2009-09-04T21:42:37.199000+00:00",
+                    "property_type": "string",
+                    "name": "AVT-App-Category",
+                    "auto_discovered": false,
+                    "description": "",
+                    "id": 129,
+                    "use_for_rule_engine": false,
+                    "creation_date": "2009-09-04T21:42:37.199000+00:00",
+                    "username": "admin"
+                }
+            ]
+        }
     },
-    "geo_json": {
-     "coordinates": [
-      47.913,
-      -122.3042
-     ],
-     "type": "Point"
+    "get_modified_remote_data": {
+        "response": [
+            {
+                "username_count": 1,
+                "description": "Session Closed\n",
+                "rules": [
+                    {
+                        "id": 100405,
+                        "type": "CRE_RULE"
+                    }
+                ],
+                "event_count": 1,
+                "flow_count": 0,
+                "assigned_to": null,
+                "security_category_count": 1,
+                "follow_up": false,
+                "source_address_ids": [
+                    10
+                ],
+                "source_count": 1,
+                "inactive": true,
+                "protected": false,
+                "closing_user": null,
+                "destination_networks": [
+                    "Net-16-182-192.Net_182_10_0_0"
+                ],
+                "source_network": "other",
+                "category_count": 1,
+                "close_time": 1633399051536,
+                "remote_destination_count": 0,
+                "start_time": 1613399051536,
+                "magnitude": 1,
+                "last_updated_time": 1613399051536,
+                "last_persisted_time": 1613399051536,
+                "credibility": 2,
+                "id": 16,
+                "categories": [
+                    "Session Closed"
+                ],
+                "severity": 2,
+                "policy_category_count": 0,
+                "log_sources": [
+                    {
+                        "type_name": "WindowsAuthServer",
+                        "type_id": 12,
+                        "name": "WindowsAuthServer @ 192.168.1.3",
+                        "id": 112
+                    }
+                ],
+                "closing_reason_id": null,
+                "device_count": 1,
+                "offense_type": 0,
+                "relevance": 0,
+                "domain_id": 0,
+                "offense_source": "192.168.1.3",
+                "local_destination_address_ids": [
+                    1
+                ],
+                "local_destination_count": 1,
+                "status": "CLOSED"
+            },
+            {
+                "username_count": 1,
+                "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
+                "rules": [
+                    {
+                        "id": 100056,
+                        "type": "CRE_RULE"
+                    }
+                ],
+                "event_count": 15,
+                "flow_count": 0,
+                "assigned_to": null,
+                "security_category_count": 2,
+                "follow_up": false,
+                "source_address_ids": [
+                    2,
+                    1
+                ],
+                "source_count": 2,
+                "inactive": true,
+                "protected": false,
+                "closing_user": null,
+                "destination_networks": [
+                    "Net-16-182-192.Net_182_10_0_0"
+                ],
+                "source_network": "Net-16-182-192.Net_182_10_0_0",
+                "category_count": 2,
+                "close_time": null,
+                "remote_destination_count": 0,
+                "start_time": 1613395296537,
+                "magnitude": 1,
+                "last_updated_time": 1613395306948,
+                "last_persisted_time": 1613399051536,
+                "credibility": 2,
+                "id": 15,
+                "categories": [
+                    "General Authentication Failed",
+                    "User Login Failure"
+                ],
+                "severity": 3,
+                "policy_category_count": 0,
+                "log_sources": [
+                    {
+                        "type_name": "WindowsAuthServer",
+                        "type_id": 12,
+                        "name": "WindowsAuthServer @ 192.168.1.3",
+                        "id": 112
+                    },
+                    {
+                        "type_name": "EventCRE",
+                        "type_id": 18,
+                        "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
+                        "id": 63
+                    }
+                ],
+                "closing_reason_id": null,
+                "device_count": 2,
+                "offense_type": 3,
+                "relevance": 0,
+                "domain_id": 0,
+                "offense_source": "yarden",
+                "local_destination_address_ids": [
+                    1
+                ],
+                "local_destination_count": 1,
+                "status": "OPEN"
+            }
+        ],
+        "outputs": [
+            16,
+            15
+        ],
+        "args": {
+            "lastUpdate": "0"
+        }
     },
-    "city": {
-     "geo_id": 5804306,
-     "confidence": null,
-     "name": "Mukilteo"
+    "get_remote_data": {
+        "args": {
+            "id": 16
+        },
+        "enrich_offenses_result": {
+            "mirroring_events_message": "",
+            "last_mirror_in_time": "2021-09-22T14:10:40.169076",
+            "username_count": 1,
+            "description": "Session Closed\n",
+            "rules": [
+                {
+                    "id": 100405,
+                    "type": "CRE_RULE",
+                    "name": "Fake port scan"
+                }
+            ],
+            "event_count": 1,
+            "flow_count": 0,
+            "assigned_to": null,
+            "security_category_count": 1,
+            "follow_up": false,
+            "source_address_ids": [
+                10
+            ],
+            "source_count": 1,
+            "inactive": true,
+            "protected": false,
+            "closing_user": null,
+            "destination_networks": [
+                "Net-16-182-192.Net_182_10_0_0"
+            ],
+            "source_network": "other",
+            "category_count": 1,
+            "close_time": null,
+            "remote_destination_count": 0,
+            "start_time": 1613399051536,
+            "magnitude": 1,
+            "last_updated_time": 1613399051536,
+            "last_persisted_time": 1613399051536,
+            "credibility": 2,
+            "id": 16,
+            "categories": [
+                "Session Closed"
+            ],
+            "severity": 2,
+            "policy_category_count": 0,
+            "log_sources": [
+                {
+                    "type_name": "WindowsAuthServer",
+                    "type_id": 12,
+                    "name": "WindowsAuthServer @ 192.168.1.3",
+                    "id": 112
+                }
+            ],
+            "closing_reason_id": null,
+            "device_count": 1,
+            "offense_type": "Source IP",
+            "relevance": 0,
+            "domain_id": 0,
+            "offense_source": "192.168.1.3",
+            "local_destination_address_ids": [
+                1
+            ],
+            "local_destination_count": 1,
+            "status": "OPEN",
+            "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
+        },
+        "enrich_closed_offense": {
+            "mirroring_events_message": "",
+            "last_mirror_in_time": "2021-09-22T14:01:47.047215",
+            "username_count": 1,
+            "description": "Session Closed\n",
+            "rules": [
+                {
+                    "id": 100405,
+                    "type": "CRE_RULE",
+                    "name": "Fake port scan"
+                }
+            ],
+            "event_count": 1,
+            "flow_count": 0,
+            "assigned_to": null,
+            "security_category_count": 1,
+            "follow_up": false,
+            "source_address_ids": [
+                10
+            ],
+            "source_count": 1,
+            "inactive": true,
+            "protected": false,
+            "closing_user": null,
+            "destination_networks": [
+                "Net-16-182-192.Net_182_10_0_0"
+            ],
+            "source_network": "other",
+            "category_count": 1,
+            "close_time": null,
+            "remote_destination_count": 0,
+            "start_time": 1613399051536,
+            "magnitude": 1,
+            "last_updated_time": 1613399051536,
+            "last_persisted_time": 1613399051536,
+            "credibility": 2,
+            "id": 16,
+            "categories": [
+                "Session Closed"
+            ],
+            "severity": 2,
+            "policy_category_count": 0,
+            "log_sources": [
+                {
+                    "type_name": "WindowsAuthServer",
+                    "type_id": 12,
+                    "name": "WindowsAuthServer @ 192.168.1.3",
+                    "id": 112
+                }
+            ],
+            "closing_reason_id": 2,
+            "device_count": 1,
+            "offense_type": "Source IP",
+            "relevance": 0,
+            "domain_id": 0,
+            "offense_source": "192.168.1.3",
+            "local_destination_address_ids": [
+                1
+            ],
+            "local_destination_count": 1,
+            "status": "CLOSED",
+            "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
+        },
+        "response": {
+            "username_count": 1,
+            "description": "Session Closed\n",
+            "rules": [
+                {
+                    "id": 100405,
+                    "type": "CRE_RULE"
+                }
+            ],
+            "event_count": 1,
+            "flow_count": 0,
+            "assigned_to": null,
+            "security_category_count": 1,
+            "follow_up": false,
+            "source_address_ids": [
+                10
+            ],
+            "source_count": 1,
+            "inactive": true,
+            "protected": false,
+            "closing_user": null,
+            "destination_networks": [
+                "Net-16-182-192.Net_182_10_0_0"
+            ],
+            "source_network": "other",
+            "category_count": 1,
+            "close_time": null,
+            "remote_destination_count": 0,
+            "start_time": 1613399051536,
+            "magnitude": 1,
+            "last_updated_time": 1613399051536,
+            "last_persisted_time": 1613399051536,
+            "credibility": 2,
+            "id": 16,
+            "categories": [
+                "Session Closed"
+            ],
+            "severity": 2,
+            "policy_category_count": 0,
+            "log_sources": [
+                {
+                    "type_name": "WindowsAuthServer",
+                    "type_id": 12,
+                    "name": "WindowsAuthServer @ 192.168.1.3",
+                    "id": 112
+                }
+            ],
+            "closing_reason_id": 2,
+            "device_count": 1,
+            "offense_type": 0,
+            "relevance": 0,
+            "domain_id": 0,
+            "offense_source": "192.168.1.3",
+            "local_destination_address_ids": [
+                1
+            ],
+            "local_destination_count": 1,
+            "status": "OPEN"
+        },
+        "closed": {
+            "username_count": 1,
+            "description": "Session Closed\n",
+            "rules": [
+                {
+                    "id": 100405,
+                    "type": "CRE_RULE"
+                }
+            ],
+            "event_count": 1,
+            "flow_count": 0,
+            "assigned_to": null,
+            "security_category_count": 1,
+            "follow_up": false,
+            "source_address_ids": [
+                10
+            ],
+            "source_count": 1,
+            "inactive": true,
+            "protected": false,
+            "closing_user": null,
+            "destination_networks": [
+                "Net-16-182-192.Net_182_10_0_0"
+            ],
+            "source_network": "other",
+            "category_count": 1,
+            "close_time": null,
+            "remote_destination_count": 0,
+            "start_time": 1613399051536,
+            "magnitude": 1,
+            "last_updated_time": 1613399051536,
+            "last_persisted_time": 1613399051536,
+            "credibility": 2,
+            "id": 16,
+            "categories": [
+                "Session Closed"
+            ],
+            "severity": 2,
+            "policy_category_count": 0,
+            "log_sources": [
+                {
+                    "type_name": "WindowsAuthServer",
+                    "type_id": 12,
+                    "name": "WindowsAuthServer @ 192.168.1.3",
+                    "id": 112
+                }
+            ],
+            "closing_reason_id": 2,
+            "device_count": 1,
+            "offense_type": 0,
+            "relevance": 0,
+            "domain_id": 0,
+            "offense_source": "192.168.1.3",
+            "local_destination_address_ids": [
+                1
+            ],
+            "local_destination_count": 1,
+            "status": "CLOSED"
+        }
     },
-    "ip_address": "1.2.3.5",
-    "represented_country": {
-     "iso_code": null,
-     "geo_id": null,
-     "confidence": null,
-     "name": null
+    "get_remote_network_cidr": {
+        "response": [
+            {
+                "name": "String",
+                "description": "String",
+                "cidrs": [
+                    "127.0.0.2/24"
+                ],
+                "id": 42,
+                "group": "String1"
+            },
+            {
+                "name": "String",
+                "description": "String",
+                "cidrs": [
+                    "127.0.0.1/32"
+                ],
+                "id": 43,
+                "group": "String2"
+            }
+        ],
+        "expected": {
+            "outputs_prefix": "QRadar.RemoteNetworkCIDR",
+            "outputs_key_field": "id",
+            "outputs": [
+                {
+                    "id": 42,
+                    "name": "String",
+                    "description": "String"
+                },
+                {
+                    "id": 43,
+                    "name": "String",
+                    "description": "String"
+                }
+            ]
+        }
     },
-    "registered_country": {
-     "iso_code": "US",
-     "geo_id": 6252001,
-     "confidence": null,
-     "name": "United States"
+    "create_and_update_remote_network_cidr": {
+        "args": {
+            "name": "test-name",
+            "description": "test-description",
+            "cidrs": [
+                "1.2.3.4/8"
+            ],
+            "id": 45,
+            "group": "test-group"
+        },
+        "response": {
+            "name": "test-name",
+            "description": "test-description",
+            "cidrs": [
+                "1.2.3.4/8"
+            ],
+            "id": 45,
+            "group": "test-group"
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.RemoteNetworkCIDR",
+            "outputs_key_field": "id",
+            "outputs": {
+                "id": 45,
+                "name": "test-name",
+                "group": "test-group",
+                "description": "test-description"
+            }
+        }
     },
-    "is_local": false,
-    "location": {
-     "accuracy_radius": 1000,
-     "timezone": "America/Los_Angeles",
-     "latitude": 47.913,
-     "metro_code": 819,
-     "average_income": null,
-     "population_density": null,
-     "longitude": -122.3042
+    "remote_network_deploy_execution": {
+        "args": {
+            "host_ip": "127.0.0.1",
+            "status": "INITIATING",
+            "deployment_type": "INCREMENTAL"
+        },
+        "response": {
+            "status": "IN_PROGRESS"
+        },
+        "expected": {
+            "outputs_prefix": "QRadar.deploy",
+            "outputs_key_field": null,
+            "outputs": {
+                "status": "IN_PROGRESS"
+            }
+        }
     },
-    "postal": {
-     "postal_code": "98275",
-     "confidence": null
+    "remote_network_cidr_delete": {
+        "readable_output": "### Successfully deleted the following remote network(s)\n|ID|\n|---|\n| 46 |\n"
     },
-    "physical_country": {
-     "iso_code": "US",
-     "geo_id": 6252001,
-     "confidence": null,
-     "name": "United States"
+    "create_log_source": {
+        "args": {
+            "name": "test_create_log_source",
+            "protocol_type_id": "0",
+            "type_id": "11",
+            "target_event_collector_id": "7",
+            "protocol_parameters": "incomingPayloadEncoding=UTF-8,identifier=example.org"
+        },
+        "expected_body": {
+            "name": "test_create_log_source",
+            "protocol_type_id": 0,
+            "protocol_parameters": [
+                {
+                    "name": "incomingPayloadEncoding",
+                    "value": "UTF-8"
+                },
+                {
+                    "name": "identifier",
+                    "value": "example.org"
+                }
+            ],
+            "type_id": 11,
+            "target_event_collector_id": 7,
+            "group_ids": [],
+            "wincollect_external_destination_ids": []
+        },
+        "response": {
+            "sending_ip": null,
+            "internal": false,
+            "protocol_parameters": [
+                {
+                    "name": "identifier",
+                    "id": 0,
+                    "value": "example.org"
+                },
+                {
+                    "name": "incomingPayloadEncoding",
+                    "id": 1,
+                    "value": "UTF-8"
+                }
+            ],
+            "description": "",
+            "coalesce_events": true,
+            "enabled": true,
+            "parsing_order": 1,
+            "average_eps": 0,
+            "group_ids": [
+                0
+            ],
+            "credibility": 5,
+            "id": 1965,
+            "store_event_payload": true,
+            "target_event_collector_id": 7,
+            "protocol_type_id": 0,
+            "language_id": 1,
+            "creation_date": 1711368529471,
+            "wincollect_external_destination_ids": null,
+            "log_source_extension_id": null,
+            "name": "test_create_log_source",
+            "modified_date": 1711368529471,
+            "auto_discovered": false,
+            "type_id": 11,
+            "last_event_time": 0,
+            "requires_deploy": true,
+            "gateway": false,
+            "wincollect_internal_destination_id": null,
+            "status": {
+                "last_updated": null,
+                "messages": null,
+                "status": "NA"
+            },
+            "disconnected_log_collector_id": null
+        }
     },
-    "subdivisions": []
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.GeoForIP",
-   "outputs_key_field": "IPAddress",
-   "outputs": [
-    {
-     "CityName": "Mukilteo",
-     "ContinentName": "NorthAmerica",
-     "LocationAccuracyRadius": 1000,
-     "LocationLatitude": 47.913,
-     "LocationLongitude": -122.3042,
-     "LocationMetroCode": 819,
-     "LocationTimezone": "America/Los_Angeles",
-     "PhysicalCountryIsoCode": "US",
-     "PhysicalCountryName": "United States",
-     "RegisteredCountryIsoCode": "US",
-     "RegisteredCountryName": "United States",
-     "IPAddress": "1.2.3.4",
-     "Coordinates": [
-      47.913,
-      -122.3042
-     ],
-     "PostalCode": "98275"
+    "update_log_source": {
+        "args": {
+            "name": "test_update_log_source",
+            "credibility": "3"
+        },
+        "expected_body": {
+            "name": "test_update_log_source",
+            "credibility": 3
+        }
     },
-    {
-     "CityName": "Mukilteo",
-     "ContinentName": "NorthAmerica",
-     "LocationAccuracyRadius": 1000,
-     "LocationLatitude": 47.913,
-     "LocationLongitude": -122.3042,
-     "LocationMetroCode": 819,
-     "LocationTimezone": "America/Los_Angeles",
-     "PhysicalCountryIsoCode": "US",
-     "PhysicalCountryName": "United States",
-     "RegisteredCountryIsoCode": "US",
-     "RegisteredCountryName": "United States",
-     "IPAddress": "1.2.3.5",
-     "Coordinates": [
-      47.913,
-      -122.3042
-     ],
-     "PostalCode": "98275"
-    }
-   ]
-  },
-  "args": {
-   "ips": "1.2.3.4,1.2.3.5"
-  }
- },
- "log_sources_list": {
-  "response": [
-   {
-    "sending_ip": null,
-    "internal": true,
-    "protocol_parameters": [
-     {
-      "name": "identifier",
-      "id": 0,
-      "value": "192.168.1.3"
-     },
-     {
-      "name": "incomingPayloadEncoding",
-      "id": 1,
-      "value": "UTF-8"
-     }
-    ],
-    "description": "Custom Rule Engine",
-    "coalesce_events": true,
-    "enabled": true,
-    "parsing_order": 0,
-    "average_eps": 0,
-    "group_ids": [
-     0
-    ],
-    "credibility": 8,
-    "id": 63,
-    "store_event_payload": true,
-    "target_event_collector_id": 7,
-    "protocol_type_id": 0,
-    "language_id": 1,
-    "creation_date": 1603050019695,
-    "wincollect_external_destination_ids": null,
-    "log_source_extension_id": null,
-    "name": "Custom Rule Engine-8 :: ip-126-64-12-85",
-    "modified_date": 1603050019695,
-    "auto_discovered": false,
-    "type_id": 18,
-    "last_event_time": 1613549676451,
-    "requires_deploy": false,
-    "gateway": false,
-    "wincollect_internal_destination_id": null,
-    "status": {
-     "last_updated": 0,
-     "messages": [
-      {
-       "severity": "ERROR",
-       "text": "Events have not been received from this Log Source in over 720 minutes.",
-       "timestamp": null
-      }
-     ],
-     "status": "ERROR"
-    }
-   },
-   {
-    "sending_ip": "192.168.1.3",
-    "internal": false,
-    "protocol_parameters": [
-     {
-      "name": "identifier",
-      "id": 0,
-      "value": "192.168.1.3"
-     },
-     {
-      "name": "incomingPayloadEncoding",
-      "id": 1,
-      "value": "UTF-8"
-     }
-    ],
-    "description": "WindowsAuthServer device",
-    "coalesce_events": true,
-    "enabled": true,
-    "parsing_order": 1,
-    "average_eps": 2,
-    "group_ids": [
-     0
-    ],
-    "credibility": 5,
-    "id": 112,
-    "store_event_payload": true,
-    "target_event_collector_id": 7,
-    "protocol_type_id": 0,
-    "language_id": 1,
-    "creation_date": 1603821114515,
-    "wincollect_external_destination_ids": null,
-    "log_source_extension_id": null,
-    "name": "WindowsAuthServer @ 192.168.1.3",
-    "modified_date": 1603821114515,
-    "auto_discovered": true,
-    "type_id": 12,
-    "last_event_time": 1614262265073,
-    "requires_deploy": false,
-    "gateway": false,
-    "wincollect_internal_destination_id": null,
-    "status": {
-     "last_updated": 0,
-     "messages": null,
-     "status": "SUCCESS"
-    }
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.LogSource",
-   "outputs_key_field": "ID",
-   "outputs": [
-    {
-     "Internal": true,
-     "ProtocolParameters": [
-      {
-       "name": "identifier",
-       "id": 0,
-       "value": "192.168.1.3"
-      },
-      {
-       "name": "incomingPayloadEncoding",
-       "id": 1,
-       "value": "UTF-8"
-      }
-     ],
-     "Description": "Custom Rule Engine",
-     "Enabled": true,
-     "GroupIDs": [
-      0
-     ],
-     "Credibility": 8,
-     "ID": 63,
-     "ProtocolTypeID": 0,
-     "CreationDate": "2020-10-18T19:40:19.695000+00:00",
-     "Name": "Custom Rule Engine-8 :: ip-126-64-12-85",
-     "ModifiedDate": "2020-10-18T19:40:19.695000+00:00",
-     "AutoDiscovered": false,
-     "TypeID": 18,
-     "LastEventTime": "2021-02-17T08:14:36.451000+00:00",
-     "Gateway": false,
-     "Status": {
-      "last_updated": 0,
-      "messages": [
-       {
-        "severity": "ERROR",
-        "text": "Events have not been received from this Log Source in over 720 minutes."
-       }
-      ],
-      "status": "ERROR"
-     }
-    },
-    {
-     "SendingIP": "192.168.1.3",
-     "Internal": false,
-     "ProtocolParameters": [
-      {
-       "name": "identifier",
-       "id": 0,
-       "value": "192.168.1.3"
-      },
-      {
-       "name": "incomingPayloadEncoding",
-       "id": 1,
-       "value": "UTF-8"
-      }
-     ],
-     "Description": "WindowsAuthServer device",
-     "Enabled": true,
-     "GroupIDs": [
-      0
-     ],
-     "Credibility": 5,
-     "ID": 112,
-     "ProtocolTypeID": 0,
-     "CreationDate": "2020-10-27T17:51:54.515000+00:00",
-     "Name": "WindowsAuthServer @ 192.168.1.3",
-     "ModifiedDate": "2020-10-27T17:51:54.515000+00:00",
-     "AutoDiscovered": true,
-     "TypeID": 12,
-     "LastEventTime": "2021-02-25T14:11:05.073000+00:00",
-     "Gateway": false,
-     "Status": {
-      "last_updated": 0,
-      "status": "SUCCESS"
-     }
-    }
-   ]
-  }
- },
- "custom_properties": {
-  "response": [
-   {
-    "identifier": "DEFAULT_ACF2_RULE_KEY",
-    "modification_date": 1341421502000,
-    "datetime_format": null,
-    "property_type": "string",
-    "name": "ACF2 rule key",
-    "auto_discovered": false,
-    "description": "",
-    "id": 212,
-    "use_for_rule_engine": true,
-    "creation_date": 1341421502000,
-    "locale": null,
-    "username": "admin"
-   },
-   {
-    "identifier": "DEFAULTCUSTOMEVENT34",
-    "modification_date": 1252100557199,
-    "datetime_format": null,
-    "property_type": "string",
-    "name": "AVT-App-Category",
-    "auto_discovered": false,
-    "description": "",
-    "id": 129,
-    "use_for_rule_engine": false,
-    "creation_date": 1252100557199,
-    "locale": null,
-    "username": "admin"
-   }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.Properties",
-   "outputs_key_field": "identifier",
-   "outputs": [
-    {
-     "identifier": "DEFAULT_ACF2_RULE_KEY",
-     "modification_date": "2012-07-04T17:05:02+00:00",
-     "property_type": "string",
-     "name": "ACF2 rule key",
-     "auto_discovered": false,
-     "description": "",
-     "id": 212,
-     "use_for_rule_engine": true,
-     "creation_date": "2012-07-04T17:05:02+00:00",
-     "username": "admin"
-    },
-    {
-     "identifier": "DEFAULTCUSTOMEVENT34",
-     "modification_date": "2009-09-04T21:42:37.199000+00:00",
-     "property_type": "string",
-     "name": "AVT-App-Category",
-     "auto_discovered": false,
-     "description": "",
-     "id": 129,
-     "use_for_rule_engine": false,
-     "creation_date": "2009-09-04T21:42:37.199000+00:00",
-     "username": "admin"
-    }
-   ]
-  }
- },
- "get_modified_remote_data": {
-  "response": [
-   {
-    "username_count": 1,
-    "description": "Session Closed\n",
-    "rules": [
-     {
-      "id": 100405,
-      "type": "CRE_RULE"
-     }
-    ],
-    "event_count": 1,
-    "flow_count": 0,
-    "assigned_to": null,
-    "security_category_count": 1,
-    "follow_up": false,
-    "source_address_ids": [
-     10
-    ],
-    "source_count": 1,
-    "inactive": true,
-    "protected": false,
-    "closing_user": null,
-    "destination_networks": [
-     "Net-16-182-192.Net_182_10_0_0"
-    ],
-    "source_network": "other",
-    "category_count": 1,
-    "close_time": 1633399051536,
-    "remote_destination_count": 0,
-    "start_time": 1613399051536,
-    "magnitude": 1,
-    "last_updated_time": 1613399051536,
-    "last_persisted_time": 1613399051536,
-    "credibility": 2,
-    "id": 16,
-    "categories": [
-     "Session Closed"
-    ],
-    "severity": 2,
-    "policy_category_count": 0,
-    "log_sources": [
-     {
-      "type_name": "WindowsAuthServer",
-      "type_id": 12,
-      "name": "WindowsAuthServer @ 192.168.1.3",
-      "id": 112
-     }
-    ],
-    "closing_reason_id": null,
-    "device_count": 1,
-    "offense_type": 0,
-    "relevance": 0,
-    "domain_id": 0,
-    "offense_source": "192.168.1.3",
-    "local_destination_address_ids": [
-     1
-    ],
-    "local_destination_count": 1,
-    "status": "CLOSED"
-   },
-   {
-    "username_count": 1,
-    "description": "Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
-    "rules": [
-     {
-      "id": 100056,
-      "type": "CRE_RULE"
-     }
-    ],
-    "event_count": 15,
-    "flow_count": 0,
-    "assigned_to": null,
-    "security_category_count": 2,
-    "follow_up": false,
-    "source_address_ids": [
-     2,
-     1
-    ],
-    "source_count": 2,
-    "inactive": true,
-    "protected": false,
-    "closing_user": null,
-    "destination_networks": [
-     "Net-16-182-192.Net_182_10_0_0"
-    ],
-    "source_network": "Net-16-182-192.Net_182_10_0_0",
-    "category_count": 2,
-    "close_time": null,
-    "remote_destination_count": 0,
-    "start_time": 1613395296537,
-    "magnitude": 1,
-    "last_updated_time": 1613395306948,
-    "last_persisted_time": 1613399051536,
-    "credibility": 2,
-    "id": 15,
-    "categories": [
-     "General Authentication Failed",
-     "User Login Failure"
-    ],
-    "severity": 3,
-    "policy_category_count": 0,
-    "log_sources": [
-     {
-      "type_name": "WindowsAuthServer",
-      "type_id": 12,
-      "name": "WindowsAuthServer @ 192.168.1.3",
-      "id": 112
-     },
-     {
-      "type_name": "EventCRE",
-      "type_id": 18,
-      "name": "Custom Rule Engine-8 :: ip-162-21-12-77",
-      "id": 63
-     }
-    ],
-    "closing_reason_id": null,
-    "device_count": 2,
-    "offense_type": 3,
-    "relevance": 0,
-    "domain_id": 0,
-    "offense_source": "yarden",
-    "local_destination_address_ids": [
-     1
-    ],
-    "local_destination_count": 1,
-    "status": "OPEN"
-   }
-  ],
-  "outputs": [
-   16,
-   15
-  ],
-  "args": {
-   "lastUpdate": "0"
-  }
- },
- "get_remote_data": {
-  "args": {
-   "id": 16
-  },
-  "enrich_offenses_result": {
-   "mirroring_events_message": "",
-   "last_mirror_in_time": "2021-09-22T14:10:40.169076",
-   "username_count": 1,
-   "description": "Session Closed\n",
-   "rules": [
-    {
-     "id": 100405,
-     "type": "CRE_RULE",
-     "name": "Fake port scan"
-    }
-   ],
-   "event_count": 1,
-   "flow_count": 0,
-   "assigned_to": null,
-   "security_category_count": 1,
-   "follow_up": false,
-   "source_address_ids": [
-    10
-   ],
-   "source_count": 1,
-   "inactive": true,
-   "protected": false,
-   "closing_user": null,
-   "destination_networks": [
-    "Net-16-182-192.Net_182_10_0_0"
-   ],
-   "source_network": "other",
-   "category_count": 1,
-   "close_time": null,
-   "remote_destination_count": 0,
-   "start_time": 1613399051536,
-   "magnitude": 1,
-   "last_updated_time": 1613399051536,
-   "last_persisted_time": 1613399051536,
-   "credibility": 2,
-   "id": 16,
-   "categories": [
-    "Session Closed"
-   ],
-   "severity": 2,
-   "policy_category_count": 0,
-   "log_sources": [
-    {
-     "type_name": "WindowsAuthServer",
-     "type_id": 12,
-     "name": "WindowsAuthServer @ 192.168.1.3",
-     "id": 112
-    }
-   ],
-   "closing_reason_id": null,
-   "device_count": 1,
-   "offense_type": "Source IP",
-   "relevance": 0,
-   "domain_id": 0,
-   "offense_source": "192.168.1.3",
-   "local_destination_address_ids": [
-    1
-   ],
-   "local_destination_count": 1,
-   "status": "OPEN",
-   "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
-  },
-  "enrich_closed_offense": {
-   "mirroring_events_message": "",
-   "last_mirror_in_time": "2021-09-22T14:01:47.047215",
-   "username_count": 1,
-   "description": "Session Closed\n",
-   "rules": [
-    {
-     "id": 100405,
-     "type": "CRE_RULE",
-     "name": "Fake port scan"
-    }
-   ],
-   "event_count": 1,
-   "flow_count": 0,
-   "assigned_to": null,
-   "security_category_count": 1,
-   "follow_up": false,
-   "source_address_ids": [
-    10
-   ],
-   "source_count": 1,
-   "inactive": true,
-   "protected": false,
-   "closing_user": null,
-   "destination_networks": [
-    "Net-16-182-192.Net_182_10_0_0"
-   ],
-   "source_network": "other",
-   "category_count": 1,
-   "close_time": null,
-   "remote_destination_count": 0,
-   "start_time": 1613399051536,
-   "magnitude": 1,
-   "last_updated_time": 1613399051536,
-   "last_persisted_time": 1613399051536,
-   "credibility": 2,
-   "id": 16,
-   "categories": [
-    "Session Closed"
-   ],
-   "severity": 2,
-   "policy_category_count": 0,
-   "log_sources": [
-    {
-     "type_name": "WindowsAuthServer",
-     "type_id": 12,
-     "name": "WindowsAuthServer @ 192.168.1.3",
-     "id": 112
-    }
-   ],
-   "closing_reason_id": 2,
-   "device_count": 1,
-   "offense_type": "Source IP",
-   "relevance": 0,
-   "domain_id": 0,
-   "offense_source": "192.168.1.3",
-   "local_destination_address_ids": [
-    1
-   ],
-   "local_destination_count": 1,
-   "status": "CLOSED",
-   "LinkToOffense": "192.168.0.1/api/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=16"
-  },
-  "response": {
-   "username_count": 1,
-   "description": "Session Closed\n",
-   "rules": [
-    {
-     "id": 100405,
-     "type": "CRE_RULE"
-    }
-   ],
-   "event_count": 1,
-   "flow_count": 0,
-   "assigned_to": null,
-   "security_category_count": 1,
-   "follow_up": false,
-   "source_address_ids": [
-    10
-   ],
-   "source_count": 1,
-   "inactive": true,
-   "protected": false,
-   "closing_user": null,
-   "destination_networks": [
-    "Net-16-182-192.Net_182_10_0_0"
-   ],
-   "source_network": "other",
-   "category_count": 1,
-   "close_time": null,
-   "remote_destination_count": 0,
-   "start_time": 1613399051536,
-   "magnitude": 1,
-   "last_updated_time": 1613399051536,
-   "last_persisted_time": 1613399051536,
-   "credibility": 2,
-   "id": 16,
-   "categories": [
-    "Session Closed"
-   ],
-   "severity": 2,
-   "policy_category_count": 0,
-   "log_sources": [
-    {
-     "type_name": "WindowsAuthServer",
-     "type_id": 12,
-     "name": "WindowsAuthServer @ 192.168.1.3",
-     "id": 112
-    }
-   ],
-   "closing_reason_id": 2,
-   "device_count": 1,
-   "offense_type": 0,
-   "relevance": 0,
-   "domain_id": 0,
-   "offense_source": "192.168.1.3",
-   "local_destination_address_ids": [
-    1
-   ],
-   "local_destination_count": 1,
-   "status": "OPEN"
-  },
-  "closed": {
-   "username_count": 1,
-   "description": "Session Closed\n",
-   "rules": [
-    {
-     "id": 100405,
-     "type": "CRE_RULE"
-    }
-   ],
-   "event_count": 1,
-   "flow_count": 0,
-   "assigned_to": null,
-   "security_category_count": 1,
-   "follow_up": false,
-   "source_address_ids": [
-    10
-   ],
-   "source_count": 1,
-   "inactive": true,
-   "protected": false,
-   "closing_user": null,
-   "destination_networks": [
-    "Net-16-182-192.Net_182_10_0_0"
-   ],
-   "source_network": "other",
-   "category_count": 1,
-   "close_time": null,
-   "remote_destination_count": 0,
-   "start_time": 1613399051536,
-   "magnitude": 1,
-   "last_updated_time": 1613399051536,
-   "last_persisted_time": 1613399051536,
-   "credibility": 2,
-   "id": 16,
-   "categories": [
-    "Session Closed"
-   ],
-   "severity": 2,
-   "policy_category_count": 0,
-   "log_sources": [
-    {
-     "type_name": "WindowsAuthServer",
-     "type_id": 12,
-     "name": "WindowsAuthServer @ 192.168.1.3",
-     "id": 112
-    }
-   ],
-   "closing_reason_id": 2,
-   "device_count": 1,
-   "offense_type": 0,
-   "relevance": 0,
-   "domain_id": 0,
-   "offense_source": "192.168.1.3",
-   "local_destination_address_ids": [
-    1
-   ],
-   "local_destination_count": 1,
-   "status": "CLOSED"
-  }
- },
- "get_remote_network_cidr": {
-  "response": [
-    {
-     "name": "String",
-     "description": "String",
-     "cidrs": [
-      "127.0.0.2/24"
-     ],
-     "id": 42,
-     "group": "String1"
-    },
-    {
-     "name": "String",
-     "description": "String",
-     "cidrs": [
-      "127.0.0.1/32"
-     ],
-     "id": 43,
-     "group": "String2"
-    }
-  ],
-  "expected": {
-   "outputs_prefix": "QRadar.RemoteNetworkCIDR",
-   "outputs_key_field": "id",
-   "outputs": [
-    {"id": 42, "name": "String", "description": "String"},
-    {"id": 43, "name": "String", "description": "String"}
-   ]
-  }
- },
- "create_and_update_remote_network_cidr": {
-  "args": {
-   "name": "test-name",
-   "description": "test-description",
-   "cidrs": [
-    "1.2.3.4/8"
-   ],
-   "id": 45,
-   "group": "test-group"
-  },
-  "response": {
-   "name": "test-name",
-   "description": "test-description",
-   "cidrs": [
-    "1.2.3.4/8"
-   ],
-   "id": 45,
-   "group": "test-group"
-  },
-  "expected": {
-   "outputs_prefix": "QRadar.RemoteNetworkCIDR",
-   "outputs_key_field": "id",
-   "outputs": {"id": 45, "name": "test-name", "group": "test-group", "description": "test-description"}
-  }
- },
- "remote_network_deploy_execution": {
-  "args": {
-   "host_ip": "127.0.0.1",
-   "status": "INITIATING",
-   "deployment_type": "INCREMENTAL"
-  },
-  "response": {"status": "IN_PROGRESS"},
-  "expected": {
-   "outputs_prefix": "QRadar.deploy",
-   "outputs_key_field": null,
-   "outputs": {"status": "IN_PROGRESS"}
-  }
- },
- "remote_network_cidr_delete": {
-  "readable_output":  "### Successfully deleted the following remote network(s)\n|ID|\n|---|\n| 46 |\n"
- },
- "all_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  limit 20 START 1613399051536",
- "correlation_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine'  limit 20 START 1613399051536"
+    "all_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  limit 20 START 1613399051536",
+    "correlation_events_query": "SELECT QIDNAME(qid), LOGSOURCENAME(logsourceid), CATEGORYNAME(highlevelcategory), CATEGORYNAME(category), PROTOCOLNAME(protocolid), sourceip, sourceport, destinationip, destinationport, QIDDESCRIPTION(qid), username, PROTOCOLNAME(protocolid), RULENAME(\"creEventList\"), sourcegeographiclocation, sourceMAC, sourcev6, destinationgeographiclocation, destinationv6, LOGSOURCETYPENAME(devicetype), credibility, severity, magnitude, eventcount, eventDirection, postNatDestinationIP, postNatDestinationPort, postNatSourceIP, postNatSourcePort, preNatDestinationPort, preNatSourceIP, preNatSourcePort, UTF8(payload), starttime, devicetime  FROM events WHERE INOFFENSE(16)  AND LOGSOURCETYPENAME(devicetype) = 'Custom Rule Engine'  limit 20 START 1613399051536"
 }

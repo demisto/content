@@ -1,0 +1,13 @@
+{
+    "success": {
+        "args": {
+            "include_archived": "true",
+            "entries_per_page": 100,
+            "plan_id": "",
+            "status": "CANCELED",
+            "simulation_id": "",
+            "sort_by": "endTime"
+        },
+        "command": "safebreach-get-tests"
+    }
+}

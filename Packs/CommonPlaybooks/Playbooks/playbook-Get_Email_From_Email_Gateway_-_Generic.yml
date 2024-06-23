@@ -3,8 +3,7 @@ version: -1
 contentitemexportablefields:
   contentitemfields: {}
 name: Get Email From Email Gateway - Generic
-description: This playbook retrieves a specified EML/MSG file directly from the email security gateway
-  product.
+description: This playbook retrieves a specified EML/MSG file directly from the email security gateway product.
 starttaskid: "0"
 tasks:
   "0":
@@ -38,6 +37,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
     taskid: 0be9c4cd-925c-4085-8451-c5a948407d97
@@ -65,6 +65,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
     taskid: b32916b5-8000-4c43-80d6-fc491edfedd6
@@ -73,8 +74,7 @@ tasks:
       id: b32916b5-8000-4c43-80d6-fc491edfedd6
       version: -1
       name: Get Email From Email Gateway - FireEye
-      description: This playbook retrieves a specified EML/MSG file directly from FireEye Email Security
-        or Central Management.
+      description: This playbook retrieves a specified EML/MSG file directly from FireEye Email Security or Central Management.
       playbookName: Get Email From Email Gateway - FireEye
       type: playbook
       iscommand: false
@@ -105,6 +105,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "4":
     id: "4"
     taskid: 3415ba42-7642-4fd4-8b5c-85e1b3b7004c
@@ -140,6 +141,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "5":
     id: "5"
     taskid: 8c2ce613-3539-48f2-84a9-fecf1d7c0ee3
@@ -148,8 +150,7 @@ tasks:
       id: 8c2ce613-3539-48f2-84a9-fecf1d7c0ee3
       version: -1
       name: Get Email From Email Gateway - Proofpoint Protection Server
-      description: This playbook retrieves a specified EML/MSG file directly from the Proofpoint Protection
-        Server.
+      description: This playbook retrieves a specified EML/MSG file directly from the Proofpoint Protection Server.
       playbookName: Get Email From Email Gateway - Proofpoint Protection Server
       type: playbook
       iscommand: false
@@ -176,7 +177,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -195,14 +196,9 @@ inputs:
   required: false
   description: The message ID received by the email security product.
   playbookInputQuery:
-- key: UserID
-  value: {}
-  required: false
-  description: The user ID.
-  playbookInputQuery:
 outputs:
 - contextPath: File
-  description: The MSG/EML File Entry ID
+  description: The MSG/EML File Entry ID.
   type: string
 tests:
 - No tests (auto formatted)

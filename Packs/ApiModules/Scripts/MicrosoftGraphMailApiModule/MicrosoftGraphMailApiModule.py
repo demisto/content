@@ -931,6 +931,22 @@ class MsGraphMailBaseClient(MicrosoftClient):
 
         return incident
 
+    def message_rules_action(self, action, user_id=None, rule_id=None, limit=50):
+        """
+        get/delete message rule action
+        """
+        if action != "DELETE":
+            return_empty_response = False
+            params = {'$top': limit}
+        else:
+            return_empty_response = True
+            params = {}
+            if rule_id is None:
+                raise ValueError("rule_id is required in order to delete the rule")
+
+        url = f"{f'/users/{user_id}' if user_id else '/me'}/mailFolders/inbox/messageRules{f'/{rule_id}' if rule_id else ''}"
+        return self.http_request(action.upper(), url, return_empty_response=return_empty_response, params=params)
+
 
 # HELPER FUNCTIONS
 class GraphMailUtils:
@@ -1980,3 +1996,29 @@ def send_email_command(client: MsGraphMailBaseClient, args):
             raw_response=prepared_args['body'],
         ))
     return results
+
+
+def list_rule_action_command(client: MsGraphMailBaseClient, args) -> CommandResults | dict:
+    rule_id = args.get('rule_id')
+    user_id = args.get('user_id')
+    limit = args.get('limit', 50)
+    hr_headers = ['id', 'displayName', 'isEnabled']
+    hr_title_parts = [f'!{demisto.command()}', user_id if user_id else '', f'for {rule_id=}' if rule_id else 'rules']
+    if rule_id:
+        hr_headers.extend(['conditions', 'actions'])
+    result = client.message_rules_action('GET', user_id=user_id, rule_id=rule_id, limit=limit)
+    result.pop('@odata.context', None)
+    outputs = [result] if rule_id else result.get('value', [])
+
+    return CommandResults(
+        outputs_prefix='MSGraphMail.Rule', outputs=outputs,
+        readable_output=tableToMarkdown(' '.join(hr_title_parts), outputs, headers=hr_headers,
+                                        headerTransform=pascalToSpace)
+    )
+
+
+def delete_rule_command(client: MsGraphMailBaseClient, args) -> str:
+    rule_id = args.get('rule_id')
+    user_id = args.get('user_id')
+    client.message_rules_action('DELETE', user_id=user_id, rule_id=rule_id)
+    return f"Rule {rule_id} deleted{f' for user {user_id}' if user_id else ''}."

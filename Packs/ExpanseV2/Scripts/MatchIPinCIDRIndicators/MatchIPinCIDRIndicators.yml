@@ -9,12 +9,12 @@ comment: Match provided IP address in all the Indicators of type CIDR with the p
 commonfields:
   id: MatchIPinCIDRIndicators
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.13.83255
 enabled: true
 name: MatchIPinCIDRIndicators
 outputs:
 - contextPath: MatchingCIDRIndicator
-  description: Matching CIDR Indicator
+  description: Matching CIDR Indicator.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

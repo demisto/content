@@ -1,7 +1,8 @@
 id: Prisma Cloud Compute - Audit Alert
 version: -1
+deprecated: true
 name: Prisma Cloud Compute - Audit Alert
-description: Default playbook for parsing Prisma Cloud Compute audit alerts
+description: Deprecated. Use "Prisma Cloud Compute - Audit Alert v3" instead. Default playbook for parsing Prisma Cloud Compute audit alerts
 fromversion: 5.0.0
 starttaskid: "0"
 tasks:

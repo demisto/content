@@ -63,7 +63,8 @@ In the Team Chat Subscription section under BOT endpoint URL add:
 
 ![enter image description here](doc_files/bot_endpoint_url.gif)
 
-1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions. 
+1. Click **Scopes** > **+ Add Scopes** to add the following scope permissions.
+
    | Scope Type | Scope Name | 
    | --- |  --- | 
    | Team Chat |  Enable Chatbot within Zoom Team Chat Client /imchat:bot |

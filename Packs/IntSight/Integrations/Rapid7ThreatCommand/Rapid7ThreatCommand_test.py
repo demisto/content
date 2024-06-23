@@ -133,9 +133,13 @@ def test_list_cyber_term_ioc_command(
         (
             HTTPStatus.INTERNAL_SERVER_ERROR,
             b"GeneralError",
-            ReadableErrors.GENERAL.value,
+            f"Status Code: {HTTPStatus.INTERNAL_SERVER_ERROR}, {ReadableErrors.GENERAL.value}",
         ),
-        (HTTPStatus.NOT_FOUND, None, ReadableErrors.NOT_FOUND.value),
+        (
+            HTTPStatus.NOT_FOUND,
+            None,
+            f"Status Code: {HTTPStatus.NOT_FOUND}, {ReadableErrors.NOT_FOUND.value}"
+        ),
     ),
 )
 def test_fail_list_cyber_term_ioc_command(
@@ -1996,7 +2000,8 @@ def test_fail_add_tags_ioc_command(
         add_tags_ioc_command(
             mock_client, {"ioc_value": "test.com", "tag_values": "test"}
         )
-    assert ReadableErrors.WRONG_PARAMETERS.value == str(error_info.value)
+    assert f"Status Code: {HTTPStatus.UNPROCESSABLE_ENTITY}, {ReadableErrors.WRONG_PARAMETERS.value}" == str(
+        error_info.value)
 
 
 def test_update_ioc_severity_command(
@@ -2097,7 +2102,8 @@ def test_fail_add_ioc_comment_command(
 
     with pytest.raises(DemistoException) as error_info:
         add_ioc_comment_command(mock_client, {"domains": "test.com", "comment": "test"})
-    assert ReadableErrors.WRONG_PARAMETERS.value == str(error_info.value)
+    assert f"Status Code: {HTTPStatus.UNPROCESSABLE_ENTITY}, {ReadableErrors.WRONG_PARAMETERS.value}" == str(
+        error_info.value)
 
 
 @pytest.mark.parametrize(
@@ -2353,12 +2359,12 @@ def test_list_mssp_customer_command(
     assert result.outputs_prefix == "ThreatCommand.MsspCustomer"
 
 
-def test_get_alert_csv_command(
-    requests_mock,
-    mock_client: Client,
+def test_get_alert_csv_command_with_comma_separated_content(
+        requests_mock,
+        mock_client: Client,
 ):
     """
-    Scenario: Get alert CSV file.
+    Scenario: Get alert CSV file with comma separated content.
     Given:
      - User has provided correct parameters.
     When:
@@ -2380,6 +2386,41 @@ def test_get_alert_csv_command(
     )
     assert isinstance(result, list)
     assert isinstance(result[0], CommandResults)
+    assert result[0].raw_response == load_mock_response("alert/alert_csv_response.json")
+    assert result[0].readable_output == ReadableOutputs.ALERT_CSV.value.format(
+        "59490dabe57c281391e11ceb"
+    )
+    assert isinstance(result[1], dict)
+
+
+def test_get_alert_csv_command_with_tab_separated_content(
+        requests_mock,
+        mock_client: Client,
+):
+    """
+    Scenario: Get alert CSV file with tab separated content.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - threat-command-alert-csv-get called.
+    Then:
+     - Ensure that CSV sent to XSOAR.
+    """
+    from Rapid7ThreatCommand import get_alert_csv_command
+
+    with open("test_data/alert/alert_csv_2.csv", "rb") as csv:
+        url = urljoin(
+            mock_client._base_url,
+            "/v1/data/alerts/csv-file/59490dabe57c281391e11ceb",
+        )
+        requests_mock.get(url=url, content=csv.read())
+
+    result = get_alert_csv_command(
+        mock_client, {"alert_id": "59490dabe57c281391e11ceb"}
+    )
+    assert isinstance(result, list)
+    assert isinstance(result[0], CommandResults)
+    assert result[0].raw_response == load_mock_response("alert/alert_csv_response_2.json")
     assert result[0].readable_output == ReadableOutputs.ALERT_CSV.value.format(
         "59490dabe57c281391e11ceb"
     )
@@ -2630,6 +2671,49 @@ def test_continue_enrich_ioc_handler(
     assert result.continue_to_poll
 
 
+def test_test_module_with_fetch_success(requests_mock, mock_client: Client):
+    """
+    Scenario: Test module with fetch enabled and success.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - test-module called.
+    Then:
+     - Ensure that test module gets success.
+    """
+    from Rapid7ThreatCommand import test_module
+
+    json_response = load_mock_response("system_modules.json")
+    url = urljoin(mock_client._base_url, "/v1/account/system-modules")
+    requests_mock.get(url=url, json=json_response, status_code=HTTPStatus.OK)
+    result = test_module(mock_client, {'isFetch': True, 'max_fetch': '200', 'first_fetch': '1 day'})
+    assert result == "ok"
+
+
+@pytest.mark.parametrize(
+    ("args", "error_msg"),
+    (
+        ({"isFetch": True, "first_fetch": "1 day", "max_fetch": "201.5"}, ReadableErrors.MAX_FETCH_INVALID.value),
+        ({"isFetch": True, "first_fetch": "1 day", "max_fetch": "0"}, ReadableErrors.MAX_FETCH_INVALID.value),
+        ({"isFetch": True, "first_fetch": "1 day", "max_fetch": "-1"}, ReadableErrors.MAX_FETCH_INVALID.value)
+    ),
+)
+def test_test_module_with_fetch_invalid_args(mock_client, args, error_msg):
+    """
+    Scenario: Test module with fetch enabled and invalid arguments.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - test-module called.
+    Then:
+     - Ensure that test module gets failed.
+    """
+    from Rapid7ThreatCommand import test_module
+
+    result = test_module(mock_client, args)
+    assert str(error_msg) in result
+
+
 def test_fetch_incidents(
     requests_mock,
     mock_client: Client,
@@ -2661,65 +2745,106 @@ def test_fetch_incidents(
     )
     requests_mock.get(url=url, json=json_response)
 
-    with open("test_data/alert/alert_image.png", "rb") as img1:
-        url = urljoin(
-            mock_client._base_url,
-            "/v1/data/alerts/alert-image/59490d78e57c281391e11cb9",
-        )
-        requests_mock.get(url=url, content=img1.read(), status_code=HTTPStatus.OK)
-    with open("test_data/alert/alert_csv.csv", "rb") as img1:
-        url = urljoin(
-            mock_client._base_url, "/v1/data/alerts/csv-file/641cbbdfb6a71e6aa08b8e53"
-        )
-        requests_mock.get(url=url, content=img1.read(), status_code=HTTPStatus.OK)
-    with open("test_data/alert/alert_csv_2.csv", "rb") as img1:
-        url = urljoin(
-            mock_client._base_url, "/v1/data/alerts/csv-file/641cbbdfb6a71e6aa08b8e53"
-        )
-        requests_mock.get(url=url, content=img1.read(), status_code=HTTPStatus.OK)
-    with open("test_data/alert/alert_csv_2.csv", "rb") as img1:
-        url = urljoin(
-            mock_client._base_url, "/v1/data/alerts/csv-file/640f00172c908c0307cbf91e"
-        )
-        requests_mock.get(
-            url=url,
-            content=b"alert does not exist or does not contain any CSV file data",
-            status_code=HTTPStatus.BAD_REQUEST,
-        )
-
-    requests_mock.get(url=url, json=json_response)
     next_run, incidents = fetch_incidents(
         client=mock_client,
-        last_run={},
+        last_run={"time": "2023-01-14T08:32:35.478Z", "last_id": "1"},
         alert_severities=None,
         alert_types=None,
+        network_types=None,
         fetch_attachments=True,
         fetch_csv=True,
         first_fetch="3 Days",
         is_closed=False,
-        max_fetch=2,
+        max_fetch=None,
         source_types=None,
     )
     assert next_run.get("time")
     assert next_run.get("last_id")
     assert len(incidents) == 2
-    assert isinstance(incidents[0]["attachment"], list)
-    assert len(incidents[0]["attachment"]) == 1
-    assert len(incidents[1]["attachment"]) == 2
-    csv_keys = [list(row.keys()) for row in incidents[0]["attachment"][0]["content"]][0]
-    assert set(csv_keys).issubset(
-        [
-            "email",
-            "password",
-            "userStatus",
-            "passwordStatus",
-            "internalDomain",
-            "message",
-            "remediationAction",
-            "remediationStatus",
-            "rawData",
-        ]
+
+
+def test_fetch_incidents_with_invalid_offset_time(
+        requests_mock,
+        mock_client: Client,
+):
+    """
+    Scenario: Fetch 2 incidents with invalid last run time.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fetch-incidents called.
+    Then:
+     - Ensure that the incidents created successfully.
+    """
+    from Rapid7ThreatCommand import fetch_incidents
+
+    json_response = load_mock_response("alert/fetch_alert_list.json")
+    url = urljoin(mock_client._base_url, "/v1/data/alerts/update-alerts")
+    requests_mock.get(url=url, json=json_response)
+    json_response = load_mock_response("alert/complete1.json")
+    url = urljoin(
+        mock_client._base_url,
+        "/v1/data/alerts/get-complete-alert/641cbbdfb6a71e6aa08b8e53",
     )
+    requests_mock.get(url=url, json=json_response)
+    json_response = load_mock_response("alert/complete2.json")
+    url = urljoin(
+        mock_client._base_url,
+        "/v1/data/alerts/get-complete-alert/640f00172c908c0307cbf91e",
+    )
+    requests_mock.get(url=url, json=json_response)
+
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        last_run={"time": "2023-01--14T08:32:35.478Z", "last_id": "1"},
+        alert_severities=None,
+        alert_types=None,
+        network_types=None,
+        fetch_attachments=True,
+        fetch_csv=True,
+        first_fetch="3 Days",
+        is_closed=False,
+        max_fetch=None,
+        source_types=None,
+    )
+    assert next_run.get("time")
+    assert next_run.get("last_id")
+    assert len(incidents) == 2
+
+
+def test_fetch_incidents_with_empty_alert_list_response(
+        requests_mock,
+        mock_client: Client,
+):
+    """
+    Scenario: Fetch 2 incidents when alert list response is empty list.
+    Given:
+     - User has provided correct parameters.
+    When:
+     - fetch-incidents called.
+    Then:
+     - Ensure that the incidents created successfully.
+    """
+    from Rapid7ThreatCommand import fetch_incidents
+
+    url = urljoin(mock_client._base_url, "/v1/data/alerts/update-alerts")
+    requests_mock.get(url=url, json={"content": []})
+    last_run = {"time": "2023-01-14T08:32:35.478Z", "last_id": "1"}
+    next_run, incidents = fetch_incidents(
+        client=mock_client,
+        last_run=last_run,
+        alert_severities=None,
+        alert_types=None,
+        network_types=None,
+        fetch_attachments=True,
+        fetch_csv=True,
+        first_fetch="3 Days",
+        is_closed=False,
+        max_fetch=None,
+        source_types=None,
+    )
+    assert next_run == last_run
+    assert len(incidents) == 0
 
 
 @pytest.mark.parametrize(

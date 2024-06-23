@@ -222,6 +222,11 @@ def main():     # pragma: no cover
             return_results(send_email_command(client, args))
         elif command == 'msgraph-mail-generate-login-url':
             return_results(generate_login_url(client))
+        elif command in ['msgraph-mail-get-rule', 'msgraph-mail-list-rules']:
+            return_results(list_rule_action_command(client, args))
+        elif command == 'msgraph-mail-delete-rule':
+            return_results(delete_rule_command(client, args))
+
     except Exception as e:
         return_error(str(e))
 

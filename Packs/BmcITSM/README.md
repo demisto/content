@@ -6,4 +6,4 @@ Cortex XSOAR interfaces with BMC Helix ITSM to help streamline security-related 
  - Fetches BMC Helix ITSM tickets.
  - Mirrors incoming BMC Helix ITSM tickets in Cortex XSOAR.
  - Mirrors Cortex XSOAR tickets in BMC Helix ITSM. 
- - Supports service request, incident, change request, task, problem investigation and known error ticket types.
+ - Supports service request, incident, change request, task, problem investigation, known error and work order ticket types.
