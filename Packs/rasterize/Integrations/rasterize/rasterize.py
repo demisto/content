@@ -412,7 +412,7 @@ def terminate_chrome(chrome_port: str = '', killall: bool = False) -> None:
     demisto.debug('terminate_chrome, Finish')
 
 
-def chrome_manager() -> tuple[Any | None, int | None]:
+def chrome_manager() -> tuple[Any | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
 
@@ -489,10 +489,10 @@ def get_chrome_instances_contents_dictionaries(chrome_instances_contents: str) -
 
 def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
     chrome_port = generate_chrome_port()
-    return start_chrome_headless(str(chrome_port), instance_id, chrome_options)
+    return start_chrome_headless(chrome_port, instance_id, chrome_options)
 
 
-def generate_chrome_port() -> int | None:
+def generate_chrome_port() -> str | None:
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
     random.shuffle(ports_list)
@@ -504,7 +504,7 @@ def generate_chrome_port() -> int | None:
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
             demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
-            return chrome_port
+            return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
 
