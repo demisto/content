@@ -2448,7 +2448,7 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 tests:
-- No tests (auto formatted)
+- Local Analysis alert Investigation - Test
 fromversion: 6.6.0
 marketplaces:
   - marketplacev2

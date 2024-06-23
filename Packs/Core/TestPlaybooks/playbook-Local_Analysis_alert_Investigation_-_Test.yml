@@ -1,0 +1,985 @@
+id: Local Analysis alert Investigation - Test
+version: -1
+name: Local Analysis alert Investigation - Test
+description: |-
+  This playbook tests the 'Local Analysis alert Investigation' playbook, which is part of the 'Core' pack. The playbook includes the following conducted tests:
+  - Checks playbook run correctly without inputs.
+  - Checks the handling of malicious verdicts.
+  - Verify the execution of containment actions.
+  - Validate the blocking of indicators.
+  - Test raising severity of the incident
+  - Test file detonation.
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 158c126e-3caa-4a6b-85a3-8ac21bfcaeec
+    type: start
+    task:
+      id: 158c126e-3caa-4a6b-85a3-8ac21bfcaeec
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "22"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 67df3bc4-c873-4992-8cd7-fdef290d3f92
+    type: regular
+    task:
+      id: 67df3bc4-c873-4992-8cd7-fdef290d3f92
+      version: -1
+      name: Set alert data
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      agentid:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      alertid:
+        simple: "123"
+      alertname:
+        simple: test
+      initiatorpath:
+        simple: C:\Users\administrator\Downloads\fortestplaybook.txt
+      initiatorsha256:
+        simple: fffee99d8b6a3d291eea8cc3441132f721101378c75eadf92fa49fe891845364
+      name:
+        simple: test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: c7bb79f1-e963-421d-8c37-27e38b0d2bfc
+    type: condition
+    task:
+      id: c7bb79f1-e963-421d-8c37-27e38b0d2bfc
+      version: -1
+      name: Testing Enrichment for Verdict by DBotScore Exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: DBotScore
+            iscontext: true
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 7d88ad93-6927-485f-8771-7fe462c28e72
+    type: condition
+    task:
+      id: 7d88ad93-6927-485f-8771-7fe462c28e72
+      version: -1
+      name: Testing WildFire internal-wildfire-get-report by retrieved files Succeeded
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "18"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: File
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: File.Extension
+                      iscontext: true
+                    right:
+                      value:
+                        simple: zip
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 3449b51d-f236-4a1a-8e9f-b6c90a6bed95
+    type: regular
+    task:
+      id: 3449b51d-f236-4a1a-8e9f-b6c90a6bed95
+      version: -1
+      name: Get Endpoint ids
+      description: Gets a list of endpoints, according to the passed filters. If there are no filters, all endpoints are returned. Filtering by multiple fields will be concatenated using AND condition (OR is not supported). Maximum result set size is 100. Offset is the zero-based number of endpoint from the start of the result set (start by counting from 0).
+      script: '|||core-get-endpoints'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      alias_name:
+        simple: TestPlaybook
+      status:
+        simple: connected
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -130
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: a0b866b1-8ef5-4de1-8aa1-5ee510721721
+    type: title
+    task:
+      id: a0b866b1-8ef5-4de1-8aa1-5ee510721721
+      version: -1
+      name: Test with Inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "13"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -450
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 665bd021-7763-46e2-8554-ea9296bd84e8
+    type: regular
+    task:
+      id: 665bd021-7763-46e2-8554-ea9296bd84e8
+      version: -1
+      name: Delete all context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -290
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: c2f7cd8f-cac6-4636-8830-9ef97b5bc903
+    type: title
+    task:
+      id: c2f7cd8f-cac6-4636-8830-9ef97b5bc903
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2440
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 6e4b4f75-e1ad-4ffd-8cee-c5bf5d8b00c5
+    type: regular
+    task:
+      id: 6e4b4f75-e1ad-4ffd-8cee-c5bf5d8b00c5
+      version: -1
+      name: Error Occured
+      description: Prints an error entry with a given message
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    scriptarguments:
+      message:
+        simple: Test Failed
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -60,
+          "y": 1860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: c9c870cc-fe7b-44a0-8729-0a8830916c36
+    type: condition
+    task:
+      id: c9c870cc-fe7b-44a0-8729-0a8830916c36
+      version: -1
+      name: Test core-retrieve file from endpoint
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              complex:
+                root: ExtractedFiles
+            iscontext: true
+          right:
+            value:
+              simple: calc.exe
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: da4886a1-f16e-4ce3-8ef3-8050243e376c
+    type: regular
+    task:
+      id: da4886a1-f16e-4ce3-8ef3-8050243e376c
+      version: -1
+      name: Delete all context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -845
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: b7190a50-4ab3-4534-8951-b0d990155587
+    type: condition
+    task:
+      id: b7190a50-4ab3-4534-8951-b0d990155587
+      version: -1
+      name: Test Raise Severity of the incident
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "23"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: parentIncidentFields
+                accessor: manual_severity
+            iscontext: true
+          right:
+            value:
+              simple: high
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1430
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 1da445a4-677d-4ef2-893f-cf2ef67d6dc1
+    type: title
+    task:
+      id: 1da445a4-677d-4ef2-893f-cf2ef67d6dc1
+      version: -1
+      name: Test without inputs
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -1030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: fb99e92d-0655-4e98-81ad-d6463440283d
+    type: condition
+    task:
+      id: fb99e92d-0655-4e98-81ad-d6463440283d
+      version: -1
+      name: Test file hash is blocked
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "16"
+      "yes":
+      - "30"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: parentIncidentContext
+                accessor: BlockedFilesHash
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 2b4121cf-c94b-4b2c-8502-ef44c7d660a5
+    type: regular
+    task:
+      id: 2b4121cf-c94b-4b2c-8502-ef44c7d660a5
+      version: -1
+      name: Unisolate test endpoint
+      description: Reverses the isolation of an endpoint.
+      script: '|||core-unisolate-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 63d7db28-8a6b-4313-8921-744c4c31aeda
+    type: playbook
+    task:
+      id: 63d7db28-8a6b-4313-8921-744c4c31aeda
+      version: -1
+      name: Local Analysis alert Investigation
+      description: |-
+        When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.
+
+        **Investigative Actions:**
+
+        Investigate the executed process image and verify if it is malicious using:
+
+        * XDR trusted signers
+        * VT trusted signers
+        * VT detection rate
+        * NSRL DB
+
+        **Response Actions**
+
+        The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+        * Auto block indicators
+        * Auto file quarantine
+        * Manual endpoint isolation
+
+        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+
+        This phase will execute the following containment actions:
+
+        * Manual block indicators
+        * Manual file quarantine
+        * Auto endpoint isolation
+
+        And the following eradication actions:
+
+        * Manual process termination
+        * Manual file deletion
+        * Manual reset of the user’s password
+
+        External resources:
+
+        [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+      playbookName: Local Analysis alert Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -650
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 1b6e745c-050c-4e7f-875c-8768b4fe1744
+    type: playbook
+    task:
+      id: 1b6e745c-050c-4e7f-875c-8768b4fe1744
+      version: -1
+      name: Local Analysis alert Investigation
+      description: |-
+        When an unknown executable, DLL, or macro attempts to run on a Windows or Mac endpoint, the Cortex XDR agent uses local analysis to determine if it is likely to be malware. Local analysis uses a static set of pattern-matching rules that inspect multiple file features and attributes, and a statistical model that was developed with machine learning on WildFire threat intelligence.
+
+        **Investigative Actions:**
+
+        Investigate the executed process image and verify if it is malicious using:
+
+        * XDR trusted signers
+        * VT trusted signers
+        * VT detection rate
+        * NSRL DB
+
+        **Response Actions**
+
+        The playbook's first response action is a containment plan that is based on the initial data provided within the alert. In that phase, the playbook will execute:
+
+        * Auto block indicators
+        * Auto file quarantine
+        * Manual endpoint isolation
+
+        When the playbook executes, it checks for additional activity using the Endpoint Investigation Plan playbook, and another phase, which includes containment and eradication, is executed.
+
+        This phase will execute the following containment actions:
+
+        * Manual block indicators
+        * Manual file quarantine
+        * Auto endpoint isolation
+
+        And the following eradication actions:
+
+        * Manual process termination
+        * Manual file deletion
+        * Manual reset of the user’s password
+
+        External resources:
+
+        [Malware Protection Flow](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/File-Analysis-and-Protection-Flow)
+      playbookName: Local Analysis alert Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      AutoCloseAlert:
+        simple: "False"
+      AutoContainment:
+        simple: "True"
+      AutoEradication:
+        simple: "False"
+      AutoRecovery:
+        simple: "False"
+      CommentToAdd:
+        simple: '${alert.name}. Alert ID: ${alert.id}'
+      FileRemediation:
+        simple: "False"
+      GraywareAsMalware:
+        simple: "False"
+      Path:
+        complex:
+          root: alert
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=pickvalue(val);function pickvalue(x){if(x.filepath){return x.filepath} else {return x.initiatorpath}}
+      Query:
+        complex:
+          root: alert
+          transformers:
+          - operator: If-Then-Else
+            args:
+              condition:
+                value:
+                  simple: lhs!=rhs
+              conditionB:
+                value:
+                  simple: lhsB!=rhsB
+              conditionInBetween:
+                value:
+                  simple: and
+              else:
+                value:
+                  simple: ${alert= '(initiatorsha256:"' + "" + '" or hostip:"' + "" + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+              equals: {}
+              lhs:
+                value:
+                  simple: alert.filesha256
+                iscontext: true
+              lhsB:
+                value:
+                  simple: alert.hostip
+              options: {}
+              optionsB: {}
+              rhs: {}
+              rhsB: {}
+              then:
+                value:
+                  simple: ${alert= '(filesha256:"' + val.filesha256 + '" or hostip:"' + val.hostip + '") ' + 'and sourceBrand:"' + val.sourceBrand + '" and name:"' + val.name + '"'}
+      SHA256:
+        complex:
+          root: alert
+          transformers:
+          - operator: DT
+            args:
+              dt:
+                value:
+                  simple: .=pickvalue(val);function pickvalue(x){if(x.filesha256){return x.filesha256} else {return x.initiatorsha256}}
+      ShouldManualReviewFP:
+        simple: "False"
+      ShouldOpenTicket:
+        simple: "False"
+      ShouldRescanBenign:
+        simple: "True"
+      ZendeskSubject:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+      agentID:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      description:
+        simple: ${parentIncidentFields.description}. ${parentIncidentFields.xdr_url}
+      serviceNowShortDescription:
+        simple: XSIAM Incident ID - ${parentIncidentFields.incident_id}
+    separatecontext: false
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 540
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: f65688eb-6ae7-4c84-87a1-7eb32f64368e
+    type: regular
+    task:
+      id: f65688eb-6ae7-4c84-87a1-7eb32f64368e
+      version: -1
+      name: Set Host IP
+      description: commands.local.cmd.set.incident
+      script: Builtin|||setAlert
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      hostip:
+        complex:
+          root: Core.Endpoint
+          accessor: ip
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: d2bdb0dd-2a63-48b6-84c8-b740f2526a69
+    type: regular
+    task:
+      id: d2bdb0dd-2a63-48b6-84c8-b740f2526a69
+      version: -1
+      name: Create file
+      description: Initiate a new endpoint script execution of shell commands.
+      script: '|||core-run-script-execute-commands'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      commands:
+        simple: echo Hello >> "C:\Users\administrator\Downloads\fortestplaybook.txt"
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      timeout:
+        simple: "600"
+      timeout_in_seconds:
+        simple: "600"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a2e6649a-c368-49c2-83b2-dceab82a2edf
+    type: regular
+    task:
+      id: a2e6649a-c368-49c2-83b2-dceab82a2edf
+      version: -1
+      name: Delete file
+      description: Initiates a new endpoint script execution to delete the specified file.
+      script: '|||core-run-script-delete-file'
+      type: regular
+      iscommand: true
+      brand: ""
+    scriptarguments:
+      endpoint_ids:
+        complex:
+          root: Core.Endpoint
+          accessor: endpoint_id
+      file_path:
+        simple: C:\Users\administrator\Downloads\fortestplaybook.txt
+      timeout_in_seconds:
+        simple: "60"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2080
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 87c12042-4c95-4d6d-84a0-d3ef9714f95a
+    type: title
+    task:
+      id: 87c12042-4c95-4d6d-84a0-d3ef9714f95a
+      version: -1
+      name: Revert testing ENV
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "29"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1950
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "18_16_#default#": 0.46,
+      "21_16_#default#": 0.59,
+      "3_16_#default#": 0.3,
+      "4_16_#default#": 0.38
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3725,
+        "width": 890,
+        "x": -60,
+        "y": -1220
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.9.0
