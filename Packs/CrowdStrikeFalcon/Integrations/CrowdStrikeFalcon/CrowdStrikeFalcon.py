@@ -566,19 +566,29 @@ def modify_detection_summaries_outputs(detection: dict):
         "control_graph_id",
         "triggering_process_graph_id",
         "sha256",
-        "pattern_disposition"
+        "pattern_disposition",
+        "parent_details",
+        "md5",
     ]
-
+    # rename some keys to be the same as the ols version, and add them to a nested dict
+    if detection.get("parent_details"):
+        detection["parent_details"]["parent_sha256"] = detection["parent_details"].pop("sha256", None)
+        detection["parent_details"]["parent_cmdline"] = detection["parent_details"].pop("cmdline", None)
+        detection["parent_details"]["parent_md5"] = detection["parent_details"].pop("md5", None)
+        detection["parent_details"]["parent_process_graph_id"] = detection["parent_details"].pop("process_graph_id", None)
+        
+    # change some keys from a flat dict to nested dict to be the same as the old version
     nested_dict = {key: detection.pop(key, None) for key in keys_to_move if key in detection}
-    
     device_id =detection.get("device", {}).get("device_id")
     nested_dict["device_id"] = device_id if device_id else None
-
     detection["behaviors"] = nested_dict
     
+    #change some keys from nested to flat to be the same as the old version
     hostinfo =detection.get("device", {}).get("hostinfo")
     detection["hostinfo"] = hostinfo if hostinfo else None
-
+    
+    #change some key name, to be the same as the old version
+    detection["detection_id"] = detection.pop("composite_id", None)
     return detection
 
 

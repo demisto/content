@@ -1779,7 +1779,7 @@ script:
       description: 'The datetime the detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.detection_id
-      description: 'The ID of the detection.  Note: This output does not exist in the post raptor version.'
+      description: The ID of the detection.
       type: String
     - contextPath: CrowdStrike.Detections.device.device_id
       description: The device ID as seen by CrowdStrike Falcon.
@@ -1923,19 +1923,19 @@ script:
       description: The SHA256 of the triggering process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.md5
-      description: 'The MD5 of the triggering process.  Note: This output does not exist in the post raptor version.'
+      description: The MD5 of the triggering process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_sha256
-      description: "The SHA256 hash of the parent process.  Note: This output does not exist in the post raptor version."
+      description: The SHA256 hash of the parent process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_md5
-      description: "The MD5 hash of the parent process.  Note: This output does not exist in the post raptor version."
+      description: "The MD5 hash of the parent process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_cmdline
-      description: 'The command line of the parent process.  Note: This output does not exist in the post raptor version.'
+      description: The command line of the parent process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id
-      description: "The process graph ID of the parent process.  Note: This output does not exist in the post raptor version."
+      description: The process graph ID of the parent process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.pattern_disposition
       description: The pattern associated with the action performed on the behavior.

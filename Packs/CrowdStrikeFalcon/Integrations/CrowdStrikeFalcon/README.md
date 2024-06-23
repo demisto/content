@@ -1969,7 +1969,7 @@ Lists detection summaries.
 | --- | --- | --- |
 | CrowdStrike.Detections.cid | String | The organization's customer ID \(CID\). | 
 | CrowdStrike.Detections.created_timestamp | Date | The datetime the detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.Detections.detection_id | String | The ID of the detection.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.detection_id | String | The ID of the detection. | 
 | CrowdStrike.Detections.device.device_id | String | The device ID as seen by CrowdStrike Falcon. | 
 | CrowdStrike.Detections.device.cid | String | The CrowdStrike Customer ID \(CID\) to which the device belongs. | 
 | CrowdStrike.Detections.device.agent_load_flags | String | The CrowdStrike Falcon agent load flags. | 
@@ -2016,12 +2016,12 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.user_id | String | The Security Identifier \(SID\) of the user in Windows. | 
 | CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. | 
 | CrowdStrike.Detections.behaviors.triggering_process_graph_id | String | The ID of the process that triggered the behavior detection. | 
-| CrowdStrike.Detections.behaviors.sha256 | String | The SHA256 of the triggering process.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.behaviors.sha256 | String | The SHA256 of the triggering process. | 
 | CrowdStrike.Detections.behaviors.md5 | String | The MD5 of the triggering process. | 
-| CrowdStrike.Detections.behaviors.parent_details.parent_sha256 | String | The SHA256 hash of the parent process.  Note: This output does not exist in the post raptor version.| 
-| CrowdStrike.Detections.behaviors.parent_details.parent_md5 | String | The MD5 hash of the parent process.  Note: This output does not exist in the post raptor version.| 
-| CrowdStrike.Detections.behaviors.parent_details.parent_cmdline | String | The command line of the parent process.  Note: This output does not exist in the post raptor version.| 
-| CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id | String | The process graph ID of the parent process.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.behaviors.parent_details.parent_sha256 | String | The SHA256 hash of the parent process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_md5 | String | The MD5 hash of the parent process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_cmdline | String | The command line of the parent process. | 
+| CrowdStrike.Detections.behaviors.parent_details.parent_process_graph_id | String | The process graph ID of the parent process. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition | Number | The pattern associated with the action performed on the behavior. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.indicator | Boolean | Whether the detection behavior is similar to an indicator. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.detect | Boolean | Whether this behavior is detected. | 
