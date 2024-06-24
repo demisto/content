@@ -377,7 +377,7 @@ def test_get_output_filenames():
     assert get_list_item(file_names, 4, "FOO.png") == 'FOO.png'
 
 
-def test_chrome_instances_file_is_empty_then_create_new_browser(mocker):
+def test_chrome_manager_case_chrome_instances_file_is_empty(mocker):
     """
     Given   instance id and chrome options
     When    chrome instances file is empty
@@ -414,7 +414,7 @@ def test_chrome_instances_file_is_empty_then_create_new_browser(mocker):
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_options_in_chromes_options_and_instance_id_not_linked(mocker):
+def test_chrome_manager_case_chromes_options_exist_and_instance_id_not_linked(mocker):
     """
     Given   instance id that does not exist and chrome options that exist in the chrome instances file
     When    chrome instances file is not empty and instance id is not linked to the chrome options
@@ -457,7 +457,7 @@ def test_chrome_options_in_chromes_options_and_instance_id_not_linked(mocker):
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_options_not_in_chromes_options_and_instance_id_not_in_instances_id(mocker):
+def test_chrome_manager_case_new_chrome_options_and_instance_id(mocker):
     """
     Given   instance id and chrome options does not exist in the chrome instances file
     When    chrome instances file is not empty
@@ -499,7 +499,7 @@ def test_chrome_options_not_in_chromes_options_and_instance_id_not_in_instances_
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_options_not_in_chrome_options_and_instance_id_in_instances_id(mocker):
+def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
     """
     Given   instance id exist and chrome options does not exist in the chrome instances file
     When    chrome instances file is not empty and instance id has different chrome options
@@ -544,7 +544,7 @@ def test_chrome_options_not_in_chrome_options_and_instance_id_in_instances_id(mo
     assert chrome_port == "chrome_port"
 
 
-def test_chrome_options_in_chrome_options_and_instance_id_linked(mocker):
+def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(mocker):
     """
     Given   instance id and chrome options
     When    chrome instances file is not empty, and instance id and chrome options linked.
