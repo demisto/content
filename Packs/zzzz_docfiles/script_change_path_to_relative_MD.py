@@ -3,6 +3,9 @@ import os
 import json
 from pathlib import Path
 from urllib.parse import urlparse
+import logging
+
+logger = logging.getLogger(__name__)
 PACKS_PATH = '/Users/mmorag/dev/demisto/content/Packs'
 LOGS_IMAGES_PER_PACK = "/Users/mmorag/dev/demisto/content/Packs/doc_files"
 HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
@@ -29,8 +32,8 @@ def find_image_in_doc_files(image_name, pack_name):
         if os.path.exists(doc_files_path):
             return f'../../doc_files/{image_name}'
     except OSError as error:
-        print(error)
-    print(f"File {doc_files_path} does not exist.")
+        logger.debug(f"Failed to get related text file, error: {error}")
+    logger.debug(f"File {doc_files_path} does not exist.")
     return ''
 
 
@@ -60,14 +63,22 @@ def search_image_links(file_path):
         Raises:
             OSError: If there is an error creating the folder to save images or downloading images.
     """
+    if os.path.getsize(file_path) == 0:
+        return "empty file"
+    parts = file_path.split("/")
+    # Find the index of "Packs"
+    packs_index = parts.index("Packs")
+
+    # Extract the name after "Packs"
+    pack_name = parts[packs_index + 1]
     try:
-        with (open(file_path, 'w') as file):
+        with (open(file_path, 'r+') as file):
             file_lines = file.readlines()
-            if logs := change_image_link_to_relative(file_lines):
-                return {file_path: logs}
+            if logs := change_image_link_to_relative(file_lines, pack_name):
+                return logs
     except OSError as error:
-        print(error)
-    return {file_path: "failed opening the file"}
+        logger.debug(error)
+    return "failed opening the file"
 
 
 def extract_image_links_from_files_and_save_to_json():
@@ -76,14 +87,17 @@ def extract_image_links_from_files_and_save_to_json():
     then extracts image links from those files and saves the information to a JSON file.
     """
     paths_links = list(Path(PACKS_PATH).rglob("*.md"))
+    filtered_md_files = [file for file in md_files if not os.path.isdir(file) or 'ReleaseNotes' not in file.split(os.sep)]
+
     images_information = {}
 
     for link in paths_links:
+        
         images_information_log = search_image_links(str(link))
         if images_information_log:
             images_information[str(link)] = images_information_log
 
-    with open(f'/Users/mmorag/dev/demisto/content/Packs/script_change_path_to_relative_MD_logs.json', "a") as file:
+    with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/script_change_path_to_relative_MD_logs.json', "a") as file:
         file.write(json.dumps(images_information))
 
 
@@ -91,7 +105,7 @@ def main():
     try:
         extract_image_links_from_files_and_save_to_json()
     except Exception as e:
-        print(e)
+        logger.debug(e)
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
