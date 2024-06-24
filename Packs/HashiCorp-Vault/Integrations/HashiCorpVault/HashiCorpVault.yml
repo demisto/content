@@ -338,7 +338,6 @@ script:
       description: Authentication lease duration in seconds, 0 if indefinitely.
       type: number
     description: Creates a new authentication token.
-
   - name: hashicorp-generate-role-secret
     arguments:
     - name: role_name
