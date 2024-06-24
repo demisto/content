@@ -17,16 +17,16 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DATE_FORMAT_NO_MS = '%Y-%m-%dT%H:%M:%SZ'
 DATE_FORMAT_HR = '%d %b %Y, %H:%M'
 
-CONTEXT_OUTPUT_PREFIX = "CipherTrust."
+CONTEXT_OUTPUT_PREFIX = "CipherTrust"
 
-GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Group"
-USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}Users"
-LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}LocalCA"
-CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CASelfSign"
-CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CAInstall"
-CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CACertificate"
-EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}ExternalCA"
-CSR_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}CSR"
+GROUP_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.Group"
+USERS_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.Users"
+LOCAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.LocalCA"
+CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.CASelfSign"
+CA_INSTALL_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.CAInstall"
+CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.CACertificate"
+EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.ExternalCA"
+CSR_CONTEXT_OUTPUT_PREFIX = f"{CONTEXT_OUTPUT_PREFIX}.CSR"
 AUTHENTICATION_URL_SUFFIX = '/auth/tokens'
 CHANGE_PASSWORD_URL_SUFFIX = '/auth/changepw'
 USER_MANAGEMENT_GROUPS_URL_SUFFIX = '/usermgmt/groups/'
@@ -379,7 +379,7 @@ class CipherTrustClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Optional[str], page_size_str: Optional[str]) -> \
+def derive_skip_and_limit_for_pagination(limit: Optional[str], page: Optional[str], page_size: Optional[str]) -> \
         tuple[int, int]:
     """
     Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
@@ -396,18 +396,17 @@ def derive_skip_and_limit_for_pagination(limit_str: Optional[str], page_str: Opt
     Raises:
         ValueError: If the provided page number is invalid or if the page size exceeds the maximum page size.
     """
-    if page_str:
-        page_from_arg = arg_to_number(page_str)
+    if page:
+        page_from_arg = arg_to_number(page)
         if page_from_arg is None:
-            raise ValueError(f'Invalid page number: {page_str}')
-        page_size_from_arg = arg_to_number(page_size_str)
-        page_size: int = page_size_from_arg if page_size_from_arg is not None else DEFAULT_PAGE_SIZE
-        if page_size > MAX_PAGE_SIZE:
+            raise ValueError(f'Invalid page number: {page}')
+        page_size_from_arg = arg_to_number(page_size)
+        size = page_size_from_arg if page_size_from_arg is not None else DEFAULT_PAGE_SIZE
+        if size > MAX_PAGE_SIZE:
             raise ValueError(f'Page size cannot exceed {MAX_PAGE_SIZE}')
-        return (int(page_from_arg) - 1) * page_size, page_size
-    limit_from_arg = arg_to_number(limit_str)
-    limit: int = limit_from_arg if limit_from_arg is not None else DEFAULT_LIMIT
-    return 0, limit
+        return (int(page_from_arg) - 1) * size, size
+    limit_from_arg = arg_to_number(limit)
+    return 0, limit_from_arg if limit_from_arg is not None else DEFAULT_LIMIT
 
 
 def optional_arg_to_bool(arg: Optional[str]) -> Optional[bool]:
