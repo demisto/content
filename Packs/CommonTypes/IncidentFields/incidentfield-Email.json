@@ -14,7 +14,8 @@
         "IAM - AD User Activation",
         "IAM - AD User Deactivation",
         "Vectra Account",
-        "CrowdStrike Falcon Mobile Detection"
+        "CrowdStrike Falcon Mobile Detection",
+        "Exabeam Notable User"
     ],
     "caseInsensitive": true,
     "cliName": "email",

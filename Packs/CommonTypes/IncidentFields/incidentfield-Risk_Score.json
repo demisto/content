@@ -13,7 +13,8 @@
 		"Skyhigh Security Alert",
 		"Skyhigh Security Threat",
 		"AWS Security Hub Finding",
-		"Prisma Cloud - VM Alert Prioritization"
+		"Prisma Cloud - VM Alert Prioritization",
+        "Exabeam Notable User"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

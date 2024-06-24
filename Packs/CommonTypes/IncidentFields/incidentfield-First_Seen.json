@@ -11,7 +11,8 @@
         "Symantec DLP Discover Incident",
         "Symantec DLP Endpoint Incident",
         "Symantec DLP Network Incident",
-		"Prisma Cloud - VM Alert Prioritization"
+		"Prisma Cloud - VM Alert Prioritization",
+        "Exabeam Notable User"
     ],
     "caseInsensitive": true,
     "cliName": "firstseen",
