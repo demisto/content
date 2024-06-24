@@ -32,7 +32,8 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
                        'Authorization Code': AUTHORIZATION_CODE,
                         'Client Credentials': CLIENT_CREDENTIALS}
-AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
+ZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
+
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
 
 
@@ -70,12 +71,12 @@ class Client:
             self_deployed=True,
             auth_id=client_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
-            auth_type else None,
+                                                                                                            auth_type else None,
             grant_type=GRANT_BY_CONNECTION[auth_type],
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
             proxy=proxy,
-            scope=AZURE_DEVOPS_SCOPE,
+            scope="499b84ac-1321-427f-aa17-267ca6975798/.default" if 'Client Credentials' in auth_type else AZURE_DEVOPS_SCOPE,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
