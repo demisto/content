@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import logging
 
 logger = logging.getLogger(__name__)
-PACKS_PATH = '/Users/mmorag/dev/demisto/content/Packs/BigFix/Integrations/BigFix' #'/Users/mmorag/dev/demisto/content/Packs'
+PACKS_PATH = '/Users/mmorag/dev/demisto/content/Packs'
 LOGS_IMAGES_PER_PACK = "/Users/mmorag/dev/demisto/content/Packs/doc_files"
 HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
 URL_IMAGE_LINK_REGEX = r"(\!\[.*?\])\((?P<url>https://[a-zA-Z_/\.0-9\- :%]*?)\)((].*)?)"
@@ -50,6 +50,8 @@ def change_image_link_to_relative(lines, md_path):
     for i, line in enumerate(lines):
         if res := re.search(URL_IMAGE_LINK_REGEX + r"|" + HTML_IMAGE_LINK_REGEX_SDK, line):
             url = res["url"]
+            if not url:
+                url = res.group(0) or res.group(1)
             parse_url = urlparse(url)
             url_path = Path(parse_url.path)
             if new_replace_url := find_image_in_doc_files(url_path.name, pack_name):
