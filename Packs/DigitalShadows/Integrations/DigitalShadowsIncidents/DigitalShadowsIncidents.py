@@ -1,7 +1,3 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-
-
 """Digital Shadows for Cortex XSOAR."""
 
 ''' IMPORTS '''
@@ -29,7 +25,7 @@ AUTO_CLOSED = 'auto-closed'
 RISK_TYPE_ALL = "all"
 RISK_LEVEL_ALL = "all"
 
-TRIAGE_ITEM_STATE_REJECTED = 'rejected'
+NON_INGESTIBLE_TRIAGE_ITEM_STATES = ['rejected', 'closed', 'rejected']
 
 # FIELDS Constants
 UPDATED = 'updated'
@@ -298,6 +294,7 @@ class DSApiRequestHandler(DSHttpRequestHandler):
             self.session.proxies = proxies
 
     def get(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+        LOG("DSApiRequestHandler request ---> ")
         response = self.session.get(
             self.base_url + url, headers=headers, params=params, data=data, **kwargs)
         return self.rate_limit_response(response)
@@ -327,8 +324,11 @@ class SearchLightRequestHandler(HttpRequestHandler):
             self.session.proxies = proxies
 
     def get(self, url, headers={}, params={}, **kwargs):
-        LOG(f"SearchLightRequestHandler get--> {headers}")
+        LOG(f"SearchLightRequestHandler get headers --> {headers}")
+        LOG(f"SearchLightRequestHandler get params --> {params}")
+        LOG(f"SearchLightRequestHandler get params --> {kwargs}")
         r = self.session.get(self.base_url + url, params=params, headers=headers, verify=False, **kwargs)
+        LOG(f"respnse incidents->> {r.json()}")
         return self.rate_limit_response(r)
 
     def post(self, url, headers={}, data=None, **kwargs):
@@ -404,7 +404,6 @@ def get_triage_item_events(request_handler: HttpRequestHandler, event_num_after=
     if len(risk_types) > 0:
         params['risk-type'] = risk_types
     r = request_handler.get('/v1/triage-item-events', params=params, **kwargs)
-    LOG("response------> {}".format(r))
     r.raise_for_status()
     return r.json()
 
@@ -809,7 +808,8 @@ class SearchLightTriagePoller(object):
         other_alerts = get_alerts(self.request_handler, other_alert_ids)
         return [*cred_alerts, *domain_alerts, *subdomain_alerts, *code_commit_alerts, *access_key_alerts, *other_alerts]
 
-    def merge_data(self, events, triage_items, triage_item_comments, alerts, incidents, assets) -> List[PollResult]:
+    def merge_data(self, events, triage_items, triage_item_comments, alerts, incidents, assets, should_ingest_closed) -> List[
+        PollResult]:
         """
         Merge the triage item data together with the found alert, incident and asset information.
         """
@@ -821,10 +821,15 @@ class SearchLightTriagePoller(object):
         asset_map = {asset[ID]: asset for asset in assets}
         comment_map = get_comments_map(triage_item_comments)
         for triage_item in triage_items:
-            if not events:
-                data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event_map[triage_item[ID]]}
-            else:
-                data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event_map[triage_item[ID]]}
+            event = event_map[triage_item[ID]]
+            if not should_ingest_closed and event[STATE] in NON_INGESTIBLE_TRIAGE_ITEM_STATES:
+                LOG("skipping triage item")
+                continue
+            # Overriding the state and risk level as event data is source of truth
+            triage_item[RISK_LEVEL] = event[RISK_LEVEL]
+            triage_item[STATE] = event[STATE]
+
+            data_item = {TRIAGE_ITEM: triage_item, ASSETS: [], EVENT: event}
 
             if triage_item[ID] in comment_map:
                 data_item[COMMENTS] = json.dumps(comment_map[triage_item[ID]])
@@ -851,18 +856,14 @@ class SearchLightTriagePoller(object):
                 asset = asset_map.get(asset_id_holder[ID], None)
                 if asset:
                     data_item[ASSETS].append(json.dumps(asset))
-
             # a new boolean field “auto-closed”, is added → where the triage-event indicates that the triage item is\
             # auto-rejected, this is set to true. Otherwise, it is false
             # based on event-action="create" and status="rejected" on the triage item event
             auto_closed = data_item[EVENT][EVENT_ACTION] == EVENT_ACTION_CREATE and data_item[TRIAGE_ITEM][
-                STATE] == TRIAGE_ITEM_STATE_REJECTED
+                STATE] == NON_INGESTIBLE_TRIAGE_ITEM_STATES
             data_item[AUTO_CLOSED] = auto_closed
-
             data_item = removing_unwanted_data(data_item)
-
             data.append(data_item)
-
         return data
 
     def stringyfyAlert(self, alert):
@@ -875,7 +876,7 @@ class SearchLightTriagePoller(object):
         return alert
 
     def poll_triage(self, event_num_start=0, limit=100, event_created_after=None, alert_risk_types=[RISK_TYPE_ALL],
-                    risk_level=[RISK_LEVEL_ALL]):
+                    risk_level=[RISK_LEVEL_ALL], should_ingest_closed=True):
         """
         A single poll of the triage API for new events, fully populating any new events found.
 
@@ -884,9 +885,10 @@ class SearchLightTriagePoller(object):
         Returns the largest event-num from the triage item events that were processed.
         """
         LOG(
-            "Polling triage items. Event num start: {}, Event created after: {}, Limit: {}".format(event_num_start,
-                                                                                                   event_created_after,
-                                                                                                   limit))
+            "Polling triage items. Event num start: {}, Event created after: {}, Limit: {} risk_level: {} alert_risk_types: {}".format(
+                event_num_start,
+                event_created_after,
+                limit, risk_level, alert_risk_types))
         risk_types_filter = []
 
         if not RISK_TYPE_ALL in alert_risk_types and len(alert_risk_types) > 0:
@@ -895,7 +897,8 @@ class SearchLightTriagePoller(object):
         events = get_triage_item_events(self.request_handler, event_num_after=event_num_start, limit=limit,
                                         event_created_after=event_created_after, risk_types=risk_types_filter)
         risk_level_filter = []
-        if not RISK_LEVEL_ALL in alert_risk_types and len(risk_level) > 0:
+
+        if not RISK_LEVEL_ALL in risk_level and len(risk_level) > 0:
             risk_level_filter = risk_level
 
         # filtering events by risk level
@@ -903,8 +906,8 @@ class SearchLightTriagePoller(object):
             events = [event for event in events if event[RISK_LEVEL] in risk_level_filter]
 
         if not events:
-            LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit: {}".format(
-                event_num_start, event_created_after, limit))
+            LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit: {}, risk_level: {}, alert_risk_types: {}".format(
+                event_num_start, event_created_after, limit, risk_level, alert_risk_types))
             return PollResult(event_num_start, [])
 
         max_event_num = max([e['event-num'] for e in events])
@@ -915,9 +918,9 @@ class SearchLightTriagePoller(object):
         if not triage_items:
             # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
             # so validate before proceeding
-            LOG("No triage items were fetched. Event num start: {}, Event created after: {}, Limit: {}"
-                .format(event_num_start, event_created_after, limit))
-            return PollResult(event_num_start, [])
+            LOG("No triage items were fetched. Event num start: {}, Event created after: {}, Limit: {},  risk_level: {}, alert_risk_types: {}"
+                .format(event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+            return PollResult(max_event_num, [])
 
         triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)
 
@@ -937,9 +940,8 @@ class SearchLightTriagePoller(object):
             [asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]])
         assets = get_assets(self.request_handler, asset_ids=asset_ids)
 
-        triage_data = self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets)
+        triage_data = self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets, should_ingest_closed)
         return PollResult(max_event_num, triage_data)
-
 
     def get_triage_details(self, triage_item_ids):
         triage_items = get_triage_items(self.request_handler, triage_item_ids)
@@ -947,8 +949,7 @@ class SearchLightTriagePoller(object):
         if not triage_items:
             # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
             # so validate before proceeding
-            LOG("No triage items were fetched. Event id:"
-                .format(triage_item_ids))
+            LOG("No triage items were fetched. Event id:".format(triage_item_ids))
             return []
 
         triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)
@@ -1128,42 +1129,6 @@ def test_module(client):
         return 'Test failed because ......' + message
 
 
-def get_remote_incident_data(client, incident_ids):
-    """
-    Gets the remote incident data.
-    Args:
-        client: The client object.
-        incident_id: The incident ID to retrieve.
-
-    Returns:
-        mirrored_data: The raw mirrored data.
-        updated_object: The updated object to set in the XSOAR incident.
-    """
-    LOG(f"inside---get_remote_incident_data{incident_ids}")
-    return client.get_triage_details(incident_ids)
-
-    # mirrored_data = client.http_request('GET', f'incidents/{incident_id}')
-    # incident_mirrored_data = incident_data_to_xsoar_format(mirrored_data, is_fetch_incidents=True)
-    # fetch_incidents_additional_info(client, incident_mirrored_data)
-    # updated_object: Dict[str, Any] = {}
-    #
-    # for field in INCOMING_MIRRORED_FIELDS:
-    #     if value := incident_mirrored_data.get(field):
-    #         updated_object[field] = value
-    #
-    # return mirrored_data, updated_object
-
-
-def get_remote_data_command(client, args):
-    LOG(f"inside---get_remote_data_command")
-    LOG(f"inside---{args}")
-    parsed_args = GetRemoteDataArgs(args)
-
-    LOG(f"remote args {parsed_args}")
-    new_incident_data = get_remote_incident_data(client, [parsed_args.remote_incident_id])
-    LOG(f"new incident data : {new_incident_data}")
-
-
 def parse_date(since):
     SINCE_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
     SINCE_DATE_FORMAT_WITH_MILLISECONDS = "%Y-%m-%dT%H:%M:%S.%fZ"
@@ -1175,6 +1140,7 @@ def parse_date(since):
         LOG(f"Unable to parse date from input: {since}")
         raise ee
 
+
 def main():
     """
         PARSE AND VALIDATE INTEGRATION PARAMS
@@ -1185,6 +1151,7 @@ def main():
     account = demisto.params().get('accountId')
     riskTypes = demisto.params().get('riskTypes')
     riskLevel = demisto.params().get('riskLevel')
+    ingestClosed = demisto.params().get('ingestClosed')
 
     if RISK_TYPE_ALL in riskTypes:
         riskTypes = [RISK_TYPE_ALL]
@@ -1203,7 +1170,7 @@ def main():
         sinceDate = parse_date(sinceDate)
     except Exception as ee:
         demisto.results('Unable to parse date from input')
-    if sinceDate>datetime.now():
+    if sinceDate > datetime.now():
         demisto.results('Date should be less than current date')
     proxy = demisto.params().get('proxy', False)
     last_run = demisto.getLastRun()
@@ -1232,55 +1199,16 @@ def main():
                 demisto.results('fetch limit must be number')
             result = test_module(searchLightClient)
             demisto.results(result)
-        if demisto.command() == 'fetch-indicators':
-            LOG(f"inside indicatores-----> ")
-            last_event_num = last_run.get('indicators', {}).get('last_fetch', 0)
-            LOG(f"last_event_num indicatores-----> ")
-
-            LOG(f"search_light_request_handler_for_indicators indicatores-----> ")
-
-            search_light_indicators_poller = SearchLightIndicatorsPoller(search_light_request_handler)
-            LOG(f"search_light_indicators_poller indicatores-----> ")
-
-            poll_result = search_light_indicators_poller.poll_indicators(event_num_start=last_event_num, limit=fetchLimit,
-                                                                         event_created_after=sinceDate)
-            LOG(f"poll_result indicatores-----> ")
-
-            data = poll_result.data
-            last_polled_number = poll_result.max_event_number
-            LOG(f"indicatores-----> {data}")
-            if data:
-                indicators = []
-                for item in data:
-                    indicator = {
-                        'type': item['type'],
-                        'fields': {"some": "thing"},
-                        'occurred': item["created"],
-                        'value': item["value"],
-                        'rawJSON': item
-                    }
-                    indicators.append(indicator)
-                for b in batch(indicators, batch_size=10):
-                    LOG(f"batch----->{b}")
-                    demisto.createIndicators(b)
-
-            demisto.setLastRun({'indicators': {'last_fetch': last_polled_number}})
         elif demisto.command() == 'fetch-incidents':
-            LOG(f"inside command ------>{demisto.command()}")
             last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
-            LOG(f"last run  ------> {last_event_num}")
-            LOG(f"before search_light_request_handler ------>")
             search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
-            LOG(f"after search_list_triage_poller ------>")
-
             poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=fetchLimit,
                                                                 event_created_after=sinceDate,
-                                                                alert_risk_types=riskTypes, risk_level=riskLevel)
-            LOG(f"after poll_result ------>")
+                                                                alert_risk_types=riskTypes, risk_level=riskLevel,
+                                                                should_ingest_closed=ingestClosed)
             data = poll_result.triage_data
             last_polled_number = poll_result.max_event_number
             if data:
-                LOG(f"inside if data")
                 incidents = []
                 for item in data:
                     incident = {
@@ -1289,14 +1217,15 @@ def main():
                         'rawJSON': json.dumps(item)
                     }
                     incidents.append(incident)
-                LOG(f"data------>{incidents}")
                 demisto.incidents(incidents)
+                demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
+                LOG(f"data found for iteration last_polled_number:{last_polled_number}")
+            else:
+                LOG(f"No data found for iteration last_polled_number:{last_polled_number}")
+                demisto.incidents([])
                 demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
         elif demisto.command() == 'ds-search':
             demisto.results(search_find(digital_shadows_request_handler, demisto.args()))
-        elif demisto.command() == 'get-remote-data':
-            search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
-            return_results(get_remote_data_command(search_list_triage_poller, demisto.args()))
         else:
             raise NotImplementedError(f'{demisto.command()} command is not implemented.')
     # Log exceptions
@@ -1309,4 +1238,3 @@ def main():
 ''' ENTRY POINT '''
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
-

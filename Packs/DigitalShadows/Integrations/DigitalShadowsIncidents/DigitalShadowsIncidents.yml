@@ -1,9 +1,12 @@
-category: Authentication
+category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Digital Shadows V2
+  id: Digital Shadows Incidents
   version: -1
+description: Digital Shadows monitors and manages an organization's digital risk across the widest range of data sources within the open, deep, and dark web.
+
 configuration:
-- display: Fetch incidents
+- defaultvalue: "true"
+  display: Fetch incidents
   name: isFetch
   required: false
   type: 8
@@ -27,6 +30,7 @@ configuration:
   required: true
   type: 9
 - display: API Secret
+  hiddenpassword: true
   name: apiSecret
   required: true
   type: 9
@@ -64,7 +68,8 @@ configuration:
   - impersonating-subdomain
   - leaked-sensitive-code
   - leaked-sensitive-technology
-  - marked-documentmention-by-a-threat-actor
+  - marked-document
+  - mention-by-a-threat-actor
   - misconfigured-web-server
   - exposed-port
   - phishing-report
@@ -95,6 +100,12 @@ configuration:
   - very-high
   required: false
   type: 16
+- additionalinfo: If you don't want to ingest rejected/resolved/closed incidents then set it to False. Otherwise incidents will ingested with auto-closed=True
+  defaultvalue: "true"
+  display: Ingest Rejected/Resolved/Closed Incidents
+  name: ingestClosedIncidents
+  required: false
+  type: 8
 - additionalinfo: No of incidents want to fetch per iteration
   defaultvalue: "50"
   display: Fetch Limit
@@ -108,18 +119,13 @@ configuration:
   required: false
   type: 19
 - additionalinfo: Since when want to fetch the data with given format(%Y-%m-%dT%H:%M:%SZ)
-  defaultvalue: "2024-01-20T00:00:00Z"
+  defaultvalue: "2020-01-20T00:00:00Z"
   display: Start date
   name: sinceDate
   required: true
   type: 0
-- display: Fetch indicators
-  name: feed
-  required: false
-  type: 8
-description: This is digital shadows integration.
-display: Digital Shadows V2 (Partner Contribution)
-name: Digital Shadows V2
+display: Digital Shadows Incidents (Partner Contribution)
+name: Digital Shadows Incidents
 script:
   commands:
   - arguments:
@@ -128,11 +134,10 @@ script:
     description: Perform a general search against incidents, threats closed sources, etc.
     name: ds-search
   dockerimage: demisto/python3:3.10.13.74666
-  feed: true
-  isFetchSamples: true
   isfetch: true
-  isremotesyncin: true
   runonce: false
   script: ''
   subtype: python3
   type: python
+defaultmapperin: DigitalShadowsIncidentMapper_V2
+defaultclassifier: DigitalShadowsIncidentClassifier_V2
