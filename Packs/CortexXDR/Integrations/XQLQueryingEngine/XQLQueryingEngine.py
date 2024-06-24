@@ -617,10 +617,8 @@ def get_xql_query_results_polling_command(client: Client, args: dict) -> Union[C
             data = gzip.decompress(file_data).decode()
             outputs['results'] = [json.loads(line) for line in data.split("\n") if len(line) > 0]
 
-    # if status is pending, in versions above 6.2.0, the command will be called again in the next run until success.
+    # if status is pending, the command will be called again in the next run until success.
     if outputs.get('status') == 'PENDING':
-        if not is_demisto_version_ge('6.2.0'):  # only 6.2.0 version and above support polling command.
-            return command_results
         scheduled_command = ScheduledCommand(command='xdr-xql-get-query-results', next_run_in_seconds=interval_in_secs,
                                              args=args, timeout_in_seconds=600)
         command_results.scheduled_command = scheduled_command
