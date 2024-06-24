@@ -1,0 +1,2455 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "XSOAR Status Review Dashboard v6",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "a6a96260-f007-11ee-b00b-bfb197b66b29",
+            "id": "a6a96260-f007-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.131250827Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.673961406Z",
+                "name": "Incidents by Type",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "type",
+                        "dbotStatus"
+                    ],
+                    "keys": null,
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Incidents - Pie chart",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "-category:job and -status:archived ",
+                "sequenceNumber": 440575642,
+                "sizeInBytes": 736,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 1
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "7f27e670-f008-11ee-b00b-bfb197b66b29",
+            "id": "7f27e670-f008-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.127666276Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "top-active-playbooks",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.670832102Z",
+                "name": "Top Active Playbooks",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "playbookId"
+                    ]
+                },
+                "prevName": "Top Active Playbooks",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "status:active -category:job",
+                "sequenceNumber": 440575584,
+                "size": 5,
+                "sizeInBytes": 696,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 8
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "c4183730-f008-11ee-b00b-bfb197b66b29",
+            "id": "c4183730-f008-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-01T09:18:11.46553187Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "14374bda-2ddd-4096-8626-0232802e066d",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-01T09:18:11.470625563Z",
+                "name": "Incidents Count",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Incidents Count",
+                "primaryTerm": 14,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job",
+                "sequenceNumber": 480420300,
+                "sizeInBytes": 632,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 8,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 3,
+            "i": "00767840-f009-11ee-b00b-bfb197b66b29",
+            "id": "00767840-f009-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-01T09:19:52.695257225Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "7666fa4a-c476-46d5-84fd-d96ad41759c6",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-01T09:19:52.699238419Z",
+                "name": "Incidents count by Run Status",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "groupBy": [
+                        "runStatus"
+                    ],
+                    "hideLegend": false,
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Incidents count by Run Status",
+                "primaryTerm": 14,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "-category:job",
+                "sequenceNumber": 480420473,
+                "sizeInBytes": 705,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "pie"
+            },
+            "x": 4,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "46f88c90-f009-11ee-b00b-bfb197b66b29",
+            "id": "46f88c90-f009-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.126046424Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Top executed Commands",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.669045865Z",
+                "name": "Top executed Commands",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "command"
+                    ],
+                    "hideLegend": false,
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "showGraphValues": false,
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Top executed Commands",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "type:integration",
+                "sequenceNumber": 440575558,
+                "size": 5,
+                "sizeInBytes": 1091,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 22
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "b9de4e70-f009-11ee-b00b-bfb197b66b29",
+            "id": "b9de4e70-f009-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-01T09:25:03.769858465Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "f2684009-22c5-44f9-8fdb-e43b8949c8d0",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-01T09:25:03.774780969Z",
+                "name": "API Quota Limited Calls",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {},
+                        "type": "above"
+                    },
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "API Quota Limited Calls",
+                "primaryTerm": 14,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:integration and apiResponseType:QuotaError",
+                "sequenceNumber": 480421054,
+                "sizeInBytes": 736,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "trend"
+            },
+            "x": 9,
+            "y": 28
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "03fcea70-f00a-11ee-b00b-bfb197b66b29",
+            "id": "03fcea70-f00a-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 2,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.13172364Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Failed Playbooks runs",
+                "fromServerVersion": "6.2.0",
+                "id": "number-of-failed-playbooks",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.674311969Z",
+                "name": "Failed Playbooks runs",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": false,
+                        "items": {
+                            "#1DB846": {
+                                "value": 0
+                            },
+                            "#D13C3C": {
+                                "value": 6
+                            },
+                            "#EF9700": {
+                                "value": 5
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "groupBy": [],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "tableColumns": [],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Failed Playbooks runs",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "type:playbook",
+                "sequenceNumber": 440575646,
+                "sizeInBytes": 873,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "trend"
+            },
+            "x": 10,
+            "y": 11
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "370137f0-f00a-11ee-b00b-bfb197b66b29",
+            "id": "370137f0-f00a-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.131339466Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 30,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Playbook run errors",
+                "fromServerVersion": "6.2.0",
+                "id": "playbooks-with-errors",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.674022993Z",
+                "name": "Playbook run errors",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "name"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Playbook run errors",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "type:playbook and errorCount:>0",
+                "sequenceNumber": 440575643,
+                "size": 5,
+                "sizeInBytes": 1100,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 11
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "5c14f2c0-f00a-11ee-b00b-bfb197b66b29",
+            "id": "5c14f2c0-f00a-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.126394266Z",
+                "dataType": "tasks",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Task execution errors",
+                "fromServerVersion": "6.2.0",
+                "id": "tasks-errors",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.669471456Z",
+                "name": "Task execution errors",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "taskName"
+                    ],
+                    "keys": [
+                        "sum|1"
+                    ],
+                    "referenceLine": {},
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Task execution errors",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "state:Error",
+                "sequenceNumber": 440575563,
+                "size": 5,
+                "sizeInBytes": 1061,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "pie"
+            },
+            "x": 5,
+            "y": 11
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "529cd360-f00b-11ee-b00b-bfb197b66b29",
+            "id": "529cd360-f00b-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.131856674Z",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.674450629Z",
+                "name": "Active Indicators by Verdict",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "type",
+                        "score"
+                    ],
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Indicators by Verdict",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "expirationStatus:active",
+                "sequenceNumber": 440575648,
+                "sizeInBytes": 763,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "column"
+            },
+            "x": 0,
+            "y": 37
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "c85b09a0-f00b-11ee-b00b-bfb197b66b29",
+            "id": "c85b09a0-f00b-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 6,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.131856674Z",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.674450629Z",
+                "name": "Expired Indicators by Verdict",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "type",
+                        "score"
+                    ],
+                    "showGraphValues": false,
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Indicators by Verdict",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "expirationStatus:expired",
+                "sequenceNumber": 440575648,
+                "sizeInBytes": 763,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "column"
+            },
+            "x": 6,
+            "y": 37
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "f0f441b0-f00b-11ee-b00b-bfb197b66b29",
+            "id": "f0f441b0-f00b-11ee-b00b-bfb197b66b29",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.131856674Z",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 180,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.2.0",
+                "id": "",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.674450629Z",
+                "name": "Total Indicators by Verdict",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "expirationStatus",
+                        "score"
+                    ],
+                    "hideLegend": false,
+                    "showGraphValues": false,
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Indicators by Verdict",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "",
+                "sequenceNumber": 440575648,
+                "sizeInBytes": 763,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 0,
+                "widgetType": "pie"
+            },
+            "x": 9,
+            "y": 33
+        },
+        {
+            "forceRange": true,
+            "h": 2,
+            "i": "58fd7b20-f7c1-11ee-bc63-73e1e0b375c6",
+            "id": "58fd7b20-f7c1-11ee-bc63-73e1e0b375c6",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T05:07:04.561023106Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "a3d8559c-403d-40fe-84bf-d9a41a1d71c7",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T05:07:04.564975046Z",
+                "name": "Automations",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Custom"
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Deprecated"
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "OOTB"
+                        }
+                    ]
+                },
+                "prevName": "Custom Automations Count",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getAutomationsCount",
+                "sequenceNumber": 481742472,
+                "sizeInBytes": 660,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 30
+        },
+        {
+            "forceRange": true,
+            "h": 2,
+            "i": "6b48b560-f7c1-11ee-bc63-73e1e0b375c6",
+            "id": "6b48b560-f7c1-11ee-bc63-73e1e0b375c6",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T05:07:36.860731508Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "36c5f3bd-387c-4323-8693-46ec90573cad",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T05:07:36.865035034Z",
+                "name": "Playbooks",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Custom"
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "Deprecated"
+                        },
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "OOTB"
+                        }
+                    ]
+                },
+                "prevName": "Custom Playbooks Count",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getPlaybooksCount",
+                "sequenceNumber": 481742544,
+                "sizeInBytes": 642,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 15
+        },
+        {
+            "forceRange": true,
+            "h": 2,
+            "i": "a5ace2d0-faf0-11ee-9cf6-656f4d19be92",
+            "id": "a5ace2d0-faf0-11ee-9cf6-656f4d19be92",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-15T06:23:15.043513621Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "bd54e074-002f-49ba-8887-084d34a9e8b4",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-15T06:23:15.047329709Z",
+                "name": "Marketplace Content Packs Status",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": []
+                },
+                "prevName": "Number of Packs required Update",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getContentPackStatus",
+                "sequenceNumber": 482329414,
+                "sizeInBytes": 661,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 19
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "92f40730-01d6-11ef-bc8f-5bb17df397ae",
+            "id": "92f40730-01d6-11ef-bc8f-5bb17df397ae",
+            "reflectDimensions": true,
+            "w": 5,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.127120085Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Command execution errors per Instance",
+                "fromServerVersion": "6.2.0",
+                "id": "error-count-per-instance",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.670439582Z",
+                "name": "Command execution errors per Instance",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "instance"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "referenceLine": {
+                        "type": "avg"
+                    },
+                    "showGraphValues": false,
+                    "showOthers": true,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 5
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Command execution errors per Instance",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "type:integration",
+                "sequenceNumber": 440575575,
+                "size": 5,
+                "sizeInBytes": 1149,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "pie"
+            },
+            "x": 0,
+            "y": 26
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "a56c1dd0-01d6-11ef-bc8f-5bb17df397ae",
+            "id": "a56c1dd0-01d6-11ef-bc8f-5bb17df397ae",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.130284041Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "days",
+                        "field": "",
+                        "fromValue": 1,
+                        "toValue": 0
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "description": "Failed Automation executions per Incident Types (top 5)",
+                "fromServerVersion": "6.2.0",
+                "id": "failed-automation-executions-per-incident-types-top-5",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.672892148Z",
+                "name": "Failed Automation executions per Incident Types (top 5)",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "incidentType"
+                    ],
+                    "keys": [
+                        "sum|errorCount"
+                    ],
+                    "showOthers": false,
+                    "tableColumns": [
+                        {
+                            "isDefault": true,
+                            "key": "count",
+                            "position": 0
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "data",
+                            "position": 1
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "floatData",
+                            "position": 2
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "groups",
+                            "position": 3
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "name",
+                            "position": 4
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "pivot",
+                            "position": 5
+                        },
+                        {
+                            "isDefault": true,
+                            "key": "color",
+                            "position": 6
+                        }
+                    ],
+                    "valuesFormat": "abbreviated",
+                    "xAxisLabel": "",
+                    "yAxisLabel": ""
+                },
+                "prevName": "Failed Automation executions per Incident Types (top 5)",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "type:automation",
+                "sequenceNumber": 440575626,
+                "size": 5,
+                "sizeInBytes": 1247,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "bar"
+            },
+            "x": 5,
+            "y": 22
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "b61037c0-01d6-11ef-bc8f-5bb17df397ae",
+            "id": "b61037c0-01d6-11ef-bc8f-5bb17df397ae",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-06-07T09:05:58.498570607Z",
+                "dataType": "metrics",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "84bc34a7-0221-4bb2-8ad9-d99f8410fa16",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2023-06-07T09:05:58.504094954Z",
+                "name": "Total Automation Task executed",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "keys": [
+                        "sum|executionCount"
+                    ],
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Total Automation Task executed",
+                "primaryTerm": 13,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "type:automation",
+                "sequenceNumber": 409545453,
+                "sizeInBytes": 687,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "number"
+            },
+            "x": 9,
+            "y": 30
+        },
+        {
+            "forceRange": true,
+            "h": 2,
+            "i": "da540350-0221-11ef-9e9d-3d80c630135f",
+            "id": "da540350-0221-11ef-9e9d-3d80c630135f",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:03:07.946989122Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "6b7f41d6-db64-4f17-8ef4-df575cf45f2b",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:03:07.953047425Z",
+                "name": "Playbooks Health Status",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": []
+                },
+                "prevName": "Playbooks Health Status",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getPlaybooksHealthStatus",
+                "sequenceNumber": 483646899,
+                "sizeInBytes": 633,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 0,
+            "y": 17
+        },
+        {
+            "forceRange": true,
+            "h": 3,
+            "i": "36c6b330-0222-11ef-9e9d-3d80c630135f",
+            "id": "36c6b330-0222-11ef-9e9d-3d80c630135f",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:05:43.008856991Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "1f6ce26d-914c-4769-804b-6b04163887da",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:05:43.013939789Z",
+                "name": "Big Incidents and Indicators",
+                "packID": "",
+                "packName": "",
+                "params": {},
+                "prevName": "Big Incidents & Indicators Status",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getInvHealthStatus",
+                "sequenceNumber": 483647188,
+                "sizeInBytes": 790,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 4
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "2412e130-0224-11ef-9e9d-3d80c630135f",
+            "id": "2412e130-0224-11ef-9e9d-3d80c630135f",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:19:29.846775618Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d2645b4e-2cb3-44b0-8472-b701932eaba5",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:19:29.851005157Z",
+                "name": "Playbooks",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "text": "# <-:->-----------------------------------------    Incidents    -----------------------------------------------"
+                },
+                "prevName": "------",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "sequenceNumber": 483648731,
+                "sizeInBytes": 699,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 0
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "da6fe860-0224-11ef-9e9d-3d80c630135f",
+            "id": "da6fe860-0224-11ef-9e9d-3d80c630135f",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:19:29.846775618Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d2645b4e-2cb3-44b0-8472-b701932eaba5",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:19:29.851005157Z",
+                "name": "Playbooks",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "text": "# <-:->---------------------------------------    Playbooks    ----------------------------------------------"
+                },
+                "prevName": "------",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "sequenceNumber": 483648731,
+                "sizeInBytes": 699,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 7
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "3fb9c740-0225-11ef-9e9d-3d80c630135f",
+            "id": "3fb9c740-0225-11ef-9e9d-3d80c630135f",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:19:29.846775618Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d2645b4e-2cb3-44b0-8472-b701932eaba5",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:19:29.851005157Z",
+                "name": "Playbooks",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "text": "# <-:->---------------------------------------    Automations    --------------------------------------------"
+                },
+                "prevName": "------",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "sequenceNumber": 483648731,
+                "sizeInBytes": 699,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 21
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "502210b0-0225-11ef-9e9d-3d80c630135f",
+            "id": "502210b0-0225-11ef-9e9d-3d80c630135f",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:19:29.846775618Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d2645b4e-2cb3-44b0-8472-b701932eaba5",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:19:29.851005157Z",
+                "name": "Playbooks",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "text": "# <-:->-----------------------------------------    Indicators    ----------------------------------------------"
+                },
+                "prevName": "------",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "sequenceNumber": 483648731,
+                "sizeInBytes": 699,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 32
+        },
+        {
+            "forceRange": false,
+            "h": 4,
+            "i": "b9c4a0f0-08ec-11ef-a0c7-07eb5e460147",
+            "id": "b9c4a0f0-08ec-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 9,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.132279811Z",
+                "dataType": "indicators",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 7,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "6.2.0",
+                "id": "8166df3f-d62e-4f33-8930-ef665ab33d65",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.674891858Z",
+                "name": "Active Indicators Volumes by Feed",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "groupBy": [
+                        "firstSeen(d)",
+                        "sourceBrands"
+                    ],
+                    "timeFrame": "days",
+                    "valuesFormat": "abbreviated"
+                },
+                "prevName": "Active Indicators Volumes by Feed",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "(expirationStatus:active or expirationStatus:\"\") and -sourceBrands:\"\"",
+                "sequenceNumber": 440575654,
+                "sizeInBytes": 832,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 21,
+                "widgetType": "line"
+            },
+            "x": 0,
+            "y": 33
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "d88c9d20-08ed-11ef-a0c7-07eb5e460147",
+            "id": "d88c9d20-08ed-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:19:29.846775618Z",
+                "dataType": "incidents",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": 0,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "d2645b4e-2cb3-44b0-8472-b701932eaba5",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:19:29.851005157Z",
+                "name": "Playbooks",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "text": "# <-:->-----------------------------------------    System    ----------------------------------------------"
+                },
+                "prevName": "------",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "",
+                "sequenceNumber": 483648731,
+                "sizeInBytes": 699,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 41
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "fa861fa0-08ed-11ef-a0c7-07eb5e460147",
+            "id": "fa861fa0-08ed-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-24T10:09:08.369272678Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "c69c8589-fa02-416a-8e04-bca853f45fa5",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-24T10:09:08.374921057Z",
+                "name": "System Health Status",
+                "packID": "",
+                "packName": "",
+                "params": {},
+                "prevName": "System Health Status",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getSystemHealthStatus",
+                "sequenceNumber": 483647565,
+                "sizeInBytes": 628,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 42
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "0194eab0-08ee-11ef-a0c7-07eb5e460147",
+            "id": "0194eab0-08ee-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-15T05:43:33.700434629Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "86de75f5-f346-4558-8a75-85e8d7f83d44",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-15T05:43:33.704501048Z",
+                "name": "Disk Storage Status",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": []
+                },
+                "prevName": "Disk Storage Status",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getDiskSpaceStatus",
+                "sequenceNumber": 482324597,
+                "sizeInBytes": 619,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 3,
+            "y": 42
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "0252bc70-08ee-11ef-a0c7-07eb5e460147",
+            "id": "0252bc70-08ee-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-15T05:41:31.113654022Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "5eaf954c-bd68-4d36-870d-34deee20db3a",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-15T05:41:31.118340037Z",
+                "name": "Docker Containers Status",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": []
+                },
+                "prevName": "Docker Containers Status",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getDockerContainersCount",
+                "sequenceNumber": 482324367,
+                "sizeInBytes": 635,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 6,
+            "y": 42
+        },
+        {
+            "forceRange": false,
+            "h": 2,
+            "i": "2faf21e0-08ee-11ef-a0c7-07eb5e460147",
+            "id": "2faf21e0-08ee-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-04-11T06:11:04.142834437Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "59173fc6-3b78-4e66-86e3-7b86044a2982",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-04-11T06:11:04.148229384Z",
+                "name": "Workers Count",
+                "packID": "",
+                "packName": "",
+                "params": {},
+                "prevName": "Workers Count",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getWorkersCount",
+                "sequenceNumber": 481750004,
+                "sizeInBytes": 589,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 9,
+            "y": 42
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "6df758a0-08ee-11ef-a0c7-07eb5e460147",
+            "id": "6df758a0-08ee-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.127925145Z",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "disk-current-usage",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.670981497Z",
+                "name": "Disk Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 60
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "Disk Current Usage",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "disk.usedPercent./",
+                "sequenceNumber": 440575589,
+                "sizeInBytes": 784,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "number"
+            },
+            "x": 0,
+            "y": 44
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "730a2ca0-08ee-11ef-a0c7-07eb5e460147",
+            "id": "730a2ca0-08ee-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.129416469Z",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "cpu-current-usage",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.672030533Z",
+                "name": "CPU Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 50
+                            },
+                            "#FF1B15": {
+                                "value": 80
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "CPU Current Usage",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "cpu.usedPercent",
+                "sequenceNumber": 440575613,
+                "sizeInBytes": 778,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "number"
+            },
+            "x": 4,
+            "y": 44
+        },
+        {
+            "forceRange": false,
+            "h": 1,
+            "i": "761a2bc0-08ee-11ef-a0c7-07eb5e460147",
+            "id": "761a2bc0-08ee-11ef-a0c7-07eb5e460147",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2023-11-30T09:50:42.132384394Z",
+                "dataType": "system",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "5.0.0",
+                "id": "memory-current-usage",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": true,
+                "itemVersion": "1.2.36",
+                "modified": "2023-11-30T09:55:11.675008258Z",
+                "name": "Memory Current Usage",
+                "packID": "CommonWidgets",
+                "packName": "Common Widgets",
+                "packPropagationLabels": [
+                    "all"
+                ],
+                "params": {
+                    "colors": {
+                        "isEnabled": true,
+                        "items": {
+                            "#00CD33": {
+                                "value": -1
+                            },
+                            "#FAC100": {
+                                "value": 70
+                            },
+                            "#FF1B15": {
+                                "value": 90
+                            }
+                        },
+                        "type": "above"
+                    },
+                    "currencySign": "%",
+                    "signAlignment": "right"
+                },
+                "prevName": "Memory Current Usage",
+                "primaryTerm": 14,
+                "propagationLabels": [],
+                "query": "memory.usedPercent",
+                "sequenceNumber": 440575656,
+                "sizeInBytes": 790,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 27,
+                "widgetType": "number"
+            },
+            "x": 8,
+            "y": 44
+        },
+        {
+            "forceRange": true,
+            "h": 6,
+            "i": "7bbd4390-101a-11ef-8e4a-9990e7e56f67",
+            "id": "7bbd4390-101a-11ef-8e4a-9990e7e56f67",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-05-12T04:40:13.543518283Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "8152c335-e502-40f6-8059-528220670ec2",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-05-12T04:40:13.548897999Z",
+                "name": "Detached OOTB Playbooks",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": []
+                },
+                "prevName": "Detached OOTB Playbooks",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getDetachedPlaybooks",
+                "sequenceNumber": 486229177,
+                "sizeInBytes": 629,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 8,
+            "y": 15
+        },
+        {
+            "forceRange": true,
+            "h": 6,
+            "i": "86de3b80-101a-11ef-8e4a-9990e7e56f67",
+            "id": "86de3b80-101a-11ef-8e4a-9990e7e56f67",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-05-12T04:36:58.261807588Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "07f958b0-926f-48f5-80b6-e97fd1f90893",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-05-12T04:36:58.267503077Z",
+                "name": "Custom playbooks modified in last 30 days",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": [
+                        {
+                            "displayed": true,
+                            "isDefault": true,
+                            "key": "name"
+                        }
+                    ]
+                },
+                "prevName": "Custom playbooks created in last 30 days",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getCustomPlaybooks",
+                "sequenceNumber": 486228769,
+                "sizeInBytes": 712,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 4,
+            "y": 15
+        },
+        {
+            "forceRange": true,
+            "h": 6,
+            "i": "01f1f410-101b-11ef-8e4a-9990e7e56f67",
+            "id": "01f1f410-101b-11ef-8e4a-9990e7e56f67",
+            "reflectDimensions": true,
+            "w": 4,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-05-12T04:39:17.628543492Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "days",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "8a7fb61c-7188-4264-8e97-aea713b0e863",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-05-12T04:39:17.633595015Z",
+                "name": "Custom Automations modified in last 30 days",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": []
+                },
+                "prevName": "Custom Automations modified in last 30 days",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getCustomAutomations",
+                "sequenceNumber": 486229062,
+                "sizeInBytes": 683,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 5,
+            "y": 26
+        },
+        {
+            "forceRange": true,
+            "h": 6,
+            "i": "0e7959d0-101b-11ef-8e4a-9990e7e56f67",
+            "id": "0e7959d0-101b-11ef-8e4a-9990e7e56f67",
+            "reflectDimensions": true,
+            "w": 3,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "created": "2024-05-12T04:40:33.839899004Z",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "69fd82b9-8c42-4fee-8461-d19a2364abc1",
+                "indexName": "testprefix-dmst-common-configuration",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2024-05-12T04:40:33.845487533Z",
+                "name": "Detached OOTB Automations",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "tableColumns": []
+                },
+                "prevName": "Detached OOTB Automations",
+                "primaryTerm": 15,
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "getDetachedAutomations",
+                "sequenceNumber": 486229230,
+                "sizeInBytes": 635,
+                "toServerVersion": "",
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "table"
+            },
+            "x": 9,
+            "y": 22
+        }
+    ],
+    "name": "XSOAR Status Review Dashboard v6",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 30,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "toVersion": "6.99.0",
+    "description": "XSOAR review dashboard can be used to get the playbooks, automations & system status in last 30 days. Note that 'CORE REST API' integration need to be enabled with admin credentials before start using this dashboard",
+    "isPredefined": true
+}
