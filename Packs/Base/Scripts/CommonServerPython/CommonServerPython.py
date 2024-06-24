@@ -52,17 +52,7 @@ DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
-
-try:
-    if 'ExecutedCommands' in demisto.callingContext['context'] \
-            and demisto.callingContext['context']['ExecutedCommands'] is not None \
-            and len(demisto.callingContext['context']['ExecutedCommands']) > 0 \
-            and 'name' in demisto.callingContext['context']['ExecutedCommands'][0]:
-        context_executed_commands_name = demisto.callingContext['context']['ExecutedCommands'][0]['name']
-        with open('script_info.txt', 'w') as file_demisto_info:
-            file_demisto_info.write(context_executed_commands_name)
-except Exception as exc_script_info:
-    demisto.info('failed to save the script info.\nError: {}'.format(exc_script_info))
+MAX_ERROR_MESSAGE_LENGTH = 50000
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -210,6 +200,7 @@ logging.raiseExceptions = False
 try:
     import requests
     from requests.adapters import HTTPAdapter
+    from requests.models import RequestEncodingMixin
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set, cast
 
@@ -7258,7 +7249,7 @@ def return_error(message, error='', outputs=None):
         Returns error entry with given message and exits the script
 
         :type message: ``str``
-        :param message: The message to return in the entry (required)
+        :param message: The message to return to the entry (required)
 
         :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
@@ -7297,6 +7288,10 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
+        if len(message) > MAX_ERROR_MESSAGE_LENGTH:
+            half_length = MAX_ERROR_MESSAGE_LENGTH // 2
+            message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
+
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
@@ -9408,6 +9403,12 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
+
+    if files:
+        """
+        To prevent timeout errors when sending large files, it is necessary to load the files into memory by reading them using the command f.read().
+        """
+        RequestEncodingMixin._encode_files(files=files, data={})
 
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,

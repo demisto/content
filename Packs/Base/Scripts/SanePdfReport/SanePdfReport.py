@@ -14,10 +14,30 @@ import http
 import tempfile
 from http.server import HTTPServer
 
+
+def find_unused_port() -> int:  # pragma: no cover
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.bind(('localhost', 0))  # tries to bind any available port on the os
+        return sock.getsockname()[1]
+    except Exception:
+        start_port, end_port = 10000, 30000
+        for port in range(start_port, end_port + 1):
+            is_connection_success = sock.connect_ex(('localhost', port))
+            if is_connection_success == 0:
+                demisto.debug(f'Port {port} is already used')
+            else:
+                demisto.debug(f'Port {port} is free')
+                return port
+        raise RuntimeError("Could not find available ports")
+    finally:
+        sock.close()
+
+
 WORKING_DIR = Path("/app")
 DISABLE_LOGOS = True  # Bugfix before sane-reports can work with image files.
 MD_IMAGE_PATH = '/markdown/image'
-MD_HTTP_PORT = 10888
+MD_HTTP_PORT = find_unused_port()
 SERVER_OBJECT = None
 MD_IMAGE_SUPPORT_MIN_VER = '6.5'
 TABLE_TEXT_MAX_LENGTH_SUPPORT_MIN_VER = '7.0'
@@ -44,7 +64,7 @@ def find_zombie_processes():
     return zombies, ps_out
 
 
-def quit_driver_and_reap_children(killMarkdownServer):
+def quit_driver_and_reap_children(killMarkdownServer):  # pragma: no cover
     try:
         if killMarkdownServer:
             # Kill Markdown artifacts server
@@ -66,7 +86,7 @@ def quit_driver_and_reap_children(killMarkdownServer):
         demisto.error(f'Failed checking for zombie processes: {e}. Trace: {traceback.format_exc()}')
 
 
-def startServer():
+def startServer():  # pragma: no cover
     class fileHandler(http.server.BaseHTTPRequestHandler):
         # See: https://docs.python.org/3/library/http.server.html#http.server.BaseHTTPRequestHandler.log_message
         # Need to override otherwise messages are logged to stderr
@@ -114,10 +134,12 @@ def startServer():
     global SERVER_OBJECT
     SERVER_OBJECT = HTTPServer(server_address=('', MD_HTTP_PORT), RequestHandlerClass=fileHandler)
     # Start the web server
+    demisto.debug(f"starting markdown server on port {MD_HTTP_PORT}")
     SERVER_OBJECT.serve_forever()
 
 
-def main():
+def main():  # pragma: no cover
+    isMDImagesSupported = is_demisto_version_ge(MD_IMAGE_SUPPORT_MIN_VER)
     try:
         sane_json_b64 = demisto.args().get('sane_pdf_report_base64', '').encode(
             'utf-8')
@@ -175,6 +197,13 @@ def main():
             with open(input_file, 'wb') as f:
                 f.write(base64.b64decode(sane_json_b64))
 
+            if headerLeftImage:
+                customer_logo_file_path = tmpdir + "/customer-logo-base64.txt"
+                with open(customer_logo_file_path, "w") as f:
+                    f.write(headerLeftImage)
+                extra_cmd = extra_cmd.replace(headerLeftImage, customer_logo_file_path)
+                headerLeftImage = customer_logo_file_path
+
             cmd = ['./reportsServer', input_file, output_file, dist_dir] + shlex.split(
                 extra_cmd)
 
@@ -189,15 +218,14 @@ def main():
             if isMDImagesSupported:
                 params += f', markdownArtifactsServerAddress="{mdServerAddress}"'
 
-            LOG(f"Sane-pdf parameters: {params}]")
+            demisto.debug(f"Sane-PDF parameters: {params}]")
             cmd_string = " ".join(cmd)
-            LOG(f"Sane-pdf cmd: {cmd_string}")
-            LOG.print_log()
+            demisto.debug(f'Sane-PDF report commmad: {cmd_string}')
 
             # Execute the report creation
             out = subprocess.check_output(cmd, cwd=WORKING_DIR,
                                           stderr=subprocess.STDOUT)
-            LOG(f"Sane-pdf output: {str(out)}")
+            demisto.debug(f"Sane-pdf output: {str(out)}")
 
             with open(output_file, 'rb') as f:
                 encoded = base64.b64encode(f.read()).decode('utf-8', 'ignore')
