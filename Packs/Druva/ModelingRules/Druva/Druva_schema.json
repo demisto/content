@@ -56,10 +56,6 @@
             "type": "string",
             "is_array": false
         },
-        "profileID": {
-            "type": "string",
-            "is_array": false
-        },
         "severity": {
             "type": "string",
             "is_array": false
