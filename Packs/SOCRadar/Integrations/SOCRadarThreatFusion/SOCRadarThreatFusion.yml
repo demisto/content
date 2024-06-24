@@ -190,7 +190,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: IP.Address
       description: IP address.
@@ -292,7 +292,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
@@ -376,7 +376,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: File.MD5
       description: The MD5 hash of the file.

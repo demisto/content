@@ -87,7 +87,7 @@ Scores provided IP entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | IP.Address | String | IP address | 
 | IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
 | IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
@@ -246,7 +246,7 @@ Scores provided domain entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | Domain.Name | String | The domain name, for example: "google.com". | 
 | Domain.DNS | String | A list of IP objects resolved by DNS. | 
 | Domain.CreationDate | Date | The date that the domain was created. | 
@@ -407,7 +407,7 @@ Scores provided hash entities' reputation in SOCRadar ThreatFusion.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
 

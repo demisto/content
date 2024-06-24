@@ -44,7 +44,7 @@ Checks the reputation of the given IP address.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor that was used to calculate the score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | String | The actual score. | 
 
 
