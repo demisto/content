@@ -58,7 +58,6 @@ def login():  # pragma: no cover
     url = urljoin(SERVER_URL, path)
     payload = json.dumps(body)
     headers = get_headers()
-    headers.update({'X-Vault-Request': 'true'})
     res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
     if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
         try:
