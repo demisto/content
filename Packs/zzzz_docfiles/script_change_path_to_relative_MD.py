@@ -57,7 +57,7 @@ def change_image_link_to_relative(lines, md_path):
             parse_url = urlparse(url)
             url_path = Path(parse_url.path)
             if new_replace_url := find_image_in_doc_files(url_path.name, pack_name):
-                lines[i] = line.replace(url, new_replace_url + "/n")
+                lines[i] = line.replace(url, new_replace_url)
                 try:
                     with open(md_path, 'w') as file:
                         file.writelines(lines)
