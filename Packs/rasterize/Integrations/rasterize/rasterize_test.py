@@ -619,6 +619,19 @@ def test_get_chrome_instances_contents_dictionaries():
     assert chromes_options == ['chrome_options2', 'chrome_options3', 'chrome_options4']
 
 
+def test_get_chrome_instances_contents_dictionaries_case_instance_id_exist_but_not_chrome_options():
+    from rasterize import get_chrome_instances_contents_dictionaries
+    mock_file_content = "2222\t22222222-2222-2222-2222-222222222222\tNone"
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(mock_file_content)
+    assert instance_id_to_chrome_options == {'22222222-2222-2222-2222-222222222222': 'None'}
+    assert instance_id_to_port == {'22222222-2222-2222-2222-222222222222': '2222'}
+    assert instances_id
+    assert instances_id == ['22222222-2222-2222-2222-222222222222']
+    assert chromes_options
+    assert chromes_options == ['None']
+
+
 def test_delete_row_with_old_chrome_configurations_from_info_file():
     """
     Given   chrome instances file with content
