@@ -42,7 +42,7 @@ def test_get_aws_secrets(mocker):
 
 
 def test_get_headers():
-    assert get_headers() == {'Content-Type': 'application/json'}
+    assert get_headers() == {'Content-Type': 'application/json', 'X-Vault-Request': 'true'}
 
 
 def test_list_secrets_engines(mocker):

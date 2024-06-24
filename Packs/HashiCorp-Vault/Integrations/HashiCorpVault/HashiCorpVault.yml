@@ -1,8 +1,8 @@
 commonfields:
-  id: HashiCorp Vault new
+  id: HashiCorp Vault
   version: -1
-name: HashiCorp Vault new
-display: HashiCorp Vault new
+name: HashiCorp Vault
+display: HashiCorp Vault
 category: Authentication & Identity Management
 description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
 configuration:
@@ -372,7 +372,7 @@ script:
       description: AppRole Name.
       type: string
     description: Retrieves the AppRole ID for a specified role.
-  dockerimage: devdemisto/vendors-sdk:1.0.0.98608
+  dockerimage: demisto/vendors-sdk:1.0.0.99324
 tests:
 - hashicorp_test
 fromversion: 5.0.0

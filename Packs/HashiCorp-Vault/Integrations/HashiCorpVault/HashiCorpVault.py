@@ -1,8 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import hcl
 from CommonServerPython import *  # noqa: F401
-import hvac
-from hvac import exceptions, utils
 
 ''' GLOBAL VARIABLES '''
 
@@ -33,7 +31,7 @@ DEFAULT_STATUS_CODES = {
 def get_headers():
     headers = {
         'Content-Type': 'application/json',
-        'X-Vault-Request':'true'
+        'X-Vault-Request': 'true'
     }
 
     if TOKEN:  # pragma: no cover
@@ -52,15 +50,6 @@ def login():  # pragma: no cover
             'role_id': USERNAME,
             'secret_id': PASSWORD
         }
-        # client = hvac.Client(namespace=NAMESPACE, url=BASE_URL, verify=VERIFY_SSL)
-        # try:
-        #     res = client.auth.approle.login(
-        #         role_id=USERNAME,
-        #         secret_id=PASSWORD,
-        #     )
-        #     return res['auth']['client_token']
-        # except Exception as e:
-        #     return_error(f"Could not authenticate user: {str(e)}")
     else:
         path = 'auth/userpass/login/' + USERNAME  # type: ignore
         body = {
@@ -69,7 +58,7 @@ def login():  # pragma: no cover
     url = urljoin(SERVER_URL, path)
     payload = json.dumps(body)
     headers = get_headers()
-    headers.update({'X-Vault-Request':'true'})
+    headers.update({'X-Vault-Request': 'true'})
     res = requests.request("POST", url, headers=headers, data=payload, verify=VERIFY_SSL, allow_redirects=True)
     if (res.status_code < 200 or res.status_code >= 300) and res.status_code not in DEFAULT_STATUS_CODES:
         try:
@@ -114,6 +103,19 @@ def send_request(path, method='get', body=None, params=None, headers=None):
 
 
 def generate_role_secret_command():
+    """
+    Generate a secret ID for a specified AppRole in the authentication system.
+    Args:
+        args (dict): A dictionary containing the following keys:
+            - 'role_name' (required): The name of the AppRole for which the secret ID is generated.
+            - 'meta_data': Metadata associated with the secret ID.
+            - 'cidr_list': Comma-separated list of CIDR blocks from which requests using the secret ID are allowed.
+            - 'token_bound_cidrs': Comma-separated list of CIDR blocks to restrict tokens issued with this secret ID.
+            - 'num_uses': Number of times the secret ID can be used before it expires.
+            - 'ttl_seconds': Time duration in seconds for which the secret ID remains valid.
+    Returns:
+        CommandResults: The command results object containing the response from the Vault server as readable output.
+    """
     args = demisto.args()
     role_name = args.get('role_name')
     meta_data = args.get('meta_data')
@@ -137,6 +139,14 @@ def generate_role_secret_command():
 
 
 def get_role_id_command():
+    """
+    Retrieve the Role ID associated with a specified AppRole from the authentication system.
+    Args:
+        args (dict): A dictionary containing the following keys:
+            - 'role_name' (required): The name of the AppRole for which the Role ID is retrieved.
+    Returns:
+        CommandResults: The command results object containing the retrieved Role ID and role name as outputs.
+    """
     args = demisto.args()
     role_name = args.get('role_name')
     path = f'/auth/approle/role/{role_name}/role-id'
@@ -272,13 +282,6 @@ def get_secret_metadata(engine_path, secret_path):
     path = engine_path + '/metadata/' + secret_path
 
     return send_request(path, 'get')
-    # client = hvac.Client(namespace=NAMESPACE, url=BASE_URL, verify=VERIFY_SSL, token=TOKEN)
-    # api_path = utils.format_url(
-    #     "/v1/{engine_path}/metadata/{secret_path}", engine_path=engine_path, secret_path=secret_path
-    # )
-    # return client._adapter.get(
-    #     url=api_path,
-    # )
 
 
 def delete_secret_command():  # pragma: no cover
