@@ -2,7 +2,7 @@ id: DemistoLockTest
 version: 5
 vcShouldKeepItemLegacyProdMachine: false
 name: DemistoLockTest
-description: Test playbook for Demisto Locking integration
+description: Test playbook for Demisto Locking integration - test
 starttaskid: "0"
 tasks:
   "0":

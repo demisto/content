@@ -3,7 +3,7 @@ version: -1
 name: Detonate URL - WildFire-v2 - Test
 description: |-
   test pb of:
-  Detonate URL - WildFire-v2
+  Detonate URL - WildFire-v2 - test
 starttaskid: "0"
 tasks:
   "0":
