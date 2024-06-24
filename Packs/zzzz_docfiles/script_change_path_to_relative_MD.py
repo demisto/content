@@ -39,7 +39,9 @@ def find_image_in_doc_files(image_name, pack_name):
 
 def change_image_link_to_relative(lines, md_path):
     # Regular expression to match URLs ending with common image file extensions
-    urls_list = {"Success": [], "files not found in doc_files": []}
+    # urls_list = {"Success": [], "files not found in doc_files": []}
+    list_success = []
+    list_not_found = []
     parts = md_path.split("/")
     # Find the index of "Packs"
     packs_index = parts.index("Packs")
@@ -59,12 +61,12 @@ def change_image_link_to_relative(lines, md_path):
                 try:
                     with open(md_path, 'w') as file:
                         file.writelines(lines)
-                    urls_list["Success"].append(url)
+                    list_success.append(url)
                 except Exception as e:
                     logger.debug(e)
             else:
-                urls_list["failed : files not found in doc_files"].append(url)
-    return urls_list
+                list_not_found.append(url)
+    return {"Success": list_success, "files not found in doc_files": list_not_found} if list_success or list_not_found else {}
 
 
 def search_image_links(file_path):
