@@ -70,13 +70,13 @@ def test_arcanna_get_jobs_command(mocker):
 
 def test_arcanna_send_event_command(mocker):
     mocker.patch.object(client, "send_raw_event", return_value=arcanna_ingest_response)
-    command_args = json.dumps({
+    command_args = {
         "job_id": 10,
         "raw_body": "{\"offset\": 1739561255, \"destination\": \"127.0.0.1\"}",
         "severity": 3,
         "title": "Incident id #20198",
         "id_value": "20198"
-    })
+    }
     mocker.patch.object(demisto, 'args', return_value=command_args)
     command_result = post_event(client, 1201, command_args)
 
@@ -88,9 +88,9 @@ def test_arcanna_send_event_command(mocker):
 
 def test_arcanna_get_decision_set(mocker):
     mocker.patch.object(client,"get_decision_set", return_value=arcanna_get_decision_set_response)
-    command_args = json.dumps({
+    command_args = {
         "job_id": 10
-    })
+    }
     mocker.patch.object(demisto, 'args', return_value=command_args)
     command_result = get_decision_set(client, 1201, command_args)
     assert command_result.outputs_prefix == "Arcanna.Event"
@@ -100,10 +100,10 @@ def test_arcanna_get_decision_set(mocker):
 
 def test_arcanna_trigger_train(mocker):
     mocker.patch.object(client, "trigger_training", return_value=arcanna_trigger_train_response)
-    command_args = json.dumps({
+    command_args = {
        "job_id": 10,
        "username": "myusername"
-    })
+    }
     mocker.patch.object(demisto, 'args',return_value=command_args)
     command_result = trigger_training(client, 1201, command_args)
     assert command_result.outputs_prefix == "Arcanna.Training"
@@ -114,13 +114,13 @@ def test_arcanna_trigger_train(mocker):
 
 def test_arcanna_get_event_status_command(mocker):
     mocker.patch.object(client, "get_event_status", return_value=arcanna_inference_response)
-    command_args = json.dumps({
+    command_args = {
         "job_id": 10,
         "event_id": "11013867751676",
         "polling": "false",
         "interval": 10,
         "timeout": 60
-    })
+    }
     mocker.patch.object(demisto, 'args', return_value=command_args)
     command_result = get_event_status(command_args, client, 1201)
     assert command_result.outputs_prefix == "Arcanna.Event"
@@ -131,13 +131,13 @@ def test_arcanna_get_event_status_command(mocker):
 
 def test_arcanna_send_event_feedback_command(mocker):
     mocker.patch.object(client, "send_feedback", return_value=arcanna_event_feedback_response)
-    command_args = json.dumps({
+    command_args = {
         "job_id": 10,
         "event_id": 10110011,
         "feedback": "Escalate",
         "decision_set": ["Drop", "Escalate"],
         "username": "dbot"
-    })
+    }
     mocker.patch.object(demisto, 'args', return_value=command_args)
     command_result = send_event_feedback(client=client, default_job_id=1201, args=command_args)
 
