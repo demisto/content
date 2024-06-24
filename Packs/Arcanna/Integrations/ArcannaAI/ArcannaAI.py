@@ -236,7 +236,7 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
 
 
 @polling_function(name='arcanna-get-event-status', timeout=arg_to_number(demisto.args().get('timeout', 120)),
-                           interval=arg_to_number(demisto.args().get('interval',15)))
+                  interval=arg_to_number(demisto.args().get('interval', 15)))
 def get_event_status(args: Dict[str, Any], client: Client, default_job_id) -> CommandResults:
     job_id = args.get("job_id", default_job_id)
     event_id = args.get("event_id")
@@ -244,13 +244,15 @@ def get_event_status(args: Dict[str, Any], client: Client, default_job_id) -> Co
     polling = args.get("polling")
     successful_response = result.get("status", "pending_inference") != 'pending_inference'
     outputs = {
-            'Arcanna.Event': createContext(result)
-        }
-    headers = ["event_id", "ingest_timestamp", "status", "error_message","bucket_state", "result", "confidence_score", "outlier", "arcanna_label"]
+        'Arcanna.Event': createContext(result)
+    }
+    headers = ["event_id", "ingest_timestamp", "status", "error_message",
+               "bucket_state", "result", "confidence_score", "outlier", "arcanna_label"]
     return_data = CommandResults(
         outputs_prefix='Arcanna.Event',
         outputs=outputs,
-        readable_output = tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result)
+        readable_output=tableToMarkdown(name="Arcanna Event Status", headers=headers, t=result),
+        raw_response=result
     )
     if successful_response or polling == 'false':
         return PollResult(response=return_data, continue_to_poll=False)
