@@ -506,30 +506,7 @@ def load_content_from_file(entry_id: str) -> str:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
 
 
-def return_file_results(data: list[str] | str | bytes, filenames: list[str] | str):
-    """
-    Return the file results to the context.
-    Args:
-        data: The file data.
-        filenames: The file names.
-    Raises:
-        ValueError: If the filenames and data are not of the same type and length.
-    """
-    if isinstance(data, list) and isinstance(filenames, list) and len(data) == len(filenames):
-        file_results = []
-        for idx, file_data in enumerate(data):
-            if not file_data:
-                continue
-            file_results.append(fileResult(filenames[idx], file_data, EntryType.ENTRY_INFO_FILE))
-        return_results(file_results)
-
-    elif isinstance(data, str) or isinstance(data, bytes) and isinstance(filenames, str):
-        return_results(fileResult(filenames, data, EntryType.ENTRY_INFO_FILE))
-    else:
-        raise ValueError('filenames and data should be of the same type and length.')
-
-
-def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> tuple[dict[str, Any], list[str] | str]:
+def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> tuple[dict[str, Any], list[str | Any] | str | Any]:
     """
     Remove a key or a list of keys from the outputs dictionary.
     Args:
@@ -541,10 +518,10 @@ def remove_key_from_outputs(outputs: dict[str, Any], keys: list[str] | str) -> t
     new_outputs = outputs.copy()
     if isinstance(keys, list):
         removed_values = []
-        for _idx, key in enumerate(keys):
+        for key in keys:
             removed_values.append(new_outputs.pop(key, ''))
     else:
-        removed_values = new_outputs.pop(keys, None)
+        removed_values = new_outputs.pop(keys, '')
 
     return new_outputs, removed_values
 
@@ -592,7 +569,7 @@ def return_password_protected_zip_file_result(zip_filename: str, filename: str, 
     create_zip_protected_file(zip_filename, filename, data, password)
     with open(zip_filename, 'rb') as f:
         file_data = f.read()
-    return_file_results(file_data, zip_filename)
+    return_results(fileResult(zip_filename, file_data, EntryType.ENTRY_INFO_FILE))
 
 
 def hr_skip_limit_to_markdown(skip: int, limit: int, total: int, name: str) -> str:
@@ -1026,7 +1003,7 @@ def local_ca_create_command(client: CipherTrustClient, args: dict[str, Any]) -> 
     )
     raw_response = client.create_local_ca(request_data=request_data)
     outputs, csr = remove_key_from_outputs(raw_response, 'csr')
-    return_file_results(csr, 'CSR.pem')
+    return_results(fileResult('CSR.pem', csr, EntryType.ENTRY_INFO_FILE))
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
@@ -1046,7 +1023,8 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         )
         raw_response = client.get_local_ca(local_ca_id=local_ca_id, params=params)
         outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
-        return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
+        for (data, filename) in zip(removed_values, ['CSR.pem', 'Certificate.pem']):
+            return_results(fileResult(filename, data, EntryType.ENTRY_INFO_FILE))
         outputs = [outputs]
         hr = hr_local_ca(raw_response)
     else:
@@ -1083,7 +1061,8 @@ def local_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) -> 
     raw_response = client.update_local_ca(local_ca_id=args.get(LOCAL_CA_ID, ''),
                                           params=params)
     outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
-    return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
+    for (data, filename) in zip(removed_values, ['CSR.pem', 'Certificate.pem']):
+        return_results(fileResult(filename, data, EntryType.ENTRY_INFO_FILE))
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
@@ -1112,7 +1091,8 @@ def local_ca_self_sign_command(client: CipherTrustClient, args: dict[str, Any]) 
     raw_response = client.self_sign_local_ca(local_ca_id=args.get(LOCAL_CA_ID, ''),
                                              request_data=request_data)
     outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
-    return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
+    for (data, filename) in zip(removed_values, ['CSR.pem', 'Certificate.pem']):
+        return_results(fileResult(filename, data, EntryType.ENTRY_INFO_FILE))
 
     return CommandResults(
         outputs_prefix=CA_SELF_SIGN_CONTEXT_OUTPUT_PREFIX,
@@ -1132,7 +1112,8 @@ def local_ca_install_command(client: CipherTrustClient, args: dict[str, Any]) ->
         local_ca_id=args.get(LOCAL_CA_ID, ''),
         request_data=request_data)
     outputs, removed_values = remove_key_from_outputs(raw_response, ['csr', 'cert'])
-    return_file_results(removed_values, ['CSR.pem', 'Certificate.pem'])
+    for (data, filename) in zip(removed_values, ['CSR.pem', 'Certificate.pem']):
+        return_results(fileResult(filename, data, EntryType.ENTRY_INFO_FILE))
 
     return CommandResults(
         outputs_prefix=CA_INSTALL_CONTEXT_OUTPUT_PREFIX,
@@ -1157,7 +1138,7 @@ def certificate_issue_command(client: CipherTrustClient, args: dict[str, Any]) -
     raw_response = client.issue_certificate(ca_id=args.get(CA_ID, ''),
                                             request_data=request_data)
     outputs, cert = remove_key_from_outputs(raw_response, 'cert')
-    return_file_results(cert, 'Certificate.pem')
+    return_results(fileResult('Certificate.pem', cert, EntryType.ENTRY_INFO_FILE))
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -1183,7 +1164,8 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
     if args.get(ID):
         issued_crtfct_dict = raw_response.get('resources', [])[0] if raw_response.get('resources', []) else {}
         outputs, removed_values = remove_key_from_outputs(issued_crtfct_dict, ['csr', 'cert'])
-        return_file_results(removed_values[1], 'Certificate.pem')
+        for (data, filename) in zip(removed_values, ['CSR.pem', 'Certificate.pem']):
+            return_results(fileResult(filename, data, EntryType.ENTRY_INFO_FILE))
         outputs = [outputs]
 
     else:
@@ -1218,7 +1200,7 @@ def certificate_revoke_command(client: CipherTrustClient, args: dict[str, Any]) 
                                              cert_id=args.get(CERT_ID, ''),
                                              request_data=request_data)
     outputs, cert = remove_key_from_outputs(raw_response, 'cert')
-    return_file_results(cert, 'Certificate.pem')
+    return_results(fileResult('Certificate.pem', cert, EntryType.ENTRY_INFO_FILE))
 
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
@@ -1232,7 +1214,7 @@ def certificate_resume_command(client: CipherTrustClient, args: dict[str, Any]) 
     raw_response = client.resume_certificate(ca_id=args.get(CA_ID, ''),
                                              cert_id=args.get(CERT_ID, ''))
     outputs, cert = remove_key_from_outputs(raw_response, 'cert')
-    return_file_results(cert, 'Certificate.pem')
+    return_results(fileResult('Certificate.pem', cert, EntryType.ENTRY_INFO_FILE))
     return CommandResults(
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -1250,7 +1232,7 @@ def external_ca_upload_command(client: CipherTrustClient, args: dict[str, Any]) 
     )
     raw_response = client.upload_external_ca(request_data=request_data)
     outputs, cert = remove_key_from_outputs(raw_response, 'cert')
-    return_file_results(cert, 'Certificate.pem')
+    return_results(fileResult('Certificate.pem', cert, EntryType.ENTRY_INFO_FILE))
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -1274,7 +1256,7 @@ def external_ca_update_command(client: CipherTrustClient, args: dict[str, Any]) 
     raw_response = client.update_external_ca(external_ca_id=args.get(EXTERNAL_CA_ID, ''),
                                              request_data=request_data)
     outputs, cert = remove_key_from_outputs(raw_response, 'cert')
-    return_file_results(cert, 'Certificate.pem')
+    return_results(fileResult('Certificate.pem', cert, EntryType.ENTRY_INFO_FILE))
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
@@ -1287,7 +1269,7 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
     if external_ca_id := args.get(EXTERNAL_CA_ID):
         raw_response = client.get_external_ca(external_ca_id=external_ca_id)
         outputs, cert = remove_key_from_outputs(raw_response, 'cert')
-        return_file_results(cert, 'Certificate.pem')
+        return_results(fileResult('Certificate.pem', cert, EntryType.ENTRY_INFO_FILE))
         outputs = [outputs]
         hr = ciphertrust_table_to_markdown(raw_response.get('subject', ''),
                                            data=raw_response,
@@ -1342,13 +1324,14 @@ def csr_generate_command(client: CipherTrustClient, args: dict[str, Any]) -> Com
     )
     raw_response = client.create_csr(request_data=request_data)
     outputs, csr = remove_key_from_outputs(raw_response, 'csr')
-    return_file_results(csr, 'CSR.pem')
+    return_results(fileResult('CSR.pem', csr, EntryType.ENTRY_INFO_FILE))
+
     if private_key_file_password := args.get(PRIVATE_KEY_FILE_PASSWORD):
         return_password_protected_zip_file_result('privateKey', 'privateKey.pem', outputs.pop('key', ''),
                                                   private_key_file_password)
     else:
         _, private_key = remove_key_from_outputs(raw_response, 'key')
-        return_file_results(private_key, 'privateKey.pem')
+        return_results(fileResult('privateKey.pem', private_key, EntryType.ENTRY_INFO_FILE))
 
     return CommandResults(
         outputs_prefix=CSR_CONTEXT_OUTPUT_PREFIX,
