@@ -1,0 +1,215 @@
+{
+    "meta": {
+        "numResults": 5,
+        "pages": 1
+    },
+    "domains": [
+        {
+            "qualifiedDomainName": "csc-panw.biz",
+            "domain": "csc-panw",
+            "idn": "",
+            "extension": "biz",
+            "newGtld": false,
+            "managedStatus": "ACTIVE",
+            "registrationDate": "22-Apr-2024 UTC",
+            "registryExpiryDate": "22-Apr-2025 UTC",
+            "paidThroughDate": "22-Apr-2025 UTC",
+            "countryCode": "",
+            "serverDeleteProhibited": false,
+            "serverTransferProhibited": false,
+            "serverUpdateProhibited": false,
+            "dnsType": "CSC_BASIC",
+            "whoisPrivacy": false,
+            "localAgent": false,
+            "dnssecActivated": "USAGE_UNKNOWN",
+            "criticalDomain": false,
+            "businessUnit": "Cortex",
+            "brandName": "",
+            "idnReferenceName": "",
+            "customFields": [
+                {
+                    "name": "Custom Field 2",
+                    "value": "Custom-RefVal"
+                },
+                {
+                    "name": "Department",
+                    "value": "Xpanse"
+                },
+                {
+                    "name": "PO Number",
+                    "value": "2024-XR-586"
+                }
+            ],
+            "account": {
+                "accountNumber": "8601230",
+                "accountName": "Palo Alto Networks - Integration"
+            },
+            "urlf": {
+                "redirectType": "",
+                "urlForwarding": false
+            },
+            "nameServers": [
+                "dns1.cscdns.net",
+                "dns2.cscdns.net"
+            ],
+            "whoisContacts": [
+                {
+                    "contactType": "REGISTRANT",
+                    "firstName": "Domain",
+                    "lastName": "Administrator",
+                    "organization": "CSC Corporate Domains, Inc.",
+                    "street1": "251 Little Falls Drive",
+                    "street2": "",
+                    "city": "Wilmington",
+                    "stateProvince": "DE",
+                    "country": "US",
+                    "postalCode": "19808",
+                    "email": "admin@internationaladmin.com",
+                    "phone": "+1.3026365400",
+                    "phoneExtn": "",
+                    "fax": ""
+                },
+                {
+                    "contactType": "ADMINISTRATIVE",
+                    "firstName": "Domain",
+                    "lastName": "Administrator",
+                    "organization": "CSC Corporate Domains, Inc.",
+                    "street1": "251 Little Falls Drive",
+                    "street2": "",
+                    "city": "Wilmington",
+                    "stateProvince": "DE",
+                    "country": "US",
+                    "postalCode": "19808",
+                    "email": "admin@internationaladmin.com",
+                    "phone": "+1.3026365400",
+                    "phoneExtn": "",
+                    "fax": ""
+                },
+                {
+                    "contactType": "TECHNICAL",
+                    "firstName": "DNS",
+                    "lastName": "Administrator",
+                    "organization": "CSC Corporate Domains, Inc.",
+                    "street1": "251 Little Falls Drive",
+                    "street2": "",
+                    "city": "Wilmington",
+                    "stateProvince": "DE",
+                    "country": "US",
+                    "postalCode": "19808",
+                    "email": "dns-admin@cscglobal.com",
+                    "phone": "+1.3026365400",
+                    "phoneExtn": "",
+                    "fax": ""
+                }
+            ],
+            "lastModifiedDate": "22-Apr-2024 UTC",
+            "lastModifiedReason": "REGISTRATION_COMPLETE",
+            "lastModifiedDescription": "Domain registered"
+        },
+        {
+            "qualifiedDomainName": "csc-panw.com",
+            "domain": "csc-panw",
+            "idn": "",
+            "extension": "com",
+            "newGtld": false,
+            "managedStatus": "ACTIVE",
+            "registrationDate": "22-Apr-2024 UTC",
+            "registryExpiryDate": "22-Apr-2025 UTC",
+            "paidThroughDate": "22-Apr-2025 UTC",
+            "countryCode": "",
+            "serverDeleteProhibited": false,
+            "serverTransferProhibited": false,
+            "serverUpdateProhibited": false,
+            "dnsType": "CSC_BASIC",
+            "whoisPrivacy": false,
+            "localAgent": false,
+            "dnssecActivated": "USAGE_UNKNOWN",
+            "criticalDomain": true,
+            "businessUnit": "Cortex",
+            "brandName": "",
+            "idnReferenceName": "",
+            "customFields": [
+                {
+                    "name": "Custom Field 2",
+                    "value": "Custom-RefVal"
+                },
+                {
+                    "name": "Department",
+                    "value": "XSOAR"
+                },
+                {
+                    "name": "PO Number",
+                    "value": "2024-XC-852"
+                }
+            ],
+            "account": {
+                "accountNumber": "8601230",
+                "accountName": "Palo Alto Networks - Integration"
+            },
+            "urlf": {
+                "redirectType": "",
+                "urlForwarding": false
+            },
+            "nameServers": [
+                "dns1.cscdns.net",
+                "dns2.cscdns.net"
+            ],
+            "whoisContacts": [
+                {
+                    "contactType": "REGISTRANT",
+                    "firstName": "Domain",
+                    "lastName": "Administrator",
+                    "organization": "CSC Corporate Domains, Inc.",
+                    "street1": "251 Little Falls Drive",
+                    "street2": "",
+                    "city": "Wilmington",
+                    "stateProvince": "DE",
+                    "country": "US",
+                    "postalCode": "19808",
+                    "email": "admin@internationaladmin.com",
+                    "phone": "+1.3026365400",
+                    "phoneExtn": "",
+                    "fax": ""
+                },
+                {
+                    "contactType": "ADMINISTRATIVE",
+                    "firstName": "Domain",
+                    "lastName": "Administrator",
+                    "organization": "CSC Corporate Domains, Inc.",
+                    "street1": "251 Little Falls Drive",
+                    "street2": "",
+                    "city": "Wilmington",
+                    "stateProvince": "DE",
+                    "country": "US",
+                    "postalCode": "19808",
+                    "email": "admin@internationaladmin.com",
+                    "phone": "+1.3026365400",
+                    "phoneExtn": "",
+                    "fax": ""
+                },
+                {
+                    "contactType": "TECHNICAL",
+                    "firstName": "DNS",
+                    "lastName": "Administrator",
+                    "organization": "CSC Corporate Domains, Inc.",
+                    "street1": "251 Little Falls Drive",
+                    "street2": "",
+                    "city": "Wilmington",
+                    "stateProvince": "DE",
+                    "country": "US",
+                    "postalCode": "19808",
+                    "email": "dns-admin@cscglobal.com",
+                    "phone": "+1.3026365400",
+                    "phoneExtn": "",
+                    "fax": ""
+                }
+            ],
+            "lastModifiedDate": "22-Apr-2024 UTC",
+            "lastModifiedReason": "REGISTRATION_COMPLETE",
+            "lastModifiedDescription": "Domain registered"
+        }
+    ],
+    "links": {
+        "self": "https://apis-ote.cscglobal.com/dbs/api/v2/domains?filter=domain==%22csc-panw%22"
+    }
+}
