@@ -38,7 +38,7 @@ configuration:
   required: true
   defaultvalue: Device Code
   type: 15
-  additionalinfo: Type of authentication - could be Authorization Code Flow (recommended) or Device Code Flow
+  additionalinfo: Type of authentication - could be Authorization Code Flow (recommended), Device Code Flow or Client Credentials Flow
   options:
   - Device Code
   - Authorization Code
