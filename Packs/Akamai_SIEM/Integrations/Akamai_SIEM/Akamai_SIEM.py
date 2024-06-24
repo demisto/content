@@ -396,7 +396,7 @@ def fetch_events_command(
         (list[dict], str): events and new offset.
     """
     total_events_count = 0
-
+    demisto.debug(f"[test] here in fetch_events_command, {ctx=}")
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
     demisto.debug(f"[test] Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
@@ -489,11 +489,11 @@ def main():
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
             ):
-                demisto.debug(f"Sending {len(events)} events to xsiam.")
+                demisto.debug(f"[test] Sending {len(events)} events to xsiam.")
                 send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                demisto.debug(f"Sent events to xsiam, setting context with: {offset=}")
+                demisto.debug(f"[test] Sent events to xsiam, setting context with: {offset=}")
                 set_integration_context({"offset": offset})
-            demisto.debug(f"update module health with {total_events_count=}")
+            demisto.debug(f"[test] update module health with {total_events_count=}")
             demisto.updateModuleHealth({'eventsPulled': total_events_count})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
