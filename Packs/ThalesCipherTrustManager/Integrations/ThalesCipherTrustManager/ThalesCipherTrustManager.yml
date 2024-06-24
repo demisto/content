@@ -1746,7 +1746,7 @@ script:
       default: false
     - name: allowed_auth_methods
       isArray: true
-      description: 'A comma-separated list of login authentication methods allowed to the user. Default value - "password". Password Authentication is allowed by default. Setting it to empty, i.e., "empty", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. This property does not control login behavior for users in admin group.'
+      description: 'A comma-separated list of login authentication methods allowed to the user. Default value - "password". Password Authentication is allowed by default. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. This property does not control login behavior for users in admin group.'
       required: false
       secret: false
       default: false
@@ -1754,11 +1754,11 @@ script:
       - password
       - user_certificate
       - password_with_user_certificate
-      - empty
+      - none
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: "A comma-separated list of client types that can authenticate using the user's credentials. Default value - \"unregistered,public,confidential\" i.e., all clients can authenticate the user using user's credentials. Setting it to empty, \"empty\", authenticate the user using user's credentials. Setting it to empty, \"empty\", means no client can authenticate this user, which effectively means no one can login into this user This property does not control login behavior for users in admin group."
+      description: "A comma-separated list of client types that can authenticate using the user's credentials. Default value - \"unregistered,public,confidential\" i.e., all clients can authenticate the user using user's credentials. Setting it to none, \"none\", authenticate the user using user's credentials. Setting it to none, \"none\", means no client can authenticate this user, which effectively means no one can login into this user This property does not control login behavior for users in admin group."
       required: false
       secret: false
       default: false
@@ -1782,7 +1782,7 @@ script:
       defaultValue: local_account
     - name: expires_at
       isArray: false
-      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to "empty", removes the expiration date of the user account.
+      description: The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to "never", removes the expiration date of the user account.
       required: false
       secret: false
       default: false
@@ -2047,7 +2047,7 @@ script:
       auto: PREDEFINED
     - name: allowed_auth_methods
       isArray: true
-      description: 'List of login authentication methods allowed to the user. Setting it to empty, i.e., "empty", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. This property does not control login behavior for users in admin group.'
+      description: 'List of login authentication methods allowed to the user. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. This property does not control login behavior for users in admin group.'
       required: false
       secret: false
       default: false
@@ -2055,11 +2055,11 @@ script:
       - password
       - user_certificate
       - password_with_user_certificate
-      - empty
+      - none
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: "A comma-separated list of client types that can authenticate using the user's credentials. Setting it to empty, i.e., \"empty\", means no client can authenticate this user, which effectively means no one can login into this user. This property does not control login behavior for users in admin group."
+      description: "A comma-separated list of client types that can authenticate using the user's credentials. Setting it to none, i.e., \"none\", means no client can authenticate this user, which effectively means no one can login into this user. This property does not control login behavior for users in admin group."
       required: false
       secret: false
       default: false
@@ -2076,7 +2076,7 @@ script:
       default: false
     - name: expires_at
       isArray: false
-      description: The "expires_at" field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the "expires_at" date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the "expires_at" argument to "empty", removes the expiration date of the user account.
+      description: The "expires_at" field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the "expires_at" date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the "expires_at" argument to "never", removes the expiration date of the user account.
       required: false
       secret: false
       default: false

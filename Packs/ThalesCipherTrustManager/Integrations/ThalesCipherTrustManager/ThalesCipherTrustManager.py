@@ -386,9 +386,9 @@ def derive_skip_and_limit_for_pagination(limit: Optional[str], page: Optional[st
     If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
     Otherwise, the skip value is 0 and the limit value is the provided limit or the default limit if not provided.
     Args:
-        limit_str: The limit argument string.
-        page_str: The page argument string.
-        page_size_str: The page_size argument string.
+        limit (str): The limit argument.
+        page (str): The page argument.
+        page_size (str): The page_size argument.
 
     Returns:
         A tuple of the skip and limit values.
@@ -433,32 +433,28 @@ def optional_arg_to_datetime_string(arg: Optional[str], date_format: str = DATE_
     return datetime_object.strftime(date_format) if datetime_object is not None else datetime_object
 
 
-def add_empty_date_param(request_data: dict, argument_value: Optional[str], param_name: str,
-                         empty_arg_value: str = "empty"):
+def add_empty_date_param(request_data: dict, argument_value: Optional[str], param_name: str):
     """
     Add an empty date parameter to the request data if the argument value is the agreed upon empty value.
     Args:
         request_data: The request data dictionary.
         argument_value: The argument value.
         param_name: The parameter name.
-        empty_arg_value: The value that represents an empty argument.
     """
     if argument_value is not None:
-        request_data[param_name] = "" if argument_value == empty_arg_value else optional_arg_to_datetime_string(argument_value)
+        request_data[param_name] = "" if argument_value == "never" else optional_arg_to_datetime_string(argument_value)
 
 
-def add_empty_list_param(request_data: dict, argument_value: Optional[str], param_name: str,
-                         empty_arg_value: str = "empty"):
+def add_empty_list_param(request_data: dict, argument_value: Optional[str], param_name: str,):
     """
     Add an empty list parameter to the request data if the argument value is the agreed upon empty value.
     Args:
         request_data: The request data dictionary.
         argument_value: The argument value.
         param_name: The parameter name.
-        empty_arg_value: The value that represents an empty argument.
     """
     if argument_value is not None:
-        request_data[param_name] = [] if argument_value == empty_arg_value else argToList(argument_value)
+        request_data[param_name] = [] if argument_value == "none" else argToList(argument_value)
 
 
 def add_login_flags(request_data: dict, argument_value: Optional[bool], flag_name: str):
