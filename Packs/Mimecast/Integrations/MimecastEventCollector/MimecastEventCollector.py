@@ -109,7 +109,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
         stored = []
 
         if self.events_from_prev_run:
-            # In order to ensure no bc break and missing events v 2.2.6
+            # In order to ensure no bc break and missing events V2.5.0
             stored.extend(self.events_from_prev_run)
             self.events_from_prev_run = []
 
