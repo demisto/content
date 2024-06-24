@@ -145,7 +145,7 @@ configuration:
   advanced: true
   defaultvalue: 90
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam Advanced Analytics - dev
+display: Exabeam - dev
 name: Exabeam - dev
 script:
   commands:
@@ -1734,6 +1734,9 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
+  - arguments:
+    description: Reset integration context for notable users fetch.
+    name: exabeam-reset-notable-users-cached
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   runonce: false
@@ -1743,3 +1746,4 @@ script:
 tests:
 - Exabeam - Test
 fromversion: 5.0.0
+defaultclassifier: "Exabeam - classifier"

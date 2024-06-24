@@ -2098,6 +2098,15 @@ def list_incidents(client: Client, args: dict[str, str]):
     return human_readable, entry_context, raw_response
 
 
+def reset_notable_users_cached(client: Client, args: dict[str, str]):
+    context = get_integration_context()
+    context['usernames'] = []
+    set_integration_context(context)
+    message = "Cached of notable users cleared successfully."
+    outputs: dict = {}
+    return message, outputs
+
+
 def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     look_back = arg_to_number(args.get('look_back')) or 1
     last_run: dict[str, Any] = demisto.getLastRun()
@@ -2107,7 +2116,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     last_run_notable_users = ""
     if args.get('is_fetch_notable_users', False):
         incidents, last_run_notable_users = fetch_notable_users(client, args, last_run)
-        demisto.debug(f'After fetch notable users, there are {len(incidents)} incidents')
+        demisto.debug(f'After fetch notable users, there are {len(incidents)} new incidents')
 
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
@@ -2160,6 +2169,7 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
         incident['createdAt'] = datetime.fromtimestamp(
             incident.get('baseFields', {}).get('createdAt') / 1000.0).strftime(DATETIME_FORMAT_MILISECONDS)
         incident = convert_all_unix_keys_to_date(incident)
+        incident['incident_type'] = 'Exabeam Incident'
         incidents.append({
             'Name': incident.get('name'),
             'occurred': incident.get('baseFields', {}).get('createdAt'),
@@ -2235,9 +2245,10 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
     incidents: list[dict] = []
     for incident in new_risky_users:
         incident = convert_all_unix_keys_to_date_user(incident)
+        incident['incident_type'] = 'Exabeam Notable User'
         incidents.append(
             {
-                "Name": incident.get("name"),
+                "Name": incident.get("user", {}).get("username", ""),
                 "rawJSON": json.dumps(incident),
             }
         )
@@ -2301,6 +2312,7 @@ def main():  # pragma: no cover
         'exabeam-get-notable-session-details': get_notable_session_details,
         'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
         'exabeam-list-incident': list_incidents,
+        'exabeam-reset-notable-users-cached': reset_notable_users_cached,
     }
     client = None
     try:
