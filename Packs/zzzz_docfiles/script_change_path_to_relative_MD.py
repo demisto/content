@@ -66,7 +66,7 @@ def change_image_link_to_relative(lines, md_path):
                     logger.debug(e)
             else:
                 list_not_found.append(url)
-    return {"Success": list_success, "files not found in doc_files": list_not_found} if list_success or list_not_found else {}
+    return list_success, list_not_found
 
 
 def search_image_links(file_path):
@@ -101,20 +101,26 @@ def extract_image_links_from_files_and_save_to_json():
     filtered_md_files = [file for file in paths_links_str if 'ReleaseNotes' not in file.split(os.sep)]
     
 
-    images_information = {}
-
+    images_information_success = {}
+    images_information_failed = {}
     for link in filtered_md_files:
         
-        images_information_log = search_image_links(link)
-        if images_information_log:
-            images_information[link] = images_information_log
+        images_information_log_success, images_information_log_fails = search_image_links(link)
+        if images_information_log_success:
+            images_information_success[link] = images_information_log_success
+        if images_information_failed:
+            images_information_failed[link] = images_information_failed
     try:
-        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/script_change_path_to_relative_MD_logs.json', "a") as file:
-            file.write(json.dumps(images_information))
+        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/success.json', "a") as file:
+            json.dump(images_information_success, file, indent=4)
+        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/errors.json', "a") as file:
+            json.dump(images_information_failed, file, indent=4)
+        
     except Exception as e:
         logger.debug(e)
         logger.debug("#####")
-        logger.debug(images_information)
+        logger.debug(f'{images_information_success=}')
+        logger.debug(f'{images_information_failed=}')
         
 
 
