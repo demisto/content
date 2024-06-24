@@ -37,10 +37,6 @@
             "mandatory": false,
             "display_name": "Active Directory Query"
         },
-        "CoreAlertFields": {
-            "mandatory": true,
-            "display_name": "Core Alert Fields"
-        },
         "CommonTypes": {
             "mandatory": true,
             "display_name": "Common Types"

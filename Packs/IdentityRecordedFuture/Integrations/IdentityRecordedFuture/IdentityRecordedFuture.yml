@@ -244,8 +244,10 @@ script:
     arguments:
     - name: limit
       description: Limits the number of alerts to fetch.
+      defaultValue: 50
     - name: time_since_update
       description: Time between now and e.g. "2 hours" or "7 days" ago.
+      defaultValue: "24 hours"
     - name: playbook_alert_status
       auto: PREDEFINED
       predefined:

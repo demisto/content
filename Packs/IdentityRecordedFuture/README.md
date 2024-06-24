@@ -98,7 +98,6 @@ the [Recorded Future Identity Integration Documentation](https://github.com/demi
 
 This pack depends on the following content packs:
 
-- **Core Alert Fields** (mandatory)
 - **Common Types** (mandatory)
 - **Filters And Transformers** (mandatory)
 - **Common Scripts** (mandatory)
