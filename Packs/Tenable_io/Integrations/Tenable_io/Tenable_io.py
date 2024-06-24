@@ -614,7 +614,6 @@ def generate_export_uuid(client: Client, last_run):
         last_run: last run object.
     """
     demisto.info("Getting vulnerabilities export uuid for report.")
-    prev_fetch = last_run.get("assets_last_fetch")
     last_found: float = get_timestamp(arg_to_datetime(VULNS_FETCH_FROM))   # type: ignore
 
     export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER, last_found=last_found)
