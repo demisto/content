@@ -33,7 +33,8 @@ configuration:
 - display: Fetch Limit
   name: fetch_limit
   type: 0
-  required: true
+  required: false
+  hidden: true
   defaultvalue: '100'
 - display: Fetch incidents
   name: isFetch
