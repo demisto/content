@@ -599,8 +599,8 @@ def test_get_chrome_instances_contents_dictionaries():
     from rasterize import get_chrome_instances_contents_dictionaries
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = get_chrome_instances_contents_dictionaries(
-        mock_file_content_edited)
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        (get_chrome_instances_contents_dictionaries(mock_file_content_edited))
     assert instance_id_to_chrome_options == {'22222222-2222-2222-2222-222222222222': 'chrome_options2',
                                              '33333333-3333-3333-3333-333333333333': 'chrome_options3',
                                              '44444444-4444-4444-4444-444444444444': 'chrome_options4'}
