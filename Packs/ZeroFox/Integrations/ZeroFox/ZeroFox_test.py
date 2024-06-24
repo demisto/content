@@ -174,9 +174,9 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     }
     alerts_url = f"{BASE_URL}{ALERTS_ENDPOINT}"
     mock_params = {
-        "last_modified_min_date": last_modified_fetched,
+        "min_timestamp": last_modified_fetched,
         "sort_direction": "asc",
-        "sort_field": "last_modified",
+        "sort_field": "timestamp",
     }
     requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
     first_page_alert_response = load_json(
@@ -185,7 +185,7 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     requests_mock.get(mock_url, json=first_page_alert_response)
     second_page_alert_response = load_json(
         "test_data/alerts/list_10_records_page2_5records.json")
-    expected_last_modified = get_formatted_date(second_page_alert_response["alerts"][-1]["last_modified"])
+    expected_last_modified = get_formatted_date(second_page_alert_response["alerts"][-1]["timestamp"])
     requests_mock.get(first_page_alert_response.get("next", ""), json=second_page_alert_response)
     client = build_zf_client()
     first_fetch_time = "2023-06-01T00:00:00.000000"

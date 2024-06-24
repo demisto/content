@@ -1154,21 +1154,21 @@ def get_exploits_content(
 
 def _build_incidents_given_last_fetch(
     client: ZFClient,
-    last_modified: datetime,
+    created_since: datetime,
     is_valid_alert: Callable[[dict[str, Any]], bool],
 ) -> tuple[list[dict[str, Any]], datetime, list[str]]:
 
     alerts = [
         alert for alert in client.get_alerts(
             filter_by={
-                "last_modified_min_date": last_modified.strftime(DATE_FORMAT)},
-            sort_by="last_modified",
+                "min_timestamp": created_since.strftime(DATE_FORMAT)},
+            sort_by="timestamp",
             sort_direction="asc"
         )
         if is_valid_alert(alert)
     ]
     if not alerts:
-        return [], last_modified, []
+        return [], created_since, []
 
     alert_to_incident = AlertToIncident()
     incidents: list[dict[str, Any]] = [
@@ -1176,7 +1176,7 @@ def _build_incidents_given_last_fetch(
     ]
 
     parsed_last_alert_timestamp = __compute_latest_timestamp(
-        alerts, "last_modified")
+        alerts, "timestamp")
     if parsed_last_alert_timestamp is None:
         raise ValueError(
             "Incorrect timestamp in last alert of fetch-incidents")
@@ -1234,7 +1234,7 @@ def fetch_incidents(
 ) -> tuple[FetchIncidentsStorage, list[dict[str, Any]]]:
     # Last modified fetch date
     last_modified_fetched_str = last_run.get("last_modified_fetched", "")
-    last_modified_fetched = parse_last_fetched_date(
+    last_fetched = parse_last_fetched_date(
         last_modified_fetched_str, first_fetch_time)
     # ZeroFox Alert IDs previously created
     zf_ids: list[str] = list(map(str, last_run.get("zf-ids", [])))
@@ -1242,13 +1242,13 @@ def fetch_incidents(
     # Fetch new alerts
     def is_non_registered_alert(alert):
         return str(alert.get("id")) not in zf_ids
-    incidents, last_modified_fetched, alert_ids = _build_incidents_given_last_fetch(
+    incidents, last_fetched, alert_ids = _build_incidents_given_last_fetch(
         client=client,
-        last_modified=last_modified_fetched,
+        created_since=last_fetched,
         is_valid_alert=is_non_registered_alert,
     )
     next_run: FetchIncidentsStorage = {
-        "last_modified_fetched": last_modified_fetched.strftime(DATE_FORMAT),
+        "last_modified_fetched": last_fetched.strftime(DATE_FORMAT),
         "zf-ids": list(zf_ids),
     }
     if not incidents:
