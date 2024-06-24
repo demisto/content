@@ -1567,6 +1567,48 @@ def test_is_mac_address():
     assert (is_mac_address(mac_address_true))
 
 
+def test_return_error_truncated_message(mocker):
+    """
+    Given
+    - invalid error message due to longer than max length (50,000)
+
+    When
+    - return_error function is called
+
+    Then
+    - Return a truncated message that contains clarification about the truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * (MAX_ERROR_MESSAGE_LENGTH + 1)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
+        len("...This error body was truncated...")
+    assert "This error body was truncated" in results.call_args[0][0]["Contents"]
+
+
+def test_return_error_valid_message(mocker):
+    """
+    Given
+    - A valid error message
+
+    When
+    - return_error function is called
+
+    Then
+    - Ensure the same message is returned
+    - Ensure the error message does not contain clarification about a truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * int(MAX_ERROR_MESSAGE_LENGTH * 0.9)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == len(err_msg)
+    assert "This error body was truncated" not in results.call_args[0][0]["Contents"]
+
+
 def test_return_error_command(mocker):
     from CommonServerPython import return_error
     err_msg = "Testing unicode Ё"

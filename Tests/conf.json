@@ -33,6 +33,10 @@
             "is_mockable": false
         },
         {
+            "integrations": "CSCDomainManager",
+            "playbookID": "CSCDomainManager_Test"
+        },
+        {
             "playbookID": "Test Playbook - NGFW Scan",
             "integrations": "VirusTotal (API v3)",
             "instance_names": "virus_total_v3",
@@ -1195,7 +1199,13 @@
         },
         {
             "integrations": "MimecastV2",
-            "playbookID": "Mimecast test"
+            "playbookID": "Mimecast test",
+            "instance_names": "mimecast_api_v1"
+        },
+        {
+            "integrations": "MimecastV2",
+            "playbookID": "Mimecast Test api 2.0",
+            "instance_names": "mimecast_api_v2"
         },
         {
             "playbookID": "CreateEmailHtmlBody_test_pb",
