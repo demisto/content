@@ -55,6 +55,7 @@ def login():  # pragma: no cover
         body = {
             'password': PASSWORD
         }
+        
     url = urljoin(SERVER_URL, path)
     payload = json.dumps(body)
     headers = get_headers()
