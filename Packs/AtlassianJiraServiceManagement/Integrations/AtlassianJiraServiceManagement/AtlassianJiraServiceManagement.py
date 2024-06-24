@@ -212,7 +212,7 @@ def get_object_outputs(objects: List[Dict[str, Any]]) -> tuple[List[Dict[str, An
     readable_outputs = []
     for obj in objects:
         obj_type = obj['ObjectType']['name']
-        output = {k: v for k, v in obj.items() if k != 'ObjectType' and k != 'Avatar'}
+        output = {k: v for k, v in obj.items() if k not in ('ObjectType',  'Avatar')}
         readable_output = {**output, "Type": obj_type}
         outputs.append(output)
         readable_outputs.append(readable_output)
