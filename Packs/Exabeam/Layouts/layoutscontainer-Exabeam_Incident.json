@@ -455,7 +455,7 @@
 		]
 	},
 	"edit": null,
-	"fromServerVersion": "",
+	"fromServerVersion": "6.0.0",
 	"group": "incident",
 	"id": "Exabeam Incident",
 	"indicatorsDetails": null,
@@ -472,6 +472,7 @@
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
+    "fromVersion": "6.0.0",
+	"toServerVersion": "99.99.99",
 	"version": -1
 }

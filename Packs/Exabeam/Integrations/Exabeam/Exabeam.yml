@@ -1734,9 +1734,8 @@ script:
     - contextPath: Exabeam.incidents.fields.description
       description: The incident description.
       type: String
-  - arguments:
+  - name: exabeam-reset-notable-users-cached
     description: Reset integration context for notable users fetch.
-    name: exabeam-reset-notable-users-cached
   dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   runonce: false

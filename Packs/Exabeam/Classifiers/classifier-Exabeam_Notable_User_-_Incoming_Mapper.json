@@ -6,7 +6,7 @@
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
-	"id": "7594fd0f-9d2b-452b-8587-c9dbf63a0f1c",
+	"id": "Exabeam Notable User - Incoming Mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -281,5 +281,6 @@
 	"transformer": {},
 	"type": "mapping-incoming",
 	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+    "fromVersion": "6.5.0"
 }
