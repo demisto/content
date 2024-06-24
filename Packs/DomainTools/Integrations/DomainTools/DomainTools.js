@@ -327,7 +327,7 @@ const DOMAINTOOLS_PARAMS = {
     "api_username": params.username,
     "api_key": params.key,
     "app_partner": "cortex_xsoar",
-    "app_name": "iris_detect_for_enterprise_pack",
+    "app_name": "enterprise_for_xsoar",
     "app_version": "1"
 }
 
