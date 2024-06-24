@@ -50,7 +50,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | URL.Data | String | A list of URLs with a bad reputation. | 
 | URL.Malicious.Vendor | String | For malicious URLs, the vendor that tagged the URL as malicious. | 
 | URL.Malicious.Description | String | For malicious URLs, the reason the vendor tagged the URL as malicious. | 
-| DBotScore.Indicator | String | The indicator tested. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 

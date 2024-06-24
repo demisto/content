@@ -458,7 +458,7 @@ script:
       description: The server type.
       type: Number
     - contextPath: DBotScore.Indicator
-      description: The indicator of the DBotScore.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.

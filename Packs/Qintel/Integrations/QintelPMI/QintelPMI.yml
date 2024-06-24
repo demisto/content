@@ -70,10 +70,10 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
-      description: Type of indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
       type: String
   runonce: false
   script: '-'

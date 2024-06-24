@@ -341,10 +341,10 @@ script:
       description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The vendor that reported the file as malicious.
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: Malicious score.
+      description: The actual score.
       type: number
     - contextPath: Polygon.Analysis.Score
       description: Malware score in Polygon.

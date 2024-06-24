@@ -181,10 +181,10 @@ Returns all services that have been found on the IP address of the searched host
 | Shodan.IP.Port | Number | The port number on which the service is operating. |
 | Shodan.IP.Address | String | The IP address of the host as a string. |
 | Shodan.IP.Vulnerabilities | Unknown | A list of Vulnerabilities. |
-| DBotScore.Indicator | String | The indicator value. |
-| DBotScore.Score | Number | The indicator score according to the vendor. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor name. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 #### Command Example
 ```!ip ip="8.8.8.8" using-brand="Shodan_v2"```

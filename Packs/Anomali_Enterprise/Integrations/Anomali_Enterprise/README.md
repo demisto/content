@@ -220,7 +220,7 @@ else, the reputation is Unknown.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
 | Domain.Name | String | The domain name. For example, "google.com". | 
 | Domain.Malicious.Vendor | String | The vendor that reported that the domain is malicious. | 
 | Domain.Malicious.Description | String | A description of the malicious domain. | 

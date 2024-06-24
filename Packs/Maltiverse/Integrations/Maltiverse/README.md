@@ -54,7 +54,7 @@ Checks the reputation of an IP address
 | IP.PositiveDetections | Number | The number of sources that positively reported the indicator as block list. |
 | IP.Tags | String | The indicator type. |  
 | IP.ThreatTypes | Unknown | A list with the description of the elements in the block list. |  
-| DBotScore.Score | Number | The DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -101,7 +101,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Domain.ASName | String | Autonumous system name of the domain. |
 | Domain.Tags | String | Attribute to label an IoC. |  
 | Domain.ThreatTypes | Unknown | A list with the description of the elements in the block list. |   
-| DBotScore.Score | Number | The DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -151,7 +151,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | URL.PositiveDetections | Number | The number of sources that positively reported the indicator as block list. | 
 | URL.Tags | String | Attribute to label an IoC. |  
 | URL.ThreatTypes | Unknown | A list with the description of the elements in the block list. |
-| DBotScore.Score | Number | The DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The type of indicator. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
@@ -206,7 +206,7 @@ Check the reputation of a file
 | File.Path | String | The path of the file. |
 | File.Tags | String | Attribute to label an IoC. |  
 | File.ThreatTypes | Unknown | A list with the description of the elements in the block list. |    
-| DBotScore.Score | Number | The DBot score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 

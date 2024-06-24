@@ -41,7 +41,7 @@ Returns information and a reputation for each IP in the input list.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | Indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.IP.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.IP.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.IP.description | String | The description of the indicator. | 
@@ -96,7 +96,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.Domain.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.Domain.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.Domain.description | String | The description of the indicator. | 
@@ -151,7 +151,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | Indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.URL.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.URL.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.URL.description | String | The description of the indicator. | 
@@ -204,7 +204,7 @@ Returns information and a reputation for each file hash in the input list.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The score of the indicator. | 
 | DBotScore.Type | String | Indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the indicator score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | SixgillDarkfeed.File.created | Date | The timestamp when the indicator was created. | 
 | SixgillDarkfeed.File.id | String | The unique ID of the indicator. | 
 | SixgillDarkfeed.File.description | String | The description of the indicator. | 

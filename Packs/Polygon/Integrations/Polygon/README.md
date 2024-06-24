@@ -995,8 +995,8 @@ Check file reputation
 | File.Malicious.Description | string | A description explaining why the file was determined to be malicious. | 
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor that reported the file as malicious. | 
-| DBotScore.Score | number | Malicious score. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Score | number | The actual score. | 
 | Polygon.Analysis.Score | number | Malware score in Polygon. | 
 | Polygon.Analysis.MD5 | string | The MD5 hash of the file. | 
 | Polygon.Analysis.SHA1 | string | The SHA1 hash of the file. | 

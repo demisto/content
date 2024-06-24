@@ -67,16 +67,16 @@ script:
     name: url
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The Indicator
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
-      description: The Indicator Type
+      description: The indicator type.
       type: string
     - contextPath: DBotScore.Vendor
-      description: The DBot score vendor
+      description: The vendor used to calculate the score.
       type: string
     - contextPath: DBotScore.Score
-      description: The DBot score
+      description: The actual score.
       type: number
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.

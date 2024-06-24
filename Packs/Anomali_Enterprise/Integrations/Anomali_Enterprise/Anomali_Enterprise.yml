@@ -162,7 +162,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: The actual DBot score.
+      description: The actual score.
       type: Number
     - contextPath: Domain.Name
       description: The domain name. For example, "google.com".

@@ -50,8 +50,8 @@ Queries Qintel for CVE intelligence
 | Qintel.CVE.Observations | array | List of observations | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | Type of indicator. | 
-| DBotScore.Vendor | String | Vendor used to calculate the score. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
 
 #### Command Example

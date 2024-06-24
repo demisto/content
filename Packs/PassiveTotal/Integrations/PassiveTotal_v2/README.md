@@ -1821,7 +1821,7 @@ Checks the reputation of an IP address.
 | PassiveTotal.IP.rules.severity | Number | Severity of the rule. | 
 | PassiveTotal.IP.rules.link | String | Link to the rule. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The reputation score. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | IP.Address | String | The IP Address. | 

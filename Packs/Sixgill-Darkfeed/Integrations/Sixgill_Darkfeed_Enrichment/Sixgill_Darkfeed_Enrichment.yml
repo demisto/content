@@ -89,7 +89,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.IP.created
       description: The timestamp when the indicator was created.
@@ -173,7 +173,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.Domain.created
       description: The timestamp when the indicator was created.
@@ -257,7 +257,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.URL.created
       description: The timestamp when the indicator was created.
@@ -341,7 +341,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the indicator score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: SixgillDarkfeed.File.created
       description: The timestamp when the indicator was created.

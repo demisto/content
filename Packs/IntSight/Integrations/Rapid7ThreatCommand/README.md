@@ -3178,7 +3178,7 @@ Checks the reputation of an IP address.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | IP.ASN | String | IP ASN. | 
 | IP.Address | String | IP address. | 
 | IP.Region | String | IP region. | 
@@ -3215,7 +3215,7 @@ Checks the reputation of a URL.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | URL.Data | String | The URL value. | 
 | URL.DetectionEngines | String | URL detection engines. | 
 | URL.PositiveDetections | Number | Number of positive engines. | 
@@ -3253,7 +3253,7 @@ Checks the reputation of a domain.
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | DBotScore.Score | Number | The actual score. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the DBot score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | Domain.DNSRecords | String | DNS records of the domain. | 
 | ThreatCommand.Domain.domain | String | The domain value. | 
 | ThreatCommand.Domain.sub_domains | Date | Sub domains of the domain. | 

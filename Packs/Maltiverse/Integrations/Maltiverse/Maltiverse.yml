@@ -70,7 +70,7 @@ script:
       description: The number of sources that positively reported the indicator as block list.
       type: Number
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -136,7 +136,7 @@ script:
       description: Autonomous system name of the domain.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -208,7 +208,7 @@ script:
       description: The number of sources that positively reported the indicator as block list.
       type: Number
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -298,7 +298,7 @@ script:
       description: The path of the file.
       type: String
     - contextPath: DBotScore.Score
-      description: The DBot score.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Type
       description: The indicator type.

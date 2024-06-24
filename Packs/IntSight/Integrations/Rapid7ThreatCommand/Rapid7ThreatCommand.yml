@@ -1948,7 +1948,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: IP.ASN
       description: IP ASN.
@@ -2010,7 +2010,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: URL.Data
       description: The URL value.
@@ -2076,7 +2076,7 @@ script:
       description: The indicator type.
       type: String
     - contextPath: DBotScore.Vendor
-      description: The vendor used to calculate the DBot score.
+      description: The vendor used to calculate the score.
       type: String
     - contextPath: Domain.DNSRecords
       description: DNS records of the domain.

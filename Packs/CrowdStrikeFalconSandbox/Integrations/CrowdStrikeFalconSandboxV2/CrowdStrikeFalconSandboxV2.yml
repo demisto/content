@@ -2249,7 +2249,7 @@ script:
       description: The reason the vendor decided the file was malicious.
       type: string
     - contextPath: DBotScore.Indicator
-      description: The tested indicator.
+      description: The indicator that was tested.
       type: string
     - contextPath: DBotScore.Type
       description: The indicator type.
