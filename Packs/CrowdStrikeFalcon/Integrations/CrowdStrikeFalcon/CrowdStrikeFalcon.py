@@ -642,12 +642,14 @@ def detection_to_incident(detection):
         :rtype ``dict``
     """
     add_mirroring_fields(detection)
-
+    # detection_id and severity key names change between the old version and the Raptor release
+    detection_id = detection.get('detection_id') or detection.get('composite_id')
+    severity = detection.get('max_severity_displayname') or detection.get('severity_name')
     incident = {
-        'name': 'Detection ID: ' + str(detection.get('detection_id')),
+        'name': 'Detection ID: ' + str(detection_id),
         'occurred': str(detection.get('created_timestamp')),
         'rawJSON': json.dumps(detection),
-        'severity': severity_string_to_int(detection.get('max_severity_displayname'))
+        'severity': severity_string_to_int(severity),
     }
     return incident
 
@@ -1549,9 +1551,10 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
         'offset': offset,
         'filter': filter_arg
     }
+    #TODO fix the params and type and limit for Raptor, and add testing
     if limit:
         params['limit'] = limit
-    endpoint_url = "/alerts/queries/alerts/v1"
+    endpoint_url = "/alerts/queries/alerts/v1" if not POST_RAPTOR_RELEASE else "/alerts/queries/alerts/v2"
     response = http_request('GET', endpoint_url, params)
     demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}")
 
@@ -2853,8 +2856,10 @@ def fetch_incidents():
 
             for detection in full_detections:
                 detection['incident_type'] = incident_type
+                # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
+                detection_id = detection.get('detection_id') or detection.get('composite_id')
                 demisto.debug(
-                    f"CrowdStrikeFalconMsg: Detection {detection['detection_id']} "
+                    f"CrowdStrikeFalconMsg: Detection {detection_id} "
                     f"was fetched which was created in {detection['created_timestamp']}")
                 incident = detection_to_incident(detection)
 

@@ -1929,7 +1929,7 @@ script:
       description: The SHA256 hash of the parent process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_md5
-      description: "The MD5 hash of the parent process.
+      description: The MD5 hash of the parent process.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.parent_details.parent_cmdline
       description: The command line of the parent process.

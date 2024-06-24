@@ -387,7 +387,7 @@
                     "simple": "device.agent_version"
                 },
                 "Alert ID": {
-                    "simple": "detection_id"
+                    "simple": "composite_id"
                 },
                 "Assigned User": {
                     "simple": "assigned_to_uid"
@@ -405,16 +405,19 @@
                     }
                 },
                 "Behaviour Objective": {
-                    "simple": "behaviors.objective"
+                    "simple": "objective"
                 },
                 "Behaviour Scenario": {
-                    "simple": "behaviors.scenario"
+                    "simple": "scenario"
                 },
                 "Behaviour Tactic": {
-                    "simple": "behaviors.tactic"
+                    "simple": "tactic"
+                },
+                "Technique": {
+                    "simple": "technique"
                 },
                 "CMD line": {
-                    "simple": "behaviors.cmdline"
+                    "simple": "cmdline"
                 },
                 "Cloud Instance ID": {
                     "simple": "device.instance_id"
@@ -423,7 +426,7 @@
                     "simple": "device.service_provider"
                 },
                 "Description": {
-                    "simple": "behaviors.description"
+                    "simple": "description"
                 },
                 "Detected User": {
                     "simple": "behaviors.user_name"
@@ -462,7 +465,7 @@
                     "simple": "device.hostname"
                 },
                 "Last Update Time": {
-                    "simple": "last_behavior"
+                    "simple": "timestamp"
                 },
                 "MAC Address": {
                     "simple": "device.mac_address"
@@ -474,7 +477,7 @@
                     "simple": "device.os_version"
                 },
                 "Parent CMD line": {
-                    "simple": "behaviors.parent_details.parent_cmdline"
+                    "simple": "parent_details.cmdline"
                 },
                 "SHA256": {
                     "simple": "behaviors.sha256"
