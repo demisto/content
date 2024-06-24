@@ -91,11 +91,11 @@ def get_default_job_id(client: Client) -> CommandResults:
     )
 
 
-def set_default_job_id(client: Client, args: dict[str, Any]) -> CommandResults:
+def set_default_job_id(client: Client, args: Dict[str, Any]) -> CommandResults:
     return get_default_job_id(client)
 
 
-def send_bulk_events(client: Client, feature_mapping_field: str, args: dict[str, Any]) -> CommandResults:
+def send_bulk_events(client: Client, feature_mapping_field: Dict[str, Any], args: Dict[str, Any]) -> CommandResults:
     response = "mock"
     readable_output = f' ## Arcanna send bulk results: {response}'
 
@@ -107,7 +107,7 @@ def send_bulk_events(client: Client, feature_mapping_field: str, args: dict[str,
     )
 
 
-def get_feedback_field(params: dict[str, Any]) -> CommandResults:
+def get_feedback_field(params: Dict[str, Any]) -> CommandResults:
     response = "deprecated"
     readable_output = f' ## Get feedback returned results: {response}'
 
@@ -237,9 +237,9 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
 
 @polling_function(name='arcanna-get-event-status', timeout=arg_to_number(demisto.args().get('timeout', 120)),
                   interval=arg_to_number(demisto.args().get('interval', 15)))
-def get_event_status(args: Dict[str, Any], client: Client, default_job_id) -> CommandResults:
+def get_event_status(args: Dict[str, Any], client: Client, default_job_id) -> CommandResults | PollResult:
     job_id = args.get("job_id", default_job_id)
-    event_id = args.get("event_id")
+    event_id = str(args.get("event_id"))
     result = client.get_event_status(job_id, event_id)
     polling = args.get("polling")
     successful_response = result.get("status", "pending_inference") != 'pending_inference'
@@ -323,7 +323,7 @@ def main() -> None:
             proxy=proxy
         )
         # Deprecated. For BC purposes
-        feature_mapping = {}
+        feature_mapping: Dict[str, Any] = {}
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result_test = test_module(client)
