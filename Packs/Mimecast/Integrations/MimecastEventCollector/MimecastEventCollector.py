@@ -534,7 +534,7 @@ def main():  # pragma: no cover
             siem_event_handler, demisto_last_run)
 
         events = events_siem + events_audit
-        
+
         if command == 'test-module':
             # End points are already tested as part of the event_handlers run method.
             # If we reach this point the requests were executed successfully.
