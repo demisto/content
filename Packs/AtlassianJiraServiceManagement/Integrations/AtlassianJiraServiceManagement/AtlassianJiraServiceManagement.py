@@ -115,7 +115,7 @@ class Client(BaseClient):
     def create_comment(self, object_id, comment):
         url_suffix = '/comment/create'
         json_data = {
-            'object_id': object_id,
+            'objectId': object_id,
             'comment': comment
         }
         return self._http_request(
@@ -240,7 +240,7 @@ def convert_attributes(attributes: Dict[str, List[str]]) -> List[Dict[str, Any]]
     return result
 
 
-def get_attributes_json_data(object_type_id: str, attributes: str = None, attributes_json: str = None) -> Dict[str, Any]:
+def get_attributes_json_data(object_type_id: str, attributes: dict[str, Any] = None, attributes_json: str = None) -> Dict[str, Any]:
 
     if not attributes and not attributes_json:
         raise ValueError('Either attributes or attributes_json must be provided.')
@@ -248,7 +248,7 @@ def get_attributes_json_data(object_type_id: str, attributes: str = None, attrib
         raise ValueError('Only one of attributes or attributes_json must be provided.')
 
     if attributes:
-        converted_attributes = convert_attributes(json.loads(attributes))
+        converted_attributes = convert_attributes(attributes)
     else:
         converted_attributes = json.loads(attributes_json).get('attributes')
 
