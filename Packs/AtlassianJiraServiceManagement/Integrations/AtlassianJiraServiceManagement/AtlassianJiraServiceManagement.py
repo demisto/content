@@ -16,9 +16,7 @@ urllib3.disable_warnings()
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 ON_PREM_URL_STRUCTURE = '{}/rest/assets/1.0/'
-ON_PREM_FILE_URL_PREFIX = 'https://{}.atlassian.net/rest/servicedeskapi/attachments/'
 INTEGRATION_OUTPUTS_BASE_PATH = 'JiraAsset'
-
 ''' CLIENT CLASS '''
 
 
@@ -190,9 +188,9 @@ def convert_keys_to_pascal(objects: List[dict[str, Any]], key_mapping: Optional[
 
 
 def get_object_attribute_string_type(attribute: Dict[str, Any]) -> str:
-    match attribute['Type']:
+    match attribute['type']:
         case 0:
-            return attribute['DefaultType']['name']
+            return attribute['defaultType']['name']
         case 1:
             return 'Object Reference'
         case 2:
@@ -207,26 +205,24 @@ def get_object_attribute_string_type(attribute: Dict[str, Any]) -> str:
             return 'Bitbucket Repository'
 
 
-def get_object_outputs(objects: List[Dict[str, Any]]) -> tuple[List[Dict[str, Any]], List[Dict[str, Any]]]:
-    outputs = []
+def get_object_readable_outputs(objects: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    pascal_objects = convert_keys_to_pascal(objects, {'id': 'ID'})
     readable_outputs = []
-    for obj in objects:
+    for obj in pascal_objects:
         obj_type = obj['ObjectType']['name']
         output = {k: v for k, v in obj.items() if k != 'ObjectType' and k != 'Avatar'}
         readable_output = {**output, "Type": obj_type}
-        outputs.append(output)
         readable_outputs.append(readable_output)
-    return outputs, readable_outputs
+    return readable_outputs
 
 
 def clean_object_attributes(attributes: List[Dict[str, any]]) -> List[Dict[str, any]]:
-    pascal_attributes = convert_keys_to_pascal(attributes, {'id': 'ID'})
     string_typed_attributes = [{
         **attribute,
-        'Type': get_object_attribute_string_type(attribute)}
-        for attribute in pascal_attributes
+        'type': get_object_attribute_string_type(attribute)}
+        for attribute in attributes
     ]
-    return [{k: v for k, v in attribute.items() if k != 'ObjectType'} for attribute in string_typed_attributes]
+    return [{k: v for k, v in attribute.items() if k != 'objectType'} for attribute in string_typed_attributes]
 
 
 def convert_attributes(attributes: Dict[str, List[str]]) -> List[Dict[str, Any]]:
@@ -259,8 +255,8 @@ def get_attributes_json_data(object_type_id: str, attributes: dict[str, Any] = N
 
 
 def parse_object_results(res: Dict[str, any]) -> Dict[str, Any]:
-    pascal_res = convert_keys_to_pascal([res], {'id': 'ID'})
-    outputs = [{k: v for k, v in obj_field.items() if k != 'ObjectType'} for obj_field in pascal_res]
+    obj_field = res.items()
+    outputs = [{k: v for k, v in res.items() if k != 'objectType'}]
     object_id = res.get('id')
     return {'outputs': outputs, 'objectId': object_id}
 
@@ -312,13 +308,13 @@ def jira_asset_object_schema_list_command(client: Client, args: dict[str, Any]) 
         limit = int(limit)
         object_schemas = object_schemas[:limit]
 
-    outputs = convert_keys_to_pascal(object_schemas, key_mapping)
+    readable_outputs = convert_keys_to_pascal(object_schemas, key_mapping)
     hr_headers = ['ID', 'Name', 'Key', 'Status', 'Description', 'Created']
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Schema',
         outputs_key_field='ID',
-        outputs=outputs,
-        readable_output=tableToMarkdown('Object Schemas', outputs, headers=hr_headers, removeNull=True)
+        outputs=object_schemas,
+        readable_output=tableToMarkdown('Object Schemas', readable_outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -343,11 +339,12 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
 
     # build outputs
     res = client.get_object_type_list(schema_id, query, exclude)
-    object_types = convert_keys_to_pascal(list(res), {'id': 'ID', 'parentObjectTypeId': 'ParentTypeID'})
+    outputs = [{k: v for k, v in ot.items() if k != 'icon'} for ot in res]
     if not all_results:
         limit = int(limit)
-        object_types = object_types[:limit]
-    outputs = [{k: v for k, v in ot.items() if k != 'Icon'} for ot in object_types]
+        outputs = outputs[:limit]
+
+    readable_outputs = convert_keys_to_pascal(list(outputs), {'id': 'ID', 'parentObjectTypeId': 'ParentTypeID'})
 
     # build readable outputs
     hr_headers = ['ID', 'Name', 'ParentTypeID', 'AbstractObjectType']
@@ -356,7 +353,7 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ObjectType',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers, removeNull=True)
+        readable_output=tableToMarkdown('Object Types', readable_outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -488,9 +485,9 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
 
     try:
         res = client.get_object(object_id)
-        pascal_res = convert_keys_to_pascal([res], {'id': 'ID'})
         hr_headers = ['ID', 'Label', 'Type', 'Created']
-        outputs, readable_output = get_object_outputs(pascal_res)
+        readable_output = get_object_readable_outputs([res])
+        outputs = {k: v for k, v in res.items() if k != 'objectType' and k != 'avatar'}
     except DemistoException as e:
         if e.res.status_code == 404:
             return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
@@ -526,10 +523,10 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
 
     # build outputs
     res = client.search_objects(ql_query, include_attributes, page, page_size, limit)
-    pascal_res = convert_keys_to_pascal(res['objectEntries'], {'id': 'ID'})
+    objects = res['objectEntries']
     hr_headers = ['ID', 'Label', 'Type', 'ObjectKey']
-    outputs, readable_output = get_object_outputs(pascal_res)
-
+    readable_output = get_object_readable_outputs(objects)
+    outputs = [{k: v for k, v in obj.items() if k != 'objectType' and k != 'avatar'} for obj in objects]
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
         outputs_key_field='ID',
@@ -579,12 +576,11 @@ def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> C
     object_id = args.get('object_id')
     comment = args.get('comment')
     res = client.create_comment(object_id, comment)
-    outputs = convert_keys_to_pascal([res], {'id': 'ID'})
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Comment',
         outputs_key_field='ID',
-        outputs=outputs,
+        outputs=res,
         readable_output=f'Comment was added successfully to object with id: {object_id}'
     )
 
@@ -599,15 +595,15 @@ def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> Com
     """
     object_id = args.get('object_id')
     res = client.get_comment_list(object_id)
-    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
-    outputs = [{k: v for k, v in output.items() if k != 'Actor'} for output in outputs]
+    readable_outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
+    outputs = [{k: v for k, v in output.items() if k != 'actor'} for output in res]
     hr_headers = ['ID', 'Comment']
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Comment',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Comments', outputs, headers=hr_headers, removeNull=True)
+        readable_output=tableToMarkdown('Comments', readable_outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -621,10 +617,10 @@ def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any
     """
     object_id = args.get('object_id')
     res = client.get_object_connected_tickets(object_id)
-    outputs = convert_keys_to_pascal(list(res.get('tickets')), {'id': 'ID'})
+    outputs = list(res.get('tickets'))
     hr_headers = ['ID', 'Title', 'Status', 'Type']
-    readable_output = [{'Status': output.get('Status', {}).get('name'), 'Type': output.get('Type', {}).get('name'),
-                        'Title': output.get('Title', {})} for output in outputs]
+    readable_output = [{'Status': output.get('status', {}).get('name'), 'Type': output.get('type', {}).get('name'),
+                        'Title': output.get('title', {})} for output in outputs]
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.ConnectedTicket',
         outputs_key_field='ID',
@@ -647,12 +643,10 @@ def jira_asset_attachment_add_command(client: Client, args: dict[str, Any]) -> C
     file_path = demisto.getFilePath(entry_id)
     demisto.debug(f'File path: {file_path}')
     res = client.send_file(object_id=object_id, file_path=file_path.get('path'))
-    demisto.debug(f'Response: {res}')
-    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
         outputs_key_field='ID',
-        outputs=outputs,
+        outputs=res,
         readable_output=f'Attachment was added successfully to object with id: {object_id}'
     )
 
@@ -671,14 +665,14 @@ def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> 
     object_id = args.get('object_id')
     download_file = argToBoolean(args.get('download_file', False))
     res = client.get_object_attachment_list(f'/attachments/object/{object_id}')
-    outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
+    readable_outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     hr_header = ['ID', 'Filename', 'Filesize', 'Comment']
 
     command_results = CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
         outputs_key_field='ID',
-        outputs=outputs,
-        readable_output=tableToMarkdown('Attachments', outputs, headers=hr_header, removeNull=True)
+        outputs=res,
+        readable_output=tableToMarkdown('Attachments', readable_outputs, headers=hr_header, removeNull=True)
     )
 
     if not download_file:
@@ -726,16 +720,34 @@ def jira_asset_attachment_remove_command(client: Client, args: dict[str, Any]) -
         else:
             raise e
 
-    outputs = convert_keys_to_pascal([res], key_mapping={'id': 'ID'})
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attachment',
         outputs_key_field='ID',
-        outputs=outputs,
+        outputs=res,
         readable_output=f'Attachment with id {res.get("id")} was successfully deleted'
     )
 
 
 ''' MAIN FUNCTION '''
+
+
+commands = {
+    'jira-asset-object-schema-list': jira_asset_object_schema_list_command,
+    'jira-asset-object-type-list': jira_asset_object_type_list_command,
+    'jira-asset-object-type-attribute-list': jira_asset_object_type_attribute_list_command,
+    'jira-asset-object-create': jira_asset_object_create_command,
+    'jira-asset-object-update': jira_asset_object_update_command,
+    'jira-asset-object-delete': jira_asset_object_delete_command,
+    'jira-asset-object-get': jira_asset_object_get_command,
+    'jira-asset-object-search': jira_asset_object_search_command,
+    'jira-asset-attribute-json-create': jira_asset_attribute_json_create_command,
+    'jira-asset-comment-create': jira_asset_comment_create_command,
+    'jira-asset-comment-list': jira_asset_comment_list_command,
+    'jira-asset-connected-ticket-list': jira_asset_connected_ticket_list_command,
+    'jira-asset-attachment-add': jira_asset_attachment_add_command,
+    'jira-asset-attachment-remove': jira_asset_attachment_remove_command,
+    'jira-asset-attachment-list': jira_asset_attachment_list_command
+}
 
 
 def main() -> None:
@@ -746,7 +758,6 @@ def main() -> None:
     server_url = params.get('url')
     verify_certificate = not params.get('insecure', False)
     proxy = params.get('proxy', False)
-    base_url = server_url
 
     try:
         base_url = ON_PREM_URL_STRUCTURE.format(server_url)
@@ -757,68 +768,12 @@ def main() -> None:
             result = test_module(client)
             return_results(result)
 
-        elif command == 'jira-asset-object-schema-list':
-            result = jira_asset_object_schema_list_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-object-type-list':
-            result = jira_asset_object_type_list_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-object-type-attribute-list':
-            result = jira_asset_object_type_attribute_list_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-object-create':
-            result = jira_asset_object_create_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-object-update':
-            result = jira_asset_object_update_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-object-delete':
-            result = jira_asset_object_delete_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-object-get':
-            result = jira_asset_object_get_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-object-search':
-            result = jira_asset_object_search_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-attribute-json-create':
-            results = jira_asset_attribute_json_create_command(client, args)
-            return_results(results)
-
-        elif command == 'jira-asset-comment-create':
-            result = jira_asset_comment_create_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-comment-list':
-            result = jira_asset_comment_list_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-connected-ticket-list':
-            result = jira_asset_connected_ticket_list_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-attachment-add':
-            result = jira_asset_attachment_add_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-attachment-list':
-            result = jira_asset_attachment_list_command(client, args)
-            return_results(result)
-
-        elif command == 'jira-asset-attachment-remove':
-            result = jira_asset_attachment_remove_command(client, args)
-            return_results(result)
-
-        else:
+        command_func = commands.get(command)
+        if not command_func:
             raise NotImplementedError(f'''Command '{command}' is not implemented.''')
+
+        result = command_func(client, args)
+        return_results(result)
 
     except Exception as e:
         demisto.debug(f"The integration context_data is {get_integration_context()}")

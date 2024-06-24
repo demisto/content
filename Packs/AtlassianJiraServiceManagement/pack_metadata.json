@@ -10,8 +10,13 @@
         "IT Services"
     ],
     "tags": [],
-    "useCases": [],
-    "keywords": [],
+    "useCases": [
+        "Managing software updates",
+        "Managing firmware updates",
+        "Managing employee roles and permissions",
+        "Managing service desk tickets"
+    ],
+    "keywords": ["Jira", "Atlassian", "Jira Service Management", "Jira Assets"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"

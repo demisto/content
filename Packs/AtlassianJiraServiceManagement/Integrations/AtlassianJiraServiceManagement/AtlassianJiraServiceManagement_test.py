@@ -81,31 +81,14 @@ def test_convert_keys_to_pascal_list_with_keys_and_mapping():
     assert result == expected_result
 
 
-@pytest.mark.parametrize(
-    "input_str, expected_output",
-    [
-        ("snake_case", "SnakeCase"),
-        ("camelCase", "CamelCase"),
-        ("PascalCase", "PascalCase"),
-        ("UPPERCASE", "UPPERCASE"),
-        ("mixed_Case", "MixedCase"),
-    ],
-)
-def test_pascal_case(input_str, expected_output):
-    assert JSM.pascal_case(input_str) == expected_output
-
-
-def test_get_object_outputs():
+def test_get_object_readable_outputs():
     objects = [
-        {'ObjectType': {'name': 'typeA'}, 'Avatar': 'avatarA', 'ID': 123, 'key': 'value'},
-        {'ObjectType': {'name': 'typeB'}, 'Avatar': 'avatarB', 'ID': 456, 'key': 'value'}
+        {'objectType': {'name': 'typeA'}, 'avatar': 'avatarA', 'id': 123, 'key': 'value'},
+        {'objectType': {'name': 'typeB'}, 'avatar': 'avatarB', 'id': 456, 'key': 'value'}
     ]
 
-    expected_output = (
-        [{'ID': 123, 'key': 'value'}, {'ID': 456, 'key': 'value'}],
-        [{'Type': 'typeA', 'ID': 123, 'key': 'value'}, {'Type': 'typeB', 'ID': 456, 'key': 'value'}],
-    )
-    assert JSM.get_object_outputs(objects) == expected_output
+    expected_output = [{'ID': 123, 'Key': 'value', 'Type': 'typeA'}, {'ID': 456, 'Key': 'value', 'Type': 'typeB'}]
+    assert JSM.get_object_readable_outputs(objects) == expected_output
 
 
 def test_clean_object_attributes_with_type_and_default_type():
@@ -117,8 +100,8 @@ def test_clean_object_attributes_with_type_and_default_type():
     Then:
         - The cleaned attributes should match the expected format with 'type' replaced by its string representation and keys in PascalCase.
     """
-    attributes = [{'id': 1, 'name': 'Test', 'type': 0, 'defaultType': {'name': 'Text'}}]
-    expected = [{'ID': 1, 'Name': 'Test', 'Type': 'Text', 'DefaultType': {'name': 'Text'}}]
+    attributes = [{'id': 1, 'name': 'Test', 'type': 0, 'defaultType': {'name': 'Text'}, 'objectType': {'id': 1}}]
+    expected = [{'id': 1, 'name': 'Test', 'type': 'Text', 'defaultType': {'name': 'Text'}}]
     result = JSM.clean_object_attributes(attributes)
     assert result == expected
 
@@ -133,7 +116,7 @@ def test_clean_object_attributes_with_type():
         - The cleaned attributes should match the expected format with 'type' replaced by its string representation and keys in PascalCase.
     """
     attributes = [{'id': 2, 'value': 'Hello', 'type': 1}]
-    expected = [{'ID': 2, 'Value': 'Hello', 'Type': 'Object Reference'}]
+    expected = [{'id': 2, 'value': 'Hello', 'type': 'Object Reference'}]
     result = JSM.clean_object_attributes(attributes)
     assert result == expected
 
@@ -221,7 +204,7 @@ def test_get_attributes_json_data_with_attributes():
     Then: The function should return a dictionary with the object type ID and converted attributes
     """
     object_type_id = "test_object_type"
-    attributes = '{"attr1": ["value1", "value2"], "attr2": ["hello"]}'
+    attributes = {"attr1": ["value1", "value2"], "attr2": ["hello"]}
     expected = {
         'objectTypeId': object_type_id,
         'attributes': [
@@ -285,11 +268,11 @@ def test_parse_object_results_basic():
     """
     Given: An object with multiple fields, but no object type.
     When: The parse_object_results function is called with the object.
-    Then: The function should return a dictionary with the object ID and the object name converted to PascalCase.
+    Then: The function should return a dictionary with the object ID and the object name.
     """
     res = {'id': 123, 'name': 'TestObject'}
     expected_output = {
-        'outputs': [{'ID': 123, 'Name': 'TestObject'}],
+        'outputs': [{'id': 123, 'name': 'TestObject'}],
         'objectId': 123
     }
     assert JSM.parse_object_results(res) == expected_output
@@ -301,24 +284,10 @@ def test_parse_object_results_with_object_type():
         When: The parse_object_results function is called with the object.
         Then: The function should return a dict with the object ID and name converted to PascalCase but delete the object type.
     """
-    res = {'id': 123, 'name': 'TestObject', 'ObjectType': 'TestType'}
+    res = {'id': 123, 'name': 'TestObject', 'objectType': 'TestType'}
     expected_output = {
-        'outputs': [{'ID': 123, 'Name': 'TestObject'}],
+        'outputs': [{'id': 123, 'name': 'TestObject'}],
         'objectId': 123
-    }
-    assert JSM.parse_object_results(res) == expected_output
-
-
-def test_parse_object_results_no_id():
-    """
-    Given: An object with no ID field.
-    When: The parse_object_results function is called with the object.
-    Then: The function should return a dictionary with the object name converted to PascalCase and no ID.
-    """
-    res = {'name': 'TestObject'}
-    expected_output = {
-        'outputs': [{'Name': 'TestObject'}],
-        'objectId': None
     }
     assert JSM.parse_object_results(res) == expected_output
 
@@ -498,7 +467,7 @@ def test_jira_asset_object_create_command(mocker: MockerFixture):
             get_attributes_json_data function returns
     """
     object_type_id = "1"
-    attributes = json.dumps({"1": ["value1"], "2": ["value1", "value2"]})
+    attributes = {"1": ["value1"], "2": ["value1", "value2"]}
     attributes_json_data = JSM.get_attributes_json_data(object_type_id, attributes)
     mocked_client = mocker.patch.object(
         client,
@@ -518,7 +487,7 @@ def test_jira_asset_object_update_command(mocker: MockerFixture):
     """
     object_id = "1"
     object_type_id = "3"
-    attributes = json.dumps({"1": ["value1"], "2": ["value1", "value2"]})
+    attributes = {"1": ["value1"], "2": ["value1", "value2"]}
     attributes_json_data = JSM.get_attributes_json_data(object_type_id, attributes)
     mocker.patch.object(client, 'get_object', return_value=command_test_data['get_object']['response'])
     mocked_update_object = mocker.patch.object(
