@@ -257,7 +257,7 @@ class Client(BaseClient):
         Returns: The UUID of the vulnerabilities export job.
 
         """
-        severity = argToList(demisto.params().get('severity'))
+        argToList(demisto.params().get('severity'))
         payload: dict[str, Any] = {
             "filters":
                 {
@@ -1890,7 +1890,7 @@ def main():  # pragma: no cover
     # Events Params
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
-    severity = argToList(params.get('severity'))
+    argToList(params.get('severity'))
 
     demisto.debug(f'Command being called is {command}')
     try:
