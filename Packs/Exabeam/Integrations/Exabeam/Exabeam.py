@@ -16,6 +16,7 @@ TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 DEFAULT_LIMIT = "50"
+MAX_LENGTH_CONTEXT = 1000
 
 
 class Client(BaseClient):
@@ -2099,6 +2100,7 @@ def list_incidents(client: Client, args: dict[str, str]):
 
 
 def reset_notable_users_cached(client: Client, args: dict[str, str]):
+    demisto.debug("Running command reset-notable-users-cached")
     context = get_integration_context()
     context['usernames'] = []
     set_integration_context(context)
@@ -2237,7 +2239,10 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
 
     demisto.debug(f"After filtering, there are {len(new_risky_users)} new risky users, and {len(new_usernames)} new usernames")
 
-    usernames_to_context = existing_usernames + new_usernames
+    combined_usernames = existing_usernames + new_usernames
+    excess_length = max(len(combined_usernames) - MAX_LENGTH_CONTEXT, 0)
+    usernames_to_context = existing_usernames[excess_length:] + new_usernames
+    demisto.debug(f"{excess_length} users deleted from the context to avoid exceeding the maximum")
     context = {"usernames": usernames_to_context}
     set_integration_context(context)
     demisto.debug(f"After the added context contain {len(usernames_to_context)} users")
