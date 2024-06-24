@@ -1117,6 +1117,19 @@ script:
       name: end_time
     - description: Index of first records to fetch. Default is 0.
       name: start
+    - description: wether to run polling command 
+      name: polling
+      defaultValue: true
+      predefined:
+      - true
+      - false
+    - description: the time in seconds to wait between polling.
+      name: interval_in_seconds
+      defaultValue: '60'
+    - description: the time in seconds in which the command will stop retrying polling.
+      name: time_out
+      defaultValue: 600
+    polling: true
     description: Creates a process search job.
     name: cb-eedr-process-search
     outputs:

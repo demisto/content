@@ -534,7 +534,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
 
 
 @polling_function(name='cb-eedr-alert-workflow-update', interval=60, requires_polling_arg=False)
-def alert_workflow_update_command_v2(args: dict, client: Client) -> PollResult:
+def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
     request_id = arg_to_number(args.get('request_id'))
     alert_id = args['alert_id']
     demisto.debug(f'got {request_id=}, {alert_id=}')
@@ -1292,11 +1292,86 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
     return incidents, res
 
+@polling_function(
+    name='cb-eedr-process-search',
+    interval=60, #arg_to_number(demisto.args.get('interval', 60)),
+    timeout= 600, #arg_to_number(demisto.args.get('timeout', 600)),
+    requires_polling_arg=False
+    )
+def process_search_command_with_polling(args: dict, client: Client) -> PollResult:
+    job_id = arg_to_number(args.get('job_id'))
+    interval_in_seconds = arg_to_number(args.get('interval_in_seconds'))
+    demisto.debug(f'in process_search_command_with_polling function, {job_id=}')
+    if not job_id: # if this is the first time
+        process_name = args.get('process_name', '')
+        process_hash = args.get('process_hash', '')
+        event_id = args.get('event_id', '')
+        query = args.get('query', '')
+        start_time = str(args.get('start_time', '1 day'))
+        end_time = str(args.get('end_time', ''))
+        limit = args.get('limit')
+        if not limit:
+            limit = 20
+        try:
+            limit = int(limit)
+        except ValueError:
+            raise ValueError("Please provide a number as limit.")
 
-def process_search_command(client: Client, args: dict) -> CommandResults:
-    """
+        response = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
+                                                        event_id=event_id, query=query, limit=limit,
+                                                        start_time=start_time, end_time=end_time)
+        demisto.debug(f'{response=}')
+        return PollResult( partial_result = CommandResults(readable_output=f"job_id is {response.get('job_id')}."),
+                           response = None,
+                           continue_to_poll= True,
+                           args_for_next_run={"job_id":  response['job_id']} | args
+                           )
+        
+    job_id = args['job_id']
+    demisto.debug(f'have job id trying to poll {job_id=}')
+    # this is not the first time
+    response = client.get_search_process_request(job_id=args['job_id'])
+    status = 'Completed' if response.get('contacted') == response.get('completed') else 'In Progress'
+    demisto.debug(f'{response=}')
+    if status != 'Completed':
+        message = CommandResults(
+            readable_output=f"Checking again in {interval_in_seconds} seconds...")
+        return PollResult(
+            partial_result=message,
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"job_id": job_id,
+                            **args})
+    
+    # status is Completed
+    output = {'status': status, 'job_id': job_id, 'results': response.get('results')}
+    title = "Completed Search Results:"
+    headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
+    human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
+    message = CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
+                                            outputs=output,
+                                            outputs_key_field='job_id',
+                                            raw_response=response,
+                                            readable_output=human_readable)
+    return PollResult(
+        response=message,
+        continue_to_poll=False)
+   
+"""
+def process_search_command(args: dict, client: Client) -> CommandResults | PollResult:
+    
     Gets arguments for a process search task, and returns the task's id and status.
-    """
+    
+    demisto.debug('in process search command')
+    polling = argToBoolean(args.get('polling'))
+    if polling:
+        return process_search_command_with_polling(args, client)
+    
+    else:
+        return process_search_command_without_polling(client, args)
+"""
+        
+def process_search_command_without_polling(client: Client, args: dict) -> CommandResults:
     process_name = args.get('process_name', '')
     process_hash = args.get('process_hash', '')
     event_id = args.get('event_id', '')
@@ -1317,7 +1392,7 @@ def process_search_command(client: Client, args: dict) -> CommandResults:
     readable_output = f"job_id is {raw_respond.get('job_id')}."
     output = {'job_id': raw_respond.get('job_id'), 'status': 'In Progress'}
     return CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess', raw_response=raw_respond,
-                          outputs=output, outputs_key_field='job_id', readable_output=readable_output)
+                        outputs=output, outputs_key_field='job_id', readable_output=readable_output)
 
 
 def event_by_process_search_command(client: Client, args: dict) -> CommandResults:
@@ -1502,7 +1577,7 @@ def main():
             return_results(alert_list_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
-            return_results(alert_workflow_update_command_v2(demisto.args(), client))
+            return_results(alert_workflow_update_command(demisto.args(), client))
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))
@@ -1595,8 +1670,13 @@ def main():
             return_results(get_file_path_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-process-search':
-            return_results(process_search_command(client, demisto.args()))
-
+            demisto.debug('in main for search command')
+            polling = argToBoolean(demisto.args().get('polling'))
+            if polling:
+                return return_results(process_search_command_with_polling(demisto.args(), client))
+            else:
+                return return_results(process_search_command_without_polling(client, demisto.args()))
+            
         elif demisto.command() == 'cb-eedr-process-search-results':
             for command_result_item in process_search_get_command(client, demisto.args()):
                 return_results(command_result_item)
