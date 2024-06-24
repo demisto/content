@@ -11,7 +11,7 @@ To add the registration, refer to the following [Microsoft article](https://lear
 
 ### Required permissions
 
-- Azure Service Management - permission `user_impersonation` of type Delegated
+- Azure Data Explorer - permission `user_impersonation` of type Delegated
 - Microsoft Graph - permission `offline_access` of type Delegated
 
 To add a permission:
@@ -45,6 +45,9 @@ to link Azure Data Explorer with Cortex XSOAR.
 
 At end of the process you'll see a message that you've logged in successfully.
 
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (a9ce8db2-847a-46af-9bfb-725d8a8d3c53).
 
 ### Authentication Using the Client Credentials Flow
 
@@ -61,9 +64,7 @@ At end of the process you'll see a message that you've logged in successfully.
    h. Save the instance.
 
 
-### Cortex XSOAR Azure App
 
-In order to use the Cortex XSOAR Azure application, use the default application ID (a9ce8db2-847a-46af-9bfb-725d8a8d3c53).
 
 ### Get the additional instance parameters
 
