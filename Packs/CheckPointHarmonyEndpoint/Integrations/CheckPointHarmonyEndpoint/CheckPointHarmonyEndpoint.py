@@ -1436,10 +1436,10 @@ def rule_modifications_get_command(args: dict[str, Any], client: Client) -> Poll
     """
     rule_id = args.get("rule_id", "")
     SCHEDULED_COMMANDS_MAPPER[
-            "harmony-ep-policy-rule-modifications-get"
-        ].format_message(rule_id)
-    
-    if not args.get("job_id"):  
+        "harmony-ep-policy-rule-modifications-get"
+    ].format_message(rule_id)
+
+    if not args.get("job_id"):
         response = client.rule_modifications_get(rule_id=rule_id)
         args["job_id"] = response.get("jobId")
 
@@ -2705,7 +2705,7 @@ def clear_integration_context() -> None:
 
 
 def convert_unix_to_date_string(unix_timestamp: int) -> str:
-    """ Convert unix timestamp to date string.
+    """Convert unix timestamp to date string.
 
     Args:
         unix_timestamp (int): unix.
