@@ -80,16 +80,16 @@ def search_image_links(file_path):
             OSError: If there is an error creating the folder to save images or downloading images.
     """
     if os.path.getsize(file_path) == 0:
-        return "empty file"
+        return [], [],"empty file"
     try:
         with (open(file_path, 'r+') as file):
             file_lines = file.readlines()
         if logs := change_image_link_to_relative(file_lines, file_path):
             
-            return logs["list_success"], logs["list_not_found"]
+            return logs["list_success"], logs["list_not_found"], ''
     except Exception as error:
         logger.debug(error)
-    return "failed opening the file"
+    return [], [],"failed opening the file"
 
 
 def extract_image_links_from_files_and_save_to_json():
@@ -106,11 +106,11 @@ def extract_image_links_from_files_and_save_to_json():
     images_information_failed = {}
     for link in filtered_md_files:
         
-        images_information_log_success, images_information_log_fails = search_image_links(link)
+        images_information_log_success, images_information_log_fails, str_error = search_image_links(link)
         if images_information_log_success:
             images_information_success[link] = images_information_log_success
-        if images_information_failed:
-            images_information_failed[link] = images_information_failed
+        if images_information_failed or str_error:
+            images_information_failed[link] = images_information_failed or str_error
     try:
         with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/success.json', "a") as file:
             json.dump(images_information_success, file, indent=4)
