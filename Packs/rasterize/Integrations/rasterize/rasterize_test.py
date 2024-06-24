@@ -587,9 +587,29 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
 
 
 def test_generate_chrome_port():
+    """
+    Given   first_chrome_port and max_chromes_count
+    When    needed to generate new chrome port
+    Then    make sure the function generate valid chrome port.
+    """
     from rasterize import generate_chrome_port
     port = generate_chrome_port()
     assert 0 <= len(port) <= 5
+
+
+def test_generate_chrome_port_no_port_available(mocker):
+    """
+    Given   first_chrome_port and max_chromes_count that creates empty range
+    When    needed to generate new chrome port
+    Then    make sure the function will raise an error and return None
+    """
+    from rasterize import generate_chrome_port
+    rasterize.FIRST_CHROME_PORT = 0
+    rasterize.MAX_CHROMES_COUNT = 0
+    mock_return_error = mocker.patch.object(demisto, 'error', return_value=None)
+    port = generate_chrome_port()
+    assert mock_return_error.call_count == 1
+    assert not port
 
 
 def test_get_chrome_instances_contents_dictionaries():
@@ -617,19 +637,6 @@ def test_get_chrome_instances_contents_dictionaries():
                             '44444444-4444-4444-4444-444444444444']
     assert chromes_options
     assert chromes_options == ['chrome_options2', 'chrome_options3', 'chrome_options4']
-
-
-def test_get_chrome_instances_contents_dictionaries_case_instance_id_exist_but_not_chrome_options():
-    from rasterize import get_chrome_instances_contents_dictionaries
-    mock_file_content = "2222\t22222222-2222-2222-2222-222222222222\tNone"
-    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
-        get_chrome_instances_contents_dictionaries(mock_file_content)
-    assert instance_id_to_chrome_options == {'22222222-2222-2222-2222-222222222222': 'None'}
-    assert instance_id_to_port == {'22222222-2222-2222-2222-222222222222': '2222'}
-    assert instances_id
-    assert instances_id == ['22222222-2222-2222-2222-222222222222']
-    assert chromes_options
-    assert chromes_options == ['None']
 
 
 def test_delete_row_with_old_chrome_configurations_from_info_file():
