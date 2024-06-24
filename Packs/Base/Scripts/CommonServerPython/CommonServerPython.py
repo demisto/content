@@ -11306,6 +11306,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :type date_format: ``str``
     :param date_format: The date format
 
+
     :type increase_last_run_time: ``bool``
     :param increase_last_run_time: Whether to increase the last run time with one millisecond
 
