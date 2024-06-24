@@ -586,6 +586,12 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
     assert chrome_port == "2222"
 
 
+def test_generate_chrome_port():
+    from rasterize import generate_chrome_port
+    port = generate_chrome_port()
+    assert 0 <= len(port) <= 5
+
+
 def test_get_chrome_instances_contents_dictionaries():
     """
     Given   chrome instances file with content
