@@ -157,12 +157,12 @@ def validate_custom_close_reasons_mapping(mapping: str, direction: str):
     for key, value in custom_mapping.items():
         if direction == XSOAR_TO_XDR:
             xdr_close_reason = to_xdr_status(value)
-            valid_key = key in XSOAR_RESOLVED_STATUS_TO_XDR
+            valid_key = key in xsoar_statuses
             valid_value = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
         elif direction == XDR_TO_XSOAR:
             xdr_close_reason = to_xdr_status(key)
             valid_key = xdr_close_reason in XDR_RESOLVED_STATUS_TO_XSOAR
-            valid_value = value in XSOAR_RESOLVED_STATUS_TO_XDR
+            valid_value = value in xsoar_statuses
 
         if not valid_key:
             raise DemistoException(
