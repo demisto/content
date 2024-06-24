@@ -107,43 +107,6 @@ PRIVATE_KEY_BYTES = 'private_key_bytes'
 ENCRYPTION_PASSWORD = 'encryption_password'
 PRIVATE_KEY_FILE_PASSWORD = 'private_key_file_password'
 
-GROUP_LIST_KEYS = ['name', 'app_metadata', 'users_count', 'description']
-PENDING_LOCAL_CA_KEYS = ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint',
-                         'sha256Fingerprint', 'sha512Fingerprint']
-LOCAL_CA_KEYS = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'state', 'serialNumber', 'subject', 'issuer',
-                 'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
-GROUP_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name',
-                                   'app_metadata': 'Defined By',
-                                   'users_count': 'No. of members',
-                                   'description': 'Description'}
-GROUP_LIST_KEYS_VALUE_MAPPING = {'app_metadata': lambda x: 'System' if isinstance(x, dict) and x.get(
-    'system') else 'User'}
-
-LOCAL_CA_LIST_ACTIVE_KEYS = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
-                             'purpose_client_authentication', 'purpose_user_authentication']
-LOCAL_CA_LIST_OTHER_KEYS = ['name', 'subject', 'createdAt', 'sha1Fingerprint']
-LOCAL_CA_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name', 'subject': 'Subject', 'serialNumber': 'Serial #', 'notBefore': 'Activation',
-                                      'notAfter': 'Expiration',
-                                      'purpose_client_authentication': 'Client Auth', 'purpose_user_authentication': 'User Auth',
-                                      'createdAt': 'Created',
-                                      'sha1Fingerprint': 'Fingerprint'}
-
-CERTIFICATE_LIST_KEYS = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'ca', 'revoked_reason',
-                         'revoked_at', 'state', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint', 'serialNumber',
-                         'subject', 'issuer', 'notBefore', 'notAfter']
-
-EXTERNAL_CA_KEYS = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'serialNumber', 'subject', 'issuer',
-                    'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
-
-EXTERNAL_CA_LIST_KEYS = ['name', 'subject', 'serialNumber', 'notBefore', 'notAfter',
-                         'purpose_client_authentication', 'purpose_user_authentication']
-EXTERNAL_CA_LIST_KEYS_HEADERS_MAPPING = {'name': 'Name', 'subject': 'Subject', 'serialNumber': 'Serial #',
-                                         'notBefore': 'Activation',
-                                         'notAfter': 'Expiration',
-                                         'purpose_client_authentication': 'Client Auth',
-                                         'purpose_user_authentication': 'User Auth',
-                                         }
-
 '''CLIENT CLASS'''
 
 
@@ -632,41 +595,7 @@ def ciphertrust_table_to_markdown_transform_data(data: dict, keys: list[str], ke
     return transformed_data
 
 
-def ciphertrust_table_to_markdown(title: str, data: list[dict] | dict, keys: list[str],
-                                  keys_headers_mapping: dict, keys_value_mapping: dict) -> str:
-    """
-    Create a markdown table from the data.
-    Args:
-        title: The title of the table.
-        data: The data dictionary or list of dictionaries.
-        keys: The keys to include.
-        keys_headers_mapping: The keys headers mapping.
-        keys_value_mapping: The keys value mapping.
-    Returns:
-        The markdown table string.
-    """
-    resources = []
-    if isinstance(data, dict):
-        if resources := data.get('resources', []):
-            skip_limit_total_hr = hr_skip_limit_to_markdown(
-                data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
-            transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping)
-                                for d in resources]
-            t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
-        else:
-            t = tableToMarkdown(title, ciphertrust_table_to_markdown_transform_data(data, keys, keys_headers_mapping,
-                                                                                    keys_value_mapping),
-                                headerTransform=underscoreToCamelCase, sort_headers=False)
-    else:
-        transformed_data = [ciphertrust_table_to_markdown_transform_data(d, keys, keys_headers_mapping, keys_value_mapping) for d
-                            in data]
-        t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
-    if resources:
-        return t + '\n' + skip_limit_total_hr
-    return t
-
-
-def hr_local_ca(raw_response: dict[str, Any]) -> str:
+def local_ca_markdown(raw_response: dict[str, Any]) -> str:
     """
     Create a human-readable string for a local CA.
     Args:
@@ -677,37 +606,37 @@ def hr_local_ca(raw_response: dict[str, Any]) -> str:
     """
     state = raw_response.get('state', '')
     keys = {
-        'active': LOCAL_CA_KEYS,
-        'pending': PENDING_LOCAL_CA_KEYS
-    }.get(state, LOCAL_CA_LIST_OTHER_KEYS)
-    hr_title = raw_response.get('subject', '')
-    return ciphertrust_table_to_markdown(hr_title, data=raw_response, keys=keys, keys_headers_mapping={}, keys_value_mapping={})
+        'active': ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'state', 'serialNumber', 'subject', 'issuer',
+                   'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint'],
+        'pending': ['id', 'createdAt', 'name', 'csr', 'subject', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
+    }.get(state, ['name', 'subject', 'createdAt', 'sha1Fingerprint'])
+
+    return tableToMarkdown(raw_response.get('subject', ''), {key: raw_response.get(key, '') for key in keys},
+                           headerTransform=underscoreToCamelCase, sort_headers=False)
 
 
-def hr_external_ca_list(raw_response: dict[str, Any]) -> str:
-    """
-    Create a human-readable string for a list of external CAs.
-    Args:
-        raw_response: The raw response.
-    Returns:
-        The human-readable string.
-    """
-    keys_value_mapping = {'notBefore': date_to_markdown,
-                          'notAfter': date_to_markdown,
-                          'purpose_user_authentication': lambda x: 'Enabled' if x else 'Disabled',
-                          'purpose_client_authentication': lambda x: 'Enabled' if x else 'Disabled'}
-    for ca in raw_response.get('resources', []):
-        ca_copy = ca.copy()
-        if purpose := ca_copy.pop('purpose', {}):
-            ca_copy['purpose_user_authentication'] = purpose.get('user_authentication')
-            ca_copy['purpose_client_authentication'] = purpose.get('client_authentication')
-    return ciphertrust_table_to_markdown('External Certificate Authorities', data=raw_response,
-                                         keys=EXTERNAL_CA_LIST_KEYS,
-                                         keys_headers_mapping=EXTERNAL_CA_LIST_KEYS_HEADERS_MAPPING,
-                                         keys_value_mapping=keys_value_mapping)
+'''MARKDOWN FUNCTIONS'''
 
 
-def hr_local_ca_list(raw_response: dict[str, Any]) -> str:
+def group_list_markdown(data: dict) -> str:
+    skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0),
+                                                    data.get('limit', 0),
+                                                    data.get('total', 0),
+                                                    'Groups')
+
+    transformed_data = [{
+        'Name': group.get('name', ''),
+        'Defined By': 'System' if isinstance(group.get('app_metadata'), dict) and group.get('app_metadata').get(
+            'system') else 'User',
+        'No. of members': group.get('users_count', ''),
+        'Description': group.get('description', '')
+    } for group in data.get('resources', [])]
+
+    return tableToMarkdown('Groups', transformed_data, headerTransform=underscoreToCamelCase,
+                           sort_headers=False) + '\n' + skip_limit_total_hr
+
+
+def local_ca_list_markdown(raw_response: dict[str, Any]) -> str:
     """
     Create a human-readable string for a list of local CAs.
     Args:
@@ -716,39 +645,117 @@ def hr_local_ca_list(raw_response: dict[str, Any]) -> str:
         The human-readable string.
     """
 
-    keys_value_mapping = {'notBefore': date_to_markdown,
-                          'notAfter': date_to_markdown,
-                          'createdAt': date_to_markdown,
-                          'purpose_user_authentication': lambda x: 'Enabled' if x else 'Disabled',
-                          'purpose_client_authentication': lambda x: 'Enabled' if x else 'Disabled'}
-
-    active_cas, pending_cas, expired_cas = [], [], []
-    for ca in raw_response.get('resources', []):
-        ca_copy = ca.copy()
-        if purpose := ca_copy.pop('purpose', {}):
-            ca_copy['purpose_user_authentication'] = purpose.get('user_authentication')
-            ca_copy['purpose_client_authentication'] = purpose.get('client_authentication')
-        if ca_copy.get('state') == 'active':
-            active_cas.append(ca_copy)
-        elif ca_copy.get('state') == 'pending':
-            pending_cas.append(ca_copy)
-        elif ca_copy.get('state') == 'expired':
-            expired_cas.append(ca_copy)
+    active_cas = tableToMarkdown('Active CAs', [{
+        'Name': ca.get('name', ''),
+        'Subject': ca.get('subject', ''),
+        'Serial #': ca.get('serialNumber', ''),
+        'Activation': date_to_markdown(ca.get('notBefore', '')),
+        'Expiration': date_to_markdown(ca.get('notAfter', '')),
+        'Client Auth': 'Enabled' if ca.get('purpose', {}).get('client_authentication') else 'Disabled',
+        'User Auth': 'Enabled' if ca.get('purpose', {}).get('user_authentication') else 'Disabled'
+    } for ca in raw_response.get('resources', []) if ca.get('state') == 'active'], headerTransform=underscoreToCamelCase,
+                                 sort_headers=False)
+    pending_cas = tableToMarkdown('Pending CAs', [{
+        'Name': ca.get('name', ''),
+        'Subject': ca.get('subject', ''),
+        'Created': date_to_markdown(ca.get('createdAt', '')),
+        'Fingerprint': ca.get('sha1Fingerprint', '')
+    } for ca in raw_response.get('resources', []) if ca.get('state') == 'pending'], headerTransform=underscoreToCamelCase,
+                                  sort_headers=False)
+    expired_cas = tableToMarkdown('Expired CAs', [{
+        'Name': ca.get('name', ''),
+        'Subject': ca.get('subject', ''),
+        'Created': date_to_markdown(ca.get('createdAt', '')),
+        'Fingerprint': ca.get('sha1Fingerprint', '')
+    } for ca in raw_response.get('resources', []) if ca.get('state') == 'expired'], headerTransform=underscoreToCamelCase,
+                                  sort_headers=False)
 
     hr_title = '### Local Certificate Authorities \n'
     hr_skip_limit_title = hr_skip_limit_to_markdown(raw_response.get('skip', 0), raw_response.get('limit', 0),
                                                     raw_response.get('total', 0), 'Local '
                                                                                   'CAs')
-    active_cas_hr = ciphertrust_table_to_markdown(
-        'Active CAs', active_cas, LOCAL_CA_LIST_ACTIVE_KEYS, LOCAL_CA_LIST_KEYS_HEADERS_MAPPING, keys_value_mapping)
-    pending_cas_hr = ciphertrust_table_to_markdown('Pending CAs', pending_cas, LOCAL_CA_LIST_OTHER_KEYS,
-                                                   LOCAL_CA_LIST_KEYS_HEADERS_MAPPING,
-                                                   keys_value_mapping)
-    expired_cas_hr = ciphertrust_table_to_markdown('Expired CAs', expired_cas, LOCAL_CA_LIST_OTHER_KEYS,
-                                                   LOCAL_CA_LIST_KEYS_HEADERS_MAPPING,
-                                                   keys_value_mapping)
 
-    return f'{hr_title}{active_cas_hr}\n{pending_cas_hr}\n{expired_cas_hr}\n{hr_skip_limit_title}'
+    return f'{hr_title}{active_cas}\n{pending_cas}\n{expired_cas}\n{hr_skip_limit_title}'
+
+
+def certificate_list_markdown(data: dict, title: str) -> str:
+    CERTIFICATE_LIST_KEYS = [
+        'id', 'uri', 'createdAt', 'updatedAt', 'name', 'ca', 'revoked_reason', 'revoked_at',
+        'state', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint', 'serialNumber',
+        'subject', 'issuer', 'notBefore', 'notAfter'
+    ]
+    skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0), data.get('limit', 0), data.get('total', 0), title)
+    transformed_data = [{key: certificate.get(key, '') for key in CERTIFICATE_LIST_KEYS} for certificate in
+                        data.get('resources', [])]
+    t = tableToMarkdown(title, transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
+    return t + '\n' + skip_limit_total_hr
+
+
+def external_ca_list_markdown(data: dict) -> str:
+    skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0), data.get('limit', 0), data.get('total', 0),
+                                                    'External Certificate Authorities')
+    transformed_data = [
+        {
+            'Name': ca.get('name', ''),
+            'Subject': ca.get('subject', ''),
+            'Serial #': ca.get('serialNumber', ''),
+            'Activation': date_to_markdown(ca.get('notBefore', '')),
+            'Expiration': date_to_markdown(ca.get('notAfter', '')),
+            'Client Auth': 'Enabled' if ca.get('purpose', {}).get('client_authentication') else 'Disabled',
+            'User Auth': 'Enabled' if ca.get('purpose', {}).get('user_authentication') else 'Disabled'
+        } for ca in data.get('resources', [])
+    ]
+    t = tableToMarkdown('External Certificate Authorities', transformed_data, headerTransform=underscoreToCamelCase,
+                        sort_headers=False)
+    return t + '\n' + skip_limit_total_hr
+
+
+def external_ca_markdown(data: dict) -> str:
+    EXTERNAL_CA_KEYS = ['id', 'uri', 'createdAt', 'updatedAt', 'name', 'serialNumber', 'subject', 'issuer',
+                        'notBefore', 'notAfter', 'sha1Fingerprint', 'sha256Fingerprint', 'sha512Fingerprint']
+    transformed_ca = {key: data.get(key, '') for key in EXTERNAL_CA_KEYS}
+
+    return tableToMarkdown(data.get('subject', ''), transformed_ca, headerTransform=underscoreToCamelCase, sort_headers=False)
+
+
+def users_list_markdown(data: dict) -> str:
+    skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0), data.get('limit', 0), data.get('total', 0), 'Users')
+    transformed_data = [
+        {
+            'Username': user.get('username', ''),
+            'Full Name': user.get('name', ''),
+            'Email': user.get('email', ''),
+            'Created': date_to_markdown(user.get('created_at', '')),
+            'Updated': date_to_markdown(user.get('updated_at', '')),
+            'Expires': date_to_markdown(user.get('expires_at'), 'Never'),
+            'ID': user.get('user_id', ''),
+            'Last Login': date_to_markdown(user.get('last_login'), 'Never Logged In'),
+            'Logins': user.get('logins_count', ''),
+            'Last Failed Login': date_to_markdown(user.get('last_failed_login_at'), 'Never Failed A Login'),
+            'Password Changed': date_to_markdown(user.get('password_changed_at', '')),
+            'Password Change Required': user.get('password_change_required', '')
+        } for user in data.get('resources', [])
+    ]
+    t = tableToMarkdown('Users', transformed_data, headerTransform=underscoreToCamelCase, sort_headers=False)
+    return t + '\n' + skip_limit_total_hr
+
+
+def user_markdown(data: dict) -> str:
+    transformed_user = {
+        'Username': data.get('username', ''),
+        'Full Name': data.get('name', ''),
+        'Email': data.get('email', ''),
+        'Created': date_to_markdown(data.get('created_at', '')),
+        'Updated': date_to_markdown(data.get('updated_at', '')),
+        'Expires': date_to_markdown(data.get('expires_at'), 'Never'),
+        'ID': data.get('user_id', ''),
+        'Last Login': date_to_markdown(data.get('last_login'), 'Never Logged In'),
+        'Logins': data.get('logins_count', ''),
+        'Last Failed Login': date_to_markdown(data.get('last_failed_login_at'), 'Never Failed A Login'),
+        'Password Changed': date_to_markdown(data.get('password_changed_at', '')),
+        'Password Change Required': data.get('password_change_required', '')
+    }
+    return tableToMarkdown(data.get('username', ''), transformed_user, headerTransform=underscoreToCamelCase, sort_headers=False)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -784,13 +791,7 @@ def group_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
         clients=args.get(CLIENT_ID)
     )
     raw_response = client.get_group_list(params=params)
-    keys_value_mapping = {'app_metadata': lambda x: 'System' if isinstance(x, dict) and x.get('system') else 'User'}
-    hr = ciphertrust_table_to_markdown('Groups', data=raw_response,
-                                       keys=GROUP_LIST_KEYS,
-                                       keys_headers_mapping=GROUP_LIST_KEYS_HEADERS_MAPPING,
-                                       keys_value_mapping=keys_value_mapping,
-                                       )
-
+    hr = group_list_markdown(raw_response)
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response.get('resources'),
@@ -858,7 +859,7 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
     if user_id := args.get(USER_ID):
         raw_response = client.get_user(user_id=user_id)
         outputs = raw_response
-        hr_title = outputs.get('username', '')
+        hr = user_markdown(raw_response)
 
     else:
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
@@ -881,33 +882,7 @@ def users_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
 
         raw_response = client.get_users_list(params=params)
         outputs = raw_response.get('resources', [])
-        hr_title = 'Users'
-
-    hr = ciphertrust_table_to_markdown(hr_title, data=raw_response,
-                                       keys=['username', 'name', 'email', 'created_at', 'updated_at', 'expires_at', 'user_id',
-                                             'last_login', 'logins_count', 'last_failed_login_at', 'password_changed_at',
-                                             'password_change_required'],
-                                       keys_headers_mapping={'username': 'Username',
-                                                             'name': 'Full Name',
-                                                             'email': 'Email',
-                                                             'created_at': 'Created',
-                                                             'updated_at': 'Updated',
-                                                             'expires_at': 'Expires', 'user_id': 'ID', 'last_login': 'Last Login',
-                                                             'logins_count': 'Logins',
-                                                             'last_failed_login_at': 'Last Failed Login',
-                                                             'password_changed_at': 'Password Changed',
-                                                             'password_change_required': 'Password Change Required'},
-
-                                       keys_value_mapping={'expires_at': lambda x: date_to_markdown(x, 'Never'),
-                                                           'last_login': lambda x: date_to_markdown(x,
-                                                                                                    'Never Logged In'),
-                                                           'last_failed_login_at':
-                                                               lambda x: date_to_markdown(x, 'Never Failed A Login'),
-                                                           'password_changed_at': date_to_markdown,
-                                                           'created_at': date_to_markdown,
-                                                           'updated_at': date_to_markdown,
-                                                           }
-                                       )
+        hr = users_list_markdown(raw_response)
 
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
@@ -1026,7 +1001,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         for (data, filename) in zip(removed_values, ['CSR.pem', 'Certificate.pem']):
             return_results(fileResult(filename, data, EntryType.ENTRY_INFO_FILE))
         outputs = [outputs]
-        hr = hr_local_ca(raw_response)
+        hr = local_ca_markdown(raw_response)
     else:
 
         skip, limit = derive_skip_and_limit_for_pagination(args.get(LIMIT),
@@ -1043,7 +1018,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
         raw_response = client.get_local_ca_list(params=params)
         outputs = [remove_key_from_outputs(local_ca_entry, ['csr', 'cert'])[0] for local_ca_entry in
                    raw_response.get('resources', [])]
-        hr = hr_local_ca_list(raw_response)
+        hr = local_ca_list_markdown(raw_response)
 
     return CommandResults(
         outputs_prefix=LOCAL_CA_CONTEXT_OUTPUT_PREFIX,
@@ -1176,11 +1151,7 @@ def certificate_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
         outputs_prefix=CA_CERTIFICATE_CONTEXT_OUTPUT_PREFIX,
         outputs=outputs,
         raw_response=raw_response,
-        readable_output=ciphertrust_table_to_markdown(title=f'Certificates issued by {args.get(CA_ID, "")}',
-                                                      data=raw_response,
-                                                      keys=CERTIFICATE_LIST_KEYS,
-                                                      keys_headers_mapping={},
-                                                      keys_value_mapping={}),
+        readable_output=certificate_list_markdown(data=raw_response, title=f'Certificates issued by {args.get(CA_ID, "")}')
     )
 
 
@@ -1271,11 +1242,7 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
         outputs, cert = remove_key_from_outputs(raw_response, 'cert')
         return_results(fileResult('Certificate.pem', cert, EntryType.ENTRY_INFO_FILE))
         outputs = [outputs]
-        hr = ciphertrust_table_to_markdown(raw_response.get('subject', ''),
-                                           data=raw_response,
-                                           keys=EXTERNAL_CA_KEYS,
-                                           keys_headers_mapping={},
-                                           keys_value_mapping={})
+        hr = external_ca_markdown(raw_response)
 
     else:
 
@@ -1294,7 +1261,7 @@ def external_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) ->
         raw_response = client.get_external_ca_list(params=params)
         outputs = [remove_key_from_outputs(external_ca_entry, ['cert'])[0]
                    for external_ca_entry in raw_response.get('resources', [])]
-        hr = hr_external_ca_list(raw_response)
+        hr = external_ca_list_markdown(raw_response)
 
     return CommandResults(
         outputs_prefix=EXTERNAL_CA_CONTEXT_OUTPUT_PREFIX,
