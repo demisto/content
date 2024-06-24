@@ -42,6 +42,7 @@ class DataExplorerClient:
 
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
+
         self.scope = f'{cluster_url}/user_impersonation offline_access user.read' if 'Device Code' in connection_type \
             else f'{cluster_url}/.default'
         self.client_activity_prefix = client_activity_prefix
@@ -557,10 +558,9 @@ def test_module(client: DataExplorerClient) -> str:
                                "and `!azure-data-explorer-auth-complete` to log in."
                                "You can validate the connection by running `!azure-data-explorer-auth-test`\n"
                                "For more details press the (?) button.")
-    elif client.connection_type == 'Authorization Code' or client.connection_type == 'Client Credentials':
+    elif client.connection_type == 'Client Credentials':
         client.ms_client.get_access_token()
         return 'ok'
-
     else:
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-data-explorer-auth-test command in order to test it")
