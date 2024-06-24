@@ -280,7 +280,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Vendor | String | The The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 
 
 

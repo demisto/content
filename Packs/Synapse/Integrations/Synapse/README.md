@@ -256,9 +256,9 @@ Returns File information and reputation.
 | File.SHA512 | String | The SHA512 hash of the file. | 
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
 | File.Malicious.Description | String | For malicious files, the full description. | 
-| DBotScore.Indicator | String | The value assigned by DBot for the indicator. | 
-| DBotScore.Type | String | The type assigned by DBot for the indicator. | 
-| DBotScore.Score | Number | The score assigned by DBot for the indicator. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Score | Number | The actual score. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 
 

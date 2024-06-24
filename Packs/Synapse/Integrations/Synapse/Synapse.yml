@@ -258,13 +258,13 @@ script:
       description: For malicious files, the full description.
       type: String
     - contextPath: DBotScore.Indicator
-      description: The value assigned by DBot for the indicator.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
-      description: The type assigned by DBot for the indicator.
+      description: The indicator type.
       type: String
     - contextPath: DBotScore.Score
-      description: The score assigned by DBot for the indicator.
+      description: The actual score.
       type: Number
     - contextPath: DBotScore.Vendor
       description: The vendor used to calculate the score.

@@ -164,7 +164,7 @@ Provides data enrichment for domains.
 | DomainTools.WebsiteTitle | Number | The website title. | 
 | DomainTools.FirstSeen | Number | The date the domain was first seen. | 
 | DomainTools.ServerType | Number | The server type. | 
-| DBotScore.Indicator | String | The indicator of the DBotScore. | 
+| DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type of the DBotScore. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
 | DBotScore.Score | Number | The actual score. | 

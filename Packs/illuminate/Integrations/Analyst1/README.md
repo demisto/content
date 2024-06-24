@@ -101,7 +101,7 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 | Analyst1.Domain.IpResolution | string | The resolved IP address for this domain. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The type of indicator. | 
+| DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
@@ -274,7 +274,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 | Analyst1.Ip.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The type of indicator. | 
+| DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
@@ -360,7 +360,7 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 | Analyst1.File.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The type of indicator. | 
+| DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
@@ -752,7 +752,7 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 | Analyst1.Url.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Score | Numbe | The actual score. | 
-| DBotScore.Type | String | The type of indicator. | 
+| DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 

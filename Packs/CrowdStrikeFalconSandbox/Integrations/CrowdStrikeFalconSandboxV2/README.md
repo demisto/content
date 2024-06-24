@@ -3047,7 +3047,7 @@ Returns file information and reputation.
 | File.MalwareFamily | string | The file family classification. | 
 | File.Malicious.Vendor | string | The vendor that decided the file was malicious. | 
 | File.Malicious.Description | string | The reason the vendor decided the file was malicious. | 
-| DBotScore.Indicator | string | The tested indicator. | 
+| DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | DBotScore.Score | number | The actual score. | 

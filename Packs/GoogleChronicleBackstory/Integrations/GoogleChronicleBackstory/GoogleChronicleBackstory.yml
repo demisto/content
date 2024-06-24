@@ -382,7 +382,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad).'
+      description: 'The actual score.'
       type: Number
     - contextPath: IP.Address
       description: The IP address of the artifact.
@@ -439,7 +439,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad).'
+      description: 'The actual score.'
       type: Number
     - contextPath: Domain.Name
       description: The domain name of the artifact.

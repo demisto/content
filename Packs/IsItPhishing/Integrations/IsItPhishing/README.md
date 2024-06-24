@@ -45,11 +45,11 @@ Checks if URL is phishing
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Status | unknown | URL identification result | 
-| URL.Url | unknown | The URL that was tested | 
-| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | unknown | For malicious URLs, the reason for the vendor to make the decision | 
-| DBotScore.Indicator | unknown | The indicator that was tested | 
-| DBotScore.Type | unknown | The type of the indicator | 
-| DBotScore.Vendor | unknown | Vendor used to calculate the score | 
-| DBotScore.Score | unknown | The actual score | 
+| URL.Status | unknown | URL identification result. | 
+| URL.Url | unknown | The URL that was tested. | 
+| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. | 
+| URL.Malicious.Description | unknown | For malicious URLs, the reason for the vendor to make the decision. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| DBotScore.Score | unknown | The actual score. | 

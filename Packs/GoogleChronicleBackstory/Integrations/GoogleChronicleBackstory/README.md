@@ -381,7 +381,7 @@ Checks the reputation of an IP address.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
+| DBotScore.Score | Number | The actual score. | 
 | IP.Address | String | The IP address of the artifact. | 
 | IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision. | 
 | IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. | 
@@ -484,7 +484,7 @@ Checks the reputation of a domain.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
+| DBotScore.Score | Number | The actual score. | 
 | Domain.Name | String | The domain name of the artifact. | 
 | Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
