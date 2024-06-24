@@ -25,7 +25,8 @@
             "playbookID": "Test Playbook - Identity Analytics - Alert Handling",
             "integrations": [
                 "Microsoft Graph User",
-                "Okta v2"
+                "Okta v2",
+                "Active Directory Query v2"
             ],
             "instance_names": [
                 "ms_graph_user_dev"
