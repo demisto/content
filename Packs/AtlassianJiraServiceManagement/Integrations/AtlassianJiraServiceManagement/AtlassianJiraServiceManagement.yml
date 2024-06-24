@@ -28,7 +28,7 @@ name: AtlassianJiraServiceManagement
 script:
   commands:
   - arguments:
-      - description: The amount of schemas to retrieve. Cannot be used alongside the page and page_size arguments.
+      - description: The maximum amount of schemas to retrieve. Cannot be used alongside the **page** and **page_size** arguments.
         name: limit
       - description: Whether to retrieve all object schemas with no limit.
         name: all_results
