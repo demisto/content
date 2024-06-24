@@ -104,18 +104,23 @@ def extract_image_links_from_files_and_save_to_json():
 
     images_information_success = {}
     images_information_failed = {}
+    _errors = {}
     for link in filtered_md_files:
         
         images_information_log_success, images_information_log_fails, str_error = search_image_links(link)
         if images_information_log_success:
             images_information_success[link] = images_information_log_success
-        if images_information_failed or str_error:
-            images_information_failed[link] = images_information_failed or str_error
+        if images_information_failed:
+            images_information_failed[link] = images_information_failed
+        if str_error:
+            _errors[link] = str_error
     try:
-        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/success.json', "a") as file:
-            json.dump(images_information_success, file, indent=4)
-        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/errors.json', "a") as file:
-            json.dump(images_information_failed, file, indent=4)
+        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/success.json', "a") as file_success:
+            json.dump(images_information_success, file_success, indent=4)
+        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/errors.json', "a") as file_fails:
+            json.dump(images_information_failed, file_fails, indent=4)
+        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/_errors.json', "a") as errors_files:
+            json.dump(_errors, errors_files, indent=4)
         
     except Exception as e:
         logger.debug(e)
