@@ -6,7 +6,7 @@ from urllib.parse import urlparse
 import logging
 
 logger = logging.getLogger(__name__)
-PACKS_PATH = '/Users/mmorag/dev/demisto/content/Packs'
+PACKS_PATH = '/Users/mmorag/dev/demisto/content/Packs/BigFix/Integrations/BigFix' #'/Users/mmorag/dev/demisto/content/Packs'
 LOGS_IMAGES_PER_PACK = "/Users/mmorag/dev/demisto/content/Packs/doc_files"
 HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
 URL_IMAGE_LINK_REGEX = r"(\!\[.*?\])\((?P<url>https://[a-zA-Z_/\.0-9\- :%]*?)\)((].*)?)"
@@ -31,7 +31,7 @@ def find_image_in_doc_files(image_name, pack_name):
     try:
         if os.path.exists(doc_files_path):
             return f'../../doc_files/{image_name}'
-    except OSError as error:
+    except Exception as error:
         logger.debug(f"Failed to get related text file, error: {error}")
     logger.debug(f"File {doc_files_path} does not exist.")
     return ''
@@ -94,7 +94,8 @@ def extract_image_links_from_files_and_save_to_json():
     """
     paths_links = list(Path(PACKS_PATH).rglob("*.md"))
     paths_links_str = [str(path) for path in paths_links]
-    filtered_md_files = [file for file in paths_links_str if 'ReleaseNotes' not in file.split(os.sep)].sort()
+    filtered_md_files = [file for file in paths_links_str if 'ReleaseNotes' not in file.split(os.sep)]
+    
 
     images_information = {}
 
