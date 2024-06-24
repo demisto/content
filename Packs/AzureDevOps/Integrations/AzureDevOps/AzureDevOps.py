@@ -29,7 +29,9 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
                             'repository_id': 'The repository ID of the pull request target branch.',
                             'pull_request_id': 'the ID of the pull request'}
 
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
+                       'Authorization Code': AUTHORIZATION_CODE,
+                        'Client Credentials': CLIENT_CREDENTIALS}
 AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
 
@@ -67,7 +69,8 @@ class Client:
         client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+            auth_type else None,
             grant_type=GRANT_BY_CONNECTION[auth_type],
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
@@ -2516,7 +2519,9 @@ def test_module(client: Client) -> str:
                                "and `!azure-deops-auth-complete` to log in."
                                "You can validate the connection by running `!azure-devops-auth-test`\n"
                                "For more details press the (?) button.")
-
+    elif client.connection_type == 'Client Credentials':
+        client.ms_client.get_access_token()
+        return 'ok'
     else:
         raise Exception("When using user auth flow configuration, "
                         "Please enable the integration and run the !azure-devops-auth-test command in order to test it")
