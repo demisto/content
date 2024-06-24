@@ -444,18 +444,18 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     elif chrome_options != instance_id_to_chrome_options.get(instance_id):
-        chrome_port = instance_id_to_port.get(instance_id)
+        chrome_port = instance_id_to_port.get(instance_id, '')
         delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents, instance_id, chrome_port)
         terminate_chrome(chrome_port=chrome_port)
         return generate_new_chrome_instance(instance_id, chrome_options)
 
-    chrome_port = instance_id_to_port.get(instance_id)
+    chrome_port = instance_id_to_port.get(instance_id, '')
     browser = is_chrome_running_locally(chrome_port)
     return browser, chrome_port
 
 
 def get_chrome_instances_contents_dictionaries(chrome_instances_contents: str) -> tuple[
-    Dict[str, str], Dict[str, str], List[str], List[str]]:
+        Dict[str, str], Dict[str, str], List[str], List[str]]:
     """
     Parses the chrome instances content to extract and return two dictionaries and two lists.
 
