@@ -134,7 +134,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
 
             yield events
 
-    def process_siem_response(self, response: Response) -> list:  # ignore: type
+    def process_siem_response(self, response: Response) -> list:
         """
         Args:
             response (Request.Response) - The response from the mimecast API
@@ -528,18 +528,19 @@ def main():  # pragma: no cover
         demisto.info(f'\n Total of {len(events_siem)} Siem Logs were fetched in this run')
 
         demisto_last_run: dict = demisto.getLastRun()
-        de_dup_events_audit, audit_next_run, duplicates_audit = audit_events_last_run(
+        events_audit, audit_next_run, duplicates_audit = audit_events_last_run(
             audit_event_handler, events_audit, demisto_last_run)
         siem_next_run = siem_events_last_run(
             siem_event_handler, demisto_last_run)
 
+        events = events_siem + events_audit
+        
         if command == 'test-module':
             # End points are already tested as part of the event_handlers run method.
             # If we reach this point the requests were executed successfully.
             return_results('ok')
 
         elif command == 'fetch-events':
-            events = events_siem + de_dup_events_audit
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run)
             demisto.setLastRun(next_run_obj)
@@ -560,7 +561,6 @@ def main():  # pragma: no cover
             )
             return_results([command_results_siem, command_results_audit])
             if should_push_events:
-                events = events_siem + events_audit
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 next_run_obj = handle_last_run_exit(audit_next_run, duplicates_audit, siem_next_run)
                 demisto.setLastRun(next_run_obj)
