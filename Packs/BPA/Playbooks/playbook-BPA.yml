@@ -184,6 +184,7 @@ view: |-
 inputs: []
 outputs: []
 deprecated: true
+hidden: true
 fromversion: 5.0.0
 tests:
 - No tests (deprecated)
