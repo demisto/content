@@ -1253,7 +1253,7 @@ script:
     - description: "Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs)."
       name: alert_id
       required: true
-    description: Get alert's analyst response
+    description: Get alert's analyst response.
     name: threat-command-alert-analyst-conversation-list
     outputs:
     - contextPath: ThreatCommand.Alert.id
@@ -2094,7 +2094,7 @@ script:
       description: Domain updated date.
       type: String
     description: Checks the reputation of a domain.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.99474
   isfetch: true
   runonce: false
   script: "-"

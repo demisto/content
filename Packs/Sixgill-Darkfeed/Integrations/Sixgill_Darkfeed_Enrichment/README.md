@@ -1,5 +1,6 @@
 Leverage the power of Sixgill to supercharge Cortex XSOAR with real-time Threat Intelligence indicators. Enrich IOCs such as domains, URLs, hashes, and IP addresses straight from XSOAR platform.
 This integration was integrated and tested with sixgill-clients
+
 ## Configure Sixgill_Darkfeed_Enrichment on Cortex XSOAR
 
 
@@ -15,10 +16,14 @@ This integration was integrated and tested with sixgill-clients
     | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Returns information and a reputation for each IP in the input list.
 
@@ -26,6 +31,7 @@ Returns information and a reputation for each IP in the input list.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -65,6 +71,7 @@ Returns information and a reputation for each IP in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -72,6 +79,7 @@ Returns information and a reputation for each IP in the input list.
 
 
 ### domain
+
 ***
 Returns information and a reputation for each domain name in the input list.
 
@@ -81,6 +89,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -120,6 +129,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -127,6 +137,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### url
+
 ***
 Returns information and a reputation for each URL in the input list.
 
@@ -136,6 +147,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -175,6 +187,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -182,6 +195,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 ### file
+
 ***
 Returns information and a reputation for each file hash in the input list.
 
@@ -189,6 +203,7 @@ Returns information and a reputation for each file hash in the input list.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -231,6 +246,7 @@ Returns information and a reputation for each file hash in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -238,6 +254,7 @@ Returns information and a reputation for each file hash in the input list.
 
 
 ### sixgill-get-actor
+
 ***
 Returns information and a reputation for each actor in the input list.
 
@@ -245,6 +262,7 @@ Returns information and a reputation for each actor in the input list.
 #### Base Command
 
 `sixgill-get-actor`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -279,6 +297,7 @@ Returns information and a reputation for each actor in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -286,6 +305,7 @@ Returns information and a reputation for each actor in the input list.
 
 
 ### sixgill-get-post-id
+
 ***
 Returns information and a reputation for each post ID in the input list.
 
@@ -293,6 +313,7 @@ Returns information and a reputation for each post ID in the input list.
 #### Base Command
 
 `sixgill-get-post-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -327,6 +348,7 @@ Returns information and a reputation for each post ID in the input list.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output

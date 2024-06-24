@@ -16,10 +16,14 @@ This integration was integrated and tested with version 0.16.0 of PMI
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cve
+
 ***
 Queries Qintel for CVE intelligence
 
@@ -27,6 +31,7 @@ Queries Qintel for CVE intelligence
 #### Base Command
 
 `cve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -55,9 +60,11 @@ Queries Qintel for CVE intelligence
 
 
 #### Command Example
+
 ```!cve cve=CVE-2021-0123```
 
 #### Context Example
+
 ```json
 {
     "CVE": {
@@ -96,6 +103,7 @@ Queries Qintel for CVE intelligence
 #### Human Readable Output
 
 >### Qintel vulnerability results for: CVE-2021-0123
+
 >**Vulnerability in Example System affecting versions: 1.0, 1.1**
 >**Last observed: 2021-04-20 04:00:00**
 >|actor|actor_type|exploit_type|exploit_notes|date_observed|

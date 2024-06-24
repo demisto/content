@@ -9,7 +9,7 @@ This integration was integrated and tested with version 1.0 of DomainTools Iris.
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | DomainTools API URL | Change to https://api.domaintools.com in order to use DomainTool's https endpoint. | True |
+    | DomainTools API URL | Change to <https://api.domaintools.com> in order to use DomainTool's https endpoint. | True |
     | API Username |  | True |
     | API Key |  | True |
     | High-Risk Threshold |  | True |

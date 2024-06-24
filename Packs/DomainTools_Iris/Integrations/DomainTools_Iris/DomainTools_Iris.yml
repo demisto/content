@@ -2410,7 +2410,7 @@ script:
       description: Parsed Whois data.
     - contextPath: Domain.WhoisRecords
       description: Full Whois record.
-  dockerimage: demisto/vendors-sdk:1.0.0.92984
+  dockerimage: demisto/vendors-sdk:1.0.0.99324
   runonce: false
   script: '-'
   type: python

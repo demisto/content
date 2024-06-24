@@ -3,6 +3,7 @@ This integration was integrated and tested with RST Cloud - Threat Feed API v1
 
 Please contact the RST Cloud team via email support@rstcloud.net to obtain a key and ask any questions you have.
 Also, the following contact details can be used:
+
 - **URL**: [https://www.rstcloud.net/contact](https://www.rstcloud.net/contact)
 
 
@@ -17,7 +18,7 @@ Please check indicator tags and malware family fields. An indicator may describe
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://api.rstcloud.net/v1) |  | True |
+    | Server URL (e.g. <https://api.rstcloud.net/v1>) |  | True |
     | API Key |  | True |
     | Score threshold for IP reputation command | Set this to determine the RST Threat Feed score that will determine if an IP is malicious \(0-100\) | True |
     | Score threshold for domain reputation command | Set this to determine the RST Threat Feed score that will determine if a domain is malicious \(0-100\) | True |
@@ -31,10 +32,14 @@ Please check indicator tags and malware family fields. An indicator may describe
     | Trust any certificate (not secure) |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Returns IP information and reputation.
 
@@ -42,6 +47,7 @@ Returns IP information and reputation.
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -89,9 +95,11 @@ Returns IP information and reputation.
 
 
 #### Command Example
+
 ```!ip ip=1.2.3.4 threshold=50```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -155,6 +163,7 @@ Returns IP information and reputation.
 
 
 ### domain
+
 ***
 Returns Domain information and reputation.
 
@@ -162,6 +171,7 @@ Returns Domain information and reputation.
 #### Base Command
 
 `domain`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -206,9 +216,11 @@ Returns Domain information and reputation.
 
 
 #### Command Example
+
 ```!domain domain="domaintovalidate.local" threshold=40```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -264,6 +276,7 @@ Returns Domain information and reputation.
 
 
 ### url
+
 ***
 Returns URL information and reputation.
 
@@ -271,6 +284,7 @@ Returns URL information and reputation.
 #### Base Command
 
 `url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -310,9 +324,11 @@ Returns URL information and reputation.
 
 
 #### Command Example
+
 ```!url url="https://domain.local/testurl" threshold=30```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -369,6 +385,7 @@ Returns URL information and reputation.
 
 
 ### file
+
 ***
 Returns File information and reputation.
 
@@ -376,6 +393,7 @@ Returns File information and reputation.
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -419,9 +437,11 @@ Returns File information and reputation.
 
 
 #### Command Example
+
 ```!file file="fe3d38316dc38a4ec63eac80e34cb157c9d896460f9b7b3bfbd2cec4e2cb8cdc"threshold=5```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -475,6 +495,7 @@ Returns File information and reputation.
 
 
 ### rst-submit-new
+
 ***
 Submits an indicator to RST Threat Feed.
 
@@ -482,6 +503,7 @@ Submits an indicator to RST Threat Feed.
 #### Base Command
 
 `rst-submit-new`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -495,6 +517,7 @@ Submits an indicator to RST Threat Feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!rst-submit-new ioc="thisisamaliciouswebsite.com" description="a user downloaded a trojan"```
 
 #### Human Readable Output
@@ -503,6 +526,7 @@ There is no context output for this command.
 
 
 ### rst-submit-fp
+
 ***
 Submits a potential False Positive to RST Threat Feed.
 
@@ -510,6 +534,7 @@ Submits a potential False Positive to RST Threat Feed.
 #### Base Command
 
 `rst-submit-fp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -523,6 +548,7 @@ Submits a potential False Positive to RST Threat Feed.
 There is no context output for this command.
 
 #### Command Example
+
 ```!rst-submit-fp ioc="thisisnotamaliciousdomain.com" description="a decent website"```
 
 #### Human Readable Output

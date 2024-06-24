@@ -16,10 +16,14 @@ This integration was integrated and tested with version 3.1 of Group-IB THF Poly
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### polygon-upload-file
+
 ***
 Upload file for analysis
 
@@ -27,6 +31,7 @@ Upload file for analysis
 #### Base Command
 
 `polygon-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,9 +51,11 @@ Upload file for analysis
 
 
 #### Command Example
+
 !polygon-upload-file file_id=4@br password="123456"
 
 #### Context Example
+
 ```
 {
     "Polygon": {
@@ -63,10 +70,12 @@ Upload file for analysis
 ```
 
 #### Human Readable Output
+
 >File uploaded successfully. Analysis ID: F2136015
 
 
 ### polygon-upload-url
+
 ***
 Upload URL for analysis.
 
@@ -76,6 +85,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 #### Base Command
 
 `polygon-upload-url`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -93,9 +103,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 
 #### Command Example
+
 ```!polygon-upload-url url=http://reqw.xyz/pik.zip```
 
 #### Context Example
+
 ```
 {
     "Polygon": {
@@ -113,6 +125,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 >Url uploaded successfully. Analysis ID: U2152031
 
 ### polygon-analysis-info
+
 ***
 Get THF Polygon analysis info
 
@@ -120,6 +133,7 @@ Get THF Polygon analysis info
 #### Base Command
 
 `polygon-analysis-info`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -182,9 +196,11 @@ Get THF Polygon analysis info
 
 
 #### Command Example
+
 ```!polygon-analysis-info tds_analysis_id=F2118597```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -823,12 +839,14 @@ Get THF Polygon analysis info
 #### Human Readable Output
 
 >### Analysis F2118597
+
 >|Analyzed|DumpExists|ID|Internet-connection|MD5|Name|Probability|Result|SHA1|SHA256|Score|Size|Started|Status|Type|Verdict|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-05-07 10:29:42 | true | F2118597 | Available | ba9fe2cb8ee2421ea24a55306ce9d923 | link.pdf | 64.80% | true | 44b3f79dfd7c5861501a19a3bac89f544c7ff815 | 0d1b77c84c68c50932e28c3462a1962916abbbebb456ce654751ab401aa37697 | 24.6 | 36375 | 2020-05-07 10:27:30 | Finished | PDF document, version 1.7 | Malicious |
 
 
 ### polygon-export-report
+
 ***
 Export an archive with THF Polygon report to War Room
 
@@ -836,6 +854,7 @@ Export an archive with THF Polygon report to War Room
 #### Base Command
 
 `polygon-export-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -855,9 +874,11 @@ Export an archive with THF Polygon report to War Room
 
 
 #### Command Example
+
 ```!polygon-export-report tds_analysis_id=F2118597```
 
 #### Context Example
+
 ```
 {
     "InfoFile": {
@@ -876,6 +897,7 @@ Export an archive with THF Polygon report to War Room
 
 
 ### polygon-export-pcap
+
 ***
 Network activity dump export
 
@@ -883,6 +905,7 @@ Network activity dump export
 #### Base Command
 
 `polygon-export-pcap`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -902,9 +925,11 @@ Network activity dump export
 
 
 #### Command Example
+
 ```!polygon-export-pcap tds_analysis_id=F2118597```
 
 #### Context Example
+
 ```
 {
     "InfoFile": {
@@ -923,6 +948,7 @@ Network activity dump export
 
 
 ### polygon-export-video
+
 ***
 Screen activity video export
 
@@ -930,6 +956,7 @@ Screen activity video export
 #### Base Command
 
 `polygon-export-video`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -949,9 +976,11 @@ Screen activity video export
 
 
 #### Command Example
+
 ```!polygon-export-video tds_analysis_id=F2118597```
 
 #### Context Example
+
 ```
 {
     "InfoFile": {
@@ -970,6 +999,7 @@ Screen activity video export
 
 
 ### file
+
 ***
 Check file reputation
 
@@ -977,6 +1007,7 @@ Check file reputation
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1007,9 +1038,11 @@ Check file reputation
 
 
 #### Command Example
+
 ```!file file=eb57446af5846faa28a726a8b7d43ce5a7fcbd55```
 
 #### Context Example
+
 ```
 {
     "DBotScore": [
@@ -1042,6 +1075,7 @@ Check file reputation
 #### Human Readable Output
 
 >### Results
+
 >|Found|Malware-families|SHA1|Score|Verdict|
 >|---|---|---|---|---|
 >| true |  | eb57446af5846faa28a726a8b7d43ce5a7fcbd55 | 24.0 | true |

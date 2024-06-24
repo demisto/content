@@ -8,7 +8,7 @@ Collaborative web service that provides validation on whether a URL is a phishin
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g. https://192.168.0.1) |  | False |
+    | Server URL (e.g. <https://192.168.0.1>) |  | False |
     | Customer's name |  | True |
     | Customer's License |  | True |
     | Use system proxy settings |  | False |
