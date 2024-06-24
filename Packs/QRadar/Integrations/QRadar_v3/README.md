@@ -1,7 +1,8 @@
 # Introduction
 IBM QRadar SIEM helps security teams accurately detect and prioritize threats across the enterprise, supports API versions 10.1 and above. Provides intelligent insights that enable teams to respond quickly to reduce the impact of incidents.
 
-This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+**This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.**
+
 # Supported Versions and license needed
 This integration was integrated and tested with version 14-20 of QRadar v3
 # Use cases
@@ -9,7 +10,7 @@ Using the commands in the integration, you can leverage what the QRadar API has 
 - Editing objects
 - Getting object lists
 - Adding notes
-Basically, you can perform tasks that a user would need to do manually in the QRadar UI or would need to provide automations to do.
+You can perform tasks that a user would need to do manually in the QRadar UI or would need to provide automations to do.
 # Architecture
 # Special Notes/Disclaimers
 ## Important Note Regarding the *Query to fetch offenses* Parameter
@@ -19,7 +20,7 @@ If you change the *Query to fetch offenses* value, it will not re-fetch offenses
 The list of QRadar IDs that were already fetched will be reset and duplicate offenses could be re-fetched, depending on the user query. 
 
 
-<details><summary><h1 style={{display: 'inline'}}>Migration-</h1><h2 style={{display: 'inline'}}> from QradarV2 to V3</h2></summary>
+<details><summary><h1 style={{display: 'inline'}}>Migration-from QradarV2 to V3</h1></summary>
 
 Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adjustments are required.
 ### Additions and Changes from QRadar v2 to QRadar v3
@@ -54,6 +55,7 @@ Every command and playbook that runs in QRadar v2 also runs in QRadar v3. No adj
 | qradar-get-domains | qradar-domains-list |  | 
 | qradar-get-domain-by-id| qradar-domains-list | Specify the *domain_id* argument in the command. |  | 
 
+
 </details>
 
 # Known Limitations
@@ -80,6 +82,7 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 3. Click **About**. A new window will appear with the details of your QRadar version.  
 If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version. 
 
+
 </details>
    
 
@@ -99,40 +102,50 @@ If you're uncertain which API version to use, it is recommended to use the lates
 2. Search for IBM QRadar v3.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | -- | --- |
-    | Server URL | \(e.g., https://1.1.1.1\) | True |
-    | Username |  | True |
-    | Password |  | True |
-    | QRadar API Version | API version of QRadar \(e.g., '12.0'\). Minimum API version is 10.1. | True |
-    | Incident Type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | if no offenses are found within the range of first fetch, will be set to fetch the earliest offense. | False |
-    | Fetch mode |  | True |
-    | Retry events fetch | Whenever enabled, the integration retries to fetch all events if the number of events fetched is less than \`event_count\`. Default number of tries is 3, but can be configured via the Advanced Parameter: EVENTS_SEARCH_TRIES. e.g EVENTS_SEARCH_TRIES=5 | False |
-    | Maximum number of events per incident. | The maximal amount of events to pull per incident. | False |
-    | Number of offenses to pull per API call (max 50) | In case of mirroring with events, this value will be used for mirroring API calls as well, and it is advised to have a small value. | False |
-    | Query to fetch offenses. | Define a query to determine which offenses to fetch. E.g., "severity &gt;= 4 AND id &gt; 5". filtering by status in the query may result in unexpected behavior when changing an incident's status. | False |
-    | Incidents Enrichment | IPs enrichment transforms IDs of the IPs of the offense to IP values. Asset enrichment adds correlated assets to the fetched offenses. | True |
-    | Event fields to return from the events query (WARNING: This parameter is correlated to the incoming mapper and changing the values may adversely affect mapping). | The parameter uses the AQL SELECT syntax. For more information, see: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html | False |
-    | Mirroring Options | How mirroring from QRadar to Cortex XSOAR should be done, available from QRadar 7.3.3 Fix Pack 3. For further explanation on how to check your QRadar version, see the integration documentation at https://xsoar.pan.dev. | False |
-    | Close Mirrored XSOAR Incident | When selected, closing the QRadar offense is mirrored in Cortex XSOAR. | False |
-    | The number of incoming incidents to mirror each time | Maximum number of incoming incidents to mirror each time. | False |
-    | Advanced Parameters | Comma-separated configuration for advanced parameter values. E.g., EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5 | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Timeout for http-requests | The timeout of the HTTP requests sent to the Qradar API (in seconds). If no value is provided, the timeout will be set to 60 seconds. | False |
-    | Fetch Incidents Interval | The fetch interval between before each fetch-incidents execution. (seconds) | False |
+| **Parameter** | **Description** | **Required** |
+|----------------|-----------------|--------------|
+| Server URL | The URL of the server (e.g., `https://1.1.1.1`). | True |
+| Username / API Key | Use the API key by typing **_api_token_key**. | True |
+| Password | For API key authentication, enter your API token instead of a password. | True |
+| QRadar API Version | The API version of QRadar (e.g., '12.0'). The minimum API version is 10.1. For assistance in finding your QRadar version, see [Get Your QRadar Version](#get-qradar-version) | True |
+| Incident Type | The type of incident. | False |
+| First fetch timestamp | Format: `<number> <time unit>`, e.g., `12 hours`, `7 days`. If no offenses are found within the first fetch range, the earliest offense will be fetched. | False |
+| Fetch mode | Options include: `Fetch Without Events`, `Fetch With All Events`, `Fetch Correlation Events Only`. | True |
+| Retry events fetch | If enabled, the integration will retry fetching all events if the number fetched is less than `event_count`. Default retry count is 3, configurable via `EVENTS_SEARCH_TRIES` (e.g., `EVENTS_SEARCH_TRIES=5`). | False |
+| Maximum number of events per incident | The maximum amount of events to pull for each incident. | False |
+| Number of offenses to pull per API call (max 50) | For mirroring with events, this value will also apply to mirroring API calls. A smaller value is advised. | False |
+| Query to fetch offenses | Define a query to determine which offenses to fetch (e.g., "severity >= 4 AND id > 5"). Filtering by status in the query may lead to unexpected behavior when changing an incident's status. | False |
+| Incidents Enrichment | IP enrichment transforms offense IP IDs to IP values. Asset enrichment adds correlated assets to fetched offenses. | True |
+| Event fields to return from the events query | WARNING: This parameter is linked to the incoming mapper. Changing values may affect mapping. Uses AQL SELECT syntax. More info: [IBM Knowledge Center](https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.4/com.ibm.qradar.doc/c_aql_intro.html). | False |
+| Mirroring Options | Defines how mirroring from QRadar to Cortex XSOAR should be done. Available from QRadar 7.3.3 Fix Pack 3. For version checking, refer to the integration documentation at [xsoar.pan.dev](https://xsoar.pan.dev). | False |
+| Close Mirrored XSOAR Incident | When enabled, closing a QRadar offense will also close the mirrored incident in Cortex XSOAR. | False |
+| The number of incoming incidents to mirror each time | The maximum number of incidents to mirror at once. | False |
+| Advanced Parameters | Comma-separated advanced parameter configurations (e.g., `EVENTS_INTERVAL_SECS=20,FETCH_SLEEP=5`). | False |
+| Trust any certificate (not secure) | Trust certificates without validation (not secure). | False |
+| Use system proxy settings | Use the system's proxy settings for connections. | False |
+| Timeout for HTTP requests | The timeout for HTTP requests to the QRadar API (in seconds). Defaults to 60 seconds if not specified. | False |
+| Fetch Incidents Interval | The interval between fetch-incidents executions (in seconds). | False |
+
 4. Click **Test** to validate the URLs, token, and connection.
+   
+<details><summary><h3 id="get-qradar-version" style={{display: 'inline'}}> Get Your QRadar Version</h3> </summary> 
+
+1. Enter to QRadar service.
+2. Click the **Menu** toolbar. A scrolling toolbar will appear.
+3. Click **About**. A new window will appear with the details of your QRadar version.  
+If you're uncertain which API version to use, it is recommended to use the latest API version listed in the **Supported REST API versions** column in the line corresponding to your QRadar version. 
+
+</details>
    
 # Mirroring
 This integration supports in mirroring from QRadar offenses to Cortex XSOAR.  
 When a field of an offense is updated in QRadar services, the update is mirrored in Cortex XSOAR.
 ### Mirroring Events
 * Mirroring events from QRadar to Cortex XSOAR is supported via the **Mirror Offense and Events** option.
-* Events will only be mirrored in the incoming direction.
-* Mirroring events will only work when the **Long running instance** parameter is enabled.
-* Filtering events using the  *events_limit* and *events_columns* options for mirrored incidents will be the same as in the fetched incidents.
-* The integration will always mirror the events that occurred first in each offense.
+* Events will only be mirrored in the **incoming direction** from Qradar into Xsoar
+* Event mirroring functionality requires the **Long running instance** parameter to be enabled.
+* The event filters such as *events_limit* and *events_columns*, will be consistent for both mirrored and fetched incidents.
+* For each offense, the integration is designed to mirror the events that occurred earliest.
 
 For more information about mirroring configurations, see [here](https://xsoar.pan.dev/docs/integrations/mirroring_integration).  
 
@@ -369,6 +382,7 @@ Gets offenses from QRadar.
 >| 14 | Detected A Successful Login From Different Geographies For the Same Username - AWSCloud (Exp Center)<br/> preceded by An AWS API Has Been Invoked From Kali - AWSCloud (Exp Center)<br/> preceded by Microsoft Word Launc<br/> preceded by Detected a Massive Creation of EC2 Instances - AWSCloud (Exp Center)<br/> containing Mail Server Info Message<br/> | Username | OPEN | 10 | other,<br/>Net-10-172-192.Net_192_168_0_0 | 2023-07-26T15:31:11.839000+00:00 | 4 | {'id': 102539, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected An Email with An Attachment From a Spam Sender'},<br/>{'id': 102589, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Microsoft Word Launched a Command Shell'},<br/>{'id': 102639, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected A Successful Login From Different Geographies For the Same Username'},<br/>{'id': 102389, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - An AWS API Has Been Invoked From Kali'},<br/>{'id': 102439, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - A Database backup Has Been Downloaded From S3 Bucket'},<br/>{'id': 102489, 'type': 'CRE_RULE', 'name': 'EC: AWS Cloud - Detected a Massive Creation of EC2 Instances'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 | admin | userD | true | 35651 | 2023-07-26T14:31:13.387000+00:00 | 0 | 1.1.1.1,<br/>1.1.1.1 | https://ec2.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=14 | 1 | 0 | Information,<br/>Suspicious Activity,<br/>Process Creation Success,<br/>Suspicious Windows Events,<br/>User Login Attempt,<br/>Misc Login Succeeded,<br/>Virtual Machine Creation Attempt,<br/>Read Activity Attempted,<br/>Object Download Attempt | 4 | false |
 >| 13 | Flow Source/Interface Stopped Sending Flows<br/> | Rule | OPEN | 1 | Net-10-172-192.Net_10_0_0_0 | 2023-06-12T08:49:50.145000+00:00 | 2 | {'id': 100270, 'type': 'CRE_RULE', 'name': 'Flow Source Stopped Sending Flows'} | 1.1.1.1,<br/>1.1.1.1,<br/>1.1.1.1 |  | Flow Source Stopped Sending Flows | true | 2 | 2023-06-12T08:19:02.020000+00:00 | 6026 | 1.1.1.1 | https://ec2-1.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=13 | 0 | 0 | Mail,<br/>System Failure | 1 | true |
 >| 12 | User Account Created and Used and Deleted within a short time frame (Exp Center)<br/> | Username | OPEN | 5 | Net-10-172-192.Net_172_16_0_0 | 2023-06-12T08:17:33.008000+00:00 | 3 | {'id': 102989, 'type': 'CRE_RULE', 'name': 'EC: User Account Created and Used and Removed'} | 1.1.1.1 |  | badadmin | true | 8 | 2023-06-12T08:15:54.740000+00:00 | 0 | 1.1.1.1 | https://ec2-3.eu.compute-1.amazonaws.com/console/do/sem/offensesummary?appName=Sem&pageId=OffenseSummary&summaryId=12 | 0 | 0 | User Activity | 2 | true |
+
 
 </details>
 
@@ -3726,8 +3740,8 @@ Retrieves a list of event collectors.
 
 
 # Troubleshooting
-<details> <summary>Instance Configuration </summary> TEST </details>
-<details> <summary> Fetch command </summary>
+<details> <summary><h3 style={{display: 'inline'}}>Instance Configuration</h3></summary> TEST </details>
+<details> <summary><h3 style={{display: 'inline'}}> Fetch command</h3> </summary>
 
 When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
 Nevertheless, some events may not be available when trying to fetch them during an incident creation. If **Retry events fetch** is enabled, the integration tries to fetch more events when the number fetched is less than the expected `event_count`. In the default setting, the integration will try 3 times, with a wait time of 100 seconds between retries.
@@ -3741,4 +3755,4 @@ If the command takes too long to finish executing, try setting the `interval_in_
 
 </details>
 
-<details> <summary> General </summary> Test</details>
+<details> <summary><h3 style={{display: 'inline'}}> General </h3> </summary> Test</details>
