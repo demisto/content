@@ -2704,7 +2704,15 @@ def clear_integration_context() -> None:
     set_integration_context({"job_id": None, "remediation_operation_id": None})
 
 
-def convert_unix_to_date_string(unix_timestamp):
+def convert_unix_to_date_string(unix_timestamp: int) -> str:
+    """ Convert unix timestamp to date string.
+
+    Args:
+        unix_timestamp (int): unix.
+
+    Returns:
+        str: Datetime string.
+    """
     timestamp_in_seconds = unix_timestamp / 1000
     date_time = datetime.fromtimestamp(timestamp_in_seconds, tz=timezone.utc)
     return date_time.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"

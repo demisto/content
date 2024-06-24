@@ -778,7 +778,7 @@ def test_schedule_command(
             "remediation/de-isolate",
         ),
         (
-            "harmony-ep-agent-computer-reset",
+            "harmony-ep-agent-computer-restart",
             "POST",
             CheckPointHarmonyEndpoint.computer_restart_command,
             {

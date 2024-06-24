@@ -1,5 +1,5 @@
 Checkpoint Harmony Endpoint provides a complete endpoint security solution built to protect organizations and the remote workforce from today's complex threat landscape.
-This integration was integrated and tested with version xx of CheckPointHarmonyEndpoint.
+This integration was integrated and tested with version 1 of CheckPointHarmonyEndpoint.
 
 ## Configure Check Point Harmony Endpoint on Cortex XSOAR
 
