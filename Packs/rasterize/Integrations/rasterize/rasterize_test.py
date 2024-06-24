@@ -587,6 +587,15 @@ def test_chrome_options_in_chrome_options_and_instance_id_linked(mocker):
 
 
 def test_get_chrome_instances_contents_dictionaries():
+    """
+    Given   chrome instances file with content
+    When    extract the data from it and parse it for 2 dictionaries and 2 lists:
+                - instance_id_to_chrome_options (dict): A dictionary mapping instance ID to Chrome options.
+                - instance_id_to_port (dict): A dictionary mapping instance ID to Chrome port.
+                - instances_id (list): A list of instances ID extracted from instance_id_to_port keys.
+                - chromes_options (list): A list of Chrome options extracted from instance_id_to_chrome_options values.
+    Then    make sure the data are extracted correctly according the mock data file content.
+    """
     from rasterize import get_chrome_instances_contents_dictionaries
     mock_file_content = util_read_tsv("test_data/info.tsv")
     mock_file_content_edited = mock_file_content.replace('\\t', '\t')
