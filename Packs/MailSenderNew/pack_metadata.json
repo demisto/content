@@ -2,7 +2,7 @@
     "name": "Mail Sender (New)",
     "description": "Send emails implemented in Python with embedded image support",
     "support": "xsoar",
-    "currentVersion": "1.0.27",
+    "currentVersion": "1.0.28",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
