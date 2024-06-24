@@ -15,7 +15,7 @@ class ScheduleCommandMetadata:
     headers: list[str] = dataclasses.field(default_factory=list)
 
     def format_message(self, id):
-        return self.message.format(id=id)
+        self.message = self.message.format(id=id)
 
 
 REGISTRY_VALUE_TYPE_MAP = {
@@ -1434,11 +1434,12 @@ def rule_modifications_get_command(args: dict[str, Any], client: Client) -> Poll
     Returns:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
-    if not args.get("job_id"):
-        rule_id = args.get("rule_id", "")
-        SCHEDULED_COMMANDS_MAPPER[
+    rule_id = args.get("rule_id", "")
+    SCHEDULED_COMMANDS_MAPPER[
             "harmony-ep-policy-rule-modifications-get"
-        ].message.format(id=rule_id)
+        ].format_message(rule_id)
+    
+    if not args.get("job_id"):  
         response = client.rule_modifications_get(rule_id=rule_id)
         args["job_id"] = response.get("jobId")
 
@@ -1827,7 +1828,7 @@ def remediation_computer_deisolate_command(
 
 
 @polling_function(
-    name="harmony-ep-agent-computer-reset",
+    name="harmony-ep-agent-computer-restart",
     interval=arg_to_number(demisto.args().get("interval", 30)),
     timeout=arg_to_number(demisto.args().get("timeout", 600)),
     poll_message="Computer restart request is executing",
@@ -1851,7 +1852,7 @@ def computer_restart_command(args: dict[str, Any], client: Client) -> PollResult
         response = client.computer_restart(request_body)
         args["job_id"] = response.get("jobId")
 
-    return schedule_command(args, client, "harmony-ep-agent-computer-reset")
+    return schedule_command(args, client, "harmony-ep-agent-computer-restart")
 
 
 @polling_function(
