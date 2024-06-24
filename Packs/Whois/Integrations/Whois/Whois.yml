@@ -28,6 +28,14 @@ configuration:
   advanced: true
   required: false
   hidden: false
+- display: Use old version
+  name: old-version
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+  defaultValue: false
+  additionalinfo: Indicates whether to use the previous/legacy implementation of the integration commands and their outputs or the new ones.
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability

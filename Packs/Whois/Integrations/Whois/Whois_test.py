@@ -651,3 +651,69 @@ def test_parse_nic_contact_new_regex():
     assert len(res) == 2
     assert any(entry.get('email') == 'test@test.net' for entry in res)
     assert any(entry.get('country') == 'TEST' for entry in res)
+
+@pytest.mark.parametrize(
+    "raw_data, domain, expected",
+    [
+        (load_test_data("test_data/google-raw.json"), "google.com", load_test_data("test_data/google-res.json")),
+        (load_test_data("test_data/ansa-raw.json"), "ansa.it", load_test_data("test_data/ansa-res.json")),
+        (load_test_data("test_data/jp-raw.json"), "nhk.or.jp", load_test_data("test_data/jp-res.json")),
+        (load_test_data("test_data/microsoft-raw.json"), "microsoft.com", load_test_data("test_data/microsoft-res.json")),
+        (load_test_data("test_data/apple-raw.json"), "apple.com", load_test_data("test_data/apple-res.json"))
+    ]
+)
+def test_arrange_raw_to_context(raw_data, domain, expected):
+    from Whois import arrange_raw_whois_data_to_context
+    res = arrange_raw_whois_data_to_context(raw_data, domain)
+    assert res == expected
+
+
+@pytest.mark.parametrize(
+    "servers, expected",
+    [
+        (None, []),
+        ("example.com", "example.com"),
+        ("example.com\nexample.net", ["example.com", "example.net"]),
+        (["EXAMPLE.COM", "example.com", "example.NET"], ["example.com", "example.net"]),
+        (["server1.com", "server2.com", "server1.com"], ["server1.com", "server2.com"]),
+        ([], []),
+    ]
+)
+def test_name_servers(servers, expected):
+    from Whois import extract_name_servers
+    assert extract_name_servers(servers) == expected
+
+
+@pytest.mark.parametrize(
+    "domain_data, prefix, expected",
+    [
+        # Test for "registrar" prefix with registrar key
+        ({"registrar": "Namecheap"}, "registrar", {"registrar_name": "Namecheap"}),
+        # Test for "registrar" prefix without registrar key
+        ({"admin_email": "admin@example.com"}, "registrar", {}),
+        # Test for other prefixes
+        ({"admin_until": "2025-06-24", "test":"test"}, "admin", {"admin_until": "2025-06-24"}),
+        # Test for non-existent prefix
+        ({"registrar": "Namecheap"}, "invalid_prefix", {}),
+        # Test for empty domain_data
+        ({}, "registrar", {}),
+    ],
+)
+def test_get_info_by_prefix(domain_data, prefix, expected):
+    from Whois import get_info_by_prefix
+    assert get_info_by_prefix(domain_data, prefix) == expected
+
+
+
+@pytest.mark.parametrize("raw_data, date_requested, expected", [
+    ({"created_date": ["2023-05-17"]}, "created_date", "17-05-2023"),
+    ({"created_date": "2023-05-17"}, "created_date", "17-05-2023"),
+    ({"created_date": []}, "created_date", ""),
+    ({"created_date": None}, "created_date", ""),
+    ({}, "created_date", ""),
+    ({"created_date": ["invalid-date"]}, "created_date", "invalid-date")
+])
+def test_extract_date(raw_data, date_requested, expected, mocker):
+    from Whois import extract_date
+    mocker.patch.object(demisto, "debug")
+    assert extract_date(raw_data, date_requested) == expected
