@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: "cleanup-machines"
+  CURRENT_BRANCH_NAME: "cleanup-ng"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "cleanup-machines"
+    ref: "cleanup-ng"
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
