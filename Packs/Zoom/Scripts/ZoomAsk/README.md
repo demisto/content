@@ -47,7 +47,7 @@ There are no outputs for this script.
 ---
 The automation is most useful in a playbook to determine the outcome of a conditional task - which will be one of the provided options.
 It uses a mechanism that allows external users to respond in Cortex XSOAR (per investigation) with entitlement strings embedded within the message contents.
-![SlackAsk](https://user-images.githubusercontent.com/35098543/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
+![SlackAsk](../../doc_files/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
 
 The automation can utilize the interactive capabilities of Zoom to send a form with buttons. 
 This requires the external endpoint for interactive responses to be available for connection. (See the Zoom integration documentation for more information).
