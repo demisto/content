@@ -11642,7 +11642,6 @@ def split_data_to_chunks(data, target_chunk_size):
             demisto.debug("object is: {object}".format(object=data_part))
             continue
         if chunk_size + sys.getsizeof(data_part) > target_chunk_size:
-        # if chunk_size >= target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
