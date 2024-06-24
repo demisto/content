@@ -37,17 +37,29 @@ def find_image_in_doc_files(image_name, pack_name):
     return ''
 
 
-def change_image_link_to_relative(lines, pack_name):
+def change_image_link_to_relative(lines, md_path):
     # Regular expression to match URLs ending with common image file extensions
     urls_list = {"Success": [], "files not found in doc_files": []}
+    parts = md_path.split("/")
+    # Find the index of "Packs"
+    packs_index = parts.index("Packs")
+
+    # Extract the name after "Packs"
+    pack_name = parts[packs_index + 1]
+    # Modify the specific line
     for i, line in enumerate(lines):
         if res := re.search(URL_IMAGE_LINK_REGEX + r"|" + HTML_IMAGE_LINK_REGEX_SDK, line):
             url = res["url"]
             parse_url = urlparse(url)
             url_path = Path(parse_url.path)
             if new_replace_url := find_image_in_doc_files(url_path.name, pack_name):
-                lines[i] = line.replace(url, new_replace_url)
-                urls_list["Success"].append(url)
+                lines[i] = line.replace(url, new_replace_url + "/n")
+                try:
+                    with open(md_path, 'w') as file:
+                        file.writelines(lines)
+                    urls_list["Success"].append(url)
+                except Exception as e:
+                    logger.debug(e)
             else:
                 urls_list["failed : files not found in doc_files"].append(url)
     return urls_list
@@ -65,18 +77,12 @@ def search_image_links(file_path):
     """
     if os.path.getsize(file_path) == 0:
         return "empty file"
-    parts = file_path.split("/")
-    # Find the index of "Packs"
-    packs_index = parts.index("Packs")
-
-    # Extract the name after "Packs"
-    pack_name = parts[packs_index + 1]
     try:
         with (open(file_path, 'r+') as file):
             file_lines = file.readlines()
-            if logs := change_image_link_to_relative(file_lines, pack_name):
-                return logs
-    except OSError as error:
+        if logs := change_image_link_to_relative(file_lines, file_path):
+            return logs
+    except Exception as error:
         logger.debug(error)
     return "failed opening the file"
 
@@ -87,18 +93,24 @@ def extract_image_links_from_files_and_save_to_json():
     then extracts image links from those files and saves the information to a JSON file.
     """
     paths_links = list(Path(PACKS_PATH).rglob("*.md"))
-    filtered_md_files = [file for file in md_files if not os.path.isdir(file) or 'ReleaseNotes' not in file.split(os.sep)]
+    paths_links_str = [str(path) for path in paths_links]
+    filtered_md_files = [file for file in paths_links_str if 'ReleaseNotes' not in file.split(os.sep)].sort()
 
     images_information = {}
 
-    for link in paths_links:
+    for link in filtered_md_files:
         
-        images_information_log = search_image_links(str(link))
+        images_information_log = search_image_links(link)
         if images_information_log:
-            images_information[str(link)] = images_information_log
-
-    with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/script_change_path_to_relative_MD_logs.json', "a") as file:
-        file.write(json.dumps(images_information))
+            images_information[link] = images_information_log
+    try:
+        with open('/Users/mmorag/dev/demisto/content/Packs/zzzz_docfiles/script_change_path_to_relative_MD_logs.json', "a") as file:
+            file.write(json.dumps(images_information))
+    except Exception as e:
+        logger.debug(e)
+        logger.debug("#####")
+        logger.debug(images_information)
+        
 
 
 def main():
