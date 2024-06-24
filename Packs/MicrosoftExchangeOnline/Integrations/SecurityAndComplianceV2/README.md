@@ -1373,7 +1373,7 @@ There is no context output for this command.
 ### o365-sc-case-hold-policy-set
 
 ***
-Update inputs for case hold policies
+Update inputs for case hold policies.
 
 #### Base Command
 

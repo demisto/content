@@ -536,7 +536,7 @@ script:
       - 'IndividualMessage'
       - 'PerUserZip'
       - 'SingleZip'
-    - description: "The Format parameter specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files."
+    - description: "Specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files."
       name: format
       auto: PREDEFINED
       predefined:
