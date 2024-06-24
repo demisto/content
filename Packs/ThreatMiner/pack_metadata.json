@@ -1,5 +1,5 @@
 {
-    "name": "ThreatMiner",
+    "name": "Threat Intel Reports (BETA)",
     "description": "Data Mining for Threat Intelligence",
     "support": "xsoar",
     "currentVersion": "1.0.13",
