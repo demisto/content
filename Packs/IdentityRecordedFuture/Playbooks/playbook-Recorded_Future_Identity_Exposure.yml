@@ -223,10 +223,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: adde8e1f-5a4d-4465-8c5b-67631b6c04cc
+    taskid: 1f43a8f1-319a-4cdd-8d1f-6850efd80622
     type: regular
     task:
-      id: adde8e1f-5a4d-4465-8c5b-67631b6c04cc
+      id: 1f43a8f1-319a-4cdd-8d1f-6850efd80622
       version: -1
       name: Close Incident
       description: commands.local.cmd.close.inv
@@ -237,6 +237,11 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
+    scriptarguments:
+      closeNotes:
+        simple: Closing Incident as False Positive - Per Analyst's Decision
+      closeReason:
+        simple: False Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -255,13 +260,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 25cba10d-3613-4262-85a7-890a31cb2825
+    taskid: 1a22b12a-3ce0-48e0-8ec4-6f30e1c79dc4
     type: regular
     task:
-      id: 25cba10d-3613-4262-85a7-890a31cb2825
+      id: 1a22b12a-3ce0-48e0-8ec4-6f30e1c79dc4
       version: -1
       name: Create ticket in IM system
-      description: ""
+      description: Generate a ticket within the organization's incident management system for tracking and record-keeping purposes. Note which actions have been taken.
       type: regular
       iscommand: false
       brand: ""
@@ -493,7 +498,7 @@ tasks:
       {
         "position": {
           "x": 592.5,
-          "y": 2520
+          "y": 2720
         }
       }
     note: false
@@ -899,7 +904,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "15"
+      - "29"
     scriptarguments:
       add_actions_taken:
         complex:
@@ -977,13 +982,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 9c39ba10-09ed-4339-8dc9-6c11d812e00f
+    taskid: 6c5de62a-8367-4643-897e-c0934a1fe874
     type: regular
     task:
-      id: 9c39ba10-09ed-4339-8dc9-6c11d812e00f
+      id: 6c5de62a-8367-4643-897e-c0934a1fe874
       version: -1
       name: Contact user or user's manager
-      description: ""
+      description: Contact the user via phone or the user's manager via phone/email; to find this information review the organization's internal directory system.
       type: regular
       iscommand: false
       brand: ""
@@ -1006,6 +1011,43 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: a4876be5-516c-4a35-8c87-4bba3fe481e5
+    type: regular
+    task:
+      id: a4876be5-516c-4a35-8c87-4bba3fe481e5
+      version: -1
+      name: Close Incident
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      closeNotes:
+        simple: Closing Incident as True Positive - Per Analyst's Decision
+      closeReason:
+        simple: True Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 592.5,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1016,7 +1058,7 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2775,
+        "height": 2975,
         "width": 1665,
         "x": -50,
         "y": -190
