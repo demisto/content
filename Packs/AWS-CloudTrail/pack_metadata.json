@@ -2,7 +2,7 @@
     "name": "AWS - CloudTrail",
     "description": "Amazon Web Services CloudTrail.",
     "support": "xsoar",
-    "currentVersion": "1.1.2",
+    "currentVersion": "1.1.3",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
