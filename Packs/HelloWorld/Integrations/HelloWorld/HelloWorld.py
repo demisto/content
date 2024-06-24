@@ -414,6 +414,10 @@ class Client(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
+def foo():
+    ...
+
+
 def validate_api_key(api_key: str) -> None:
     """
     This is a validation that the api-key is valid. It is not needed when dealing with a real API.

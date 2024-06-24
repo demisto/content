@@ -13,6 +13,11 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 VENDOR = 'hello'
 PRODUCT = 'world'
 
+
+def foo():
+    ...
+
+
 ''' CLIENT CLASS '''
 
 
