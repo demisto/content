@@ -974,7 +974,10 @@ def get_remote_data_command(client, args):
 def update_remote_system_command(client, args):
     remote_args = UpdateRemoteSystemArgs(args)
     incident_id = remote_args.remote_incident_id
+    remote_data = remote_args.data
     demisto.debug(f"update_remote_system_command {incident_id=} {remote_args=}")
+    demisto.debug(f"update_remote_system_command {incident_id=} , {remote_data.get('closeReason')=}, "
+                  f"{remote_data.get('closeNotes')=}")
 
     if remote_args.delta:
         demisto.debug(f'Got the following delta keys {str(list(remote_args.delta.keys()))} to update'
@@ -988,8 +991,11 @@ def update_remote_system_command(client, args):
             demisto.debug(f'Sending incident with remote ID [{remote_args.remote_incident_id}]\n')
             demisto.debug(f"Before checking status {update_args=}")
             current_remote_status = remote_args.data.get('status') if remote_args.data else None
-            is_closed = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
-                         or update_args.get('resolve_comment') or update_args.get('closingUserId'))
+            is_closed_delta = (update_args.get('close_reason') or update_args.get('closeReason') or update_args.get('closeNotes')
+                               or update_args.get('resolve_comment') or update_args.get('closingUserId'))
+            is_closed_data = (remote_data.get('closeReason') or remote_data.get('close_reason') or remote_data.get('closeNotes'))
+            demisto.debug(f"update_remote_system_command {is_closed_delta=}, {is_closed_data=}")
+            is_closed = is_closed_delta or is_closed_data
             closed_without_status = not update_args.get('close_reason') and not update_args.get('closeReason')
             remote_is_already_closed = current_remote_status in XDR_RESOLVED_STATUS_TO_XSOAR
             demisto.debug(f"{remote_is_already_closed=}")
