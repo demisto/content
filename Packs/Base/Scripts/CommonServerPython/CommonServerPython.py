@@ -11312,6 +11312,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :type new_offset: ``int | None``
     :param new_offset: The new offset to set in the last run
 
+
     :return: The new LastRun object
     :rtype: ``Dict``
     """

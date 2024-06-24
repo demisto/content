@@ -2,7 +2,7 @@ id: Wildfire Test
 version: -1
 name: Wildfire Test
 description: |-
-  A test playbook for Wild Fire.
+  A test playbook for Wild Fire. - change
   Does not test the deprecated detonate commands.
 starttaskid: "0"
 tasks:
