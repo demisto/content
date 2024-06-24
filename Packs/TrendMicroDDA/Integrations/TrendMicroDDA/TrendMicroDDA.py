@@ -123,10 +123,7 @@ def binary_to_boolean_str(binary):
 
 
 def binary_to_boolean(binary):
-    if (binary == '0'):
-        return False
-    else:
-        return True
+    return binary == '0'
 
 
 # GLOBAL VARIABLES #

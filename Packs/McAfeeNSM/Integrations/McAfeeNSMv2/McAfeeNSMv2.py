@@ -652,7 +652,7 @@ def check_source_and_destination(source_rule_object_id: Optional[int], source_ru
             (not destination_rule_object_id and destination_rule_object_type):
         # If the user provides destination_rule_object_id he must provide destination_rule_object_type and vice versa
         raise Exception('Please provide both destination_rule_object_id and destination_rule_object_type.')
-    if create_or_update == 'create':
+    if create_or_update == 'create':    # noqa: SIM102
         # if the user wants to create a new firewall policy, he must provide a source rule or destination rule or both.
         if source_rule_object_id == -1 and destination_rule_object_id == -1:
             raise Exception('You must provide the source fields or destination fields or both.')
