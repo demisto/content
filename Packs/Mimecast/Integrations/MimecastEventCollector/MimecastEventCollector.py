@@ -173,8 +173,7 @@ class MimecastGetSiemEvents(IntegrationGetEvents):
             # Handle errors
             demisto.info('Unexpected response from siem logs')
             headers_list = list(resp_headers)
-            return_error(f'headers of failed request for siem errors: {headers_list}')
-            return []
+            raise DemistoException(f'headers of failed request for siem errors: {headers_list}')
 
     def process_siem_events(self, siem_json_resp: dict) -> list:
         """
