@@ -149,7 +149,7 @@ def main():  # pragma: no cover
             if not tenant_id:
                 raise Exception('Token must be provided.')
 
-        # params related to mailbox to fetch incidents test
+        # params related to mailbox to fetch incidents
         mailbox_to_fetch = params.get('mailbox_to_fetch', '')
         folder_to_fetch = params.get('folder_to_fetch', 'Inbox')
         first_fetch_interval = params.get('first_fetch', '15 minutes')
