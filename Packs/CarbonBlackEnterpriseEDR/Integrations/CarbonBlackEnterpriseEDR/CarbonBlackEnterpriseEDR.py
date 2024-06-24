@@ -658,7 +658,11 @@ def alert_workflow_update_command_v2(args: dict, client: Client) -> PollResult:
                             **args})
       
     message = CommandResults(
-        readable_output='The alert workflow has been updated successfully')
+        readable_output= tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
+                                         {'changed_by':response['job_parameters']['job_parameters']['userWorkflowDto']['changed_by'],
+                                          'last_update_time':response['last_update_time'],
+                                          'state':response['job_parameters']['job_parameters']['request']['status']}
+                                         , removeNull=True))
     demisto.debug('returning PollResult with continue_to_poll=False')
     return PollResult(
         response=message,
