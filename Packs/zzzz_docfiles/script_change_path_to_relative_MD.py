@@ -66,7 +66,7 @@ def change_image_link_to_relative(lines, md_path):
                     logger.debug(e)
             else:
                 list_not_found.append(url)
-    return list_success, list_not_found
+    return {"list_success": list_success, "list_not_found":list_not_found}
 
 
 def search_image_links(file_path):
@@ -85,7 +85,8 @@ def search_image_links(file_path):
         with (open(file_path, 'r+') as file):
             file_lines = file.readlines()
         if logs := change_image_link_to_relative(file_lines, file_path):
-            return logs
+            
+            return logs["list_success"], logs["list_not_found"]
     except Exception as error:
         logger.debug(error)
     return "failed opening the file"
