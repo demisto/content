@@ -82,7 +82,7 @@ db-dtypes = "^1.0.1"
 json5 = "^0.9.10"
 tqdm = "^4.66.1"
 tabulate = ">=0.8.9,<0.10.0"
-jira = "^3.5.2"
+jira = "^3.8.0"
 junitparser = "^3.1.0"
 tenacity = "^8.2.3"
 
