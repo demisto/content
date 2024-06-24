@@ -75,6 +75,3 @@ Security team challenges | Solving with VirusTotal + XSOAR
 - [VirusTotal 360 overview brief](https://www.virustotal.com/go/vt360)
 - [VirusTotal service catalog](http://www.virustotal.com/go/vt-services-catalog)
 - [VirusTotal webinars](https://www.brighttalk.com/search/?q=%22Google+Cloud+Security%22+%22VirusTotal%22)
-
-
-this is a test

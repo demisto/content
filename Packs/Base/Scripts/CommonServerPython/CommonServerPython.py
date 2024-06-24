@@ -11315,7 +11315,6 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :return: The new LastRun object
     :rtype: ``Dict``
     """
-
     demisto.debug("lb: Create updated last run object, len(incidents) is {},"
                   "look_back is {}, fetch_limit is {}, new_offset is {}".format(len(incidents), look_back, fetch_limit, new_offset))
     remove_incident_ids = True

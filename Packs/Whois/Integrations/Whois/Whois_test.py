@@ -651,20 +651,3 @@ def test_parse_nic_contact_new_regex():
     assert len(res) == 2
     assert any(entry.get('email') == 'test@test.net' for entry in res)
     assert any(entry.get('country') == 'TEST' for entry in res)
-
-
-def test_parse_nic_contact_new_regex_test():
-    """
-    Given:
-        - Data fetched from the API.
-    When:
-        - calling the whois/domain command.
-    Then:
-        - validate that the data extracted without timeout.
-    """
-    from Whois import parse_nic_contact
-    data = pathlib.Path('test_data/whois_response_text.txt').read_text()
-    res = parse_nic_contact([data])
-    assert len(res) == 2
-    assert any(entry.get('email') == 'test@test.net' for entry in res)
-    assert any(entry.get('country') == 'TEST' for entry in res)
