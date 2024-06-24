@@ -1,0 +1,37 @@
+{
+    "meta": {
+        "status": 200
+    },
+    "data": [
+        {
+            "id": "eNo1jrs",
+            "policy": {
+                "description": "test",
+                "fromPart": "envelope_from",
+                "from": {
+                    "type": "internal_addresses"
+                },
+                "to": {
+                    "type": "internal_addresses"
+                },
+                "fromType": "internal_addresses",
+                "toType": "internal_addresses",
+                "fromEternal": true,
+                "toEternal": true,
+                "fromDate": "1900-01-01T00:00:00+0000",
+                "toDate": "2100-01-01T23:59:59+0000",
+                "override": false,
+                "bidirectional": false,
+                "conditions": {
+                    "sourceIPs": [
+                        "8.8.8.8/24"
+                    ]
+                },
+                "enabled": false,
+                "enforced": false,
+                "lastUpdated": "2024-05-26T13:00:12+0000"
+            }
+        }
+    ],
+    "fail": []
+}
