@@ -117,6 +117,10 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
+def foo():
+    ...
+
+
 def create_last_run(set_ids: list, from_date: str) -> dict:
     """
     Gets a list of set_ids and a datetime presentation in str.
