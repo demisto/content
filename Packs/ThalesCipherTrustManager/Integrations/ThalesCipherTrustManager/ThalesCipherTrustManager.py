@@ -379,8 +379,7 @@ class CipherTrustClient(BaseClient):
 ''' HELPER FUNCTIONS '''
 
 
-def derive_skip_and_limit_for_pagination(limit: Optional[str], page: Optional[str], page_size: Optional[str]) -> \
-        tuple[int, int]:
+def derive_skip_and_limit_for_pagination(limit: Optional[str], page: Optional[str], page_size: Optional[str]) -> tuple[int, int]:
     """
     Derive the skip and limit values for pagination from the provided arguments, according to Demisto's pagination logic.
     If page is provided, the skip value is calculated as (page - 1) * page_size and the limit value is the page_size.
@@ -445,7 +444,7 @@ def add_empty_date_param(request_data: dict, argument_value: Optional[str], para
         request_data[param_name] = "" if argument_value == "never" else optional_arg_to_datetime_string(argument_value)
 
 
-def add_empty_list_param(request_data: dict, argument_value: Optional[str], param_name: str,):
+def add_empty_list_param(request_data: dict, argument_value: Optional[str], param_name: str):
     """
     Add an empty list parameter to the request data if the argument value is the agreed upon empty value.
     Args:
@@ -457,19 +456,16 @@ def add_empty_list_param(request_data: dict, argument_value: Optional[str], para
         request_data[param_name] = [] if argument_value == "none" else argToList(argument_value)
 
 
-def add_login_flags(request_data: dict, argument_value: Optional[bool], flag_name: str):
+def add_prevent_ui_login(request_data: dict, argument_value: Optional[bool]):
     """
     Add a login flag parameter to the request data in the expected format.
     Args:
         request_data: The request data dictionary.
         argument_value: The argument value.
-        flag_name: The flag name.
     """
-    if argument_value is None:
-        return
-    if 'login_flags' not in request_data:
+    if argument_value is not None:
         request_data['login_flags'] = {}
-    request_data['login_flags'][flag_name] = argument_value
+        request_data['login_flags']['prevent_ui_login'] = argument_value
 
 
 def optional_safe_load_json(raw_json_string: Optional[str], json_entry_id: Optional[str]) -> dict:
@@ -504,6 +500,7 @@ def load_content_from_file(entry_id: str) -> str:
     try:
         path = demisto.getFilePath(entry_id)
         with open(path.get('path')) as file:
+            # Since the file is read as a string, and the '\n' is escaped as '\\n'
             return file.read().replace('\\n', '\n')
     except Exception as e:
         raise ValueError(f'Failed to load the file {entry_id}: {str(e)}')
@@ -564,8 +561,7 @@ def zip_file_with_password(input_file_path: str, password: str, output_file_path
     encryption = pyzipper.WZ_AES
     with pyzipper.AESZipFile(output_file_path, mode='w', compression=compression, encryption=encryption) as zf:
         zf.pwd = bytes(password, 'utf-8')
-        zf.write(output_file_path)
-    zf.close()
+        zf.write(input_file_path)
 
 
 def create_zip_protected_file(zip_filename: str, filename: str, data: str, password: str):
@@ -960,7 +956,7 @@ def user_create_command(client: CipherTrustClient, args: dict[str, Any]) -> Comm
     add_empty_date_param(request_data, args.get(EXPIRES_AT), "expires_at")
     add_empty_list_param(request_data, args.get(ALLOWED_AUTH_METHODS), "allowed_auth_methods")
     add_empty_list_param(request_data, args.get(ALLOWED_CLIENT_TYPES), "allowed_client_types")
-    add_login_flags(request_data, optional_arg_to_bool(args.get(PREVENT_UI_LOGIN)), "prevent_ui_login")
+    add_prevent_ui_login(request_data, optional_arg_to_bool(args.get(PREVENT_UI_LOGIN)))
     raw_response = client.create_user(request_data=request_data)
     return CommandResults(
         outputs_prefix=USERS_CONTEXT_OUTPUT_PREFIX,
@@ -984,7 +980,7 @@ def user_update_command(client: CipherTrustClient, args: dict[str, Any]) -> Comm
     add_empty_date_param(request_data, args.get(EXPIRES_AT), "expires_at")
     add_empty_list_param(request_data, args.get(ALLOWED_AUTH_METHODS), "allowed_auth_methods")
     add_empty_list_param(request_data, args.get(ALLOWED_CLIENT_TYPES), "allowed_client_types")
-    add_login_flags(request_data, optional_arg_to_bool(args.get(PREVENT_UI_LOGIN)), "prevent_ui_login")
+    add_prevent_ui_login(request_data, optional_arg_to_bool(args.get(PREVENT_UI_LOGIN)))
     raw_response = client.update_user(user_id=args.get(USER_ID, ''),
                                       request_data=request_data)
     return CommandResults(
@@ -1044,8 +1040,7 @@ def local_ca_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Co
     if args.get(CHAINED) is not None and args.get(LOCAL_CA_ID) is None:
         raise ValueError('The "chained" argument can only be used with the "local_ca_id" argument.')
 
-    if local_ca_id := args.get(
-            LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
+    if local_ca_id := args.get(LOCAL_CA_ID):  # filter by local_ca_id if provided, in other words - get a single local CA
         params = assign_params(
             chained=optional_arg_to_bool(args.get(CHAINED)),
         )

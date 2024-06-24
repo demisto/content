@@ -3,7 +3,6 @@ from unittest.mock import patch
 import pytest
 import json
 
-
 MOCKER_HTTP_METHOD = 'ThalesCipherTrustManager.CipherTrustClient._http_request'
 MOCKER_CREATE_AUTH_TOKEN = "ThalesCipherTrustManager.CipherTrustClient.create_auth_token"
 MOCKER_LOAD_CONTENT_FROM_FILE = 'ThalesCipherTrustManager.load_content_from_file'
@@ -487,7 +486,7 @@ def test_derive_skip_and_limit_for_pagination_invalid_input(limit, page, page_si
 
 
 @pytest.mark.parametrize('param_name, argument_value, expected_output',
-                         [("test_date", "empty", ""),
+                         [("test_date", "never", ""),
                           ("test_date", "2023-05-26T15:30:00", "2023-05-26T15:30:00.000000Z"),
                           ("test_date", None, None)])
 def test_add_empty_date_param(param_name, argument_value, expected_output):
@@ -507,7 +506,7 @@ def test_add_empty_date_param_invalid_input():
 
 
 @pytest.mark.parametrize('param_name, argument_value, expected_output',
-                         [("test_list", "empty", []),
+                         [("test_list", "none", []),
                           ("test_list", "item1,item2,item3", ["item1", "item2", "item3"]),
                           ("test_list", "", []),
                           ("test_list", None, None)])
@@ -526,16 +525,14 @@ def test_add_empty_list_param_no_value():
         assert request_data['test_list'] is None
 
 
-@pytest.mark.parametrize('request_data, argument_value, flag_name, expected_login_flags', [
-    ({}, "some_value", "flag1", {"flag1": "some_value"}),
-    ({'login_flags': {'existing_flag': 'existing_value'}}, "new_value", "new_flag",
-     {'existing_flag': 'existing_value', 'new_flag': 'new_value'}),
-    ({}, None, "flag1", None),
-    ({'login_flags': {}}, "some_value", "flag1", {"flag1": "some_value"})
+@pytest.mark.parametrize('request_data, argument_value, expected_login_flags', [
+    ({}, "true", {"prevent_ui_login": True}),
+    ({}, "false", {"prevent_ui_login": False}),
+    ({}, None, {})
 ])
-def test_add_login_flags(request_data, argument_value, flag_name, expected_login_flags):
-    from ThalesCipherTrustManager import add_login_flags
-    add_login_flags(request_data, argument_value, flag_name)
+def test_add_login_flags(request_data, argument_value, expected_login_flags):
+    from ThalesCipherTrustManager import add_prevent_ui_login
+    add_prevent_ui_login(request_data, argument_value)
     assert request_data.get('login_flags') == expected_login_flags
 
 
@@ -544,7 +541,6 @@ def test_add_login_flags(request_data, argument_value, flag_name, expected_login
 
 @pytest.fixture(autouse=True)
 def patch_create_auth_token(monkeypatch):
-
     def mock_create_auth_token(*args, **kwargs):
         return util_load_json('test_data/mock_create_auth_token_response.json')
 
