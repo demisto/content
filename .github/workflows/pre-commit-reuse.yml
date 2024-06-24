@@ -56,14 +56,14 @@ jobs:
     - name: "Check coverage.xml exists"
       if: always()
       id: check-coverage-xml-exists
-      uses: andstor/file-existence-action@v2
+      uses: andstor/file-existence-action@v3
       with:
         files: "coverage_report/coverage.xml"
 
     - name: "Check pytest report exists"
       if: always()
       id: check-pytest-junit-exists
-      uses: andstor/file-existence-action@v2
+      uses: andstor/file-existence-action@v3
       with:
         files: ".report_pytest.xml"
 
