@@ -1,4 +1,4 @@
-This playbook uses Endace APIs to search, archive and download PCAP file from either a single EndaceProbe or many via the InvestigationManager.      The workflow accepts inputs like “the date and time of the incident or a timeframe”, “source or destination IP address of the incident”,  “source or destination IP port of the incident”,  “protocol of the incident” and name of archive file. 
+DEPRECATED - This playbook has been deprecated. Use Endace Search Archive Download PCAP v3 instead. This playbook uses Endace APIs to search, archive and download PCAP file from either a single EndaceProbe or many via the InvestigationManager.      The workflow accepts inputs like “the date and time of the incident or a timeframe”, “source or destination IP address of the incident”,  “source or destination IP port of the incident”,  “protocol of the incident” and name of archive file. 
 Required Inputs -
 Either timeframe  or start and timeframe or end and timeframe or start and end fields. 
 Either src_host_list or dest_host_list or ip fields. 
