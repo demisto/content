@@ -134,4 +134,4 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-![image](../../doc_files/94807766-c5c92a80-03f8-11eb-9339-d8e399d895c5.png)
+![image](https://user-images.githubusercontent.com/71636766/94807766-c5c92a80-03f8-11eb-9339-d8e399d895c5.png)
