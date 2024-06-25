@@ -236,7 +236,7 @@ USER_CREATE_TEST_ARGS = [
         "email": "emptyexpirationuser@example.com",
         "allowed_auth_methods": "password",
         "allowed_client_types": "unregistered,public,confidential",
-        "expires_at": "empty",
+        "expires_at": "never",
         "prevent_ui_login": "false",
         "password_change_required": "false",
         "password_policy": "default_policy"
@@ -245,7 +245,7 @@ USER_CREATE_TEST_ARGS = [
         "name": "Empty Auth Methods User",
         "username": "noauthmethodsuser",
         "email": "noauthmethodsuser@example.com",
-        "allowed_auth_methods": "empty",
+        "allowed_auth_methods": "none",
         "allowed_client_types": "unregistered,public,confidential",
         "prevent_ui_login": "false",
         "password_change_required": "false",
@@ -278,9 +278,9 @@ USER_UPDATE_TEST_ARGS = [
     },
     {
         USER_ID: "local|f4k3-u51d-1234",
-        EXPIRES_AT: "empty",
-        ALLOWED_AUTH_METHODS: "empty",
-        ALLOWED_CLIENT_TYPES: "empty"
+        EXPIRES_AT: "never",
+        ALLOWED_AUTH_METHODS: "none",
+        ALLOWED_CLIENT_TYPES: "none"
 
     },
 
@@ -526,8 +526,8 @@ def test_add_empty_list_param_no_value():
 
 
 @pytest.mark.parametrize('request_data, argument_value, expected_login_flags', [
-    ({}, "true", {"prevent_ui_login": True}),
-    ({}, "false", {"prevent_ui_login": False}),
+    ({}, True, {"prevent_ui_login": True}),
+    ({}, False, {"prevent_ui_login": False}),
     ({}, None, {})
 ])
 def test_add_login_flags(request_data, argument_value, expected_login_flags):
