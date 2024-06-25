@@ -10,7 +10,12 @@ from JizoM import (
 )
 
 MOCK_URL = "http://123-fake-api.com"
-
+client = Client(
+    base_url=MOCK_URL,
+    auth=("user_role", "fake_password"),
+    verify=False,
+    proxy=False,
+)
 
 def load_mock_response(file_name: str) -> dict:
     """
@@ -27,17 +32,42 @@ def load_mock_response(file_name: str) -> dict:
         return json.load(f)
 
 
+def test_test_module(requests_mock):
+    """
+    To test test_module command when success response come.
+    Given
+        - A valid response
+    When
+        - The status code returned is 200
+    Then
+        - Ensure test module should return success
+    """
+
+    from JizoM import test_module
+    requests_mock.get(f"{MOCK_URL}/ping", status_code=200)
+    assert test_module(client) == 'ok'
+
+def test_get_token(requests_mock):
+    """
+    To test get_token command when success response come.
+    Given
+        - A valid response
+    Then
+        - Ensure get_token returns the token that will be required
+        to get responses from other endpoints
+    """
+
+    from JizoM import get_token
+    requests_mock.post(f"{MOCK_URL}/login", json=load_mock_response("connect.json"), status_code=200)
+    result= get_token(client)
+    assert "token" in result
+    assert type(result['token'])==str
+    
 def test_get_protocols_command(requests_mock):
 
     requests_mock.get(
         f"{MOCK_URL}/jizo_get_protocols",
         json=load_mock_response("protocols.json"),
-    )
-    client = Client(
-        base_url=MOCK_URL,
-        auth=("user_role", "fake_password"),
-        verify=False,
-        proxy=False,
     )
     response = get_protocols_command(client, {})
     assert len(response.outputs) == 3
@@ -51,12 +81,7 @@ def test_get_peers_command(requests_mock):
         f"{MOCK_URL}/jizo_get_peers",
         json=load_mock_response("peers.json"),
     )
-    client = Client(
-        base_url=MOCK_URL,
-        auth=("user_role", "fake_password"),
-        verify=False,
-        proxy=False,
-    )
+    
     response = get_peers_command(client, {})
     assert list(response.outputs.keys()) == [
         "alerts_flows",
@@ -73,12 +98,7 @@ def test_get_query_records_command(requests_mock):
         f"{MOCK_URL}/jizo_query_records",
         json=load_mock_response("query_records.json"),
     )
-    client = Client(
-        base_url=MOCK_URL,
-        auth=("user_role", "fake_password"),
-        verify=False,
-        proxy=False,
-    )
+    
     response = get_query_records_command(client, {})
     assert (
         len(response.outputs["alerts_flows"]["data"])
@@ -94,12 +114,7 @@ def test_get_alert_rules_command(requests_mock):
         f"{MOCK_URL}/jizo_get_alert_rules",
         json=load_mock_response("alert_rules.json"),
     )
-    client = Client(
-        base_url=MOCK_URL,
-        auth=("user_role", "fake_password"),
-        verify=False,
-        proxy=False,
-    )
+    
     response = get_alert_rules_command(client, {})
     assert len(response.outputs) == 1
     assert response.outputs_prefix == "JizoM.AlertRules"
@@ -112,12 +127,7 @@ def test_get_device_records_command(requests_mock):
         f"{MOCK_URL}/jizo_device_records",
         json=load_mock_response("device_records.json"),
     )
-    client = Client(
-        base_url=MOCK_URL,
-        auth=("user_role", "fake_password"),
-        verify=False,
-        proxy=False,
-    )
+    
     response = get_device_records_command(client, {})
     assert response.outputs_prefix == "JizoM.Device.Records"
     assert "severity" in response.outputs["alerts_flows"]["data"][0]
@@ -129,12 +139,7 @@ def test_get_device_alerts_command(requests_mock):
         f"{MOCK_URL}/jizo_get_devicealerts",
         json=load_mock_response("device_alerts.json"),
     )
-    client = Client(
-        base_url=MOCK_URL,
-        auth=("user_role", "fake_password"),
-        verify=False,
-        proxy=False,
-    )
+    
     response = get_device_alerts_command(client, {})
 
     assert response.outputs_prefix == "JizoM.Device.Alerts"
