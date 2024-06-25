@@ -79,9 +79,10 @@ class Client:
             verify=verify,
             proxy=proxy,
             # scope="https://management.azure.com/.default" if 'Client Credentials' in auth_type else AZURE_DEVOPS_SCOPE,
-            scope=AZURE_DEVOPS_SCOPE if 'Client Credentials' not
-                                    in auth_type else '499b84ac-1321-427f-aa17-267ca6975798',
+            # scope=AZURE_DEVOPS_SCOPE if 'Client Credentials' not
+            #                         in auth_type else '499b84ac-1321-427f-aa17-267ca6975798',
             #scope="/.default" if 'Client Credentials' in auth_type else AZURE_DEVOPS_SCOPE,
+            scope=AZURE_DEVOPS_SCOPE,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
