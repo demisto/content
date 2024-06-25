@@ -283,7 +283,7 @@ def list_processing_tasks_command(tiscale: TitaniumScale):
         resp = tiscale.list_processing_tasks(age=age, custom_token=custom_token)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.text)
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
         else:
             raise
 
@@ -312,7 +312,7 @@ def get_processing_task_info_command(tiscale: TitaniumScale):
         resp = tiscale.get_processing_task_info(task_id=task_id, full=False)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.text)
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
         else:
             raise
 
@@ -332,7 +332,7 @@ def delete_processing_task_command(tiscale: TitaniumScale):
         tiscale.delete_processing_task(task_id=task_id)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.text)
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
         else:
             raise
 
@@ -350,7 +350,7 @@ def delete_multiple_tasks_command(tiscale: TitaniumScale):
         tiscale.delete_multiple_tasks(age=age)
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.text)
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
         else:
             raise
 
@@ -367,7 +367,7 @@ def get_yara_id_command(tiscale: TitaniumScale):
         resp = tiscale.get_yara_id()
     except Exception as e:
         if hasattr(e, "response_object"):
-            return_error(e.response_object.text)
+            return_error(e.response_object.text)    # type: ignore[attr-defined]
         else:
             raise
 
