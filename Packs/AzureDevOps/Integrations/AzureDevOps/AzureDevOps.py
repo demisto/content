@@ -31,7 +31,7 @@ OUTGOING_MIRRORED_FIELDS = {'status': 'The status of the pull request.',
 
 GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
                        'Authorization Code': AUTHORIZATION_CODE,
-                        'Client Credentials': CLIENT_CREDENTIALS}
+                       'Client Credentials': CLIENT_CREDENTIALS}
 AZURE_DEVOPS_SCOPE = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
@@ -70,19 +70,16 @@ class Client:
         client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
+            token_retrieval_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if 'Client Credentials' in auth_type
+                                                                            else 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             # token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
-            #                                                                                                 auth_type else None,                                                                                              auth_type else None,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Client Credentials' not
-                                    in auth_type else f'https://login.microsoftonline.com/{tenant_id}/oauth2/token',
+            #                                                             auth_type else f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token',
             grant_type=GRANT_BY_CONNECTION[auth_type],
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
             proxy=proxy,
-            # scope="https://management.azure.com/.default" if 'Client Credentials' in auth_type else AZURE_DEVOPS_SCOPE,
-            # scope=AZURE_DEVOPS_SCOPE if 'Client Credentials' not
-            #                         in auth_type else '499b84ac-1321-427f-aa17-267ca6975798',
-            #scope="/.default" if 'Client Credentials' in auth_type else AZURE_DEVOPS_SCOPE,
-            scope=AZURE_DEVOPS_SCOPE,
+            # scope="499b84ac-1321-427f-aa17-267ca6975798/.default" if 'Client Credentials' in auth_type else AZURE_DEVOPS_SCOPE,
+            scope= None if 'Client Credentials' in auth_type else AZURE_DEVOPS_SCOPE,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
