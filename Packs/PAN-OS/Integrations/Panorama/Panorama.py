@@ -14231,8 +14231,7 @@ def update_max_fetch_dict(max_fetch_dict: MaxFetch,
         if new_incident_entries.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
     }
     demisto.debug(f"{new_max_fetch=}")
-    # return cast(MaxFetch, new_max_fetch)
-    return new_max_fetch
+    return cast(MaxFetch, new_max_fetch)
 
 
 def fetch_incidents_request(queries_dict: QueryMap, max_fetch_dict: MaxFetch,
@@ -14450,8 +14449,9 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
 
     parsed_incident_entries_list = get_parsed_incident_entries(
         unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
-    
-    next_max_fetch = update_max_fetch_dict(max_fetch_dict, last_fetch_dict, unique_incident_entries_dict)  # type: ignore[arg-type]
+
+    next_max_fetch = update_max_fetch_dict(max_fetch_dict, last_fetch_dict,
+                                           unique_incident_entries_dict)  # type: ignore[arg-type]
     new_last_run = LastRun(last_fetch_dict=last_fetch_dict, last_id_dict=last_id_dict, max_fetch_dict=next_max_fetch)
 
     return new_last_run, parsed_incident_entries_list  # type: ignore[return-value]

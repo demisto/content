@@ -6842,11 +6842,12 @@ class TestFetchIncidentsFlows:
         assert new_last_run['last_fetch_dict'].get('Y_log_type', '') == '2022-01-01 13:00:00'
         assert new_last_run['last_id_dict'].get('Y_log_type', '') == {'dummy_device2': '000000003'}
 
+
 @pytest.mark.parametrize('new_incident_entries, expected_res',
                          [
                              ({}, {}),
                              ({'log_type1': [{'test_data': 1}]}, {'log_type1': 15})
-                        ])
+                         ])
 def test_update_max_fetch_dict(mocker, new_incident_entries, expected_res):
     """
     Given:
