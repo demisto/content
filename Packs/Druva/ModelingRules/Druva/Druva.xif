@@ -7,8 +7,8 @@ alter
     dst_username = arrayindex(regextract(inSyncUserEmail, "(\S+)\@"),0),
     dst_first_name = arrayindex(regextract(inSyncUserName,"(\w+?)\s"),0),
     dst_last_name = arrayindex(regextract(inSyncUserName,"\w+\s(\w+\s*\w*)"),0),
-    severity = rtrim(to_string(severity), ".0"),
-    inSyncDataSourceID = to_string(inSyncDataSourceID)
+    severity_str = rtrim(to_string(severity), ".0"),
+    inSyncDataSourceID_str = to_string(inSyncDataSourceID)
 | alter
     xdm.source.ipv4 = if(incidr(ip, "0.0.0.0/0"), ip),
     xdm.source.ipv6 = arrayindex(regextract(ip, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
@@ -28,9 +28,9 @@ alter
     xdm.target.user.last_name = if(dst_last_name != null, dst_last_name),
     xdm.target.user.username = if(dst_username != null, dst_username, inSyncUserName),
     xdm.target.user.upn = inSyncUserEmail,
-    xdm.target.host.device_id = if(inSyncDataSourceID = "", null, rtrim(inSyncDataSourceID, ".0")),
+    xdm.target.host.device_id = if(inSyncDataSourceID_str = "", null, rtrim(inSyncDataSourceID_str, ".0")),
     xdm.target.host.hostname = if(inSyncDataSourceName = "", null, inSyncDataSourceName),
-    xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity = "1", XDM_CONST.LOG_LEVEL_ALERT, severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity);
+    xdm.event.log_level = if(severity_str = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity_str = "1", XDM_CONST.LOG_LEVEL_ALERT, severity_str = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity_str = "3", XDM_CONST.LOG_LEVEL_ERROR, severity_str = "4", XDM_CONST.LOG_LEVEL_WARNING, severity_str = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity_str = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity_str = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity_str);
 
 [MODEL: dataset="druva_druva_raw"]
 filter eventType = "Alert" //Extraction of fields from 'eventDetails' that are relevant to 'Alert' event types.
