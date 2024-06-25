@@ -127,14 +127,12 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation",
-            "memory_threshold": 85
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
             "timeout": 1200,
-            "integrations": "Cortex XDR - IR",
-            "memory_threshold": 85
+            "integrations": "Cortex XDR - IR"
         },
         {
             "integrations": [
@@ -142,9 +140,7 @@
                 "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
-            "timeout": 1200,
-            "memory_threshold": 85
-
+            "timeout": 1200
         },
         {
             "integrations": "Twitter v2",
