@@ -570,31 +570,6 @@ def date_to_markdown(iso_date: Optional[str], empty_value: str = '') -> str:
         return datetime.strptime(iso_date, DATE_FORMAT_NO_MS).strftime(DATE_FORMAT_HR)
 
 
-def ciphertrust_table_to_markdown_transform_data(data: dict, keys: list[str], keys_headers_mapping: dict,
-                                                 keys_value_mapping: dict) -> dict:
-    """
-    Transform the data for the table to markdown function.
-    Args:
-        data: The data dictionary.
-        keys: The keys to include.
-        keys_headers_mapping: The keys headers mapping.
-        keys_value_mapping: The keys value mapping.
-    Returns:
-        The transformed data dictionary.
-    """
-    transformed_data = {}
-    for k in keys:
-        v = data.get(k, '')
-        transform_func = keys_value_mapping.get(k)
-        if transform_func:
-            transformed_data[k] = transform_func(v)
-        if k in keys_headers_mapping:
-            transformed_data[keys_headers_mapping.get(k, '')] = transformed_data.pop(k, v)
-        else:
-            transformed_data[k] = transformed_data.pop(k, v)
-    return transformed_data
-
-
 def local_ca_markdown(raw_response: dict[str, Any]) -> str:
     """
     Create a human-readable string for a local CA.
@@ -616,8 +591,6 @@ def local_ca_markdown(raw_response: dict[str, Any]) -> str:
 
 
 '''MARKDOWN FUNCTIONS'''
-
-
 def group_list_markdown(data: dict) -> str:
     skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0),
                                                     data.get('limit', 0),
@@ -626,8 +599,7 @@ def group_list_markdown(data: dict) -> str:
 
     transformed_data = [{
         'Name': group.get('name', ''),
-        'Defined By': 'System' if isinstance(group.get('app_metadata'), dict) and group.get('app_metadata').get(
-            'system') else 'User',
+         'Defined By': 'System' if group.get('app_metadata', {}).get('system') else 'User',
         'No. of members': group.get('users_count', ''),
         'Description': group.get('description', '')
     } for group in data.get('resources', [])]
@@ -645,30 +617,56 @@ def local_ca_list_markdown(raw_response: dict[str, Any]) -> str:
         The human-readable string.
     """
 
-    active_cas = tableToMarkdown('Active CAs', [{
-        'Name': ca.get('name', ''),
-        'Subject': ca.get('subject', ''),
-        'Serial #': ca.get('serialNumber', ''),
-        'Activation': date_to_markdown(ca.get('notBefore', '')),
-        'Expiration': date_to_markdown(ca.get('notAfter', '')),
-        'Client Auth': 'Enabled' if ca.get('purpose', {}).get('client_authentication') else 'Disabled',
-        'User Auth': 'Enabled' if ca.get('purpose', {}).get('user_authentication') else 'Disabled'
-    } for ca in raw_response.get('resources', []) if ca.get('state') == 'active'], headerTransform=underscoreToCamelCase,
-                                 sort_headers=False)
-    pending_cas = tableToMarkdown('Pending CAs', [{
-        'Name': ca.get('name', ''),
-        'Subject': ca.get('subject', ''),
-        'Created': date_to_markdown(ca.get('createdAt', '')),
-        'Fingerprint': ca.get('sha1Fingerprint', '')
-    } for ca in raw_response.get('resources', []) if ca.get('state') == 'pending'], headerTransform=underscoreToCamelCase,
-                                  sort_headers=False)
-    expired_cas = tableToMarkdown('Expired CAs', [{
-        'Name': ca.get('name', ''),
-        'Subject': ca.get('subject', ''),
-        'Created': date_to_markdown(ca.get('createdAt', '')),
-        'Fingerprint': ca.get('sha1Fingerprint', '')
-    } for ca in raw_response.get('resources', []) if ca.get('state') == 'expired'], headerTransform=underscoreToCamelCase,
-                                  sort_headers=False)
+    active_cas = tableToMarkdown(
+        'Active CAs',
+        [
+            {
+                'Name': ca.get('name', ''),
+                'Subject': ca.get('subject', ''),
+                'Serial #': ca.get('serialNumber', ''),
+                'Activation': date_to_markdown(ca.get('notBefore', '')),
+                'Expiration': date_to_markdown(ca.get('notAfter', '')),
+                'Client Auth': 'Enabled' if ca.get('purpose', {}).get('client_authentication') else 'Disabled',
+                'User Auth': 'Enabled' if ca.get('purpose', {}).get('user_authentication') else 'Disabled'
+            }
+            for ca in raw_response.get('resources', [])
+            if ca.get('state') == 'active'
+        ],
+        headerTransform=underscoreToCamelCase,
+        sort_headers=False
+    )
+
+    pending_cas = tableToMarkdown(
+        'Pending CAs',
+        [
+            {
+                'Name': ca.get('name', ''),
+                'Subject': ca.get('subject', ''),
+                'Created': date_to_markdown(ca.get('createdAt', '')),
+                'Fingerprint': ca.get('sha1Fingerprint', '')
+            }
+            for ca in raw_response.get('resources', [])
+            if ca.get('state') == 'pending'
+        ],
+        headerTransform=underscoreToCamelCase,
+        sort_headers=False
+    )
+
+    expired_cas = tableToMarkdown(
+        'Expired CAs',
+        [
+            {
+                'Name': ca.get('name', ''),
+                'Subject': ca.get('subject', ''),
+                'Created': date_to_markdown(ca.get('createdAt', '')),
+                'Fingerprint': ca.get('sha1Fingerprint', '')
+            }
+            for ca in raw_response.get('resources', [])
+            if ca.get('state') == 'expired'
+        ],
+        headerTransform=underscoreToCamelCase,
+        sort_headers=False
+    )
 
     hr_title = '### Local Certificate Authorities \n'
     hr_skip_limit_title = hr_skip_limit_to_markdown(raw_response.get('skip', 0), raw_response.get('limit', 0),
@@ -791,12 +789,11 @@ def group_list_command(client: CipherTrustClient, args: dict[str, Any]) -> Comma
         clients=args.get(CLIENT_ID)
     )
     raw_response = client.get_group_list(params=params)
-    hr = group_list_markdown(raw_response)
     return CommandResults(
         outputs_prefix=GROUP_CONTEXT_OUTPUT_PREFIX,
         outputs=raw_response.get('resources'),
         raw_response=raw_response,
-        readable_output=hr
+        readable_output=group_list_markdown(raw_response)
     )
 
 
