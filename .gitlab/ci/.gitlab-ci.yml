@@ -1,4 +1,4 @@
-variables: 
+variables:  
   CURRENT_BRANCH_NAME: "cleanup-ng" 
 
 include:
