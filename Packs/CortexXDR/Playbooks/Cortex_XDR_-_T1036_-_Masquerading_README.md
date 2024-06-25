@@ -43,14 +43,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Endpoint Investigation
-* Search and Compare Process Executions - Generic
 * Cortex XDR - Quarantine File v2
+* Cortex XDR - Endpoint Investigation
 * Entity Enrichment - Generic v3
-* Isolate Endpoint - Generic V2
-* Block Account - Generic v2
 * Command-Line Analysis
-* Block Indicators - Generic v3
+* Detonate File - Generic
 
 ### Integrations
 
@@ -58,7 +55,9 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Scripts
 
-* IncreaseIncidentSeverity
+* GetErrorsFromEntry
+* HttpV2
+* ParseJSON
 
 ### Commands
 
@@ -70,17 +69,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| FileRemediation | Should be either 'Quarantine' or 'Delete'. | Quarantine | Required |
-| AutoCloseAlert | Whether to close the alert automatically or manually, after an analyst's review. | False | Optional |
-| AutoRecovery | Whether to execute the Recovery playbook. | False | Optional |
-| AutoContainment | Setting this input will impact both Containment Plan sub-playbooks. Without setting this input, the default values are True for the first occurrence and False for the second.<br/>Whether to execute automatically or manually the containment plan tasks:<br/>\* Isolate endpoint<br/>\* Block indicators<br/>\* Quarantine file<br/>\* Disable user | False | Optional |
-| AutoEradication | Whether to execute automatically or manually the eradication plan tasks:<br/>\* Terminate process<br/>\* Delete file<br/>\* Reset the user's password | False | Optional |
-| FileSHA256 | The file SHA256 to investigate. | alert.initiatorsha256 | Optional |
-| FilePath | The file path to investigate. | alert.initiatorpath | Optional |
-| IP | The IP address to investigate. | alert.hostip | Optional |
+| AutoContainment | Setting this input to True will quarantine the file automatically in case of malicious file. | True | Optional |
+| FileSHA256 | The file SHA256 to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_sha256 | Optional |
+| FilePath | The file path to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_path | Optional |
 | Username | The alert's username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
 | EndpointID | The IP, Hostname or ID of the Endpoint | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
-| ManualReview | Require manual review by an analyst for further investigation and approval.<br/>\(True/False\) | True | Optional |
+| AlertID | The ID of the alert | PaloAltoNetworksXDR.Incident.alerts.aler_id | Optional |
 
 ## Playbook Outputs
 
