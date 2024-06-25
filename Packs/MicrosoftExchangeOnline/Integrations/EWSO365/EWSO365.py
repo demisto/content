@@ -92,8 +92,8 @@ TARGET_MAILBOX = 'receivedBy'
 
 # context paths
 CONTEXT_UPDATE_EWS_ITEM = f"EWS.Items((val.{ITEM_ID} === obj.{ITEM_ID} || " \
-                          f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
-                          f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
+    f"(val.{MESSAGE_ID} && obj.{MESSAGE_ID} && val.{MESSAGE_ID} === obj.{MESSAGE_ID}))" \
+    f" && val.{TARGET_MAILBOX} === obj.{TARGET_MAILBOX})"
 
 CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT = f"EWS.Items(val.{ITEM_ID} == obj.{ATTACHMENT_ORIGINAL_ITEM_ID})"
 CONTEXT_UPDATE_ITEM_ATTACHMENT = f".ItemAttachments(val.{ATTACHMENT_ID} == obj.{ATTACHMENT_ID})"
@@ -433,7 +433,7 @@ class MarkAsJunk(EWSAccountService):
 
     def get_payload(self, item_id, move_item):  # pragma: no cover
         junk = create_element(
-            f"m:{self.SERVICE_NAME}",
+            f"m: {self.SERVICE_NAME}",
             {"IsJunk": "true", "MoveItem": "true" if move_item else "false"},
         )
 
@@ -481,7 +481,7 @@ class GetSearchableMailboxes(EWSService):
         ]
 
     def get_payload(self):
-        element = create_element(f"m:{self.SERVICE_NAME}")
+        element = create_element(f"m: {self.SERVICE_NAME}")
         return element
 
 
@@ -519,7 +519,7 @@ class ExpandGroup(EWSService):
             sys.exit()
 
     def get_payload(self, email_address):
-        element = create_element(f"m:{self.SERVICE_NAME}")
+        element = create_element(f"m: {self.SERVICE_NAME}")
         mailbox_element = create_element("m:Mailbox")
         add_xml_child(mailbox_element, "t:EmailAddress", email_address)
         element.append(mailbox_element)
@@ -2118,8 +2118,8 @@ def decode_email_data(email_obj: Message):
         data = attached_email_bytes.decode(encoding)
     except UnicodeDecodeError:
         # In case the detected encoding fails apply the default encoding
-        demisto.info(f'Could not decode attached email using detected encoding:{encoding}, retrying '
-                     f'using utf-8.\nAttached email details:'
+        demisto.info(f'Could not decode attached email using detected encoding: {encoding}, retrying '
+                     f'using utf-8.\nAttached email details: '
                      f'\nMessage-ID = {email_obj.get("Message-ID")}'
                      f'\nDate = {email_obj.get("Date")}'
                      f'\nSubject = {email_obj.get("Subject")}'
@@ -2481,7 +2481,7 @@ def fetch_last_emails(
     qs.chunk_size = min(client.max_fetch, 100)
     qs.page_size = min(client.max_fetch, 100)
     demisto.debug("Before iterating on queryset")
-    demisto.debug(f'Size of the queryset object in fetch-incidents:{sys.getsizeof(qs)}')
+    demisto.debug(f'Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}')
     for item in qs:
         demisto.debug("next iteration of the queryset in fetch-incidents")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
