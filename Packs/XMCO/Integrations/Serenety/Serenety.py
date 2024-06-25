@@ -1,12 +1,6 @@
-from datetime import datetime
-
-import urllib3
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
-
-# Disable insecure warnings
-urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
@@ -89,7 +83,7 @@ def convert_to_demisto_severity(severity: str) -> float:
         'medium': IncidentSeverity.MEDIUM,
         'high': IncidentSeverity.HIGH,
         'critical': IncidentSeverity.CRITICAL
-    }[severity]
+    }.get(severity, IncidentSeverity.INFO)
 
 
 ''' COMMAND FUNCTIONS '''
@@ -115,13 +109,12 @@ def test_module(client: Client) -> str:
         if result.get('_error', None):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
-            message = f'User {result["user"]["first_name"]} {result["user"]["surname"]} is authenticated'
+            message = 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
             message = 'Authorization Error: make sure API Key is correctly set'
         else:
             raise e
-    demisto.results(message)
 
     return message
 
@@ -145,35 +138,39 @@ def fetch_incidents(client: Client,
         incidents: Incidents that will be created in Cortex XSOAR
     """
     # Get the last fetch time, if exists
-    last_fetch = last_run.get("last_fetch", first_fetch_time)
-    # last_fetch_datetime = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
-    # last_fetch = last_fetch_datetime.strftime(ISO_8601_FORMAT)
-
-    # current_datetime = datetime.utcnow().astimezone(timezone.utc)
-    # current_iso_format_time = current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    last_fetch = last_run.get("last_fetch", None)
+    if last_fetch is None:
+        last_fetch = first_fetch_time
+    else:
+        last_fetch = datetime.now().strftime(ISO_8601_FORMAT)
 
     incidents: list[dict[str, Any]] = []
     items = client.fetch_alert(scope)
     for item in items:
-        data = item['data']
-        created = dateparser.parse(data['_created'])
-        incident = {
-            'name': data['title'],
-            'detail': data['description'],
-            'severity': convert_to_demisto_severity(data.get('severity', 'low')),
-            'occurred': created.strftime(ISO_8601_FORMAT),  # type: ignore[union-attr]
-            'rawJSON': json.dumps(data),
-            'type': 'XMCO Serenety Alert',
-            'CustomFields': {
-                'xmcoserenetycategory': data['custom_fields']['category'],
-                'xmcoserenetysubcategory': data['custom_fields']['subcategory'],
-                'xmcoserenetyidentification': data['custom_fields']['identification'],
-                'xmcoserenetymonitoring': data['custom_fields']['scope'],
-                'renderedhtml': data['description']
-            }
-        }
+        try:
+            data = item.get('data', {})
+            if data:
+                created = dateparser.parse(data['_created'])
+                incident = {
+                    'name': data['title'],
+                    'detail': data['description'],
+                    'severity': convert_to_demisto_severity(data.get('severity', 'low')),
+                    'occurred': created.strftime(ISO_8601_FORMAT),  # type: ignore[union-attr]
+                    'rawJSON': json.dumps(data),
+                    'type': 'XMCO Serenety Alert',
+                    'CustomFields': {
+                        'xmcoserenetycategory': data['custom_fields']['category'],
+                        'xmcoserenetysubcategory': data['custom_fields']['subcategory'],
+                        'xmcoserenetyidentification': data['custom_fields']['identification'],
+                        'xmcoserenetymonitoring': data['custom_fields']['scope'],
+                        'renderedhtml': data['description']
+                    }
+                }
 
-        incidents.append(incident)
+                incidents.append(incident)
+        except Exception as e:
+            demisto.debug(e)
+            continue
 
     next_run = {'last_fetch': last_fetch}
 

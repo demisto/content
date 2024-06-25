@@ -1,5 +1,8 @@
 fromversion: 6.10.0
 category: Vulnerability Management
+sectionOrder:
+  - Connect
+  - Collect
 commonfields:
   id: Serenety
   version: -1
@@ -9,6 +12,7 @@ configuration:
   name: url
   required: true
   type: 0
+  section: Connect
 - displaypassword: API Key
   name: api_key
   required: true
@@ -19,24 +23,31 @@ configuration:
   name: insecure
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
 - display: Maximum number of incidents per fetch
   defaultvalue: '50'
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch.
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
@@ -58,4 +69,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted).
-
+defaultmapperin: XMCO - Serenety Mapper
