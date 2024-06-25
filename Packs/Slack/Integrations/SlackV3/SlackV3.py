@@ -161,9 +161,8 @@ def test_module():
         xsiam_permitted_notification_types = {"investigationClosed", "investigationDeleted", "incidentReminderSLA",
                                               "taskCompleted", "failedFetchIncidents", "mentionNew", "mentionOld"}
 
-        if set(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > xsiam_permitted_notification_types:
-            demisto.error(f"Some of the options were chosen for 'Types of Notifications to Send' are not supported in XSIAM.\n"
-                          f"There are all the options are supported by XSIAM: {xsiam_permitted_notification_types}")
+        if not_allowed := set(CUSTOM_PERMITTED_NOTIFICATION_TYPES).difference(xsiam_permitted_notification_types):
+            demisto.error(f"The {','.join(sorted(not_allowed))} 'Types of Notifications to Send' are not supported in XSIAM.")
 
     demisto.results('ok')
 
