@@ -43,11 +43,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
+* Detonate File - Generic
+* Command-Line Analysis
+* Entity Enrichment - Generic v3
 * Cortex XDR - Quarantine File v2
 * Cortex XDR - Endpoint Investigation
-* Entity Enrichment - Generic v3
-* Command-Line Analysis
-* Detonate File - Generic
 
 ### Integrations
 

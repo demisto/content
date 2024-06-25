@@ -3,43 +3,35 @@ version: -1
 name: Cortex XDR - T1036 - Masquerading
 description: |-
   This playbook handles masquerading alerts based on the MITRE T1036 technique.
-  An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
-
+  An attacker might leverage Microsoft Windows' well-known image names to run malicious processes without being caught.
+  
   **Attacker's Goals:**
-
-  An attacker is attempting to masquerade as standard windows images by using a trusted name to execute malicious code.
-
+  
+  An attacker attempts to masquerade as standard Windows images by using a trusted name to execute malicious code.
+  
   **Investigative Actions:**
-
-  Investigate the executed process image and verify if it is malicious using:
-
-  * XDR trusted signers
-  * VT trusted signers
-  * VT detection rate
+  
+  Enrich and Investigate the executed process image and endpoint and verify if it is malicious using:
+  
+  * File Reputation
   * NSRL DB
-
+  * CommandLine Analysis
+  * Sandbox File Detonation
+  
+  
   **Response Actions**
-
-  The playbook's first response action is a containment plan which is based on the initial data provided within the alert. In that phase, the playbook will execute:
-
-  * Auto block indicators
+  
+  When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment actions:
+  
+  * Auto Process termination
   * Auto file quarantine
-  * Manual endpoint isolation
-
-  When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment and eradication, is executed.
-
-  This phase will execute the following containment actions:
-
-  * Manual block indicators
-  * Manual file quarantine
-  * Auto endpoint isolation
-  * Auto process termination
-
+  * Manual containment
+  
   External resources:
-
+  
   [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
-
-  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading).
+  
+  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
 starttaskid: "0"
 tasks:
   "0":
@@ -63,37 +55,6 @@ tasks:
         "position": {
           "x": 1180,
           "y": 390
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "7":
-    id: "7"
-    taskid: 12863511-ef31-44dc-89d9-273119d82456
-    type: title
-    task:
-      id: 12863511-ef31-44dc-89d9-273119d82456
-      version: -1
-      name: False Positive
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "41"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 650,
-          "y": 2360
         }
       }
     note: false
@@ -202,10 +163,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 6fd1aa61-82d7-4ecf-8263-57c4740aa164
+    taskid: 3bbe35e6-a7a6-47b9-8140-6a2beb1a1957
     type: condition
     task:
-      id: 6fd1aa61-82d7-4ecf-8263-57c4740aa164
+      id: 3bbe35e6-a7a6-47b9-8140-6a2beb1a1957
       version: -1
       name: Are there investigation findings?
       description: Checks if there are findings from the Endpoint Investigation stage.
@@ -215,7 +176,6 @@ tasks:
     nexttasks:
       '#default#':
       - "41"
-      - "7"
       "Yes":
       - "33"
     separatecontext: false
@@ -1063,8 +1023,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 2525,
-        "width": 1570,
-        "x": 650,
+        "width": 1440,
+        "x": 780,
         "y": 390
       }
     }
