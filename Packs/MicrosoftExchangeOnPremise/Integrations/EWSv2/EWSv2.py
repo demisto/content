@@ -1,6 +1,7 @@
 import email
 import hashlib
 from multiprocessing import Process
+import uuid
 
 import dateparser  # type: ignore
 import exchangelib
@@ -400,10 +401,13 @@ def get_time_zone() -> EWSTimeZone | None:
     return time_zone
 
 
-def get_attachment_name(attachment_name):  # pragma: no cover
+def get_attachment_name(attachment_name, content_id="", attachment_id=""):  # pragma: no cover
+    identifier_id = content_id
+    if not identifier_id or identifier_id == "None":
+        identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return 'demisto_untitled_attachment'
-    return attachment_name
+        return f'{identifier_id}-imageName:demisto_untitled_attachment'
+    return f'{identifier_id}-imageName:{attachment_name}'
 
 
 def switch_hr_headers(obj, hr_header_changes):
@@ -537,7 +541,8 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     """
     if not attachments:
         attachments = []
-    message_body = get_message_for_body_type(body, body_type, html_body)
+    message_body, inline_attachments = get_message_for_body_type(body, body_type, html_body)
+    attachments += inline_attachments
     m = Message(
         account=account,
         mime_content=raw_message.encode('UTF-8') if raw_message else None,
@@ -562,6 +567,35 @@ def send_email_to_mailbox(account, to, subject, body, body_type, bcc, cc, reply_
     return m
 
 
+def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
+    """
+    Extract all data-url content from within the html and return as separate attachments.
+    Due to security implications, we support only images here
+    We might not have Beautiful Soup so just do regex search
+    """
+    attachments = []
+    clean_body = ''
+    last_index = 0
+    for i, m in enumerate(
+            re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
+        name = f'image{i}'
+        cid = (f'{name}_{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
+        attachment = {
+            'data': base64.b64decode(m.group(3)),
+            'name': name
+
+        }
+        attachment['cid'] = cid
+        clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
+        last_index = m.end() - 1
+        new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'),
+                                        content_id=attachment.get('cid'), is_inline=True)
+        attachments.append(new_attachment)
+
+    clean_body += html_body[last_index:]
+    return clean_body, attachments
+
+
 def get_message_for_body_type(body, body_type, html_body):
     """
     Compatibility with Data Collection - where body_type is not provided, we will use the html_body if it exists.
@@ -574,11 +608,14 @@ def get_message_for_body_type(body, body_type, html_body):
     Returns:
         Body: the body of the message.
     """
+    attachments: list = []
+    if html_body:
+        html_body, attachments = handle_html(html_body)
     if body_type is None:  # When called from a data collection task.
-        return HTMLBody(html_body) if html_body else Body(body)
+        return (HTMLBody(html_body) if html_body else Body(body)), attachments
     if body_type.lower() == 'html' and html_body:  # When called from 'send-mail' command.
-        return HTMLBody(html_body)
-    return Body(body) if (body or not html_body) else HTMLBody(html_body)
+        return HTMLBody(html_body), attachments
+    return Body(body) if (body or not html_body) else HTMLBody(html_body), attachments
 
 
 def send_email_reply_to_mailbox(account, in_reply_to, to, body, subject=None, bcc=None, cc=None, html_body=None,
@@ -1055,7 +1092,9 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 label_attachment_id_type = 'attachmentId'
 
                                 # save the attachment
-                                file_name = get_attachment_name(attachment.name)
+                                file_name = get_attachment_name(attachment_name=attachment.name,
+                                                                content_id=attachment.content_id,
+                                                                attachment_id=attachment.attachment_id.id)
                                 file_result = fileResult(file_name, attachment.content)
 
                                 # check for error
@@ -1066,8 +1105,9 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                 # save attachment to incident
                                 incident['attachment'].append({
                                     'path': file_result['FileID'],
-                                    'name': get_attachment_name(attachment.name),
-                                    "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
+                                    'name': get_attachment_name(attachment_name=attachment.name,
+                                                                content_id=attachment.content_id,
+                                                                attachment_id=attachment.attachment_id.id),
                                 })
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
@@ -1103,7 +1143,9 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                             and header.name != 'Content-Type':
                                         attached_email.add_header(header.name, header.value)
 
-                            file_result = fileResult(get_attachment_name(attachment.name) + ".eml",
+                            file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
+                                                                         content_id=attachment.content_id,
+                                                                         attachment_id=attachment.attachment_id.id) + ".eml",
                                                      attached_email.as_string())
 
                         if file_result:
@@ -1115,17 +1157,21 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                             # save attachment to incident
                             incident['attachment'].append({
                                 'path': file_result['FileID'],
-                                'name': get_attachment_name(attachment.name) + ".eml",
-                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
+                                'name': get_attachment_name(attachment_name=attachment.name,
+                                                            content_id=attachment.content_id,
+                                                            attachment_id=attachment.attachment_id.id) + ".eml",
                             })
 
                         else:
                             incident['attachment'].append({
-                                'name': get_attachment_name(attachment.name) + ".eml",
-                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else ""
+                                'name': get_attachment_name(attachment_name=attachment.name,
+                                                            content_id=attachment.content_id,
+                                                            attachment_id=attachment.attachment_id.id) + ".eml",
                             })
 
-                    labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment.name)})
+                    labels.append({'type': label_attachment_type, 'value': get_attachment_name(attachment_name=attachment.name,
+                                                                                               content_id=attachment.content_id,
+                                                                                               attachment_id=attachment.attachment_id.id)})
                     labels.append({'type': label_attachment_id_type, 'value': attachment.attachment_id.id})
 
         # handle headers
@@ -1251,7 +1297,9 @@ def fetch_emails_as_incidents(account_email, folder_name):
 
 
 def get_entry_for_file_attachment(item_id, attachment):  # pragma: no cover
-    entry = fileResult(get_attachment_name(attachment.name), attachment.content)
+    entry = fileResult(get_attachment_name(attachment_name=attachment.name,
+                                           content_id=attachment.content_id,
+                                           attachment_id=attachment.attachment_id.id), attachment.content)
     ec = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id,
                                                                                                           attachment)
@@ -1270,7 +1318,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentName': get_attachment_name(attachment_name=attachment.name,
+                                                      content_id=attachment.content_id,
+                                                      attachment_id=attachment.attachment_id.id),
                 'attachmentSHA256': hashlib.sha256(attachment_content).hexdigest() if attachment_content else None,
                 'attachmentContentType': attachment.content_type,
                 'attachmentContentId': attachment.content_id,
@@ -1287,7 +1337,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
             return {
                 ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
                 ATTACHMENT_ID: attachment.attachment_id.id,
-                'attachmentName': get_attachment_name(attachment.name),
+                'attachmentName': get_attachment_name(attachment_name=attachment.name,
+                                                      content_id=attachment.content_id,
+                                                      attachment_id=attachment.attachment_id.id),
                 'attachmentSize': attachment.size,
                 'attachmentLastModifiedTime': attachment.last_modified_time.ewsformat(),
                 'attachmentIsInline': attachment.is_inline,
@@ -1301,7 +1353,9 @@ def parse_attachment_as_dict(item_id, attachment):  # pragma: no cover
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            'attachmentName': get_attachment_name(attachment.name),
+            'attachmentName': get_attachment_name(attachment_name=attachment.name,
+                                                  content_id=attachment.content_id,
+                                                  attachment_id=attachment.attachment_id.id),
             'attachmentSHA256': None,
             'attachmentContentType': attachment.content_type,
             'attachmentContentId': attachment.content_id,
@@ -1317,7 +1371,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     item = attachment.item
     dict_result = parse_attachment_as_dict(item_id, attachment)
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
-    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment.name)}"'
+    title = (f'EWS get attachment got item for "{target_email}", '
+             f'"{get_attachment_name(attachment_name=attachment.name,content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"')  # noqa: E501
 
     return get_entry_for_object(title, CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT + CONTEXT_UPDATE_ITEM_ATTACHMENT,
                                 dict_result)
@@ -1377,22 +1432,29 @@ def delete_attachments_for_message(item_id, target_mailbox=None, attachment_ids=
     return entries
 
 
-def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None):  # pragma: no cover
+def fetch_attachments_for_message(item_id, target_mailbox=None, attachment_ids=None, identifiers_filter=""):  # pragma: no cover
+    identifiers_filter = argToList(identifiers_filter)
     account = get_account(target_mailbox or ACCOUNT_EMAIL)
     attachments = get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if isinstance(attachment, FileAttachment):
-            try:
-                if attachment.content:
-                    entries.append(get_entry_for_file_attachment(item_id, attachment))
-            except TypeError as e:
-                if str(e) != "must be string or buffer, not None":
-                    raise
-        else:
-            entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
-            if attachment.item.mime_content:
-                entries.append(fileResult(get_attachment_name(attachment.name) + ".eml", attachment.item.mime_content))
+        if (not identifiers_filter
+            or attachment.content_id in identifiers_filter
+                or attachment.attachment_id.id in identifiers_filter):
+            if isinstance(attachment, FileAttachment):
+                try:
+                    if attachment.content:
+                        entries.append(get_entry_for_file_attachment(item_id, attachment))
+                except TypeError as e:
+                    if str(e) != "must be string or buffer, not None":
+                        raise
+            else:
+                entries.append(get_entry_for_item_attachment(item_id, attachment, account.primary_smtp_address))
+                if attachment.item.mime_content:
+                    entries.append(fileResult(get_attachment_name(attachment_name=attachment.name,
+                                                                  content_id=attachment.content_id,
+                                                                  attachment_id=attachment.attachment_id.id) + ".eml",
+                                              attachment.item.mime_content))
 
     return entries
 
@@ -1996,7 +2058,6 @@ def send_email(args):
             'ContentsFormat': formats['html'],
             'Contents': args.get('htmlBody')
         })
-
     return results
 
 
