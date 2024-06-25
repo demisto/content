@@ -599,7 +599,7 @@ def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None
     log_message_append = ""
     if is_gcc:  # Backward compatible.
         endpoint_type = "US GCC"
-        log_message_append = f", Overriding endpoint to {endpoint_type}, backward compatible."
+        log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
     elif (endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type) and not url:
         # When the integration was configured before our Azure Cloud support, the value will be None.
         if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
@@ -607,7 +607,7 @@ def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None
         raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
     endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(endpoint_type, 'com')
     url = url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
-    demisto.info(f"Using url: {url}, endpoint type: {endpoint_type}{log_message_append}")
+    demisto.info(f"Using url:{url}, endpoint type:{endpoint_type}{log_message_append}")
     return endpoint_type, url
 
 
@@ -940,7 +940,7 @@ class MicrosoftClient(BaseClient):
                 f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} '
                 f'{oproxy_response.text}'
             )
-            msg += f" Status: {oproxy_response.status_code}, "
+            msg += f" Status: {oproxy_response.status_code},"
             search_microsoft_response = re.search(r'{.*}', oproxy_response.text)
             microsoft_response = self.extract_microsoft_error(json.loads(search_microsoft_response.group())) \
                 if search_microsoft_response else ""
@@ -1094,7 +1094,7 @@ class MicrosoftClient(BaseClient):
         try:
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
             if response.status_code not in {200, 201}:
-                return_error(f'Error in Microsoft authorization. Status: {response.status_code}, '
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
                              f' body: {self.error_parser(response)}')
             response_json = response.json()
         except Exception as e:
@@ -1142,7 +1142,7 @@ class MicrosoftClient(BaseClient):
         try:
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
             if response.status_code not in {200, 201}:
-                return_error(f'Error in Microsoft authorization. Status: {response.status_code}, '
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
                              f' body: {self.error_parser(response)}')
             response_json = response.json()
         except Exception as e:
@@ -1210,7 +1210,7 @@ class MicrosoftClient(BaseClient):
         try:
             response = requests.post(self.token_retrieval_url, data, verify=self.verify)
             if response.status_code not in {200, 201}:
-                return_error(f'Error in Microsoft authorization. Status: {response.status_code}, '
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
                              f' body: {self.error_parser(response)}')
             response_json = response.json()
         except Exception as e:
@@ -1299,7 +1299,7 @@ class MicrosoftClient(BaseClient):
         if err_str:
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
                 err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
-                    f"to reset the authentication process."
+                           f"to reset the authentication process."
             return err_str
         # If no error message
         return None
@@ -1368,7 +1368,7 @@ class MicrosoftClient(BaseClient):
             return base64.b64encode(nonce + ct)
 
         now = MicrosoftClient.epoch_seconds()
-        encrypted = encrypt(f'{now}: {content}', key).decode('utf-8')
+        encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
         return encrypted
 
     @staticmethod
@@ -1394,7 +1394,7 @@ class MicrosoftClient(BaseClient):
                 verify=self.verify
             )
             if not response.ok:
-                return_error(f'Error in Microsoft authorization. Status: {response.status_code}, '
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
                              f' body: {self.error_parser(response)}')
             response_json = response.json()
         except Exception as e:
@@ -1501,7 +1501,7 @@ def generate_login_url(client: MicrosoftClient,
         missing.append("redirect_uri")
     if missing:
         raise DemistoException("Please make sure you entered the Authorization configuration correctly. "
-                               f"Missing: {','.join(missing)}")
+                               f"Missing:{','.join(missing)}")
 
     login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
                         f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
