@@ -134,7 +134,13 @@ def get_xsoar_close_reasons():
     """
      Get the default XSOAR close-reasons in addition to custom close-reasons from server configuration.
     """
-    custom_close_reasons: list = argToList(get_server_config().get('incident.closereasons', ''))
+    try:
+        server_config = get_server_config()
+    except Exception as e:
+        demisto.error(f"Could not get server configuration: {e}")
+        server_config = {}
+
+    custom_close_reasons: list = argToList(server_config.get('incident.closereasons', ''))
     return list(XSOAR_RESOLVED_STATUS_TO_XDR.keys()) + custom_close_reasons
 
 
