@@ -16,19 +16,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Port Scan - Adjusted
+* Cortex XDR - Cloud IAM User Access Investigation
+* Cortex XDR - XCloud Cryptojacking
+* Cortex XDR - Malware Investigation
+* Cortex XDR - First SSO Access
+* Cortex XDR - Cloud Data Exfiltration Response
+* Cortex XDR - XCloud Token Theft Response
 * Cortex XDR - Large Upload
 * GenericPolling
-* Cortex XDR - Identity Analytics
-* Cortex XDR - Cloud IAM User Access Investigation
-* Cortex XDR - Cloud Data Exfiltration Response
-* Cortex XDR - XCloud Cryptojacking
-* Cortex XDR - T1036 - Masquerading
-* Cortex XDR - Malware Investigation
-* Cortex XDR - XCloud Token Theft Response
 * Cortex XDR - Possible External RDP Brute-Force
-* Cortex XDR - First SSO Access
+* Cortex XDR - Port Scan - Adjusted
+* Cortex XDR - Identity Analytics
 * Cortex XDR Remote PsExec with LOLBIN command execution alert
+* Cortex XDR - T1036 - Masquerading
 
 ### Integrations
 

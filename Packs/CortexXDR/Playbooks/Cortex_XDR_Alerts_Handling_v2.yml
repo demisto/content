@@ -68,7 +68,7 @@ tasks:
       RDP Brute-Force:
       - "13"
       Masquerading:
-      - "23"
+      - "24"
     separatecontext: false
     conditions:
     - label: Masquerading
@@ -1874,12 +1874,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "23":
-    id: "23"
-    taskid: 84d50959-532a-42be-81bc-5f6544758e78
+  "24":
+    id: "24"
+    taskid: c77dad80-fa71-45ad-83c4-cc09cd58fca9
     type: playbook
     task:
-      id: 84d50959-532a-42be-81bc-5f6544758e78
+      id: c77dad80-fa71-45ad-83c4-cc09cd58fca9
       version: -1
       name: Cortex XDR - T1036 - Masquerading
       description: |-
@@ -1929,14 +1929,24 @@ tasks:
       '#none#':
       - "5"
     scriptarguments:
-      AutoCloseAlert:
-        simple: "False"
+      AlertID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name
+                iscontext: true
+              right:
+                value:
+                  simple: T1036
+              ignorecase: true
+          accessor: alert_id
+          transformers:
+          - operator: uniq
       AutoContainment:
-        simple: "False"
-      AutoEradication:
-        simple: "False"
-      AutoRecovery:
-        simple: "False"
+        simple: "True"
       EndpointID:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
@@ -1949,11 +1959,11 @@ tasks:
               right:
                 value:
                   simple: inputs.alert_id
+                iscontext: true
               ignorecase: true
           accessor: endpoint_id
           transformers:
           - operator: uniq
-          - operator: StringifyArray
       FilePath:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
@@ -1961,47 +1971,32 @@ tasks:
           - - operator: isEqualString
               left:
                 value:
-                  simple: 'PaloAltoNetworksXDR.Incident.alerts.alert_id '
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
                 iscontext: true
               right:
                 value:
                   simple: inputs.alert_id
                 iscontext: true
+              ignorecase: true
           accessor: actor_process_image_path
-      FileRemediation:
-        simple: Quarantine
+          transformers:
+          - operator: uniq
       FileSHA256:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
           filters:
-          - - operator: isEqualString
+          - - operator: containsString
               left:
                 value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                  simple: PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name
                 iscontext: true
               right:
                 value:
-                  simple: inputs.alert_id
-                iscontext: true
+                  simple: T1036
               ignorecase: true
           accessor: actor_process_image_sha256
-      IP:
-        complex:
-          root: PaloAltoNetworksXDR.Incident.alerts
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.alert_id
-                iscontext: true
-              ignorecase: true
-          accessor: host_ip
-      ManualReview:
-        simple: "False"
+          transformers:
+          - operator: uniq
       Username:
         complex:
           root: PaloAltoNetworksXDR.Incident.alerts
@@ -2025,11 +2020,11 @@ tasks:
       iscommand: false
       exitCondition: ""
       wait: 1
-      max: 0
+      max: 100
     view: |-
       {
         "position": {
-          "x": -1310,
+          "x": -1320,
           "y": 405
         }
       }
@@ -2050,7 +2045,6 @@ view: |-
       "1_18_ Remote PsExec with LOLBIN command": 0.67,
       "1_19_Identity Analytics": 0.9,
       "1_20_Large Upload": 0.89,
-      "1_23_Masquerading": 0.89,
       "1_7_#default#": 0.9
     },
     "paper": {
@@ -2100,6 +2094,7 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
+- Test XDR Playbook general commands
 - Test XDR Playbook
 fromversion: 6.5.0
 marketplaces:
