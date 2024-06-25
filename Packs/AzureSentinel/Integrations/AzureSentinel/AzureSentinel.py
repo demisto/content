@@ -15,7 +15,6 @@ from MicrosoftApiModule import *  # noqa: E402
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
-
 ''' CONSTANTS '''
 
 APP_NAME = 'ms-azure-sentinel'
