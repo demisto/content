@@ -877,7 +877,7 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
         Then:
             - Ensure no error is raised, and return `ok`
         """
-    from CortexXDRIR import Client
+    from CortexXDRIR import Client, validate_custom_close_reasons_mapping
 
     # using two different credentials object as they both fields need to be encrypted
     base_url = urljoin("dummy_url", '/public_api/v1')
@@ -895,10 +895,10 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
     with capfd.disabled():
         if should_raise_error:
             with pytest.raises(DemistoException):
-                validate_custom_mapping(mapping=custom_mapping, direction=direction)
+                validate_custom_close_reasons_mapping(mapping=custom_mapping, direction=direction)
         else:
             try:
-                validate_custom_mapping(mapping=custom_mapping, direction=direction)
+                validate_custom_close_reasons_mapping(mapping=custom_mapping, direction=direction)
             except DemistoException as e:
                 pytest.fail(f"Unexpected exception raised for input {input}: {e}")
 
