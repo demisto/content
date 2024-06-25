@@ -171,7 +171,7 @@ def decode_message(msg: str) -> Sequence[str | None]:
     readable_msg = []
     translated_msg = urllib.parse.unquote(msg).split(';')
     for word in translated_msg:
-        word = b64decode(word.encode('utf8')).decode('utf8')
+        word = b64decode(word).decode('utf-8', errors='replace')
         if word:
             readable_msg.append(word)
     return readable_msg
@@ -408,13 +408,10 @@ def fetch_events_command(
             try:
                 event["_time"] = event["httpMessage"]["start"]
                 if "attackData" in event:
-                    event['attackData']['rules'] = decode_message(event.get('attackData', {}).get('rules', ""))
-                    event['attackData']['ruleMessages'] = decode_message(event.get('attackData', {}).get('ruleMessages', ""))
-                    event['attackData']['ruleTags'] = decode_message(event.get('attackData', {}).get('ruleTags', ""))
-                    event['attackData']['ruleData'] = decode_message(event.get('attackData', {}).get('ruleData', ""))
-                    event['attackData']['ruleSelectors'] = decode_message(event.get('attackData', {}).get('ruleSelectors', ""))
-                    event['attackData']['ruleActions'] = decode_message(event.get('attackData', {}).get('ruleActions', ""))
-                    event['attackData']['ruleVersions'] = decode_message(event.get('attackData', {}).get('ruleVersions', ""))
+                    for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
+                                'ruleActions', 'ruleVersions']:
+                        event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
+                                                                                                              ""))
                 if "httpMessage" in event:
                     event['httpMessage']['requestHeaders'] = decode_url(event.get('httpMessage', {}).get('requestHeaders', ""))
                     event['httpMessage']['responseHeaders'] = decode_url(event.get('httpMessage', {}).get('responseHeaders', ""))
