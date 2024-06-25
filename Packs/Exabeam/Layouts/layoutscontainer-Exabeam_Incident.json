@@ -79,7 +79,9 @@
 							}
 						],
 						"maxW": 3,
+						"moved": false,
 						"name": "Case Details",
+						"static": false,
 						"w": 1,
 						"x": 0,
 						"y": 0
@@ -88,7 +90,9 @@
 						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
+						"moved": false,
 						"name": "Notes",
+						"static": false,
 						"type": "notes",
 						"w": 1,
 						"x": 2,
@@ -99,7 +103,9 @@
 						"h": 2,
 						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
+						"moved": false,
 						"name": "Work Plan",
+						"static": false,
 						"type": "workplan",
 						"w": 1,
 						"x": 1,
@@ -111,7 +117,9 @@
 						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"maxW": 3,
+						"moved": false,
 						"name": "Linked Incidents",
+						"static": false,
 						"type": "linkedIncidents",
 						"w": 1,
 						"x": 1,
@@ -122,7 +130,9 @@
 						"h": 2,
 						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
+						"moved": false,
 						"name": "Child Incidents",
+						"static": false,
 						"type": "childInv",
 						"w": 1,
 						"x": 2,
@@ -133,7 +143,9 @@
 						"h": 2,
 						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
 						"maxW": 3,
+						"moved": false,
 						"name": "Evidence",
+						"static": false,
 						"type": "evidence",
 						"w": 1,
 						"x": 2,
@@ -145,7 +157,9 @@
 						"hideName": false,
 						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
 						"maxW": 3,
+						"moved": false,
 						"name": "Team Members",
+						"static": false,
 						"type": "team",
 						"w": 1,
 						"x": 2,
@@ -156,9 +170,11 @@
 						"h": 2,
 						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
 						"maxW": 3,
+						"moved": false,
 						"name": "Indicators",
 						"query": "",
 						"queryType": "input",
+						"static": false,
 						"type": "indicators",
 						"w": 2,
 						"x": 0,
@@ -216,7 +232,9 @@
 							}
 						],
 						"maxW": 3,
+						"moved": false,
 						"name": "Timeline Information",
+						"static": false,
 						"w": 1,
 						"x": 0,
 						"y": 2
@@ -256,7 +274,9 @@
 							}
 						],
 						"maxW": 3,
+						"moved": false,
 						"name": "Closing Information",
+						"static": false,
 						"w": 1,
 						"x": 0,
 						"y": 6
@@ -278,7 +298,9 @@
 							}
 						],
 						"maxW": 3,
+						"moved": false,
 						"name": "Investigation Data",
+						"static": false,
 						"w": 1,
 						"x": 1,
 						"y": 2
@@ -287,34 +309,9 @@
 				"type": "custom"
 			},
 			{
-				"id": "warRoom",
-				"name": "War Room",
-				"type": "warRoom"
-			},
-			{
-				"id": "workPlan",
-				"name": "Work Plan",
-				"type": "workPlan"
-			},
-			{
-				"id": "evidenceBoard",
-				"name": "Evidence Board",
-				"type": "evidenceBoard"
-			},
-			{
-				"id": "relatedIncidents",
-				"name": "Related Incidents",
-				"type": "relatedIncidents"
-			},
-			{
-				"id": "canvas",
-				"name": "Canvas",
-				"type": "canvas"
-			},
-			{
 				"hidden": false,
 				"id": "hjz1thixle",
-				"name": "New tab",
+				"name": "exabeam incident",
 				"sections": [
 					{
 						"displayType": "CARD",
@@ -443,7 +440,7 @@
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
-						"name": "New Section",
+						"name": "info",
 						"static": false,
 						"w": 1,
 						"x": 0,
@@ -451,28 +448,52 @@
 					}
 				],
 				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			},
+			{
+				"id": "relatedIncidents",
+				"name": "Related Incidents",
+				"type": "relatedIncidents"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
 			}
 		]
 	},
 	"edit": null,
 	"fromServerVersion": "6.0.0",
 	"group": "incident",
-	"id": "Exabeam Incident",
+	"id": "2fc43654-5c7b-47a6-8671-70aa7e76f05d",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
-	"itemVersion": "",
+	"itemVersion": "2.4.0",
 	"locked": false,
 	"mobile": null,
 	"name": "Exabeam Incident",
 	"packID": "",
-	"packName": "",
+	"packName": "Exabeam Advanced Analytics",
 	"propagationLabels": [
 		"all"
 	],
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
-    "fromVersion": "6.0.0",
 	"toServerVersion": "99.99.99",
 	"version": -1
 }
