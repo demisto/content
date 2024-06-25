@@ -80,7 +80,7 @@ Checks the reputation of the given IP address.
 
 >|Confidence|DbotReputation|LastPublished|Name|ThreatTypes|TypeOfUse|
 >|---|---|---|---|---|---|
->| 0 | 2 | 2018-04-25 14:20:30 | 0.0.0.0 | Cyber Espionage | MALWARE_DOWNLOAD,<br/>MALWARE_C2 |
+>| 0 | 2 | 2018-04-25 14:20:30 | 0.0.0.0 | Cyber Espionage | MALWARE_DOWNLOAD, MALWARE_C2 |
 
 
 ### domain
@@ -464,6 +464,6 @@ Fetches Intelligence Alerts & Intelligence Reports.
 
 #### Human Readable Output
 
->Report has been fetched!
-><br>UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
-><br>Link to view report: <https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b>
+Report has been fetched!
+UUID: 8b8b48f1-92a0-411a-a073-3241f6819f8b
+Link to view report: <https://intelgraph.idefense.com/#/node/intelligence_alert/view/8b8b48f1-92a0-411a-a073-3241f6819f8b>
