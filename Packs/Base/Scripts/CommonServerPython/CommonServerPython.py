@@ -11303,6 +11303,7 @@ def create_updated_last_run_object(last_run, incidents, fetch_limit, look_back, 
     :type created_time_field: ``str``
     :param created_time_field: The incident created time field
 
+
     :type date_format: ``str``
     :param date_format: The date format
 
