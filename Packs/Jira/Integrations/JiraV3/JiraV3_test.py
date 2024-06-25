@@ -430,7 +430,7 @@ class TestJiraGetIssueCommand:
         assert Path.exists(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
         Path.unlink(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
 
-    @ pytest.mark.parametrize('get_attachments', [
+    @pytest.mark.parametrize('get_attachments', [
         (True), (False)
     ])
     def test_download_issue_attachments_to_war_room(self, mocker, get_attachments):
@@ -999,7 +999,7 @@ class TestJiraGetIDOffsetCommand:
 
 
 class TestJiraListIssueFieldsCommand:
-    @ pytest.mark.parametrize('pagination_args', [
+    @pytest.mark.parametrize('pagination_args', [
         ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
     ])
     def test_list_fields_command(self, mocker, pagination_args):
@@ -1028,7 +1028,7 @@ class TestJiraListIssueFieldsCommand:
 
 
 class TestJiraIssueToBacklogCommand:
-    @ pytest.mark.parametrize('args', [
+    @pytest.mark.parametrize('args', [
         ({'rank_before_issue': 'key1', 'issues': 'issue1,issue2'}), ({'rank_after_issue': 'key1', 'issues': 'issue1,issue2'})
     ])
     def test_using_rank_without_board_id_error(self, args):
