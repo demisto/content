@@ -1026,6 +1026,7 @@ inputs:
           right:
             value:
               simple: inputs.AlertID
+            iscontext: true
           ignorecase: true
       accessor: endpoint_id
       transformers:
