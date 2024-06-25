@@ -4,34 +4,34 @@ name: Cortex XDR - T1036 - Masquerading
 description: |-
   This playbook handles masquerading alerts based on the MITRE T1036 technique.
   An attacker might leverage Microsoft Windows' well-known image names to run malicious processes without being caught.
-  
+
   **Attacker's Goals:**
-  
+
   An attacker attempts to masquerade as standard Windows images by using a trusted name to execute malicious code.
-  
+
   **Investigative Actions:**
-  
+
   Enrich and Investigate the executed process image and endpoint and verify if it is malicious using:
-  
+
   * File Reputation
   * NSRL DB
   * CommandLine Analysis
-  * Sandbox File Detonation
-  
-  
+  * Related Alerts
+
+
   **Response Actions**
-  
+
   When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment actions:
-  
+
   * Auto Process termination
   * Auto file quarantine
   * Manual containment
-  
+
   External resources:
-  
+
   [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
-  
-  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
+
+  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading).
 starttaskid: "0"
 tasks:
   "0":
@@ -80,7 +80,6 @@ tasks:
       '#none#':
       - "113"
       - "116"
-      - "134"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -130,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: dab754b5-6d3e-4ef2-8db3-984c847b2c92
+    taskid: 5b9df2b0-9f79-4054-8df7-9144debe11c1
     type: title
     task:
-      id: dab754b5-6d3e-4ef2-8db3-984c847b2c92
+      id: 5b9df2b0-9f79-4054-8df7-9144debe11c1
       version: -1
       name: Containment
       type: title
@@ -153,9 +152,7 @@ tasks:
         }
       }
     note: false
-    timertriggers:
-    - fieldname: containmentsla
-      action: start
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -273,10 +270,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: e37814b3-6904-4d93-89db-ae40f0aa009b
+    taskid: 272b8a57-aee1-47be-88b8-8b89066b272d
     type: title
     task:
-      id: e37814b3-6904-4d93-89db-ae40f0aa009b
+      id: 272b8a57-aee1-47be-88b8-8b89066b272d
       version: -1
       name: Done
       type: title
@@ -289,11 +286,13 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 2850
+          "y": 2840
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -416,7 +415,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 780,
+          "x": 990,
           "y": 1840
         }
       }
@@ -488,7 +487,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1190,
+          "x": 1400,
           "y": 1840
         }
       }
@@ -623,10 +622,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "123":
     id: "123"
-    taskid: 4a07a307-5916-4cc0-89f6-73f33459f2f0
+    taskid: e34a609e-4e8c-477e-8541-ce0f1419412c
     type: title
     task:
-      id: 4a07a307-5916-4cc0-89f6-73f33459f2f0
+      id: e34a609e-4e8c-477e-8541-ce0f1419412c
       version: -1
       name: Early Containment
       type: title
@@ -847,93 +846,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "134":
-    id: "134"
-    taskid: 97ee6c18-ebea-4b73-8d72-b7704328af0d
-    type: playbook
-    task:
-      id: 97ee6c18-ebea-4b73-8d72-b7704328af0d
-      version: -1
-      name: Detonate File - Generic
-      description: |-
-        Detonate files through one or more active integrations that support file detonation.
-        Supported integrations:
-        - SecneurX Analysis
-        - ANY.RUN
-        - McAfee Advanced Threat Defense
-        - WildFire
-        - Lastline
-        - Cuckoo Sandbox
-        - Cisco Secure Malware Analytics (ThreatGrid)
-        - JoeSecurity
-        - CrowdStrike Falcon Sandbox
-        - FireEye AX
-        - VMRay Analyzer
-        - Polygon
-        - CrowdStrike Falcon Intelligence Sandbox
-        - OPSWAT Filescan.
-      playbookName: Detonate File - Generic
-      type: playbook
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "26"
-    scriptarguments:
-      EntryID:
-        complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.SHA256
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.FileSHA256
-                iscontext: true
-              ignorecase: true
-          accessor: EntryID
-          transformers:
-          - operator: uniq
-      File:
-        complex:
-          root: File
-          filters:
-          - - operator: isEqualString
-              left:
-                value:
-                  simple: File.SHA256
-                iscontext: true
-              right:
-                value:
-                  simple: inputs.FileSHA256
-                iscontext: true
-              ignorecase: true
-          transformers:
-          - operator: uniq
-    separatecontext: true
-    continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
-    view: |-
-      {
-        "position": {
-          "x": 1600,
-          "y": 1840
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "135":
     id: "135"
     taskid: c1279c5e-0fdd-42a7-89ca-cbef634438cd
@@ -959,8 +871,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1700,
-          "y": 2680
+          "x": 1400,
+          "y": 2670
         }
       }
     note: false
@@ -1006,8 +918,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1190,
-          "y": 2690
+          "x": 960,
+          "y": 2670
         }
       }
     note: false
@@ -1019,12 +931,15 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "117_135_#default#": 0.43,
+      "37_41_#default#": 0.16
+    },
     "paper": {
       "dimensions": {
-        "height": 2525,
-        "width": 1440,
-        "x": 780,
+        "height": 2515,
+        "width": 1260,
+        "x": 960,
         "y": 390
       }
     }
@@ -1132,7 +1047,7 @@ inputs:
             value:
               simple: T1036
           ignorecase: true
-      accessor: aler_id
+      accessor: alert_id
       transformers:
       - operator: uniq
   required: false
