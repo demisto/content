@@ -21,10 +21,15 @@ if ELASTIC_SEARCH_CLIENT == 'OpenSearch':
     from opensearchpy import OpenSearch as Elasticsearch, RequestsHttpConnection, NotFoundError
     from opensearch_dsl import Search
     from opensearch_dsl.query import QueryString
-else:
+elif ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
     from elasticsearch import Elasticsearch, NotFoundError, TransportError, ApiError
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
+else: # Elasticsearch (<= v7)
+    from elasticsearch7 import Elasticsearch, RequestsHttpConnection, NotFoundError
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
+    
 
 ES_DEFAULT_DATETIME_FORMAT = 'yyyy-MM-dd HH:mm:ss.SSSSSS'
 PYTHON_DEFAULT_DATETIME_FORMAT = '%Y-%m-%d %H:%M:%S.%f'
@@ -145,27 +150,47 @@ def get_api_key_header_val(api_key):
 
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
-    # connection_args = {
-    #     "hosts": [SERVER],
-    #     "connection_class": RequestsHttpConnection,
-    #     "proxies": proxies,
-    #     "verify_certs": INSECURE,
-    #     "timeout": TIMEOUT,
-    # }
-    # if API_KEY_ID:
-    #     connection_args["api_key"] = API_KEY
-    # elif USERNAME:
-    #     connection_args["http_auth"] = (USERNAME, PASSWORD)
-
-    # es = Elasticsearch(**connection_args)
-    # # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
-    # if API_KEY_ID and hasattr(es, 'transport'):
-    #     es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
-
-    es = Elasticsearch(
+    # if ELASTIC_SEARCH_CLIENT == 'Elasticsearch':
+    #     # Set the environment variable for REST API compatibility
+    #     os.environ['ELASTIC_CLIENT_APIVERSIONING'] = 'true'
+        
+    #     # Create the Elasticsearch client instance
+    #     es = Elasticsearch(
+    #     SERVER,
+    #     verify_certs=INSECURE,
+    #     basic_auth=(USERNAME, PASSWORD),
+    #     headers={'Accept': "application/vnd.elasticsearch+json;compatible-with=7",
+    #              'Content-Type': "application/vnd.elasticsearch+json;compatible-with=7"}
+    #     )
+    
+    #     print(f"headers are {es._headers}")
+    #     print(f"env var is: {os.environ.get('ELASTIC_CLIENT_APIVERSIONING')}")
+    
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        # Create the Elasticsearch v8 client instance
+        es = Elasticsearch(
         SERVER,
         verify_certs=INSECURE,
-        basic_auth=(USERNAME, PASSWORD))
+        basic_auth=(USERNAME, PASSWORD)
+        )
+    else: # Elasticsearch version v7 or below, OpenSearch
+        
+        connection_args = {
+            "hosts": [SERVER],
+            "connection_class": RequestsHttpConnection,
+            "proxies": proxies,
+            "verify_certs": INSECURE,
+            "timeout": TIMEOUT,
+        }
+        if API_KEY_ID:
+            connection_args["api_key"] = API_KEY
+        elif USERNAME:
+            connection_args["http_auth"] = (USERNAME, PASSWORD)
+
+        es = Elasticsearch(**connection_args)
+        # this should be passed as api_key via Elasticsearch init, but this code ensures it'll be set correctly
+        if API_KEY_ID and hasattr(es, 'transport'):
+            es.transport.get_connection().session.headers['authorization'] = get_api_key_header_val(API_KEY)
     
     return es
 
@@ -315,7 +340,11 @@ def search_command(proxies):
         if sort_field is not None:
             search = search.sort({sort_field: {'order': sort_order}})
 
-        response = search.execute().to_dict()
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     total_dict, total_results = get_total_results(response)
     search_context, meta_headers, hit_tables, hit_headers = results_to_context(index, query_dsl or query, base_page,
@@ -755,7 +784,13 @@ def fetch_incidents(proxies):
         # Elastic search can use epoch timestamps (in milliseconds) as date representation regardless of date format.
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {'order': 'asc'}})[0:FETCH_SIZE].query(query)
-        response = search.execute().to_dict()
+            
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
     _, total_results = get_total_results(response)
 
     incidents = []  # type: List
@@ -903,23 +938,21 @@ def index_document(args, proxies):
 
 def index_document_command(args, proxies):
     resp = index_document(args, proxies)
-    # resp = {'_index': 'test', '_id': '1243', '_version': 1, 'result': 'created',
-    #         '_shards': {'total': 2, 'successful': 1, 'failed': 0}, '_seq_no': 11, '_primary_term': 1}
-    demisto.debug(f"resp is: {resp}")
+    
     index_context = {
         'id': resp.get('_id', ''),
         'index': resp.get('_index', ''),
         'version': resp.get('_version', ''),
         'result': resp.get('result', '')
     }
-    demisto.debug(f"index_context is: {index_context}")
+    
     human_readable = {
         'ID': index_context.get('id'),
         'Index name': index_context.get('index'),
         'Version': index_context.get('version'),
         'Result': index_context.get('result')
     }
-    demisto.debug(f"human_readable is: {human_readable}")
+    
     headers = [str(k) for k in human_readable]
     demisto.debug(f"headers are: {headers}")
     readable_output = tableToMarkdown(
@@ -928,15 +961,41 @@ def index_document_command(args, proxies):
         removeNull=True,
         headers=headers
     )
-    demisto.debug(f"readable_output is: {readable_output}")
+    
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        resp = resp.body
+    
     result = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Elasticsearch.Index',
         outputs=index_context,
-        raw_response=resp.body,
+        raw_response=resp,
         outputs_key_field='id'
     )
-    demisto.debug(f"result is: {result}")
+    return result
+
+def list_indices_command(proxies):
+    
+    indices_names = []
+    es = elasticsearch_builder(proxies)
+    # Retrieve the list of all indices
+    indices = es.cat.indices(format='json')
+
+    for index in indices:
+        indices_names.append(index.get('index'))
+    
+    readable_output = tableToMarkdown(
+        name="Indices are:",
+        t=indices_names,
+        removeNull=True,
+        headers=['Index Name']
+    )
+    
+    result = CommandResults(
+        readable_output=readable_output,
+        outputs_prefix='Elasticsearch.Indices',
+        outputs=indices_names
+    )
     return result
 
 
@@ -959,6 +1018,9 @@ def main():
             return_results(index_document_command(demisto.args(), proxies))
         elif demisto.command() == 'es-integration-health-check':
             return_results(integration_health_check(proxies))
+        elif demisto.command() == 'es-list-indices':
+            return_results(list_indices_command(proxies))
+            
     except Exception as e:
         if 'The client noticed that the server is not a supported distribution of Elasticsearch' in str(e):
             return_error('Failed executing {}. Seems that the client does not support the server\'s distribution, '
