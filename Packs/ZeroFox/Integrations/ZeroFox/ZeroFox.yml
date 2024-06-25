@@ -33,7 +33,8 @@ configuration:
 - display: Fetch Limit
   name: fetch_limit
   type: 0
-  required: true
+  required: false
+  hidden: true
   defaultvalue: '100'
 - display: Fetch incidents
   name: isFetch
@@ -580,11 +581,11 @@ script:
   - name: zerofox-list-alerts
     description: Returns alerts that match user-defined or default filters and parameters. By default, no filters are applied and the results are sorted by timestamp.
     arguments:
-    - description: The account number of the social network (unique ID).
-      name: account
-    - auto: PREDEFINED
+    - name: account
+      description: The account number of the social network (unique ID).
+    - name: alert_type
+      auto: PREDEFINED
       description: A CSV list of alert types.
-      name: alert_type
       required: false
       secret: false
       predefined:
@@ -603,64 +604,64 @@ script:
       - search_query
       - location
       - email
-    - description: The name of the user assigned to an alert.
-      name: assignee
-    - description: The ID of the ZeroFox entity.
-      name: entity
-    - description: The term ID of the ZeroFox entity.
-      name: entity_term
-    - description: The amount of time (in seconds) since an alert was last modified.
-      name: last_modified
-    - default: true
+    - name: assignee
+      description: The name of the user assigned to an alert.
+    - name: entity
+      description: The ID of the ZeroFox entity.
+    - name: entity_term
+      description: The term ID of the ZeroFox entity.
+    - name: last_modified
+      description: The amount of time (in seconds) since an alert was last modified.
+    - name: limit
+      default: true
       defaultValue: '10'
       description: The maximum number of alerts to retrieve (0 - 100).
-      name: limit
-    - description: The ending date-time string (in ISO-8601 format) by which to filter alerts.
-      name: max_timestamp
-    - description: The starting date-time string (in ISO-8601 format) by which to filter alerts.
-      name: min_timestamp
-    - description: Filters results by the specified network names.
-      name: network
-    - description: Used for pagination. Starts response with the first filtered alert.
-      name: offset
-    - description: CSV list of the ZeroFox page IDs.
-      name: page_id
-    - description: The URL to the website or social media content that triggered an alert.
-      name: page_url
-    - description: The encoded JSON array of strings used for filtering alerts.
-      name: pages
-    - description: The unique post number of the social network.
-      name: post
-    - description: CSV list of the ZeroFox rule IDs.
-      name: rule_id
-    - description: CSV list of the ZeroFox rule names.
-      name: rule_name
-    - description: The matched substring of the protected entity.
-      name: entity_search
-    - description: The substring used to filter alerts by the username or display name of a perpetrator.
-      name: perpetrator_search
-    - description: The substring used to filter alerts by the username, display name, or entity term name of protected social objects.
-      name: pro_social_obj_search
-    - description: CSV list of alert IDs.
-      name: alert_id
-    - auto: PREDEFINED
+    - name: max_timestamp
+      description: The ending date-time string (in ISO-8601 format) by which to filter alerts.
+    - name: min_timestamp
+      description: The starting date-time string (in ISO-8601 format) by which to filter alerts.
+    - name: network
+      description: Filters results by the specified network names.
+    - name: offset
+      description: Used for pagination. Starts response with the first filtered alert.
+    - name: page_id
+      description: CSV list of the ZeroFox page IDs.
+    - name: page_url
+      description: The URL to the website or social media content that triggered an alert.
+    - name: pages
+      description: The encoded JSON array of strings used for filtering alerts.
+    - name: post
+      description: The unique post number of the social network.
+    - name: rule_id
+      description: CSV list of the ZeroFox rule IDs.
+    - name: rule_name
+      description: CSV list of the ZeroFox rule names.
+    - name: entity_search
+      description: The matched substring of the protected entity.
+    - name: perpetrator_search
+      description: The substring used to filter alerts by the username or display name of a perpetrator.
+    - name: pro_social_obj_search
+      description: The substring used to filter alerts by the username, display name, or entity term name of protected social objects.
+    - name: alert_id
+      description: CSV list of alert IDs.
+    - name: risk_rating
       description: Risk rating of alert.
-      name: risk_rating
+      auto: PREDEFINED
       predefined:
       - Critical
       - High
       - Medium
       - Low
       - Info
-    - auto: PREDEFINED
+    - name: sort_direction
       description: Sorts results in ascending or descending order.
-      name: sort_direction
+      auto: PREDEFINED
       predefined:
       - asc
       - desc
-    - auto: PREDEFINED
+    - name: sort_field
       description: Field used for defining alert filter for sorting.
-      name: sort_field
+      auto: PREDEFINED
       predefined:
       - alert_id
       - alert_status
@@ -674,9 +675,9 @@ script:
       - social_network
       - timestamp
       - escalated
-    - auto: PREDEFINED
+    - name: status
       description: The alert status.
-      name: status
+      auto: PREDEFINED
       predefined:
       - closed
       - open
@@ -684,14 +685,14 @@ script:
       - takedown_denied
       - takedown_requested
       - whitelisted
-    - auto: PREDEFINED
+    - name: escalated
       description: If true, returns only escalated alerts.
-      name: escalated
+      auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: Alert tags. Returns alerts containing at least of the tags in the provided CSV list.
-      name: tags
+    - name: tags
+      description: Alert tags. Returns alerts containing at least of the tags in the provided CSV list.
     outputs:
     - contextPath: ZeroFox.Alert.AlertType
       description: The type of an alert.
@@ -1471,14 +1472,15 @@ script:
     - contextPath: ZeroFox.Exploits.URLs
       description: URLs associated to the threat separated by commas.
       type: string
-  dockerimage: demisto/python3:3.10.14.91134
-  isfetch: true
+  dockerimage: demisto/python3:3.10.14.98471
   longRunning: false
   longRunningPort: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
+  isfetch: true
+  ismappable: false
   isremotesyncin: true
   isremotesyncout: false
 tests:

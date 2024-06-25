@@ -1,48 +1,51 @@
 import json
+from urllib.parse import urlencode, urljoin
+
 from dateparser import parse as parse_date
-from datetime import timedelta
 from ZeroFox import (
     # Constants
     DATE_FORMAT,
-
-    demisto,
-
     # Client
     ZFClient,
-
-    # Commands
-    fetch_incidents,
-    get_modified_remote_data_command,
-    get_remote_data_command,
-    get_alert_command,
+    alert_cancel_takedown_command,
+    alert_request_takedown_command,
     alert_user_assignment_command,
     close_alert_command,
-    open_alert_command,
-    alert_request_takedown_command,
-    alert_cancel_takedown_command,
-    modify_alert_tags_command,
-    create_entity_command,
-    list_alerts_command,
-    list_entities_command,
-    get_entity_types_command,
-    get_policy_types_command,
-    modify_alert_notes_command,
-    submit_threat_command,
-    send_alert_attachment_command,
-    get_alert_attachments_command,
     compromised_domain_command,
     compromised_email_command,
-    malicious_ip_command,
+    create_entity_command,
+    demisto,
+    # Commands
+    fetch_incidents,
+    get_alert_attachments_command,
+    get_alert_command,
+    get_entity_types_command,
+    get_modified_remote_data_command,
+    get_policy_types_command,
+    get_remote_data_command,
+    list_alerts_command,
+    list_entities_command,
     malicious_hash_command,
+    malicious_ip_command,
+    modify_alert_notes_command,
+    modify_alert_tags_command,
+    open_alert_command,
     search_exploits_command,
+    send_alert_attachment_command,
+    submit_threat_command,
 )
 
 BASE_URL = "https://api.zerofox.com"
 OK_CODES = (200, 201)
-FETCH_LIMIT = 10
 
 TOKEN_AUTH_ENDPOINT = "/1.0/api-token-auth/"
 ALERTS_ENDPOINT = "/1.0/alerts/"
+
+
+def build_url(base_url, params):
+    query_string = urlencode(params)
+    full_url = urljoin(base_url, '?' + query_string)
+    return full_url
 
 
 def load_json(file: str):
@@ -60,17 +63,15 @@ def build_zf_client() -> ZFClient:
         ok_codes=OK_CODES,
         username='',
         password='',
-        fetch_limit=FETCH_LIMIT,
         only_escalated=False,
     )
 
 
-def get_delayed_formatted_date(str_date: str, delay=timedelta(milliseconds=1)):
+def get_formatted_date(str_date: str):
     formatted_date = parse_date(str_date, date_formats=(DATE_FORMAT,),)
     if formatted_date is None:
         raise ValueError("date must be a valid string date")
-    delayed_date = formatted_date + delay
-    return delayed_date.strftime(DATE_FORMAT)
+    return formatted_date.strftime(DATE_FORMAT)
 
 
 def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
@@ -100,30 +101,20 @@ def test_fetch_incidents_first_time_with_no_data(requests_mock, mocker):
     client = build_zf_client()
     last_run: dict = {}
     first_fetch_time = "2023-06-01T00:00:00.000000"
-    expected_offset = 0
-    spy = mocker.spy(client, "list_alerts")
 
-    next_run, incidents = fetch_incidents(
+    _, incidents = fetch_incidents(
         client,
         last_run,
         first_fetch_time,
     )
 
-    # One call for new alerts, and another call to modified alerts
-    assert spy.call_count == 1
-    list_alert_params = spy.call_args_list[0].args[0]
-    assert list_alert_params.get("last_modified_min_date") == first_fetch_time
-    assert list_alert_params.get("sort_direction") == "asc"
-    assert list_alert_params.get("offset") == expected_offset
-    assert next_run["last_modified_fetched"] == first_fetch_time
-    assert next_run["last_modified_offset"] == str(expected_offset)
     assert len(incidents) == 0
 
 
 def test_fetch_incidents_first_time(requests_mock, mocker):
     """
     Given
-        There are new alerts (less than the fetch limit)
+        There are new alerts
         And there is no last_fetched in last_run
     When
         Calling fetch_incidents
@@ -135,17 +126,16 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
         And 10 incidents correctly formatted
     """
     alerts_response = load_json("test_data/alerts/list_10_records.json")
-    last_alert_timestamp = alerts_response["alerts"][-1]["timestamp"]
+    last_alert_timestamp = alerts_response["alerts"][-1]["last_modified"]
     requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
     requests_mock.get(ALERTS_ENDPOINT, json=alerts_response)
     client = build_zf_client()
     last_run: dict = {}
-    first_fetch_time = "2023-06-01T00:00:00.000000"
-    last_alert_timestamp_formatted = get_delayed_formatted_date(
+    first_fetch_time = "2023-05-01T00:00:00.000000"
+    last_alert_timestamp_formatted = get_formatted_date(
         last_alert_timestamp,
     )
-    expected_offset = 0
-    spy = mocker.spy(client, "list_alerts")
+    spy = mocker.spy(client, "get_alerts")
 
     next_run, incidents = fetch_incidents(
         client,
@@ -154,12 +144,7 @@ def test_fetch_incidents_first_time(requests_mock, mocker):
     )
 
     spy.assert_called_once()
-    list_alert_params = spy.call_args[0][0]
-    assert list_alert_params.get("last_modified_min_date") == first_fetch_time
-    assert list_alert_params.get("sort_direction") == "asc"
-    assert list_alert_params.get("offset") == expected_offset
     assert next_run["last_modified_fetched"] == last_alert_timestamp_formatted
-    assert next_run["last_modified_offset"] == str(expected_offset)
     assert len(incidents) == 10
     for incident in incidents:
         assert "mirror_instance" in incident["rawJSON"]
@@ -182,21 +167,29 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
         And last_modified_offset equals to the offset set in the "next" link of the response
         And 10 incidents correctly formatted
     """
-    alerts_response = load_json(
-        "test_data/alerts/list_10_records_and_more.json")
-    alerts_response["alerts"][-1]["timestamp"]
-    requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
-    requests_mock.get(ALERTS_ENDPOINT, json=alerts_response)
-    client = build_zf_client()
-    last_offset_saved = 10
+    last_modified_fetched = "2023-05-31T12:34:56.000000"
     last_run = {
-        "last_modified_fetched": "2023-07-01T12:34:56.000000",
-        "last_modified_offset": str(last_offset_saved),
+        "last_modified_fetched": last_modified_fetched,
         "zf-ids": ["224850129"],
     }
+    alerts_url = f"{BASE_URL}{ALERTS_ENDPOINT}"
+    mock_params = {
+        "min_timestamp": last_modified_fetched,
+        "sort_direction": "asc",
+        "sort_field": "timestamp",
+    }
+    requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
+    first_page_alert_response = load_json(
+        "test_data/alerts/list_10_records_page1_5records.json")
+    mock_url = build_url(alerts_url, mock_params)
+    requests_mock.get(mock_url, json=first_page_alert_response)
+    second_page_alert_response = load_json(
+        "test_data/alerts/list_10_records_page2_5records.json")
+    expected_last_modified = get_formatted_date(second_page_alert_response["alerts"][-1]["timestamp"])
+    requests_mock.get(first_page_alert_response.get("next", ""), json=second_page_alert_response)
+    client = build_zf_client()
     first_fetch_time = "2023-06-01T00:00:00.000000"
-    last_offset_expected = 20
-    spy = mocker.spy(client, "list_alerts")
+    spy = mocker.spy(client, "get_alerts")
 
     next_run, incidents = fetch_incidents(
         client,
@@ -205,13 +198,7 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     )
 
     spy.assert_called_once()
-    list_alert_params = spy.call_args[0][0]
-    min_timestamp_called = list_alert_params.get("last_modified_min_date")
-    assert min_timestamp_called == last_run["last_modified_fetched"]
-    assert list_alert_params.get("sort_direction") == "asc"
-    assert list_alert_params.get("offset") == last_offset_saved
-    assert next_run["last_modified_fetched"] == last_run["last_modified_fetched"]
-    assert next_run["last_modified_offset"] == str(last_offset_expected)
+    assert next_run["last_modified_fetched"] == expected_last_modified
     assert len(incidents) == 9
     assert set(next_run["zf-ids"]) == {
         "224850129", "224850127", "224850128",
@@ -238,14 +225,12 @@ def test_get_modified_remote_data_command_with_no_data(requests_mock, mocker):
     requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
     requests_mock.get(ALERTS_ENDPOINT, json=alerts_response)
     client = build_zf_client()
-    spy = mocker.spy(client, "list_alerts")
+    spy = mocker.spy(client, "get_alerts")
     args = {"lastUpdate": "2023-07-01T12:34:56"}
 
     results = get_modified_remote_data_command(client, args)
 
     spy.assert_called_once()
-    list_alerts_call_args = spy.call_args[0][0]
-    assert list_alerts_call_args["last_modified_min_date"] == args["lastUpdate"]
     assert len(results.modified_incident_ids) == 0
 
 
@@ -263,14 +248,12 @@ def test_get_modified_remote_data_command(requests_mock, mocker):
     requests_mock.post(TOKEN_AUTH_ENDPOINT, json={"token": ""})
     requests_mock.get(ALERTS_ENDPOINT, json=alerts_response)
     client = build_zf_client()
-    spy = mocker.spy(client, "list_alerts")
+    spy = mocker.spy(client, "get_alerts")
     args = {"lastUpdate": "2023-07-01T12:34:56"}
 
     results = get_modified_remote_data_command(client, args)
 
     spy.assert_called_once()
-    list_alerts_call_args = spy.call_args[0][0]
-    assert list_alerts_call_args["last_modified_min_date"] == args["lastUpdate"]
     assert len(results.modified_incident_ids) == 10
     for modified_incident_id in results.modified_incident_ids:
         assert isinstance(modified_incident_id, str)
@@ -1305,7 +1288,8 @@ def test_get_alert_attachments_command(requests_mock, mocker):
     alert_id = "123"
     attachments_response = load_json("test_data/alerts/attachments.json")
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
-    requests_mock.get(f"/1.0/alerts/{alert_id}/attachments/", json=attachments_response)
+    requests_mock.get(
+        f"/1.0/alerts/{alert_id}/attachments/", json=attachments_response)
     client = build_zf_client()
     spy_get_attachments = mocker.spy(client, "get_alert_attachments")
     args = {"alert_id": alert_id}
