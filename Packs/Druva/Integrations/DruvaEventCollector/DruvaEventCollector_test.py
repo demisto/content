@@ -399,3 +399,36 @@ def test_max_fetch_validation():
             verify=False,
             proxy=False,
         )
+
+
+def test_fetch_events_invalid_tracker(mocker, mock_client):
+    """
+    Given:
+    - fetch events command
+
+    When:
+    - Running fetch-events command
+    - Mocking the second fetch to throw an exception to Invalid tracker
+
+    Then:
+    - Ensure exception is caught
+    - Ensure same tracker is returned (as we got at the previous call)
+    - Ensure no events are returned
+    """
+    # First fetch
+    mocker.patch.object(
+        mock_client, "search_events", return_value=RESPONSE_WITH_EVENTS_1
+    )
+    events, tracker_for_second_run = fetch_events(
+        client=mock_client, last_run={}, max_fetch=MAX_FETCH
+    )
+
+    # Second fetch
+    mocker.patch.object(mock_client, "search_events", side_effect=Exception("Invalid tracker"))
+    events, tracker_for_third_run = fetch_events(
+        client=mock_client, last_run=tracker_for_second_run, max_fetch=MAX_FETCH
+    )
+
+    # same tracker should be returned when "Invalid tracker" exception is thrown and no events
+    assert tracker_for_third_run["tracker"] == tracker_for_second_run["tracker"]
+    assert events == []

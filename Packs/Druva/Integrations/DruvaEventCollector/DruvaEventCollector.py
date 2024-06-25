@@ -175,7 +175,7 @@ def fetch_events(
     last_interation: bool = False
     while len(final_events) < max_fetch and not last_interation:
         tracker = last_run.get("tracker")  # None on first run
-
+        events, new_tracker = [], {}
         # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
         try:
             events, new_tracker = get_events(client, tracker)
