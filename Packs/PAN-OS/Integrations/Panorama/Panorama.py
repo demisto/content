@@ -14452,7 +14452,8 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
 
     next_max_fetch = update_max_fetch_dict(max_fetch_dict, last_fetch_dict,  # type: ignore[arg-type]
                                            unique_incident_entries_dict)  # type: ignore[arg-type]
-    new_last_run = LastRun(last_fetch_dict=last_fetch_dict, last_id_dict=last_id_dict, max_fetch_dict=next_max_fetch)  # type: ignore[typeddict-item]
+    new_last_run = LastRun(last_fetch_dict=last_fetch_dict, last_id_dict=last_id_dict,  # type: ignore[typeddict-item]
+                           max_fetch_dict=next_max_fetch)  # type: ignore[typeddict-item]
 
     return new_last_run, parsed_incident_entries_list  # type: ignore[return-value]
 
