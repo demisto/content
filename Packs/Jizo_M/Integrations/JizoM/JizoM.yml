@@ -49,7 +49,7 @@ configuration:
   name: incidentFetchInterval
   type: 0
   required: false
-- display: First fetch time
+- display: First fetch time (<number> <time unit>, for example, 12 hours, 7 days, 3 months, 1 year)  
   name: first_fetch
   defaultvalue: 3 days
   type: 0
@@ -71,10 +71,10 @@ script:
       description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: datetime_from
-      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.  
       type: textArea
     - name: datetime_to
-      description: Get the alerts that were occurred up to this date. The default is now.
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
       type: textArea
     - name: probe_name
       description: The name of the jizo probe.
@@ -123,10 +123,10 @@ script:
       description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: datetime_from
-      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: Get the alerts that were occurred up to this date. The default is now.
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
       type: textArea
     - name: probe_name
       description: The name of the jizo probe.
@@ -175,11 +175,42 @@ script:
       description: Ipv4 or Ipv6 of the destination.
       type: textArea
     - name: proto
-      description: The protocol (e.g., TCP, UDP).
+      description: The protocol.
       type: textArea
+      predefined:
+      - TCP
+      - UDP
+      - IP
+      - IPSEC
+      - ICMP
+      - ARP
+      auto: PREDEFINED
     - name: app_proto
-      description: The application protocol(e.g., FTP, HTTP, DNS, DHCP, SMB).
+      description: The application protocol.
       type: textArea
+      predefined:
+      - HTTP
+      - HTTPS
+      - FTP
+      - DNS
+      - DHCP
+      - DCERPC
+      - SMB
+      - SMTP
+      - SNMP
+      - SSL
+      - SSH
+      - SIP
+      - RDP
+      - RFB
+      - NFS
+      - MQTT
+      - MSN 
+      - MODBUS
+      - IMAP
+      - TFTP
+      - KRBS
+      auto: PREDEFINED
     - name: port_src
       description: The source port.
       type: textArea
@@ -199,10 +230,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: Get the alerts that were occurred up to this date. The default is now.
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
       type: textArea
     - name: page
       description: A page number for pagination.
@@ -254,10 +285,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: Get the alerts that were occurred up to this date. The default is now.
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
       type: textArea
     - name: severity
       description: Relevance/importance of alert varies from 1-4.
@@ -321,10 +352,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: Get the alerts that were occurred up to this date. The default is now.
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
       type: textArea
     - name: page
       description: A page number for pagination.
@@ -382,10 +413,10 @@ script:
       description: The alert port.
       type: textArea
     - name: datetime_from
-      description: Get the alerts that were occurred from this date. The default value is 7 days ago.
+      description: Get the alerts that were occurred from this date, for example, "3 days ago", "2020-01-01-00:00:00". The default value is 7 days ago.
       type: textArea
     - name: datetime_to
-      description: Get the alerts that were occurred up to this date. The default is now.
+      description: Get the alerts that were occurred up to this date, for example, "3 days ago", "2020-01-01-00:00:00". The default is now.
       type: textArea
     - name: page
       description: A page number for pagination.
