@@ -656,11 +656,11 @@ def test_parse_nic_contact_new_regex():
 @pytest.mark.parametrize(
     "raw_data, domain, expected",
     [
-        (load_test_data("test_data/google-raw.json"), "google.com", load_test_data("test_data/google-res.json")),
-        (load_test_data("test_data/ansa-raw.json"), "ansa.it", load_test_data("test_data/ansa-res.json")),
-        (load_test_data("test_data/jp-raw.json"), "nhk.or.jp", load_test_data("test_data/jp-res.json")),
-        (load_test_data("test_data/microsoft-raw.json"), "microsoft.com", load_test_data("test_data/microsoft-res.json")),
-        (load_test_data("test_data/apple-raw.json"), "apple.com", load_test_data("test_data/apple-res.json"))
+        (load_test_data("test_data/test-arrange-data.json")['raw']['google'], "google.com", load_test_data("test_data/test-arrange-data.json")['res']['google']),  # noqa: E501
+        (load_test_data("test_data/test-arrange-data.json")['raw']['ansa'], "ansa.it", load_test_data("test_data/test-arrange-data.json")['res']['ansa']),  # noqa: E501
+        (load_test_data("test_data/test-arrange-data.json")['raw']['jp'], "nhk.or.jp", load_test_data("test_data/test-arrange-data.json")['res']['jp']),  # noqa: E501
+        (load_test_data("test_data/test-arrange-data.json")['raw']['microsoft'], "microsoft.com", load_test_data("test_data/test-arrange-data.json")['res']['microsoft']),  # noqa: E501
+        (load_test_data("test_data/test-arrange-data.json")['raw']['apple'], "apple.com", load_test_data("test_data/test-arrange-data.json")['res']['apple'])  # noqa: E501
     ]
 )
 def test_arrange_raw_to_context(raw_data, domain, expected):
@@ -724,7 +724,7 @@ def test_get_info_by_prefix(domain_data, prefix, expected):
     When:
         - `get_info_by_prefix(domain_data, prefix)` is called.
     Then:
-        - Ensure the returned dictionary matches `expected`, 
+        - Ensure the returned dictionary matches `expected`,
           verifying correct filtering based on the prefix.
     """
     from Whois import get_info_by_prefix
@@ -748,7 +748,7 @@ def test_extract_date(raw_data, date_requested, expected, mocker):
     When:
         - `extract_date(raw_data, date_requested)` is called.
     Then:
-        - Ensure the returned date string matches `expected`, handling various scenarios 
+        - Ensure the returned date string matches `expected`, handling various scenarios
           such as valid date formats, empty list, None, empty dictionary, and invalid date format.
     """
     from Whois import extract_date
