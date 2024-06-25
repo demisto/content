@@ -992,27 +992,6 @@ inputs:
   required: false
   description: The file path to investigate.
   playbookInputQuery:
-- key: Username
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      filters:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-            iscontext: true
-          right:
-            value:
-              simple: inputs.AlertID
-            iscontext: true
-          ignorecase: true
-      accessor: user_name
-      transformers:
-      - operator: uniq
-  required: false
-  description: The alert's username.
-  playbookInputQuery:
 - key: EndpointID
   value:
     complex:
