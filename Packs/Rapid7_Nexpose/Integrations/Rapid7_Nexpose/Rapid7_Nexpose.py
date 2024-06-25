@@ -5653,13 +5653,11 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
     filters = convert_asset_search_filters(filters_data)
     res = client.create_tag(name=name, type=type, color=color, filters=filters, match=match)
 
-    id = res.get("id", 'ID not found')
-
     return CommandResults(
         outputs_prefix="Nexpose.Tag",
         outputs_key_field="id",
         outputs=res,
-        readable_output=f"A new tag '{name}' created successfully with ID: {id}",
+        readable_output=f"A new tag '{name}' created successfully with ID: {res['id']}",
         raw_response=res,
     )
 
@@ -6038,7 +6036,7 @@ def create_asset_group_command(client: Client, name: str, description: str, type
         outputs_prefix="Nexpose.AssetGroup",
         outputs_key_field="id",
         outputs=res,
-        readable_output=f"A new asset group {name} created successfully with ID: {res.get('id', 'ID not found')}",
+        readable_output=f"A new asset group {name} created successfully with ID: {res['id']}",
         raw_response=res
     )
 
