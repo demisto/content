@@ -891,13 +891,13 @@ tasks:
     continueonerrortype: ""
   "117":
     id: "117"
-    taskid: 02daa225-5853-458d-8c40-fb3e671a5568
+    taskid: e190537d-1b4b-4055-8eff-1f60d7651da1
     type: playbook
     task:
-      id: 02daa225-5853-458d-8c40-fb3e671a5568
+      id: e190537d-1b4b-4055-8eff-1f60d7651da1
       version: -1
       name: Containment Plan
-      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook handles the main containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -925,10 +925,6 @@ tasks:
         simple: "False"
       FileRemediation:
         simple: Quarantine
-      HostAutoContainment:
-        simple: "False"
-      IAMUserDomain:
-        simple: ''
       IP:
         complex:
           root: ImpossibleTravelerIPs
@@ -940,6 +936,18 @@ tasks:
           accessor: username
           transformers:
           - operator: uniq
+      AutoBlockIndicators:
+        simple: "True"
+      EndpointID:
+        complex:
+          root: alert
+          accessor: agentid
+          transformers:
+          - operator: uniq
+      HostContainment:
+        simple: "True"
+      UserVerification:
+        simple: "False"
     separatecontext: true
     loop:
       iscommand: false
@@ -991,8 +999,6 @@ tasks:
         simple: Quarantine
       HostAutoContainment:
         simple: "False"
-      IAMUserDomain:
-        simple: ''
       IP:
         complex:
           root: ImpossibleTravelerIPs
@@ -1093,8 +1099,8 @@ tasks:
     task:
       id: b4b81e66-cdaf-453c-847d-2e2ec377b6fc
       version: -1
-      name: Set Incident Severity to High
-      description: commands.local.cmd.set.parent.incident.field
+      name: Set Alert Severity to High
+      description: commands.local.cmd.set.parent.alert.field
       script: Builtin|||setParentIncidentFields
       type: regular
       iscommand: true
@@ -1175,10 +1181,7 @@ tasks:
       id: b0ab22d5-3713-42df-8820-a04c73f3418a
       version: -1
       name: Ticket Management - Generic
-      description: "`Ticket Management - Generic` allows you to open new tickets or
-        update comments to the existing ticket in the following ticketing systems:\n-ServiceNow
-        \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk
-        - Ticket Management`\n"
+      description: "`Ticket Management - Generic` allows you to open new tickets or update comments to the existing ticket in the following ticketing systems:\n-ServiceNow \n-Zendesk \nusing the following sub-playbooks:\n-`ServiceNow - Ticket Management`\n-`Zendesk - Ticket Management`\n"
       playbookName: Ticket Management - Generic
       type: playbook
       iscommand: false
