@@ -155,10 +155,6 @@ def get_events(client: Client, tracker: Optional[str] = None) -> tuple[list[dict
 
     response = client.search_events(tracker)
 
-    demisto.debug(f'##################### Number of Events: {len(response["events"])} ##################################')
-    demisto.debug(
-        f'########## Response - first raw event - {response["events"][0] if response["events"] else "No events"} ##############')
-
     return response["events"], response["tracker"]
 
 
@@ -174,12 +170,18 @@ def fetch_events(
         last_run (dict): A dict containing the next tracker (a pointer to the next event).
         events (list): List of events that will be created in XSIAM.
     """
-    demisto.debug(f'##################### Last Run: {last_run} ##################################')
+    demisto.debug(f'Last Run: {last_run}')
     final_events: list[dict] = []
     last_interation: bool = False
     while len(final_events) < max_fetch and not last_interation:
         tracker = last_run.get("tracker")  # None on first run
-        events, new_tracker = get_events(client, tracker)
+
+        # when fetching events, in case of "Invalid tracker", we catch the exception and restore the same tracker
+        try:
+            events, new_tracker = get_events(client, tracker)
+        except Exception as e:
+            if "Invalid tracker" in str(e):
+                events, new_tracker = [], tracker
 
         # It means there are no more events to retrieve when there are fewer than 500 events
         last_interation = len(events) < MAX_EVENTS_API_CALL
