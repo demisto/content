@@ -897,7 +897,7 @@ tasks:
       id: e190537d-1b4b-4055-8eff-1f60d7651da1
       version: -1
       name: Containment Plan
-      description: "This playbook handles the main containment actions available with Cortex XSIAM, including the following sub-playbooks:  \n* Containment Plan - Isolate endpoint\n* Containment Plan - Disable account\n* Containment Plan - Quarantine file\n* Containment Plan - Block indicators\n* Containment Plan - Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      description: "This playbook handles all the containment actions available with Cortex XSIAM, including:  \n* Isolate endpoint\n* Disable account\n* Quarantine file\n* Block indicators\n* Clear user session (currently, the playbook supports only Okta)\n\nNote: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
       playbookName: Containment Plan
       type: playbook
       iscommand: false
@@ -925,6 +925,10 @@ tasks:
         simple: "False"
       FileRemediation:
         simple: Quarantine
+      HostAutoContainment:
+        simple: "False"
+      IAMUserDomain:
+        simple: ''
       IP:
         complex:
           root: ImpossibleTravelerIPs
