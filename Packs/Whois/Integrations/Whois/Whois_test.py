@@ -652,6 +652,7 @@ def test_parse_nic_contact_new_regex():
     assert any(entry.get('email') == 'test@test.net' for entry in res)
     assert any(entry.get('country') == 'TEST' for entry in res)
 
+
 @pytest.mark.parametrize(
     "raw_data, domain, expected",
     [
@@ -663,6 +664,17 @@ def test_parse_nic_contact_new_regex():
     ]
 )
 def test_arrange_raw_to_context(raw_data, domain, expected):
+    """
+    Given:
+        - 'raw_data': Raw data dictionary from a whois lookup.
+        - 'domain': Domain name associated with the raw data.
+
+    When:
+        - Calling arrange_raw_whois_data_to_context with 'raw_data' and 'domain'.
+
+    Then:
+        - Assert that the returned context dictionary 'res' matches the expected 'expected'.
+    """
     from Whois import arrange_raw_whois_data_to_context
     res = arrange_raw_whois_data_to_context(raw_data, domain)
     assert res == expected
@@ -680,6 +692,16 @@ def test_arrange_raw_to_context(raw_data, domain, expected):
     ]
 )
 def test_name_servers(servers, expected):
+    """
+    Given:
+        - 'servers': Input to the extract_name_servers function.
+
+    When:
+        - Calling extract_name_servers with the input 'servers'.
+
+    Then:
+        - Assert that the output matches the expected 'expected'.
+    """
     from Whois import extract_name_servers
     assert extract_name_servers(servers) == expected
 
@@ -687,22 +709,26 @@ def test_name_servers(servers, expected):
 @pytest.mark.parametrize(
     "domain_data, prefix, expected",
     [
-        # Test for "registrar" prefix with registrar key
         ({"registrar": "Namecheap"}, "registrar", {"registrar_name": "Namecheap"}),
-        # Test for "registrar" prefix without registrar key
         ({"admin_email": "admin@example.com"}, "registrar", {}),
-        # Test for other prefixes
-        ({"admin_until": "2025-06-24", "test":"test"}, "admin", {"admin_until": "2025-06-24"}),
-        # Test for non-existent prefix
+        ({"admin_until": "2025-06-24", "test": "test"}, "admin", {"admin_until": "2025-06-24"}),
         ({"registrar": "Namecheap"}, "invalid_prefix", {}),
-        # Test for empty domain_data
         ({}, "registrar", {}),
     ],
 )
 def test_get_info_by_prefix(domain_data, prefix, expected):
+    """
+    Given:
+        - `domain_data` containing domain information.
+        - `prefix` specifying the filter criterion.
+    When:
+        - `get_info_by_prefix(domain_data, prefix)` is called.
+    Then:
+        - Ensure the returned dictionary matches `expected`, 
+          verifying correct filtering based on the prefix.
+    """
     from Whois import get_info_by_prefix
     assert get_info_by_prefix(domain_data, prefix) == expected
-
 
 
 @pytest.mark.parametrize("raw_data, date_requested, expected", [
@@ -714,6 +740,46 @@ def test_get_info_by_prefix(domain_data, prefix, expected):
     ({"created_date": ["invalid-date"]}, "created_date", "invalid-date")
 ])
 def test_extract_date(raw_data, date_requested, expected, mocker):
+    """
+    Given:
+        - `raw_data` containing the raw data to extract date from.
+        - `date_requested` specifying the key to extract the date value from `raw_data`.
+        - `mocker` for mocking `demisto.debug` function.
+    When:
+        - `extract_date(raw_data, date_requested)` is called.
+    Then:
+        - Ensure the returned date string matches `expected`, handling various scenarios 
+          such as valid date formats, empty list, None, empty dictionary, and invalid date format.
+    """
     from Whois import extract_date
     mocker.patch.object(demisto, "debug")
     assert extract_date(raw_data, date_requested) == expected
+
+
+@pytest.mark.parametrize("input_date, expected_output", [
+    ("[接続年月日]                    2013/09/04", "04-09-2013"),
+    ("[接続年月日]                    2013,09,04", "04-09-2013"),
+    ("[接続年月日]                    09-04-2013", "09-04-2013"),
+    ("[接続年月日]                    04/09/2013", "04-09-2013"),
+    ("[接続年月日]                    2013-09-04", "04-09-2013"),
+    ("[接続年月日]                    2013-04-09", "09-04-2013"),
+    ("[接続年月日]                    04-09/2013", "04-09-2013"),
+    ("[接続年月日]                    2013/043-09", None),
+    ("[接続年月日]                    04/09-013", None),
+    ("[接続年月日]                    abc/def/ghi", None),
+    ("[接続年月日]                    123/456/789", None),
+    ("[接続年月日]                    123-456-789", None),
+])
+def test_extract_hard_date(input_date, expected_output):
+    """
+    Given:
+        - Various input date strings representing different formats.
+    When:
+        - `extract_hard_date(input_date)` is called.
+    Then:
+        - Ensure the returned formatted date string matches `expected_output`,
+          handling different valid date formats and scenarios where the input
+          does not match expected formats and returns None.
+    """
+    from Whois import extract_hard_date
+    assert extract_hard_date(input_date) == expected_output
