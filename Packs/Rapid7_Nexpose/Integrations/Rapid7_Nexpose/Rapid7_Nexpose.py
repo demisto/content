@@ -17,7 +17,7 @@ REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a r
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
 VALID_TAG_TYPES = ["Custom", "Location", "Owner"]
-VALID_ASSET_GROUP_TYPES = ["Dynamic", "Static"]
+VALID_ASSET_GROUP_TYPES = ["dynamic", "static"]
 VALID_TAG_COLORS = ["Blue", "Green", "Orange", "Red", "Purple", "Default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
@@ -5999,7 +5999,7 @@ def create_asset_group_command(client: Client, name: str, description: str, type
         client (Client): Client to use for API requests.
         name (str): The name of the asset group.
         description (str): The description of the asset group.
-        type (str): The type of the asset group, valid values: "Dynamic" or "Static".
+        type (str): The type of the asset group, valid values: "dynamic" or "static".
         match (str, optional): The match criteria for the asset group.
         ip_address_is (str, optional): Filter by IP address.
         host_name_is (str, optional): Filter by host name.
