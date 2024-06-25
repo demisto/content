@@ -4,6 +4,7 @@ the challenges of:
 * maintaining compliance consistently in the cloud
 * stopping threats to sensitive information, users, and resources
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
 ## Configure SaaS Security on Cortex XSIAM
 

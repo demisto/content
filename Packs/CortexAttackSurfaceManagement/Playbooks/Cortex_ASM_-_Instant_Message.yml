@@ -1,0 +1,338 @@
+contentitemexportablefields:
+  contentitemfields: {}
+description: This playbook is used to create instant messages toward service owners to notify them of their internet exposures.
+id: 'Cortex ASM - Instant Message'
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - OwnerNotificationBody
+  - InstantMessageChannel
+  - RemediationGuidance
+  name: General (Inputs group)
+inputs:
+- description: Body of the notification (email or ticket) sent to the potential service owner.
+  key: OwnerNotificationBody
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Channel to send instant messages for notification purposes.  For Slack, this will be the channel ID.
+  key: InstantMessageChannel
+  playbookInputQuery:
+  required: true
+  value: {}
+- description: Remediation Guidance of the Attack Surface Rule.
+  key: RemediationGuidance
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Cortex ASM - Instant Message
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 18a8542a-f6ca-474e-82bb-cd023bdf2a69
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -170
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e28fdfca-d524-4853-8dc3-285981f0050f
+      iscommand: false
+      name: Complete
+      type: title
+      version: -1
+      description: ''
+    taskid: e28fdfca-d524-4853-8dc3-285981f0050f
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 520
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmnotification
+      keys:
+        simple: type,value,url,timestamp
+      val1:
+        simple: Slack
+      val2:
+        simple: ${Slack.Thread.ID}
+      val3:
+        simple: n/a
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: e529a3dc-af23-41e5-8445-64473ce4b094
+      iscommand: false
+      name: Set notification grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: e529a3dc-af23-41e5-8445-64473ce4b094
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 360
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "8"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      blocks:
+        simple: |-
+          [
+              {
+                  "type": "rich_text",
+                  "elements": [
+                      {
+                          "type": "rich_text_section",
+                          "elements": [
+                              {
+                                  "type": "link",
+                                  "text": "Cortex ASM Alert: ${alert.name}",
+                                  "url": "${AlertURL}"
+                              }
+                          ]
+                      }
+                  ]
+              },
+              {
+                  "type": "divider"
+              },
+              {
+                  "type": "rich_text",
+                  "elements": [
+                      {
+                          "type": "rich_text_section",
+                          "elements": [
+                              {
+                                  "type": "text",
+                                  "text": "${FormattedBody}"
+                              }
+                          ]
+                      }
+                  ]
+              },
+              {
+                  "type": "divider"
+              }
+          ]
+      channel_id:
+        simple: ${inputs.InstantMessageChannel}
+    separatecontext: false
+    skipunavailable: true
+    task:
+      brand: SlackV3
+      description: Sends a message to a user, group, or channel.
+      id: dfb76202-de06-43c1-82b4-7fe51c9828d5
+      iscommand: true
+      name: Send Slack message
+      script: SlackV3|||send-notification
+      type: regular
+      version: -1
+    taskid: dfb76202-de06-43c1-82b4-7fe51c9828d5
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 195
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: FormattedBody
+      value:
+        complex:
+          root: inputs.OwnerNotificationBody
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                iscontext: true
+                value:
+                  simple: inputs.RemediationGuidance
+            operator: concat
+          - args:
+              limit: {}
+              replaceWith: {}
+              toReplace:
+                value:
+                  simple: <br><br>
+            operator: replace
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 1539852c-e767-4018-8a82-fa641fb3bb54
+      iscommand: false
+      name: Format message body
+      script: Set
+      type: regular
+      version: -1
+    taskid: 1539852c-e767-4018-8a82-fa641fb3bb54
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 230,
+          "y": 10
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      key:
+        simple: AlertURL
+      value:
+        complex:
+          accessor: server
+          root: demistoUrls
+          transformers:
+          - args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /alerts/
+            operator: concat
+          - args:
+              prefix:
+                iscontext: true
+              suffix:
+                iscontext: true
+                value:
+                  simple: alert.investigationId
+            operator: concat
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: 05f590df-8779-4f09-897b-6815ebb3c939
+      iscommand: false
+      name: Get alert URL
+      script: Set
+      type: regular
+      version: -1
+    taskid: 05f590df-8779-4f09-897b-6815ebb3c939
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 670,
+          "y": 10
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 755,
+        "width": 820,
+        "x": 230,
+        "y": -170
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0

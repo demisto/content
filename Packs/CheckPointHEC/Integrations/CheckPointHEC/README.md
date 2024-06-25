@@ -1,5 +1,5 @@
 The Best Way to Protect Enterprise Email & Collaboration from phishing, malware, account takeover, data loss, etc.
-This integration was integrated and tested with version 1.1.1 of CheckPointHEC
+This integration was integrated and tested with version 1.1.3 of CheckPointHEC
 
 ## Configure Check Point Harmony Email and Collaboration (HEC) on Cortex XSOAR
 
@@ -25,6 +25,7 @@ This integration was integrated and tested with version 1.1.1 of CheckPointHEC
     | Incidents Fetch Interval |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 
 ## Commands
@@ -349,4 +350,3 @@ Retrieve security events.
 | CheckPointHEC.Event.actions | unknown | Performed actions related to the security event. | 
 | CheckPointHEC.Event.senderAddress | String | Sender of email related to the security event. | 
 | CheckPointHEC.Event.entityLink | String | Email link. | 
-

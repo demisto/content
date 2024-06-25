@@ -14,6 +14,6 @@ timeout: '0'
 type: python
 subtype: python3
 dockerimage: demisto/python3:3.10.14.92207
-fromversion: 6.10.0
+fromversion: 6.9.0
 tests:
 - No test
