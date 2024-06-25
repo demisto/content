@@ -10,9 +10,8 @@ from handle_external_pr import EXTERNAL_LABEL
 from utils import (
     get_env_var,
     timestamped_print,
-    load_json,
     get_doc_reviewer,
-    CONTENT_ROLES_PATH
+    get_content_roles
 )
 from urllib3.exceptions import InsecureRequestWarning
 
@@ -81,7 +80,7 @@ def main():
     assignees = [assignee.login for assignee in merged_pr.assignees]
 
     # Un-assign the tech writer (cause the docs reviewed has already been done on the external PR)
-    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_roles = get_content_roles()
     if content_roles:
 
         try:
@@ -96,7 +95,7 @@ def main():
             print(f"{str(ve)}. Skipped tech writer unassignment.")
 
     else:
-        print(f"Unable to parse JSON from '{CONTENT_ROLES_PATH}'. Skipping tech writer unassignment.")
+        print("Unable to get content roles. Skipping tech writer unassignment...")
 
     pr.add_to_assignees(*assignees)
     print(f'{t.cyan}Assigned users {assignees}{t.normal}')
