@@ -4,7 +4,7 @@ This integration was integrated and tested with version 22.1.05 of BmcITSM
 ## Configure BMC Helix ITSM on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BmcITSM.
+2. Search for BMC Helix ITSM.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
@@ -874,7 +874,7 @@ Creates a new task ticket. By splitting cases into individual tasks (assignments
 | location_company | The company associated with the task process. | Required | 
 | support_company | The technical support team associated with the company. | Optional | 
 | assigned_support_organization | The organization for the task's support organization. It makes up the second tier of the task’s support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. | Optional | 
-| assigned_support_group | The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. | Optional | 
+| assigned_group | The group for the task's support organization.  It makes up the third tier of the task's support organization data structure. The arguments assigned_support_organization, assigned_group, and support_company should be provided together. | Optional | 
 | impact | The task ticket impact. Possible values are: 1-Extensive/Widespread, 2-Significant/Large, 3-Moderate/Limited, 4-Minor/Localized. | Optional | 
 | urgency | The task ticket urgency. Possible values are: 1-Critical, 2-High, 3-Medium, 4-Low. | Optional | 
 | assignee | The full name of the employee the ticket will be assigned to. It can be retrieved by using the bmc-itsm-user-list command. | Optional | 
@@ -1853,3 +1853,28 @@ Retrieves a list of service request definitions. The records are retrieved by th
 | --- | --- | --- |
 | BmcITSM.Attachment.ID | String | The Work Log ID. | 
 
+### bmc-itsm-ticket-create-relationship
+
+***
+Creates a relationship between two tickets.
+
+#### Base Command
+
+`bmc-itsm-ticket-create-relationship`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| request_type | Request Type. Possible values are: Incident, Asset, Work order. | Required | 
+| request_description | Request Description. | Required | 
+| association_type | Association Type. Possible values are: Caused, Caused by, Duplicate of, Original of, Resolved, Resolved by. | Required | 
+| first_form_name | First Form Name. Possible values are: incident, task, change request, problem investigation, known error, work order. | Required | 
+| first_request_id | First Request ID. | Required | 
+| second_form_name | Second Form Name. Possible values are: incident, task, change request, problem investigation, known error, work order. | Required | 
+| second_request_id | Second Request ID. | Required | 
+| bidirectional | Bidirectionality. Possible values are: true, false. Default is True. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

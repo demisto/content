@@ -778,8 +778,8 @@ script:
       defaultValue: true
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'true'
+      - 'false'
     outputs: []
   - name: bmc-itsm-incident-create
     description: Creates a new incident ticket. An incident is any event that is not part of the standard operation of a service and that causes an interruption to or a reduction in the quality of that service.

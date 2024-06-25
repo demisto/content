@@ -1,5 +1,4 @@
 import demistomock as demisto  # noqa: F401
-import re
 from CommonServerPython import *  # noqa: F401
 # type: ignore
 # mypy: ignore-errors
@@ -421,9 +420,9 @@ class Client(BaseClient):
                 content_disposition = res.headers['content-disposition']
             except KeyError:
                 continue
-            fname = re.findall("filename\*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
-            fname = fname[0].strip().strip('"')
-            attachments.append(fileResult(fname, res.content))
+            m = re.search(r"filename\*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
+            name = m.group(0).strip().strip('"')
+            attachments.append(fileResult(name, res.content))
 
         return attachments
 
