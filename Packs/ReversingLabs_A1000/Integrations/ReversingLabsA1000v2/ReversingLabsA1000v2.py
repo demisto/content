@@ -1,5 +1,3 @@
-import json
-
 from CommonServerPython import *
 from ReversingLabs.SDK.a1000 import A1000
 
@@ -906,7 +904,7 @@ def user_tags_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            raise Exception(e.response_object.content)
+            raise Exception(e.response_object.content)  # type: ignore[attr-defined]
         else:
             raise
 
@@ -937,7 +935,7 @@ def file_analysis_status_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            raise Exception(e.response_object.content)
+            raise Exception(e.response_object.content)  # type: ignore[attr-defined]
         else:
             raise
 
@@ -983,7 +981,7 @@ def pdf_report_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            raise Exception(e.response_object.content)
+            raise Exception(e.response_object.content)  # type: ignore[attr-defined]
         else:
             raise
 
@@ -1030,7 +1028,7 @@ def static_analysis_report_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            raise Exception(e.response_object.content)
+            raise Exception(e.response_object.content)  # type: ignore[attr-defined]
         else:
             raise
 
@@ -1103,7 +1101,7 @@ def dynamic_analysis_report_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            raise Exception(e.response_object.content)
+            raise Exception(e.response_object.content)  # type: ignore[attr-defined]
         else:
             raise
 
@@ -1192,7 +1190,7 @@ def sample_classification_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            raise Exception(e.response_object.content)
+            raise Exception(e.response_object.content)  # type: ignore[attr-defined]
         else:
             raise
 
@@ -1372,7 +1370,7 @@ def list_containers_command(a1000: A1000):
 
     except Exception as e:
         if hasattr(e, "response_object"):
-            raise Exception(e.response_object.content)
+            raise Exception(e.response_object.content)  # type: ignore[attr-defined]
         else:
             raise
 
