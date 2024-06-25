@@ -479,7 +479,7 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
 
 
 @pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
-def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incident_status):
+def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker, incident_status):
     """
     Given:
         -  an XDR client
@@ -536,7 +536,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incid
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=raw_incident['reply'])
-    response = get_remote_data_command(client, args)
+    with capfd.disabled():
+        response = get_remote_data_command(client, args)
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
