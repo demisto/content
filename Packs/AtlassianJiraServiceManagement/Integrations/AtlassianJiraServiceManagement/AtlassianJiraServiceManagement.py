@@ -210,7 +210,7 @@ def get_object_readable_outputs(objects: List[Dict[str, Any]]) -> List[Dict[str,
     readable_outputs = []
     for obj in pascal_objects:
         obj_type = obj['ObjectType']['name']
-        output = {k: v for k, v in obj.items() if k != 'ObjectType' and k != 'Avatar'}
+        output = {k: v for k, v in obj.items() if k not in ('ObjectType',  'Avatar')}
         readable_output = {**output, "Type": obj_type}
         readable_outputs.append(readable_output)
     return readable_outputs
