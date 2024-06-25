@@ -21,13 +21,13 @@ alter
     xdm.event.outcome = if(eventState contains  "Success" or eventState contains "Warning", XDM_CONST.OUTCOME_SUCCESS, eventState contains "Failed" or eventState contains "Marked as Inactive", XDM_CONST.OUTCOME_FAILED, eventState contains "Backed up with Errors", XDM_CONST.OUTCOME_PARTIAL, eventState),
     xdm.event.outcome_reason = if(eventState != "Success" and eventState != "Warning" and eventState != "Failed" ,eventState),
     xdm.event.description = eventDetails,
-    xdm.target.user.identifier = rtrim(inSyncUserID, ".0"),
+    xdm.target.user.identifier = rtrim(to_string(inSyncUserID), ".0"),
     xdm.target.agent.version = if(clientVersion = "", null, clientVersion),
     xdm.target.user.first_name = if(dst_first_name != null, dst_first_name),
     xdm.target.user.last_name = if(dst_last_name != null, dst_last_name),
     xdm.target.user.username = if(dst_username != null, dst_username, inSyncUserName),
     xdm.target.user.upn = inSyncUserEmail,
-    xdm.target.host.device_id = if(inSyncDataSourceID = "", null, rtrim(inSyncDataSourceID, ".0")),
+    xdm.target.host.device_id = if(inSyncDataSourceID = "", null, rtrim(to_string(inSyncDataSourceID), ".0")),
     xdm.target.host.hostname = if(inSyncDataSourceName = "", null, inSyncDataSourceName),
     xdm.event.log_level = if(severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, severity = "1", XDM_CONST.LOG_LEVEL_ALERT, severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, severity = "3", XDM_CONST.LOG_LEVEL_ERROR, severity = "4", XDM_CONST.LOG_LEVEL_WARNING, severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, severity = "7", XDM_CONST.LOG_LEVEL_DEBUG, severity);
 
