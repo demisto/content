@@ -49,4 +49,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![IP_Enrichment_Generic](../../doc_files/IP_Enrichment_Generic.png)
+![IP_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/IP_Enrichment_Generic.png)

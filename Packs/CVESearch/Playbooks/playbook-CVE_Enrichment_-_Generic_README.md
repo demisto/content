@@ -39,4 +39,4 @@ This playbook does not use any sub-playbooks.
 
 ## Playbook Image
 ---
-![CVE_Enrichment_Generic](../../doc_files/CVE_Enrichment_Generic.png)
+![CVE_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CVE_Enrichment_Generic.png)

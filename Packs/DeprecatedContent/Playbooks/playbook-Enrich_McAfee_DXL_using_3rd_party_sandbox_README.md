@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Enrich_McAfee_DXL_using_3rd_party_sandbox](../../doc_files/Enrich_McAfee_DXL_using_3rd_party_sandbox.png)
+![Enrich_McAfee_DXL_using_3rd_party_sandbox](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Enrich_McAfee_DXL_using_3rd_party_sandbox.png)

@@ -33,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Search_Endpoints_By_Hash_Carbon_Black_Response](../../doc_files/Search_Endpoints_By_Hash_Carbon_Black_Response.png)
+![Search_Endpoints_By_Hash_Carbon_Black_Response](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_Carbon_Black_Response.png)

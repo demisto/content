@@ -32,5 +32,5 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![CloudConvert](../../doc_files/100620498-2ad0cc00-3327-11eb-8959-3ec0726dbced.png)
+![CloudConvert](https://user-images.githubusercontent.com/72340690/100620498-2ad0cc00-3327-11eb-8959-3ec0726dbced.png)
 

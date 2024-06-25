@@ -913,9 +913,9 @@ There is no context output for this command.
 <h3>Change the name of the Cortex XSOAR App</h3>
 <p>You can change the name and icon of the Cortex XSOAR app in direct messages using the integration configuration settings (parameters). In order to change the name of the application itself, do the following:</p>
 <ul>
-<li>Go to the app in the **Apps** section in Slack../../doc_files/slack-apps.png"/></li>
-<li> In the app, go to **About > Settings**: ../../doc_files/slack-app-about.png"/></li>
-<li>Scroll down and click the pencil icon to change the name. ../../doc_files/slack-app-name.png"/></li>
+<li>Go to the app in the **Apps** section in Slack<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-apps.png"/></li>
+<li> In the app, go to **About > Settings**: <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-about.png"/></li>
+<li>Scroll down and click the pencil icon to change the name. <img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-app-name.png"/></li>
 </ul>
 <h3>Direct messages</h3>
 <p>You can send direct messages to the Cortex XSOAR app on Slack using the following commands:</p>
@@ -967,5 +967,5 @@ The following information is sent to the dedicated endpoint in the request:
 </ul>
 <h2>Troubleshooting</h2>
 <p>If messages are not mirrored in Cortex XSOAR, or direct messages are not handled properly, check the integration status on the integration page:</p>
-../../doc_files/slack-health.png"/>
+<img alt="" src="https://github.com/demisto/content/raw/09eaa5901b0967706af2e83dfad567321e72ead8/Packs/Slack/doc_files/slack-health.png"/>
 <br>

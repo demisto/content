@@ -58,7 +58,7 @@ def change_image_link_to_relative(lines, md_path):
             url_path = Path(parse_url.path)
             if new_replace_url := find_image_in_doc_files(url_path.name, pack_name):
                 if '<img src="' in url:
-                    new_replace_url=f'<img src="{new_replace_url}"'
+                    new_replace_url=f'<img src="{new_replace_url}'
                 lines[i] = line.replace(url, new_replace_url)
                 try:
                     with open(md_path, 'w') as file:
@@ -126,7 +126,7 @@ def extract_image_links_from_files_and_save_to_json():
         
     except Exception as e:
         logger.debug(e)
-        logger.debug("#####")
+        logger.debug(f'{_errors=}')
         logger.debug(f'{images_information_success=}')
         logger.debug(f'{images_information_failed=}')
         

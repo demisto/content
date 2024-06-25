@@ -27,4 +27,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![CrowdStrike_Rapid_IOC_Hunting](../../doc_files/CrowdStrike_Rapid_IOC_Hunting.png)
+![CrowdStrike_Rapid_IOC_Hunting](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CrowdStrike_Rapid_IOC_Hunting.png)
