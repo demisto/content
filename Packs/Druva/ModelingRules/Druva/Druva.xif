@@ -7,7 +7,7 @@ alter
     dst_username = arrayindex(regextract(inSyncUserEmail, "(\S+)\@"),0),
     dst_first_name = arrayindex(regextract(inSyncUserName,"(\w+?)\s"),0),
     dst_last_name = arrayindex(regextract(inSyncUserName,"\w+\s(\w+\s*\w*)"),0),
-    severity = rtrim(severity, ".0")
+    severity = rtrim(to_string(severity), ".0")
 | alter
     xdm.source.ipv4 = if(incidr(ip, "0.0.0.0/0"), ip),
     xdm.source.ipv6 = arrayindex(regextract(ip, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
