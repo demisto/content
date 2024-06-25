@@ -12029,7 +12029,7 @@ def parse_json_string(json_string):
 def get_server_config():
     response = demisto.internalHttpRequest(method='GET', uri='/system/config')
     body = parse_json_string(response.get('body'))
-    server_config = body.get('sysConf')
+    server_config = body.get('sysConf', {})
     return server_config
 
 
