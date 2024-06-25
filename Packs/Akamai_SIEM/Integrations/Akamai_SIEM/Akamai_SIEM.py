@@ -100,10 +100,12 @@ class Client(BaseClient):
         from_epoch: str | None = ''
     ) -> tuple[list[dict], str | None]:
         params = {
-            'offset': offset,
-            'limit': limit,
-            'from': from_epoch,
+            'limit': limit
         }
+        if offset:
+            params["offset"] = offset
+        else:
+            params["from"] = from_epoch
         raw_response: str = self._http_request(
             method='GET',
             url_suffix=f'/{config_ids}',
@@ -111,9 +113,7 @@ class Client(BaseClient):
             resp_type='text',
         )
         events: list[dict] = [json.loads(e) for e in raw_response.split('\n') if e]
-        last_item = events.pop()
-        demisto.debug(f"[test] popped last_item: {last_item=} and {len(events)} new events.")
-        offset = last_item.get("offset")
+        offset = events.pop().get("offset")
         return events, offset
 
 
@@ -396,14 +396,13 @@ def fetch_events_command(
         (list[dict], str): events and new offset.
     """
     total_events_count = 0
-    demisto.debug(f"[test] here in fetch_events_command, {ctx=}")
-    from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
+    from_epoch = ctx.get("last_run_time") or parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
-    demisto.debug(f"[test] Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
     while total_events_count < int(fetch_limit):
+        demisto.debug(f"Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
         if not events:
-            demisto.debug("[test] Didn't receive any events, breaking.")
+            demisto.debug("Didn't receive any events, breaking.")
             break
         for event in events:
             try:
@@ -422,10 +421,11 @@ def fetch_events_command(
             except Exception as e:
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
-                demisto.debug(f"[test] Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
+                demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         total_events_count += len(events)
-        demisto.debug(f"[test] Got {len(events)} events, and {offset=}, the new total_events_count is: {total_events_count}")
-        yield events, offset, total_events_count
+        new_from_time = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]) + 1)
+        demisto.debug(f"Got {len(events)} events, {offset=}, {new_from_time=} the new total_events_count is: {total_events_count}")
+        yield events, offset, total_events_count, new_from_time
 
 
 def decode_url(headers: str) -> dict:
@@ -482,18 +482,15 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            for events, offset, total_events_count in fetch_events_command(  # noqa: B007
+            for events, offset, total_events_count, new_from_time in fetch_events_command(  # noqa: B007
                 client,
                 params.get("fetchTime"),
                 params.get("fetchLimit"),
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
             ):
-                demisto.debug(f"[test] Sending {len(events)} events to xsiam.")
                 send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
-                demisto.debug(f"[test] Sent events to xsiam, setting context with: {offset=}")
-                set_integration_context({"offset": offset})
-            demisto.debug(f"[test] update module health with {total_events_count=}")
+                set_integration_context({"offset": offset, "last_run_time": new_from_time})
             demisto.updateModuleHealth({'eventsPulled': total_events_count})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
