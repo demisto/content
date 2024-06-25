@@ -514,13 +514,11 @@ def test_jira_asset_object_delete_command(mocker: MockerFixture):
 def test_jira_asset_object_delete_non_exising_object(mocker: MockerFixture):
     """
     Given: A non-existing object id
-    When: The client's delete_object function raises a 404 error
+    When: The client's delete_object function returns None
     Then: The jira_asset_object_delete_command function returns a specific hr response
     """
     object_id = "-1"
-    res = Response()
-    res.status_code = 404
-    mock_delete = mocker.patch.object(client, 'delete_object', side_effect=DemistoException(message="", res=res))
+    mock_delete = mocker.patch.object(client, 'delete_object', return_value=None)
     command_result = JSM.jira_asset_object_delete_command(client, {"object_id": object_id})
     mock_delete.assert_called_with(object_id)
     assert command_result.readable_output == f'Object with id: {object_id} does not exist'
@@ -541,13 +539,11 @@ def test_jira_object_get_command(mocker: MockerFixture):
 def test_jira_asset_object_get_non_exising_object(mocker: MockerFixture):
     """
     Given: A non-existing object id
-    When: The client's get_object function raises a 404 error
+    When: The client's get_object function returns None
     Then: The jira_asset_object_get_command function returns a specific hr response
     """
     object_id = "-1"
-    res = Response()
-    res.status_code = 404
-    mock_delete = mocker.patch.object(client, 'get_object', side_effect=DemistoException(message="", res=res))
+    mock_delete = mocker.patch.object(client, 'get_object', return_value=None)
     command_result = JSM.jira_asset_object_get_command(client, {"object_id": object_id})
     mock_delete.assert_called_with(object_id)
     assert command_result.readable_output == f'Object with id: {object_id} does not exist'

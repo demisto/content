@@ -24,7 +24,7 @@ class Client(BaseClient):
 
     def __init__(self, base_url: str, api_key: str, verify: bool, proxy: bool):
         headers = {'Authorization': f'Bearer {api_key}', 'Accept': 'application/json'}
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, ok_codes=(200, 201, 204, 404))
 
     def get_schema_list(self):
         return self._http_request(
@@ -71,7 +71,15 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
     def get_object(self, object_id):
-        return self._http_request(method='GET', url_suffix=f'/object/{object_id}')
+        """
+        hr_headers = ['ID', 'Label', 'Type', 'Created']
+        readable_output = get_object_readable_outputs([res])
+        outputs = {k: v for k, v in res.items() if k != 'objectType' and k != 'avatar'}
+        """
+        res = self._http_request(method='GET', url_suffix=f'/object/{object_id}', resp_type='response')
+        if res.status_code == 404:
+            return None
+        return res.json()
 
     def search_objects(self, ql_query: str, include_attributes: bool, page: int, page_size: int, limit: int = None):
         params = {
@@ -94,7 +102,10 @@ class Client(BaseClient):
         return self._http_request(method='GET', url_suffix=f'/objectconnectedtickets/{object_id}/tickets')
 
     def get_object_attachment_list(self, object_id):
-        return self._http_request(method='GET', url_suffix=f'/attachments/object/{object_id}')
+        res = self._http_request(method='GET', url_suffix=f'/attachments/object/{object_id}', resp_type='response')
+        if res.status_code == 404:
+            return None
+        return res.json()
 
     def get_file(self, file_url):
         return self._http_request(
@@ -137,10 +148,14 @@ class Client(BaseClient):
         )
 
     def delete_object(self, object_id: str):
-        return self._http_request(
+        res = self._http_request(
             method='DELETE',
-            url_suffix=f'/object/{object_id}'
+            url_suffix=f'/object/{object_id}',
+            resp_type='response'
         )
+        if res.status_code == 404:
+            return None
+        return res.json()
 
     def remove_file(self, attachment_id):
         return self._http_request(
@@ -396,11 +411,12 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
         outputs = outputs[:limit]
 
     hr_headers = ['ID', 'Name', 'Type', 'Description', 'MinimumCardinality', 'Editable']
+    readable_outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Attribute',
         outputs_key_field='ID',
         outputs=outputs,
-        readable_output=tableToMarkdown('Object Types', outputs, headers=hr_headers, removeNull=True)
+        readable_output=tableToMarkdown('Object Types', readable_outputs, headers=hr_headers, removeNull=True)
     )
 
 
@@ -444,6 +460,8 @@ def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> Co
     object_id = args.get('object_id')
 
     jira_object = client.get_object(object_id)
+    if not jira_object:
+        return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
     object_type_id = jira_object.get('objectType').get('id')
     json_data = get_attributes_json_data(object_type_id, attributes, attributes_json)
     res = client.update_object(object_id, json_data)
@@ -461,15 +479,9 @@ def jira_asset_object_delete_command(client: Client, args: dict[str, Any]) -> Co
     :return: A CommandResults object containing a human-readable message.
     """
     object_id = args.get('object_id')
-
-    try:
-        client.delete_object(object_id)
-    except DemistoException as e:
-        if e.res.status_code == 404:
-            return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
-        else:
-            raise e
-
+    res = client.delete_object(object_id)
+    if not res:
+        return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
     return CommandResults(readable_output=f'Object with id: {object_id} was deleted successfully')
 
 
@@ -483,16 +495,12 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
     """
     object_id = args.get('object_id')
 
-    try:
-        res = client.get_object(object_id)
-        hr_headers = ['ID', 'Label', 'Type', 'Created']
-        readable_output = get_object_readable_outputs([res])
-        outputs = {k: v for k, v in res.items() if k != 'objectType' and k != 'avatar'}
-    except DemistoException as e:
-        if e.res.status_code == 404:
-            return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
-        else:
-            raise e
+    res = client.get_object(object_id)
+    if not res:
+        return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
+    hr_headers = ['ID', 'Label', 'Type', 'Created']
+    readable_output = get_object_readable_outputs([res])
+    outputs = {k: v for k, v in res.items() if k != 'objectType' and k != 'avatar'}
 
     return CommandResults(
         outputs_prefix=f'{INTEGRATION_OUTPUTS_BASE_PATH}.Object',
@@ -665,6 +673,8 @@ def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> 
     object_id = args.get('object_id')
     download_file = argToBoolean(args.get('download_file', False))
     res = client.get_object_attachment_list(f'/attachments/object/{object_id}')
+    if not res:
+        return CommandResults(readable_output='No attachments found.')
     readable_outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     hr_header = ['ID', 'Filename', 'Filesize', 'Comment']
 
