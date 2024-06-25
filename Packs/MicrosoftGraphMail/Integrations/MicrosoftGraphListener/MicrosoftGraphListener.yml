@@ -112,7 +112,7 @@ configuration:
   required: false
   type: 8
   section: Collect
-- display: Email address from which to fetch incidents (e.g., "example@demisto.com")
+- display: Email address from which to fetch incidents (e.g., "example@mail.com")
   name: mailbox_to_fetch
   required: true
   type: 0
@@ -376,6 +376,8 @@ script:
       required: true
     - description: The contents (body) of the email.
       name: body
+    - description: The content in html format (htmlBody) of the email.
+      name: htmlBody
     - auto: PREDEFINED
       description: 'The body type of the email. Can be: "text", or "HTML".'
       name: body_type
@@ -646,6 +648,10 @@ script:
     - deprecated: true
       description: Flag for rate limit retry.
       name: ran_once_flag
+    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
+      name: identifiers_filter
+      required: false
+      hidden: true
     outputs:
     - contextPath: File.Size
       description: The size of the file.
@@ -922,7 +928,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.89294
+  dockerimage: demisto/crypto:1.0.0.98336
   isfetch: true
   script: ''
   type: python

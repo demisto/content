@@ -1,3 +1,4 @@
+import uuid
 from CommonServerPython import *
 ''' IMPORTS '''
 import re
@@ -306,15 +307,22 @@ class Client:
                     body += text
 
             else:
-                if part['body'].get('attachmentId') is not None:
+                if part['body'].get('attachmentId') is not None and part.get('headers'):
+                    identifier_id = ""
+                    for header in part['headers']:
+                        if header.get('name') == 'Content-ID':
+                            identifier_id = header.get('value')
+                            if not identifier_id or identifier_id == "None":
+                                identifier_id = part['body'].get('attachmentId')
+                            identifier_id = identifier_id.strip("<>")
                     attachments.append({
                         'ID': part['body']['attachmentId'],
-                        'Name': part['filename']
+                        'Name': f"{identifier_id}-imageName:{part['filename']}",
                     })
 
         return body, html, attachments
 
-    def get_attachments(self, user_id, _id):
+    def get_attachments(self, user_id, _id, identifiers_filter=""):
         mail_args = {
             'userId': user_id,
             'id': _id,
@@ -331,12 +339,15 @@ class Client:
             'messageId': _id,
         }
         files = []
-        for attachment in result['Attachments']:
+        for attachment in result.get('Attachments', []):
+            identifiers_filter_array = argToList(identifiers_filter)
             command_args['id'] = attachment['ID']
             result = execute_gmail_action(service, "get_attachments", command_args)
-            file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
-            files.append((attachment['Name'], file_data))
-
+            if (not identifiers_filter_array
+                or ('-imageName:' in attachment['Name']
+                    and attachment['Name'].split('-imageName:')[0] in identifiers_filter_array)):
+                file_data = base64.urlsafe_b64decode(result['data'].encode('ascii'))
+                files.append((attachment['Name'], file_data))
         return files
 
     @staticmethod
@@ -756,15 +767,17 @@ class Client:
                 re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', htmlBody, re.I | re.S)):
             maintype, subtype = m.group(2).split('/', 1)
             name = f"image{i}.{subtype}"
-            att = {
+            cid = f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}'
+            attachment = {
                 'maintype': maintype,
                 'subtype': subtype,
                 'data': base64.b64decode(m.group(3)),
                 'name': name,
-                'cid': name
+                'cid': cid,
+                'ID': cid
             }
-            attachments.append(att)
-            cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + att['cid']
+            attachments.append(attachment)
+            cleanBody += htmlBody[lastIndex:m.start(1)] + 'cid:' + attachment['cid']
             lastIndex = m.end() - 1
 
         cleanBody += htmlBody[lastIndex:]
@@ -873,7 +886,7 @@ class Client:
                 msg_txt = MIMEText(att['data'], att['subtype'], 'utf-8')
                 if att['cid'] is not None:
                     msg_txt.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_txt.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_txt.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_txt.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -883,8 +896,9 @@ class Client:
                 msg_img = MIMEImage(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_img.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_img.add_header('Content-ID', '<' + att['name'] + '>')
-
+                    msg_img.add_header('Content-ID', '<' + att['cid'] + '>')
+                    if (att.get('ID')):
+                        msg_img.add_header('X-Attachment-Id', att['ID'])
                 else:
                     msg_img.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_img)
@@ -893,7 +907,7 @@ class Client:
                 msg_aud = MIMEAudio(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_aud.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_aud.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_aud.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_aud.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -903,7 +917,7 @@ class Client:
                 msg_app = MIMEApplication(att['data'], att['subtype'])
                 if att['cid'] is not None:
                     msg_app.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_app.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_app.add_header('Content-ID', '<' + att['cid'] + '>')
                 else:
                     msg_app.add_header('Content-Disposition', 'attachment', filename=att['name'])
                 message.attach(msg_app)
@@ -913,7 +927,7 @@ class Client:
                 msg_base.set_payload(att['data'])
                 if att['cid'] is not None:
                     msg_base.add_header('Content-Disposition', 'inline', filename=att['name'])
-                    msg_base.add_header('Content-ID', '<' + att['name'] + '>')
+                    msg_base.add_header('Content-ID', '<' + att['cid'] + '>')
 
                 else:
                     msg_base.add_header('Content-Disposition', 'attachment', filename=att['name'])
@@ -973,7 +987,6 @@ class Client:
             inlineAttachments = []  # type: list
 
             if htmlBody:
-                # htmlBody, htmlAttachments = handle_html(htmlBody)
                 htmlBody, htmlAttachments = self.handle_html(htmlBody)
                 msg = MIMEText(htmlBody, 'html', 'utf-8')
                 attach_body_to.attach(msg)  # type: ignore
@@ -1123,8 +1136,9 @@ def reply_mail_command(client: Client):
 def get_attachments_command(client: Client):
     args = demisto.args()
     _id = args.get('message-id')
+    content_ids = args.get('identifiers-filter', "")
 
-    attachments = client.get_attachments('me', _id)
+    attachments = client.get_attachments('me', _id, content_ids)
 
     return [fileResult(name, data) for name, data in attachments]
 

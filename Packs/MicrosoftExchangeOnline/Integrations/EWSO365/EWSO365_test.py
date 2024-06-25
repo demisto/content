@@ -1,7 +1,7 @@
-import base64
 import json
 import unittest
 from unittest.mock import MagicMock, patch
+import uuid
 
 import pytest
 from EWSO365 import (
@@ -25,7 +25,8 @@ from EWSO365 import (
     parse_incident_from_item,
     parse_item_as_dict,
     cast_mime_item_to_message,
-    decode_email_data
+    decode_email_data,
+    get_attachment_name
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -411,8 +412,8 @@ def test_handle_transient_files(transient_files, transient_files_contents, trans
 HTML_PACKAGE = [
     ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [])),
     ('<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>',
-     ('<html><body>some text <img src="cid:image0@abcd1234.abcd1234"></body></html>',
-      [{'data': base64.b64decode('abcd'), 'name': 'image0', 'cid': 'image0@abcd1234.abcd1234'}]
+     ('<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>',
+      [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}],
       )
      )
 ]
@@ -430,8 +431,8 @@ def test_handle_html(mocker, html_input, expected_output):
         - Clean the HTML string and add the relevant references to image files
 
     """
-    import EWSO365 as ewso365
-    mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
+    mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
+    # mocker.patch.object(demisto, 'uniqueFile', return_value='12345678')
     assert handle_html(html_input) == expected_output
 
 
@@ -580,7 +581,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     assert incident["rawJSON"]
     raw_json = json.loads(incident["rawJSON"])
     assert raw_json['attachments'][0]['attachmentSHA256'] == expected_attachmentSHA256
-    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
 
 
 def test_parse_incident_from_item_with_attachments():
@@ -674,7 +675,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     mock_file_result = mocker.patch('EWSO365.fileResult')
     parse_incident_from_item(message)
     # assert the fileResult is created with the expected results
-    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
 
 
 @pytest.mark.parametrize('params, expected_result', [
@@ -869,7 +870,39 @@ class TestEmailModule(unittest.TestCase):
             name="file.txt", content="data", is_inline=True, content_id="12345"
         )
         mock_message.assert_called_once()
-        assert isinstance(result, MagicMock)
+        assert isinstance(result[0], MagicMock)
+
+    @patch('EWSO365.FileAttachment')
+    @patch('EWSO365.HTMLBody')
+    @patch('EWSO365.Body')
+    @patch('EWSO365.Message')
+    def test_create_message_with_html_body_inline_image(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+        """
+        Test create_message function with an HTML body.
+        """
+        import EWSO365
+        # Setup
+        to = ["recipient@example.com"]
+        subject = "Test Subject"
+        html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+        original_html_body = '<p><img src="cid:image0@11111111_11111111"/></p>'
+        attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
+
+        mock_message.return_value = MagicMock()
+        mock_html_body.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock()
+        with patch.object(EWSO365.demisto, 'uniqueFile', return_value="1234567"), \
+                patch.object(EWSO365.demisto, 'getFilePath', return_value={"path": "", "name": ""}), \
+                patch.object(uuid, 'uuid4', return_value="111111111"):  # noqa: F821
+            # Call the function
+            result = create_message(
+                to, subject, html_body=html_body, attachments=attachments
+            )
+
+            # Assertions
+            mock_html_body.assert_called_once_with(original_html_body)
+            mock_message.assert_called_once()
+            assert isinstance(result[0], MagicMock)
 
 
 @pytest.mark.parametrize("headers, expected_formatted_headers", [
@@ -922,3 +955,14 @@ def test_handle_incorrect_message_id(message_id, expected_message_id_output):
 
     """
     assert handle_incorrect_message_id(message_id) == expected_message_id_output
+
+
+@pytest.mark.parametrize("attachment_name, content_id, attachment_id, expected_result", [
+    pytest.param('image1.png', "", '123', "123-imageName:image1.png"),
+    pytest.param('image1.png', '123', '456', "123-imageName:image1.png"),
+    pytest.param('image1.png', None, '456', "456-imageName:image1.png"),
+
+])
+def test_get_attachment_name(attachment_name, content_id, attachment_id, expected_result):
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
+                               attachment_id=attachment_id) == expected_result
