@@ -17,7 +17,7 @@
             "is_array": false
         },
         "eventID": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "eventState": {
@@ -33,7 +33,7 @@
             "is_array": false
         },
         "inSyncDataSourceID": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "inSyncUserEmail": {
@@ -41,7 +41,7 @@
             "is_array": false
         },
         "inSyncUserID": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         },
         "inSyncUserName": {
@@ -57,7 +57,7 @@
             "is_array": false
         },
         "severity": {
-            "type": "string",
+            "type": "int",
             "is_array": false
         }
     }
