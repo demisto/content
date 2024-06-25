@@ -1,3 +1,6 @@
+Use the Azure Data Explorer integration to collect and analyze data inside Azure Data Explorer clusters, and to manage search queries.
+This integration was integrated and tested with version V1 of AzureDataExplorer.
+
 In order to connect to the Azure Data Explorer using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
 
 1. *Authorization Code Flow* (Recommended).
