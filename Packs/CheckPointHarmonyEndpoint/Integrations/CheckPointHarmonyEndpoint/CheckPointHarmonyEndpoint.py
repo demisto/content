@@ -1928,7 +1928,7 @@ def computer_list_command(args: dict[str, Any], client: Client) -> PollResult:
     if not args.get("job_id"):
         new_page, new_page_size, _ = get_pagination_args(args)
         request_body = {
-            "filters":  extract_query_filter(args),
+            "filters": extract_query_filter(args),
             "paging": {"pageSize": new_page_size, "offset": new_page},
         }
 
