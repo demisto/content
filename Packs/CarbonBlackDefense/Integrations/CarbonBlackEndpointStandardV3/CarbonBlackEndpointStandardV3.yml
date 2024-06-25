@@ -349,6 +349,128 @@ script:
     description: 'Removes a rule from an existing policy. Note: System policies cannot be modified.'
   - name: cbd-get-policies-summary
     description: Get an overview of the policies available in the organization.
+  - name: cbd-find-processes
+    arguments:
+    - name: job_id
+      hidden: true
+      description: 'The unique identifier for the process search job. This ID is used to retrieve the results of the process search initiated by the Carbon Black Cloud. If not provided, a new search job will be created based on the other provided arguments.'
+    - name: alert_category
+      auto: PREDEFINED
+      description: 'The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED".'
+      predefined:
+        - THREAT
+        - OBSERVED
+    - name: device_external_ip
+      description: The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format.
+    - name: device_id
+      description: The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments.
+    - name: device_internal_ip
+      description: The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format.
+    - name: device_name
+      description: The hostname of the endpoint recorded by the sensor when last initialized.
+    - name: device_os
+      auto: PREDEFINED
+      description: 'The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX".'
+      predefined:
+        - WINDOWS
+        - MAC
+        - LINUX
+    - name: device_timestamp
+      description: 'The sensor-reported timestamp of the batch of events in which this record was submitted to Carbon Black Cloud. specified as ISO 8601 timestamp in UTC for example: 2020-01-19T04:28:40.190Z.'
+    - name: event_type
+      auto: PREDEFINED
+      description: 'The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload".'
+      predefined:
+        - filemod
+        - netconn
+        - regmod
+        - modload
+        - crossproc
+        - childproc
+        - scriptload
+        - fileless_scriptload
+    - name: parent_name
+      description: The file system path of the parent process binary.
+    - name: parent_reputation
+      auto: PREDEFINED
+      description: 'The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
+      predefined:
+        - ADAPTIVE_WHITE_LIST
+        - ADWARE
+        - COMMON_WHITE_LIST
+        - COMPANY_BLACK_LIST
+        - COMPANY_WHITE_LIST
+        - HEURISTIC
+        - IGNORE
+        - KNOWN_MALWARE
+        - LOCAL_WHITE
+        - NOT_LISTED
+        - PUP
+        - RESOLVING
+        - SUSPECT_MALWARE
+        - TRUSTED_WHITE_LIST
+    - name: process_cmdline
+      description: The command line executed by the actor process.
+    - name: process_guid
+      description: The unique process identifier for the actor process.
+    - name: hash
+      description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
+    - name: process_name
+      description: The file system path of the actor process binary.
+    - name: process_pid
+      description: The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
+    - name: process_reputation
+      auto: PREDEFINED
+      description: 'The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
+      predefined:
+        - ADAPTIVE_WHITE_LIST
+        - ADWARE
+        - COMMON_WHITE_LIST
+        - COMPANY_BLACK_LIST
+        - COMPANY_WHITE_LIST
+        - HEURISTIC
+        - IGNORE
+        - KNOWN_MALWARE
+        - LOCAL_WHITE
+        - NOT_LISTED
+        - PUP
+        - RESOLVING
+        - SUSPECT_MALWARE
+        - TRUSTED_WHITE_LIST
+    - name: process_start_time
+      description: 'The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts.'
+    - name: process_terminated
+      auto: PREDEFINED
+      description: 'Whether the process has terminated. Possible values: "true" and "false". Always "false" for enriched events (process termination not recorded).'
+      predefined:
+        - 'true'
+        - 'false'
+    - name: process_username
+      description: |-
+        The user context in which the actor process was executed.
+        MacOS - all users for the PID for fork() and exec() transitions.
+        Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
+    - name: sensor_action
+      auto: PREDEFINED
+      description: 'The action performed by the sensor on the process. Possible values: "TERMINATE", "DENY", and "SUSPEND".'
+      predefined:
+        - TERMINATE
+        - DENY
+        - SUSPEND
+    - name: query
+      description: The query in Lucene syntax and/or value searches.
+    - name: rows
+      description: The number of rows to request. Can be paginated.
+    - name: start
+      description: The first row to use for pagination.
+    - name: time_range
+      description: 'The time window in which to restrict the search to match using device_timestamp as the reference. The window value will take priority over the start and end times if provided. For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"}, window: “-2w” (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp.'
+    - name: interval_in_seconds
+      description: Used for polling.
+    - name: time_out
+      description: Used for polling.
+    description: 'Creates a process search job and retrieves the search results. At least one of the arguments (not including: rows, start, and time_range) is required.'
+    polling: true
   dockerimage: demisto/python3:3.10.14.97608
   isfetch: true
   runonce: false

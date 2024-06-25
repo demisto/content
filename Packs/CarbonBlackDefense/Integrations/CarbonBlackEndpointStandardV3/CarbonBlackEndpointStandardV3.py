@@ -8,6 +8,9 @@ import urllib3
 urllib3.disable_warnings()  # Disable insecure warnings
 
 
+INTERVAL_FOR_POLLING_DEFAULT = 30
+TIMEOUT_FOR_POLLING_DEFAULT = 600
+
 ''' CLIENT CLASS '''
 
 
@@ -121,6 +124,7 @@ class Client(BaseClient):
             rows=limit,
             query=query
         )
+        demisto.debug(f"Fetch query: {suffix_url} wite the request bode: {body}")
 
         return self._http_request('POST', suffix_url, headers=self.headers, json_data=body)
 
@@ -309,6 +313,172 @@ class Client(BaseClient):
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers,
                                   return_empty_response=True)  # Carbon black api return 204 for a successfully request
 
+    def get_processes(self, alert_category: List[str] | None = None, hash: List[str] | None = None,
+                      device_external_ip: List[str] | None = None, device_id: List[int] | None = None,
+                      device_internal_ip: List[str] | None = None, device_name: List[str] | None = None,
+                      device_os: List[str] | None = None, device_timestamp: List[str] | None = None,
+                      event_type: List[str] | None = None, parent_name: List[str] | None = None,
+                      parent_reputation: List[str] | None = None, process_cmdline: List[str] | None = None,
+                      process_guid: List[str] | None = None, process_name: List[str] | None = None,
+                      process_pid: List[int] | None = None, process_reputation: List[str] | None = None,
+                      process_start_time: List[str] | None = None, process_terminated: List[bool] | None = None,
+                      process_username: List[str] | None = None, sensor_action: List[str] | None = None,
+                      query: str | None = None, rows: int = 10, start: int = 0, time_range: str = "{}") -> dict:
+        """Searches for Carbon Black events
+            using the 'api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs' API endpoint
+
+        All the parameters are passed directly to the API as HTTP POST parameters in the request
+
+        :type alert_category: ``Optional[List[str]]``
+        :param alert_category: The Carbon Black Cloud classification for events tagged to an alert indicating.
+            Options are: 'threat' or 'observed'.
+
+        :type hash: ``Optional[List[str]]``
+        :param hash: Searchable. Aggregate set of MD5 and SHA-256 hashes associated with the process
+            (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
+            enables one-step search for any matches on the specified hashes
+
+        :type device_external_ip: ``Optional[List[str]]``
+        :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
+            can differ from device_internal_ip due to network proxy or NAT;
+            either IPv4 (dotted decimal notation) or IPv6 (proprietary format documented below).
+
+        :type device_id: ``Optional[List[int]]``
+        :param device_id: The ID assigned to the endpoint by Carbon Black Cloud;
+            unique across all Carbon Black Cloud environments.
+
+        :type device_internal_ip ``Optional[List[str]]``
+        :param device_internal_ip: The IP address of the endpoint reported by the sensor;
+            either IPv4 (dotted decimal notation) or IPv6 (proprietary format, documented below).
+
+        :type device_name: ``Optional[List[str]]``
+        :param device_name: The Hostname of the endpoint recorded by the sensor when last initialized.
+
+        :type device_os: ``Optional[List[str]]``
+        :param device_os: The operating system of the endpoint.
+
+        :type device_timestamp: ``Optional[List[str]]``
+        :param device_timestamp: The Sensor-reported timestamp of the batch of events
+            in which this record was submitted to Carbon Black Cloud.
+
+        :type event_type: ``Optional[List[str]]``
+        :param event_type: The type of enriched event observed. (Requires Endpoint Standard).
+
+        :type parent_name: ``Optional[List[str]]``
+        :param parent_name: The Filesystem path of the parent process binary.
+
+        :type parent_reputation: ``Optional[List[str]]``
+        :param parent_reputation: The Command line executed by the actor process.
+            Options are: 'ADAPTIVE_WHITE_LIST' or 'ADWARE' or 'COMMON_WHITE_LIST' or 'COMPANY_BLACK_LIST' or
+            'COMPANY_WHITE_LIST' or 'HEURISTIC' or 'IGNORE' or 'KNOWN_MALWARE' or 'LOCAL_WHITE' or 'NOT_LISTED' or 'PUP'
+            or 'RESOLVING' or 'SUSPECT_MALWARE' or 'TRUSTED_WHITE_LIST'
+
+        :type process_cmdline ``Optional[List[str]]``
+        :param process_cmdline: The Command line executed by the actor process.
+
+        :type process_guid: ``Optional[List[str]]``
+        :param process_guid: The Unique process identifier for the actor process.
+
+        :type process_name ``Optional[List[str]]``
+        :param process_name: The Filesystem path of the actor process binary.
+
+        :type process_pid: ``Optional[List[int]]``
+        :param process_pid: The Process identifier assigned by the operating system;
+            can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
+
+        :type process_reputation: ``Optional[List[str]]``
+        :param process_reputation: The Reputation of the actor process;
+            applied when event is processed by the Carbon Black Cloud.
+            Options are: 'ADAPTIVE_WHITE_LIST' or 'ADWARE' or 'COMMON_WHITE_LIST' or 'COMPANY_BLACK_LIST' or
+            'COMPANY_WHITE_LIST' or 'HEURISTIC' or 'IGNORE' or 'KNOWN_MALWARE' or 'LOCAL_WHITE' or 'NOT_LISTED' or 'PUP'
+            or 'RESOLVING' or 'SUSPECT_MALWARE' or 'TRUSTED_WHITE_LIST'
+
+        :type process_start_time: ``Optional[List[str]]``
+        :param process_start_time: The Sensor reported timestamp of when the process started;
+            not available for processes running before the sensor starts.
+
+        :type process_terminated: ``Optional[List[bool]]``
+        :param process_terminated: “True” indicates the process has terminated;
+            always “false” for enriched events (process termination not recorded).
+            Options are: 'true' or 'false'
+
+        :type process_username: ``Optional[List[str]]``
+        :param process_username: The User context in which the actor process was executed.
+            MacOS - all users for the PID for fork() and exec() transitions,
+            Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
+
+        :type sensor_action: ``Optional[List[str]]``
+        :param sensor_action: The action performed by the sensor on the process.
+            Options are: 'TERMINATE' or 'DENY' or 'SUSPEND'
+
+        :type query: ``Optional[str]``
+        :param query: The Query in lucene syntax and/or including value searches.
+            query or some of the other must be included.
+
+        :type rows: ``Optional[int]``
+        :param rows: The Number of rows to request, can be paginated. default is 10.
+
+        :type start: ``Optional[int]``
+        :param start: The first row to use for pagination. default is 0.
+
+        :type time_range: ``Optional[dict]``
+        :param time_range: The time window to restrict the search to match using device_timestamp as the reference.
+            Window will take priority over start and end if provided.
+            For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"},
+            (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp
+
+        :return: Dict containing a job_id to using it in get_process_results.
+        :rtype: ``Dict[str, str]``
+        """
+        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs'
+        body = assign_params(
+            criteria=assign_params(  # one of the arguments (query or criteria) is required
+                alert_category=argToList(alert_category),
+                hash=argToList(hash),
+                device_external_ip=argToList(device_external_ip),
+                device_id=argToList(device_id),
+                device_internal_ip=argToList(device_internal_ip),
+                device_name=argToList(device_name),
+                device_os=argToList(device_os),
+                device_timestamp=argToList(device_timestamp),
+                event_type=argToList(event_type),
+                parent_name=argToList(parent_name),
+                parent_reputation=argToList(parent_reputation),
+                process_cmdline=argToList(process_cmdline),
+                process_guid=argToList(process_guid),
+                process_name=argToList(process_name),
+                process_pid=argToList(process_pid),
+                process_reputation=argToList(process_reputation),
+                process_start_time=argToList(process_start_time),
+                process_terminated=argToList(process_terminated),
+                process_username=argToList(process_username),
+                sensor_action=argToList(sensor_action)
+            ),
+            query=query,  # one of the arguments (query or criteria) is required
+            rows=arg_to_number(rows),
+            start=arg_to_number(start),
+            time_range=json.loads(time_range)
+        )
+        if not body.get('criteria') and not body.get('query'):
+            raise DemistoException("At least one criteria filter or query must be provided.")
+        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+
+    def get_process_results(self, job_id: str, rows: int = 10) -> dict:
+        """Returns Carbon Black events by job_id
+            using the 'api/investigate/v2/orgs/{org_key}/processes/search_jobs/{job_id}/results' API endpoint
+
+        :type job_id: ``Optional[str]``
+        :param job_id: The id of the job.
+
+        :type rows: ``Optional[int]``
+        :param rows: The number of results to return. default is 10.
+
+        :return: dict containing the results data'.
+        :rtype: ``dict``
+        """
+        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={str(rows)}"
+        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -437,6 +607,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
 
     incidents = []
 
+    demisto.debug("Starting to fetch.")
+    demisto.debug(f"Last run value before starting: {last_fetched_alert_create_time}.")
+
     response = client.search_alerts_request(
         type=type,
         minimum_severity=min_severity,
@@ -452,10 +625,13 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         ),
         limit=fetch_limit
     )
+    demisto.debug(f"Fetch server response: {response}")
     alerts = response.get('results', [])
+    demisto.debug(f"Number of incidents before filtering: {len(alerts)}")
 
     for alert in alerts:
         if alert_id == alert.get('id'):
+            demisto.debug(f"Incident with ID: {alert_id} filtered out. reason: duplicate from the last fetch, skipping")
             continue
         alert_create_date = alert.get('backend_timestamp')
         alert_id = alert.get('id')
@@ -469,7 +645,10 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: int, last_run:
         }
         incidents.append(incident)
 
+    demisto.debug(f"Number of Incidents after filtering: {len(incidents)}")
+
     new_last_run = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alert_id': alert_id}
+    demisto.debug(f"New lest run: {new_last_run}")
     return incidents, new_last_run
 
 
@@ -629,6 +808,53 @@ def delete_rule_from_policy_command(client: Client, policy_id: str, rule_id: str
     client.delete_rule_from_policy(policy_id_int, rule_id_int)
 
     return CommandResults(readable_output="The rule was successfully deleted from policy")
+
+
+@polling_function(
+    name='cbd-find-processes',
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),
+    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),
+    poll_message='search jobs in process',
+    requires_polling_arg=False
+)
+def find_processes_command(args: dict, client: Client):
+    rows = arg_to_number(args.get("rows", 10))
+
+    if 'job_id' not in args:  # first polling iteration
+        res = client.get_processes(**assign_params(**args))
+        job_id = res['job_id']
+        return PollResult(
+            continue_to_poll=True,
+            args_for_next_run={"job_id": job_id, "rows": rows},
+            response=res
+        )
+
+    job_id = args['job_id']
+    res = client.get_process_results(job_id=job_id, rows=rows)
+
+    if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
+        readable_output = tableToMarkdown(
+            'The Results For The Process Search', res.get('results', []),
+            headers=['device_id', 'device_name', 'process_name', 'device_policy_id', 'enriched_event_type'],
+            removeNull=True, headerTransform=string_to_table_header
+        )
+
+        return PollResult(
+            continue_to_poll=False,
+            response=CommandResults(
+                outputs_prefix='CarbonBlackDefense.Process.Results',
+                outputs_key_field='job_id',
+                outputs=res,
+                readable_output=readable_output,
+                raw_response=res
+            )
+        )
+
+    return PollResult(
+        continue_to_poll=True,
+        args_for_next_run={"job_id": job_id, "rows": rows},
+        response=res
+    )
 
 
 ''' HELPER FUNCTIONS '''
@@ -835,6 +1061,8 @@ def main() -> None:
             results = update_rule_in_policy_command(client=client, policy_id=args.pop('policyId'), **args)
         elif command == 'cbd-delete-rule-from-policy':
             results = delete_rule_from_policy_command(client=client, policy_id=args.pop('policyId'), rule_id=args.pop('ruleId'))
+        elif command == 'cbd-find-processes':
+            results = find_processes_command(client=client, args=args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
