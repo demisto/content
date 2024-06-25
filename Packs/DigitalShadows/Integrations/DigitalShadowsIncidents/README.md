@@ -55,7 +55,7 @@ Vulnerability/Exploit Monitoring
 - Take Action and Protect  
   Alerts provide you all the context you need to make quicker, better decisions. Users also benefit from playbooks for remediating the risk, including the ability to launch takedowns.
 
-## Update – Version 1.0.10
+## Update – Version 2.0.1
 **Ingestion of Triage alerts from new Search Light API Endpoint**
 - Events are then Mapped to one of 38 Incident Types 
 - Corresponding Incident Fields are Mapped from these Types 
