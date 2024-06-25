@@ -57,6 +57,8 @@ def change_image_link_to_relative(lines, md_path):
             parse_url = urlparse(url)
             url_path = Path(parse_url.path)
             if new_replace_url := find_image_in_doc_files(url_path.name, pack_name):
+                if '<img src="' in url:
+                    new_replace_url=f'<img src="{new_replace_url}"'
                 lines[i] = line.replace(url, new_replace_url)
                 try:
                     with open(md_path, 'w') as file:
@@ -97,7 +99,7 @@ def extract_image_links_from_files_and_save_to_json():
     Searches for files matching a specified pattern within a directory and its subdirectories,
     then extracts image links from those files and saves the information to a JSON file.
     """
-    paths_links = list(Path(PACKS_PATH).rglob("*.md"))
+    paths_links = list(Path("Packs/AWS-CloudWatchLogs/Integrations/AWS-CloudWatchLogs").rglob("*.md"))
     paths_links_str = [str(path) for path in paths_links]
     filtered_md_files = [file for file in paths_links_str if 'ReleaseNotes' not in file.split(os.sep)]
     
