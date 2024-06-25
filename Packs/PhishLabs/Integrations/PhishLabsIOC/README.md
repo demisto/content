@@ -7,7 +7,7 @@
 <h2 id="phishlabs-ioc-playbooks">PhishLabs IOC Playbooks</h2>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/35098543/58381182-d8408200-7fc2-11e9-8726-8056cab1feea.png" alt="image"><br> <img src="https://user-images.githubusercontent.com/35098543/58381191-e5f60780-7fc2-11e9-84fb-7b9d9beab7f8.png" alt="image"></p>
+<p><img src="../../doc_files/58381182-d8408200-7fc2-11e9-8726-8056cab1feea.png" alt="image"><br> <img src="https://user-images.githubusercontent.com/35098543/58381191-e5f60780-7fc2-11e9-84fb-7b9d9beab7f8.png" alt="image"></p>
 </div>
 <div class="cl-preview-section">
 <h2 id="use-cases">Use Cases</h2>

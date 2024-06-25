@@ -241,7 +241,7 @@
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/52956734-b5d21380-3398-11e9-84d4-fb6eb40d9cbc.png" alt="screen shot 2019-02-18 at 16 15 48"></p>
+<p><img src="../../doc_files/52956734-b5d21380-3398-11e9-84d4-fb6eb40d9cbc.png" alt="screen shot 2019-02-18 at 16 15 48"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="set-attributes-of-an-access-rule-object">2. Set attributes of an access rule object</h3>
@@ -459,7 +459,7 @@
 <h5 id="human-readable-output-1">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/52952045-1444c500-338c-11e9-941a-53a7cea3363a.png" alt="screen shot 2019-02-18 at 13 55 04"></p>
+<p><img src="../../doc_files/52952045-1444c500-338c-11e9-941a-53a7cea3363a.png" alt="screen shot 2019-02-18 at 13 55 04"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-status-of-a-check-point-task">3. Get the status of a Check Point task</h3>
@@ -743,7 +743,7 @@
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/52951911-c039e080-338b-11e9-9918-c4986fdd4e19.png" alt="screen shot 2019-02-18 at 14 26 54"></p>
+<p><img src="../../doc_files/52951911-c039e080-338b-11e9-9918-c4986fdd4e19.png" alt="screen shot 2019-02-18 at 14 26 54"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="block-an-ip-address">5. Block an IP address</h3>

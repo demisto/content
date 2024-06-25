@@ -140,33 +140,33 @@ Palo Alto recommends that you configure Splunk to produce basic alerts that the 
 
 1. Create a summary index in Splunk. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Indexer/Setupmultipleindexes#Create_events_indexes_2).
 2. Build a query to return relevant alerts.
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/build-query.png)
+![image](../../doc_files/build-query.png)
 1. Identify the fields list from the Splunk query and save it to a local file.
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/identify-fields-list.png)
+![image](../../doc_files/identify-fields-list.png)
 1. Define a search macro to capture the fields list that you saved locally. For more information, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
 Use the following naming convention: (demisto_fields_{type}).
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/micro-name.png)
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/macro.png)
+![image](../../doc_files/micro-name.png)
+![image](../../doc_files/macro.png)
 1. Define a scheduled search, the results of which are stored in the summary index. For more information about scheduling searches, click [here](https://docs.splunk.com/Documentation/Splunk/7.3.0/Knowledge/Definesearchmacros).
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/scheduled-search.png)
+![image](../../doc_files/scheduled-search.png)
 1. In the Summary indexing section, select the summary index, and enter the {key:value} pair for Cortex XSOAR classification.
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/summary-index.png)
+![image](../../doc_files/summary-index.png)
 1. Configure the incident type in Cortex XSOAR by navigating to __Settings > Advanced > Incident Types.__ Note: In the example, Splunk Generic is a custom incident type.
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/incident_type.png)
+![image](../../doc_files/incident_type.png)
 1. Configure the classification. Make sure that your non ES incident fields are associated with your custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
    2. Click your classifier.
    3. Select your instance.
    4. Click the fetched data.
    5. Drag the value to the appropriate incident type.
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/classify.png)
+![image](../../doc_files/classify.png)
 1. Configure the mapping. Make sure to map your non ES fields accordingly and make sure that these incident fields are associated with their custom incident type.
    1. Navigate to __Settings > Integrations > Classification & Mapping__.
    2. Click your mapper.
    3. Select your instance.
    4. Click the __Choose data path__ link for the field you want to map.
    5. Click the data from the Splunk fields to map it to Cortex XSOAR.
-![image](https://github.com/demisto/content/raw/master/Packs/SplunkPy/doc_files/mapping.png)
+![image](../../doc_files/mapping.png)
 1.  (Optional) Create custom fields.
 2.  Build a playbook and assign it as the default for this incident type.
 
