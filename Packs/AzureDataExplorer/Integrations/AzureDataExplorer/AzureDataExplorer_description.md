@@ -2,7 +2,7 @@ In order to connect to the Azure Data Explorer using either Cortex XSOAR Azure A
 
 1. *Authorization Code Flow* (Recommended).
 2. *Device Code Flow*.
-3. *Client Credentials Flow*
+3. *Client Credentials Flow*.
 
 ## Self-Deployed Azure App
 
@@ -11,25 +11,25 @@ To add the registration, refer to the following [Microsoft article](https://lear
 
 ### Required permissions
 
-- Azure Data Explorer - permission `user_impersonation` of type Delegated
-- Microsoft Graph - permission `offline_access` of type Delegated
+- Azure Data Explorer - permission `user_impersonation` of type Delegated.
+- Microsoft Graph - permission `offline_access` of type Delegated.
 
 To add a permission:
 
-1. Navigate to **Home** > **App registrations**.
+1. Navigate to **Azure Portal > **Home** > **App registrations**.
 2. Search for your app under 'all applications'.
 3. Click **API permissions** > **Add permission**.
-4.  Search for the specific Microsoft API and select the specific permission of type Delegated.
+4. Search for the specific Microsoft API and select the specific permission of type Delegated.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
-1. In the **Authentication Type** field, select the **Authorization Code** option.
-2. In the **Application ID** field, enter your Client/Application ID. 
-3. In the **Client Secret** field, enter your Client Secret.
-4. In the **Tenant ID** field, enter your Tenant ID .
-5. In the **Application redirect URI** field, enter your Application redirect URI.
+1. In the *Authentication Type* field, select the **Authorization Code** option.
+2. In the *Application ID* field, enter your Client/Application ID. 
+3. In the *Client Secret* field, enter your Client Secret.
+4. In the *Tenant ID* field, enter your Tenant ID .
+5. In the *Application redirect URI* field, enter your Application redirect URI.
 6. Save the instance.
-7. Run the `!azure-data-explorer-generate-login-url` command in the War Room and follow the instruction.
+7. Run the `!azure-data-explorer-generate-login-url` command in the War Room and follow the instructions.
 8. Save the instance.
    
 ### Authentication Using the Device Code Flow

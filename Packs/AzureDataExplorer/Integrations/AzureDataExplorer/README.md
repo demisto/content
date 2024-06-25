@@ -7,7 +7,7 @@ In order to connect to the Azure Data Explorer using either Cortex XSOAR Azure A
 
 1. *Authorization Code Flow* (Recommended).
 2. *Device Code Flow*.
-3. *Client Credentials Flow*
+3. *Client Credentials Flow*.
 
 ## Self-Deployed Azure App
 
@@ -16,23 +16,23 @@ To add the registration, refer to the following [Microsoft article](https://lear
 
 ### Required permissions
 
-- Azure Data Explorer - permission `user_impersonation` of type Delegated
-- Microsoft Graph - permission `offline_access` of type Delegated
+- Azure Data Explorer - permission `user_impersonation` of type Delegated.
+- Microsoft Graph - permission `offline_access` of type Delegated.
 
 To add a permission:
 
-1. Navigate to **Home** > **App registrations**.
+1. Navigate to **Azure Poral** > **Home** > **App registrations**.
 2. Search for your app under 'all applications'.
 3. Click **API permissions** > **Add permission**.
 4.  Search for the specific Microsoft API and select the specific permission of type Delegated.
 
 ### Authentication Using the Authorization Code Flow (recommended)
 
-1. In the **Authentication Type** field, select the **Authorization Code** option.
-2. In the **Application ID** field, enter your Client/Application ID. 
-3. In the **Client Secret** field, enter your Client Secret.
-4. In the **Tenant ID** field, enter your Tenant ID .
-5. In the **Application redirect URI** field, enter your Application redirect URI.
+1. In the *Authentication Type* field, select the **Authorization Code** option.
+2. In the *Application ID* field, enter your Client/Application ID. 
+3. In the *Client Secret* field, enter your Client Secret.
+4. In the *Tenant ID* field, enter your Tenant ID .
+5. In the *Application redirect URI* field, enter your Application redirect URI.
 6. Save the instance.
 7. Run the `!azure-data-explorer-generate-login-url` command in the War Room and follow the instruction.
 8. Save the instance.
@@ -43,7 +43,7 @@ Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microso
 to link Azure Data Explorer with Cortex XSOAR.
 
 1. Fill in the required parameters.
-2. In the **Authentication Type** field, select the **Device Code** option.
+2. In the *Authentication Type* field, select the **Device Code** option.
 3. Run the ***!azure-data-explorer-auth-start*** command.
 4. Follow the instructions that appear.
 5. Run the ***!azure-data-explorer-auth-complete*** command.
@@ -84,7 +84,6 @@ In order to use the Cortex XSOAR Azure application, use the default application 
     | Use system proxy settings |  | False |
     | Authentication Type | Type of authentication - could be Authorization Code Flow \(recommended\), Device Code Flow or Client Credentials Flow. | False |
     | Tenant ID | For Authorization Code or Client Credentials Flows. | False |
-    | Client Secret | For Authorization Code or Client Credentials Flows. | False |
     | Client Secret | For Authorization Code or Client Credentials Flows. | False |
     | Application redirect URI (for Authorization Code mode) |  | False |
     | Authorization code | for Authorization Code mode - received from the authorization step. see Detailed Instructions \(?\) section | False |
