@@ -11,7 +11,7 @@ alter
 | alter
     xdm.source.ipv4 = if(incidr(ip, "0.0.0.0/0"), ip),
     xdm.source.ipv6 = arrayindex(regextract(ip, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
-    xdm.event.id  = rtrim(eventID, ".0"),
+    xdm.event.id  = rtrim(to_string(eventID), ".0"),
     xdm.target.host.os = if(clientOS = "", null, clientOS),
     xdm.event.type = eventType,
     xdm.source.user.username = if(src_username != null, src_username ,initiator = "", null, initiator),
