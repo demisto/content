@@ -1926,14 +1926,13 @@ def computer_list_command(args: dict[str, Any], client: Client) -> PollResult:
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     if not args.get("job_id"):
-        request_body = build_request_body(args)
-        updated_request_body = {
-            "filters": request_body["targets"]["query"]["filter"],
-            "paging": request_body["targets"]["query"]["paging"],
+        new_page, new_page_size, _ = get_pagination_args(args)
+        request_body = {
+            "filters":  extract_query_filter(args),
+            "paging": {"pageSize": new_page_size, "offset": new_page},
         }
-        del request_body
 
-        response = client.computer_list(updated_request_body)
+        response = client.computer_list(request_body)
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, "harmony-ep-computer-list")
@@ -2586,7 +2585,7 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
         for query in queries:
             query_parts = query.split(" ")
 
-            if len(query_parts) < 3:
+            if len(query_parts) != 3:
                 raise ValueError(
                     "'filter_by_query' must be in the following format: 'column_name filter_type filter_value'."
                 )
