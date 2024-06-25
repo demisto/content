@@ -1174,7 +1174,7 @@ class ZendeskClient(BaseClient):
         return GetMappingFieldsResponse([zendesk_ticket_scheme])
 
 
-def main():  # pragma: no cover test
+def main():  # pragma: no cover
 
     params = demisto.params()
     verify = not params.get('insecure', False)
