@@ -179,6 +179,10 @@ script:
     - description: The attachments ids to get. If none - all attachments will be retrieve from the message. Support multiple attachments with comma-separated value or array.
       isArray: true
       name: attachment-ids
+    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
+      hidden: true
+      name: identifiers-filter
+      required: false
     description: Retrieves the actual attachments from an item (email message). To get all attachments for a message, only specify the item-id argument.
     name: ews-get-attachment
     outputs:
@@ -959,7 +963,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:1.0.0.91957
+  dockerimage: demisto/py3ews:5.4.1.98461
   isfetch: true
   script: ''
   subtype: python3
