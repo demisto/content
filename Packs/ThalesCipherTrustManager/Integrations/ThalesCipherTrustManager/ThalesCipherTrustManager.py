@@ -591,6 +591,8 @@ def local_ca_markdown(raw_response: dict[str, Any]) -> str:
 
 
 '''MARKDOWN FUNCTIONS'''
+
+
 def group_list_markdown(data: dict) -> str:
     skip_limit_total_hr = hr_skip_limit_to_markdown(data.get('skip', 0),
                                                     data.get('limit', 0),
@@ -599,7 +601,7 @@ def group_list_markdown(data: dict) -> str:
 
     transformed_data = [{
         'Name': group.get('name', ''),
-         'Defined By': 'System' if group.get('app_metadata', {}).get('system') else 'User',
+        'Defined By': 'System' if group.get('app_metadata', {}).get('system') else 'User',
         'No. of members': group.get('users_count', ''),
         'Description': group.get('description', '')
     } for group in data.get('resources', [])]
