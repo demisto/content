@@ -528,7 +528,7 @@ def test_add_empty_list_param_no_value():
 @pytest.mark.parametrize('request_data, argument_value, expected_login_flags', [
     ({}, True, {"prevent_ui_login": True}),
     ({}, False, {"prevent_ui_login": False}),
-    ({}, None, {})
+    ({}, None, None),
 ])
 def test_add_login_flags(request_data, argument_value, expected_login_flags):
     from ThalesCipherTrustManager import add_prevent_ui_login
