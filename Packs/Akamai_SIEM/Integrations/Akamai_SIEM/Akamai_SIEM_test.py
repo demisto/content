@@ -165,7 +165,7 @@ class TestCommandsFunctions:
                                                                                       '',
                                                                                       {}
                                                                                       ):
-            assert offset == f"offset_{events[-1]['id']}"
+            assert offset == f"offset_{events[-1]['id']}" if events else True
         assert total_events_count == 250
 
     def test_fetch_events_command__no_results(self, client, requests_mock):
@@ -184,11 +184,11 @@ class TestCommandsFunctions:
         last_offset = "11111"
         requests_mock.get(f'{BASE_URL}/50170?limit={size}&offset={last_offset}', text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count in Akamai_SIEM.fetch_events_command(client, '12 hours', 6,  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client, '12 hours', 6,  # noqa: B007
                                                                               '50170', {"offset": last_offset}):
             last_offset = offset
         assert total_events_count == 0
-        assert last_offset == "11111"
+        assert not last_offset
 
     def test_fetch_events_command__limit_is_smaller_than_page_size(self, client, requests_mock, mocker):
         """
@@ -245,7 +245,7 @@ class TestCommandsFunctions:
                                                                                             ):
             last_offset = offset
         assert total_events_count == 8
-        assert last_offset == "318d8"
+        assert not last_offset
         assert new_from_time == '1576002508'
 
     def test_fetch_events_command__limit_reached(self, client, requests_mock, mocker):

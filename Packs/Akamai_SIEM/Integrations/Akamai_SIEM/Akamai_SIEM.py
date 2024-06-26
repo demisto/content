@@ -396,13 +396,16 @@ def fetch_events_command(
         (list[dict], str): events and new offset.
     """
     total_events_count = 0
-    from_epoch = ctx.get("last_run_time") or parse_date_range(date_range=fetch_time, date_format='%s')
+    new_from_time = ""
+    if not (from_epoch := ctx.get("last_run_time")):
+        from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
     while total_events_count < int(fetch_limit):
         demisto.debug(f"Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
         if not events:
             demisto.debug("Didn't receive any events, breaking.")
+            offset = None
             break
         for event in events:
             try:
@@ -423,7 +426,7 @@ def fetch_events_command(
         new_from_time = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]) + 1)
         demisto.debug(f"Got {len(events)} events, and {offset=}")
         yield events, offset, total_events_count, new_from_time
-    yield [], None, total_events_count, from_epoch
+    yield [], offset, total_events_count, new_from_time or from_epoch
 
 
 def decode_url(headers: str) -> dict:
