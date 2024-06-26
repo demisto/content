@@ -218,6 +218,7 @@ def get_object_attribute_string_type(attribute: Dict[str, Any]) -> str:
             return 'Status'
         case 8:
             return 'Bitbucket Repository'
+    return 'Default'
 
 
 def get_object_readable_outputs(objects: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -225,13 +226,13 @@ def get_object_readable_outputs(objects: List[Dict[str, Any]]) -> List[Dict[str,
     readable_outputs = []
     for obj in pascal_objects:
         obj_type = obj['ObjectType']['name']
-        output = {k: v for k, v in obj.items() if k not in ('ObjectType',  'Avatar')}
+        output = {k: v for k, v in obj.items() if k not in ('ObjectType', 'Avatar')}
         readable_output = {**output, "Type": obj_type}
         readable_outputs.append(readable_output)
     return readable_outputs
 
 
-def clean_object_attributes(attributes: List[Dict[str, any]]) -> List[Dict[str, any]]:
+def clean_object_attributes(attributes: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     string_typed_attributes = [{
         **attribute,
         'type': get_object_attribute_string_type(attribute)}
@@ -252,7 +253,11 @@ def convert_attributes(attributes: Dict[str, List[str]]) -> List[Dict[str, Any]]
     return result
 
 
-def get_attributes_json_data(object_type_id: str, attributes: dict[str, Any] = None, attributes_json: str = None) -> Dict[str, Any]:
+def get_attributes_json_data(
+    object_type_id: str,
+    attributes: dict[str, Any] = None,
+    attributes_json: str = None
+) -> Dict[str, Any]:
 
     if not attributes and not attributes_json:
         raise ValueError('Either attributes or attributes_json must be provided.')
@@ -262,7 +267,8 @@ def get_attributes_json_data(object_type_id: str, attributes: dict[str, Any] = N
     if attributes:
         converted_attributes = convert_attributes(attributes)
     else:
-        converted_attributes = json.loads(attributes_json).get('attributes')
+        # cast is necessary for pre-commit. mypy isn't smart enough to know that by that point, attributes_json must be defined
+        converted_attributes = json.loads(str(attributes_json)).get('attributes')
 
     return {
         'objectTypeId': object_type_id,
@@ -270,8 +276,7 @@ def get_attributes_json_data(object_type_id: str, attributes: dict[str, Any] = N
     }
 
 
-def parse_object_results(res: Dict[str, any]) -> Dict[str, Any]:
-    obj_field = res.items()
+def parse_object_results(res: Dict[str, Any]) -> Dict[str, Any]:
     outputs = [{k: v for k, v in res.items() if k != 'objectType'}]
     object_id = res.get('id')
     return {'outputs': outputs, 'objectId': object_id}
@@ -347,11 +352,14 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
         - 'all_results': A boolean indicating whether to return all results or to respect the limit. Defaults to False.
     :return: A CommandResults object containing the list of object types as output, and a human-readable markdown table.
     """
-    schema_id = args.get('schema_id')
+    schema_id = args.get('schema_id', '')
     query = args.get('query')
     exclude = args.get('exclude')
     limit = args.get('limit', 50)
     all_results = argToBoolean(args.get('all_results', False))
+
+    if not schema_id:
+        raise ValueError("schema_id is a required argument")
 
     # build outputs
     res = client.get_object_type_list(schema_id, query, exclude)
@@ -390,9 +398,12 @@ def jira_asset_object_type_attribute_list_command(client: Client, args: dict[str
                 * 'order_by_required'
         :return: A CommandResults object containing the list of attributes as output, and a human-readable markdown table.
     """
-    object_type_id = args.get('object_type_id')
+    object_type_id = args.get('object_type_id', '')
     limit = args.get('limit', 50)
     all_results = args.get('all_results', False)
+
+    if not object_type_id:
+        raise ValueError('object_type_id is a required argument')
 
     # build outputs
     res = client.get_object_type_attributes(
@@ -431,9 +442,12 @@ def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> Co
         - 'attributes_json': A JSON string of attributes to set for the object.
     :return: A CommandResults object containing the created object as output, and a human-readable markdown table.
     """
-    object_type_id = args.get('object_type_id')
+    object_type_id = args.get('object_type_id', '')
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
+
+    if not object_type_id:
+        raise ValueError('object_type_id is a required argument')
 
     json_data = get_attributes_json_data(object_type_id, attributes, attributes_json)
     res = client.create_object(json_data)
@@ -458,11 +472,16 @@ def jira_asset_object_update_command(client: Client, args: dict[str, Any]) -> Co
     """
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
-    object_id = args.get('object_id')
+    object_id = args.get('object_id', '')
+
+    if not object_id:
+        raise ValueError('object_id is a required argument')
 
     jira_object = client.get_object(object_id)
+
     if not jira_object:
         return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
+
     object_type_id = jira_object.get('objectType').get('id')
     json_data = get_attributes_json_data(object_type_id, attributes, attributes_json)
     res = client.update_object(object_id, json_data)
@@ -479,10 +498,14 @@ def jira_asset_object_delete_command(client: Client, args: dict[str, Any]) -> Co
         - 'object_id': The ID of the object to delete.
     :return: A CommandResults object containing a human-readable message.
     """
-    object_id = args.get('object_id')
+    object_id = args.get('object_id', '')
+    if not object_id:
+        raise ValueError('object_id is a required argument')
+
     res = client.delete_object(object_id)
     if not res:
         return CommandResults(readable_output=f'Object with id: {object_id} does not exist')
+
     return CommandResults(readable_output=f'Object with id: {object_id} was deleted successfully')
 
 
@@ -494,7 +517,10 @@ def jira_asset_object_get_command(client: Client, args: dict[str, Any]) -> Comma
         - 'object_id': The ID of the object to retrieve.
     :return: A CommandResults object containing the object as output, and a human-readable markdown table.
     """
-    object_id = args.get('object_id')
+    object_id = args.get('object_id', '')
+
+    if not object_id:
+        raise ValueError('object_id is a required argument')
 
     res = client.get_object(object_id)
     if not res:
@@ -524,11 +550,14 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
     :return: A CommandResults object containing the objects as output, and a human-readable markdown table.
     """
     # build request params
-    ql_query = args.get('ql_query')
+    ql_query = args.get('ql_query', '')
     include_attributes = argToBoolean(args.get('include_attributes', False))
     page = int(args.get('page', 1))
     page_size = int(args.get('page_size', 50))
     limit = args.get('limit')
+
+    if not ql_query:
+        raise ValueError('ql_query is a required argument')
 
     # build outputs
     res = client.search_objects(ql_query, include_attributes, page, page_size, limit)
@@ -544,7 +573,7 @@ def jira_asset_object_search_command(client: Client, args: dict[str, Any]) -> Co
     )
 
 
-def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any]) -> [dict, CommandResults]:
+def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any]) -> tuple[dict, CommandResults]:
     """
     Creates a Jira asset attribute JSON object.
     :param client: Client object for performing API requests.
@@ -555,13 +584,16 @@ def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any
     :return: A CommandResults object containing the attribute JSON as a file entry, and a human-readable json string.
     """
     # build request params
-    object_type_id = args.get('object_type_id')
+    object_type_id = args.get('object_type_id', '')
     is_editable = args.get('is_editable', False)
+
+    if not object_type_id:
+        raise ValueError('object_type_id is a required argument')
 
     # build outputs
     res = client.get_object_type_attributes(object_type_id=object_type_id, is_editable=is_editable)
     if args.get('is_required'):
-        res = [attribute for attribute in res if attribute.get('minimumCardinality') > 0]
+        res = [attribute for attribute in res if int(attribute.get('minimumCardinality')) > 0]
 
     outputs = {'attributes': [{
         "objectTypeAttributeId": attribute.get("id"),
@@ -570,7 +602,7 @@ def jira_asset_attribute_json_create_command(client: Client, args: Dict[str, Any
 
     hr_command_results = CommandResults(readable_output=json.dumps(outputs))
     file_entry = fileResult(filename='attributes.json', data=json.dumps(outputs, indent=2), file_type=EntryType.ENTRY_INFO_FILE)
-    return [file_entry, hr_command_results]
+    return file_entry, hr_command_results
 
 
 def jira_asset_comment_create_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -602,7 +634,10 @@ def jira_asset_comment_list_command(client: Client, args: dict[str, Any]) -> Com
         - 'object_id': The ID of the object to retrieve comments for.
     :return: A CommandResults object containing the comments as output, and a human-readable markdown table.
     """
-    object_id = args.get('object_id')
+    object_id = args.get('object_id', '')
+    if not object_id:
+        raise ValueError('object_id is a required argument')
+
     res = client.get_comment_list(object_id)
     readable_outputs = convert_keys_to_pascal(list(res), {'id': 'ID'})
     outputs = [{k: v for k, v in output.items() if k != 'actor'} for output in res]
@@ -704,9 +739,9 @@ def jira_asset_attachment_list_command(client: Client, args: dict[str, Any]) -> 
             files.append(file.name)
     zip_data_buffer = io.BytesIO()
     with zipfile.ZipFile(zip_data_buffer, 'w') as zipf:
-        for file in files:
-            zipf.write(file)
-            os.remove(file)
+        for curr_file_name in files:
+            zipf.write(curr_file_name)
+            os.remove(curr_file_name)
 
     data = zip_data_buffer.getvalue()
     file_result = fileResult('ObjectAttachments.zip', data, EntryType.ENTRY_INFO_FILE)
@@ -740,7 +775,6 @@ def jira_asset_attachment_remove_command(client: Client, args: dict[str, Any]) -
 
 
 ''' MAIN FUNCTION '''
-
 
 commands = {
     'jira-asset-object-schema-list': jira_asset_object_schema_list_command,

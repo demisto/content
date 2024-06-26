@@ -4,8 +4,7 @@ from pytest_mock import MockerFixture
 from typing import Any
 import AtlassianJiraServiceManagement as JSM
 import json
-from requests import Response
-from CommonServerPython import DemistoException, CommandResults
+from CommonServerPython import CommandResults
 import demistomock as demisto
 
 
@@ -98,7 +97,8 @@ def test_clean_object_attributes_with_type_and_default_type():
     When:
         - Cleaning the object attributes to match a certain format.
     Then:
-        - The cleaned attributes should match the expected format with 'type' replaced by its string representation and keys in PascalCase.
+        - The cleaned attributes should match the expected format with 'type' replaced by its string representation and
+        keys in PascalCase.
     """
     attributes = [{'id': 1, 'name': 'Test', 'type': 0, 'defaultType': {'name': 'Text'}, 'objectType': {'id': 1}}]
     expected = [{'id': 1, 'name': 'Test', 'type': 'Text', 'defaultType': {'name': 'Text'}}]
@@ -113,7 +113,8 @@ def test_clean_object_attributes_with_type():
     When:
         - Cleaning the object attributes to match a certain format.
     Then:
-        - The cleaned attributes should match the expected format with 'type' replaced by its string representation and keys in PascalCase.
+        - The cleaned attributes should match the expected format with 'type' replaced by its string representation and
+        keys in PascalCase.
     """
     attributes = [{'id': 2, 'value': 'Hello', 'type': 1}]
     expected = [{'id': 2, 'value': 'Hello', 'type': 'Object Reference'}]
@@ -143,7 +144,8 @@ def test_convert_attributes_multiple_values():
     When:
         - The convert_attributes function is called with the dictionary.
     Then:
-        - The function should return a list with a dictionary containing 'objectTypeAttributeId' set to the attribute ID and 'objectAttributeValues' as a list of dictionaries with 'value' keys.
+        - The function should return a list with a dictionary containing 'objectTypeAttributeId' set to the attribute ID
+         and 'objectAttributeValues' as a list of dictionaries with 'value' keys.
     """
     attributes = {"attr1": ["value1", "value2"]}
     expected = [
@@ -160,7 +162,8 @@ def test_convert_attributes_single_value():
     When:
         - The convert_attributes function is called with the dictionary.
     Then:
-        - The function should return a list with a dictionary containing 'objectTypeAttributeId' set to the attribute ID and 'objectAttributeValues' as a list with a single dictionary with the 'value' key.
+        - The function should return a list with a dictionary containing 'objectTypeAttributeId' set to the attribute ID
+         and 'objectAttributeValues' as a list with a single dictionary with the 'value' key.
     """
     attributes = {"attr2": ["hello"]}
     expected = [

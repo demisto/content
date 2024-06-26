@@ -11,10 +11,9 @@
     ],
     "tags": [],
     "useCases": [
-        "Managing software updates",
-        "Managing firmware updates",
-        "Managing employee roles and permissions",
-        "Managing service desk tickets"
+        "Asset Management",
+        "Network Security",
+        "Vulnerability Management"
     ],
     "keywords": ["Jira", "Atlassian", "Jira Service Management", "Jira Assets"],
     "marketplaces": [
