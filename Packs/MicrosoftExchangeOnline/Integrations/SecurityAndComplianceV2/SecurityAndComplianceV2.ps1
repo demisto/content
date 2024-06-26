@@ -1,5 +1,6 @@
 . $PSScriptRoot\CommonServerPowerShell.ps1
 
+
 $script:INTEGRATION_NAME = "Security And Compliance"
 $script:COMMAND_PREFIX = "o365-sc"
 $script:INTEGRATION_ENTRY_CONTEX = "O365.SecurityAndCompliance.ContentSearch"
@@ -1332,6 +1333,27 @@ class SecurityAndComplianceClient {
         #>
     }
 
+
+    CaseHoldPolicySet([string]$identity, [bool]$enabled, [string[]]$add_exchange_locations, [string[]] $add_sharepoint_locations, [string[]]$add_public_locations,
+        [string[]]$remove_exchange_locations, [string[]]$remove_sharepoint_locations, [string[]]$remove_public_locations, [string]$comment){
+        $this.CreateDelegatedSession("Set-CaseHoldPolicy")
+      $cmd_params = @{}
+  
+      if ($identity) { $cmd_params.Identity = $identity }
+      if ($enabled) { $cmd_params.Enabled = $enabled }
+      if ($add_exchange_locations) { $cmd_params.AddExchangeLocation = $add_exchange_locations }
+      if ($add_sharepoint_locations) { $cmd_params.AddSharePointLocation = $add_sharepoint_locations }
+      if ($add_public_locations) { $cmd_params.AddPublicFolderLocation = $add_public_locations }
+      if ($remove_exchange_locations) { $cmd_params.RemoveExchangeLocation = $remove_exchange_locations }
+      if ($remove_sharepoint_locations) { $cmd_params.RemoveSharePointLocation = $remove_sharepoint_locations }
+      if ($remove_public_locations) { $cmd_params.RemovePublicFolderLocation = $remove_public_locations }
+      if ($comment) { $cmd_params.Comment = $comment }
+
+        Set-CaseHoldPolicy @cmd_params
+        $this.DisconnectSession()
+    }
+
+
     [psobject]CaseHoldRuleCreate([string]$rule_name, [string]$policy_name, [string]$query, [string]$comment, [bool]$is_disabled){
         # Establish session to remote
         $this.CreateDelegatedSession("New-CaseHoldRule")
@@ -1449,6 +1471,7 @@ class SecurityAndComplianceClient {
         #>
     }
 }
+
 
 #### COMMAND FUNCTIONS ####
 
@@ -1847,6 +1870,28 @@ function CaseHoldRuleDeleteCommand([SecurityAndComplianceClient]$client, [hashta
     return $human_readable, $entry_context, $raw_response
 }
 
+function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs){
+    $enabled = ConvertTo-Boolean $kwargs.enabled
+    $add_exchange_locations = ArgToList $kwargs.add_exchange_locations
+    $add_sharepoint_locations = ArgToList $kwargs.add_sharepoint_locations
+    $add_public_locations = ArgToList $kwargs.add_public_locations
+    $remove_exchange_locations = ArgToList $kwargs.remove_exchange_locations
+    $remove_sharepoint_locations = ArgToList $kwargs.remove_sharepoint_locations
+    $remove_public_locations = ArgToList $kwargs.remove_public_locations
+
+    $client.CaseHoldPolicySet($kwargs.identity, $enabled, $add_exchange_locations,
+                                $add_sharepoint_locations, $add_public_locations, $remove_exchange_locations,
+                                $remove_sharepoint_locations, $remove_public_locations, $kwargs.comment)
+
+    $raw_response = @{}
+    # Human readable
+    $human_readable = "$script:INTEGRATION_NAME - case hold policy **$($kwargs.identity)** modified!"
+    # Entry context
+    $entry_context = @{}
+
+    return $human_readable, $entry_context, $raw_response
+}
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
@@ -1956,6 +2001,9 @@ function Main {
             }
             "$script:COMMAND_PREFIX-case-hold-rule-delete" {
                 ($human_readable, $entry_context, $raw_response, $file_entry) = CaseHoldRuleDeleteCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-case-hold-policy-set" {
+                ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
         }
 
