@@ -126,7 +126,7 @@ def test_say_hello():
     assert response.outputs == 'Hello Dbot'
 
 
-@ pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
+@pytest.mark.parametrize('hello_world_severity, expected_xsoar_severity', [
     ('low', 1), ('medium', 2), ('high', 3), ('critical', 4), ('unknown', 0)
 ])
 def test_convert_to_demisto_severity(hello_world_severity, expected_xsoar_severity):
@@ -426,28 +426,6 @@ class TestFetchAlerts:
         assert next_run['last_ids'] == [1, 2, 3]
 
     def test_subsequent_run(self):
-        """
-        Given:
-            - A last run with a last fetch time and list of last incident IDs
-        When:
-            - Fetch incidents is called with the last run
-            - First fetch time is provided
-        Then:
-            - Returned incidents should have occurred after last fetch
-            - Number of returned incidents should match max results
-            - Next run should have new updated last incident IDs
-        """
-        last_run = {'last_fetch': '2021-02-01T00:00:00Z', 'last_ids': [1, 2, 3]}
-        first_fetch = '2021-01-01T00:00:00Z'
-
-        next_run, incidents = fetch_incidents(self.client,
-                                              max_results=3, last_run=last_run, first_fetch_time=first_fetch)
-
-        assert incidents[0]['occurred'] > last_run['last_fetch']
-        assert len(incidents) == 3
-        assert next_run['last_ids'] == [4, 5, 6]
-
-    def test_subsequent_run_2(self):
         """
         Given:
             - A last run with a last fetch time and list of last incident IDs
