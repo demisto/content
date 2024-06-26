@@ -691,7 +691,7 @@ def test_arrange_raw_to_context(raw_data, domain, expected):
         ([], []),
     ]
 )
-def test_name_servers(servers, expected):
+def test_extract_name_servers(servers, expected):
     """
     Given:
         - 'servers': Input to the extract_name_servers function.
@@ -709,11 +709,50 @@ def test_name_servers(servers, expected):
 @pytest.mark.parametrize(
     "domain_data, prefix, expected",
     [
-        ({"registrar": "Namecheap"}, "registrar", {"registrar_name": "Namecheap"}),
-        ({"admin_email": "admin@example.com"}, "registrar", {}),
-        ({"admin_until": "2025-06-24", "test": "test"}, "admin", {"admin_until": "2025-06-24"}),
-        ({"registrar": "Namecheap"}, "invalid_prefix", {}),
-        ({}, "registrar", {}),
+        # Test case for registrar prefix
+        ({"registrar": "Namecheap", "registrar_url": "https://www.namecheap.com"},
+         "registrar",
+         {"Name": "Namecheap", "Url": "https://www.namecheap.com"}),
+
+        # Test case for admin prefix
+        ({"admin_name": "John Doe", "admin_email": "john@example.com", "admin_phone": None},
+         "admin",
+         {"Name": "John Doe", "Email": "john@example.com"}),
+
+        # Test case for tech prefix with some None values
+        ({"tech_name": "Jane Smith", "tech_email": None, "tech_phone": "+1234567890"},
+         "tech",
+         {"Name": "Jane Smith", "Phone": "+1234567890"}),
+
+        # Test case for billing prefix (empty result)
+        ({"domain_name": "example.com", "creation_date": "2020-01-01"},
+         "billing",
+         {}),
+
+        # Test case for mixed prefixes
+        ({"registrar": "GoDaddy", "admin_name": "Alice", "tech_email": "tech@example.com"},
+         "registrar",
+         {"Name": "GoDaddy"}),
+
+        # Test case for non-existent prefix
+        ({"registrar": "Namecheap", "admin_name": "Bob"},
+         "invalid_prefix",
+         {}),
+
+        # Test case for empty input
+        ({},
+         "any_prefix",
+         {}),
+
+        # Test case for registrar prefix with underscore in key
+        ({"registrar": "Domain.com", "registrar_abuse_email": "abuse@domain.com"},
+         "registrar",
+         {"Name": "Domain.com", "Abuse_email": "abuse@domain.com"}),
+
+        # Test case for multi-word key
+        ({"admin_first_name": "John", "admin_last_name": "Doe"},
+         "admin",
+         {"First_name": "John", "Last_name": "Doe"}),
     ],
 )
 def test_get_info_by_prefix(domain_data, prefix, expected):

@@ -8835,6 +8835,15 @@ def setup_proxy():
 
 
 def extract_hard_date(date):
+    """
+    Extracts and formats a date from a string using regex.
+
+    Args:
+        date (str): String potentially containing a date.
+
+    Returns:
+        Optional[str]: Formatted date string (DD-MM-YYYY) if found, None otherwise.
+    """
     match = re.search(r'\d{4}[,/-]\d{2}[,/-]\d{2}|\d{2}[,/-]\d{2}[,/-]\d{4}', date)
     if match:
         date_str = match.group()
@@ -8849,6 +8858,16 @@ def extract_hard_date(date):
 
 
 def extract_date(raw_data: dict, date_requested: str) -> str:
+    """
+    Extracts and formats a date from raw data.
+
+    Args:
+        raw_data (dict): Dictionary containing date information.
+        date_requested (str): Key for the requested date in raw_data.
+
+    Returns:
+        str: Formatted date string (DD-MM-YYYY) or original value if parsing fails.
+    """
     date = raw_data.get(date_requested)
     if date:
         try:
@@ -8873,7 +8892,16 @@ def extract_date(raw_data: dict, date_requested: str) -> str:
     return ""
 
 
-def extract_name_servers(servers):
+def extract_name_servers(servers) -> list:
+    """
+    Extracts and normalizes name servers from input.
+
+    Args:
+        servers: String or iterable of name servers.
+
+    Returns:
+        list: Normalized list of unique name servers.
+    """
     if not servers:
         return []
     if isinstance(servers, str):
@@ -8883,24 +8911,36 @@ def extract_name_servers(servers):
     return sorted(list(set(map(str.lower, servers))))
 
 
-def get_info_by_prefix(domain_data, prefix):
-    if prefix == "registrar":
-        return {"registrar_name" if key == "registrar" else key: value for key, value in domain_data.items() if key.startswith(prefix)}
-    return {key: value for key, value in domain_data.items() if key.startswith(prefix)}
+def get_info_by_prefix(domain_data: dict, prefix: str) -> dict:
+    """
+    Filters domain_data by prefix, removes prefix from keys, and capitalizes them.
+
+    Args:
+        domain_data (dict): Domain information.
+        prefix (str): Prefix to filter by.
+
+    Returns:
+        dict: Filtered data with processed keys and non-None values.
+    """
+    def process_key(key: str):
+        return "Name" if key == "registrar" else key.removeprefix(prefix + '_').capitalize()
+    return {process_key(key): value
+            for key, value in domain_data.items()
+            if key.startswith(prefix) and value}
 
 
-def arrange_raw_whois_data_to_context(raw_data, domain):
+def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
     context_data = {
         "Name": domain,
-        "Raw": ', '.join([f"{key}: {value}" for key, value in raw_data.items()]),
+        "ID": raw_data.get("domain_id"),
         "Whois_server": raw_data.get("whois_server"),
         "CreationDate": extract_date(raw_data, "creation_date"),
         "ExpirationDate": extract_date(raw_data, "expiration_date"),
         "UpdatedDate": extract_date(raw_data, "updated_date"),
         "Organization": raw_data.get("org"),
         "Referral url": raw_data.get("referral_url", ""),
-        "Orgenization": raw_data.get("org"),
         "Address": raw_data.get("address"),
+        "Administrator": raw_data.get("admin"),
         "City": raw_data.get("city"),
         "State": raw_data.get("state"),
         "Country": raw_data.get("country"),
@@ -8908,11 +8948,12 @@ def arrange_raw_whois_data_to_context(raw_data, domain):
         "Registrant": get_info_by_prefix(raw_data, 'registrant'),
         "Registrar": get_info_by_prefix(raw_data, 'registrar'),
         "Tech": get_info_by_prefix(raw_data, 'tech'),
-        "Phone": raw_data.get('phone', []),
+        "Phone": raw_data.get('phone'),
         "Emails": raw_data.get("emails"),
         "NameServers": extract_name_servers(raw_data.get("name_servers", [])),
         "DomainStatus": raw_data.get("status", []),
         "FeedRelatedIndicators": [{"Email": email} for email in list(raw_data.get("emails"))]if isinstance(raw_data.get("emails"), list) else raw_data.get("emails"),
+        "Raw": ', '.join([f"{key}: {value}" for key, value in raw_data.items()]),
     }
     remove_nulls_from_dictionary(context_data)
     return {"WHOIS": context_data}
@@ -8927,13 +8968,14 @@ def new_domain_comand() -> list[CommandResults]:
         demisto.debug(f"whois lib return raw_data for {domain} domain: {domain_data=} ")
         whois_res = {}
         context_output = arrange_raw_whois_data_to_context(domain_data, domain)
+        context_output.update(context_output["WHOIS"])
         whois_res.update({Common.Domain.CONTEXT_PATH: context_output})
         whois_res.update(Common.DBotScore(indicator=domain, indicator_type='domain',
                          integration_name='Whois', score=0).to_context())
         results.append(CommandResults(
             outputs=whois_res,
-            readable_output=tableToMarkdown('Whois NEW results for {}'.format(domain), context_output["WHOIS"], headers=[
-                                            "Name", "Admin", "CreationDate", "ExpirationDate", "UpdatedDate", "NameServers", "Organization", "Registrar", "DomainStatus", "Emails"], removeNull=True),
+            readable_output=tableToMarkdown('Whois NEW results for {}'.format(domain), context_output, headers=[
+                                            "Name", "ID", "CreationDate", "ExpirationDate", "UpdatedDate", "NameServers", "Organization", "Registrar", "DomainStatus", "Emails", "Whois_server"], removeNull=True),
             raw_response=str(domain_data)
         ))
     return (results)

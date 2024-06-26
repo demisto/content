@@ -31,22 +31,12 @@
                 "ns4.google.com"
             ],
             "status": [
-                "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-                "serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited",
-                "serverTransferProhibited https://icann.org/epp#serverTransferProhibited",
-                "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited",
-                "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-                "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-                "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-                "serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)",
-                "serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)",
-                "serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)"
+                "clientDeleteProhibited https://icann.org/test-example",
+                "clientTransferProhibited https://icann.org/epp#test-example"
             ],
             "emails": [
-                "abusecomplaints@markmonitor.com",
-                "whoisrequest@markmonitor.com"
+                "test-example@markmonitor.com",
+                "test-example@markmonitor.com"
             ],
             "dnssec": "unsigned",
             "name": "",
@@ -88,24 +78,14 @@
                 "ns4-39.azure-dns.info"
             ],
             "status": [
-                "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-                "serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited",
-                "serverTransferProhibited https://icann.org/epp#serverTransferProhibited",
-                "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited",
-                "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-                "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-                "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-                "serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)",
-                "serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)",
-                "serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)"
+                "clientDeleteProhibited https://icann.org/epp#test-example",
+                "clientTransferProhibited https://icann.org/epp#test-example"
             ],
             "emails": [
-                "abusecomplaints@markmonitor.com",
-                "admin@domains.microsoft",
-                "msnhst@microsoft.com",
-                "whoisrequest@markmonitor.com"
+                "test-example@markmonitor.com",
+                "test-example@domains.microsoft",
+                "test-example@microsoft.com",
+                "test-example@markmonitor.com"
             ],
             "dnssec": "unsigned",
             "name": "Domain Administrator",
@@ -144,24 +124,16 @@
                 "d.ns.apple.com"
             ],
             "status": [
-                "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-                "serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited",
-                "serverTransferProhibited https://icann.org/epp#serverTransferProhibited",
-                "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited",
-                "clientDeleteProhibited https://www.icann.org/epp#clientDeleteProhibited",
-                "clientTransferProhibited https://www.icann.org/epp#clientTransferProhibited",
-                "clientUpdateProhibited https://www.icann.org/epp#clientUpdateProhibited",
-                "serverDeleteProhibited https://www.icann.org/epp#serverDeleteProhibited",
-                "serverTransferProhibited https://www.icann.org/epp#serverTransferProhibited",
-                "serverUpdateProhibited https://www.icann.org/epp#serverUpdateProhibited"
+                "clientDeleteProhibited https://icann.org/epp#test-example",
+                "clientTransferProhibited https://icann.org/epp#test-example",
+                "clientUpdateProhibited https://icann.org/epp#test-example",
+                "serverDeleteProhibited https://icann.org/epp#test-example"
             ],
             "emails": [
                 "abuse@comlaude.com",
-                "apple.com-Registrant@anonymised.email",
-                "apple.com-Admin@anonymised.email",
-                "apple.com-Tech@anonymised.email"
+                "test-example.com-Registrant@anonymised.email",
+                "test-example.com-Admin@anonymised.email",
+                "test-example.com-Tech@anonymised.email"
             ],
             "dnssec": [
                 "unsigned",
@@ -208,25 +180,20 @@
         "google": {
             "WHOIS": {
                 "Name": "google.com",
-                "Raw": "domain_name: ['GOOGLE.COM', 'google.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: , updated_date: ['(2019, 9, 9, 15, 39, 4)', '(2019, 9, 9, 15, 39, 4, )'], creation_date: ['(1997, 9, 15, 4, 0)', '(1997, 9, 15, 7, 0, )'], expiration_date: ['(2028, 9, 14, 4, 0)', '(2028, 9, 13, 7, 0, )'], name_servers: ['NS1.GOOGLE.COM', 'NS2.GOOGLE.COM', 'NS3.GOOGLE.COM', 'NS4.GOOGLE.COM', 'ns2.google.com', 'ns3.google.com', 'ns1.google.com', 'ns4.google.com'], status: ['clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited', 'clientTransferProhibited https://icann.org/epp#clientTransferProhibited', 'clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited', 'serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited', 'serverTransferProhibited https://icann.org/epp#serverTransferProhibited', 'serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited', 'clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)', 'clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)', 'clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)', 'serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)', 'serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)', 'serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)'], emails: ['abusecomplaints@markmonitor.com', 'whoisrequest@markmonitor.com'], dnssec: unsigned, name: , org: Google LLC, address: , city: , state: CA, registrant_postal_code: , country: US",
                 "Whois_server": "whois.markmonitor.com",
                 "CreationDate": "(1997, 9, 15, 4, 0)",
                 "ExpirationDate": "(2028, 9, 14, 4, 0)",
                 "UpdatedDate": "(2019, 9, 9, 15, 39, 4)",
                 "Organization": "Google LLC",
-                "Orgenization": "Google LLC",
                 "State": "CA",
                 "Country": "US",
                 "Dnssec": "unsigned",
-                "Registrant": {
-                    "registrant_postal_code": ""
-                },
                 "Registrar": {
-                    "registrar_name": "MarkMonitor, Inc."
+                    "Name": "MarkMonitor, Inc."
                 },
                 "Emails": [
-                    "abusecomplaints@markmonitor.com",
-                    "whoisrequest@markmonitor.com"
+                    "test-example@markmonitor.com",
+                    "test-example@markmonitor.com"
                 ],
                 "NameServers": [
                     "ns1.google.com",
@@ -235,55 +202,44 @@
                     "ns4.google.com"
                 ],
                 "DomainStatus": [
-                    "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                    "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                    "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-                    "serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited",
-                    "serverTransferProhibited https://icann.org/epp#serverTransferProhibited",
-                    "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited",
-                    "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-                    "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-                    "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-                    "serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)",
-                    "serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)",
-                    "serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)"
+                    "clientDeleteProhibited https://icann.org/test-example",
+                    "clientTransferProhibited https://icann.org/epp#test-example"
                 ],
                 "FeedRelatedIndicators": [
                     {
-                        "Email": "abusecomplaints@markmonitor.com"
+                        "Email": "test-example@markmonitor.com"
                     },
                     {
-                        "Email": "whoisrequest@markmonitor.com"
+                        "Email": "test-example@markmonitor.com"
                     }
-                ]
+                ],
+                "Raw": "domain_name: ['GOOGLE.COM', 'google.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: , updated_date: ['(2019, 9, 9, 15, 39, 4)', '(2019, 9, 9, 15, 39, 4, )'], creation_date: ['(1997, 9, 15, 4, 0)', '(1997, 9, 15, 7, 0, )'], expiration_date: ['(2028, 9, 14, 4, 0)', '(2028, 9, 13, 7, 0, )'], name_servers: ['NS1.GOOGLE.COM', 'NS2.GOOGLE.COM', 'NS3.GOOGLE.COM', 'NS4.GOOGLE.COM', 'ns2.google.com', 'ns3.google.com', 'ns1.google.com', 'ns4.google.com'], status: ['clientDeleteProhibited https://icann.org/test-example', 'clientTransferProhibited https://icann.org/epp#test-example'], emails: ['test-example@markmonitor.com', 'test-example@markmonitor.com'], dnssec: unsigned, name: , org: Google LLC, address: , city: , state: CA, registrant_postal_code: , country: US"
             }
         },
         "microsoft": {
             "WHOIS": {
                 "Name": "microsoft.com",
-                "Raw": "domain_name: ['microsoft.com', 'microsoft.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: , updated_date: ['(2023, 8, 18, 16, 15, 54)', '(2023, 8, 18, 16, 15, 54)'], creation_date: ['(1991, 5, 2, 4, 0)', '(1991, 5, 2, 4, 0)'], expiration_date: ['(2025, 5, 3, 4, 0)', '(2025, 5, 3, 0, 0)'], name_servers: ['NS1-39.AZURE-DNS.COM', 'NS2-39.AZURE-DNS.NET', 'NS3-39.AZURE-DNS.ORG', 'NS4-39.AZURE-DNS.INFO', 'ns1-39.azure-dns.com', 'ns3-39.azure-dns.org', 'ns2-39.azure-dns.net', 'ns4-39.azure-dns.info'], status: ['clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited', 'clientTransferProhibited https://icann.org/epp#clientTransferProhibited', 'clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited', 'serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited', 'serverTransferProhibited https://icann.org/epp#serverTransferProhibited', 'serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited', 'clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)', 'clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)', 'clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)', 'serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)', 'serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)', 'serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)'], emails: ['abusecomplaints@markmonitor.com', 'admin@domains.microsoft', 'msnhst@microsoft.com', 'whoisrequest@markmonitor.com'], dnssec: unsigned, name: Domain Administrator, org: Microsoft Corporation, address: One Microsoft Way,, city: Redmond, state: WA, registrant_postal_code: 98052, country: US",
                 "Whois_server": "whois.markmonitor.com",
                 "CreationDate": "(1991, 5, 2, 4, 0)",
                 "ExpirationDate": "(2025, 5, 3, 4, 0)",
                 "UpdatedDate": "(2023, 8, 18, 16, 15, 54)",
                 "Organization": "Microsoft Corporation",
-                "Orgenization": "Microsoft Corporation",
                 "Address": "One Microsoft Way,",
                 "City": "Redmond",
                 "State": "WA",
                 "Country": "US",
                 "Dnssec": "unsigned",
                 "Registrant": {
-                    "registrant_postal_code": "98052"
+                    "Postal_code": "98052"
                 },
                 "Registrar": {
-                    "registrar_name": "MarkMonitor, Inc."
+                    "Name": "MarkMonitor, Inc."
                 },
                 "Emails": [
-                    "abusecomplaints@markmonitor.com",
-                    "admin@domains.microsoft",
-                    "msnhst@microsoft.com",
-                    "whoisrequest@markmonitor.com"
+                    "test-example@markmonitor.com",
+                    "test-example@domains.microsoft",
+                    "test-example@microsoft.com",
+                    "test-example@markmonitor.com"
                 ],
                 "NameServers": [
                     "ns1-39.azure-dns.com",
@@ -292,45 +248,34 @@
                     "ns4-39.azure-dns.info"
                 ],
                 "DomainStatus": [
-                    "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                    "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                    "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-                    "serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited",
-                    "serverTransferProhibited https://icann.org/epp#serverTransferProhibited",
-                    "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited",
-                    "clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)",
-                    "clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)",
-                    "clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)",
-                    "serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)",
-                    "serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)",
-                    "serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)"
+                    "clientDeleteProhibited https://icann.org/epp#test-example",
+                    "clientTransferProhibited https://icann.org/epp#test-example"
                 ],
                 "FeedRelatedIndicators": [
                     {
-                        "Email": "abusecomplaints@markmonitor.com"
+                        "Email": "test-example@markmonitor.com"
                     },
                     {
-                        "Email": "admin@domains.microsoft"
+                        "Email": "test-example@domains.microsoft"
                     },
                     {
-                        "Email": "msnhst@microsoft.com"
+                        "Email": "test-example@microsoft.com"
                     },
                     {
-                        "Email": "whoisrequest@markmonitor.com"
+                        "Email": "test-example@markmonitor.com"
                     }
-                ]
+                ],
+                "Raw": "domain_name: ['microsoft.com', 'microsoft.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: , updated_date: ['(2023, 8, 18, 16, 15, 54)', '(2023, 8, 18, 16, 15, 54)'], creation_date: ['(1991, 5, 2, 4, 0)', '(1991, 5, 2, 4, 0)'], expiration_date: ['(2025, 5, 3, 4, 0)', '(2025, 5, 3, 0, 0)'], name_servers: ['NS1-39.AZURE-DNS.COM', 'NS2-39.AZURE-DNS.NET', 'NS3-39.AZURE-DNS.ORG', 'NS4-39.AZURE-DNS.INFO', 'ns1-39.azure-dns.com', 'ns3-39.azure-dns.org', 'ns2-39.azure-dns.net', 'ns4-39.azure-dns.info'], status: ['clientDeleteProhibited https://icann.org/epp#test-example', 'clientTransferProhibited https://icann.org/epp#test-example'], emails: ['test-example@markmonitor.com', 'test-example@domains.microsoft', 'test-example@microsoft.com', 'test-example@markmonitor.com'], dnssec: unsigned, name: Domain Administrator, org: Microsoft Corporation, address: One Microsoft Way,, city: Redmond, state: WA, registrant_postal_code: 98052, country: US"
             }
         },
         "apple": {
             "WHOIS": {
                 "Name": "apple.com",
-                "Raw": "domain_name: ['APPLE.COM', 'apple.com'], registrar: NOM-IQ Ltd dba Com Laude, whois_server: whois.comlaude.com, referral_url: , updated_date: ['(2023, 8, 28, 18, 33, 11)', '(2024, 5, 3, 9, 53, 59)'], creation_date: (1987, 2, 19, 5, 0), expiration_date: ['(2025, 2, 20, 5, 0)', '(2025, 2, 20, 0, 0)'], name_servers: ['A.NS.APPLE.COM', 'B.NS.APPLE.COM', 'C.NS.APPLE.COM', 'D.NS.APPLE.COM', 'a.ns.apple.com', 'b.ns.apple.com', 'c.ns.apple.com', 'd.ns.apple.com'], status: ['clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited', 'clientTransferProhibited https://icann.org/epp#clientTransferProhibited', 'clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited', 'serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited', 'serverTransferProhibited https://icann.org/epp#serverTransferProhibited', 'serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited', 'clientDeleteProhibited https://www.icann.org/epp#clientDeleteProhibited', 'clientTransferProhibited https://www.icann.org/epp#clientTransferProhibited', 'clientUpdateProhibited https://www.icann.org/epp#clientUpdateProhibited', 'serverDeleteProhibited https://www.icann.org/epp#serverDeleteProhibited', 'serverTransferProhibited https://www.icann.org/epp#serverTransferProhibited', 'serverUpdateProhibited https://www.icann.org/epp#serverUpdateProhibited'], emails: ['abuse@comlaude.com', 'apple.com-Registrant@anonymised.email', 'apple.com-Admin@anonymised.email', 'apple.com-Tech@anonymised.email'], dnssec: ['unsigned', 'Unsigned'], name: REDACTED FOR PRIVACY, org: Apple Inc., address: REDACTED FOR PRIVACY, city: REDACTED FOR PRIVACY, state: CA, registrant_postal_code: REDACTED FOR PRIVACY, country: US",
                 "Whois_server": "whois.comlaude.com",
                 "CreationDate": "(1987, 2, 19, 5, 0)",
                 "ExpirationDate": "(2025, 2, 20, 5, 0)",
                 "UpdatedDate": "(2023, 8, 28, 18, 33, 11)",
                 "Organization": "Apple Inc.",
-                "Orgenization": "Apple Inc.",
                 "Address": "REDACTED FOR PRIVACY",
                 "City": "REDACTED FOR PRIVACY",
                 "State": "CA",
@@ -340,16 +285,16 @@
                     "Unsigned"
                 ],
                 "Registrant": {
-                    "registrant_postal_code": "REDACTED FOR PRIVACY"
+                    "Postal_code": "REDACTED FOR PRIVACY"
                 },
                 "Registrar": {
-                    "registrar_name": "NOM-IQ Ltd dba Com Laude"
+                    "Name": "NOM-IQ Ltd dba Com Laude"
                 },
                 "Emails": [
                     "abuse@comlaude.com",
-                    "apple.com-Registrant@anonymised.email",
-                    "apple.com-Admin@anonymised.email",
-                    "apple.com-Tech@anonymised.email"
+                    "test-example.com-Registrant@anonymised.email",
+                    "test-example.com-Admin@anonymised.email",
+                    "test-example.com-Tech@anonymised.email"
                 ],
                 "NameServers": [
                     "a.ns.apple.com",
@@ -358,66 +303,58 @@
                     "d.ns.apple.com"
                 ],
                 "DomainStatus": [
-                    "clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited",
-                    "clientTransferProhibited https://icann.org/epp#clientTransferProhibited",
-                    "clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited",
-                    "serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited",
-                    "serverTransferProhibited https://icann.org/epp#serverTransferProhibited",
-                    "serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited",
-                    "clientDeleteProhibited https://www.icann.org/epp#clientDeleteProhibited",
-                    "clientTransferProhibited https://www.icann.org/epp#clientTransferProhibited",
-                    "clientUpdateProhibited https://www.icann.org/epp#clientUpdateProhibited",
-                    "serverDeleteProhibited https://www.icann.org/epp#serverDeleteProhibited",
-                    "serverTransferProhibited https://www.icann.org/epp#serverTransferProhibited",
-                    "serverUpdateProhibited https://www.icann.org/epp#serverUpdateProhibited"
+                    "clientDeleteProhibited https://icann.org/epp#test-example",
+                    "clientTransferProhibited https://icann.org/epp#test-example",
+                    "clientUpdateProhibited https://icann.org/epp#test-example",
+                    "serverDeleteProhibited https://icann.org/epp#test-example"
                 ],
                 "FeedRelatedIndicators": [
                     {
                         "Email": "abuse@comlaude.com"
                     },
                     {
-                        "Email": "apple.com-Registrant@anonymised.email"
+                        "Email": "test-example.com-Registrant@anonymised.email"
                     },
                     {
-                        "Email": "apple.com-Admin@anonymised.email"
+                        "Email": "test-example.com-Admin@anonymised.email"
                     },
                     {
-                        "Email": "apple.com-Tech@anonymised.email"
+                        "Email": "test-example.com-Tech@anonymised.email"
                     }
-                ]
+                ],
+                "Raw": "domain_name: ['APPLE.COM', 'apple.com'], registrar: NOM-IQ Ltd dba Com Laude, whois_server: whois.comlaude.com, referral_url: , updated_date: ['(2023, 8, 28, 18, 33, 11)', '(2024, 5, 3, 9, 53, 59)'], creation_date: (1987, 2, 19, 5, 0), expiration_date: ['(2025, 2, 20, 5, 0)', '(2025, 2, 20, 0, 0)'], name_servers: ['A.NS.APPLE.COM', 'B.NS.APPLE.COM', 'C.NS.APPLE.COM', 'D.NS.APPLE.COM', 'a.ns.apple.com', 'b.ns.apple.com', 'c.ns.apple.com', 'd.ns.apple.com'], status: ['clientDeleteProhibited https://icann.org/epp#test-example', 'clientTransferProhibited https://icann.org/epp#test-example', 'clientUpdateProhibited https://icann.org/epp#test-example', 'serverDeleteProhibited https://icann.org/epp#test-example'], emails: ['abuse@comlaude.com', 'test-example.com-Registrant@anonymised.email', 'test-example.com-Admin@anonymised.email', 'test-example.com-Tech@anonymised.email'], dnssec: ['unsigned', 'Unsigned'], name: REDACTED FOR PRIVACY, org: Apple Inc., address: REDACTED FOR PRIVACY, city: REDACTED FOR PRIVACY, state: CA, registrant_postal_code: REDACTED FOR PRIVACY, country: US"
             }
         },
         "jp": {
             "WHOIS": {
                 "Name": "nhk.or.jp",
-                "Raw": "domain_name: , registrant_org: NHK (Japan Broadcasting Corporation), creation_date: [\u63a5\u7d9a\u5e74\u6708\u65e5]                    2013/09/04, expiration_date: , name_servers: , updated_date: 2024/04/01 01:03:25 (JST), status: Connected (2025/03/31)",
                 "CreationDate": "04-09-2013",
                 "UpdatedDate": "01-04-2024",
                 "Registrant": {
-                    "registrant_org": "NHK (Japan Broadcasting Corporation)"
+                    "Org": "NHK (Japan Broadcasting Corporation)"
                 },
-                "DomainStatus": "Connected (2025/03/31)"
+                "DomainStatus": "Connected (2025/03/31)",
+                "Raw": "domain_name: , registrant_org: NHK (Japan Broadcasting Corporation), creation_date: [\u63a5\u7d9a\u5e74\u6708\u65e5]                    2013/09/04, expiration_date: , name_servers: , updated_date: 2024/04/01 01:03:25 (JST), status: Connected (2025/03/31)"
             }
         },
         "ansa": {
             "WHOIS": {
                 "Name": "ansa.it",
-                "Raw": "domain_name: ansa.it, creation_date: (1996, 1, 29, 0, 0), updated_date: (2024, 3, 19, 0, 54, 46), expiration_date: (2025, 3, 3, 0, 0), status: ok, name_servers: ns8.colt.net\n  ns.ansa.it\n  ns3.ansa.it\n  ns2.ansa.it, registrant_organization: ANSA Agenzia Nazionale Stampa Associata Soc. Coop., registrant_address: Via della Dtaria 94, admin_address: Via della Dtaria 94, admin_organization: Angelo Marrara, admin_name: Angelo Marrara, tech_address: None, tech_organization: hidden, tech_name: hidden, registrar_address: None, registrar: InterNetX GmbH, registrar_name: INTERNETXGMBH-REG",
                 "CreationDate": "(1996, 1, 29, 0, 0)",
                 "ExpirationDate": "(2025, 3, 3, 0, 0)",
                 "UpdatedDate": "(2024, 3, 19, 0, 54, 46)",
                 "Registrant": {
-                    "registrant_organization": "ANSA Agenzia Nazionale Stampa Associata Soc. Coop.",
-                    "registrant_address": "Via della Dtaria 94"
+                    "Organization": "ANSA Agenzia Nazionale Stampa Associata Soc. Coop.",
+                    "Address": "Via della Dtaria 94"
                 },
                 "Registrar": {
-                    "registrar_address": "None",
-                    "registrar_name": "INTERNETXGMBH-REG"
+                    "Address": "None",
+                    "Name": "INTERNETXGMBH-REG"
                 },
                 "Tech": {
-                    "tech_address": "None",
-                    "tech_organization": "hidden",
-                    "tech_name": "hidden"
+                    "Address": "None",
+                    "Organization": "hidden",
+                    "Name": "hidden"
                 },
                 "NameServers": [
                     "ns8.colt.net",
@@ -425,7 +362,8 @@
                     "  ns3.ansa.it",
                     "  ns2.ansa.it"
                 ],
-                "DomainStatus": "ok"
+                "DomainStatus": "ok",
+                "Raw": "domain_name: ansa.it, creation_date: (1996, 1, 29, 0, 0), updated_date: (2024, 3, 19, 0, 54, 46), expiration_date: (2025, 3, 3, 0, 0), status: ok, name_servers: ns8.colt.net\n  ns.ansa.it\n  ns3.ansa.it\n  ns2.ansa.it, registrant_organization: ANSA Agenzia Nazionale Stampa Associata Soc. Coop., registrant_address: Via della Dtaria 94, admin_address: Via della Dtaria 94, admin_organization: Angelo Marrara, admin_name: Angelo Marrara, tech_address: None, tech_organization: hidden, tech_name: hidden, registrar_address: None, registrar: InterNetX GmbH, registrar_name: INTERNETXGMBH-REG"
             }
         }
     }
