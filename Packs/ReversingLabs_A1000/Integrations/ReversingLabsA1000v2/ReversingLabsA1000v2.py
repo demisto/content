@@ -473,6 +473,7 @@ def get_classification_output(response_json):
         )
 
         return command_results
+    return None
 
 
 def advanced_search(a1000):
@@ -998,8 +999,8 @@ def pdf_report_output(resp, action, sample_hash):
     file_result = None
 
     if action == "CREATE REPORT":
-        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n""" +
-                    f"""**Download endpoint**: {resp.get("download_endpoint")}""")
+        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n"""
+                    + f"""**Download endpoint**: {resp.get("download_endpoint")}""")
         context = resp
 
     elif action == "CHECK STATUS":
@@ -1123,8 +1124,8 @@ def dynamic_analysis_report_output(resp, action, sample_hash, report_format):
     file_result = None
 
     if action == "CREATE REPORT":
-        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n""" +
-                    f"""**Download endpoint**: {resp.get("download_endpoint")}""")
+        markdown = (markdown + f"""**Status endpoint**: {resp.get("status_endpoint")}\n"""
+                    + f"""**Download endpoint**: {resp.get("download_endpoint")}""")
         context = resp
 
     elif action == "CHECK STATUS":
@@ -1493,7 +1494,7 @@ def upload_from_url_output(resp_json, action):
     return command_results
 
 
-def main():
+def main():  # pragma: no cover
     try:
         wait_time_seconds = int(WAIT_TIME_SECONDS)
     except ValueError:

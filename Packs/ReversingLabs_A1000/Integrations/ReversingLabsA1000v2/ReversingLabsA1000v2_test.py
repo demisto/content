@@ -176,8 +176,8 @@ def test_reanalyze_output():
     report = util_load_json("test_data/a1000_reanalyze.json")
     result = reanalyze_output(response_json=report)
 
-    assert (result[0].to_context().get("Contents").get("a1000_reanalyze_report").get("results")[0].get("detail").get("sha1") ==
-            "d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
+    assert (result[0].to_context().get("Contents").get("a1000_reanalyze_report").get("results")[0].get("detail").get("sha1")
+            == "d1aff4d205b59b1ae3edf152603fa2ae5a7c6cc5")
 
 
 def test_advanced_search_output():
@@ -211,7 +211,7 @@ def test_format_proxy():
 
 
 def test_vars():
-    assert USER_AGENT == "ReversingLabs XSOAR A1000 " + VERSION
+    assert "ReversingLabs XSOAR A1000 " + VERSION == USER_AGENT
     assert RELIABILITY is not None
     assert HTTP_PROXY is None
     assert HTTP_PROXY_USERNAME is None
@@ -228,5 +228,5 @@ def test_upload_sample_output():
 
 
 def util_load_json(path):
-    with open(path, mode='r') as f:
+    with open(path) as f:
         return json.loads(f.read())

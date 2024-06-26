@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from ReversingLabs.SDK.tiscale import TitaniumScale
 
 import json
+# pragma: no cover
 
 VERSION = "v1.2.0"
 USER_AGENT = f"ReversingLabs XSOAR TitaniumScale {VERSION}"
@@ -215,10 +216,13 @@ def parse_report_and_return_results(title, response_json):
 
             else:
                 return_error("Scan result does not contain classifications")
+                return None
         else:
             return_error("Report does not contain scan results")
+            return None
     else:
         return_error("Response does not contain report")
+        return None
 
 
 def get_report(tiscale):

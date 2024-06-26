@@ -1,5 +1,4 @@
 import json
-import io
 from ReversingLabsTitaniumScale import parse_report_and_return_results, parse_upload_report_and_return_results, format_proxy, \
     classification_to_score, get_status_from_classification, list_processing_tasks_output, get_yara_id_output
 
@@ -67,5 +66,5 @@ def test_get_yara_id_output():
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
