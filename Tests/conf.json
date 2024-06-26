@@ -937,7 +937,8 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
-            "timeout": 3000
+            "timeout": 3000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Cortex XDR - IR",
