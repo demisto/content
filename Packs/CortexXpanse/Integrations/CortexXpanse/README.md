@@ -2919,6 +2919,7 @@ Get a list of all your external websites filtered by authentication type. Maximu
 | asset_id | Authentication type string on which to search. | Required | 
 | entity_type | Maximum number of assets to return. The default and maximum is 100. | Required | 
 | note_to_add | The custom note to be added to the notes section of the asset in Xpanse | Required |
+| should_append | f you would like to overwrite the current note on the asset, set to 'false'. If you would like to append to the current note, set to 'true' (Note: Default value is 'true'). | Optional |
 
 #### Context Output
 

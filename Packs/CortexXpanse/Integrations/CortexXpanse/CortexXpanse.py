@@ -292,7 +292,7 @@ class Client(BaseClient):
 
         return response
     
-    def add_note_to_asset(self, asm_asset_id: str, entity_type: str, annotation_note: str) -> dict[str, Any]:
+    def add_note_to_asset(self, asm_asset_id: str, entity_type: str, annotation_note: str, should_append: bool) -> dict[str, Any]:
         """Adds an annotation (also called a note) to an asset or IP range
         using the /assets/assets_internet_exposure/annotation endpoint.
 
@@ -311,7 +311,7 @@ class Client(BaseClient):
                         "entity_type": entity_type,
                         "annotation": annotation_note
                         }],
-                    "should_append": True
+                    "should_append": should_append
                     }
                 }
 
@@ -1295,11 +1295,18 @@ def add_note_to_asset_command (client: Client, args: dict[str, Any]) -> CommandR
     asset_id = str(args.get('asset_id'))
     entity_type = str(args.get('entity_type'))
     note_to_add = str(args.get('note_to_add'))
+    should_append = argToBoolean(args.get('should_append'))
 
-    response = client.add_note_to_asset(asm_asset_id=asset_id, entity_type=entity_type, annotation_note=note_to_add)
+    response = client.add_note_to_asset(asm_asset_id=asset_id,
+                                        entity_type=entity_type,
+                                        annotation_note=note_to_add,
+                                        should_append=should_append)
     response_message = {"status": response.get('reply', {})}
     response_message['asset'] = asset_id
-    markdown = tableToMarkdown('Add Note to Asset Command Results:', response_message.get('status'), headers=['Status'], removeNull=True)
+    markdown = tableToMarkdown('Add Note to Asset Command Results:',
+                               response_message.get('status'),
+                               headers=['Status'],
+                               removeNull=True)
     command_results = CommandResults(
         outputs_prefix='ASM.AssetAnnotation',
         outputs_key_field='',

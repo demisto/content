@@ -569,6 +569,14 @@ script:
     - name: note_to_add
       required: true
       description: The custom note to be added to the notes section of the asset in Xpanse.
+    - name: should_append
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+      defaultValue: true
+      description: "If you would like to overwrite the current note on the asset, set to 'false'. If you would like to append to the current note, set to 'true' (Note: Default value is 'true')."
   - name: asm-tag-asset-remove
     arguments:
     - name: asm_id_list
