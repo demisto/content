@@ -564,17 +564,19 @@
                         "y": 2
                     },
                     {
-                        "displayType": "ROW",
+                        "displayType": "CARD",
                         "h": 3,
                         "hideName": false,
                         "i": "caseinfoid-4e9cf880-ec46-11ee-8125-f7e4811c7e26",
                         "items": [
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "recordedfutureidentityexposedproperties",
                                 "height": 22,
                                 "id": "b8844d60-f804-11ee-b047-e5c3219a3f84",
                                 "index": 0,
+                                "listId": "caseinfoid-4e9cf880-ec46-11ee-8125-f7e4811c7e26",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
