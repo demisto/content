@@ -47,9 +47,8 @@ script:
       predefined:
       - pre
       - post
-    - description: Is there an alternate device group to query?
+    - description: Query an alternate device group. Overrides the Device Group parameter.
       name: device_group
-      type: unknown
     outputs:
     - contextPath: PanOS.PolicyOptimizer.Stats.no_app_specified
       description: Number of rules with no apps specified.
@@ -76,9 +75,8 @@ script:
       predefined:
       - pre
       - post
-    - description: Is there an alternate device group to query?
+    - description: Query an alternate device group. Overrides the Device Group parameter.
       name: device_group
-      type: unknown
     outputs:
     - contextPath: PanOS.PolicyOptimizer.NoApps
       description: Contains information about the rules that have no apps specified. For example, Source and Destination.
@@ -93,9 +91,8 @@ script:
       predefined:
       - pre
       - post
-    - description: Is there an alternate device group to query?
+    - description: Query an alternate device group. Overrides the Device Group parameter.
       name: device_group
-      type: unknown
     outputs:
     - contextPath: PanOS.PolicyOptimizer.UnusedApps
       description: Shows all security rules with unused apps.
@@ -150,9 +147,8 @@ script:
       name: page_size
     - description: A specific pagination page to get items from.
       name: page
-    - description: Is there an alternate device group to query?
+    - description: Query an alternate device group. Overrides the Device Group parameter.
       name: device_group
-      type: unknown
     description: Gets unused, used, or any rules.
     name: pan-os-po-get-rules
     outputs:
@@ -169,7 +165,7 @@ script:
     - description: The UUID of the security rule.
       name: rule_uuid
       required: true
-    - description: Is there an alternate device group to query?
+    - description: Query an alternate device group. Overrides the Device Group parameter.
       name: device_group
     description: Gets the app usage statistics for a specific security rule.
     name: pan-os-po-app-and-usage
@@ -181,9 +177,8 @@ script:
     - description: Dynamic address group name.
       name: dag
       required: true
-    - description: Is there an alternate device group to query?
+    - description: Query an alternate device group. Overrides the Device Group parameter.
       name: device_group
-      type: unknown
     description: Gets a specific dynamic address group.
     name: pan-os-get-dag
   dockerimage: demisto/python3:3.10.14.99474
