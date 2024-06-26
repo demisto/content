@@ -97,9 +97,9 @@ class Client(BaseClient):
         config_ids: str,
         offset: str | None = '',
         limit: int = 20,
-        from_epoch: str | None = ''
+        from_epoch: str = ''
     ) -> tuple[list[dict], str | None]:
-        params = {
+        params: dict[str, int | str] = {
             'limit': limit
         }
         if offset:
