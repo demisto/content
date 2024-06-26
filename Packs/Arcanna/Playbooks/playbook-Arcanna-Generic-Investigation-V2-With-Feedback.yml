@@ -1,5 +1,7 @@
 id: Arcanna-Generic-Investigation-V2-With-Feedback
 version: -1
+deprecated: true
+hidden: true
 name: Arcanna-Generic-Investigation-V2-With-Feedback
 starttaskid: "0"
 tasks:
@@ -652,6 +654,5 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
-description: Alert Triage using Arcanna.Ai Machine Learning capabilities and reinforcement
-  learning by offerring analyst feedback to incidents closed
+fromversion: 6.2.0
+description: Deprecated. Use ArcannaGenericInvestigation instead.
