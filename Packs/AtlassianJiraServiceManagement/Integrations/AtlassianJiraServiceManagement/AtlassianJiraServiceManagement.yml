@@ -160,6 +160,7 @@ script:
     - description: The amount of object types to retrieve.
       name: limit
     - name: all_results
+      description: whether to retrieve all object types with no limit.
       auto: PREDEFINED
       predefined:
       - "true"
