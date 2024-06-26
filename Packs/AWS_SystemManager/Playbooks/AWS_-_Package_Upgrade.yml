@@ -518,7 +518,7 @@ tasks:
       id: 5f029ce5-bc0d-4555-800c-47be2c8ea935
       iscommand: false
       name: 'AWS Package Upgrade '
-      script: AWSEC2PackageUpgrade
+      script: AWSPackageUpgrade
       type: regular
       version: -1
     taskid: 5f029ce5-bc0d-4555-800c-47be2c8ea935
