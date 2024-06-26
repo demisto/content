@@ -409,7 +409,7 @@ def fetch_events_command(
                 event["_time"] = event["httpMessage"]["start"]
                 if "attackData" in event:
                     for attack_data_key in ['rules', 'ruleMessages', 'ruleTags', 'ruleData', 'ruleSelectors',
-                                'ruleActions', 'ruleVersions']:
+                                            'ruleActions', 'ruleVersions']:
                         event['attackData'][attack_data_key] = decode_message(event.get('attackData', {}).get(attack_data_key,
                                                                                                               ""))
                 if "httpMessage" in event:
@@ -421,7 +421,7 @@ def fetch_events_command(
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         total_events_count += len(events)
         new_from_time = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]) + 1)
-        demisto.debug(f"Got {len(events)} events, {offset=}, {new_from_time=} the new total_events_count is: {total_events_count}")
+        demisto.debug(f"Got {len(events)} events, and {offset=}")
         yield events, offset, total_events_count, new_from_time
 
 
