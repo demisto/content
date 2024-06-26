@@ -176,18 +176,25 @@ class IntegrationGetEvents(ABC):
         }
 
     def run(self):
-        stored = []
-        for logs in self._iter_events():
-            stored.extend(logs)
-            if self.options.limit:
-                demisto.debug(
-                    f'{self.options.limit=} reached. \
-                    slicing from {len(logs)=}. \
-                    limit must be presented ONLY in commands and not in fetch-events.'
-                )
-                if len(stored) >= self.options.limit:
-                    return stored[: self.options.limit]
-        return stored
+        final_stored_all_types = []
+        # In this integration we need to do 3 API calls:
+        # - activities with filter to get the admin events
+        # - activities with different filter to get the login events
+        # - alerts with no filter
+        for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
+            stored_per_type = []
+            for logs in self._iter_events(event_type_name, endpoint_details):
+                stored_per_type.extend(logs)
+                if self.options.limit:
+                    demisto.debug(
+                        f'{self.options.limit=} reached. \
+                        slicing from {len(logs)=}. \
+                        limit must be presented ONLY in commands and not in fetch-events.'
+                    )
+                    if len(stored_per_type) >= self.options.limit:
+                        final_stored_all_types.extend(stored_per_type[: self.options.limit])
+                        break
+        return final_stored_all_types
 
     def call(self) -> requests.Response:
         return self.client.call(self.client.request)
@@ -201,7 +208,7 @@ class IntegrationGetEvents(ABC):
         return {'after': events[-1]['created']}
 
     @abstractmethod
-    def _iter_events(self):
+    def _iter_events(self, event_type_name: str, endpoint_details: dict):
         """Create iterators with Yield"""
         raise NotImplementedError
 
@@ -289,28 +296,37 @@ class DefenderClient(IntegrationEventsClient):
 class DefenderGetEvents(IntegrationGetEvents):
     client: DefenderClient
 
-    def _iter_events(self):
+    def _iter_events(self, event_type_name, endpoint_details):
         self.last_timestamp = {}
         base_url = self.client.request.url
         self.client.authenticate()
 
-        # In this integration we need to do 3 API calls:
-        # - activities with filter to get the admin events
-        # - activities with different filter to get the login events
-        # - alerts with no filter
-        for event_type_name, endpoint_details in self.filter_name_to_attributes.items():
-            self.client.request.params.pop('filters', None)
-            self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
+        self.client.request.params.pop('filters', None)
+        self.client.request.url = parse_obj_as(HttpUrl, f'{base_url}{endpoint_details["type"]}')
 
-            # get the filter for this type
-            filters = endpoint_details['filters']
+        # get the filter for this type
+        filters = endpoint_details['filters']
 
-            after = demisto.getLastRun().get(event_type_name) or self.client.after
-            # add the time filter
-            if after:
-                filters['date'] = {'gte': after}  # type: ignore
+        after = demisto.getLastRun().get(event_type_name) or self.client.after
+        # add the time filter
+        if after:
+            filters['date'] = {'gte': after}  # type: ignore
 
-            self.client.request.params['filters'] = json.dumps(filters)
+        self.client.request.params['filters'] = json.dumps(filters)
+        response = self.client.call(self.client.request).json()
+        events = response.get('data', [])
+
+        # add new field with the event type
+        for event in events:
+            event['event_type_name'] = event_type_name
+
+        has_next = response.get('hasNext')
+
+        yield events
+
+        while has_next:
+            last = events.pop()
+            self.client.set_request_filter(last['timestamp'])
             response = self.client.call(self.client.request).json()
             events = response.get('data', [])
 
@@ -321,20 +337,6 @@ class DefenderGetEvents(IntegrationGetEvents):
             has_next = response.get('hasNext')
 
             yield events
-
-            while has_next:
-                last = events.pop()
-                self.client.set_request_filter(last['timestamp'])
-                response = self.client.call(self.client.request).json()
-                events = response.get('data', [])
-
-                # add new field with the event type
-                for event in events:
-                    event['event_type_name'] = event_type_name
-
-                has_next = response.get('hasNext')
-
-                yield events
 
     @staticmethod
     def get_last_run(events: list) -> dict:
