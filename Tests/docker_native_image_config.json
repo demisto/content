@@ -135,14 +135,6 @@
             ]
         },
         {
-            "id":"Intezer v2",
-            "reason":"Issue: CIAC-7861",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:candidate"
-            ]
-        },
-        {
             "id":"RegexExtractAll",
             "reason":"Issue: CIAC-6005",
             "ignored_native_images":[
