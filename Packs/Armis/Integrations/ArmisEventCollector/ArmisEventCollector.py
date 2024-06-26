@@ -231,6 +231,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
         before_time = before_time - timedelta(minutes=(fetch_delay))
     # case 1
     if last_fetch_time:
+        demisto.info("info-log: In calculate_fetch_start_time, case 1")
         if isinstance(last_fetch_time, str):
             demisto.info(f"info-log: calculating_fetch_time for {last_fetch_time=}")
             last_fetch_datetime = arg_to_datetime(last_fetch_time)
@@ -241,6 +242,7 @@ def calculate_fetch_start_time(last_fetch_time: datetime | str | None, fetch_sta
         after_time = last_fetch_datetime
     # case 2
     elif fetch_start_time:
+        demisto.info("info-log: In calculate_fetch_start_time, case 2")
         after_time = fetch_start_time
     if after_time:
         after_time = after_time.replace(tzinfo=None)
@@ -430,6 +432,7 @@ def fetch_events(client: Client,
     """
     events: dict[str, list[dict]] = {}
     next_run: dict[str, list | str] = {}
+    demisto.debug(f'debug-log: called fetch_events with {last_run=}')
     if 'Devices' in event_types_to_fetch\
             and not should_run_device_fetch(last_run, device_fetch_interval, datetime.now()):
         demisto.debug('debug-log: skipping Devices fetch as it is not yet reached the device interval.')
