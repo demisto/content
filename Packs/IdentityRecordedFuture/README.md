@@ -107,7 +107,7 @@ For detailed configuration instructions, refer to the [Recorded Future Identity 
 
 ### Deprecated Components
 
-- **Incident Type**: Recorded Future Identity
+- **Incident Type**: Recorded Future Identity (Deprecated)
 - **Layouts**: Recorded Future Identity Incident
 - **Playbooks**:
     - Recorded Future Workforce Usecase
