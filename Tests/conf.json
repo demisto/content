@@ -23,13 +23,7 @@
     "tests": [
         {
             "playbookID": "Local Analysis alert Investigation - Test",
-            "timeout": 6000,
-            "integrations": [
-                "VirusTotal (API v3)"
-            ],
-            "instance_names": [
-                "virus_total_v3"
-            ]
+            "timeout": 6000
         },
         {
             "playbookID": "Endpoint Investigation Plan - Test",
