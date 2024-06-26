@@ -6,6 +6,7 @@ import AtlassianJiraServiceManagement as JSM
 import json
 from CommonServerPython import CommandResults
 import demistomock as demisto
+import os
 
 
 def util_load_json(path):
@@ -585,8 +586,10 @@ def test_jira_asset_attribute_json_create_command(mocker: MockerFixture, args, e
     command_results = JSM.jira_asset_attribute_json_create_command(client, args)
     mock_attributes_call.assert_called_with(object_type_id=object_type_id, is_editable=False)
     _, command_results = command_results
+    os.remove(f"1_{_.get('FileID')}")
     attributes = json.loads(command_results.readable_output).get('attributes')
     assert len(attributes) == expected_len
+
 
 
 def test_jira_asset_comment_create_command(mocker: MockerFixture):
