@@ -38,7 +38,7 @@ class Client(BaseClient):
         return access_token
 
     def users_search(self, size: Optional[int], page: Optional[int], team_id: Optional[str] = None,
-                     user_id: Optional[str] = None):
+                     user_id: Optional[str] = None, email: Optional[str] = None):
         """Search users by sending a GET request.
 
         Args:
@@ -55,6 +55,12 @@ class Client(BaseClient):
             'size': size,
             'teamId': team_id,
         })
+        
+        if email:
+            res = self._http_request(method='GET', url_suffix=f'auth/public/v1/users',
+                                  headers=self._headers,
+                                  params=params)
+            
 
         return self._http_request(method='GET', url_suffix=f'auth/public/v1/users/{user_id if user_id else ""}',
                                   headers=self._headers,
@@ -389,9 +395,10 @@ def users_search_command(client: Client, args: dict) -> CommandResults:
     limit = arg_to_number(args.get('limit', '50'))
     team_id = args.get('team_id')
     user_id = args.get('user_id')
+    email = args.get('email')
     size = page_size if page_size else limit
 
-    response = client.users_search(size=size, page=page, team_id=team_id, user_id=user_id)
+    response = client.users_search(size=size, page=page, team_id=team_id, user_id=user_id, email=email)
 
     content = response.get('content') if not user_id else response
 
