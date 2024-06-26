@@ -999,26 +999,38 @@ def index_document_command(args, proxies):
     return result
 
 def list_indices_command(proxies):
-    
-    indices_names = []
+    """
+    Lists Elasticsearch indices.
+    return: A List with Elasticsearch indices names.
+    """
+    indices = []
     es = elasticsearch_builder(proxies)
+    
     # Retrieve the list of all indices
-    indices = es.cat.indices(format='json')
-
-    for index in indices:
-        indices_names.append(index.get('index'))
+    raw_indices = es.cat.indices(format='json')
+    
+    for raw_index in raw_indices:
+        index_data = {'Name': raw_index.get('index', ''),
+                      'Status': raw_index.get('status', ''),
+                      'Health': raw_index.get('health', ''),
+                      'UUID': raw_index.get('uuid', ''),
+                      'Documents Count': raw_index.get('docs.count', ''),
+                      'Documents Deleted': raw_index.get('docs.deleted', ''),
+                      }
+        indices.append(index_data)
     
     readable_output = tableToMarkdown(
-        name="Indices are:",
-        t=indices_names,
-        removeNull=True,
-        headers=['Index Name']
+        name="Indices:",
+        t=indices,
+        removeNull=True
     )
     
     result = CommandResults(
         readable_output=readable_output,
         outputs_prefix='Elasticsearch.Indices',
-        outputs=indices_names
+        outputs=indices,
+        outputs_key_field='UUID',
+        raw_response=list(raw_indices)
     )
     return result
 

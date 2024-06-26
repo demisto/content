@@ -37,6 +37,7 @@ configuration:
   options:
   - Elasticsearch
   - OpenSearch
+  - Elasticsearch_v8
   type: 15
   section: Connect
   advanced: true
@@ -289,6 +290,27 @@ script:
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
   - name: es-integration-health-check
     description: Returns the health status of the integration. This commmand should be used for debugging purposes.
+  - name: es-list-indices
+    description: Returns a list of Elasticsearch indices. This command is not supported for client type OpenSearch.
+    outputs:
+    - contextPath: Elasticsearch.Indices.Name
+      description: The Name of the index.
+      type: String
+    - contextPath: Elasticsearch.Indices.Status
+      description: The Status of the index.
+      type: String
+    - contextPath: Elasticsearch.Indices.Health
+      description: The Health status of the index.
+      type: String
+    - contextPath: Elasticsearch.Indices.UUID
+      description: The UUID of the index.
+      type: String
+    - contextPath: Elasticsearch.Indices.Documents Count
+      description: The amount of documents that are indexed in the index.
+      type: Number
+    - contextPath: Elasticsearch.Indices.Documents Deleted
+      description: The amount of documents that were deleted from the index.
+      type: Number
   - description: Search using EQL query.
     name: es-eql-search
     arguments:
@@ -382,7 +404,7 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: demisto/elasticsearch:1.0.0.98351
+  dockerimage: devdemisto/elasticsearch:1.0.0.99282
   isfetch: true
   runonce: false
   script: '-'
