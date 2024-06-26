@@ -153,17 +153,29 @@ class AssetNotFound(Exception):
         super().__init__(f"ASM {asset_type} Asset with id \"{id}\" not found. {message}")
 
 
-class TagNotFound(Exception):
-    def __init__(self, name: str, message: Optional[str] = None):
-        super().__init__(f"ASM Tag with name \"{name}\" not found. {message}")
+class MitigationError(Exception):
+    def __init__(self, risk_id: str, message: Optional[str] = ""):
+        super().__init__(f"Could not mitigate ASM Risk \"{risk_id}\" due to the following:\n{message}")
 
 
-class CommentNotFound(Exception):
-    def __init__(self, id: Optional[str] = None, message: Optional[str] = None):
-        if message:
-            super().__init__(f"ASM Comment with id \"{id}\" not found. {message}")
-        else:
-            super().__init__(f"ASM Comment with id \"{id}\" not found.")
+class TagError(Exception):
+    def __init__(self, action: str, name: str, id: Optional[str] = "", message: Optional[str] = ""):
+        if action == 'create':
+            super().__init__(f"Could not create ASM Tag \"{name}\" due to the following:\n{message}")
+        if action == 'assign':
+            super().__init__(f"Could not assign ASM Tag \"{name}\" to ASM object \"{id}\" due to the following:\n{message}")
+        if action == 'unassign':
+            super().__init__(f"Could not unassign ASM Tag \"{name}\" from ASM object \"{id}\" due to the following:\n{message}")
+
+
+class CommentError(Exception):
+    def __init__(self, action: str, id: Optional[str] = "", message: Optional[str] = ""):
+        if action == 'post':
+            super().__init__(f"Could not post comment to ASM object \"{id}\" due to the following:\n{message}")
+        elif action == 'edit':
+            super().__init__(f"Could not edit comment \"{id}\" due to the following:\n{message}")
+        elif action == 'delete':
+            super().__init__(f"Could not delete comment \"{id}\" due to the following:\n{message}")
 
 
 """*****CLIENT CLASS*****
@@ -291,6 +303,10 @@ class Client(BaseClient):
                     '''
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
+        if not response["data"]["closeRisk"]:
+            errors = [error.get("message", '') for error in response.get("errors", {})]
+            errors_string = '\n'.join(errors)
+            raise MitigationError(risk_id, errors_string)
         return response["data"]["closeRisk"]
 
     def get_asm_asset(self, asset_id: str):
@@ -346,7 +362,9 @@ class Client(BaseClient):
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
         if not response['data']['placeComment']:
-            return response
+            errors = [error.get("message", '') for error in response.get("errors", {})]
+            errors_string = '\n'.join(errors)
+            raise CommentError('post', id, errors_string)
         return response["data"]["placeComment"]
 
     def edit_asm_comment(self, comment_id: str, comment: str):
@@ -371,9 +389,9 @@ class Client(BaseClient):
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
         if not response['data']['editComment']:
-            errors = [error.get("message", "") for error in response.get("errors", [])]
-            message = '\n'.join(errors)
-            raise CommentNotFound(comment_id, message)
+            errors = [error.get("message", '') for error in response.get("errors", {})]
+            errors_string = '\n'.join(errors)
+            raise CommentError('edit', comment_id, errors_string)
         return response["data"]["editComment"]
 
     def delete_asm_comment(self, comment_id: str):
@@ -392,7 +410,9 @@ class Client(BaseClient):
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
         if not response['data']['deleteComment']:
-            return response
+            errors = [error.get("message", '') for error in response.get("errors", {})]
+            errors_string = '\n'.join(errors)
+            raise CommentError('delete', comment_id, errors_string)
         return response["data"]["deleteComment"]
 
     def create_asm_tag(self, tag_name: str):
@@ -414,6 +434,10 @@ class Client(BaseClient):
                     '''
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
+        if not response['data']['createTag']:
+            errors = [error.get("message", '') for error in response.get("errors", {})]
+            errors_string = '\n'.join(errors)
+            raise TagError('create', name=tag_name, message=errors_string)
         return response['data']['createTag']
 
     def assign_asm_tag(self, tag_name: str, asset_id: str):
@@ -438,9 +462,9 @@ class Client(BaseClient):
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
         if not response['data']['assignTag']:
-            errors = [error.get("message", "") for error in response.get("errors", [])]
-            message = '\n'.join(errors)
-            raise TagNotFound(name=tag_name, message=message)
+            errors = [error.get("message", '') for error in response.get("errors", {})]
+            errors_string = '\n'.join(errors)
+            raise TagError('assign', id=asset_id, name=tag_name, message=errors_string)
         return response['data']['assignTag']
 
     def unassign_asm_tag(self, tag_name: str, asset_id: str):
@@ -464,6 +488,10 @@ class Client(BaseClient):
                     '''
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
+        if not response['data']['unassignTag']:
+            errors = [error.get("message", '') for error in response.get("errors", {})]
+            errors_string = '\n'.join(errors)
+            raise TagError('unassign', id=asset_id, name=tag_name, message=errors_string)
         return response['data']['unassignTag']
 
     def get_asm_risks(self, start_time) -> List[Dict[str, Any]]:
