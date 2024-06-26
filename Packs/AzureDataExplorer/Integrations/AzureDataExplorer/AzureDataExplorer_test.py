@@ -264,7 +264,7 @@ def test_validate_list_command_arguments():
 
 @pytest.mark.parametrize('auth_type, expected_results', [
     ('Device Code', "Please enable the integration and run `!azure-data-explorer-auth-start`"),
-    ('Authorization Code', "When using user auth flow configuration,")])
+    ('Authorization Code', "When using user auth flow configuration, ")])
 def test_test_module_command(mocker, auth_type, expected_results):
     """
         Given:
@@ -322,6 +322,6 @@ def test_generate_login_url(mocker):
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code' \
                    f'&scope=offline_access%20{cluster_url}/.default' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = AzureDataExplorer.return_results.call_args[0][0].readable_output
     assert expected_url in res
