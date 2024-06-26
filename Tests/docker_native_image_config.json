@@ -95,7 +95,7 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.6.0.88771"
+            "docker_ref": "demisto/py3-native:8.6.0.98251"
         }
     },
     "ignored_content_items":[
@@ -179,14 +179,6 @@
         {
             "id": "Github Feed",
             "reason": "update docker image",
-            "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
-            ]
-        },
-        {
-            "id": "ZipFile",
-            "reason": "see CIAC-10361",
             "ignored_native_images": [
                 "native:8.6",
                 "native:candidate"

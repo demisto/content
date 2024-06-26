@@ -6,8 +6,9 @@
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
+    "created": "2021-09-01T21:14:15Z",
     "categories": [
-        "Cloud Services"
+        "Cloud Security"
     ],
     "tags": [
         "Palo Alto Networks Products"
