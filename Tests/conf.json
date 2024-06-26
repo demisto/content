@@ -22,6 +22,18 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Test Playbook - Impossible Traveler - Enrichment",
+            "integrations": [
+                "Active Directory Query v2",
+                "Microsoft Graph User",
+                "AbuseIPDB"
+            ],
+            "instance_names": [
+                "active_directory_80k",
+                "ms_graph_user_dev"
+            ]
+        },
+        {
             "playbookID": "Endpoint Investigation Plan - Test",
             "timeout": 600
         },
@@ -31,6 +43,10 @@
             "instance_names": "Azure_Log_Analytics_client_cred",
             "timeout": 800,
             "is_mockable": false
+        },
+        {
+            "integrations": "CSCDomainManager",
+            "playbookID": "CSCDomainManager_Test"
         },
         {
             "playbookID": "Test Playbook - NGFW Scan",
@@ -1195,7 +1211,13 @@
         },
         {
             "integrations": "MimecastV2",
-            "playbookID": "Mimecast test"
+            "playbookID": "Mimecast test",
+            "instance_names": "mimecast_api_v1"
+        },
+        {
+            "integrations": "MimecastV2",
+            "playbookID": "Mimecast Test api 2.0",
+            "instance_names": "mimecast_api_v2"
         },
         {
             "playbookID": "CreateEmailHtmlBody_test_pb",
@@ -1623,7 +1645,7 @@
                 "ewv2_regular",
                 "ewso365_dev_team"
             ],
-            "timeout": 400,
+            "timeout": 600,
             "memory_threshold": 150
         },
         {
@@ -2011,11 +2033,6 @@
             "timeout": 400
         },
         {
-            "integrations": "PhishTank V2",
-            "playbookID": "PhishTank Testing",
-            "is_mockable": false
-        },
-        {
             "integrations": "McAfee Web Gateway",
             "playbookID": "McAfeeWebGatewayTest",
             "timeout": 500,
@@ -2083,13 +2100,15 @@
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewv2_regular",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "EWS v2",
             "playbookID": "pyEWS_Test",
             "instance_names": "ewsv2_separate_process",
-            "is_mockable": false
+            "is_mockable": false,
+            "timeout": 500
         },
         {
             "integrations": "remedy_sr_beta",
@@ -5687,7 +5706,8 @@
         },
         {
             "integrations": "Zoom Mail",
-            "playbookID": "ZoomMailTest"
+            "playbookID": "ZoomMailTest",
+            "instance_names": "zoom_mail_test"
         },
         {
             "integrations": "Zimperium v2",
@@ -5706,6 +5726,16 @@
         {
             "integrations": "Palo Alto Networks AIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test"
+        },
+        {
+            "integrations": "MattermostV2",
+            "playbookID": "MattermostV2 - testplaybook"
+        },
+        {
+            "playbookID": "MattermostAskUser_testplaybook",
+            "scripts": [
+                "MattermostAskUser"
+            ]
         }
     ],
     "skipped_tests": {
@@ -5892,7 +5922,9 @@
         "VMWare Test": "CIAC-10276",
         "AWS_DynamoDB-Test": "CIAC-10426",
         "AWS - EC2 Test Playbook": "CIAC-10426",
-        "AWS SNS Listener - Test": "CIAC-10426"
+        "AWS SNS Listener - Test": "CIAC-10426",
+        "MattermostV2 - testplaybook": "Cannot run integration in build machines, must be an open tenant",
+        "MattermostAskUser_testplaybook": "Cannot run script in build machines, must be an open tenant"
     },
     "skipped_integrations": {
         "AWS - Lambda": "No instance - wrong creds, issue CRTX-110456",
@@ -6027,7 +6059,8 @@
         "PhishLabs IOC EIR": "No instance, CRTX-91214",
         "fortimail": "No instance",
         "JoeSecurityV2": "CIAC-9872",
-        "Aha": "No instance"
+        "Aha": "No instance",
+        "SlackV2": "Integration slackV2 is deprecated."
     },
     "nightly_packs": [
         "CommonScripts",
@@ -6052,7 +6085,6 @@
         "CortexXDR",
         "PAN-OS",
         "QRadar",
-        "PhishTank",
         "OpenPhish",
         "AbuseDB",
         "CrowdStrikeFalcon",
@@ -6213,7 +6245,6 @@
         "DShield Feed",
         "Core REST API",
         "EDL",
-        "EWS v2",
         "ElasticsearchFeed",
         "Fastly Feed",
         "Feodo Tracker IP Blocklist Feed",
