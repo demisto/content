@@ -16,6 +16,8 @@ MAX_ALERTS = 100  # max alerts per fetch
 TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 V1_URL_SUFFIX = "/public_api/v1"
 V2_URL_SUFFIX = "/public_api/v2"
+PACK_VERSION = get_pack_version()
+DEMISTO_VERSION = demisto.demistoVersion()
 SEVERITY_DICT = {
     'informational': IncidentSeverity.INFO,
     'low': IncidentSeverity.LOW,
@@ -1748,7 +1750,8 @@ def main() -> None:
         headers = {
             'Authorization': f'{api}',
             'x-xdr-auth-id': f'{auth_id}',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            "User-Agent": f"Cortex Xpanse Integration Pack/{PACK_VERSION} XSOAR/{DEMISTO_VERSION}"
         }
 
         proxy = params.get('proxy', False)
