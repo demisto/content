@@ -395,11 +395,9 @@ def fetch_events_command(
     Yields:
         (list[dict], str): events and new offset.
     """
-    demisto.debug("use 1")
     total_events_count = 0
     from_epoch = ctx.get("last_run_time") or parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
-    demisto.debug("use 2")
     while total_events_count < int(fetch_limit):
         demisto.debug(f"Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
@@ -421,12 +419,11 @@ def fetch_events_command(
                 config_id = event.get('attackData', {}).get('configId', "")
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
-        demisto.debug("use 3")
         total_events_count += len(events)
         new_from_time = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]) + 1)
-        demisto.debug("use 4")
         demisto.debug(f"Got {len(events)} events, and {offset=}")
         yield events, offset, total_events_count, new_from_time
+    yield [], None, total_events_count, from_epoch
 
 
 def decode_url(headers: str) -> dict:
@@ -483,7 +480,6 @@ def main():
             demisto.incidents(incidents)
             demisto.setLastRun(new_last_run)
         elif command == "fetch-events":
-            demisto.debug("use 5")
             for events, offset, total_events_count, new_from_time in fetch_events_command(  # noqa: B007
                 client,
                 params.get("fetchTime"),
@@ -491,10 +487,10 @@ def main():
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
             ):
-                send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
+                if events:
+                    send_events_to_xsiam(events, VENDOR, PRODUCT, should_update_health_module=False)
                 set_integration_context({"offset": offset, "last_run_time": new_from_time})
-            demisto.debug("use 6")
-            demisto.updateModuleHealth({'eventsPulled': total_events_count})
+            demisto.updateModuleHealth({'eventsPulled': (total_events_count or 0)})
         else:
             human_readable, entry_context, raw_response = commands[command](client, **demisto.args())
             return_outputs(human_readable, entry_context, raw_response)
