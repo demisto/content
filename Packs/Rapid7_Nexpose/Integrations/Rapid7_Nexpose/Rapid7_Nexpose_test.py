@@ -1965,7 +1965,21 @@ def test_remove_site_asset_command(mocker, mock_client, target_type, site_id, as
     ("1", "asset_groups", "excluded", "/sites/1/excluded_asset_groups")
 ])
 def test_list_site_assets_command(mocker, mock_client, site_id, asset_type, target_type, expected_url_suffix):
-    response_data = {"addresses": ["1.1.1.1", "www"]} if asset_type == "assets" else {"resources": [1, 2, 3]}
+    response_data = (
+        {"addresses": ["1.1.1.1", "www"]}
+        if asset_type == "assets"
+        else {"resources": [{
+            "assets": 768,
+            "description": "Assets with unacceptable high risk required immediate remediation.",
+            "id": 61,
+            "links": [],
+            "name": "High Risk Assets",
+            "riskScore": 4457823.78,
+            "searchCriteria": {},
+            "type": "dynamic",
+            "vulnerabilities": {},
+        }]}
+    )
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value=response_data)
 
     list_site_assets_command(client=mock_client, site_id=site_id, asset_type=asset_type, target_type=target_type)
@@ -2006,10 +2020,10 @@ def test_parse_filters(mocker, mock_client, kwargs, expected_output):
 @pytest.mark.parametrize(
     "name, type, description, ip_address_is, match, expected_post_data",
     [
-        ("test", "Dynamic", "description test", "1.1.1.1", "Any",
+        ("test", "dynamic", "description test", "1.1.1.1", "Any",
             {
                 "name": "test",
-                "type": "Dynamic",
+                "type": "dynamic",
                 "description": "description test",
                 "searchCriteria": {
                     "filters": [
@@ -2043,7 +2057,7 @@ def test_create_asset_group_command(mocker, mock_client, name, type, description
 
 
 @pytest.mark.parametrize("name, type, group_id, limit, api_mock_file", [
-    ("test", "Dynamic", None, "2", "client_get_asset_groups"),
+    ("test", "dynamic", None, "2", "client_get_asset_groups"),
     (None, None, "1", None, "client_get_asset_groups")
 ])
 def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limit, api_mock_file):
@@ -2057,7 +2071,7 @@ def test_get_asset_group_command(mocker, mock_client, name, type, group_id, limi
             url_suffix="/asset_groups",
             method="GET",
             resp_type="json",
-            params={"name": "test", "type": "Dynamic"},
+            params={"name": "test", "type": "dynamic"},
             page_size=None,
             page=None,
             limit=2,
