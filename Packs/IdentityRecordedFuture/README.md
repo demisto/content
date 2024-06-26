@@ -2,12 +2,60 @@
 
 ## Overview
 
-The Recorded Future Identity Pack for Cortex XSOAR provides enhanced threat intelligence capabilities focused on
-identity-related exposures. This pack integrates Recorded Future's rich data to automate the detection, investigation,
-and response to identity threats. The pack includes playbooks, incident types, layouts, and classifiers to streamline
-identity threat management and response workflows.
+The Recorded Future Identity Pack for Cortex XSOAR enhances threat intelligence capabilities focused on identity-related
+exposures. Integrating Recorded Future's data, this pack automates the detection, investigation, and response to
+identity threats. It includes playbooks, incident types, layouts, and classifiers to streamline identity threat
+management and response workflows.
 
-## What Does This Pack Do?
+## Primary Use Case
+
+Designed for security teams managing identity-related threats, this pack helps detect compromised credentials in real
+time and automatically respond to these threats. For example, when an identity exposure alert is triggered, the
+integration fetches detailed information about the exposure, allowing security analysts to assess the severity and take
+appropriate actions, such as enforcing password resets or disabling compromised accounts.
+
+## Getting Started
+
+1. **Install the Pack**:
+    - From the Cortex XSOAR Marketplace, search for and install the **Recorded Future Identity Pack**.
+
+2. **Configure the Integration**:
+    - Follow the setup instructions to configure the **Recorded Future Identity** integration.
+
+3. **Run Initial Searches**:
+    - Use the **recordedfuture-identity-search** command to search for identity-related data.
+    - Use the **recordedfuture-identity-lookup** command to look up detailed information about specific identities.
+
+4. **Set Up Automated Responses**:
+    - Configure playbooks and automation to respond to identity exposure alerts. Use the **Recorded Future - Identity
+      Exposure** playbook as a template for handling alerts.
+
+## Setup Instructions
+
+To set up the Recorded Future Identity integration in Cortex XSOAR, follow these steps:
+
+1. **Navigate to Integrations**:
+    - Go to **Settings** > **Integrations** > **Instances**.
+
+2. **Search for Recorded Future Identity**:
+    - In the search bar, type **Recorded Future Identity**.
+
+3. **Add a New Instance**:
+    - Click **Add instance** to create and configure a new integration instance.
+
+4. **Configure the Integration**:
+    - Enter the required parameters such as Server URL and API Token.
+    - Adjust optional settings like proxy usage and incident fetching as needed.
+
+5. **Test the Configuration**:
+    - Click **Test** to ensure the settings are correct and that the connection to Recorded Future is successful.
+
+6. **Setup Pre-Process Rule**:
+    - The configuration of the preprocessing rule is optional, but highly recommended.
+
+For detailed configuration instructions, refer to the [Recorded Future Identity Integration Documentation](https://github.com/demisto/content/blob/master/Packs/IdentityRecordedFuture/Integrations/IdentityRecordedFuture/README.md).
+
+## Contents of the Pack
 
 ### Integration
 
@@ -45,7 +93,7 @@ identity threat management and response workflows.
     - Exposed Secret
     - Exposed Value
     - Identity
-    - Malware Family
+    - RF Malware Family
 
 ### Layouts
 
@@ -67,32 +115,6 @@ identity threat management and response workflows.
     - Recorded Future Identity - Lookup Identities (parent)
     - Recorded Future Identity - Create Incident (sub)
     - Recorded Future Identity - Identity Found (incident)
-
-## Setup Instructions
-
-To set up the Recorded Future Identity integration in Cortex XSOAR, follow these steps:
-
-1. **Navigate to Integrations**:
-    - Go to **Settings** > **Integrations** > **Servers & Services**.
-
-2. **Search for Recorded Future Identity**:
-    - In the search bar, type **Recorded Future Identity**.
-
-3. **Add a New Instance**:
-    - Click **Add instance** to create and configure a new integration instance.
-
-4. **Configure the Integration**:
-    - Enter the required parameters such as Server URL and API Token.
-    - Adjust optional settings like proxy usage and incident fetching as needed.
-
-5. **Test the Configuration**:
-    - Click **Test** to ensure the settings are correct and that the connection to Recorded Future is successful.
-
-6. **Setup Pre-Process Rule**:
-    - The configuration of the preprocessing rule is optional, but highly recommended.
-
-For detailed configuration instructions, refer to
-the [Recorded Future Identity Integration Documentation](https://github.com/demisto/content/blob/master/Packs/IdentityRecordedFuture/Integrations/IdentityRecordedFuture/README.md).
 
 ## Dependencies
 

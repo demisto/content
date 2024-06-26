@@ -63,7 +63,6 @@
         "Okta",
         "Malware",
         "Active_Directory_Query",
-        "CoreAlertFields",
         "CommonTypes",
         "FiltersAndTransformers",
         "CommonScripts"

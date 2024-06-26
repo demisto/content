@@ -534,7 +534,7 @@
                             {
                                 "dropEffect": "move",
                                 "endCol": 2,
-                                "fieldId": "malwarefamily",
+                                "fieldId": "rfmalwarefamily",
                                 "height": 53,
                                 "id": "f2b63c50-ec42-11ee-bdee-6bd55c023fe8",
                                 "index": 6,

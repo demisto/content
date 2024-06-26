@@ -229,7 +229,7 @@
                         "transformers": []
                     }
                 },
-                "Malware Family": {
+                "RF Malware Family": {
                     "complex": {
                         "accessor": "name",
                         "filters": [],
