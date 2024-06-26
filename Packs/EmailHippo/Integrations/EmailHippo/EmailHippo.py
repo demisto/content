@@ -19,6 +19,7 @@ TRUST_LEVEL_TO_DBOT_SCORE_MAPPING = {
     'Low': Common.DBotScore.BAD
 }
 
+
 class Client(BaseClient):
     """Client class to interact with the service API
 
