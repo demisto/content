@@ -4,6 +4,7 @@ from CommonServerPython import *  # noqa: F401
 
 from typing import Any, cast
 from datetime import datetime, timedelta
+import ipaddress
 
 import urllib3
 
@@ -1336,7 +1337,18 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     for ip in ips:
         xsoar_ips_of_indicators = []
         xsoar_indicators = []
-        search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IP")
+        
+        ip_version_type = ipaddress.ip_address(ip).version
+        
+        if ip_version_type == 4:
+            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IP")
+            search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
+        elif ip_version_type == 6:
+            search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IPv6")
+            search_params = [{"field": "ipv6_address", "operator": "eq", "value": ip}]
+        else:
+            ips_not_found.append(ip)
+            continue
         
         if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
             xsoar_indicators = search_xsoar_indicator_results.get('iocs')
@@ -1372,7 +1384,6 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                     }
                     xsoar_indicator_list_command_output.append(non_xpanse_indicator_data_subset)
         elif not is_xsoar_timestamp_within_three_days:
-            search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
             ip_data = client.list_asset_internet_exposure_request(search_params=search_params)
             formatted_response = ip_data.get("reply", {}).get("assets_internet_exposure", {})
             if len(formatted_response) > 0:
@@ -1519,7 +1530,10 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                     non_xpanse_indicator_data = indicator_data_subset
                     xsoar_indicator_list_command_output.append(non_xpanse_indicator_data)
         elif not is_xsoar_timestamp_within_three_days:
-            search_params = [{"field": "name", "operator": "eq", "value": domain}]
+            search_params = [
+                {"field": "name", "operator": "eq", "value": domain},
+                {"field": "type", "operator": "in", "value": ['domain']}
+                ]
             domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
             formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
             if len(formatted_response) > 0:
@@ -1582,7 +1596,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
         markdown_body = ("This domain list is from existing records found in XSOAR within the last 3 days.\n"
                         "If you would additional Xpanse specific information about these please use"
                         "  `asm-list-asset-internet-exposure`.")
-        readable_output = tableToMarkdown(name="## Xpanse Discovered Domain List (Existing Indicators)\n" + markdown_body,
+        readable_output = tableToMarkdown(name="Xpanse Discovered Domain List (Existing Indicators)\n" + markdown_body,
                                           t=xsoar_xpanse_indicator_list_command_output)
         command_results.append(CommandResults(
             readable_output=readable_output,
