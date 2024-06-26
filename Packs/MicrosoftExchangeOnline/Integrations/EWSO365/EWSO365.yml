@@ -963,7 +963,7 @@ script:
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:5.4.1.98461
+  dockerimage: demisto/py3ews:1.0.0.91957
   isfetch: true
   script: ''
   subtype: python3
