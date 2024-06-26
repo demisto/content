@@ -293,7 +293,6 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 ''' HELPER FUNCTIONS '''
 
-
 def error_handler(res):
     res_json = res.json()
     reason = res.reason
