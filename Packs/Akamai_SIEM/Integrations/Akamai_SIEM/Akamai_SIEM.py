@@ -393,7 +393,7 @@ def fetch_events_command(
         ctx: The integration context
 
     Yields:
-        (list[dict], str): events and new offset.
+        (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
     """
     total_events_count = 0
     new_from_time = ""
@@ -401,10 +401,10 @@ def fetch_events_command(
         from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
     while total_events_count < int(fetch_limit):
-        demisto.debug(f"Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
+        demisto.info(f"Preparing to get events with {offset=}, {from_epoch=}, and {fetch_limit=}")
         events, offset = client.get_events_with_offset(config_ids, offset, FETCH_EVENTS_PAGE_SIZE, from_epoch)
         if not events:
-            demisto.debug("Didn't receive any events, breaking.")
+            demisto.info("Didn't receive any events, breaking.")
             offset = None
             break
         for event in events:
@@ -424,7 +424,7 @@ def fetch_events_command(
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         total_events_count += len(events)
         new_from_time = str(max([int(event.get('httpMessage', {}).get('start')) for event in events]) + 1)
-        demisto.debug(f"Got {len(events)} events, and {offset=}")
+        demisto.info(f"Got {len(events)} events, and {offset=}")
         yield events, offset, total_events_count, new_from_time
     yield [], offset, total_events_count, new_from_time or from_epoch
 
