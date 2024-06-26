@@ -96,7 +96,7 @@ class Client(BaseClient):
         self,
         config_ids: str,
         offset: str | None = '',
-        limit: str | int | None = None,
+        limit: int = 20,
         from_epoch: str | None = ''
     ) -> tuple[list[dict], str | None]:
         params = {
@@ -379,7 +379,7 @@ def get_events_command(client: Client, config_ids: str, offset: str | None = Non
 def fetch_events_command(
     client: Client,
     fetch_time: str,
-    fetch_limit: str | int,
+    fetch_limit: int,
     config_ids: str,
     ctx: dict,
 ) -> Iterator[Any]:
@@ -486,7 +486,7 @@ def main():  # pragma: no cover
             for events, offset, total_events_count, new_from_time in fetch_events_command(  # noqa: B007
                 client,
                 params.get("fetchTime"),
-                params.get("fetchLimit"),
+                int(params.get("fetchLimit", 20)),
                 params.get("configIds"),
                 ctx=get_integration_context() or {},
             ):
