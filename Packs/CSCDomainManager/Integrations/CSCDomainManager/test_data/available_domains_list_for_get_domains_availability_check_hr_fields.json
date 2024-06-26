@@ -1,0 +1,14 @@
+[
+    {
+        "qualifiedDomainName": "csc-panw.info",
+        "result": {
+            "code": "DOMAIN_IN_PORTFOLIO",
+            "message": "Domain already in portfolio"
+        },
+        "basePrice": {
+            "price": null,
+            "currency": ""
+        },
+        "availableTerms": []
+    }
+]
