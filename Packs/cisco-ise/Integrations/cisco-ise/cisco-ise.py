@@ -467,9 +467,9 @@ def update_endpoint_group_command():
         updated_endpoint_details = {}
         updated_endpoint_details['ERSEndPoint'] = {}
         updated_endpoint_details['ERSEndPoint']['groupId'] = endpoint_group_id
-        updated_endpoint_details['ERSEndPoint']['id'] = endpoint_details['ERSEndPoint']["id"]
-        updated_endpoint_details['ERSEndPoint']['mac'] = endpoint_details['ERSEndPoint']["mac"]
-        updated_endpoint_details['ERSEndPoint']['name'] = endpoint_details['ERSEndPoint']["name"]
+        updated_endpoint_details['ERSEndPoint']['id'] = endpoint_details.get('ERSEndPoint', {}).get('id')
+        updated_endpoint_details['ERSEndPoint']['mac'] = endpoint_details.get('ERSEndPoint', {}).get('mac')
+        updated_endpoint_details['ERSEndPoint']['name'] = endpoint_details.get('ERSEndPoint', {}).get('name')
 
         update_result = update_endpoint_by_id(endpoint_id, updated_endpoint_details)
         if update_result:
