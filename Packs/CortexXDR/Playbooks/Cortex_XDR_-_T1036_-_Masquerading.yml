@@ -1041,3 +1041,5 @@ tests:
 - Test Playbook - Cortex XDR - Retrieve File by sha256
 - Test Playbook - Cortex XDR - False Positive Incident Handling
 fromversion: 6.10.0
+marketplaces:
+- xsoar
