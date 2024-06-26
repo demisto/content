@@ -55,14 +55,11 @@ tasks:
         complex:
           root: alert.asmserviceownerunrankedraw
           filters:
-          - - left:
-                iscontext: true
+          - - operator: isNotExists
+              left:
                 value:
                   simple: alert.asmserviceownerunrankedraw.accounttype
-              operator: isNotEqualString
-              right:
-                value:
-                  simple: SERVICE-ACCOUNT
+                iscontext: true
       asmsystemids:
         complex:
           root: alert.asmsystemids
