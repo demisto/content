@@ -1,10 +1,10 @@
 {
-    "id": "incident_exposedvalue",
+    "id": "incident_recordedfutureidentityexposedvalue",
     "version": -1,
     "modified": "2024-04-16T17:05:17.770259515Z",
-    "name": "Exposed Value",
+    "name": "Recorded Future Identity Exposed Value",
     "ownerOnly": false,
-    "cliName": "exposedvalue",
+    "cliName": "recordedfutureidentityexposedvalue",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

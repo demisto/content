@@ -1,10 +1,10 @@
 {
-    "id": "incident_exposedproperties",
+    "id": "incident_recordedfutureidentityexposedproperties",
     "version": -1,
     "modified": "2024-04-16T17:05:17.701991189Z",
-    "name": "Exposed Properties",
+    "name": "Recorded Future Identity Exposed Properties",
     "ownerOnly": false,
-    "cliName": "exposedproperties",
+    "cliName": "recordedfutureidentityexposedproperties",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

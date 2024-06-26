@@ -1,10 +1,10 @@
 {
-    "id": "incident_dumpname",
+    "id": "incident_recordedfutureidentitydumpname",
     "version": -1,
     "modified": "2024-04-16T17:05:17.637377603Z",
-    "name": "Dump Name",
+    "name": "Recorded Future Identity Dump Name",
     "ownerOnly": false,
-    "cliName": "dumpname",
+    "cliName": "recordedfutureidentitydumpname",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

@@ -1,10 +1,10 @@
 {
-    "id": "incident_exposedhint",
+    "id": "incident_recordedfutureidentityexposedhint",
     "version": -1,
     "modified": "2024-04-16T17:05:17.670372853Z",
-    "name": "Exposed Hint",
+    "name": "Recorded Future Identity Exposed Hint",
     "ownerOnly": false,
-    "cliName": "exposedhint",
+    "cliName": "recordedfutureidentityexposedhint",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

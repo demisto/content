@@ -84,16 +84,16 @@ For detailed configuration instructions, refer to the [Recorded Future Identity 
 ### Incident Fields
 
 - Fields to enhance the data captured and utilized in identity-related incidents:
-    - Assessment
-    - Authorization URL
-    - Compromised Host
-    - Dump Name
-    - Exposed Hint
-    - Exposed Properties
-    - Exposed Secret
-    - Exposed Value
-    - Identity
-    - RF Malware Family
+    - Recorded Future Identity Assessment
+    - Recorded Future Identity Authorization URL
+    - Recorded Future Identity Compromised Host
+    - Recorded Future Identity Dump Name
+    - Recorded Future Identity Exposed Hint
+    - Recorded Future Identity Exposed Properties
+    - Recorded Future Identity Exposed Secret
+    - Recorded Future Identity Exposed Value
+    - Recorded Future Identity Malware Family
+    - Recorded Future Identity Name
 
 ### Layouts
 

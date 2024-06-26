@@ -29,7 +29,7 @@
                         "transformers": []
                     }
                 },
-                "Assessment": {
+                "Recorded Future Identity Assessment": {
                     "complex": {
                         "accessor": "name",
                         "filters": [],
@@ -89,7 +89,7 @@
                         ]
                     }
                 },
-                "Authorization URL": {
+                "Recorded Future Identity Authorization URL": {
                     "complex": {
                         "accessor": "authorization_url",
                         "filters": [],
@@ -97,7 +97,7 @@
                         "transformers": []
                     }
                 },
-                "Compromised Host": {
+                "Recorded Future Identity Compromised Host": {
                     "complex": {
                         "accessor": "compromised_host",
                         "filters": [],
@@ -117,7 +117,7 @@
                         "transformers": []
                     }
                 },
-                "Dump Name": {
+                "Recorded Future Identity Dump Name": {
                     "complex": {
                         "accessor": "name",
                         "filters": [],
@@ -125,7 +125,7 @@
                         "transformers": []
                     }
                 },
-                "Exposed Hint": {
+                "Recorded Future Identity Exposed Hint": {
                     "complex": {
                         "accessor": "clear_text_hint",
                         "filters": [],
@@ -133,7 +133,7 @@
                         "transformers": []
                     }
                 },
-                "Exposed Properties": {
+                "Recorded Future Identity Exposed Properties": {
                     "complex": {
                         "accessor": "properties",
                         "filters": [],
@@ -193,7 +193,7 @@
                         ]
                     }
                 },
-                "Exposed Secret": {
+                "Recorded Future Identity Exposed Secret": {
                     "complex": {
                         "accessor": "hashes",
                         "filters": [],
@@ -205,7 +205,7 @@
                         ]
                     }
                 },
-                "Exposed Value": {
+                "Recorded Future Identity Exposed Value": {
                     "complex": {
                         "accessor": "clear_text_value",
                         "filters": [],
@@ -221,7 +221,7 @@
                         "transformers": []
                     }
                 },
-                "Identity": {
+                "Recorded Future Identity Name": {
                     "complex": {
                         "accessor": "subject",
                         "filters": [],
@@ -229,7 +229,7 @@
                         "transformers": []
                     }
                 },
-                "RF Malware Family": {
+                "Recorded Future Identity Malware Family": {
                     "complex": {
                         "accessor": "name",
                         "filters": [],

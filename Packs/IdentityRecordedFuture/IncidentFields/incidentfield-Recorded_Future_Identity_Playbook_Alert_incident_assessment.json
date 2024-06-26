@@ -1,10 +1,10 @@
 {
-    "id": "incident_assessment",
+    "id": "incident_recordedfutureidentityassessment",
     "version": -1,
     "modified": "2024-04-16T17:05:17.531320945Z",
-    "name": "Assessment",
+    "name": "Recorded Future Identity Assessment",
     "ownerOnly": false,
-    "cliName": "assessment",
+    "cliName": "recordedfutureidentityassessment",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

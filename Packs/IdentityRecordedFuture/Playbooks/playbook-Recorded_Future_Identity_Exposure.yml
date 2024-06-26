@@ -56,7 +56,7 @@ tasks:
       email:
         complex:
           root: incident
-          accessor: identity
+          accessor: recordedfutureidentityname
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -606,7 +606,7 @@ tasks:
       term:
         complex:
           root: incident
-          accessor: identity
+          accessor: recordedfutureidentityname
     separatecontext: false
     continueonerrortype: ""
     view: |-

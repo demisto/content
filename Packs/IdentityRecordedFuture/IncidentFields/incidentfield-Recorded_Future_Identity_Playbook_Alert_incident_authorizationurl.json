@@ -1,10 +1,10 @@
 {
-    "id": "incident_authorizationurl",
+    "id": "incident_recordedfutureidentityauthorizationurl",
     "version": -1,
     "modified": "2024-04-16T17:05:17.56355177Z",
-    "name": "Authorization URL",
+    "name": "Recorded Future Identity Authorization URL",
     "ownerOnly": false,
-    "cliName": "authorizationurl",
+    "cliName": "recordedfutureidentityauthorizationurl",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
