@@ -11,7 +11,7 @@ This content pack includes the following playbooks:
 #### AWS - Package Upgrade
 AWS - Package Upgrade playbook upgrades supported packages to latest version.
 
-![AWS - Package Upgrade]()
+![AWS - Package Upgrade](https://raw.githubusercontent.com/demisto/content/9db27aa62803d99e5a3650610a877f2b9e87c303/Packs/AWS_SystemManager/doc_files/AWS_-_Package_Upgrade.png)
 
 ### Automation Scripts
 
@@ -19,4 +19,4 @@ AWS - Package Upgrade playbook upgrades supported packages to latest version.
 
 Automation to upgrade supported package versions to latest. This only works for supported platform type and version.
 
-![AWSPackageUpgrade]()
+![AWSPackageUpgrade](https://raw.githubusercontent.com/demisto/content/9db27aa62803d99e5a3650610a877f2b9e87c303/Packs/AWS_SystemManager/doc_files/AWSPackageUpgrade.png)
