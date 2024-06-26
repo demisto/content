@@ -166,7 +166,7 @@ class IntegrationEventsClient(ABC):
 
 class IntegrationGetEvents(ABC):
     def __init__(
-        self, client: IntegrationEventsClient, options: IntegrationOptions, event_filters: list[EventFilter]
+        self, client: IntegrationEventsClient, options: IntegrationOptions, event_filters: list[EventFilter], base_url: AnyUrl
     ) -> None:
         self.client = client
         self.options = options
@@ -174,6 +174,7 @@ class IntegrationGetEvents(ABC):
             event_filter.name: event_filter.attributes
             for event_filter in event_filters
         }
+        self.base_url = base_url
 
     def run(self):
         final_stored_all_types = []
@@ -298,7 +299,7 @@ class DefenderGetEvents(IntegrationGetEvents):
 
     def _iter_events(self, event_type_name, endpoint_details):
         self.last_timestamp = {}
-        base_url = self.client.request.url
+        base_url = self.base_url
         self.client.authenticate()
 
         self.client.request.params.pop('filters', None)
@@ -386,6 +387,7 @@ def module_test(get_events: DefenderGetEvents) -> str:
 
     try:
         get_events.client.request.params = {'limit': 1}
+        get_events.options.limit = 1
         get_events.run()
         message = 'ok'
     except DemistoException as e:
@@ -420,7 +422,7 @@ def main(command: str, demisto_params: dict):
 
         client = DefenderClient(request=request, options=options, authenticator=authenticator,
                                 after=after)
-        get_events = DefenderGetEvents(client=client, options=options, event_filters=event_filters)
+        get_events = DefenderGetEvents(client=client, base_url=request.url, options=options, event_filters=event_filters)
 
         if command == 'test-module':
             return_results(module_test(get_events=get_events))
