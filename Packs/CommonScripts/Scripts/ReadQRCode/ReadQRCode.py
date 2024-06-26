@@ -33,7 +33,7 @@ def read_qr_code(filename: str) -> list:
 
         img = cv2.imread(filename)
         demisto.debug(f'loaded file: {filename}')
-        text = [d.data.decode() for d in pyzbar.decode(img)]
+        text = [d.data.decode() for d in pyzbar.decode(img, symbols=[pyzbar.ZBarSymbol.QRCODE])]
         demisto.debug(f'pybar decode: {text}')
 
         if not text:
