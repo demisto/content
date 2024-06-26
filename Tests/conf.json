@@ -139,14 +139,12 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation",
-            "memory_threshold": 200,
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
             "timeout": 1200,
-            "integrations": "Cortex XDR - IR",
-            "memory_threshold": 200,
+            "integrations": "Cortex XDR - IR"
         },
         {
             "integrations": [
@@ -154,9 +152,7 @@
                 "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
-            "timeout": 1200,
-            "memory_threshold": 200
-
+            "timeout": 1200
         },
         {
             "integrations": "Twitter v2",
@@ -940,15 +936,13 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
-            "timeout": 3000,
-            "memory_threshold": 200
+            "timeout": 3000
         },
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
-            "timeout": 2500,
-            "memory_threshold": 200,
+            "timeout": 2500
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -960,8 +954,7 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook retrieve file command",
             "fromversion": "4.1.0",
-            "timeout": 3500,
-            "memory_threshold": 200,
+            "timeout": 3500
         },
         {
             "integrations": "Cortex XDR - IOC",
