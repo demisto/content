@@ -20,7 +20,7 @@ tasks:
     separatecontext: false
     continueonerrortype: ""
     view: |-
-      { 
+      {
         "position": {
           "x": 450,
           "y": 50

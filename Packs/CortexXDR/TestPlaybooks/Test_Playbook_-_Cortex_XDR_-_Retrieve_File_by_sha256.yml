@@ -20,7 +20,7 @@ tasks:
       - "32"
     separatecontext: false
     continueonerrortype: ""
-    view: |- 
+    view: |-
       {
         "position": {
           "x": 630,
