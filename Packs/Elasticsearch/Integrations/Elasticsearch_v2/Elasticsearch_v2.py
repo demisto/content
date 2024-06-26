@@ -380,7 +380,7 @@ def test_query_to_fetch_incident_index(es):
     """Test executing query in fetch index.
 
     Notes:
-        if is_fetch it ticked, this function runs a generay query to Elasticsearch just to make sure we get a response
+        if is_fetch it ticked, this function runs a general query to Elasticsearch just to make sure we get a response
         from the FETCH_INDEX.
 
     Args:
@@ -389,7 +389,13 @@ def test_query_to_fetch_incident_index(es):
     try:
         query = QueryString(query='*')
         search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-        response = search.execute().to_dict()
+        
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
         _, total_results = get_total_results(response)
 
     except NotFoundError as e:
@@ -405,12 +411,18 @@ def test_general_query(es):
     try:
         query = QueryString(query='*')
         search = Search(using=es, index='*').query(query)[0:1]
-        response = search.execute().to_dict()
+        
+        if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+        else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
         get_total_results(response)
 
     except NotFoundError as e:
-        return_error("Failed executing general search command - please check the Server URL and port number "
-                     "and the supplied credentials.\nError message: {}.".format(str(e)))
+        return_error(f"Failed executing general search command - please check the Server URL and port number " \
+                     f"and the supplied credentials.\nError message: {str(e)}.")
 
 
 def test_time_field_query(es):
@@ -427,7 +439,13 @@ def test_time_field_query(es):
     """
     query = QueryString(query=TIME_FIELD + ':*')
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-    response = search.execute().to_dict()
+    
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+            response = search.execute().to_dict()
+            
+    else: # Elasticsearch v7 and below, OpenSearch
+            response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
     _, total_results = get_total_results(response)
 
     if total_results == 0:
@@ -452,7 +470,13 @@ def test_fetch_query(es):
     """
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
-    response = search.execute().to_dict()
+     
+    if ELASTIC_SEARCH_CLIENT == 'Elasticsearch_v8':
+        response = search.execute().to_dict()
+            
+    else: # Elasticsearch v7 and below, OpenSearch
+        response = es.search(index=search._index, body=search.to_dict(), **search._params)
+
     _, total_results = get_total_results(response)
 
     if total_results > 0:
@@ -510,8 +534,8 @@ def test_connectivity_auth(proxies):
             except requests.exceptions.HTTPError as e:
                 if HTTP_ERRORS.get(res.status_code) is not None:
                     # if it is a known http error - get the message form the preset messages
-                    return_error("Failed to connect. "
-                                 "The following error occurred: {}".format(HTTP_ERRORS.get(res.status_code)))
+                    return_error(f"Failed to connect. " \
+                                 f"The following error occurred: {HTTP_ERRORS.get(res.status_code)}")
 
                 else:
                     # if it is unknown error - get the message from the error itself
