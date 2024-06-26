@@ -1022,7 +1022,8 @@ def list_indices_command(proxies):
     readable_output = tableToMarkdown(
         name="Indices:",
         t=indices,
-        removeNull=True
+        removeNull=True,
+        headers=[str(k) for k in indices[0]]
     )
     
     result = CommandResults(
