@@ -8907,7 +8907,7 @@ def extract_name_servers(servers) -> list:
     if isinstance(servers, str):
         if '\n' in servers:
             return servers.split('\n')
-        return servers
+        return list(servers)
     return sorted(list(set(map(str.lower, servers))))
 
 
