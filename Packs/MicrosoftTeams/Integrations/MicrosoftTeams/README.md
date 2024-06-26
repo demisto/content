@@ -1071,8 +1071,8 @@ There is no context output for this command.
 
 ### microsoft-teams-generate-login-url
 ***
-Generate the login url used for Authorization code flow.
-
+Generate the login url used for Authorization code flow.  
+Note: Authorization codes are short-lived. Typically, they expire after about 10 minutes.
 
 #### Base Command
 
