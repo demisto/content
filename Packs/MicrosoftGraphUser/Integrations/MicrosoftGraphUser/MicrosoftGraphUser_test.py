@@ -95,7 +95,7 @@ def test_get_user_command_url_saved_chars(mocker):
     http_mock = mocker.patch.object(BaseClient, '_http_request')
     mocker.patch.object(MicrosoftClient, 'get_access_token')
     hr, _, _ = get_user_command(client, {'user': user_name})
-    assert 'users/dbot%5E' == http_mock.call_args[1]["url_suffix"]
+    assert http_mock.call_args[1]["url_suffix"] == 'users/dbot%5E'
 
 
 def test_get_unsupported_chars_in_user():
@@ -341,7 +341,7 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    f'response_type=code&scope=offline_access%20{Scopes.graph}' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = MicrosoftGraphUser.return_results.call_args[0][0].readable_output
     assert expected_url in res
 

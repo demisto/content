@@ -230,8 +230,8 @@ class PolyswarmConnector():
         artifacts = argToList(param[artifact_type])
 
         for artifact in artifacts:
-            title = 'PolySwarm %s Reputation for: %s' % (artifact_type.upper(),
-                                                         artifact)
+            title = 'PolySwarm {} Reputation for: {}'.format(artifact_type.upper(),
+                                                             artifact)
 
             demisto.debug(f'[url_reputation] {title}')
 
@@ -244,7 +244,7 @@ class PolyswarmConnector():
             if artifact_type == 'ip':
                 try:
                     socket.inet_aton(artifact)
-                except socket.error:
+                except OSError:
                     return_error('Invalid IP Address: {ip}'.
                                  format(ip=artifact))
 
@@ -318,7 +318,7 @@ class PolyswarmConnector():
 
 def main():
     ''' EXECUTION '''
-    LOG('command is %s' % (demisto.command(),))
+    LOG(f'command is {demisto.command()}')
     try:
         polyswarm = PolyswarmConnector()
 
