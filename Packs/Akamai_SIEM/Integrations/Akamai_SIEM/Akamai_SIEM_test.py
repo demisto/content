@@ -8,7 +8,7 @@ import pytest
 from freezegun import freeze_time
 
 # Local imports
-from Akamai_SIEM import fetch_events_command, Client, decode_url
+import Akamai_SIEM
 from CommonServerPython import urljoin
 
 
@@ -150,7 +150,7 @@ class TestCommandsFunctions:
         num_of_results = 500
         page_size = 50
         num_of_pages = num_of_results // page_size
-        mocker.patch.object(Client, "get_events_with_offset", side_effect=[
+        mocker.patch.object(Akamai_SIEM.Client, "get_events_with_offset", side_effect=[
             (
                 [{"id": i + 1, "httpMessage": {"start": i + 1}} for i in range(page_size * j, page_size * (j + 1))],
                 f"offset_{page_size * (j + 1)}",
@@ -159,7 +159,7 @@ class TestCommandsFunctions:
         ])
         total_events_count = 0
 
-        for events, offset, total_events_count, _ in fetch_events_command(client, '3 days', 220, '', {}):  # noqa: B007
+        for events, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client, '3 days', 220, '', {}):  # noqa: B007
             assert offset == f"offset_{events[-1]['id']}"
         assert total_events_count == 250
 
@@ -179,7 +179,7 @@ class TestCommandsFunctions:
         last_offset = "11111"
         requests_mock.get(f'{BASE_URL}/50170?limit={size}&offset={last_offset}', text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count in fetch_events_command(client, '12 hours', 6,  # noqa: B007
+        for _, offset, total_events_count in Akamai_SIEM.fetch_events_command(client, '12 hours', 6,  # noqa: B007
                                                                               '50170', {"offset": last_offset}):
             last_offset = offset
         assert total_events_count == 0
@@ -204,7 +204,10 @@ class TestCommandsFunctions:
         requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=218d9', text=SEC_EVENTS_TXT)
         requests_mock.get(f'{BASE_URL}/50170?limit=6&from=1575966002&offset=318d8', text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count, new_from_time in fetch_events_command(client, '12 hours', 4, '50170', {}):  # noqa: B007
+        for _, offset, total_events_count, new_from_time in Akamai_SIEM.fetch_events_command(client,
+                                                                                             '12 hours',
+                                                                                             4, '50170',
+                                                                                             {}):  # noqa: B007
             last_offset = offset
         assert total_events_count == 6
         assert last_offset == "218d9"
@@ -229,7 +232,7 @@ class TestCommandsFunctions:
         requests_mock.get(f'{BASE_URL}/50170?limit=6&offset=218d9', text=SEC_EVENTS_TXT)
         requests_mock.get(f'{BASE_URL}/50170?limit=6&offset=318d8', text=SEC_EVENTS_EMPTY_TXT)
 
-        for _, offset, total_events_count, new_from_time in fetch_events_command(client, '12 hours', 20, '50170', {}):  # noqa: B007
+        for _, offset, total_events_count, new_from_time in Akamai_SIEM.fetch_events_command(client, '12 hours', 20, '50170', {}):  # noqa: B007
             last_offset = offset
         assert total_events_count == 8
         assert last_offset == "318d8"
@@ -254,7 +257,12 @@ class TestCommandsFunctions:
         requests_mock.get(f'{BASE_URL}/50170?limit=2&from=1575966002', text=SEC_EVENTS_TWO_RESULTS_TXT)
         requests_mock.get(f'{BASE_URL}/50170?limit=2&offset=117d9', text=SEC_EVENTS_TXT)
 
-        for _, offset, total_events_count, _ in fetch_events_command(client, '12 hours', 2, '50170', {}):  # noqa: B007
+        for _, offset, total_events_count, _ in Akamai_SIEM.fetch_events_command(client,
+                                                                                 '12 hours',
+                                                                                 2,
+                                                                                 '50170',
+                                                                                 {}
+                                                                                ):  # noqa: B007
             last_offset = offset
         assert total_events_count == 2
         assert last_offset == "117d9"
@@ -295,4 +303,4 @@ def test_decode_url(header):
                              'EPM_Request_ID': 'EPM_request_id', 'Content_Length': '157', 'Date': 'Mon, 25 Mar 2024 13:52:11 GMT',
                              'Connection': 'keep-alive', 'Server_Timing': 'intid;desc=dd',
                              'Strict_Transport_Security': 'max-age=31536000 ; includeSubDomains ; preload'}
-    assert decode_url(header) == expected_decoded_dict
+    assert Akamai_SIEM.decode_url(header) == expected_decoded_dict
