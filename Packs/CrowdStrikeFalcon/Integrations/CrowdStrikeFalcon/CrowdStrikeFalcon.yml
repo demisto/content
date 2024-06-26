@@ -599,7 +599,9 @@ script:
     - contextPath: File.Size
       description: The size of the file in bytes.
       type: Number
-  - arguments: []
+  - arguments:
+    - description: The maximum number of entries to return per page, Default is 100.
+      name: page_size
     description: Returns a list of put-file IDs that are available for the user in the 'put' command.
     name: cs-falcon-list-files
     outputs:
