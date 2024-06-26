@@ -350,7 +350,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "query": "incident.id:* and expirationStatus:active and (verdict:Malicious or verdict:Suspicious or verdict:Unknown)",
+                "query": "investigationIDs:* and expirationStatus:active and (verdict:Malicious or verdict:Suspicious or verdict:Unknown)",
                 "shouldCommit": false,
                 "size": 10,
                 "sort": [
