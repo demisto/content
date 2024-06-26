@@ -659,7 +659,9 @@ def jira_asset_connected_ticket_list_command(client: Client, args: dict[str, Any
         - 'object_id': The ID of the object to retrieve connected tickets for.
     :return: A CommandResults object containing the connected tickets as output, and a human-readable markdown table.
     """
-    object_id = args.get('object_id')
+    object_id = args.get('object_id', '')
+    if not object_id:
+        raise ValueError('object_id is a required argument')
     res = client.get_object_connected_tickets(object_id)
     outputs = list(res.get('tickets'))
     hr_headers = ['ID', 'Title', 'Status', 'Type']
@@ -810,8 +812,8 @@ def main() -> None:
 
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            test_result = test_module(client)
+            return_results(test_result)
 
         command_func = commands.get(command)
         if not command_func:
