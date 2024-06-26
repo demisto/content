@@ -7,7 +7,7 @@ def test_upgrade_package_on_instance_invalid_asmruleid(mocker):
     Expected result: A dictionary with run_command_flag set to False and an
     appropriate error message.
     """
-    from AWSEC2PackageUpgrade import upgrade_package_on_instance
+    from AWSPackageUpgrade import upgrade_package_on_instance
 
     args = {
         "instance_id": "ou-2222-22222222",
@@ -28,7 +28,7 @@ def test_upgrade_package_on_instance_invalid_instanceid(mocker):
     Expected result: A dictionary with run_command_flag set to False and an
     appropriate error message.
     """
-    from AWSEC2PackageUpgrade import upgrade_package_on_instance
+    from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
         if name == "aws-ssm-inventory-entry-list":
@@ -54,7 +54,7 @@ def test_upgrade_package_on_instance_no_instance(mocker):
     Test the upgrade_package_on_instance function with a non-existent instance.
     Expected result: A dictionary with run_command_flag set to False and an appropriate error message.
     """
-    from AWSEC2PackageUpgrade import upgrade_package_on_instance
+    from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
         if name == "aws-ssm-inventory-entry-list":
@@ -80,7 +80,7 @@ def test_upgrade_package_on_instance_inactive(mocker):
     Test the upgrade_package_on_instance function with an inactive instance.
     Expected result: A dictionary with run_command_flag set to False and an appropriate error message.
     """
-    from AWSEC2PackageUpgrade import upgrade_package_on_instance
+    from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
         if name == "aws-ssm-inventory-entry-list":
@@ -106,7 +106,7 @@ def test_upgrade_package_on_instance_no_package(mocker):
     Test the upgrade_package_on_instance function with an unsupported operating system for package upgrade.
     Expected result: A dictionary with run_command_flag set to False and an appropriate error message.
     """
-    from AWSEC2PackageUpgrade import upgrade_package_on_instance
+    from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
         if name == "aws-ssm-inventory-entry-list":
@@ -144,7 +144,7 @@ def test_upgrade_package_on_instance_package(mocker):
     Test the upgrade_package_on_instance function with a valid instance and package upgrade scenario.
     Expected result: A dictionary with run_command_flag set to True and a CommandId.
     """
-    from AWSEC2PackageUpgrade import upgrade_package_on_instance
+    from AWSPackageUpgrade import upgrade_package_on_instance
 
     def executeCommand(name, args):
         if name == "aws-ssm-inventory-entry-list":
@@ -180,24 +180,24 @@ def test_upgrade_package_on_instance_package(mocker):
     }
 
 
-def test_aws_ec2_package_upgrade(mocker):
+def test_aws_package_upgrade(mocker):
     """
-    Test the aws_ec2_package_upgrade function with a mocked upgrade_package_on_instance function.
+    Test the aws_package_upgrade function with a mocked upgrade_package_on_instance function.
     Expected result: A CommandResults object with the correct output and prefix.
     """
-    from AWSEC2PackageUpgrade import aws_ec2_package_upgrade
+    from AWSPackageUpgrade import aws_package_upgrade
 
     mock_dict = {"run_command_flag": True, "run_command_output": "123"}
 
     mocker.patch(
-        "AWSEC2PackageUpgrade.upgrade_package_on_instance", return_value=mock_dict
+        "AWSPackageUpgrade.upgrade_package_on_instance", return_value=mock_dict
     )
 
-    command_results = aws_ec2_package_upgrade(
+    command_results = aws_package_upgrade(
         {"instance_id": "123", "asm_rule_id": "InsecureOpenSSH", "region": "us-east"}
     )
 
-    assert command_results.outputs_prefix == "awsec2packageupgrade"
+    assert command_results.outputs_prefix == "awspackageupgrade"
     assert command_results.outputs == {
         "run_command_flag": True,
         "run_command_output": "123",

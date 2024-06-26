@@ -136,7 +136,7 @@ cd ..; rm openssh-9.7p1.tar.gz; rm -r openssh-9.7p1"
     return output_run_command_dict
 
 
-def aws_ec2_package_upgrade(args: Dict[str, Any]) -> CommandResults:
+def aws_package_upgrade(args: Dict[str, Any]) -> CommandResults:
     """
     Initiates an upgrade of a software package on a specified AWS EC2 instance.
 
@@ -175,7 +175,7 @@ def aws_ec2_package_upgrade(args: Dict[str, Any]) -> CommandResults:
     )
     command_results = CommandResults(
         outputs=results,
-        outputs_prefix="awsec2packageupgrade",
+        outputs_prefix="awspackageupgrade",
         raw_response=results,
         readable_output=results.get("run_command_output"),
     )
@@ -190,10 +190,10 @@ def main():
     main function
     """
     try:
-        return_results(aws_ec2_package_upgrade(demisto.args()))
+        return_results(aws_package_upgrade(demisto.args()))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute AWSEC2PackageUpgrade. Error: {str(ex)}")
+        return_error(f"Failed to execute AWSPackageUpgrade. Error: {str(ex)}")
 
 
 """ ENTRY POINT """

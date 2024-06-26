@@ -1,5 +1,5 @@
-description: This playbook upgrades supported packages on an AWS EC2 instance.
-id: AWS - EC2 Package Upgrade
+description: This playbook upgrades supported packages on an AWS EC2 instance using AWS Systems manager.
+id: AWS - Package Upgrade
 inputSections:
 - description: Generic group for inputs.
   inputs:
@@ -36,7 +36,7 @@ inputs:
   playbookInputQuery:
   required: false
   value: {}
-name: AWS - EC2 Package Upgrade
+name: AWS - Package Upgrade
 outputSections:
 - description: Generic group for outputs.
   name: General (Outputs group)
@@ -62,12 +62,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: e1adf28a-3a47-4044-8483-806ea1c3c75c
+      id: 6ff3e273-643f-4981-8d73-7131697d49d6
       iscommand: false
       name: ""
       version: -1
       description: ''
-    taskid: e1adf28a-3a47-4044-8483-806ea1c3c75c
+    taskid: 6ff3e273-643f-4981-8d73-7131697d49d6
     timertriggers: []
     type: start
     view: |-
@@ -138,12 +138,12 @@ tasks:
     task:
       brand: ""
       description: Determines if the AWS - Systems Manager integration instance is configured and input values are defined.
-      id: 75306cbe-5048-4052-8a48-ac85290e53e4
+      id: c9829402-26c5-4efb-8e0f-077ce690d1a4
       iscommand: false
       name: Is AWS - Systems Manager enabled and are input values defined?
       type: condition
       version: -1
-    taskid: 75306cbe-5048-4052-8a48-ac85290e53e4
+    taskid: c9829402-26c5-4efb-8e0f-077ce690d1a4
     timertriggers: []
     type: condition
     view: |-
@@ -165,13 +165,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 7277ea02-f5b1-4734-8334-c57417ab3da3
+      id: 379598ad-1166-488f-8856-b513aaca3431
       iscommand: false
       name: Done
       type: title
       version: -1
       description: ''
-    taskid: 7277ea02-f5b1-4734-8334-c57417ab3da3
+    taskid: 379598ad-1166-488f-8856-b513aaca3431
     timertriggers: []
     type: title
     view: |-
@@ -199,7 +199,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       Ids:
-        simple: ${awsec2packageupgrade.run_command_id}
+        simple: ${awspackageupgrade.run_command_id}
       Interval:
         simple: "1"
       PollingCommandArgName:
@@ -222,13 +222,13 @@ tasks:
         1. Initiate the operation.
         2. Poll to check if the operation completed.
         3. (optional) Get the results of the operation.
-      id: 05965785-d679-4fb5-8244-415f5cd4f3ee
+      id: 8b226c89-b40d-424e-8d9f-950fa69c0ee1
       iscommand: false
       name: GenericPolling
       playbookId: GenericPolling
       type: playbook
       version: -1
-    taskid: 05965785-d679-4fb5-8244-415f5cd4f3ee
+    taskid: 8b226c89-b40d-424e-8d9f-950fa69c0ee1
     timertriggers: []
     type: playbook
     view: |-
@@ -251,7 +251,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       command_id:
-        simple: ${awsec2packageupgrade.run_command_id}
+        simple: ${awspackageupgrade.run_command_id}
       roleArn:
         simple: ${inputs.Assume Role}
       roleSessionName:
@@ -261,13 +261,13 @@ tasks:
     task:
       brand: AWS - System Manager
       description: Lists the commands requested by users of the Amazon Web Services account.
-      id: bbc0487e-ac4e-4a4c-8884-103f47b0a7e6
+      id: c45424b5-c696-4708-8f17-e906c08d0296
       iscommand: true
       name: Get status of command
       script: AWS - System Manager|||aws-ssm-command-list
       type: regular
       version: -1
-    taskid: bbc0487e-ac4e-4a4c-8884-103f47b0a7e6
+    taskid: c45424b5-c696-4708-8f17-e906c08d0296
     timertriggers: []
     type: regular
     view: |-
@@ -306,12 +306,12 @@ tasks:
     task:
       brand: ""
       description: Does the provided ASM Rule ID exist in the list?
-      id: dd2287f1-8cb5-4412-89e1-0ff7ba55be31
+      id: a9465063-4c61-481c-8c57-242007a24466
       iscommand: false
       name: Does this ASM Rule ID support AWS EC2 Patching?
       type: condition
       version: -1
-    taskid: dd2287f1-8cb5-4412-89e1-0ff7ba55be31
+    taskid: a9465063-4c61-481c-8c57-242007a24466
     timertriggers: []
     type: condition
     view: |-
@@ -327,7 +327,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: ${awsec2packageupgrade.run_command_flag}
+              simple: ${awspackageupgrade.run_command_flag}
           operator: isTrue
           right:
             value: {}
@@ -349,12 +349,12 @@ tasks:
     task:
       brand: ""
       description: Checks if the package upgrade command run is initiated via AWS SSM.
-      id: c85a3184-b257-42f0-837d-6125bfdc3c36
+      id: 802dfb1f-c0fa-4ad4-88f2-f36c3d480814
       iscommand: false
       name: AWS SSM Command Run Initiated?
       type: condition
       version: -1
-    taskid: c85a3184-b257-42f0-837d-6125bfdc3c36
+    taskid: 802dfb1f-c0fa-4ad4-88f2-f36c3d480814
     timertriggers: []
     type: condition
     view: |-
@@ -387,13 +387,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: e349260f-0203-4617-8600-7c97f300b1e2
+      id: 8664fefc-0f3c-482c-8a10-784b03e9eeb3
       iscommand: false
       name: Set remediatedFlag to true
       script: Set
       type: regular
       version: -1
-    taskid: e349260f-0203-4617-8600-7c97f300b1e2
+    taskid: 8664fefc-0f3c-482c-8a10-784b03e9eeb3
     timertriggers: []
     type: regular
     view: |-
@@ -426,13 +426,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 6583c277-ea33-40be-8353-b335e722fb56
+      id: 24eb5eec-b581-45f8-8de7-841612349784
       iscommand: false
       name: Set remediatedFlag to false
       script: Set
       type: regular
       version: -1
-    taskid: 6583c277-ea33-40be-8353-b335e722fb56
+    taskid: 24eb5eec-b581-45f8-8de7-841612349784
     timertriggers: []
     type: regular
     view: |-
@@ -471,12 +471,12 @@ tasks:
     task:
       brand: ""
       description: Was the command run successful?
-      id: c39b855b-3b09-446f-872c-222527b80a61
+      id: b43b0cce-00a6-461d-8d6b-96c5d467c1af
       iscommand: false
-      name: AWS EC2 Package Upgrade success?
+      name: AWS Package Upgrade success?
       type: condition
       version: -1
-    taskid: c39b855b-3b09-446f-872c-222527b80a61
+    taskid: b43b0cce-00a6-461d-8d6b-96c5d467c1af
     timertriggers: []
     type: condition
     view: |-
@@ -514,14 +514,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: This is an AWS script that upgrades a package on the AWS EC2 instance.
-      id: b4657cee-60e8-4566-8095-dd07661e1792
+      description: This is an AWS script that upgrades a package on the AWS EC2 instance using AWS Systems manager.
+      id: 5f029ce5-bc0d-4555-800c-47be2c8ea935
       iscommand: false
-      name: 'AWS EC2 Package Upgrade '
+      name: 'AWS Package Upgrade '
       script: AWSEC2PackageUpgrade
       type: regular
       version: -1
-    taskid: b4657cee-60e8-4566-8095-dd07661e1792
+    taskid: 5f029ce5-bc0d-4555-800c-47be2c8ea935
     timertriggers: []
     type: regular
     view: |-

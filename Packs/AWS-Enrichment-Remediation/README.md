@@ -2,7 +2,7 @@
 
 The pack contains AWS playbooks that conduct enrichment and/or remediation and can use multiple other AWS content packs:
 - Enrichment: Given an IP address, see if there is an associated EC2 instance and if so pull information on the associated security group. If an SSM agent is installed on the instance, pull information from the SSM agent.
-- Remediation: Given the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved. If there is a matching ASM rule ID that is supported, upgrade the associated package to the latest available version.
+- Remediation: Given the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved.
 - Unclaimed S3 Bucket Validation: The playbook sends a HTTP get response to the domain and validates the missing bucket information.
 - Unclaimed S3 Bucket Remediation: The playbook will create the unclaimed S3 bucket.
 
@@ -13,7 +13,6 @@ There are multiple AWS content packs for multiple AWS products (EC2, IAM, Route5
 Users are only able to run the playbook in v6.5.0 or higher as it requires commands to execute the task.
 This content pack includes the following playbooks: 
 - AWS - Enrichment
-- AWS - EC2 Package Upgrade
 - AWS - Security Group Remediation
 - AWS - Security Group Remediation v2
 - Cloud Response - AWS
@@ -24,11 +23,6 @@ This content pack includes the following playbooks:
 AWS - Enrichment playbook reports EC2 information given an IP address of an EC2 instance.
 
 ![AWS - Enrichment](https://raw.githubusercontent.com/demisto/content/master/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_Enrichment.png)
-
-#### AWS - EC2 Package Upgrade
-AWS - EC2 Package Upgrade playbook upgrades supported packages on an AWS EC2 instance.
-
-![AWS - EC2 Package Upgrade](https://raw.githubusercontent.com/demisto/content/56f3ae1b82b1320e0badc580713726034dd622b1/Packs/AWS-Enrichment-Remediation/doc_files/AWS_-_EC2_Package_Upgrade.png)
 
 #### AWS - Security Group Remediation
 AWS - Security Group Remediation playbook replaces current security groups associated to NIC with Remediation security group.

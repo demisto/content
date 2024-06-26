@@ -1,4 +1,4 @@
-This is an AWS script that upgrades a package on the AWS EC2 instance.
+This is an AWS script that upgrades a package on the AWS EC2 instance using AWS Systems manager.
 
 ## Script Data
 
@@ -7,22 +7,7 @@ This is an AWS script that upgrades a package on the AWS EC2 instance.
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python3 |
-
-## Dependencies
-
----
-This script uses the following commands and scripts.
-
-* aws-ssm-inventory-entry-list
-* aws-ssm-command-run
-* AWS - System Manager
-
-## Used In
-
----
-This script is used in the following playbooks and scripts.
-
-* AWS - EC2 Package Upgrade
+| Cortex XSOAR Version | 6.10.0 |
 
 ## Inputs
 
@@ -42,4 +27,4 @@ This script is used in the following playbooks and scripts.
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
-| awsec2packageupgrade | The command ID of the command initiated by AWS SSM command. | Unknown |
+| awspackageupgrade | The command ID of the command initiated by the AWS SSM command. | Unknown |

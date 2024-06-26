@@ -1,4 +1,4 @@
-This playbook upgrades supported package on an AWS EC2 instance.
+This playbook upgrades supported packages on an AWS EC2 instance using AWS Systems manager.
 
 ## Dependencies
 
@@ -6,11 +6,11 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-GenericPolling
+* GenericPolling
 
 ### Integrations
 
-AWS - System Manager
+* AWS - System Manager
 
 ### Scripts
 
@@ -19,7 +19,7 @@ AWS - System Manager
 
 ### Commands
 
-aws-ssm-command-list
+* aws-ssm-command-list
 
 ## Playbook Inputs
 
@@ -45,4 +45,4 @@ aws-ssm-command-list
 
 ---
 
-![AWS - EC2 Package Upgrade](../doc_files/AWS_-_EC2_Package_Upgrade.png)
+![AWS - Package Upgrade](../doc_files/AWS_-_Package_Upgrade.png)
