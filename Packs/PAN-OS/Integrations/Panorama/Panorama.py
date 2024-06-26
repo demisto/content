@@ -11256,7 +11256,7 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology, target: strk, ip_address: Optional[str] = None):
+    def get_device_state(topology: Topology, target: str, ip_address: Optional[str] = None):
         """
         Returns an exported device state, as binary data. Note that this will attempt to connect directly to the target
         firewall, as it cannot be exported via the Panorama proxy. If there are network issues that prevent that, this command
