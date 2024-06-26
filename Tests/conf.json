@@ -4645,6 +4645,7 @@
         {
             "playbookID": "Cortex XDR - IOC - Test without fetch",
             "fromversion": "5.5.0",
+            "memory_threshold": 200,
             "integrations": [
                 "Cortex XDR - IR",
                 "Cortex XDR - IOC"
