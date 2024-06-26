@@ -286,6 +286,7 @@ def test_add_alert_notes_command(mocker):
 
 def test_test_module(mocker):
     """
+    bla bla
     Given:
         - All relevant parameters for the integration.
 
