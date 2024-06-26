@@ -5705,11 +5705,12 @@ def get_list_tag_command(client: Client, id: str | None = None, name: str | None
         limit_int = arg_to_number(limit, required=False)
         tags = client.get_tags_list(name=name, type=type, page_size=page_size_int, page=page_int, limit=limit_int)
 
+    headers = ['id', 'color', 'created', 'name', 'riskmodifier', 'source', 'type']
     return CommandResults(
         outputs_prefix="Nexpose.Tag",
         outputs_key_field="id",
         outputs=tags,
-        readable_output=tableToMarkdown("Tags list", remove_dict_key(deepcopy(tags), "searchCriteria"),
+        readable_output=tableToMarkdown("Tags list", remove_dict_key(deepcopy(tags), "searchCriteria"), headers=headers,
                                         headerTransform=string_to_table_header),
         raw_response=tags
     )
@@ -5977,13 +5978,14 @@ def list_site_assets_command(client: Client, site_id: str, asset_type: str, targ
         raise ValueError("Invalid asset_type. Expected 'assets' or 'asset_groups'.")
 
     outputs = dict(**res, site_id=site_id_int)
-    res = remove_empty_elements(res)
+    readable_results = res.get("resources") if asset_type == 'asset_groups' else res
 
     return CommandResults(
         outputs_prefix=output_prefix,
         outputs_key_field="id",
         outputs=outputs,
-        readable_output=tableToMarkdown(readable_title, res, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown(readable_title, readable_results,
+                                        headerTransform=string_to_table_header, removeNull=True),
         raw_response=outputs
     )
 

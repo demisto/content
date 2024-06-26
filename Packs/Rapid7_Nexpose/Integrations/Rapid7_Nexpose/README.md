@@ -2812,7 +2812,7 @@ There is no context output for this command.
 ### nexpose-add-tag-asset-group
 
 ***
-Add existing asset groups to an existing tag.
+Add existing asset groups to an existing tag.()
 
 #### Base Command
 
