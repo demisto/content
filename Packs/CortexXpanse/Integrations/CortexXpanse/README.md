@@ -2053,7 +2053,7 @@ Returns reputation lookup for an IP address found in Xpanse.
 
 
 #### Command example
-```!ip ip='1.1.1.1, 1.1.1.2'```
+```!ip ip='1.1.1.1, 1.1.1.2, 8.8.8.8 '```
 
 #### Context Example
 
@@ -2133,15 +2133,19 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 }
 ```
 
-If the Indicator was updated in XSOAR in the last 3 days:
+If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
 
 ```json
 {
-    "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
-    "indicator_type": "IP",
-    "name": "1.1.1.2",
-    "reliability": "A+ - 3rd party enrichment",
-    "score": 0
+    "ASM": {
+        "TIM": {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "indicator_type": "IP",
+            "name": "1.1.1.2",
+            "reliability": "A+ - 3rd party enrichment",
+            "score": 0
+        }
+    }
 }
 ```
 
@@ -2154,7 +2158,7 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 > |---|---|---|---|---|---|---|---|---|---|---|---|
 > | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
 
-If the Indicator was updated in XSOAR in the last 3 days:
+If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
 
 > ### Xpanse Discovered IP List (Existing Indicators)
 >
@@ -2164,6 +2168,18 @@ If the Indicator was updated in XSOAR in the last 3 days:
 > |id|indicator_type|name|reliability|score|
 > |---|---|---|---|---|
 > | abcd1b2abcd1a0b20c7a8bc5d67e8eea | IP | 1.1.1.2 | A+ - 3rd party enrichment | 0 |
+
+If the Indicator was updated in XSOAR in the last 3 days:
+
+> ### XSOAR Indicator Discovered IP List (Not Related to Xpanse)
+> 
+> This IP list is from existing records found in XSOAR within the last 3 days.
+> These IPs have not been found to be attributed to Xpanse`.
+> 
+> |integrations|name|
+> |---|---|
+> | VirusTotal (API v3) | 8.8.8.8 |
+
 
 ### domain
 
@@ -2208,7 +2224,7 @@ Returns reputation lookup for an doamin found in Xpanse
 | ASM.TIM.Domain.score          | Integer  | The existing indicator score recently updated in XSOAR indicators          |
 
 #### Command example
-```!domain domain="*.acme.com, www.example.com"```
+```!domain domain="*.acme.com, www.example.com, www.fakedomain.com"```
 
 #### Context Example
 
@@ -2287,15 +2303,19 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 }
 ```
 
-If the Indicator was updated in XSOAR in the last 3 days:
+If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
 
 ```json
 {
-    "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
-    "indicator_type": "Domain",
-    "name": "www.example.com",
-    "reliability": "A+ - 3rd party enrichment",
-    "score": 0
+    "ASM": {
+        "TIM": {
+            "id": "abcd1b2abcd1a0b20c7a8bc5d67e8eea",
+            "indicator_type": "Domain",
+            "name": "www.example.com",
+            "reliability": "A+ - 3rd party enrichment",
+            "score": 0
+        }
+    }
 }
 ```
 
@@ -2309,7 +2329,7 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 > |---|---|---|---|---|---|---|---|---|---|---|---|
 > | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
 
-If the Indicator was updated in XSOAR in the last 3 days:
+If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
 
 > ### Xpanse Discovered Domain List (Existing Indicators)
 >
@@ -2319,6 +2339,16 @@ If the Indicator was updated in XSOAR in the last 3 days:
 > |id|indicator_type|name|reliability|score|
 > |---|---|---|---|---|
 > | abcd1b2abcd1a0b20c7a8bc5d67e8eea | Domain | www.example.com | A+ - 3rd party enrichment | 0 |
+
+If the Indicator was updated in XSOAR in the last 3 days:
+
+> ### XSOAR Indicator Discovered Domain List (Not Related to Xpanse)
+> 
+> This domain list is from existing records found in XSOAR within the last 3 days.
+> These domains have not been found to be attributed to Xpanse`.
+> |integrations|name|
+> |---|---|
+> | VirusTotal (API v3) | www.fakedomain.com |
 
 
 ### asm-list-external-websites
