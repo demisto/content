@@ -591,7 +591,6 @@ def test_jira_asset_attribute_json_create_command(mocker: MockerFixture, args, e
     assert len(attributes) == expected_len
 
 
-
 def test_jira_asset_comment_create_command(mocker: MockerFixture):
     """
     Given: An object id and a comment
