@@ -164,12 +164,6 @@ script:
       name: sort
       required: false
       secret: false
-    - description: 'Page number'
-      isArray: false
-      isOptional: true
-      name: page
-      required: false
-      secret: false
     - description: 'Page size'
       isArray: false
       isOptional: true
@@ -193,12 +187,19 @@ script:
       description: Details of the asset for the provided ID.
       type: String
   - arguments: []
+    description: for retrieve list of data types for company.
+    name: dspm-get-data-types
+    outputs:
+    - contextPath: DSPM.DataTypes
+      description: List of data types for company.
+      type: String
+  - arguments: []
     description: Pushes local changes to the remote system.
     name: update-remote-system
-  - arguments:
+  - arguments: []
     description: for testing the fetch-handle method.
     name: fetch-incidents
-  - arguments:
+  - arguments: []
     description: for getting integration config.
     name: dspm-get-integration-cofig
   - arguments:
@@ -210,12 +211,12 @@ script:
       required: true
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
     name: get-remote-data
-  # - arguments:
-  #   - description: Retrieve entries that were created after lastUpdate.
-  #     name: last_update
-  #     required: false
-  #   description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-  #   name: get-modified-remote-data
+  - arguments:
+    - description: Retrieve entries that were created after lastUpdate.
+      name: last_update
+      required: false
+    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
+    name: get-modified-remote-data
   - arguments:
     - description: 'Risk Finding ID'
       isArray: false
