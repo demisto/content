@@ -232,7 +232,7 @@ tasks:
     task:
       id: cee5c66c-f442-4deb-8200-de2684e4d81e
       version: -1
-      name: 5Verify Context Error - Extracted Indicators
+      name: Verify Context Error - Extracted Indicators
       description: Prints an error entry with a given message
       scriptName: PrintErrorEntry
       type: regular
