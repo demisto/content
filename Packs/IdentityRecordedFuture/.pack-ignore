@@ -1,0 +1,5 @@
+[file:ReleaseNotes/2_0_0.md]
+ignore=RN107,RN114
+
+[file:Layouts/layoutscontainer-Recorded_Future_Playbook_Alert_Identity_Exposure.json]
+ignore=LO107
