@@ -8,4 +8,5 @@ Using the commands in the integration, you can leverage what the Jira Assets API
 - Getting object types
 - Adding, reading and deleting object's attachments
 - Adding, reading and deleting object's comments
-Basically, you can perform tasks that a user would need to do manually in the Jira Assets UI or would need to provide automations to do.
+
+- You can perform tasks that a user would need to do manually in the Jira Assets UI or would need to provide automations to do.

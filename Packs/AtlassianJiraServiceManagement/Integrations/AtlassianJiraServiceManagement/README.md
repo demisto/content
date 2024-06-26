@@ -1,5 +1,5 @@
 Use this integration to manage Jira objects and attach files to Jira objects from XSOAR.
-This integration was integrated and tested with version 5.4.15 of AtlassianJiraServiceManagement.
+This integration was integrated and tested with on-prem version 5.4.15 of AtlassianJiraServiceManagement.
 
 ## Configure Atlassian Jira Service Management on Cortex XSOAR
 
