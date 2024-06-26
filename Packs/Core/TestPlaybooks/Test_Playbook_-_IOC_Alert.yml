@@ -5,7 +5,7 @@ description: |-
   This playbook tests the ‘IOC Alert' playbook which is part of the ‘Core’ pack.
 
   The following tests are conducted in the playbook:
-  1-Verify that the parent incident fields and alert fields have been populated.
+  1-Verify that the parent incident fields have been populated.
   2- Ensure that the context data is correctly extracted.
 starttaskid: "0"
 tasks:
@@ -134,7 +134,6 @@ tasks:
     nexttasks:
       '#none#':
       - "13"
-      - "269"
       - "310"
     separatecontext: false
     continueonerrortype: ""
@@ -261,117 +260,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "269":
-    id: "269"
-    taskid: 460da925-cd41-41d0-861d-a060b36133cb
-    type: title
-    task:
-      id: 460da925-cd41-41d0-861d-a060b36133cb
-      version: -1
-      name: Check Alert Field
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "270"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1070
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "270":
-    id: "270"
-    taskid: 12e4d4d1-312c-4286-8bd3-94cd6a1c7b98
-    type: condition
-    task:
-      id: 12e4d4d1-312c-4286-8bd3-94cd6a1c7b98
-      version: -1
-      name: Verify Close Reason
-      description: Verify that the ‘closeReason’ alert field was populated correctly.
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "271"
-      "yes":
-      - "306"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: alert.closeReason
-            iscontext: true
-          right:
-            value:
-              simple: Resolved - Threat Handled
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1200
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "271":
-    id: "271"
-    taskid: 731d6f05-9349-43f1-879e-89597b61de89
-    type: regular
-    task:
-      id: 731d6f05-9349-43f1-879e-89597b61de89
-      version: -1
-      name: Verify Alert Field Error - Close Reason
-      description: Prints an error entry with a given message
-      scriptName: PrintErrorEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    scriptarguments:
-      message:
-        simple: |-
-          The ‘closeReason’ alert field was populated correctly. One of the following may be the cause:
-          1- The 'closeInvestigation' script failed to execute in the 'close alert' task.
-          2- The 'closeReason' input configuration was changed for the 'closeInvestigation' automation used in the 'close alert' task.
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 50,
-          "y": 1445
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "306":
     id: "306"
     taskid: 277d4cdf-d375-490e-8974-bce285c77675
@@ -402,10 +290,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "307":
     id: "307"
-    taskid: 2587622c-8660-4835-8ea7-52cbaafb29be
+    taskid: 6dca2d8d-dbc9-4f8d-82a4-3dce2773532c
     type: playbook
     task:
-      id: 2587622c-8660-4835-8ea7-52cbaafb29be
+      id: 6dca2d8d-dbc9-4f8d-82a4-3dce2773532c
       version: -1
       name: IOC Alert
       description: "IOCs provide the ability to alert on known malicious objects on endpoints across the organization. \n\n**Analysis Actions:**\nThe playbook will use several enrichment sources to determine the IOC verdict. Additionally, will use the Analytics module to run a prevalence check for the IOC.\n\n**Response Actions:**\nThe playbook's first response action is a containment plan that is based on the playbook input. In that phase, the playbook will execute endpoint isolation\n\n**Investigative Actions:**\nWhen the playbook executes, it checks for additional abnormal activity using the Endpoint Investigation Plan playbook that can indicate the endpoint might be compromised.\n\n**Remediation Actions:**\nIn case results are found within the investigation phase, the playbook will execute remediation actions that include containment and eradication.\n\nThis phase will execute the following containment actions:\n\n* File quarantine\n* Endpoint isolation\n\nAnd the following eradication actions:\n\n* Manual process termination\n* Manual file deletion"
@@ -432,7 +320,7 @@ tasks:
       PreHostContainment:
         simple: "False"
       ShouldCloseAutomatically:
-        simple: "True"
+        simple: "False"
       ShouldHandleFPautomatically:
         simple: "False"
       ShouldOpenTicket:
@@ -532,7 +420,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
+          "x": 50,
           "y": 1070
         }
       }
@@ -577,7 +465,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
+          "x": 50,
           "y": 1200
         }
       }
@@ -612,7 +500,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -390,
+          "x": 50,
           "y": 1445
         }
       }
@@ -626,15 +514,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "270_306_yes": 0.16,
       "311_306_yes": 0.11,
       "70_306_yes": 0.17
     },
     "paper": {
       "dimensions": {
         "height": 1240,
-        "width": 1620,
-        "x": -390,
+        "width": 1180,
+        "x": 50,
         "y": 300
       }
     }
