@@ -22,6 +22,10 @@
     "testInterval": 20,
     "tests": [
         {
+            "playbookID": "Local Analysis alert Investigation - Test",
+            "timeout": 6000
+        },
+        {
             "playbookID": "Test Playbook - Impossible Traveler - Enrichment",
             "integrations": [
                 "Active Directory Query v2",
