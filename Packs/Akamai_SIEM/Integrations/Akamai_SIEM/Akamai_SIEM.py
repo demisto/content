@@ -451,7 +451,7 @@ def decode_url(headers: str) -> dict:
 ''' COMMANDS MANAGER / SWITCH PANEL '''
 
 
-def main():
+def main():  # pragma: no cover
     params = demisto.params()
     client = Client(
         base_url=urljoin(params.get('host'), '/siem/v1/configs'),
