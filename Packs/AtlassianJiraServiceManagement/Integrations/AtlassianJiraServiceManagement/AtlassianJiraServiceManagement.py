@@ -243,6 +243,8 @@ def clean_object_attributes(attributes: List[Dict[str, any]]) -> List[Dict[str, 
 def convert_attributes(attributes: Dict[str, List[str]]) -> List[Dict[str, Any]]:
     result = []
     for attribute_id, values in attributes.items():
+        if not isinstance(values, list):
+            values = [values]
         attribute_dict = {
             "objectTypeAttributeId": attribute_id,
             "objectAttributeValues": [{"value": value} for value in values]
@@ -433,6 +435,9 @@ def jira_asset_object_create_command(client: Client, args: dict[str, Any]) -> Co
     object_type_id = args.get('object_type_id')
     attributes = args.get('attributes')
     attributes_json = args.get('attributes_json')
+
+    demisto.log('attributes: {}'.format(attributes))
+    demisto.log('attributes type: {}'.format(type(attributes)))
 
     json_data = get_attributes_json_data(object_type_id, attributes, attributes_json)
     res = client.create_object(json_data)
