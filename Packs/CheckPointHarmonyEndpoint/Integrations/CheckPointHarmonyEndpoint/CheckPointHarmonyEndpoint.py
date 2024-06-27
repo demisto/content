@@ -2587,7 +2587,7 @@ def extract_query_filter(args: dict[str, Any]) -> list[dict[str, Any]]:
 
             if len(query_parts) != 3:
                 raise ValueError(
-                    "'filter_by_query' must be in the following format: 'column_name filter_type filter_value'."
+                    "'filter' must be in the following format: 'column_name filter_type filter_value'."
                 )
 
             column_name = query_parts[0]
