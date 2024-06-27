@@ -783,6 +783,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     outputs = response
     sleep(1)
     print('1')
+    LOG('0')
     demisto.results('')
     return_outputs('')
     sys.exit(1)
