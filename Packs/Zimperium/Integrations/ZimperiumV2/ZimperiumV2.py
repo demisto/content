@@ -55,12 +55,11 @@ class Client(BaseClient):
             'size': size,
             'teamId': team_id,
         })
-        
+
         if email:
-            res = self._http_request(method='GET', url_suffix=f'auth/public/v1/users',
-                                  headers=self._headers,
-                                  params=params)
-            
+            self._http_request(method='GET', url_suffix='auth/public/v1/users',
+                               headers=self._headers,
+                               params=params)
 
         return self._http_request(method='GET', url_suffix=f'auth/public/v1/users/{user_id if user_id else ""}',
                                   headers=self._headers,
