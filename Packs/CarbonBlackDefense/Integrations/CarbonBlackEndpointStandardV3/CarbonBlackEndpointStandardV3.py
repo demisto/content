@@ -479,6 +479,48 @@ class Client(BaseClient):
         suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={str(rows)}"
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
+    def get_observation_details(self, alert_id: str | None = None, event_ids: list[str] | None = None,
+                                process_hash: str | None = None, device_id: int | None = None,
+                                count_unique_devices: bool | None = None, rows: int | None = None):
+        """Returns Carbon Black events details by ID
+            using the 'api/investigate/v2/orgs/{org_key}/enriched_events/search_jobs/{job_id}/results' API endpoint
+
+        :type event_ids: ``Optional[List[str]]``
+        :param event_ids: The id of the event.
+
+        :return: dict containing a job_id to using it in get_events_details_results.
+        :rtype: ``dict``
+        """
+        # if alert_id and event_ids:
+        #     raise ValueError("Either 'alert_id' or 'observation_ids' must be specified, not both.")
+        # if not alert_id and not event_ids:
+        #     raise ValueError("One of 'alert_id' or 'observation_ids' must be specified.")
+
+        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs'
+        count_unique_devices = count_unique_devices or False
+        body = assign_params(
+            alert_id=alert_id,
+            observation_ids=argToList(event_ids),
+            process_hash=process_hash,
+            device_id=arg_to_number(device_id),
+            count_unique_devices=argToBoolean(count_unique_devices),
+            max_rows=arg_to_number(rows)
+        )
+        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+
+    def get_observation_details_results(self, job_id: str, rows: int = 10):
+        """Returns Carbon Black event details by job_id
+            using the 'api/investigate/v2/orgs/{org_key}/enriched_events/search_jobs/{job_id}/results' API endpoint
+
+        :type job_id: ``Optional[str]``
+        :param job_id: The id of the job.
+
+        :return: dict containing the event data'.
+        :rtype: ``dict``
+        """
+        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs/{job_id}/results?rows={str(rows)}'
+        return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -857,6 +899,53 @@ def find_processes_command(args: dict, client: Client):
     )
 
 
+@polling_function(
+    name='cbd-find-observation-details',
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),
+    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),
+    poll_message='search jobs in process',
+    requires_polling_arg=False
+)
+def find_observation_details_command(args: dict, client: Client):
+    rows = arg_to_number(args.get("rows", 10))
+
+    if 'job_id' not in args:  # first polling iteration
+        res = client.get_observation_details(**assign_params(**args))
+        job_id = res['job_id']
+        return PollResult(
+            continue_to_poll=True,
+            args_for_next_run={"job_id": job_id, "rows": rows},
+            response=res
+        )
+
+    job_id = args['job_id']
+    res = client.get_observation_details_results(job_id=job_id, rows=rows)
+
+    if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
+        readable_output = tableToMarkdown(
+            'Defense Event Details Results', res.get('results', []),
+            headers=['event_id', 'device_id', 'device_external_ip', 'device_internal_ip', 'enriched_event_type'],
+            removeNull=True, headerTransform=string_to_table_header
+        )
+
+        return PollResult(
+            continue_to_poll=False,
+            response=CommandResults(
+                outputs_prefix='CarbonBlackDefense.EventDetails.Results',
+                outputs_key_field='job_id',
+                outputs=res,
+                readable_output=readable_output,
+                raw_response=res
+            )
+        )
+
+    return PollResult(
+        continue_to_poll=True,
+        args_for_next_run={"job_id": job_id, "rows": rows},
+        response=res
+    )
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1063,6 +1152,8 @@ def main() -> None:
             results = delete_rule_from_policy_command(client=client, policy_id=args.pop('policyId'), rule_id=args.pop('ruleId'))
         elif command == 'cbd-find-processes':
             results = find_processes_command(client=client, args=args)
+        elif command == 'cbd-find-observation-details':
+            results = find_observation_details_command(client=client, args=args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 

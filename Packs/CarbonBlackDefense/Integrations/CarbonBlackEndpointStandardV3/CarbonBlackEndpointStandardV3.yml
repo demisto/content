@@ -471,6 +471,25 @@ script:
       description: Used for polling.
     description: 'Creates a process search job and retrieves the search results. At least one of the arguments (not including: rows, start, and time_range) is required.'
     polling: true
+  - name: cbd-find-observation-details
+    arguments:
+    - name: job_id
+      hidden: true
+      description: The ID of the job to retrieve the details. This is used internally for polling.
+    - name: alert_id
+      description: The ID of the alert to retrieve the observation details.
+    - name: event_ids
+      description: A list of observation IDs to retrieve the details.
+    - name: process_hash
+      description: The hash of the process to search for.
+    - name: device_id
+      description: The ID of the device to filter the observations.
+    - name: count_unique_devices
+      description: A boolean indicating whether to count unique devices executing the process hash.
+    - name: rows
+      description: The maximum number of rows to return, up to 10,000.
+    description: Fetches Carbon Black events details based on specified parameters. Supports polling to wait for the search job completion.
+    polling: true
   dockerimage: demisto/python3:3.10.14.97608
   isfetch: true
   runonce: false
