@@ -1,12 +1,12 @@
 {
-    "id": "Recorded Future Identity",
+    "id": "Recorded Future Identity Exposure",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Recorded Future Identity (Deprecated)",
-    "prevName": "Recorded Future Identity",
-    "color": "#F8E7A5",
-    "playbookId": "Recorded Future Identity - Identity Found (incident)",
+    "name": "Recorded Future Identity Exposure",
+    "prevName": "Recorded Future Identity Exposure",
+    "color": "#EEC1C1",
+    "playbookId": "Recorded Future - Identity Exposure",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -20,11 +20,11 @@
     "disabled": false,
     "reputationCalc": 1,
     "onChangeRepAlg": 1,
-    "layout": "Recorded Future Identity Incident",
+    "layout": "Recorded Future Playbook Alert Identity Exposure",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.10.0"
 }
