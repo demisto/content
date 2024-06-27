@@ -23,6 +23,8 @@ IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
+ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
+ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 PARAMS = demisto.params()
 CLIENT_ID = PARAMS.get('credentials', {}).get('identifier') or PARAMS.get('client_id')
 SECRET = PARAMS.get('credentials', {}).get('password') or PARAMS.get('secret')
@@ -316,7 +318,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
-    DETECTION = ('ldt' ,'ods')
+    DETECTION = ('ldt' ,'ods')      #TODO: check again why do we need it, why detections are returned as "ods" and not only "ldt"
     IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
@@ -327,6 +329,24 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def truncate_long_time_str(detections: List[Dict], time_key: str) -> List[Dict]:
+    """
+    Truncates the time string in each detection to a maximum of 26 characters, to prevent an error when parsing the time.
+    
+    Args:
+        detections (List[Dict]): The list of detections, each represented as a dictionary.
+        time_key (str): The key in each detection dictionary that corresponds to the time string.
+        
+    Returns:
+        List[Dict]: The list of detections with the time string truncated.
+    """
+    for event in detections:
+        long_time_str = event.get(time_key)
+        if long_time_str and len(long_time_str) > 26:
+            event[time_key] = long_time_str[:26] + "Z"
+    return detections
 
 
 def error_handler(res):
@@ -694,7 +714,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         'occurred': detection.get(start_time_key),
         'rawJSON': json.dumps(detection)
     }
-    if detection_type == IDP_DETECTION_FETCH_TYPE:
+    if detection_type in (IDP_DETECTION_FETCH_TYPE , ON_DEMAND_SCANS_DETECTION_TYPE):
         incident_context['name'] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context['last_updated'] = detection.get('updated_timestamp')
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
@@ -1442,12 +1462,16 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     elif last_behavior_time:
         params['filter'] = f"first_behavior:>'{last_behavior_time}'"
 
-    endpoint_url = "alerts/queries/alerts/v2?filter=product" if POST_RAPTOR_RELEASE else '/detects/queries/detects/v1'
-    if filter_arg:
-        # behavior filters are not supported in Raptor
-        endpoint_url += urllib.parse.quote_plus(f":'epp'+{filter_arg}")
+    if POST_RAPTOR_RELEASE:
+        endpoint_url = "alerts/queries/alerts/v2?filter=product"
+        text_to_encode = ":'epp'"
+        # in Raptor we send only the filter_arg argument as encoded string
+        if filter_arg:
+            text_to_encode += f"+{filter_arg}"
+        endpoint_url += urllib.parse.quote_plus(text_to_encode)
         return http_request('GET', endpoint_url)
     else:
+        endpoint_url = '/detects/queries/detects/v1'
         return http_request('GET', endpoint_url, params)
 
 
@@ -2822,10 +2846,11 @@ def fetch_incidents():
     iom_incidents: list[dict[str, Any]] = []
     ioa_incidents: list[dict[str, Any]] = []
     mobile_detections: list[dict[str, Any]] = []
+    on_demand_detections: list[dict[str, Any]] = []
     last_run = demisto.getLastRun()
     demisto.debug(f'CrowdStrikeFalconMsg: Current last run object is {last_run}')
     if not last_run:
-        last_run = [{}, {}, {}, {}, {}, {}]
+        last_run = [{}, {}, {}, {}, {}, {}, {}]
     last_run = migrate_last_run(last_run)
     current_fetch_info_detections: dict = last_run[0]
     current_fetch_info_incidents: dict = last_run[1]
@@ -2833,6 +2858,7 @@ def fetch_incidents():
     iom_last_run: dict = {} if len(last_run) < 4 else last_run[3]
     ioa_last_run: dict = {} if len(last_run) < 5 else last_run[4]
     current_fetch_info_mobile_detections: dict = {} if len(last_run) < 6 else last_run[5]
+    current_fetch_on_demand_detections: dict = {} if len(last_run) < 7 else last_run[6]
     params = demisto.params()
     fetch_incidents_or_detections = params.get('fetch_incidents_or_detections', "")
     look_back = int(params.get('look_back') or 1)
@@ -2948,7 +2974,7 @@ def fetch_incidents():
         demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch Incidents. Fetched {len(incidents)}")
 
     if IDP_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
-        idp_detections, current_fetch_info_idp_detections = fetch_idp_and_mobile_detections(
+        idp_detections, current_fetch_info_idp_detections = fetch_detections_by_product_type(
             current_fetch_info_idp_detections,
             look_back=look_back,
             fetch_query=params.get(
@@ -2959,7 +2985,7 @@ def fetch_incidents():
             start_time_key='start_time')
 
     if MOBILE_DETECTION_FETCH_TYPE in fetch_incidents_or_detections:
-        mobile_detections, current_fetch_info_mobile_detections = fetch_idp_and_mobile_detections(
+        mobile_detections, current_fetch_info_mobile_detections = fetch_detections_by_product_type(
             current_fetch_info_mobile_detections,
             look_back=look_back,
             fetch_query=params.get(
@@ -3035,12 +3061,28 @@ def fetch_incidents():
 
         ioa_last_run = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
                         'last_fetch_query': ioa_fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
+        
+    if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
+        if not POST_RAPTOR_RELEASE:
+            raise DemistoException('On-Demand Scans Detection is supported only from Raptor release and above.')
+        demisto.debug('Fetching On-Demand Scans Detection incidents')
+        demisto.debug(f'on_demand_detections_last_run= {current_fetch_on_demand_detections}')
+        
+        on_demand_detections, current_fetch_on_demand_detections = fetch_detections_by_product_type(
+            current_fetch_on_demand_detections,
+            look_back=look_back,
+            fetch_query = params.get('on_demand_fetch_query', ''),
+            detections_type=ON_DEMAND_SCANS_DETECTION,
+            product_type='ods',
+            detection_name_prefix=ON_DEMAND_SCANS_DETECTION_TYPE,
+            start_time_key='created_timestamp')
+        
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
-                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections])
-    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections
+                        iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections])
+    return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections
 
 
-def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, product_type: str,
+def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
                                     fetch_query: str, detections_type: str, detection_name_prefix: str,
                                     start_time_key: str) -> tuple[List, dict]:
     """The fetch logic for idp and mobile detections.
@@ -3059,13 +3101,14 @@ def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, pr
     """
     detections: List = []
     offset: int = current_fetch_info.get('offset') or 0
-
     start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=current_fetch_info,
                                                                 first_fetch=FETCH_TIME,
                                                                 look_back=look_back,
                                                                 date_format=DETECTION_DATE_FORMAT)
     fetch_limit = current_fetch_info.get('limit') or INCIDENTS_PER_FETCH
     filter = f"product:'{product_type}'+created_timestamp:>'{start_fetch_time}'"
+    if product_type == 'ods':
+        filter = filter.replace('product:', 'type:')
 
     if fetch_query:
         filter += f"+{fetch_query}"
@@ -3084,7 +3127,7 @@ def fetch_idp_and_mobile_detections(current_fetch_info: dict, look_back: int, pr
                 detection['incident_type'] = detections_type
                 detection_to_context = detection_to_incident_context(detection, detection_name_prefix, start_time_key)
                 detections.append(detection_to_context)
-
+        detections = truncate_long_time_str(detections, 'occurred') if product_type == 'ods' else detections
         detections = filter_incidents_by_duplicates_and_limit(incidents_res=detections,
                                                               last_run=current_fetch_info,
                                                               fetch_limit=INCIDENTS_PER_FETCH, id_field='name')

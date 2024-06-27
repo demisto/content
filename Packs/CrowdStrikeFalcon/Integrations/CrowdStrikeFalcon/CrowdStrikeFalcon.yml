@@ -167,7 +167,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
+  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is for Post Raptor release only.
   options:
   - IDP Detection
   - Endpoint Incident
