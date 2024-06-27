@@ -7010,8 +7010,8 @@ def test_resolve_detection(mocker, Post_Raptor_release, url_suffix, data):
 
 
 @pytest.mark.parametrize('post_raptor_release, url_suffix, request_params', [
-    (True, "/alerts/queries/alerts/v2?filter=product:'epp'%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27", {'limit': 3}),
-    (False, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3, 'filter': "created_timestamp:>'2024-06-19T15:25:00Z'"})
+    (True, "/alerts/queries/alerts/v2?filter=product:'epp'%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27", {'limit': 3}),
+    (False, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
 ])
 def test_get_fetch_detections__url(mocker, post_raptor_release, url_suffix, request_params):
     """
@@ -7024,7 +7024,7 @@ def test_get_fetch_detections__url(mocker, post_raptor_release, url_suffix, requ
 
     Test Scenarios:
         1. When `Post_Raptor_release` is True, the `url_suffix` should be:
-        "/alerts/queries/alerts/v2?filter=product:'epp'%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+        "/alerts/queries/alerts/v2?filter=product:'epp'%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
         All parameters (except 'limit') are part of the URL and are URL-encoded.
         2. When `Post_Raptor_release` is False, the `url_suffix` should be "/detects/queries/detects/v1"
         All the provided parameters are passed under 'parameters'.
@@ -7033,7 +7033,7 @@ def test_get_fetch_detections__url(mocker, post_raptor_release, url_suffix, requ
     mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', post_raptor_release)
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
 
-    get_fetch_detections(last_created_timestamp='2024-06-19T15:25:00Z', filter_arg=None, offset=5,
+    get_fetch_detections(filter_arg=None, offset=5,
                          last_updated_timestamp='2024-06-19T15:25:00Z',
                          has_limit=True, limit=3)
 

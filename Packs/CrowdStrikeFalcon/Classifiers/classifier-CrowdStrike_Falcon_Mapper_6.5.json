@@ -309,6 +309,9 @@
                 "Display Name": {
                     "simple": "display_name"
                 },
+                "Description": {
+                    "simple": "description"
+                },
                 "End Time": {
                     "simple": "end_time"
                 },
@@ -352,7 +355,7 @@
                     "simple": "product"
                 },
                 "name": {
-                    "simple": "id"
+                    "simple": "composite_id"
                 },
                 "occurred": {
                     "simple": "created_timestamp"
@@ -381,7 +384,7 @@
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Account Name": {
-                    "simple": "behaviors.user_name"
+                    "simple": "user_name"
                 },
                 "Agent Version": {
                     "simple": "device.agent_version"
@@ -393,17 +396,16 @@
                     "simple": "assigned_to_uid"
                 },
                 "CrowdStrike Falcon Behaviour Pattern Disposition Details": {
-                    "complex": {
-                        "accessor": "pattern_disposition_details",
-                        "filters": [],
-                        "root": "behaviors",
-                        "transformers": [
-                            {
-                                "operator": "ConvertKeysToTableFieldFormat"
-                            }
-                        ]
-                    }
-                },
+					"complex": {
+						"filters": [],
+						"root": "pattern_disposition_details",
+						"transformers": [
+							{
+								"operator": "ConvertKeysToTableFieldFormat"
+							}
+						]
+					}
+				},
                 "Behaviour Objective": {
                     "simple": "objective"
                 },
@@ -429,7 +431,7 @@
                     "simple": "description"
                 },
                 "Detected User": {
-                    "simple": "behaviors.user_name"
+                    "simple": "user_name"
                 },
                 "Device External IP": {
                     "simple": "device.external_ip"
@@ -444,34 +446,34 @@
                     "simple": "device.hostname"
                 },
                 "Event Descriptions": {
-                    "simple": "behaviors.description"
+                    "simple": "description"
                 },
                 "Event Names": {
-                    "simple": "behaviors.display_name"
+                    "simple": "display_name"
                 },
                 "File MD5": {
-                    "simple": "behaviors.md5"
+                    "simple": "md5"
                 },
                 "File Name": {
-                    "simple": "behaviors.filename"
+                    "simple": "filename"
                 },
                 "File Paths": {
-                    "simple": "behaviors.filepath"
+                    "simple": "filepath"
                 },
                 "File SHA256": {
-                    "simple": "behaviors.sha256"
+                    "simple": "sha256"
                 },
                 "Hostnames": {
-                    "simple": "device.hostname"
+                    "simple": "hostname"
                 },
                 "Last Update Time": {
                     "simple": "timestamp"
                 },
                 "MAC Address": {
-                    "simple": "device.mac_address"
+                    "simple": "mac_address"
                 },
                 "MD5": {
-                    "simple": "behaviors.md5"
+                    "simple": "md5"
                 },
                 "OS": {
                     "simple": "device.os_version"
@@ -480,7 +482,7 @@
                     "simple": "parent_details.cmdline"
                 },
                 "SHA256": {
-                    "simple": "behaviors.sha256"
+                    "simple": "sha256"
                 },
                 "Start Time": {
                     "simple": "first_behavior"
@@ -489,25 +491,26 @@
                     "simple": "status"
                 },
                 "name": {
-                    "complex": {
-                        "accessor": "display_name",
-                        "filters": [],
-                        "root": "behaviors.[0]",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "prefix": {
-                                        "value": {
-                                            "simple": "Falcon Detection - "
-                                        }
-                                    },
-                                    "suffix": {
-                                        "value": {
-                                            "simple": " - Detection ID: "
-                                        }
-                                    }
-                                },
-                                "operator": "concat"
+					"complex": {
+						"filters": [],
+						"root": "display_name",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": "Falcon Detection - "
+										}
+									},
+									"suffix": {
+										"isContext": false,
+										"value": {
+											"simple": " - Detection ID: "
+										}
+									}
+								},
+								"operator": "concat"
                             },
                             {
                                 "args": {
@@ -515,7 +518,7 @@
                                     "suffix": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "detection_id"
+                                            "simple": "composite_id"
                                         }
                                     }
                                 },
@@ -528,7 +531,7 @@
                     "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                    "simple": "detection_id"
+                    "simple": "composite_id"
                 },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
@@ -875,7 +878,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "detection_id"
+                                            "simple": "composite_id"
                                         }
                                     }
                                 },
@@ -887,7 +890,7 @@
                 "External Link": {
                     "complex": {
                         "filters": [],
-                        "root": "detection_id",
+                        "root": "composite_id",
                         "transformers": [
                             {
                                 "args": {
@@ -932,7 +935,7 @@
                 "External Severity": {
                     "complex": {
                         "filters": [],
-                        "root": "max_severity",
+                        "root": "severity",
                         "transformers": [
                             {
                                 "args": {
@@ -954,7 +957,7 @@
                 "External System ID": {
                     "complex": {
                         "filters": [],
-                        "root": "detection_id",
+                        "root": "composite_id",
                         "transformers": [
                             {
                                 "args": {
@@ -1099,7 +1102,7 @@
 								"args": {
 									"conditions": {
 										"value": {
-											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{detection_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{detection_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
+											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
 										}
 									},
 									"flags": {}
@@ -1119,7 +1122,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "max_severity"
+                                            "simple": "severity"
                                         }
                                     }
                                 },

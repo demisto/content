@@ -274,7 +274,8 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
 
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                      'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
-
+POST_RAPTOR_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
+                                     'technique', 'device.hostname', "composite_id", 'display_name']
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
                                     'tags', 'hosts.hostname', 'incident_id']
 
@@ -315,7 +316,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
-    DETECTION = 'ldt'
+    DETECTION = ('ldt' ,'ods')
     IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
@@ -1431,27 +1432,24 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         :param filter_arg: 1st priority. The result will be filtered using this argument.
         :return: Response json of the get detection endpoint (IDs of the detections)
     """
-    if not POST_RAPTOR_RELEASE:
-        endpoint_url = '/detects/queries/detects/v1'
-        params = {
-            'sort': 'first_behavior.asc'
-        }
-        if filter_arg:
-            params['filter'] = filter_arg
-        elif behavior_id:
-            params['filter'] = f"behaviors.behavior_id:'{behavior_id}'"
-        elif last_behavior_time:
-            params['filter'] = f"first_behavior:>'{last_behavior_time}'"
+    params = {
+        'sort': 'first_behavior.asc'
+    }
+    if filter_arg:
+        params['filter'] = filter_arg
+    elif behavior_id:
+        params['filter'] = f"behaviors.behavior_id:'{behavior_id}'"
+    elif last_behavior_time:
+        params['filter'] = f"first_behavior:>'{last_behavior_time}'"
 
-        response = http_request('GET', endpoint_url, params)
-    else:
-        endpoint_url = "alerts/queries/alerts/v2?filter=product:'epp'"
+    endpoint_url = "alerts/queries/alerts/v2?filter=product" if POST_RAPTOR_RELEASE else '/detects/queries/detects/v1'
     if filter_arg:
         # behavior filters are not supported in Raptor
-        endpoint_url += urllib.parse.quote_plus(f"+{filter_arg}")
+        endpoint_url += urllib.parse.quote_plus(f":'epp'+{filter_arg}")
+        return http_request('GET', endpoint_url)
+    else:
+        return http_request('GET', endpoint_url, params)
 
-    response = http_request('GET', endpoint_url)
-    return response
 
 
 def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None,
@@ -1475,18 +1473,15 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     elif last_created_timestamp:
         params['filter'] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
-        params['filter'] = f"date_updated:>'{last_updated_timestamp}'"
+        timestamp_key = 'date_updated' if not POST_RAPTOR_RELEASE else 'updated_timestamp'
+        params['filter'] = f"{timestamp_key}:>'{last_updated_timestamp}'"
+    
+    endpoint_url = '/detects/queries/detects/v1' if not POST_RAPTOR_RELEASE else "/alerts/queries/alerts/v2?filter=product"
+   
+    if POST_RAPTOR_RELEASE:
+        endpoint_url += urllib.parse.quote_plus(f":'epp'+{params.pop('filter', None)}")
 
-    if not POST_RAPTOR_RELEASE:
-        endpoint_url = '/detects/queries/detects/v1'
-        response = http_request('GET', endpoint_url, params)
-    else:
-        endpoint_url = "/alerts/queries/alerts/v2?filter=product:'epp'"
-        if params.get('filter'):
-            endpoint_url += urllib.parse.quote_plus(f"+{params.get('filter')}")
-        if params.get('limit'):
-            raptor_params={'limit': params.get('limit')}
-        response = http_request('GET', endpoint_url, raptor_params)
+    response = http_request('GET', endpoint_url, params)
         
     demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
     return response
@@ -1500,6 +1495,7 @@ def get_detections_entities(detections_ids: list):
     """
     ids_json = {'ids': detections_ids} if not POST_RAPTOR_RELEASE else {"composite_ids": detections_ids}
     url = '/detects/entities/summaries/GET/v1' if not POST_RAPTOR_RELEASE else '/alerts/entities/alerts/v2'
+    demisto.debug(f"Getting detections entities from {url} with {ids_json=}")
     if detections_ids:
         response = http_request(
             'POST',
@@ -1551,11 +1547,16 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
         'offset': offset,
         'filter': filter_arg
     }
-    #TODO fix the params and type and limit for Raptor, and add testing
     if limit:
         params['limit'] = limit
-    endpoint_url = "/alerts/queries/alerts/v1" if not POST_RAPTOR_RELEASE else "/alerts/queries/alerts/v2"
+    endpoint_url = "/alerts/queries/alerts/v1" if not POST_RAPTOR_RELEASE else \
+    "/alerts/queries/alerts/v2?filter="
+    #if post raptor release we need to add the product type to the filter to the url as encoded string
+    if POST_RAPTOR_RELEASE:
+        endpoint_url += urllib.parse.quote_plus(params.pop('filter', None))
     response = http_request('GET', endpoint_url, params)
+    
+        
     demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}")
 
     return response
@@ -1581,10 +1582,12 @@ def get_detection_entities(incidents_ids: list):
         :return: The response.
         :rtype ``dict``
     """
+    url_endpoint_version = 'v1' if not POST_RAPTOR_RELEASE else 'v2'
+    ids_json = {'ids': incidents_ids} if not POST_RAPTOR_RELEASE else {"composite_ids": incidents_ids}
     return http_request(
         'POST',
-        '/alerts/entities/alerts/v1',
-        data=json.dumps({'ids': incidents_ids})
+        f'/alerts/entities/alerts/{url_endpoint_version}',
+        data=json.dumps(ids_json)
     )
 
 
@@ -2337,6 +2340,7 @@ def get_remote_data_command(args: dict[str, Any]):
         demisto.debug(f'Performing get-remote-data command with incident or detection id: {remote_incident_id} '
                       f'and last_update: {remote_args.last_update}')
         incident_type = find_incident_type(remote_incident_id)
+        demisto.debug(f'Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}')
         if incident_type == IncidentType.INCIDENT:
             mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
             if updated_object:
@@ -2344,6 +2348,7 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_incident_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
 
         elif incident_type == IncidentType.DETECTION:
+            
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
@@ -2376,12 +2381,15 @@ def get_remote_data_command(args: dict[str, Any]):
 
 
 def find_incident_type(remote_incident_id: str):
-    if remote_incident_id[0:3] == IncidentType.INCIDENT.value:
+    if  IncidentType.INCIDENT.value in remote_incident_id:
         return IncidentType.INCIDENT
-    if remote_incident_id[0:3] == IncidentType.DETECTION.value:
+    for subtype in IncidentType.DETECTION.value:
+        if subtype in remote_incident_id:
+            return IncidentType.DETECTION
         return IncidentType.DETECTION
     if IncidentType.IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
         return IncidentType.IDP_OR_MOBILE_DETECTION
+    demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
 
@@ -2414,8 +2422,9 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data['severity'] = severity_string_to_int(severity)
     demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
+    incomming_args = CS_FALCON_DETECTION_INCOMING_ARGS if not POST_RAPTOR_RELEASE else POST_RAPTOR_CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
-    set_updated_object(updated_object, mirrored_data, CS_FALCON_DETECTION_INCOMING_ARGS)
+    set_updated_object(updated_object, mirrored_data, incomming_args)
     demisto.debug(f'After set_updated_object {updated_object=}')
     return mirrored_data, updated_object
 
@@ -2628,13 +2637,14 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
 
     try:
         incident_type = find_incident_type(remote_incident_id)
+        demisto.debug(f'Successfully identified incident type: {incident_type} for remote incident id: {remote_incident_id}')
         if parsed_args.incident_changed:
             if incident_type == IncidentType.INCIDENT:
                 result = update_remote_incident(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
-            elif incident_type == IncidentType.DETECTION:
+            elif incident_type in IncidentType.DETECTION:
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
