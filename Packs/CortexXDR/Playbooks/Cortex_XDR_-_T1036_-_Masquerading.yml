@@ -1031,7 +1031,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The ID of the alert
+  description: The ID of the alert.
   playbookInputQuery:
 outputs: []
 tests:
