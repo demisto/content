@@ -346,9 +346,13 @@ script:
     - description: The ID of the message to retrieve.
       name: message-id
       required: true
+    - description: Identifier ids to download to XSOAR (to avoid downloading all files to XSOAR during the preprocessing script).
+      name: identifiers-filter
+      required: false
+      hidden: true
     description: Retrieves attachments from a sent Gmail message.
     name: gmail-get-attachments
-  dockerimage: demisto/google-api-py3:1.0.0.88704
+  dockerimage: demisto/google-api-py3:1.0.0.98645
   isfetch: true
   runonce: false
   script: '-'

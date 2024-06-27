@@ -54,7 +54,7 @@ class GithubParams(BaseModel):
 
 class GithubEventsRequestConfig(IntegrationHTTPRequest):
     url: AnyUrl
-    method = Method.GET
+    method: Method = Method.GET
     params: GithubParams  # type: ignore
 
 
