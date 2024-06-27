@@ -1882,10 +1882,6 @@ def test_http_request_without_credentials(mocker, without_credentials: bool, exp
     from AnomaliThreatStreamv3 import BaseClient
     http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
     client: BaseClient = mock_client()
-    # {
-    # 'Authorization': 'apikey :',
-    #     'api_key': '',
-    #     'username': '',}
 
     client.http_request("GET", "/hello", without_credentials=without_credentials)
     assert http_request.call_args.kwargs["headers"] == expected_params
