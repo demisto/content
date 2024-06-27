@@ -16,7 +16,7 @@ TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 DEFAULT_LIMIT = "50"
-MAX_LENGTH_CONTEXT = 1000
+MAX_LENGTH_CONTEXT = 10000
 
 
 class Client(BaseClient):
@@ -1193,7 +1193,7 @@ def convert_all_unix_keys_to_date_user(incident: dict) -> dict:
         for key in keys:
             if key in incident['user']:
                 incident['user'][key] = convert_unix_to_date(incident['user'][key]).split('.')[0] + 'Z'
-            if key in incident['highestRiskSession']:
+            if key in incident['highestRiskSession'] and incident['highestRiskSession'][key]:
                 incident['highestRiskSession'][key] = convert_unix_to_date(
                     incident['highestRiskSession'][key]).split('.')[0] + 'Z'
     return incident
@@ -2248,13 +2248,14 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
     demisto.debug(f"After the added context contain {len(usernames_to_context)} users")
 
     incidents: list[dict] = []
-    for incident in new_risky_users:
-        incident = convert_all_unix_keys_to_date_user(incident)
-        incident['incident_type'] = 'Exabeam Notable User'
+    for user_data in new_risky_users:
+        user_data_fixed_time = convert_all_unix_keys_to_date_user(user_data)
+        user_username = user_data.get("user", {}).get("username", "")
+        user_data_fixed_time['incident_type'] = 'Exabeam Notable User'
         incidents.append(
             {
-                "Name": incident.get("user", {}).get("username", ""),
-                "rawJSON": json.dumps(incident),
+                "Name": user_username,
+                "rawJSON": json.dumps(user_data_fixed_time),
             }
         )
 

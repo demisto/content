@@ -2,11 +2,12 @@ import pytest
 from datetime import datetime
 from freezegun import freeze_time
 import pytz
+import copy
 from Exabeam import Client, contents_append_notable_user_info, contents_user_info, get_peer_groups, \
     get_user_labels, get_watchlist, get_asset_data, get_session_info_by_id, get_rules_model_definition, \
     parse_context_table_records_list, get_notable_assets, get_notable_session_details, get_notable_sequence_details, \
     get_notable_sequence_event_types, delete_context_table_records, list_incidents, convert_all_unix_keys_to_date, \
-    fetch_incidents, build_incident_response_query_params
+    fetch_incidents, build_incident_response_query_params, fetch_notable_users
 from test_data.response_constants import RESPONSE_PEER_GROUPS, RESPONSE_USER_LABELS, RESPONSE_WATCHLISTS, \
     RESPONSE_ASSET_DATA, RESPONSE_SESSION_INFO, RESPONSE_MODEL_DATA, RESPONSE_NOTABLE_ASSET_DATA, \
     RESPONSE_NOTABLE_SESSION_DETAILS, RESPONSE_NOTABLE_SEQUENCE_DETAILS, RESPONSE_NOTABLE_SEQUENCE_EVENTS, \
@@ -18,6 +19,7 @@ from test_data.result_constants import EXPECTED_PEER_GROUPS, EXPECTED_USER_LABEL
 from test_data.response_incidents import INCIDENTS, EXPECTED_INCIDENTS, EXPECTED_LAST_RUN, EXPECTED_CALL_ARGS, \
     EXPECTED_LAST_RUN_FOR_LOOK_BACK, INCIDENTS_FOR_LOOK_BACK_FIRST_TIME, EXPECTED_INCIDENTS_FOR_LOOK_BACK, \
     EXPECTED_CALL_ARGS_FOR_LOOK_BACK, INCIDENTS_FOR_LOOK_BACK_SECOND_TIME
+from test_data.response_users import RES_USERS
 
 
 def test_contents_append_notable_user_info():
@@ -525,3 +527,48 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
     assert last_run['time'] == expected_last_run['second_fetch']['time']
     for id_ in expected_last_run['second_fetch']['found_incident_ids']:
         assert id_ in last_run['found_incident_ids']
+
+
+@pytest.mark.parametrize(
+    "args, last_run_obj, context_data, expected_new_incidents_count",
+    [
+        (
+            {
+                "notable_users_fetch_interval": "60",
+                "notable_users_first_fetch": "3 months",
+                "max_fetch_users": "50",
+                "minimum_risk_score_to_fetch_users": "90",
+            },
+            {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
+            {"usernames": ["old_username_risky"]},
+            1,
+        ),
+        (
+            {
+                "notable_users_fetch_interval": "60",
+                "notable_users_first_fetch": "3 months",
+                "max_fetch_users": "50",
+                "minimum_risk_score_to_fetch_users": "90",
+            },
+            {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
+            {"usernames": []},
+            2
+        )
+    ],
+    ids=["with_old_username_risky", "without_old_username_risky"]
+)
+def test_notable_users_fetch_incdents(mocker, args, last_run_obj, context_data, expected_new_incidents_count):
+    mocker.patch.object(Client, '_login', return_value=None)
+    client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False, headers={})
+    copy_res = copy.deepcopy(RES_USERS)  # for separation between the tests
+    mocker.patch('Exabeam.get_notable_users', return_value=(None, None, copy_res))
+
+    mocker.patch('Exabeam.get_integration_context', return_value=context_data)
+    mocker.patch('Exabeam.set_integration_context', return_value=None)
+
+    incidents, last_run = fetch_notable_users(client, args, last_run_obj)
+
+    assert len(incidents) == expected_new_incidents_count
+    assert incidents[0]['Name'] == 'new_username_risky'
+    actual_last_run = last_run.split('.')[0]  # Remove microseconds for comparison
+    assert actual_last_run == datetime.now(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S')
