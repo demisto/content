@@ -8,17 +8,18 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Server URL (e.g., <https://api.crowdstrike.com>) |  | True |
-    | Client ID |  | True |
-    | Secret |  | True |
+    | Server URL (e.g., https://api.crowdstrike.com) |  | True |
+    | Client ID |  | False |
+    | Secret |  | False |
     | Source Reliability | Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command. | False |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Max incidents per fetch |  | False |
     | Endpoint Detections fetch query |  | False |
     | Endpoint Incidents fetch query |  | False |
     | IDP Detections fetch query |  | False |
-    | IOM fetch query | Use the Falcon Query Language. For more information, refer to the integration docs. | False |
-    | IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. For more information, refer to the integration docs. | False |
+    | Mobile Detections fetch query |  | False |
+    | IOM fetch query | Use the Falcon Query Language. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
+    | IOA fetch query | In the format: cloud_provider=aws&amp;aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
     | Mirroring Direction | Choose the direction to mirror the detection: Incoming \(from CrowdStrike Falcon to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to CrowdStrike Falcon\), or Incoming and Outgoing \(to/from CrowdStrike Falcon and Cortex XSOAR\). | False |
@@ -27,12 +28,12 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
     | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
     | Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
-    | Reopen Statuses | Crowdsrike Falcon statuses that will reopen an incident in XSOAR if closed. You can choose any combination. | False |
+    | Reopen Statuses | CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination. | False |
     | Incidents Fetch Interval |  | False |
-    | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
-
+    | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ### Required API client scope
 
@@ -4293,15 +4294,15 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | filter | Limit the vulnerabilities returned to specific properties. Each value must be enclosed in single quotes and placed immediately after the colon with no space. For example, 'filter=status:'open'+cve.id:['CVE-2013-3900','CVE-2021-1675']'. | Optional | 
-| aid | Unique agent identifier (AID) of a sensor. | Optional | 
-| cve_id | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
-| cve_severity | Severity of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional | 
-| tags | Name of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional | 
+| aid | A comma-separated list of unique agent identifiers (AIDs) of a sensor. | Optional | 
+| cve_id | A comma-separated list of unique identifiers for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
+| cve_severity | A comma-separated list of severities of the CVE. The possible values are: CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN, or NONE. | Optional | 
+| tags | A comma-separated list of names of a tag assigned to a host. Retrieve tags from Host Tags APIs. | Optional | 
 | status | Status of a vulnerability. This filter supports multiple values and negation. The possible values are: open, closed, reopen, expired. | Optional | 
 | platform_name | Operating system platform. This filter supports negation. The possible values are: Windows, Mac, Linux. | Optional | 
-| host_group | Unique system-assigned ID of a host group. Retrieve the host group ID from Host Group APIs. | Optional | 
-| host_type | Type of host a sensor is running on. | Optional | 
-| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days you want to look back. Example- last_seen_within:10. | Optional | 
+| host_group | A comma-separated list of unique system-assigned IDs of a host group. Retrieve the host group ID from Host Group APIs. | Optional | 
+| host_type | A comma-separated list of types of hosts a sensor is running on. | Optional | 
+| last_seen_within | Filter for vulnerabilities based on the number of days since a host last connected to CrowdStrike Falcon. Enter a numeric value from 3 to 45 to indicate the number of days  to look back. For example, last_seen_within:10. | Optional | 
 | is_suppressed | Indicates if the vulnerability is suppressed by a suppression rule. Possible values are: true, false. | Optional | 
 | display_remediation_info | Display remediation information type of data to be returned for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
 | display_evaluation_logic_info | Whether to return logic information type of data for each vulnerability entity. Possible values are: True, False. Default is True. | Optional | 
@@ -4328,7 +4329,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | CrowdStrike.Vulnerability.host_info.os_build | String | Operating system build. | 
 | CrowdStrike.Vulnerability.host_info.product_type_desc | String | Type of host a sensor is running on. | 
 | CrowdStrike.Vulnerability.host_info.local_ip | String | Device's local IP address. | 
-| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active Directory domain name. | 
+| CrowdStrike.Vulnerability.host_info.machine_domain | String | Active directory domain name. | 
 | CrowdStrike.Vulnerability.host_info.os_version | String | Operating system version. | 
 | CrowdStrike.Vulnerability.host_info.ou | String | Active directory organizational unit name. | 
 | CrowdStrike.Vulnerability.host_info.site_name | String | Active directory site name. | 
@@ -4417,6 +4418,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
     ]
 }
 ```
+#### Human Readable Output
 
 | CVE ID | CVE Severity | CVE Base Score | CVE Published Date | CVE Impact Score | CVE Exploitability Score | CVE Vector | 
 | --- | --- | --- | --- | --- | --- |  --- |
@@ -4529,9 +4531,10 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | CVE ID | Host Info hostname | Host Info os Version | Host Info Product Type Desc | Host Info Local IP | Host Info ou | Host Info Machine Domain | Host Info Site Name | CVE Exploitability Score | CVE Vector |
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
-
+ 
 ### cve
 
+***
 Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
 
 #### Base Command
@@ -4542,8 +4545,8 @@ Retrieve vulnerability details according to the selected filter. Each request re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_id | Deprecated. Use cve instead. | Optional |
-| cve | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation | Optional |
+| cve_id | Deprecated. Use cve instead. | Optional | 
+| cve | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
 
 #### Command example
 
@@ -4772,24 +4775,17 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 
 #### Base Command
 
-### cs-falcon-search-ml-exclusion
-
-***
-Get a list of ML exclusions by specifying their IDs, value, or a specific filter.
-
-#### Base Command
-
 `cs-falcon-search-ml-exclusion`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: <https://www.falconpy.io/Service-Collections/Falcon-Query-Language>. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: value:'test'.<br/> Available filters: applied_globally, created_by, created_on, last_modified, modified_by, value.<br/> For more information, see: https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql. | Optional | 
 | value | The value by which the exclusions should be filtered. | Optional | 
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and value. | Optional | 
-| limit | The maximum number of records to return. [1-500]. Applies only if the IDs argument is not supplied. | Optional | 
-| offset | The offset to start retrieving records from. Applies only if the IDs argument is not supplied. | Optional | 
+| limit | The maximum number of records to return. [1-500]. Applies only if the ids argument is not supplied. | Optional | 
+| offset | The offset to start retrieving records from. Applies only if the ids argument is not supplied. | Optional | 
 | sort | How to sort the retrieved exclusions. Possible values are: applied_globally.asc, applied_globally.desc, created_by.asc, created_by.desc, created_on.asc, created_on.desc, last_modified.asc, last_modified.desc, modified_by.asc, modified_by.desc, value.asc, value.desc. | Optional | 
 
 #### Context Output
@@ -4801,11 +4797,11 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 | CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
 | CrowdStrike.MLExclusion.value_hash | String | A hash of the value field. | 
 | CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
-| CrowdStrike.MLExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.MLExclusion.groups.id | String | Group ID that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.group_type | String | Group type that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.name | String | Group name that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.description | String | Group description that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.assignment_rule | String | Group assignment rule that the exclusion is associated with. | 
 | CrowdStrike.MLExclusion.groups.created_by | String | Indicate who created the group. | 
 | CrowdStrike.MLExclusion.groups.created_timestamp | Date | The date when the group was created. | 
 | CrowdStrike.MLExclusion.groups.modified_by | String | Indicate who last modified the group. | 
@@ -4882,7 +4878,7 @@ Create an IOA exclusion.
 | pattern_name | Name of the exclusion pattern. | Optional | 
 | pattern_id | ID of the exclusion pattern. | Required | 
 | cl_regex | Command line regular expression. | Required | 
-| ifn_regex | Image file name regular expression. | Required | 
+| ifn_regex | Image filename regular expression. | Required | 
 | comment | Comment describing why the exclusions were created. | Optional | 
 | description | Exclusion description. | Optional | 
 | detection_json | JSON formatted detection template. | Optional | 
@@ -5107,11 +5103,11 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'` for example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: <https://www.falconpy.io/Service-Collections/Falcon-Query-Language>. | Optional | 
+| filter | A custom filter by which the exclusions should be filtered.<br/> The syntax follows the pattern `&lt;property&gt;:[operator]'&lt;value&gt;'`. For example: name:'test'.<br/> Available filters: applied_globally, created_by, created_on, name, last_modified, modified_by, value, pattern.<br/> For more information, see: https://www.falconpy.io/Service-Collections/Falcon-Query-Language. | Optional | 
 | name | The name by which the exclusions should be filtered. | Optional | 
 | ids | A comma-separated list of exclusion IDs to retrieve. The IDs overwrite the filter and name. | Optional | 
-| limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the IDs argument is not supplied. | Optional | 
-| offset | The offset of how many exclusions to skip. Default is 0. Applies only if the IDs argument is not supplied. | Optional | 
+| limit | The limit of how many exclusions to retrieve. Default is 50. Applies only if the ids argument is not supplied. | Optional | 
+| offset | The offset of how many exclusions to skip. Default is 0. Applies only if the ids argument is not supplied. | Optional | 
 
 #### Context Output
 
@@ -5122,14 +5118,14 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 | CrowdStrike.IOAExclusion.description | String | A description of the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
-| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
+| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for filename matching. | 
 | CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
 | CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
-| CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.IOAExclusion.groups.id | String | Group ID that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.group_type | String | Group type that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.name | String | Group name that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.description | String | Group description that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Group assignment rule that the exclusion is associated with. | 
 | CrowdStrike.IOAExclusion.groups.created_by | String | Indicate who created the group. | 
 | CrowdStrike.IOAExclusion.groups.created_timestamp | Date | The date when the group was created. | 
 | CrowdStrike.IOAExclusion.groups.modified_by | String | Indicate who last modified the group. | 
@@ -5192,7 +5188,7 @@ Get quarantine file metadata by specified IDs or filter.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | ids | A comma-separated list of quarantined file IDs to retrieve. | Optional | 
-| filter | A custom filter by which the retrieve quarantined file should be filtered. | Optional | 
+| filter | A custom filter by which the retrieved quarantined file should be filtered. | Optional | 
 | sha256 | A comma-separated list of SHA256 hash of the files to retrieve. | Optional | 
 | filename | A comma-separated list of the name of the files to retrieve. | Optional | 
 | state | Filter the retrieved files by state. | Optional | 
@@ -5207,7 +5203,7 @@ Get quarantine file metadata by specified IDs or filter.
 | --- | --- | --- |
 | CrowdStrike.QuarantinedFile.id | String | A unique identifier for the quarantined file. | 
 | CrowdStrike.QuarantinedFile.aid | String | The agent identifier of the agent that quarantined the file. | 
-| CrowdStrike.QuarantinedFile.cid | String | The unique identifier for the customer that who the agent. | 
+| CrowdStrike.QuarantinedFile.cid | String | The unique customer identifier of the agent that quarantined the file. | 
 | CrowdStrike.QuarantinedFile.sha256 | String | The SHA256 hash value of the quarantined file. | 
 | CrowdStrike.QuarantinedFile.paths.path | String | The full path of the quarantined file. | 
 | CrowdStrike.QuarantinedFile.paths.filename | String | The name of the quarantined file. | 
@@ -5265,7 +5261,7 @@ Get quarantine file metadata by specified IDs or filter.
 ### cs-falcon-apply-quarantine-file-action
 
 ***
-Apply action to quarantined file by file IDs or filter.
+Apply action to quarantined files by file IDs or filter.
 
 #### Base Command
 
@@ -5279,11 +5275,11 @@ Apply action to quarantined file by file IDs or filter.
 | action | Action to perform against the quarantined file. Possible values are: delete, release, unrelease. | Required | 
 | comment | Comment to appear along with the action taken. | Required | 
 | filter | Update files based on a custom filter. | Optional | 
-| sha256 | A comma-separated list of quarantined files SHA256 to update. | Optional | 
-| filename | A comma-separated list of quarantined file names to update. | Optional | 
+| sha256 | A comma-separated list of quarantined SHA256 files to update. | Optional | 
+| filename | A comma-separated list of quarantined filenames to update. | Optional | 
 | state | Update files based on the state. | Optional | 
 | hostname | A comma-separated list of quarantined file hostnames to update. | Optional | 
-| username | A comma-separated list of quarantined files username to update. | Optional | 
+| username | A comma-separated list of quarantined file usernames to update. | Optional | 
 
 #### Context Output
 
@@ -5316,12 +5312,13 @@ Retrieve ODS scan details.
 | initiated_from | Comma-separated list of scan initiation sources to filter by. | Optional | 
 | status | Comma-separated list of scan statuses to filter by. | Optional | 
 | severity | Comma-separated list of scan severities to filter by. | Optional | 
-| scan_started_on | UTC-format time of scan start to filter by. | Optional | 
-| scan_completed_on | UTC-format time of the scan completion to filter by. | Optional | 
+| scan_started_on | UTC-format of the scan start time to filter by. | Optional | 
+| scan_completed_on | UTC-format of the scan completion time to filter by. | Optional | 
 | offset | Starting index of overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
 | interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
 | timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| hide_polling_output | Whether to hide the polling message and only print the final status at the end (automatically filled by polling. Can be used for testing purposes). Default is True. | Optional | 
 
 #### Context Output
 
@@ -5350,7 +5347,7 @@ Retrieve ODS scan details.
 | CrowdStrike.ODSScan.metadata.last_updated | Date | The date and time that the metadata was last updated. | 
 | CrowdStrike.ODSScan.status | String | The status of the scan \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
-| CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
+| CrowdStrike.ODSScan.endpoint_notification | Boolean | Indicates whether endpoint notifications are enabled. | 
 | CrowdStrike.ODSScan.pause_duration | Number | The number of hours to pause between scanning each file. | 
 | CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in hours. | 
 | CrowdStrike.ODSScan.max_file_size | Number | The maximum file size \(in MB\) to scan. | 
@@ -5535,9 +5532,9 @@ Retrieve ODS scheduled scan details.
 | ids | Comma-separated list of scan IDs to retrieve details about. If set, will override all other arguments. | Optional | 
 | initiated_from | Comma-separated list of scan initiation sources to filter by. | Optional | 
 | status | Comma-separated list of scan statuses to filter by. | Optional | 
-| created_on | UTC-format time of scan creation to filter by. | Optional | 
-| created_by | UTC-format time of scan creator to filter by. | Optional | 
-| start_timestamp | UTC-format time of scan start to filter by. | Optional | 
+| created_on | UTC-format of the scan creation time to filter by. | Optional | 
+| created_by | UTC-format time of the scan creator to filter by. | Optional | 
+| start_timestamp | UTC-format of scan start time to filter by. | Optional | 
 | deleted | Deleted scans only. | Optional | 
 | offset | Starting index of overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
@@ -5558,7 +5555,7 @@ Retrieve ODS scheduled scan details.
 | CrowdStrike.ODSScheduledScan.host_groups | String | The host groups targeted by the scan. | 
 | CrowdStrike.ODSScheduledScan.endpoint_notification | Boolean | Whether notifications of the scan were sent to endpoints. | 
 | CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of the scan in hours. | 
-| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of the scan in hours. | 
+| CrowdStrike.ODSScheduledScan.max_duration | Number | The maximum duration of the scan in hours. | 
 | CrowdStrike.ODSScheduledScan.max_file_size | Number | The maximum file size that the scan can handle in MB. | 
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_detection | Number | The machine learning detection level for the sensor. | 
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_detection | Number | The machine learning detection level for the cloud. | 
@@ -5567,7 +5564,7 @@ Retrieve ODS scheduled scan details.
 | CrowdStrike.ODSScheduledScan.created_on | Date | The timestamp when the scan was created. | 
 | CrowdStrike.ODSScheduledScan.created_by | String | The user who created the scan. | 
 | CrowdStrike.ODSScheduledScan.last_updated | Date | The timestamp when the scan was last updated. | 
-| CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan has been deleted. | 
+| CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan was deleted. | 
 | CrowdStrike.ODSScheduledScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
 | CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
@@ -5689,9 +5686,9 @@ Retrieve ODS scan host details.
 | host_ids | Comma-separated list of host IDs to filter by. | Optional | 
 | scan_ids | Comma-separated list of scan IDs to filter by. | Optional | 
 | status | Comma-separated list of scan statuses to filter by. | Optional | 
-| started_on | UTC-format time of scan start to filter by. | Optional | 
-| completed_on | UTC-format time of scan completion to filter by. | Optional | 
-| offset | Starting index of overall result set from which to return IDs. | Optional | 
+| started_on | UTC-format of scan start time to filter by. | Optional | 
+| completed_on | UTC-format of scan completion time to filter by. | Optional | 
+| offset | Starting index of the overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
 
 #### Context Output
@@ -5710,8 +5707,8 @@ Retrieve ODS scan host details.
 | CrowdStrike.ODSScanHost.filecount.skipped | Number | The number of files that were skipped during the scan. | 
 | CrowdStrike.ODSScanHost.status | String | The status of the scan. \(e.g., "completed", "pending", "cancelled", "running", or "failed"\). | 
 | CrowdStrike.ODSScanHost.severity | Number | A severity score assigned to the scan, ranging from 0 to 100. | 
-| CrowdStrike.ODSScanHost.started_on | Date | The date and time when the scan was started. | 
-| CrowdStrike.ODSScanHost.completed_on | Date | The date and time when the scan was completed. | 
+| CrowdStrike.ODSScanHost.started_on | Date | The date and time when the scan started. | 
+| CrowdStrike.ODSScanHost.completed_on | Date | The date and time when the scan completed. | 
 | CrowdStrike.ODSScanHost.last_updated | Date | The date and time when the scan event was last updated. | 
 
 #### Command example
@@ -5785,9 +5782,9 @@ Retrieve ODS malicious file details.
 | host_ids | Comma-separated list of host IDs to filter by. | Optional | 
 | scan_ids | Comma-separated list of scan IDs to filter by. | Optional | 
 | file_paths | Comma-separated list of file paths to filter by. | Optional | 
-| file_names | Comma-separated list of file names to filter by. | Optional | 
+| file_names | Comma-separated list of filenames to filter by. | Optional | 
 | hash | Comma-separated list of hashes to filter by. | Optional | 
-| offset | Starting index of overall result set from which to return IDs. | Optional | 
+| offset | Starting index of the overall result set from which to return IDs. | Optional | 
 | limit | Maximum number of resources to return. | Optional | 
 
 #### Context Output
@@ -5801,10 +5798,10 @@ Retrieve ODS malicious file details.
 | CrowdStrike.ODSMaliciousFile.host_scan_id | String | A unique identifier for the scan that detected the file on the host. | 
 | CrowdStrike.ODSMaliciousFile.filepath | String | The full path to the malicious file on the host system. | 
 | CrowdStrike.ODSMaliciousFile.filename | String | The name of the malicious file. | 
-| CrowdStrike.ODSMaliciousFile.hash | String | A SHA-256 hash of the malicious file, which can be used to identify it. | 
+| CrowdStrike.ODSMaliciousFile.hash | String | A SHA256 hash of the malicious file, which can be used to identify it. | 
 | CrowdStrike.ODSMaliciousFile.pattern_id | Number | The identifier of the pattern used to detect the malicious file. | 
 | CrowdStrike.ODSMaliciousFile.severity | Number | A severity score assigned to the detection event, ranging from 0 to 100. | 
-| CrowdStrike.ODSMaliciousFile.quarantined | Boolean | A Boolean value indicating whether the file has been quarantined. | 
+| CrowdStrike.ODSMaliciousFile.quarantined | Boolean | Indicates whether the file was quarantined. | 
 | CrowdStrike.ODSMaliciousFile.last_updated | Date | The date and time when the detection event was last updated. | 
 
 #### Command example
@@ -5818,7 +5815,7 @@ Retrieve ODS malicious file details.
 ### cs-falcon-ods-create-scan
 
 ***
-Create an ODS scan and wait for results.
+Create an ODS scan and wait for the results.
 
 #### Base Command
 
@@ -5828,13 +5825,13 @@ Create an ODS scan and wait for results.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hosts | List of hosts to be scanned. "hosts" OR "host_groups" must be set. | Optional | 
-| host_groups | List of host groups to be scanned. "hosts" OR "host_groups" must be set. | Optional | 
-| file_paths | List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
-| scan_inclusions | List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
-| scan_exclusions | List of excluded files or locations for this scan. | Optional | 
+| hosts | A comma-separated list of hosts to be scanned. "hosts" OR "host_groups" must be set. | Optional | 
+| host_groups | A comma-separated list of host groups to be scanned. "hosts" OR "host_groups" must be set. | Optional | 
+| file_paths | A comma-separated list of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_inclusions | A comma-separated list of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_exclusions | A comma-separated list of excluded files or locations for this scan. | Optional | 
 | initiated_from | Scan origin. | Optional | 
-| cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
+| cpu_priority | The scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
 | description | Scan description. | Optional | 
 | quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
 | pause_duration | Amount of time (in hours) for scan pauses. Default is 2. | Optional | 
@@ -5873,7 +5870,7 @@ Create an ODS scan and wait for results.
 | CrowdStrike.ODSScan.metadata.last_updated | Date | The date and time that the metadata was last updated. | 
 | CrowdStrike.ODSScan.status | String | The status of the scan \(e.g., "pending", "running", "completed", or "failed"\). | 
 | CrowdStrike.ODSScan.hosts | String | A list of the host IDs that were scanned. | 
-| CrowdStrike.ODSScan.endpoint_notification | Boolean | A boolean value indicating whether endpoint notifications are enabled. | 
+| CrowdStrike.ODSScan.endpoint_notification | Boolean | Indicates whether endpoint notifications are enabled. | 
 | CrowdStrike.ODSScan.pause_duration | Number | The number of hours to pause between scanning each file. | 
 | CrowdStrike.ODSScan.max_duration | Number | The maximum amount of time to allow for the scan job in hours. | 
 | CrowdStrike.ODSScan.max_file_size | Number | The maximum file size \(in MB\) to scan. | 
@@ -5975,12 +5972,12 @@ Create an ODS scheduled scan.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_groups | List of host groups to be scanned. | Required | 
-| file_paths | List of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
-| scan_inclusions | List of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
-| scan_exclusions | List of excluded files or locations for this scan. | Optional | 
+| host_groups | A comma-separated list of host groups to be scanned. | Required | 
+| file_paths | A comma-separated list of file paths to be scanned. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_inclusions | A comma-separated list of included files or locations for this scan. "file_paths" OR "scan_inclusions" must be set. | Optional | 
+| scan_exclusions | A comma-separated list of excluded files or locations for this scan. | Optional | 
 | initiated_from | Scan origin. | Optional | 
-| cpu_priority | Set the scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
+| cpu_priority | The scan CPU priority. Possible values are: Highest, High, Medium, Low, Lowest. Default is Low. | Optional | 
 | description | Scan description. | Optional | 
 | quarantine | Flag indicating if identified threats should be quarantined. | Optional | 
 | pause_duration | Amount of time (in hours) for scan pauses. Default is 2. | Optional | 
@@ -5989,8 +5986,8 @@ Create an ODS scheduled scan.
 | cloud_ml_level_detection | Cloud ML detection level for the scan. | Optional | 
 | cloud_ml_level_prevention | Cloud ML prevention level for the scan. | Optional | 
 | max_duration | Maximum time (in hours) the scan is allowed to execute. Default is 2. | Optional | 
-| schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tommorow" or "in an hour". | Required | 
-| schedule_interval | Set the schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required | 
+| schedule_start_timestamp | When to start the first scan. Supports english expressions such as "tomorrow" or "in an hour". | Required | 
+| schedule_interval | The schedule interval. Possible values are: Never, Daily, Weekly, Every other week, Every four weeks, Monthly. | Required | 
 
 #### Context Output
 
@@ -6007,8 +6004,8 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.status | String | The status of the scan, whether it's "scheduled", "running", "completed", etc. | 
 | CrowdStrike.ODSScheduledScan.host_groups | String | The host groups targeted by the scan. | 
 | CrowdStrike.ODSScheduledScan.endpoint_notification | Boolean | Whether notifications of the scan were sent to endpoints. | 
-| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of scan in hours. | 
-| CrowdStrike.ODSScheduledScan.max_duration | Number | The max duration of scan in hours. | 
+| CrowdStrike.ODSScheduledScan.pause_duration | Number | The pause duration of the scan in hours. | 
+| CrowdStrike.ODSScheduledScan.max_duration | Number | The maximum duration of the scan in hours. | 
 | CrowdStrike.ODSScheduledScan.max_file_size | Number | The maximum file size that the scan can handle in MB. | 
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_detection | Number | The machine learning detection level for the sensor. | 
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_detection | Number | The machine learning detection level for the cloud. | 
@@ -6017,12 +6014,12 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.created_on | Date | The timestamp when the scan was created. | 
 | CrowdStrike.ODSScheduledScan.created_by | String | The user who created the scan. | 
 | CrowdStrike.ODSScheduledScan.last_updated | Date | The timestamp when the scan was last updated. | 
-| CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan has been deleted. | 
+| CrowdStrike.ODSScheduledScan.deleted | Boolean | Whether the scan was deleted. | 
 | CrowdStrike.ODSScheduledScan.quarantine | Boolean | Whether the scan was set to quarantine. | 
 | CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
-| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
+| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. |
 
 #### Command example
 
@@ -6170,13 +6167,13 @@ List identity entities.
 | type | API type. Possible values are: USER, ENDPOINT. | Required | 
 | sort_key | The key to sort by. Possible values are: RISK_SCORE, PRIMARY_DISPLAY_NAME, SECONDARY_DISPLAY_NAME, MOST_RECENT_ACTIVITY, ENTITY_ID. | Optional | 
 | sort_order | The sort order. Possible values are: DESCENDING, ASCENDING. Default is ASCENDING. | Optional | 
-| entity_id | Comma separated list of entity IDs to look for. | Optional | 
-| primary_display_name | Primary display name to filter by. | Optional | 
-| secondary_display_name | Secondary display name to filter by. | Optional | 
+| entity_id | A comma-separated list of entity IDs to look for. | Optional | 
+| primary_display_name | A comma-separated list of primary display names to filter by. | Optional | 
+| secondary_display_name | A comma-separated list of secondary display names to filter by. | Optional | 
 | max_risk_score_severity | The maximum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional | 
 | min_risk_score_severity | The minimum risk score severity to filter by. Possible values are: NORMAL, MEDIUM, HIGH. | Optional | 
 | enabled | Whether to get only enabled or disabled identity entities. Possible values are: true, false. | Optional | 
-| email | Filter by email. | Optional | 
+| email | Email to filter by. | Optional | 
 | next_token | The hash for the next page. | Optional | 
 | page_size | The maximum number of items to fetch per page. The maximum value allowed is 1000. Default is 50. | Optional | 
 | page | The page number. Default is 1. | Optional | 
@@ -6383,7 +6380,7 @@ Returns information about current policy settings.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | The policy ID to look for its settings. | Optional | 
+| policy_id | The policy ID. | Optional | 
 | cloud_platform | The cloud provider. Possible values are: aws, gcp, azure. Default is aws. | Optional | 
 | service | Service type to filter by. | Optional | 
 | limit | The maximum number of entities to list. Default is 50. | Optional | 
@@ -6408,7 +6405,7 @@ Returns information about current policy settings.
 | CrowdStrike.CSPMPolicySetting.policy_timestamp | Date | The policy timestamp. | 
 | CrowdStrike.CSPMPolicySetting.policy_settings | Array | An array that holds policy settings. | 
 | CrowdStrike.CSPMPolicySetting.policy_settings.account_id | String | The account ID correlated to the policy. | 
-| CrowdStrike.CSPMPolicySetting.policy_settings.regions | Array | The regions in which the policy is configured at. | 
+| CrowdStrike.CSPMPolicySetting.policy_settings.regions | Array | The regions in which the policy is configured. | 
 | CrowdStrike.CSPMPolicySetting.policy_settings.severity | String | The severity of the policy. | 
 | CrowdStrike.CSPMPolicySetting.policy_settings.enabled | Boolean | Whether the policy settings are enabled or not. | 
 | CrowdStrike.CSPMPolicySetting.policy_settings.tag_excluded | Boolean | Whether the tag is excluded or not. | 
@@ -6622,13 +6619,13 @@ Perform actions on identity detection alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | IDs of the alerts to update. | Required | 
+| ids | A comma-separated list of IDs of the alerts to update. | Required | 
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
 | add_tag | Add a tag to the specified detections. | Optional | 
 | remove_tag | Remove a tag from the specified detections. | Optional | 
-| update_status | Update status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
 | unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
 | show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
 
@@ -6657,10 +6654,10 @@ List users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID(s) of specific users to list. | Optional | 
-| filter | The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid. | Optional | 
+| id | A comma-separated list of IDs (UUIDs) of specific users to list. | Optional | 
+| filter | The filter expression that should be used to limit the results. FQL syntax. Available values: assigned_cids, cid, first_name, last_name, name, uid. Example: "first_name:'John'". | Optional | 
 | offset | The integer offset to start retrieving records from. | Optional | 
-| limit | The maximum number of records to return. Default is 100. | Optional | 
+| limit | The maximum number of records to return. Default is 50. | Optional | 
 
 #### Context Output
 
@@ -6677,7 +6674,7 @@ List users.
 ### cs-falcon-get-incident-behavior
 
 ***
-Get incident behavior information
+Get incident behavior information.
 
 #### Base Command
 
@@ -6687,7 +6684,7 @@ Get incident behavior information
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| behavior_ids | ID(s) of behaviors to list. Behavior IDs can be retrieved by running the 'cs-falcon-get-detections-for-incident' command. | Required | 
+| behavior_ids | A comma-separated list of ID(s) of behaviors to list. Behavior IDs can be retrieved by running the 'cs-falcon-get-detections-for-incident' command. | Required | 
 
 #### Context Output
 
@@ -6728,20 +6725,20 @@ Get incident behavior information
 | CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_process | Boolean | Whether the process was suspended. | 
 | CrowdStrike.IncidentBehavior.pattern_disposition_details.suspend_parent | Boolean | Whether the parent was suspended. | 
 | CrowdStrike.IncidentBehavior.sha256 | String | The SHA256 hash. | 
-| CrowdStrike.IncidentBehavior.user_name | String | The user name. | 
+| CrowdStrike.IncidentBehavior.user_name | String | The username. | 
 | CrowdStrike.IncidentBehavior.tactic | String | The tactic used. | 
 | CrowdStrike.IncidentBehavior.tactic_id | String | The tactic ID. | 
 | CrowdStrike.IncidentBehavior.technique | String | The technique used. | 
 | CrowdStrike.IncidentBehavior.technique_id | String | The technique ID. | 
 | CrowdStrike.IncidentBehavior.display_name | String | The display name. | 
 | CrowdStrike.IncidentBehavior.objective | String | The objective. | 
-| CrowdStrike.IncidentBehavior.compound_tto | String | The compound TTO. | 
+| CrowdStrike.IncidentBehavior.compound_tto | String | The compound Time to Operate \(TTO\). | 
 
 
 ### cs-falcon-get-ioarules
 
 ***
-Get IOA Rules for Custom IOA rule triggered detections
+Get IOA Rules.
 
 #### Base Command
 
@@ -6751,35 +6748,35 @@ Get IOA Rules for Custom IOA rule triggered detections
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_ids | ID(s) of rules to list. Rule IDs can be retrieved by combining cid and rule_instance_id from 'cs-falcon-list-detection-summaries' output using this format cid:rule_instance_id. Example: 1123casdcccxxaafq13fdasf:2003 | Required | 
+| rule_ids | A comma-separated list of rule IDs to get IOA rules for. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.IOARules.instance_id | String | The IOA Rule's Instance ID. | 
+| CrowdStrike.IOARules.instance_id | String | The IOA rule's instance ID. | 
 | CrowdStrike.IOARules.customer_id | String | The customer ID. | 
-| CrowdStrike.IOARules.action_label | String | The IOA Rule's Action Label. | 
-| CrowdStrike.IOARules.comment | String | The IOA Rule's Comment.. | 
-| CrowdStrike.IOARules.committed_on | String | The timestamp of the IOA Rule's commitment. | 
-| CrowdStrike.IOARules.created_by | String | The IOA Rule's creator. | 
-| CrowdStrike.IOARules.created_on | String | The timestamp of the IOA Rule's creation. | 
-| CrowdStrike.IOARules.deleted | Boolean | Whether the IOA Rule is in deleted status. | 
-| CrowdStrike.IOARules.description | String | The IOA Rule's Description. | 
-| CrowdStrike.IOARules.disposition_id | String | The Disposition ID used by the IOA Rule. | 
-| CrowdStrike.IOARules.enabled | Boolean | Whether the IOA Rule is enabled. | 
-| CrowdStrike.IOARules.field_values | String | The IOA Rule's field values. | 
-| CrowdStrike.IOARules.instance_version | String | The IOA Rule's Instance Version. | 
-| CrowdStrike.IOARules.magic_cookie | String | The IOA Rule's Magic Cookie. | 
-| CrowdStrike.IOARules.modified_by | String | The IOA Rule's last modified user.
-| CrowdStrike.IOARules.modified_on| String | The timestamp of the IOA Rule's last modification. | 
-| CrowdStrike.IOARules.name | String | The IOA Rule Name. | 
-| CrowdStrike.IOARules.pattern_id | String | The IOA Rule's Pattern ID. | 
-| CrowdStrike.IOARules.pattern_severity | String | The IOA Rule's Pattern Severity. | 
-| CrowdStrike.IOARules.rulegroup_id | String | The IOA Rule's Rule Group ID. | 
-| CrowdStrike.IOARules.ruletype_id | String | The IOA Rule's Rule Type ID. | 
-| CrowdStrike.IOARules.ruletype_name | String | The IOA Rule's Rule Type Name. | 
-| CrowdStrike.IOARules.version_ids | String | The IOA Rule's Version ID. | 
+| CrowdStrike.IOARules.action_label | String | The IOA rule's action label. | 
+| CrowdStrike.IOARules.comment | String | The IOA rule's comment. | 
+| CrowdStrike.IOARules.committed_on | String | The timestamp of the IOA rule's commitment. | 
+| CrowdStrike.IOARules.created_by | String | The IOA rule's creator. | 
+| CrowdStrike.IOARules.created_on | String | The timestamp of the IOA rule's creation. | 
+| CrowdStrike.IOARules.deleted | Boolean | Whether the IOA rule is in a deleted status. | 
+| CrowdStrike.IOARules.description | String | The IOA rule's description. | 
+| CrowdStrike.IOARules.disposition_id | String | The disposition ID used by the IOA rule. | 
+| CrowdStrike.IOARules.enabled | Boolean | Whether the IOA rule is enabled. | 
+| CrowdStrike.IOARules.field_values | String | The IOA rule's field values. | 
+| CrowdStrike.IOARules.instance_version | String | The IOA rule's instance version. | 
+| CrowdStrike.IOARules.magic_cookie | String | The IOA rule's magic cookie. | 
+| CrowdStrike.IOARules.modified_by | String | The last user who modified the IOA rule. | 
+| CrowdStrike.IOARules.modified_on | String | The timestamp of the IOA rule's last modification. | 
+| CrowdStrike.IOARules.name | String | The IOA rule name. | 
+| CrowdStrike.IOARules.pattern_id | String | The IOA rule's pattern ID. | 
+| CrowdStrike.IOARules.pattern_severity | String | The IOA rule's pattern severity. | 
+| CrowdStrike.IOARules.rulegroup_id | String | The IOA rule's rule group ID. | 
+| CrowdStrike.IOARules.ruletype_id | String | The IOA rule's rule type ID. | 
+| CrowdStrike.IOARules.ruletype_name | String | The IOA rule's rule type name. | 
+| CrowdStrike.IOARules.version_ids | String | The IOA rule's version ID. | 
 
 ### cs-falcon-resolve-mobile-detection
 
@@ -6794,13 +6791,13 @@ Perform actions on mobile detection alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | IDs of the alerts to update. | Required | 
+| ids | A comma-separated list of IDs of the alerts to update. | Required | 
 | assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
 | assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
 | append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
 | add_tag | Add a tag to the specified detections. | Optional | 
 | remove_tag | Remove a tag from the specified detections. | Optional | 
-| update_status | Update status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
 | unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
 | show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
 
