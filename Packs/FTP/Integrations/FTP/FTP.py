@@ -6,39 +6,42 @@ from ftplib import FTP
 
 """ MAIN """
 
-
 def main():
     HOST = demisto.params().get('host')
-    USER = demisto.params().get('user')
+    PORT = demisto.params().get('port') if demisto.params().get('port') else '21'
+    USER =  demisto.params().get('user')
     PASSWD = demisto.params().get('passwd')
 
     if demisto.command() == "test-module":
         try:
-            with FTP(HOST) as ftp:
+            with FTP() as ftp:
+                ftp.connect(host=HOST,port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 ftp.voidcmd('NOOP')
 
             demisto.results("ok")
         except Exception as excp:
-            demisto.error(traceback.format_exc())
             return_error(f"Error occurred - Error: {str(excp)}")
 
     if demisto.command() == "ftp-ls":
         path = demisto.args().get('path')
         list_path = path if path else '~/'
         try:
-            with FTP(HOST) as ftp:
+            with FTP() as ftp:
+                ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
-                demisto.results({
+                outputs = {
                     'ContentsFormat': formats["markdown"],
                     'Type': entryTypes["note"],
                     'ReadableContentsFormat': formats['markdown'],
                     'Contents': ftp.nlst(f"{list_path}"),
                     'HumanReadable': tableToMarkdown("Files and Folders", {'Files and Folders': ftp.nlst(f'{list_path}')})
-                })
+                }
+                return_results(outputs)
 
+        except IndexError:
+            return_results("There is no file or folder")
         except Exception as excp:
-            demisto.error(traceback.format_exc())
             return_error(f"Error occurred - Error: {str(excp)}")
 
     if demisto.command() == "ftp-put":
@@ -46,16 +49,16 @@ def main():
         target = demisto.args().get('target')
 
         try:
-            with FTP(HOST) as ftp:
+            with FTP() as ftp:
+                ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 fileObject = demisto.getFilePath(entry_id)
                 with open(fileObject['path'], 'rb') as file:
                     ftp.storbinary(f'STOR {target}/{fileObject["name"]}', file)
 
-            demisto.results(f'File uploaded to {target}/{fileObject["name"]} successfully')
+            return_results(f'File uploaded to {target}/{fileObject["name"]} successfully')
 
         except Exception as excp:
-            demisto.error(traceback.format_exc())
             return_error(f"Error occurred - Error: {str(excp)}")
 
     if demisto.command() == "ftp-get":
@@ -63,20 +66,22 @@ def main():
         file_name = demisto.args().get('file_name')
 
         try:
-            with FTP(HOST) as ftp:
+            with FTP() as ftp:
+                ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 with open(f'/tmp/{file_name}', 'wb') as file:
                     ftp.retrbinary(f'RETR {file_path}/{file_name}', file.write)
 
                 with open(f"/tmp/{file_name}", "r") as f:
                     data = f.read()
-                    demisto.results(
-                        fileResult(filename=file_name, data=data)
+                    return_results(
+                        fileResult(filename = file_name, data = data)
                     )
 
         except Exception as excp:
-            demisto.error(traceback.format_exc())
             return_error(f"Error occurred - Error: {str(excp)}")
+
+
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
