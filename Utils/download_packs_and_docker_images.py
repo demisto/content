@@ -98,7 +98,7 @@ def get_pack_names(pack_display_names: list, id_set_json: dict) -> dict:
 def should_filter_out_pack(pack_data: dict, fields: dict, deprecated: bool = False):
     """
     Check if the pack should be filtered out based on given fields.
-    
+
     Parameters:
     pack_data (dict): The dictionary containing the actual data. Based on id_set.
     fields (dict): The dictionary containing the expected values for certain keys.
@@ -112,9 +112,9 @@ def should_filter_out_pack(pack_data: dict, fields: dict, deprecated: bool = Fal
         return True
 
     return any(pack_data.get(key) != value for key, value in fields.items())
-    
 
-def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: str, verify_ssl: bool, 
+
+def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: str, verify_ssl: bool,
                             all_packs: bool = False) -> None:
     """ Download and save packs under """
     if 'Packs' not in id_set_json:
@@ -127,7 +127,7 @@ def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: st
             if pack_name not in id_set_packs:
                 print(f"\tCouldn't find {pack_d_name} in id_set.json. Skipping pack download.")
                 continue
-            # In case no input is given and we automatically get all packs, we want to get only relevant packs. 
+            # In case no input is given and we automatically get all packs, we want to get only relevant packs.
             if all_packs and should_filter_out_pack(id_set_packs[pack_name], fields={"author": 'Cortex XSOAR'}):
                 print(f"\t{pack_d_name} filtered out. Skipping pack download.")
                 continue
