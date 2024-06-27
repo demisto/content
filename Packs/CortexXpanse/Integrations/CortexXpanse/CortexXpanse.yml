@@ -567,7 +567,7 @@ script:
       required: true
     - name: note_to_add
       required: true
-      description: The custom note to be added to the notes section of the asset in Xpanse.
+      description: The custom note to be added to the notes section of the asset in Cortex Xpanse.
     - name: should_append
       required: false
       auto: PREDEFINED
@@ -575,11 +575,11 @@ script:
       - 'True'
       - 'False'
       defaultValue: true
-      description: "If you would like to overwrite the current note on the asset, set to 'false'. If you would like to append to the current note, set to 'true' (Note: Default value is 'true')."
+      description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. 
     description: Adds a note to an asset in Xpanse.
     outputs:
     - contextPath: ASM.AssetAnnotation.status
-      description: Status of the note being added to the asset in Xpanse.
+      description: Status of the note being added to the asset in Cortex Xpanse.
       type: String
   - name: asm-tag-asset-remove
     arguments:
@@ -601,7 +601,7 @@ script:
       description: 'Comma-separated list of range IDs to remove tags from.'
     - name: tags
       description: The name of the tags to remove from supplied IP ranges.
-    description: 'Removes tags from a list of IP ranges.'
+    description: Removes tags from a list of IP ranges.
   - name: asm-list-incidents
     arguments:
     - name: incident_id_list
@@ -813,25 +813,25 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
-      description: 'The reliability of the source providing the intelligence data.'
+      description: The reliability of the source providing the intelligence data.
       type: String
     - contextPath: IP.Address
       description: IP address.
       type: String
     - contextPath: ASM.TIM.IP.name 
-      description: The existing Xpanse IP address recently updated in XSOAR indicators.
+      description: The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.indicator_type
-      description: The existing Xpanse indicator type in XSOAR indicators.
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.id  
-      description: The existing indicator ID in XSOAR indicators.
+      description: The existing indicator ID in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.reliability 
-      description: The existing indicator reliability recently updated in XSOAR indicators.
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.IP.score
-      description: The existing indicator score recently updated in XSOAR indicators.
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
       type: Number
     description: Returns enrichment for an IP address.
   - name: domain
@@ -886,19 +886,19 @@ script:
       description: 'The domain name, for example: "google.com".'
       type: String
     - contextPath: ASM.TIM.Domain.name
-      description: The existing Xpanse domain recently updated in XSOAR indicators.
+      description: The existing Cortex Xpanse domain recently updated in XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.Domain.indicator_type 
-      description: The existing Xpanse indicator type in XSOAR indicators  .
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.Domain.id 
-      description: The existing indicator ID in XSOAR indicators  .
+      description: The existing indicator ID in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.Domain.reliability 
-      description: The existing indicator reliability recently updated in XSOAR indicators.
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
       type: String
     - contextPath: ASM.TIM.Domain.score 
-      description: The existing indicator score recently updated in XSOAR indicators.
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
       type: Number
     description: Returns enrichment for a domain.
   - name: asm-get-incident

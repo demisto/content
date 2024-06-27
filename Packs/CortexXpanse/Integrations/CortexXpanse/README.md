@@ -2123,11 +2123,11 @@ Returns reputation lookup for an IP address found in Xpanse.
 | DBotScore.Type            | String   | The vendor used to calculate the score.                                    |
 | DBotScore.Reliability     | String   | Reliability of the source providing the intelligence data.                 |
 | IP.Address                | String   | IP address.                                                                |
-| ASM.TIM.IP.name           | String   | The existing Xpanse IP address recently updated in XSOAR indicators        |
-| ASM.TIM.IP.indicator_type | String   | The existing Xpanse indicator type in XSOAR indicators                     |
-| ASM.TIM.IP.id             | String   | The existing indicator ID in XSOAR indicators                              |
-| ASM.TIM.IP.reliability    | String   | The existing indicator reliability recently updated in XSOAR indicators    |
-| ASM.TIM.IP.score          | Integer  | The existing indicator score recently updated in XSOAR indicators          |
+| ASM.TIM.IP.name           | String   | The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators        |
+| ASM.TIM.IP.indicator_type | String   | The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators                     |
+| ASM.TIM.IP.id             | String   | The existing indicator ID in the Cortex XSOAR indicators                              |
+| ASM.TIM.IP.reliability    | String   | The existing indicator reliability recently updated in the Cortex XSOAR indicators    |
+| ASM.TIM.IP.score          | Integer  | The existing indicator score recently updated in the Cortex XSOAR indicators          |
 
 
 #### Command example
@@ -2136,7 +2136,7 @@ Returns reputation lookup for an IP address found in Xpanse.
 
 #### Context Example
 
-If the Indicator was **not** updated in XSOAR in the last 3 days:
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
 
 ```json
 {
@@ -2212,7 +2212,7 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 }
 ```
 
-If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
 
 ```json
 {
@@ -2230,7 +2230,7 @@ If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 day
 
 #### Human Readable Output
 
-If the Indicator was **not** updated in XSOAR in the last 3 days:
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
 
 > ### Xpanse Discovered IP List
 >
@@ -2238,23 +2238,23 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 > |---|---|---|---|---|---|---|---|---|---|---|---|
 > | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1.1.1.1 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
 
-If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
 
 > ### Xpanse Discovered IP List (Existing Indicators)
 >
-> This domain list is from existing records found in XSOAR within the last 3 days.
-> If you would additional Xpanse specific information about these please use asm-list-asset-internet-exposure.
+> This domain list is from existing records found in Cortex XSOAR within the last 3 days.
+> If you would additional Cortex Xpanse specific information about these, use asm-list-asset-internet-exposure.
 >
 > |id|indicator_type|name|reliability|score|
 > |---|---|---|---|---|
 > | abcd1b2abcd1a0b20c7a8bc5d67e8eea | IP | 1.1.1.2 | A+ - 3rd party enrichment | 0 |
 
-If the Indicator was updated in XSOAR in the last 3 days:
+If the indicator was updated in Cortex XSOAR in the last 3 days:
 
-> ### XSOAR Indicator Discovered IP List (Not Related to Xpanse)
+> ### XSOAR Indicator Discovered IP List (Not Related to Cortex Xpanse)
 > 
-> This IP list is from existing records found in XSOAR within the last 3 days.
-> These IPs have not been found to be attributed to Xpanse`.
+> This IP list is from existing records found in Cortex XSOAR within the last 3 days.
+> These IPs have not been found to be attributed to Cortex Xpanse.
 > 
 > |integrations|name|
 > |---|---|
@@ -2264,7 +2264,7 @@ If the Indicator was updated in XSOAR in the last 3 days:
 ### domain
 
 ***
-Returns reputation lookup for an doamin found in Xpanse
+Returns reputation lookup for an domain found in Cortex Xpanse.
 
 #### Base Command
 
@@ -2297,11 +2297,11 @@ Returns reputation lookup for an doamin found in Xpanse
 | DBotScore.Type                | String   | The vendor used to calculate the score.                                    |
 | DBotScore.Reliability         | String   | Reliability of the source providing the intelligence data.                 |
 | Domain.Name                   | String   | Name of the domain.                                                        |
-| ASM.TIM.Domain.name           | String   | The existing Xpanse domain recently updated in XSOAR indicators            |
-| ASM.TIM.Domain.indicator_type | String   | The existing Xpanse indicator type in XSOAR indicators                     |
-| ASM.TIM.Domain.id             | String   | The existing indicator ID in XSOAR indicators                              |
-| ASM.TIM.Domain.reliability    | String   | The existing indicator reliability recently updated in XSOAR indicators    |
-| ASM.TIM.Domain.score          | Integer  | The existing indicator score recently updated in XSOAR indicators          |
+| ASM.TIM.Domain.name           | String   | The existing Cortex Xpanse domain recently updated in the Cortex XSOAR indicators            |
+| ASM.TIM.Domain.indicator_type | String   | The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators                     |
+| ASM.TIM.Domain.id             | String   | The existing indicator ID in the Cortex XSOAR indicators                              |
+| ASM.TIM.Domain.reliability    | String   | The existing indicator reliability recently updated in the Cortex XSOAR indicators    |
+| ASM.TIM.Domain.score          | Integer  | The existing indicator score recently updated in the Cortex XSOAR indicators          |
 
 #### Command example
 
@@ -2309,7 +2309,7 @@ Returns reputation lookup for an doamin found in Xpanse
 
 #### Context Example
 
-If the Indicator was **not** updated in XSOAR in the last 3 days:
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
 
 ```json
 {
@@ -2384,7 +2384,7 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 }
 ```
 
-If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
 
 ```json
 {
@@ -2402,7 +2402,7 @@ If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 day
 
 #### Human Readable Output
 
-If the Indicator was **not** updated in XSOAR in the last 3 days:
+If the indicator was **not** updated in Cortex XSOAR in the last 3 days:
 
 > ### Xpanse Discovered Domain List
 >
@@ -2410,23 +2410,23 @@ If the Indicator was **not** updated in XSOAR in the last 3 days:
 > |---|---|---|---|---|---|---|---|---|---|---|---|
 > | 4b1f3765-de40-3a1a-8535-667420408fd9 |  | DOMAIN | *.acme.com | admin: {"city": "", "country": "us", "emailAddress": "", "faxExtension": null, "faxNumber": "", "name": "", "organization": "Acme, Inc.", "phoneExtension": null, "phoneNumber": "", "postalCode": "", "province": "AZ", "registryId": null, "street": ""}| 1679457579382 | 1697361335282 | *.acme.com | {'id': '218b3cc9-2d26-3a17-aadd-9eac08cc30ec', 'ip': 52529952, 'ipv6': None, 'source': {'name': 'DOMAIN_RESOLUTION'}, 'provider': {'name': 'AWS', 'additionalProviderInfo': None, 'isCdn': False, 'legacyName': 'AWS', 'displayName': 'Amazon Web Services', 'cdn': False}, 'firstObserved': 1692418207732, 'lastObserved': 1697361335282} | HttpServer | BU:Xpanse VanDelay Demo 3 |
 
-If the Indicator is **related to Xpanse** was updated in XSOAR in the last 3 days:
+If the indicator is **related to Xpanse** was updated in Cortex XSOAR in the last 3 days:
 
 > ### Xpanse Discovered Domain List (Existing Indicators)
 >
-> This domain list is from existing records found in XSOAR within the last 3 days.
-> If you would additional Xpanse specific information about these please use asm-list-asset-internet-exposure.
+> This domain list is from existing records found in Cortex XSOAR within the last 3 days.
+> If you would like additional Cortex Xpanse specific information about these, use asm-list-asset-internet-exposure.
 >
 > |id|indicator_type|name|reliability|score|
 > |---|---|---|---|---|
 > | abcd1b2abcd1a0b20c7a8bc5d67e8eea | Domain | www.example.com | A+ - 3rd party enrichment | 0 |
 
-If the Indicator was updated in XSOAR in the last 3 days:
+If the indicator was updated in Cortex XSOAR in the last 3 days:
 
 > ### XSOAR Indicator Discovered Domain List (Not Related to Xpanse)
 > 
-> This domain list is from existing records found in XSOAR within the last 3 days.
-> These domains have not been found to be attributed to Xpanse`.
+> This domain list is from existing records found in Cortex XSOAR within the last 3 days.
+> These domains have not been found to be attributed to Cortex Xpanse.
 > |integrations|name|
 > |---|---|
 > | VirusTotal (API v3) | www.fakedomain.com |
@@ -2918,8 +2918,8 @@ Get a list of all your external websites filtered by authentication type. Maximu
 | --- | --- | --- |
 | asset_id | Authentication type string on which to search. | Required | 
 | entity_type | Maximum number of assets to return. The default and maximum is 100. | Required | 
-| note_to_add | The custom note to be added to the notes section of the asset in Xpanse | Required |
-| should_append | If you would like to overwrite the current note on the asset, set to 'false'. If you would like to append to the current note, set to 'true' (Note: Default value is 'true'). | Optional |
+| note_to_add | The custom note to be added to the notes section of the asset in Cortex Xpanse | Required |
+| should_append | Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. Default is 'true'. | Optional |
 
 #### Context Output
 
