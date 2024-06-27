@@ -7,10 +7,11 @@
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "categories": ["Network Security"],
-    "tags": ["Network"],
+    "tags": [],
     "useCases": [],
     "keywords": ["HP", "HPE", "Switch", "Aruba", "Aruba Networking", "Hewlett Packard Enterprise"],
     "marketplaces": [
+        "xsoar",
         "marketplacev2"
     ]
 }
