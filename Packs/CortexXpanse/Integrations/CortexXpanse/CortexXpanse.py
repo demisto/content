@@ -291,7 +291,7 @@ class Client(BaseClient):
         response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/get_external_websites/', json_data=data)
 
         return response
-    
+
     def add_note_to_asset(self, asm_asset_id: str, entity_type: str, annotation_note: str, should_append: bool) -> dict[str, Any]:
         """Adds an annotation (also called a note) to an asset or IP range
         using the /assets/assets_internet_exposure/annotation endpoint.
@@ -306,14 +306,14 @@ class Client(BaseClient):
         """
         data = {
             "request_data":
-                { "assets":
-                    [{ "entity_id": asm_asset_id,
+                {"assets":
+                    [{"entity_id": asm_asset_id,
                         "entity_type": entity_type,
                         "annotation": annotation_note
-                        }],
+                      }],
                     "should_append": should_append
-                    }
-                }
+                 }
+        }
 
         response = self._http_request('POST', f'{V1_URL_SUFFIX}/assets/assets_internet_exposure/annotation', json_data=data)
 
@@ -340,10 +340,10 @@ def is_timestamp_within_days(timestamp, days: int):
     fractional_seconds = fractional_seconds[:6]
     timestamp = f"{date_part}T{main_time}.{fractional_seconds}"
     target_time = datetime.strptime(timestamp, '%Y-%m-%dT%H:%M:%S.%f')
-    
+
     current_time = datetime.now()
     time_difference = current_time - target_time
-    
+
     if time_difference >= timedelta(days=days):
         demisto.debug(f"The timestamp was not within the last {days} days.")
         return False
@@ -726,7 +726,7 @@ def list_asset_internet_exposure_command(client: Client, args: dict[str, Any]) -
         append_search_param(search_params, "business_units_list", "in", str(business_units_list).split(","))
 
     if has_bu_overrides:
-        append_search_param(search_params, "has_bu_overrides", "eq", False if has_bu_overrides.lower() == 'false' else True)
+        append_search_param(search_params, "has_bu_overrides", "eq", has_bu_overrides.lower() != 'false')
 
     if mac_addresses:
         append_search_param(search_params, "mac_addresses", "contains", mac_addresses)
@@ -1278,7 +1278,7 @@ def update_alert_command(client: Client, args: dict[str, Any]) -> CommandResults
     return command_results
 
 
-def add_note_to_asset_command (client: Client, args: dict[str, Any]) -> CommandResults:
+def add_note_to_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Adds an annotation (also called a note) to an asset or IP range
        using the /assets/assets_internet_exposure/annotation endpoint.
 
@@ -1341,15 +1341,15 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     xsoar_xpanse_indicator_list_command_output: list[dict[str, Any]] = []
     xsoar_indicator_list_command_output: list[dict[str, Any]] = []
     command_results = []
-    ips_not_found =[]
+    ips_not_found = []
 
     for ip in ips:
         is_xsoar_timestamp_within_three_days = None
         xsoar_ips_of_indicators = []
         xsoar_indicators = []
-        
+
         ip_version_type = ipaddress.ip_address(ip).version
-        
+
         if ip_version_type == 4:
             search_xsoar_indicator_results = demisto.searchIndicators(query=f"{ip} type:IP")
             search_params = [{"field": "ip_address", "operator": "eq", "value": ip}]
@@ -1359,7 +1359,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
         else:
             ips_not_found.append(ip)
             continue
-        
+
         if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
             xsoar_indicators = search_xsoar_indicator_results.get('iocs')
             if not isinstance(xsoar_indicators, list):
@@ -1436,10 +1436,10 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
             outputs=xpanse_ip_list_command_output,
             raw_response=xpanse_ip_list_command_output
         ))
-    
+
     if len(xsoar_indicator_list_command_output) > 0:
         markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
-                        "These IPs have not been found to be attributed to Xpanse`.")
+                         "These IPs have not been found to be attributed to Xpanse`.")
         readable_output = tableToMarkdown("XSOAR Indicator Discovered IP List (Not Related to Xpanse)\n" + markdown_body,
                                           xsoar_indicator_list_command_output)
         command_results.append(CommandResults(
@@ -1448,8 +1448,8 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
 
     if len(xsoar_xpanse_indicator_list_command_output) > 0:
         markdown_body = ("This IP list is from existing records found in XSOAR within the last 3 days.\n"
-                        "If you would additional Xpanse specific information about these please use "
-                        "`asm-list-asset-internet-exposure`.")
+                         "If you would additional Xpanse specific information about these please use "
+                         "`asm-list-asset-internet-exposure`.")
         readable_output = tableToMarkdown(name="Xpanse Discovered IP List (Existing Indicators)\n" + markdown_body,
                                           t=xsoar_xpanse_indicator_list_command_output)
         command_results.append(CommandResults(
@@ -1492,18 +1492,18 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
     xsoar_indicator_list_command_output: list[dict[str, Any]] = []
     command_results = []
     is_xsoar_timestamp_within_three_days = None
-    domains_not_found =[]
+    domains_not_found = []
 
     for domain in domains:
         xsoar_indicators = []
         xsoar_domains_of_indicators = []
         is_xsoar_timestamp_within_three_days = False
-        
+
         if domain.startswith('*.'):
             search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:DomainGlob")
         else:
             search_xsoar_indicator_results = demisto.searchIndicators(query=f"{domain} type:Domain")
-        
+
         if "total" in search_xsoar_indicator_results and search_xsoar_indicator_results.get('total') != 0:
             xsoar_indicators = search_xsoar_indicator_results.get('iocs')
             if not isinstance(xsoar_indicators, list):
@@ -1543,7 +1543,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             search_params = [
                 {"field": "name", "operator": "eq", "value": domain},
                 {"field": "type", "operator": "in", "value": ['domain']}
-                ]
+            ]
             domain_data = client.list_asset_internet_exposure_request(search_params=search_params)
             formatted_response = domain_data.get("reply", {}).get("assets_internet_exposure", {})
             if len(formatted_response) > 0:
@@ -1552,7 +1552,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                 domains_not_found.append(domain)
                 continue
             formatted_response['domain'] = domain
-            
+
             xpanse_domain_list_command_output.append({
                 k: formatted_response.get(k) for k in formatted_response if k in ASSET_HEADER_HEADER_LIST
             })
@@ -1560,7 +1560,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             domains_not_found.append(domain)
 
         xpanse_api_response_domain_list = [entry['domain'] for entry in xpanse_domain_list_command_output if 'domain' in entry]
-        
+
         if domain in xpanse_api_response_domain_list:
             if domain.startswith('*.'):
                 indicator_type = DBotScoreType.DOMAINGLOB
@@ -1592,20 +1592,20 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
             outputs=xpanse_domain_list_command_output,
             raw_response=xpanse_domain_list_command_output
         ))
-        
+
     if len(xsoar_indicator_list_command_output) > 0:
         markdown_body = ("This domain list is from existing records found in XSOAR within the last 3 days.\n"
-                        "These domains have not been found to be attributed to Xpanse`.")
+                         "These domains have not been found to be attributed to Xpanse`.")
         readable_output = tableToMarkdown("XSOAR Indicator Discovered Domain List (Not Related to Xpanse)\n" + markdown_body,
                                           xsoar_indicator_list_command_output)
         command_results.append(CommandResults(
             readable_output=readable_output
         ))
- 
+
     if len(xsoar_xpanse_indicator_list_command_output) > 0:
         markdown_body = ("This domain list is from existing records found in XSOAR within the last 3 days.\n"
-                        "If you would additional Xpanse specific information about these please use"
-                        "  `asm-list-asset-internet-exposure`.")
+                         "If you would additional Xpanse specific information about these please use"
+                         "  `asm-list-asset-internet-exposure`.")
         readable_output = tableToMarkdown(name="Xpanse Discovered Domain List (Existing Indicators)\n" + markdown_body,
                                           t=xsoar_xpanse_indicator_list_command_output)
         command_results.append(CommandResults(

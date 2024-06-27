@@ -1872,7 +1872,7 @@ XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW = {
                 }
             },
             "expiration": "2099-12-31T23:59:59.9999999Z",
-            
+
             "expirationStatus": "active",
             "expirationSource": {
                 "setTime": "2099-12-31T23:59:59.9999999Z",
@@ -2016,7 +2016,7 @@ XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW = {
                 }
             },
             "expiration": "2099-12-31T23:59:59.9999999Z",
-            
+
             "expirationStatus": "active",
             "expirationSource": {
                 "setTime": "2099-12-31T23:59:59.9999999Z",

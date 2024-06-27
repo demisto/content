@@ -3,11 +3,12 @@ Tests module for Cortex Xpanse integration.
 """
 import pytest
 
-### Helper Functions
+# Helper Functions
+
 
 def new_client():
     from CortexXpanse import Client
-    
+
     client = Client(
         base_url='https://test.com',
         verify=True,
@@ -17,7 +18,7 @@ def new_client():
             "Content-Type": "application/json"
         },
         proxy=False)
-        
+
     return client
 
 
@@ -538,7 +539,7 @@ def test_update_alert_command(requests_mock):
 
     assert response.outputs == ALERT_UPDATE_RESULTS
     assert response.outputs_prefix == 'ASM.UpdatedAlerts'
-    
+
 
 def test_successfully_add_note_to_asset_command(requests_mock):
     """Tests update_alert_command function.
@@ -569,7 +570,6 @@ def test_successfully_add_note_to_asset_command(requests_mock):
 
     assert response.outputs.get('status') == "succeeded"
     assert response.outputs_prefix == 'ASM.AssetAnnotation'
-
 
 
 def test_ip_command_xpanse_asset_object(requests_mock):
@@ -604,7 +604,8 @@ def test_ip_command_xpanse_asset_object(requests_mock):
             assert response.indicator.dbot_score.indicator == '1.1.1.1'
         else:
             pytest.fail()
-            
+
+
 def test_ip_command_xsoar_indicator(mocker):
     """Tests domain_command function.
 
@@ -622,12 +623,12 @@ def test_ip_command_xsoar_indicator(mocker):
     from test_data.expected_results import XSOAR_SEARCH_INDICATOR_IP_RESULTS
     from datetime import datetime
     insight_cache = XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW['iocs'][0]['insightCache']
-    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
-    
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
+
     mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW)
 
     client = new_client()
-    
+
     responses = ip_command(client, {'ip': '1.1.1.2'})
 
     assert len(responses) == 1
@@ -638,6 +639,7 @@ def test_ip_command_xsoar_indicator(mocker):
             assert response.indicator.dbot_score.indicator == '1.1.1.2'
         else:
             pytest.fail()
+
 
 def test_ip_command_xsoar_and_xpanse(mocker, requests_mock):
     """Tests domain_command function.
@@ -656,14 +658,14 @@ def test_ip_command_xsoar_and_xpanse(mocker, requests_mock):
     from test_data.raw_response import IP_DOMAIN_RAW, XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW
     from test_data.expected_results import IP_RESULTS, XSOAR_SEARCH_INDICATOR_IP_RESULTS
     insight_cache = XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW['iocs'][0]['insightCache']
-    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
-    
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
+
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
     mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW)
 
     client = new_client()
-    
+
     responses = ip_command(client, {'ip': '1.1.1.2, 1.1.1.1'})
 
     assert len(responses) == 3
@@ -676,7 +678,6 @@ def test_ip_command_xsoar_and_xpanse(mocker, requests_mock):
             assert response.indicator.dbot_score.indicator_type == 'ip'
         else:
             pytest.fail()
-
 
 
 def test_domain_command_xpanse_asset_object(requests_mock):
@@ -693,14 +694,14 @@ def test_domain_command_xpanse_asset_object(requests_mock):
     from CortexXpanse import domain_command
     from test_data.raw_response import IP_DOMAIN_RAW
     from test_data.expected_results import IP_RESULTS
-    
+
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
 
     client = new_client()
-    
+
     responses = domain_command(client, {'domain': '*.acme.com'})
-    
+
     del IP_RESULTS[0]['ip']
     assert len(responses) == 2
     for response in responses:
@@ -729,11 +730,11 @@ def test_domain_command_xsoar_indicator(mocker):
     from test_data.raw_response import XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW
     from test_data.expected_results import XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
     insight_cache = XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW['iocs'][0]['insightCache']
-    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
     mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW)
 
     client = new_client()
-    
+
     responses = domain_command(client, {'domain': 'www.toysrus.com'})
 
     assert len(responses) == 1
@@ -763,14 +764,14 @@ def test_domain_command_xsoar_and_xpanse(mocker, requests_mock):
     from test_data.raw_response import IP_DOMAIN_RAW, XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW
     from test_data.expected_results import DOMAIN_RESULTS, XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
     insight_cache = XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW['iocs'][0]['insightCache']
-    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
-    
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
+
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
     mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW)
 
     client = new_client()
-    
+
     responses = domain_command(client, {'domain': 'www.toysrus.com, *.acme.com'})
 
     assert len(responses) == 3
