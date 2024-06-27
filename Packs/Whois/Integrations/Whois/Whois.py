@@ -9079,20 +9079,20 @@ def main():  # pragma: no cover
 
     reliability = demisto.params().get('integrationReliability')
     reliability = reliability if reliability else DBotScoreReliability.B
-    
+
     org_socket = None
     if DBotScoreReliability.is_valid_type(reliability):
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
     else:
         raise Exception("Please provide a valid value for the Source Reliability parameter.")
-    
+
     old_version = argToBoolean(params.get("old-version", "true"))
     if old_version == False and command != "ip":
         demisto.debug("Run by new context data layout")
         if command == "domain" or command == "whois":
             return_results(new_domain_comand(command, reliability))
         if command == 'test-module':
-                    return_results(new_test_command())
+            return_results(new_test_command())
     else:
         try:
             results: List[CommandResults] = []
