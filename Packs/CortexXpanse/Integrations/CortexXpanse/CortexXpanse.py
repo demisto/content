@@ -1341,9 +1341,10 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
     xsoar_xpanse_indicator_list_command_output: list[dict[str, Any]] = []
     xsoar_indicator_list_command_output: list[dict[str, Any]] = []
     command_results = []
-    is_xsoar_timestamp_within_three_days = None
     ips_not_found =[]
+
     for ip in ips:
+        is_xsoar_timestamp_within_three_days = None
         xsoar_ips_of_indicators = []
         xsoar_indicators = []
         
@@ -1381,7 +1382,7 @@ def ip_command(client: Client, args: dict[str, Any]) -> list[CommandResults]:
                         'name': xsoar_indicators[0].get('value'),
                         'indicator_type': xsoar_indicators[0].get('indicator_type'),
                         'score': xsoar_indicators[0].get('score'),
-                        'reliability': score_data.get('reliability'),
+                        'reliability': cortex_xpanse_score.get('reliability'),
                         'id': xsoar_indicators[0].get('id')
                     }
                     xsoar_xpanse_indicator_list_command_output.append(xpanse_indicator_data_subset)
@@ -1525,7 +1526,7 @@ def domain_command(client: Client, args: dict[str, Any]) -> list[CommandResults]
                         'name': xsoar_indicators[0].get('value'),
                         'indicator_type': xsoar_indicators[0].get('indicator_type'),
                         'score': xsoar_indicators[0].get('score'),
-                        'reliability': score_data.get('reliability'),
+                        'reliability': cortex_xpanse_score.get('reliability'),
                         'id': xsoar_indicators[0].get('id')
                     }
                     xpanse_indicator_data = indicator_data_subset

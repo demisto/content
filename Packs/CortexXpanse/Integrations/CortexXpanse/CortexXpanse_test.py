@@ -54,7 +54,7 @@ def test_list_external_service_command(requests_mock):
     from CortexXpanse import list_external_service_command
 
     from test_data.raw_response import EXTERNAL_SERVICES_RESPONSE
-    from test_data.expected_results import EXTERNAL_SERVICES_RESULTS    
+    from test_data.expected_results import EXTERNAL_SERVICES_RESULTS
     requests_mock.post('https://test.com/public_api/v1/assets/get_external_services/',
                        json=EXTERNAL_SERVICES_RESPONSE)
 
@@ -561,7 +561,8 @@ def test_successfully_add_note_to_asset_command(requests_mock):
     args = {
         'asset_id': "abcd1234-a1b2-a1b2-a1b2-abcdefg12345",
         'entity_type': 'ip_range',
-        'note_to_add': 'Test note adding to asset in Ev2'
+        'note_to_add': 'Test note adding to asset in Ev2',
+        'should_append': 'true'
     }
 
     response = add_note_to_asset_command(client, args)
@@ -620,7 +621,8 @@ def test_ip_command_xsoar_indicator(mocker):
     from test_data.raw_response import XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW
     from test_data.expected_results import XSOAR_SEARCH_INDICATOR_IP_RESULTS
     from datetime import datetime
-    XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW['iocs'][0]['insightCache']['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
+    insight_cache = XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW['iocs'][0]['insightCache']
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
     
     mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW)
 
@@ -628,7 +630,7 @@ def test_ip_command_xsoar_indicator(mocker):
     
     responses = ip_command(client, {'ip': '1.1.1.2'})
 
-    assert len(responses) == 2
+    assert len(responses) == 1
     for response in responses:
         if response.outputs_prefix == 'ASM.TIM.IP':
             assert response.outputs[0] == XSOAR_SEARCH_INDICATOR_IP_RESULTS
@@ -650,8 +652,11 @@ def test_ip_command_xsoar_and_xpanse(mocker, requests_mock):
     """
     from CortexXpanse import ip_command
     import demistomock as demisto
+    from datetime import datetime
     from test_data.raw_response import IP_DOMAIN_RAW, XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW
     from test_data.expected_results import IP_RESULTS, XSOAR_SEARCH_INDICATOR_IP_RESULTS
+    insight_cache = XSOAR_SEARCH_INDICATOR_IP_RESPONSE_RAW['iocs'][0]['insightCache']
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
     
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
@@ -665,7 +670,7 @@ def test_ip_command_xsoar_and_xpanse(mocker, requests_mock):
     for response in responses:
         if response.outputs_prefix == 'ASM.IP':
             assert response.outputs == IP_RESULTS
-        if response.outputs_prefix == 'ASM.TIM.IP':
+        elif response.outputs_prefix == 'ASM.TIM.IP':
             assert response.outputs[0] == XSOAR_SEARCH_INDICATOR_IP_RESULTS
         elif response.indicator:
             assert response.indicator.dbot_score.indicator_type == 'ip'
@@ -723,15 +728,15 @@ def test_domain_command_xsoar_indicator(mocker):
     from datetime import datetime
     from test_data.raw_response import XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW
     from test_data.expected_results import XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
-    
-    XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW['iocs'][0]['insightCache']['modified'] = datetime.now().isoformat(timespec='milliseconds') + 'Z'
+    insight_cache = XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW['iocs'][0]['insightCache']
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
     mocker.patch.object(demisto, 'searchIndicators', return_value=XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW)
 
     client = new_client()
     
     responses = domain_command(client, {'domain': 'www.toysrus.com'})
 
-    assert len(responses) == 2
+    assert len(responses) == 1
     for response in responses:
         if response.outputs_prefix == 'ASM.TIM.Domain':
             assert response.outputs[0] == XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
@@ -754,8 +759,11 @@ def test_domain_command_xsoar_and_xpanse(mocker, requests_mock):
     """
     from CortexXpanse import domain_command
     import demistomock as demisto
+    from datetime import datetime
     from test_data.raw_response import IP_DOMAIN_RAW, XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW
     from test_data.expected_results import DOMAIN_RESULTS, XSOAR_SEARCH_INDICATOR_DOMAIN_RESULTS
+    insight_cache = XSOAR_SEARCH_INDICATOR_DOMAIN_RESPONSE_RAW['iocs'][0]['insightCache']
+    insight_cache['modified'] = datetime.now().isoformat(timespec='milliseconds')+'Z'
     
     requests_mock.post('https://test.com/public_api/v1/assets/get_assets_internet_exposure/',
                        json=IP_DOMAIN_RAW)
