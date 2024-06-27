@@ -1920,7 +1920,7 @@ tasks:
 
         [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
 
-        [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
+        [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Analytics-Alert-Reference-by-Alert-name/Possible-Microsoft-process-masquerading).
       playbookName: Cortex XDR - T1036 - Masquerading
       type: playbook
       iscommand: false
