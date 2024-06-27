@@ -79,17 +79,18 @@ PACK1_DATA_MOCK = {
     'name': 'Pack1 (Deprecated)',
     'field': 'value',
     'field2': 'value2',
-    }
+}
 
 PACK2_DATA_MOCK = {
     'name': 'Pack2',
     'field': 'value',
     'field2': 'value2',
-    }
+}
+
 
 @pytest.mark.usefixtures("mock_print_patch")
 class TestDownloadPacksAndDockerImages:
-    
+
     @pytest.fixture(autouse=True)
     def mock_print_setup(self, mocker):
         # Mocking the print function
@@ -175,7 +176,7 @@ class TestDownloadPacksAndDockerImages:
         self.mock_print.assert_called_with(print_res)
 
         assert actual_docker_images == expected_res
-        
+
     def test_get_pack_names(self):
         """Test get_pack_names function"""
         pack_display_name, pack_display_name_2, invalid_pack = (
@@ -191,7 +192,6 @@ class TestDownloadPacksAndDockerImages:
         assert res == expected
         self.mock_print.assert_called_with("Couldn't find pack invalid pack. Skipping pack.")
 
-    
     @pytest.mark.parametrize(
         "pack_data, fields, deprecated, expected",
         [
@@ -216,7 +216,7 @@ class TestDownloadPacksAndDockerImages:
                 True,
                 id="removing - Deprecated pack, multiple fields with deprecated"
             ),
-            
+
             pytest.param(
                 PACK1_DATA_MOCK,
                 {'field': 'value', 'field2': 'value2'},
@@ -245,7 +245,7 @@ class TestDownloadPacksAndDockerImages:
                 False,
                 id="not removing - multiple fields with deprecated"
             ),
-            
+
             pytest.param(
                 PACK2_DATA_MOCK,
                 {'field': 'other value', 'field2': 'value2'},
