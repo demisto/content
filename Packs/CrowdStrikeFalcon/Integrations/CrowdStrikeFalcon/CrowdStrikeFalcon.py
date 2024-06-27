@@ -318,7 +318,7 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
-    DETECTION = ('ldt' ,'ods')      #TODO: check again why do we need it, why detections are returned as "ods" and not only "ldt"
+    DETECTION = ('ldt' ,'ods')      #TODO: check again why do we need it, why detections are returned as "ods" and not only "ldt", since this will badly affect the mirroring of On-Demand Scans
     IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
@@ -348,6 +348,25 @@ def truncate_long_time_str(detections: List[Dict], time_key: str) -> List[Dict]:
             event[time_key] = long_time_str[:26] + "Z"
     return detections
 
+
+
+def modify_detection_outputs(detection):
+    """
+    Modifies the detection outputs in the post raptor release, to be in the same format as the pre raptor release.
+    Args:
+        detection: The detection to modify.
+    Returns:
+        The nested modified detection.
+    """
+    #TODO double check if using pop instead of get is ok
+    behavior = {key: detection.pop(key, None) for key in DETECTIONS_BEHAVIORS_KEY_MAP}
+    behavior.update({
+        "parent_details": detection.pop("parent_details", None),
+        "triggering_process_graph_id": detection.pop("triggering_process_graph_id", None)
+    })
+    detection["behaviors"] = [behavior]
+    return detection
+    
 
 def error_handler(res):
     res_json = res.json()
@@ -592,7 +611,7 @@ def modify_detection_summaries_outputs(detection: dict):
         "md5",
     ]
     
-   # rename some keys to be the same as the old version, before adding them to a nested dict
+   # rename before adding to a nested dict
     parent_details = detection.get("parent_details", {})
     parent_keys = ["sha256", "cmdline", "md5", "process_graph_id"]
     for key in parent_keys:
@@ -600,15 +619,15 @@ def modify_detection_summaries_outputs(detection: dict):
             new_key = f"parent_{key}"
             parent_details[new_key] = parent_details.pop(key)
 
-    # change some keys from a flat dict to nested dict to be the same as the old version
+    # change from a flat dict to nested dict
     nested_dict = {key: detection.pop(key, None) for key in keys_to_move if key in detection}
     nested_dict["device_id"] = detection.get("device", {}).get("device_id")
     detection["behaviors"] = nested_dict
 
-    # change some keys from nested to flat to be the same as the old version
+    # change from nested to flat
     detection["hostinfo"] = detection.get("device", {}).get("hostinfo")
 
-    # change some key name, to be the same as the old version
+    # rename without moving to a nested dict
     detection["detection_id"] = detection.pop("composite_id", None)
     
     return detection
@@ -1465,7 +1484,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     if POST_RAPTOR_RELEASE:
         endpoint_url = "alerts/queries/alerts/v2?filter=product"
         text_to_encode = ":'epp'"
-        # in Raptor we send only the filter_arg argument as encoded string
+        # in Raptor we send only the filter_arg argument as encoded string without the params
         if filter_arg:
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
@@ -2005,7 +2024,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     if comment:
         payload['comment'] = comment
     if POST_RAPTOR_RELEASE:
-        # modify the payload to match the new API
+        # modify the payload to match the Raptor API
         ids = payload.pop('ids')
         payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
         payload["update_status"] = payload.pop("status") if "status" in payload else None
@@ -2372,7 +2391,6 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_incident_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
 
         elif incident_type == IncidentType.DETECTION:
-            
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
@@ -2442,6 +2460,7 @@ def get_remote_detection_data(remote_incident_id: str):
     """
     mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
+    # severity key name is different in the Raptor release
     severity = mirrored_data.get('max_severity_displayname') or mirrored_data.get('severity_name')
     mirrored_data['severity'] = severity_string_to_int(severity)
     demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
@@ -4115,14 +4134,8 @@ def search_detections_command():
             detection_entry = {}
 
             if POST_RAPTOR_RELEASE:
-                # Modify the detection entry to match the old format
-                behavior = {key: detection.get(key) for key in DETECTIONS_BEHAVIORS_KEY_MAP}
-                behavior.update({
-                    "parent_details": detection.get("parent_details"),
-                    "triggering_process_graph_id": detection.get("triggering_process_graph_id")
-                })
-                detection["behaviors"] = [behavior]
-        
+                detection = modify_detection_outputs(detection)
+                
             for path, new_key in (DETECTIONS_BASE_KEY_MAP.items() if not POST_RAPTOR_RELEASE else
                                   POST_RAPTOR_RELEASE_DETECTIONS_BASE_KEY_MAP.items()):
                 detection_entry[new_key] = demisto.get(detection, path)
