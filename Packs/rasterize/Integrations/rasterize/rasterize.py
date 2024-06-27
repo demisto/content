@@ -261,7 +261,7 @@ def is_chrome_running_locally(port):
             exp_str = str(exp)
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
-                demisto.debug(f"Failed to connect to Chrome on prot {port} on iteration {i + 1}. {connection_refused}")
+                demisto.debug(f"Failed to connect to Chrome on port {port} on iteration {i + 1}. {connection_refused}")
             else:
                 demisto.debug(
                     f"Failed to connect to Chrome on port {port} on iteration {i + 1}. ConnectionError, {exp_str=}, {exp=}")
