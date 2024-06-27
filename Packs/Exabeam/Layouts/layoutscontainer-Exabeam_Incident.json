@@ -308,14 +308,14 @@
                 "sections": [
                     {
                         "displayType": "CARD",
-                        "h": 7,
+                        "h": 4,
                         "hideName": false,
                         "i": "caseinfoid-0cccf740-3226-11ef-9f2b-1555829de806",
                         "items": [
                             {
                                 "endCol": 2,
                                 "fieldId": "closetime",
-                                "height": 22,
+                                "height": 53,
                                 "id": "0de2ad00-3226-11ef-9f2b-1555829de806",
                                 "index": 0,
                                 "sectionItemType": "field",
@@ -324,7 +324,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "description",
-                                "height": 22,
+                                "height": 53,
                                 "id": "278701c0-3226-11ef-9f2b-1555829de806",
                                 "index": 1,
                                 "sectionItemType": "field",
@@ -333,7 +333,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "exabeamid",
-                                "height": 22,
+                                "height": 53,
                                 "id": "2b9780f0-3226-11ef-9f2b-1555829de806",
                                 "index": 2,
                                 "sectionItemType": "field",
@@ -342,7 +342,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "exabeamqueue",
-                                "height": 22,
+                                "height": 53,
                                 "id": "32d3c4a0-3226-11ef-9f2b-1555829de806",
                                 "index": 3,
                                 "sectionItemType": "field",
@@ -351,7 +351,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "itemowner",
-                                "height": 22,
+                                "height": 53,
                                 "id": "4bf66640-3226-11ef-9f2b-1555829de806",
                                 "index": 4,
                                 "sectionItemType": "field",
@@ -360,7 +360,7 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sourcecategory",
-                                "height": 22,
+                                "height": 53,
                                 "id": "51d60020-3226-11ef-9f2b-1555829de806",
                                 "index": 5,
                                 "sectionItemType": "field",
@@ -369,65 +369,77 @@
                             {
                                 "endCol": 2,
                                 "fieldId": "sourcepriority",
-                                "height": 22,
+                                "height": 53,
                                 "id": "b467eaf0-3226-11ef-9f2b-1555829de806",
                                 "index": 6,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "sourcecreatetime",
-                                "height": 22,
-                                "id": "5c669ef0-3226-11ef-9f2b-1555829de806",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourcecreatedby",
-                                "height": 22,
-                                "id": "a30da060-3226-11ef-9f2b-1555829de806",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourcestatus",
-                                "height": 22,
-                                "id": "b9c842b0-3226-11ef-9f2b-1555829de806",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "sourceupdatedby",
-                                "height": 22,
-                                "id": "bd9465e0-3226-11ef-9f2b-1555829de806",
-                                "index": 10,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "starttime",
-                                "height": 22,
-                                "id": "c1f15760-3226-11ef-9f2b-1555829de806",
-                                "index": 11,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
+                                "dropEffect": "move",
+                                "endCol": 4,
                                 "fieldId": "title",
-                                "height": 22,
+                                "height": 53,
                                 "id": "c57240c0-3226-11ef-9f2b-1555829de806",
-                                "index": 12,
+                                "index": 0,
+                                "listId": "caseinfoid-0cccf740-3226-11ef-9f2b-1555829de806",
                                 "sectionItemType": "field",
-                                "startCol": 0
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "starttime",
+                                "height": 53,
+                                "id": "c1f15760-3226-11ef-9f2b-1555829de806",
+                                "index": 1,
+                                "listId": "caseinfoid-0cccf740-3226-11ef-9f2b-1555829de806",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "sourceupdatedby",
+                                "height": 53,
+                                "id": "bd9465e0-3226-11ef-9f2b-1555829de806",
+                                "index": 2,
+                                "listId": "caseinfoid-0cccf740-3226-11ef-9f2b-1555829de806",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "sourcestatus",
+                                "height": 53,
+                                "id": "b9c842b0-3226-11ef-9f2b-1555829de806",
+                                "index": 3,
+                                "listId": "caseinfoid-0cccf740-3226-11ef-9f2b-1555829de806",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "sourcecreatedby",
+                                "height": 53,
+                                "id": "a30da060-3226-11ef-9f2b-1555829de806",
+                                "index": 4,
+                                "listId": "caseinfoid-0cccf740-3226-11ef-9f2b-1555829de806",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "sourcecreatetime",
+                                "height": 53,
+                                "id": "5c669ef0-3226-11ef-9f2b-1555829de806",
+                                "index": 5,
+                                "listId": "caseinfoid-0cccf740-3226-11ef-9f2b-1555829de806",
+                                "sectionItemType": "field",
+                                "startCol": 2
                             }
                         ],
                         "maxW": 3,
@@ -435,7 +447,7 @@
                         "moved": false,
                         "name": "info",
                         "static": false,
-                        "w": 1,
+                        "w": 3,
                         "x": 0,
                         "y": 0
                     }

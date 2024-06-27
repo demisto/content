@@ -45,7 +45,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "items": [
                             {
@@ -113,7 +113,7 @@
                     },
                     {
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "moved": false,
                         "name": "Notes",
@@ -126,7 +126,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "moved": false,
                         "name": "Work Plan",
@@ -139,7 +139,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
                         "isVisible": true,
                         "maxW": 3,
                         "moved": false,
@@ -153,7 +153,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
                         "maxW": 3,
                         "moved": false,
                         "name": "Child Incidents",
@@ -166,7 +166,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
                         "maxW": 3,
                         "moved": false,
                         "name": "Evidence",
@@ -180,7 +180,7 @@
                         "displayType": "ROW",
                         "h": 2,
                         "hideName": false,
-                        "i": "sosmfpdiuh-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
                         "maxW": 3,
                         "moved": false,
                         "name": "Team Members",
@@ -193,7 +193,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
                         "maxW": 3,
                         "moved": false,
                         "name": "Indicators",
@@ -208,7 +208,7 @@
                     {
                         "displayType": "CARD",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
                         "items": [
                             {
                                 "endCol": 1,
@@ -267,7 +267,7 @@
                     {
                         "displayType": "ROW",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
@@ -309,7 +309,7 @@
                     {
                         "displayType": "CARD",
                         "h": 2,
-                        "i": "sosmfpdiuh-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
                         "isVisible": true,
                         "items": [
                             {
@@ -340,9 +340,9 @@
                 "sections": [
                     {
                         "displayType": "CARD",
-                        "h": 5,
+                        "h": 4,
                         "hideName": false,
-                        "i": "sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                        "i": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
                         "items": [
                             {
                                 "endCol": 2,
@@ -363,159 +363,13 @@
                                 "startCol": 0
                             },
                             {
-                                "endCol": 2,
-                                "fieldId": "title",
-                                "height": 53,
-                                "id": "8972cf10-3206-11ef-97d6-054c45da533b",
-                                "index": 2,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "tags",
-                                "height": 53,
-                                "id": "a564a540-3161-11ef-8149-addaf9dc6392",
-                                "index": 3,
-                                "listId": "sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
                                 "endCol": 2,
                                 "fieldId": "riskscore",
                                 "height": 53,
                                 "id": "ff5e8260-3160-11ef-8149-addaf9dc6392",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "location",
-                                "height": 53,
-                                "id": "e4d2c8b0-3201-11ef-97d6-054c45da533b",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "department",
-                                "height": 53,
-                                "id": "0c8bec20-3161-11ef-8149-addaf9dc6392",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "managername",
-                                "height": 53,
-                                "id": "1c7122e0-3161-11ef-8149-addaf9dc6392",
-                                "index": 6,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "firstseen",
-                                "height": 53,
-                                "id": "02ce1130-3162-11ef-8149-addaf9dc6392",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "lastseen",
-                                "height": 53,
-                                "id": "71e2f4f0-3162-11ef-8149-addaf9dc6392",
-                                "index": 8,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "accountstatus",
-                                "height": 53,
-                                "id": "05045940-31fe-11ef-97d6-054c45da533b",
-                                "index": 9,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "main",
-                        "static": false,
-                        "w": 1,
-                        "x": 0,
-                        "y": 0
-                    },
-                    {
-                        "displayType": "CARD",
-                        "h": 5,
-                        "hideName": false,
-                        "i": "sosmfpdiuh-b3c5ad05-3161-11ef-8149-addaf9dc6392",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "email",
-                                "height": 53,
-                                "id": "8c624060-3162-11ef-8149-addaf9dc6392",
-                                "index": 0,
-                                "listId": "sosmfpdiuh-b3c5ad05-3161-11ef-8149-addaf9dc6392",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "mobilephone",
-                                "height": 53,
-                                "id": "86e93080-3162-11ef-8149-addaf9dc6392",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "workphone",
-                                "height": 53,
-                                "id": "4a3cb2b0-3202-11ef-97d6-054c45da533b",
                                 "index": 2,
-                                "listId": "sosmfpdiuh-b3c5ad05-3161-11ef-8149-addaf9dc6392",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "country",
-                                "height": 53,
-                                "id": "17ba8d80-3202-11ef-97d6-054c45da533b",
-                                "index": 3,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "teamname",
-                                "height": 53,
-                                "id": "23eef140-3202-11ef-97d6-054c45da533b",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "usergroups",
-                                "height": 53,
-                                "id": "66e3e730-3202-11ef-97d6-054c45da533b",
-                                "index": 5,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -524,59 +378,197 @@
                                 "fieldId": "starttime",
                                 "height": 53,
                                 "id": "5110c980-3164-11ef-97ed-51db7b22d264",
-                                "index": 6,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
                             {
+                                "dropEffect": "move",
                                 "endCol": 2,
                                 "fieldId": "endtime",
                                 "height": 53,
                                 "id": "5adc4390-3164-11ef-97ed-51db7b22d264",
-                                "index": 7,
+                                "index": 4,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 2,
+                                "fieldId": "title",
+                                "height": 53,
+                                "id": "8972cf10-3206-11ef-97d6-054c45da533b",
+                                "index": 5,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "managername",
+                                "height": 53,
+                                "id": "1c7122e0-3161-11ef-8149-addaf9dc6392",
+                                "index": 0,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "usergroups",
+                                "height": 53,
+                                "id": "66e3e730-3202-11ef-97d6-054c45da533b",
+                                "index": 1,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "teamname",
+                                "height": 53,
+                                "id": "23eef140-3202-11ef-97d6-054c45da533b",
+                                "index": 2,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "accountstatus",
+                                "height": 53,
+                                "id": "05045940-31fe-11ef-97d6-054c45da533b",
+                                "index": 3,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "tags",
+                                "height": 53,
+                                "id": "a564a540-3161-11ef-8149-addaf9dc6392",
+                                "index": 4,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "lastseen",
+                                "height": 53,
+                                "id": "71e2f4f0-3162-11ef-8149-addaf9dc6392",
+                                "index": 5,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "firstseen",
+                                "height": 53,
+                                "id": "02ce1130-3162-11ef-8149-addaf9dc6392",
+                                "index": 6,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "mobilephone",
+                                "height": 53,
+                                "id": "86e93080-3162-11ef-8149-addaf9dc6392",
+                                "index": 0,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "email",
+                                "height": 53,
+                                "id": "8c624060-3162-11ef-8149-addaf9dc6392",
+                                "index": 1,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "department",
+                                "height": 53,
+                                "id": "0c8bec20-3161-11ef-8149-addaf9dc6392",
+                                "index": 2,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "country",
+                                "height": 53,
+                                "id": "17ba8d80-3202-11ef-97d6-054c45da533b",
+                                "index": 3,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "location",
+                                "height": 53,
+                                "id": "e4d2c8b0-3201-11ef-97d6-054c45da533b",
+                                "index": 4,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 4
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 6,
+                                "fieldId": "workphone",
+                                "height": 53,
+                                "id": "4a3cb2b0-3202-11ef-97d6-054c45da533b",
+                                "index": 5,
+                                "listId": "caseinfoid-sosmfpdiuh-caseinfoid-5bea9230-3157-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 4
                             }
                         ],
                         "maxW": 3,
                         "minH": 1,
                         "moved": false,
-                        "name": "info",
+                        "name": "main",
                         "static": false,
-                        "w": 1,
-                        "x": 1,
+                        "w": 3,
+                        "x": 0,
                         "y": 0
                     },
                     {
                         "displayType": "CARD",
-                        "h": 5,
+                        "h": 4,
                         "hideName": false,
-                        "i": "sosmfpdiuh-d1d990e5-3161-11ef-8149-addaf9dc6392",
+                        "i": "caseinfoid-sosmfpdiuh-d1d990e5-3161-11ef-8149-addaf9dc6392",
                         "items": [
-                            {
-                                "endCol": 2,
-                                "fieldId": "accountmemberof",
-                                "height": 53,
-                                "id": "60feb2d0-3164-11ef-97ed-51db7b22d264",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
                             {
                                 "endCol": 2,
                                 "fieldId": "numberoffoundrelatedalerts",
                                 "height": 53,
                                 "id": "66395a20-3164-11ef-97ed-51db7b22d264",
-                                "index": 1,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "numberofrelatedincidents",
-                                "height": 53,
-                                "id": "6d0b9160-3164-11ef-97ed-51db7b22d264",
-                                "index": 3,
+                                "index": 0,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -585,16 +577,7 @@
                                 "fieldId": "exabeamhighestsessionnumberofasset",
                                 "height": 53,
                                 "id": "fe92d120-3164-11ef-97ed-51db7b22d264",
-                                "index": 4,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 2,
-                                "fieldId": "exabeamlastactivitytype",
-                                "height": 53,
-                                "id": "d4db7ee0-3164-11ef-97ed-51db7b22d264",
-                                "index": 5,
+                                "index": 1,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -603,18 +586,7 @@
                                 "fieldId": "exabeampastscores",
                                 "height": 53,
                                 "id": "a2e9d9e0-3164-11ef-97ed-51db7b22d264",
-                                "index": 7,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "exabeamlastactivitytime",
-                                "height": 53,
-                                "id": "def259d0-3164-11ef-97ed-51db7b22d264",
-                                "index": 8,
-                                "listId": "sosmfpdiuh-83f5f640-3164-11ef-97ed-51db7b22d264",
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -623,7 +595,7 @@
                                 "fieldId": "exabeamhighestsessionloginhost",
                                 "height": 53,
                                 "id": "e9afadf0-3164-11ef-97ed-51db7b22d264",
-                                "index": 9,
+                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -632,7 +604,7 @@
                                 "fieldId": "exabeamaverageriskscore",
                                 "height": 53,
                                 "id": "9a860620-3164-11ef-97ed-51db7b22d264",
-                                "index": 10,
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -641,9 +613,53 @@
                                 "fieldId": "exabeamhighestsessionnumberofreasons",
                                 "height": 53,
                                 "id": "f4317fb0-3164-11ef-97ed-51db7b22d264",
-                                "index": 11,
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "accountmemberof",
+                                "height": 53,
+                                "id": "60feb2d0-3164-11ef-97ed-51db7b22d264",
+                                "index": 0,
+                                "listId": "caseinfoid-sosmfpdiuh-d1d990e5-3161-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "numberofrelatedincidents",
+                                "height": 53,
+                                "id": "6d0b9160-3164-11ef-97ed-51db7b22d264",
+                                "index": 1,
+                                "listId": "caseinfoid-sosmfpdiuh-d1d990e5-3161-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "exabeamlastactivitytype",
+                                "height": 53,
+                                "id": "d4db7ee0-3164-11ef-97ed-51db7b22d264",
+                                "index": 2,
+                                "listId": "caseinfoid-sosmfpdiuh-d1d990e5-3161-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "dropEffect": "move",
+                                "endCol": 4,
+                                "fieldId": "exabeamlastactivitytime",
+                                "height": 53,
+                                "id": "def259d0-3164-11ef-97ed-51db7b22d264",
+                                "index": 4,
+                                "listId": "caseinfoid-sosmfpdiuh-d1d990e5-3161-11ef-8149-addaf9dc6392",
+                                "sectionItemType": "field",
+                                "startCol": 2
                             }
                         ],
                         "maxW": 3,
@@ -651,9 +667,9 @@
                         "moved": false,
                         "name": "highest Risk Session",
                         "static": false,
-                        "w": 1,
-                        "x": 2,
-                        "y": 0
+                        "w": 3,
+                        "x": 0,
+                        "y": 4
                     }
                 ],
                 "type": "custom"
