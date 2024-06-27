@@ -3,7 +3,7 @@ An attacker might leverage Microsoft Windows well-known image names to run malic
 
 **Attacker's Goals:**
 
-An attacker is attempting to masquerade as standard windows images by using a trusted name to execute malicious code.
+An attacker is attempting to masquerade as standard Windows images by using a trusted name to execute malicious code.
 
 **Investigative Actions:**
 
