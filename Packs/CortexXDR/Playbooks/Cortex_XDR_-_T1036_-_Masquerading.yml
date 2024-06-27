@@ -949,7 +949,7 @@ inputs:
   value:
     simple: "True"
   required: false
-  description: Setting this input to True will quarantine the file automatically in case of malicious file.
+  description: Setting this input to True will quarantine the file automatically in case of a malicious file.
   playbookInputQuery:
 - key: FileSHA256
   value:
