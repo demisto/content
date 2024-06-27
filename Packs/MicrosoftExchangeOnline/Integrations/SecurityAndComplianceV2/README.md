@@ -1370,3 +1370,29 @@ There is no context output for this command.
 * Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
 * A maximum of 10 items per mailbox can be removed at one time, due to a Microsoft [limitiation](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-for-and-delete-messages-in-your-organization?view=o365-worldwide#before-you-begin).
 * For more Microsoft known limitations see [Limits for eDiscovery search](https://docs.microsoft.com/en-us/microsoft-365/compliance/limits-for-content-search?view=o365-worldwide).
+### o365-sc-case-hold-policy-set
+
+***
+Update inputs for case hold policies.
+
+#### Base Command
+
+`o365-sc-case-hold-policy-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | Identity of the policy to update. | Required | 
+| add_exchange_locations | Exchange locations to add to the policy. | Optional | 
+| add_sharepoint_locations | Sharepoint locations to add to the policy. | Optional | 
+| add_public_locations | Public locations to add to the policy. | Optional | 
+| remove_exchange_locations | Exchange locations to remove from the policy. | Optional | 
+| remove_sharepoint_locations | Sharepoint locations to remove from the policy. | Optional | 
+| remove_public_locations | Public locations to remove from the policy. | Optional | 
+| comment | Add a comment to existing policy. | Optional | 
+| enabled | Enable or disable the policy. Possible values are: true, false. Default is true. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
