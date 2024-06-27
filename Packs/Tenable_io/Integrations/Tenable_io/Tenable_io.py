@@ -1982,6 +1982,9 @@ def main():  # pragma: no cover
 
             demisto.info(f"Received {len(assets)} assets and {len(vulnerabilities)} vulnerabilities.")
 
+            demisto.debug(f"new lastrun assets: {assets_last_run}")
+            demisto.setAssetsLastRun(assets_last_run)
+
             if assets:
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
@@ -1990,8 +1993,6 @@ def main():  # pragma: no cover
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
             demisto.info("Done Sending data to XSIAM.")
-            demisto.debug(f"new lastrun assets: {assets_last_run}")
-            demisto.setAssetsLastRun(assets_last_run)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

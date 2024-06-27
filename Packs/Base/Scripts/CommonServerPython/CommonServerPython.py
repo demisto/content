@@ -11639,12 +11639,13 @@ def split_data_to_chunks(data, target_chunk_size):
     for data_part in data:
         if sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
             demisto.debug("skipped object with size: {size}".format(size=sys.getsizeof(data_part)))
-            demisto.debug("object is: {object}".format(object=data_part))
-            try:
-                with open("/tmp/vulns_test.json", "w") as test_file:
-                    json.dump(data_part, test_file)
-            except Exception as e:
-                demisto.debug(f"failed writing to json file: {e}")
+            # demisto.debug("object is: {object}".format(object=data_part))
+            # try:
+            #     with open("/tmp/vulns_test.json", "w") as test_file:
+            #         json.dump(data_part, test_file)
+            #         demisto.debug("finished writing to file")
+            # except Exception as e:
+            #     demisto.debug("failed writing to json file: {e}".format(e=e))
             continue
         if chunk_size + sys.getsizeof(data_part) > target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
