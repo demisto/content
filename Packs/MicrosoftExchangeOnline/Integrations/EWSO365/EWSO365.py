@@ -141,6 +141,10 @@ class InsecureProxyAdapter(NoVerifyHTTPAdapter):
     Insecure Proxy Adapter used to add PROXY and INSECURE to requests
     NoVerifyHTTPAdapter is a built-in insecure HTTPAdapter class
     """
+     def __init__(self, *args, **kwargs):
+        # Processing before init call
+        kwargs.pop('verify', None)
+        super().__init__(verify=False, **kwargs)
 
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
