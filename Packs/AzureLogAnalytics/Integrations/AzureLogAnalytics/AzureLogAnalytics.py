@@ -123,9 +123,7 @@ def validate_params(refresh_token, managed_identities_client_id, client_credenti
     if not refresh_token:
         raise DemistoException('Token / Tenant ID must be provided.')
     if not managed_identities_client_id:
-        if client_credentials and not enc_key:
-            raise DemistoException("Client Secret must be provided for client credentials flow.")
-        elif not self_deployed and not enc_key:
+        if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided when not using self deployed flow. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         elif not enc_key and not (certificate_thumbprint and private_key):
