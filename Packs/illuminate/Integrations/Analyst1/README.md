@@ -79,20 +79,20 @@ After you successfully execute a command, a DBot message appears in the War Room
 ---
 Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indicator data
 
-##### Base Command
+#### Base Command
 
 `domain`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | domain | The domain for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Domain.Name | string | The domain name, for example, "google.com". | 
 | Analyst1.Domain.ID | number | The indicator's unique ID in Analyst1. | 
@@ -116,11 +116,11 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!domain domain=abc.com```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -157,7 +157,7 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 Domain Information
 
@@ -171,20 +171,20 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 ---
 Queries the Analyst1 REST API and enriches the given email with Analyst1 indicator data.
 
-##### Base Command
+#### Base Command
 
 `email`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | email | The email for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Email.From | string | The sender of the email. | 
 | Analyst1.Email.ID | number | The unique identifier of the given Indicator in Analyst1 | 
@@ -207,11 +207,11 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!email email=001toxic@gmail.com```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -253,7 +253,7 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 Email Information
 
@@ -267,20 +267,20 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 ---
 Queries the Analyst1 REST API and enriches the given IP address with Analyst1 indicator data.
 
-##### Base Command
+#### Base Command
 
 `ip`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | ip | The IP address for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | IP.Address | string | The IP address. | 
 | Analyst1.Ip.ID | number | The indicator's unique ID in Analyst1. | 
@@ -303,11 +303,11 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!ip ip=0.154.17.105```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -344,7 +344,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 Ip Information
 
@@ -358,20 +358,20 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 ---
 Queries the Analyst1 REST API and enriches the given file with Analyst1 indicator data.
 
-##### Base Command
+#### Base Command
 
 `file`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | file | The file for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
@@ -396,11 +396,11 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!file file=00000000000000000000000000000000```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -450,7 +450,7 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 File Information
 
@@ -464,20 +464,20 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 ---
 Queries the Analyst1 REST API and enriches the given string with Analyst1 indicator data
 
-##### Base Command
+#### Base Command
 
 `analyst1-enrich-string`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | string | The string for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.String.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.String.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -495,11 +495,11 @@ Queries the Analyst1 REST API and enriches the given string with Analyst1 indica
 | Analyst1.String.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!analyst1-enrich-string string=??```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -536,7 +536,7 @@ Queries the Analyst1 REST API and enriches the given string with Analyst1 indica
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 String Information
 
@@ -550,20 +550,20 @@ Queries the Analyst1 REST API and enriches the given string with Analyst1 indica
 ---
 Queries the Analyst1 REST API and enriches the given IP address with Analyst1 indicator data.
 
-##### Base Command
+#### Base Command
 
 `analyst1-enrich-ipv6`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | ip | The IP address for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.Ipv6.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.Ipv6.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -581,11 +581,11 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 | Analyst1.Ipv6.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!analyst1-enrich-ipv6 ip=16::```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -611,7 +611,7 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 Ipv6 Information
 
@@ -625,20 +625,20 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 ---
 Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicator data.
 
-##### Base Command
+#### Base Command
 
 `analyst1-enrich-mutex`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | mutex | The mutex to query information for | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.Mutex.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.Mutex.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -656,11 +656,11 @@ Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicat
 | Analyst1.Mutex.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!analyst1-enrich-mutex mutex=??```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -700,7 +700,7 @@ Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicat
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 Mutex Information
 
@@ -714,20 +714,20 @@ Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicat
 ---
 Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 indicator data.
 
-##### Base Command
+#### Base Command
 
 `analyst1-enrich-http-request`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | http-request | The HTTP request for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.Httprequest.ID | number | The unique identifier of the given Indicator in Analyst1 | 
 | Analyst1.Httprequest.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
@@ -745,11 +745,11 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 | Analyst1.Httprequest.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!analyst1-enrich-http-request http-request=/~```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -773,7 +773,7 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 Httprequest Information
 
@@ -787,20 +787,20 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 ---
 Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator data.
 
-##### Base Command
+#### Base Command
 
 `url`
 
-##### Input
+#### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | url | The URL for which to return information. | Required | 
 
 
-##### Context Output
+#### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | URL.Data | String | The URL. | 
 | Analyst1.Url.ID | number | The unique identifier of the given Indicator in Analyst1 | 
@@ -823,11 +823,11 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 | DBotScore.Vendor | String | The AlienVault OTX vendor. | 
 
 
-##### Command Example
+#### Command Example
 
 ```!url url=104.218.120.128/check.aspx```
 
-##### Context Example
+#### Context Example
 
 ```
 {
@@ -871,7 +871,7 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 }
 ```
 
-##### Human Readable Output
+#### Human Readable Output
 
 ### Analyst1 Url Information
 
@@ -891,7 +891,7 @@ Submits an 'Evidence' to Analyst1. Submission can be any text or attachment (PDF
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | sourceId | Analyst1 ID# of the Source to associate the Evidence. It is a best practice to create a 'Reference' source in Analyst1 to which XSOAR may submit. | Required | 
 | fileContent | Content of the Evidence to create within Analyst1. Should be used when content is TXT or JSON. Use fileEntryId for attachments in XSOAR context. One of fileConent or fileEntryId must be included. | Optional | 
@@ -902,7 +902,7 @@ Submits an 'Evidence' to Analyst1. Submission can be any text or attachment (PDF
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.EvidenceSubmit.uuid | unknown | The unique GUID tracking this specific Evidence's submission. Can be used to monitor to finish extraction. If empty, check 'message'. | 
 | Analyst1.EvidenceSubmit.message | unknown | An explanation of the error which occurred that prevented acceptance of the Evidence submission. | 
@@ -918,13 +918,13 @@ Check on the status of the analyst1-evidence-submit action by using its output U
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | uuid | Identifier from an Evidence Submission to track status. | Required | 
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.EvidenceStatus.id | unknown | Evidence ID created by the submission. If 'blank' and message is 'blank', indicates the upload is still procesing. | 
 | Analyst1.EvidenceStatus.message | unknown | If populated, will communicate errors which occurred with the status check or the upload processing.  | 
@@ -967,13 +967,13 @@ Queries the Analyst1 REST API for indicator enrichment data based on a CSV input
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | values | Comma delimited set of possible Indicator or other Observable values. Submit as a basic string input with commas separating each value. For more complex or higher volume batches, use analyst1-batch-check-post. | Required | 
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.BatchResults.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. | 
 | Analyst1.BatchResults.matchedValue | unknown | The matched terms from Indicators, Assets, Ignore List, or System CIDR entries. | 
@@ -1040,14 +1040,14 @@ Similar to analyst1-batch-check, however the inputs can be more complex. The 'va
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | values | Newline delimited text for many Indicator or other observable inputs. Either valeus_array or values must be provided. | Optional | 
 | values_array | Array of text, each being an Indicator or other observable value to search. Either valeus_array or values must be provided. | Optional | 
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1 | unknown | Full Batch Check JSON | 
 | Analyst1.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. | 
@@ -1065,13 +1065,13 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | indicator_id | Internal Analyst1 Indicator ID. | Required | 
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.Indicator | unknown | Full Analyst1 native JSON for the Indicator. Will include all attributes, associated sources, enrichment results, and all settings as seen in the Analyst1 UI. | 
 
@@ -1250,7 +1250,7 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
             ],
             "malwares": [],
             "originatingIps": null,
-            "path": null,
+            "**Path**": null,
             "ports": [
                 {
                     "classification": "U",
@@ -1374,7 +1374,7 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
 
 >### Results
 
->|active|activityDates|actors|attackPatterns|benign|confidenceLevel|description|domainRegistration|enrichmentFields|enrichmentResults|expand|exploitStage|externalhitCount|fileNames|fileSize|firstExternalHit|firstHit|hashes|hitCount|id|indicatorDerivation|integrationSources|ipRegistration|ipResolution|lastExternalHit|lastHit|links|malwares|originatingIps|path|ports|reportCount|reportedDates|requestMethods|sources|status|stixObjects|subjects|targets|tasked|tlp|tlpCaveats|tlpHighestAssociated|tlpJustification|tlpLowestAssociated|tlpResolution|type|value|verified|
+>|active|activityDates|actors|attackPatterns|benign|confidenceLevel|description|domainRegistration|enrichmentFields|enrichmentResults|expand|exploitStage|externalhitCount|fileNames|fileSize|firstExternalHit|firstHit|hashes|hitCount|id|indicatorDerivation|integrationSources|ipRegistration|ipResolution|lastExternalHit|lastHit|links|malwares|originatingIps|**Path**|ports|reportCount|reportedDates|requestMethods|sources|status|stixObjects|subjects|targets|tasked|tlp|tlpCaveats|tlpHighestAssociated|tlpJustification|tlpLowestAssociated|tlpResolution|type|value|verified|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | {'date': '2012-05-08', 'classification': 'U'},<br/>{'date': '2012-05-16', 'classification': 'U'},<br/>{'date': '2012-08-30', 'classification': 'U'},<br/>{'date': '2012-09-05', 'classification': 'U'},<br/>{'date': '2012-09-26', 'classification': 'U'},<br/>{'date': '2012-12-07', 'classification': 'U'},<br/>{'date': '2013-01-17', 'classification': 'U'},<br/>{'date': '2013-03-01', 'classification': 'U'},<br/>{'date': '2013-03-14', 'classification': 'U'},<br/>{'date': '2013-03-27', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-18', 'classification': 'U'},<br/>{'date': '2014-03-05', 'classification': 'U'},<br/>{'date': '2014-05-07', 'classification': 'U'} | {'name': 'APT41', 'id': 30, 'classification': 'U'},<br/>{'name': 'Conimes', 'id': 121, 'classification': 'U'} |  | value: false<br/>classification: U | value: high<br/>classification: U |  | name: unknown<br/>classification: U | {'type': 'ipResolution', 'name': 'IP Resolution (DNS Resolution)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'reverseIp', 'name': 'Reverse IP Lookup (VirusTotal)', 'value': '13 resolutions to this domain', 'numeric': 13.0, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (DomainTools)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (VirusTotal)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'} | { "date": "2020-04-28", "format": "json", "result": "{ \"status\": \"redacted to protect content provider's actual JSON output that in a live call would be provided\" }" "type": "VIRUS_TOTAL" },<br/>{ "date": "2020-12-15", "format": "colonDelimited", "result": "redacted to protected content provider's actual raw text result", "type": "WHOIS_IP_REGISTRATION" } | enrichmentResults,hitStats,sources | name: Stage 7 - Actions on Objectives<br/>id: 6<br/>classification: U | 0 |  |  |  |  |  | 0 | 983 |  |  |  |  |  |  | {'rel': 'self', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983'},<br/>{'rel': 'evidence', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/evidence'},<br/>{'rel': 'stix', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/stix'} |  |  |  | {'value': 443, 'classification': 'U'},<br/>{'value': 80, 'classification': 'U'} | 21 | {'date': '2012-05-10', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-19', 'classification': 'U'},<br/>{'date': '2013-09-16', 'classification': 'U'},<br/>{'date': '2014-05-19', 'classification': 'U'},<br/>{'date': '2014-08-14', 'classification': 'U'},<br/>{'date': '2018-09-19', 'classification': 'U'},<br/>{'date': '2019-10-17', 'classification': 'U'},<br/>{'date': '2021-07-01', 'classification': 'U'} |  | {'type': 'reference', 'enabled': False, 'title': 'Internal', 'url': None, 'category': 'INTERNAL', 'id': 0},<br/>{'type': 'rss', 'enabled': False, 'title': 'Threat Connect', 'url': 'https:<span>//</span>feeds.feedburner.com/threatconnect-blogs', 'category': 'FREE', 'id': 78},<br/>{'type': 'api', 'enabled': True, 'title': 'CrowdStrike Premium Paid', 'url': 'https:<span>//</span>api.crowdstrike.com', 'category': 'PAID', 'id': 134} | rc |  |  | {'name': 'Unknown', 'id': -2, 'classification': 'U'},<br/>{'name': 'Manufacturing Industry', 'id': 100017, 'classification': 'U'},<br/>{'name': 'Energy Industry', 'id': 100021, 'classification': 'U'},<br/>{'name': 'Technology Industry', 'id': 100026, 'classification': 'U'} | true | undetermined |  | amber |  | undetermined | resolved | domain | name: conimes.com<br/>classification: U | true |
 
@@ -1390,13 +1390,13 @@ Queries the Analyst1 REST API for the current sensor config given a valid Sensor
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | sensor_id | Sensor ID number for this Analyst1 instance. | Required | 
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.SensorTaskings.ConfigFile.config_text | unknown | full text of the current configuration file for the Sensor | 
 | Analyst1.SensorTaskings.ConfigFile.warRoomEntry.FileID | unknown | FileID from invoking fileResult\(\) in the Common Server Functions. An alternative to the returned config_text in case file processing is preferred. | 
@@ -1447,14 +1447,14 @@ Queries the Analyst1 REST API for the current sensor taskings given a valid Sens
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | sensor_id | Sensor ID number for this Analyst1 instance. | Required | 
 | timeout | Overrides the XSOAR default of 10s for timeout. Default Analsyt1 app is 200s for this command. Caller may further override as required. Default is 200. | Optional | 
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.SensorTaskings | unknown | Root JSON for processing all taskings data.  | 
 | Analyst1.SensorTaskings.id | unknown | Sensor ID for this Taskings response. | 
@@ -1474,7 +1474,7 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | sensor_id | ID# of the Sensor record in Analyst1. | Required | 
 | version | Non zero version of the known Sensor. | Required | 
@@ -1482,7 +1482,7 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
 
 #### Context Output
 
-| __Path__ | __Type__ | __Description__ |
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Analyst1.SensorTaskings.ID | unknown | Sensor ID | 
 | Analyst1.SensorTaskings.latestVersion | unknown | Current version of the Sensor. Meant to be saved and used on subsequent invocations to 'diff' to only get the latest changes. | 
@@ -1576,7 +1576,7 @@ Queries the Analyst1 REST API to retrieve a list of registered sensors.
 
 #### Input
 
-| __Argument Name__ | __Description__ | __Required__ |
+| __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
 | page | page of Sensors to iterate. Default is 1. | Optional | 
 | pageSize | size of each page of Sensors to iterate. Maximum 50. Default is 50. | Optional | 
