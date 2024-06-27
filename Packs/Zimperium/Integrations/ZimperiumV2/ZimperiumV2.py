@@ -47,7 +47,7 @@ class Client(BaseClient):
             user_id: the id of the user to search.
             team_id: the id of the team filter by.
             email: the email of the user to search.
-
+            
         Returns:
             Response from API.
         """
@@ -56,21 +56,22 @@ class Client(BaseClient):
             'size': size,
             'teamId': team_id,
         })
-
+        
         if not email:
             return self._http_request(method='GET', url_suffix=f'auth/public/v1/users/{user_id if user_id else ""}',
-                                      headers=self._headers,
-                                      params=params)
-
+                                  headers=self._headers,
+                                  params=params)
+        
         res = self._http_request(method='GET', url_suffix='auth/public/v1/users',
-                                 headers=self._headers,
-                                 params=params)
+                                headers=self._headers,
+                                params=params)
         users = []
         for user in res.get('content'):
             if user.get('email') == email or user.get('id') == user_id:
                 users.append(user)
-
+        
         return users
+        
 
     def device_search(self, size: Optional[int], page: Optional[int], device_id: Optional[str]):
         """Search devices by sending a GET request.
