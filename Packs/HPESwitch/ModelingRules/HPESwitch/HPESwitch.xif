@@ -1,4 +1,4 @@
-[MODEL: dataset="hpe_switch_raw"]
+[MODEL: dataset=hpe_switch_raw]
 /* -------------------------------------------------------------------------------------------------------------------
     Event Log Reference:  
     https://www.arubanetworks.com/techdocs/AOS-Switch/16.10/Aruba%20Event%20Log%20Message%20Reference%20Guide%20for%20AOS-S%20Switch%2016.10.pdf 
@@ -7,15 +7,10 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
 | alter // Extract the common message parts 
     device_ip = arrayindex(regextract(_raw_log, "^.+?((?:\d{1,3}\.){3}\d{1,3})(?:\s+\d+)? \S+?: "), 0),
     event_id = to_integer(ltrim(arrayindex(regextract(_raw_log, "\s+(\d+)\s+\S+?:\s+") , 0), "0")),
-    event_name = arrayindex(regextract(_raw_log, "%.+?\-\d+\-(\S+?):") , 0),
-    facility = uppercase(coalesce(
-        arrayindex(regextract(_raw_log, "%(.+?)\-\d+\-\S+?:") , 0),
-        arrayindex(regextract(_raw_log, "\s+(\S+?):\s+") , 0))),
+    facility = uppercase(arrayindex(regextract(_raw_log, "\s+(\S+?):\s+") , 0)),
     msg = arrayindex(regextract(_raw_log, "\s+\S+?:\s+(.+)") , 0),
     syslog_priority = to_integer(arrayindex(regextract(_raw_log, "^\<(\d{1,3})\>") , 0))
-| alter severity = coalesce(
-        arrayindex(regextract(_raw_log, "%.+?\-(\d+)\-\S+?:") , 0),
-        to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8))))
+| alter severity = to_string(subtract(syslog_priority, multiply(floor(divide(syslog_priority, 8)), 8)))
 
 | alter // Extract the varying dynamic fields from the message payload 
     access_mode = if( 
@@ -36,7 +31,7 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         event_id = 753, arrayindex(regextract(msg, "failure\:\s*((?:\d{1,3}\.){3}\d{1,3}\/\d{1,2})"), 0)),
     mac_address = if(
         event_id = 5, arrayindex(regextract(msg, "at ((?:[a-fA-F\d]{2}[\-\:]?){5}[a-fA-F\d]{2})"), 0),
-        event_id in (20, 21, 334, 5681, 5682, 5683, 5684, 5731), arrayindex(regextract(msg, "(?:mac|MAC)[\s\-]+(?:address|ADDRESS) ((?:[a-fA-F\d]{2}[\-\:]?){5}[a-fA-F\d]{2})"), 0),
+        event_id in (20, 21, 288, 334, 5681, 5682, 5683, 5684, 5731), arrayindex(regextract(msg, "(?:mac|MAC)[\s\-]+(?:address|ADDRESS) ((?:[a-fA-F\d]{2}[\-\:]?){5}[a-fA-F\d]{2})"), 0),
         event_id in (845, 952, 958, 959, 960, 961, 2400, 2401, 2402, 2403, 2404, 2405, 2411, 3210, 3273, 3274, 3281, 3283,  3350, 3356, 3357, 3822, 4987), arrayindex(regextract(msg, "(?:mac|MAC)\s*((?:[a-fA-F\d]{2}[\-\:]?){5}[a-fA-F\d]{2})"), 0),
         event_id = 2581, arrayindex(regextract(msg, "MAC address of ((?:[a-fA-F\d]{2}[\-\:]?){5}[a-fA-F\d]{2})"), 0),
         event_id in (354, 858), arrayindex(regextract(msg, "address ((?:[a-fA-F\d]{2}[\-\:]?){5}[a-fA-F\d]{2})"), 0),
@@ -101,26 +96,26 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         event_id = 5817, arrayindex(regextract(msg, "class \'(.+?)\'"), 0),
         event_id in (2655, 2659, 2661),  arrayindex(regextract(msg, "apply \'(.+?)\'"), 0),
         event_id in (2637, 2638, 2652, 2653, 2654, 2656, 3025, 5215, 5745, 5746), arrayindex(regextract(msg, "[Pp]olicy (?:is\s+)?\'(.+?)\'"), 0)),
-    port_id = if(
-        event_id in (76, 77, 324, 725, 826, 827, 840, 841, 844, 848, 849, 884, 885, 886, 887, 888, 889, 927, 972, 975, 2671, 3827, 3828, 4170, 4171, 4300, 4301, 4584, 4593, 4646, 4647, 5161, 5162), arrayindex(regextract(msg, "^[Pp]ort (\d+)"), 0),
-        event_id in (725, 826, 827, 848, 849, 885, 927, 2671, 3827, 3828, 4170, 4171, 4300, 4301, 4646, 4647, 5161, 5162), arrayindex(regextract(msg, "^Port (\d+) (?:with|released|changed|inhibited|blocked|unblocked|disabled|has|is|\-)"), 0), 
-        event_id in (346, 347, 348, 350, 351, 353, 356, 447), arrayindex(regextract(msg, "^(\d+)\s*[\-]+\s*(?:ACK|Received|detected|initialized|established|not established)"), 0), // 
-        event_id in (822, 823), arrayindex(regextract(msg, "^(?:Created|Deleted) (\d+)"), 0), 
-        event_id in (883, 3381, 3815), arrayindex(regextract(msg, "Port (\d+) (?:has|communications|moved)"), 0), 
-        event_id in (2640, 2641, 2642, 2643, 2644), arrayindex(regextract(msg, "src I\/F (\d+) (?:is|has)"), 0), 
-        event_id in (4667, 4670), arrayindex(regextract(msg, "on Interface (\d+)"), 0), 
-        event_id = 357, arrayindex(regextract(msg, "^(\d+) load balance version"), 0), 
-        event_id = 444, arrayindex(regextract(msg, "^(\d+): received"), 0), 
-        event_id = 453, arrayindex(regextract(msg, "detected on (\d+)"), 0),
-        event_id = 520, arrayindex(regextract(msg, "Ports (\d+):"), 0), 
-        event_id = 592, arrayindex(regextract(msg, "Move \S+ to (\d+) denied"), 0), 
-        event_id = 825, arrayindex(regextract(msg, "PORT-MAP (?:removed from|added to) (\d+)"), 0), 
-        event_id = 2639, arrayindex(regextract(msg, "from (\d+) interface"), 0), 
-        event_id = 4573, arrayindex(regextract(msg, "Invalid DHCPv6 packet \S+\.?\s*(\d+)"), 0), 
-        event_id = 4633, arrayindex(regextract(msg, "Mac-notify traps (\d+)"), 0), 
-        event_id = 4986, arrayindex(regextract(msg, "enabled port (\d+)"), 0), 
-        event_id = 5052, arrayindex(regextract(msg, "^Configuration conversion for \S+ (\d+)"), 0), 
-        arrayindex(regextract(msg, "[Pp]ort ([\d\/]+)"), 0)), // General fall back
+    interface_port_id = if(
+        event_id in (76, 77, 324, 725, 826, 827, 828, 840, 841, 844, 848, 849, 884, 885, 886, 887, 888, 889, 927, 972, 975, 2671, 3827, 3828, 4170, 4171, 4300, 4301, 4584, 4593, 4646, 4647, 5161, 5162, 5834), arrayindex(regextract(msg, "^[Pp]ort ([\w\/]+)"), 0),
+        event_id in (725, 826, 827, 848, 849, 885, 927, 2671, 3827, 3828, 4170, 4171, 4300, 4301, 4646, 4647, 5161, 5162), arrayindex(regextract(msg, "^Port ([\w\/]+) (?:with|released|changed|inhibited|blocked|unblocked|disabled|has|is|\-)"), 0), 
+        event_id in (346, 347, 348, 350, 351, 353, 356, 447), arrayindex(regextract(msg, "^([\w\/]+)\s*[\-]+\s*(?:ACK|Received|detected|initialized|established|not established)"), 0), // 
+        event_id in (822, 823), arrayindex(regextract(msg, "^(?:Created|Deleted) ([\w\/]+)"), 0), 
+        event_id in (883, 3381, 3815), arrayindex(regextract(msg, "Port ([\w\/]+) (?:has|communications|moved)"), 0), 
+        event_id in (2640, 2641, 2642, 2643, 2644), arrayindex(regextract(msg, "src I\/F ([\w\/]+) (?:is|has)"), 0), 
+        event_id in (4667, 4670), arrayindex(regextract(msg, "on Interface ([\w\/]+)"), 0), 
+        event_id = 357, arrayindex(regextract(msg, "^([\w\/]+) load balance version"), 0), 
+        event_id = 444, arrayindex(regextract(msg, "^([\w\/]+): received"), 0), 
+        event_id = 453, arrayindex(regextract(msg, "detected on ([\w\/]+)"), 0),
+        event_id = 520, arrayindex(regextract(msg, "Ports ([\w\/]+):"), 0), 
+        event_id = 592, arrayindex(regextract(msg, "Move \S+ to ([\w\/]+) denied"), 0), 
+        event_id = 825, arrayindex(regextract(msg, "PORT-MAP (?:removed from|added to) ([\w\/]+)"), 0), 
+        event_id = 2639, arrayindex(regextract(msg, "from ([\w\/]+) interface"), 0), 
+        event_id = 4573, arrayindex(regextract(msg, "Invalid DHCPv6 packet \S+\.?\s*([\w\/]+)"), 0), 
+        event_id = 4633, arrayindex(regextract(msg, "Mac-notify traps ([\w\/]+)"), 0), 
+        event_id = 4986, arrayindex(regextract(msg, "enabled port ([\w\/]+)"), 0), 
+        event_id = 5052, arrayindex(regextract(msg, "^Configuration conversion for \S+ ([\w\/]+)"), 0), 
+        arrayindex(regextract(msg, "[Pp]ort ([\w\/]+)"), 0)), // General fall back
     src_ip = if( 
         event_id in (3, 3087, 5328), arrayindex(regextract(msg, "to (\S+)"), 0),
         event_id in (11, 91, 97, 98, 99, 112, 236, 237, 419, 468, 469, 470, 609, 610, 611, 618, 619, 620, 621, 622, 636, 637, 639, 640, 754, 982, 983, 984, 985, 2205, 2206, 2207, 2210, 2211, 2219, 2220, 2419, 2420, 2421, 2422, 2425, 2667, 2684, 2686, 3310, 3311, 3318, 3345, 3362, 3363, 3387, 3390, 4215, 4216, 4241, 4242, 4244, 4245, 4281, 4542, 4558, 456, 4575, 4832, 4834, 4872, 4873, 5005, 5006, 5016, 5312, 5313, 5314, 5329, 5653), arrayindex(regextract(msg, "from (\S+)"), 0),
@@ -184,7 +179,7 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         event_id = 4940, arrayindex(regextract(_raw_log, "^Password for user (\S+) (?:has )?expired") , 0),
         event_id in (3391, 3392), arrayindex(regextract(_raw_log, "Local user (\S+) is") , 0)), // users added/removed to/from group
     tgt_mac_address = if(event_id = 913, arrayindex(regextract(msg, "dest:\s*((?:[a-fA-F\d]{2}[\-\:]?){5}[a-fA-F\d]{2})"), 0)),
-    user = if(
+    username = if(
         event_id in(3362, 3363, 4241, 4242, 3369, 4942, 4943, 4944, 4945, 4946, 4947, 4948, 4949, 4951, 4952, 5005, 5006, 5007, 3387, 4930, 4938, 4939, 5826), arrayindex(regextract(msg, "^User \'?([\w\\]+)\'? (?:logged|logout|from|password|has logged|is logged|has been logged|denied access)"), 0), 
         event_id in (186, 468, 469, 470, 640, 2667, 2710, 2714, 2715, 2716, 2717, 3310, 3311, 3318, 3340, 3341, 3342, 3343, 3344, 3345, 3440, 3444, 4244, 4245, 4248, 5553, 5555, 5765, 5825, 5827, 5828, 5829), arrayindex(regextract(msg, "^User\s*\:?\s*\'?([\w\\]+)\'?\s*\:"), 0), 
         event_id in (419, 5008, 639, 992, 993, 3390, 4940, 4941), arrayindex(regextract(msg, "[Uu]ser \'?([\w\\]+)\'? (?:is (?:trying|logged|added|deleted)|command|logged|has|expired)"), 0), 
@@ -205,15 +200,15 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         arrayindex(regextract(msg, "apply user role (\S)"), 0),
         arrayindex(regextract(msg, "Local user \S+ is \S+ \S+ the group ([\w\_\']+)"), 0)),
     vlan_id = if(
-        event_id in (1,2), arrayindex(regextract(msg, "^(\d+) virtual LAN"), 0),
-        event_id = 316, arrayindex(regextract(msg, "^VLAN ID out of range \(?(\d+)"), 0), 
-        event_id = 964, arrayindex(regextract(msg, "^Failed to allocate memory for (\d+)"), 0), 
-        event_id = 3815, arrayindex(regextract(msg, "^(\d+) \S+ Port \S+ moved"), 0), 
-        event_id = 3824, arrayindex(regextract(msg, "^GVRP could not create (\d+) because"), 0), 
-        event_id = 3826, arrayindex(regextract(msg, "^GVRP could not add port \S+ to (\d+)"), 0), 
-        event_id = 3828, arrayindex(regextract(msg, "^Port \S+ unblocked on (\d+)"), 0), 
-        event_id = 4588, arrayindex(regextract(msg, "^Unable to add binding for (\d+)"), 0),
-        arrayindex(regextract(msg, "(?:VID|vid|VLAN|vlan|Vlan|Vlan-id|VLAN-id)\s*:?\s*(\d+)"), 0)) // default fallback  
+        event_id in (1,2), arrayindex(regextract(msg, "^0*(\d+) virtual LAN"), 0),
+        event_id = 316, arrayindex(regextract(msg, "^VLAN ID out of range \(?0*(\d+)"), 0), 
+        event_id = 964, arrayindex(regextract(msg, "^Failed to allocate memory for 0*(\d+)"), 0), 
+        event_id = 3815, arrayindex(regextract(msg, "^0*(\d+) \S+ Port \S+ moved"), 0), 
+        event_id = 3824, arrayindex(regextract(msg, "^GVRP could not create 0*(\d+) because"), 0), 
+        event_id = 3826, arrayindex(regextract(msg, "^GVRP could not add port \S+ to 0*(\d+)"), 0), 
+        event_id = 3828, arrayindex(regextract(msg, "^Port \S+ unblocked on 0*(\d+)"), 0), 
+        event_id = 4588, arrayindex(regextract(msg, "^Unable to add binding for 0*(\d+)"), 0),
+        arrayindex(regextract(msg, "(?:VID|vid|VLAN|vlan|Vlan|Vlan-id|VLAN-id)\s*:?\s*0*(\d+)"), 0)) // default fallback  
 
 | alter // Post Extraction Processing 
     formatted_mac_address = arraystring(regextract(mac_address, "[\da-fA-F]{2}"), ":"), 
@@ -225,12 +220,12 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
     tgt_ipv4 = arrayindex(regextract(tgt_ip, "((?:\d{1,3}\.){3}\d{1,3})"), 0), 
     tgt_ipv6 = arrayindex(regextract(tgt_ip, "((?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4})"), 0),
     tgt_user_domain = arrayindex(regextract(tgt_user, "(.+)\\.+"), 0),
-    user_domain = arrayindex(regextract(user, "(.+)\\.+"), 0)
+    user_domain = arrayindex(regextract(username, "(.+)\\.+"), 0)
 
 | alter // XDM Mappings 
     xdm.alert.severity = severity,
     xdm.auth.auth_method = access_mode,
-    xdm.event.id = to_string(event_id),
+    xdm.event.description = msg, 
     xdm.event.is_completed = if(
         event_id in (91, 375, 666, 734, 2552, 2568, 2802, 3318, 3802, 4762), to_boolean("FALSE"),
         event_id in (93, 94, 131, 150, 202, 376, 667, 735, 796, 2553, 2558, 2569, 2803, 3310, 3803, 4050, 4066, 4185, 4215, 4763, 5024, 5033, 5034, 4612), to_boolean("TRUE")),
@@ -244,10 +239,10 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, 
         severity = "7", XDM_CONST.LOG_LEVEL_DEBUG),
     xdm.event.outcome = if(
-        msg ~= "(?i)ERROR|FAIL|REJECTED|UNABLE|ABORT|INCORRECT|PROBLEM|FAULT|DENY|DENIED|MISMATCH|COLLISIONS|CANNOT|UNREACHABLE|NOT FOUND|NOT SUCCEED|UNABLE TO PERMIT|NOT APPLIED|NOT MODIFIED|NOT REACHABLE", XDM_CONST.OUTCOME_FAILED, // corrupted, canceled because o
-        event_name ~= "(?i)SUCCESS" or msg ~= "(?i)SUCCESS|SUCCEEDED", XDM_CONST.OUTCOME_SUCCESS),
+        msg ~= "(?i)ERROR|FAIL|REJECTED|UNABLE|ABORT|INCORRECT|PROBLEM|FAULT|DENY|DENIED|MISMATCH|COLLISIONS|CANNOT|UNREACHABLE|CORRUPTED|NOT FOUND|NOT SUCCEED|UNABLE TO PERMIT|NOT APPLIED|NOT MODIFIED|NOT REACHABLE|CANCELED BECAUSE|CAN\'T REACH", XDM_CONST.OUTCOME_FAILED,
+        msg ~= "(?i)SUCCESS|SUCCEEDED", XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.outcome_reason = outcome_reason,
-    xdm.event.type = coalesce(event_name, facility),
+    xdm.event.type = to_string(event_id),
     xdm.intermediate.host.hostname = gateway_name,
     xdm.intermediate.ipv4 = device_ip,
     xdm.intermediate.ipv6 = gw_ipv6,
@@ -258,17 +253,129 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
     xdm.observer.type = facility,
     xdm.observer.unique_identifier = device_ip,
     xdm.source.host.mac_addresses = if(formatted_mac_address != null, arraycreate(formatted_mac_address)),
-    xdm.source.interface = to_string(port_id),
     xdm.source.ipv4 = src_ipv4,
     xdm.source.ipv6 = src_ipv6,
-    xdm.source.process.command_line = cmd,
     xdm.source.subnet = ip_mask,
     xdm.source.user.domain = user_domain,
     xdm.source.user.groups = if(user_role != null, arraycreate(user_role)),
-    xdm.source.user.username = user,
+    xdm.source.user.username = username,
     xdm.source.vlan = to_integer(vlan_id),
     xdm.target.host.mac_addresses = if(formatted_tgt_mac_address != null, arraycreate(formatted_tgt_mac_address)),
+    xdm.target.process.command_line = cmd,
+    xdm.target.interface = to_string(interface_port_id),
     xdm.target.ipv4 = tgt_ipv4,
     xdm.target.ipv6 = tgt_ipv6,
     xdm.target.user.domain = tgt_user_domain,
     xdm.target.user.username = tgt_user;
+
+
+/* -----------------------------------------------------------
+    Event Log Alternative Format:  
+    seq no:timestamp: %facility-severity-MNEMONIC:description 
+   ----------------------------------------------------------*/
+filter _raw_log ~= "%\S+\-\d\-\S+:"
+| alter // Extract the common message parts 
+    sequence_number = arrayindex(regextract(_raw_log, "^\<\d+\>(\d+):") , 0),
+    facility = arrayindex(regextract(_raw_log, "%(.+?)\-\d+\-\S+?:") , 0),
+    severity = arrayindex(regextract(_raw_log, "%.+?\-(\d+)\-\S+?:") , 0),
+    event_name_mnemonic = arrayindex(regextract(_raw_log, "%.+?\-\d+\-(\S+?):") , 0),
+    msg = arrayindex(regextract(_raw_log, "\s+\S+?:\s+(.+)") , 0)
+
+| alter // extract dynamic fields from the syslog message description 
+    client_mac_address = coalesce(
+        arrayindex(regextract(msg, "from MAC address\s+([\da-fA-F]{6}\-[\da-fA-F]{6})"), 0),
+        arrayindex(regextract(msg, "client\s*\(((?:[\da-fA-F]{4}\.){2}[\da-fA-F]{4})\)"), 0),
+        arrayindex(regextract(msg, "(?:Host|Client MAC|sourced by)\s+((?:[\da-fA-F]{4}\.){2}[\da-fA-F]{4})"), 0)),
+    device_hostname = arrayindex(regextract(_raw_log ,"\<\d+\>\d+\:\s([\w+\-\_]+)\:\s\d+\:"), 0),
+    device_product_id = arrayindex(regextract(msg ,"\[PID\:([^\,]+)\,"), 0), 
+    device_serial_number = arrayindex(regextract(msg , ",SN\:([\w\-]+)"), 0),
+    interface_port_id = coalesce(
+        arrayindex(regextract(msg ,"Interface\s([^\/]+\/\d+\/*\d*)"), 0),
+        arrayindex(regextract(msg ,"interface\sname\s([^\/]+\/\d+\/\d+)"), 0),
+        arrayindex(regextract(msg , "Interface\s([\w\-]+)"), 0),
+        arrayindex(regextract(msg , "on interface\s+(\S+)\s+by"), 0),
+        arrayindex(regextract(msg , "(?:on|port|Unblocking|Blocking)\s+(\w+\/\w+\/\w+)"), 0),
+        arrayindex(regextract(msg , "^(\w+\/\w+\/\w+):"), 0)),
+    outcome_reason = coalesce(
+        arrayindex(regextract(msg, "\sreason:\s*(.+?)\."), 0), 
+        arrayindex(regextract(msg, "with reason\s*\(([^\)]+)\)"), 0),
+        arrayindex(regextract(msg, "\[Reason:\s*([^\]]+)\]"), 0)),
+    process_name = coalesce(
+        arrayindex(regextract(msg ,"by\sprocess\s(.+?)\s+(?:Process|Policy\smanager)"), 0),
+        arrayindex(regextract(msg ,"process\s*\=\s*([^\.]+)\."), 0)),
+    server_ipv4 = arrayindex(regextract(msg, "[Ss]erver(?:\s+not\s+found)?(?:\s+at)?\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+    server_name = arrayindex(regextract(msg, "Server\s+([\w\-]+)\s+is"), 0),
+    session_id = coalesce(
+        arrayindex(regextract(msg, "AuditSessionID (\w+)"), 0),
+        arrayindex(regextract(msg, "session (\w+)\("), 0)),
+    source_ipv4 = coalesce(
+        arrayindex(regextract(msg , "from\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(msg , "from\s+host\s+((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(msg , "list\s\d+\spermitted\s((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(msg ,"\[Source\:\s((?:\d{1,3}\.){3}\d{1,3})\]"), 0),
+        arrayindex(regextract(msg ,"session\s\d+\(((?:\d{1,3}\.){3}\d{1,3})\)"), 0),
+        arrayindex(regextract(msg ,"connection\sfrom\s((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(msg ,"to\shost\s((?:\d{1,3}\.){3}\d{1,3})\s"), 0),
+        arrayindex(regextract(msg ,"address\s((?:\d{1,3}\.){3}\d{1,3})\son"), 0),
+        arrayindex(regextract(msg ,"neighbor\s((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(msg , "on\s+\w+\s*\(((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        arrayindex(regextract(msg ,"\(((?:\d{1,3}\.){3}\d{1,3})\)\)\,\suser"), 0)),
+    target_ipv4 = arrayindex(regextract(msg ,"to\shost\s((?:\d{1,3}\.){3}\d{1,3})\s"), 0),
+    target_port = coalesce(
+        arrayindex(regextract(msg ,"\[localport\:\s(\d+)\]"), 0), 
+        arrayindex(regextract(msg ,"to\shost\s\d+\.\d+\.\d+\.\d+\sport\s(\d+)"), 0)),
+    username = coalesce(
+        arrayindex(regextract(msg ,"user\s+name\s*:\s*([\w\-]+)"), 0),
+        arrayindex(regextract(msg ,"User\s+\'([^\']+)\'\s+\w+"), 0),
+        arrayindex(regextract(msg ,"User\s+(\S+)\s+has"), 0),
+        arrayindex(regextract(msg ,"\[user\:\s([^\]]+)\]"), 0),
+        arrayindex(regextract(msg ,"\:\sUser\s(\S+)\s"), 0),
+        arrayindex(regextract(msg ,"Username:\s*()"), 0),
+        arrayindex(regextract(msg ,"by\s+(\S+)\s+on\s+"), 0),
+        arrayindex(regextract(msg ,"\(\d+\.\d+\.\d+\.\d+\)\)\,\suser\s(\S+)"), 0)),
+    vlan = arrayindex(regextract(msg, "(?:VID|vid|VLAN|vlan|Vlan|Vlan-id|VLAN-id)\s*:?\s*0*(\d+)"), 0)
+
+| alter // post-extraction formatting 
+    client_mac_formatted = arraystring(regextract(client_mac_address, "[\da-fA-F]{2}"), ":"), 
+    sequence_number = replex(sequence_number, "^0+", ""),
+    user_domain = arrayindex(regextract(username, "(.+)\\.+"), 0)
+
+| alter // XDM mappings
+    xdm.alert.severity = severity,
+    xdm.event.description = msg,
+    xdm.event.id = sequence_number,
+    xdm.event.log_level = if(
+        severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, 
+        severity = "1", XDM_CONST.LOG_LEVEL_ALERT , 
+        severity = "2", XDM_CONST.LOG_LEVEL_CRITICAL, 
+        severity = "3", XDM_CONST.LOG_LEVEL_ERROR, 
+        severity = "4", XDM_CONST.LOG_LEVEL_WARNING, 
+        severity = "5", XDM_CONST.LOG_LEVEL_NOTICE, 
+        severity = "6", XDM_CONST.LOG_LEVEL_INFORMATIONAL, 
+        severity = "7", XDM_CONST.LOG_LEVEL_DEBUG),
+    xdm.event.outcome = if(
+        msg ~= "(?i)ERROR|FAIL|REJECTED|UNABLE|ABORT|INCORRECT|PROBLEM|FAULT|DENY|DENIED|MISMATCH|COLLISIONS|CANNOT|UNREACHABLE|CORRUPTED|NOT FOUND|NOT SUCCEED|UNABLE TO PERMIT|NOT APPLIED|NOT MODIFIED|NOT REACHABLE|CANCELED BECAUSE|CAN\'T REACH", XDM_CONST.OUTCOME_FAILED,
+        event_name_mnemonic ~= "SUCCESS" or msg ~= "(?i)SUCCESS|SUCCEEDED", XDM_CONST.OUTCOME_SUCCESS),
+    xdm.event.outcome_reason = outcome_reason,
+    xdm.event.type = if( // rename vague event names to a meaningful name if necessary 
+        event_name_mnemonic = "FAIL" and msg ~= "(?i)Authorization failed", "AUTHORIZATION_FAILED",
+        event_name_mnemonic = "FAIL" and msg ~= "(?i)Authentication failed", "AUTHENTICATION_FAILED",
+        event_name_mnemonic),
+    xdm.network.session_id = session_id,
+    xdm.observer.name = device_hostname,
+    xdm.observer.type = facility,
+    xdm.observer.unique_identifier = coalesce(device_serial_number, device_hostname),
+    xdm.session_context_id = session_id,
+    xdm.source.host.device_id = coalesce(device_serial_number, device_hostname),
+    xdm.source.host.device_model = device_product_id,
+    xdm.source.host.hardware_uuid = device_serial_number,
+    xdm.source.host.mac_addresses = if(client_mac_formatted != null, arraycreate(client_mac_formatted)),
+    xdm.source.ipv4 = source_ipv4,
+    xdm.source.process.name = process_name,
+    xdm.source.user.domain = user_domain,
+    xdm.source.user.username = username,
+    xdm.source.vlan = to_integer(vlan),
+    xdm.target.host.hostname = server_name,
+    xdm.target.interface = interface_port_id,
+    xdm.target.ipv4 = coalesce(server_ipv4, target_ipv4),
+    xdm.target.port = to_integer(target_port);
