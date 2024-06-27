@@ -46,12 +46,6 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: fetch_time
-  type: 0
-  defaultvalue: '3 days'
-  section: Collect
-  required: false
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
