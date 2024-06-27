@@ -554,18 +554,17 @@ script:
       description: The name of the tags to apply to supplied assets.
     description: Assigns tags to a list of assets.
   - name: asm-add-note-to-asset
-    description: Adds a note to an asset in Xpanse.
     arguments:
     - name: asset_id
-      required: true
       description: The asset ID to add a note to.
+      required: true
     - name: entity_type
+      description: "The type of Xpanse asset. Allowed values are: 'asset' or 'ip_range'."
       auto: PREDEFINED
       predefined:
       - ip_range
       - asset
       required: true
-      description: "The type of Xpanse asset. Allowed values are: 'asset' or 'ip_range'."
     - name: note_to_add
       required: true
       description: The custom note to be added to the notes section of the asset in Xpanse.
@@ -577,6 +576,7 @@ script:
       - false
       defaultValue: true
       description: "If you would like to overwrite the current note on the asset, set to 'false'. If you would like to append to the current note, set to 'true' (Note: Default value is 'true')."
+    description: Adds a note to an asset in Xpanse.
   - name: asm-tag-asset-remove
     arguments:
     - name: asm_id_list
@@ -594,10 +594,10 @@ script:
   - name: asm-tag-range-remove
     arguments:
     - name: range_id_list
-      description: Comma-separated list of range IDs to remove tags from.
+      description: 'Comma-separated list of range IDs to remove tags from.'
     - name: tags
       description: The name of the tags to remove from supplied IP ranges.
-    description: Removes tags from a list of IP ranges.
+    description: 'Removes tags from a list of IP ranges.'
   - name: asm-list-incidents
     arguments:
     - name: incident_id_list
@@ -605,12 +605,12 @@ script:
     - name: description
       description: String to search for within the incident description field.
     - name: status
+      description: Status to search incidents for.
       auto: PREDEFINED
       predefined:
       - new
       - under_investigation
       - resolved
-      description: Status to search incidents for.
     - name: lte_creation_time
       description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
     - name: gte_creation_time
@@ -703,8 +703,8 @@ script:
   - name: asm-update-incident
     arguments:
     - name: incident_id
-      required: true
       description: ID of the incident to modify.
+      required: true
     - name: alert_id
       description: Used for scoping updates such as comments to the alert level.
     - name: assigned_user_mail
@@ -765,8 +765,8 @@ script:
     - name: ip
       description: IP address to enrich.
       required: true
-      default: true
       isArray: true
+      default: true
     outputs:
     - contextPath: ASM.IP.ip
       description: The IP address of the asset.
@@ -809,7 +809,7 @@ script:
       description: The actual score.
       type: Number
     - contextPath: DBotScore.Reliability
-      description: The reliability of the source providing the intelligence data.
+      description: 'The reliability of the source providing the intelligence data.'
       type: String
     - contextPath: IP.Address
       description: IP address.
@@ -818,8 +818,8 @@ script:
   - name: domain
     arguments:
     - name: domain
-      description: Domain to enrich.
       required: true
+      description: Domain to enrich.
       isArray: true
       default: true
     outputs:
@@ -870,8 +870,8 @@ script:
   - name: asm-get-incident
     arguments:
     - name: incident_id
-      required: true
       description: The ID of the incident to be fetched.
+      required: true
     outputs:
     - contextPath: ASM.Incident.incident_id
       description: The ID of the incident.
@@ -907,7 +907,7 @@ script:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
     description: Get external websites assets.
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.99474
   isFetchSamples: true
   isfetch: true
   script: ''
