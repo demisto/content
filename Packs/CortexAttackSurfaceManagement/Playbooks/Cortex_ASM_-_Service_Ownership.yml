@@ -60,6 +60,14 @@ tasks:
                 value:
                   simple: alert.asmserviceownerunrankedraw.accounttype
                 iscontext: true
+            - operator: isNotEqualString
+              left:
+                value:
+                  simple: alert.asmserviceownerunrankedraw.accounttype
+                iscontext: true
+              right:
+                value:
+                  simple: SERVICE-ACCOUNT
       asmsystemids:
         complex:
           root: alert.asmsystemids
