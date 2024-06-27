@@ -46,7 +46,8 @@ class Client(BaseClient):
             page: response page.
             user_id: the id of the user to search.
             team_id: the id of the team filter by.
-
+            email: the email of the user to search.
+            
         Returns:
             Response from API.
         """
@@ -55,15 +56,22 @@ class Client(BaseClient):
             'size': size,
             'teamId': team_id,
         })
-
-        if email:
-            self._http_request(method='GET', url_suffix='auth/public/v1/users',
-                               headers=self._headers,
-                               params=params)
-
-        return self._http_request(method='GET', url_suffix=f'auth/public/v1/users/{user_id if user_id else ""}',
+        
+        if not email:
+            return self._http_request(method='GET', url_suffix=f'auth/public/v1/users/{user_id if user_id else ""}',
                                   headers=self._headers,
                                   params=params)
+        
+        res = self._http_request(method='GET', url_suffix='auth/public/v1/users',
+                                headers=self._headers,
+                                params=params)
+        users = []
+        for user in res.get('content'):
+            if user.get('email') == email or user.get('id') == user_id:
+                users.append(user)
+        
+        return users
+        
 
     def device_search(self, size: Optional[int], page: Optional[int], device_id: Optional[str]):
         """Search devices by sending a GET request.
@@ -398,8 +406,7 @@ def users_search_command(client: Client, args: dict) -> CommandResults:
     size = page_size if page_size else limit
 
     response = client.users_search(size=size, page=page, team_id=team_id, user_id=user_id, email=email)
-
-    content = response.get('content') if not user_id else response
+    content = response.get('content') if (not user_id and not email) else response
 
     hr = tableToMarkdown(name='Users Search Results', t=content,
                          headers=['id', 'firstName', 'lastName', 'email', 'created', 'role', 'teams'],
