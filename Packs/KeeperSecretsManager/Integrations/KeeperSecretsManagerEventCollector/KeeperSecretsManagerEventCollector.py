@@ -26,272 +26,7 @@ urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-""" CLIENT CLASS """
-
-
-class Client(BaseClient):
-    """Client class to interact with the service API
-
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
 """ HELPER FUNCTIONS """
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-""" COMMAND FUNCTIONS """
-
-
-def test_module(client: Client) -> str:
-    """Tests API connectivity and authentication'
-
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-
-    :type client: ``Client``
-    :param Client: client to use
-
-    :return: 'ok' if test passed, anything else will fail the test.
-    :rtype: ``str``
-    """
-
-    message: str = ""
-    try:
-        # TODO: ADD HERE some code to test connectivity and authentication to your service.
-        # This  should validate all the inputs given in the integration configuration panel,
-        # either manually or by using an API that uses them.
-        message = "ok"
-    except DemistoException as e:
-        if "Forbidden" in str(e) or "Authorization" in str(e):  # TODO: make sure you capture authentication errors
-            message = "Authorization Error: make sure API Key is correctly set"
-        else:
-            raise e
-    return message
-
-
-# TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    dummy = args.get("dummy", None)
-    if not dummy:
-        raise ValueError("dummy not specified")
-
-    # Call the Client function and get the raw response
-    result = client.baseintegration_dummy(dummy)
-
-    return CommandResults(
-        outputs_prefix="BaseIntegration",
-        outputs_key_field="",
-        outputs=result,
-    )
-
-
-class LastRun:
-    def __init__(
-        self,
-        start_time: datetime | None = None,
-        last_ids: set | None = None,
-    ) -> None:
-        self.last_run_timestamp = start_time if start_time else datetime.now()
-        self.last_ids = last_ids if last_ids else set()
-
-    def set_last_ids(self, ids: set[str]) -> None:
-        self.last_ids = set(ids) if isinstance(ids, list) else ids
-
-    def to_demisto_last_run(self) -> dict:
-        # if not self.event_types:
-        #     return {}
-        # data = {
-        #     LAST_RUN: {
-        #         event_type.name: self.__getattribute__(
-        #             event_type.name
-        #         ).to_demisto_last_run()
-        #         for event_type in self.event_types
-        #     }
-        # }
-        # return data
-        ...
-
-    def add_event_type(
-        self,
-        event_type: str,
-        start_time: datetime,
-        last_ids: set,
-        event_types: list[str],
-    ) -> None:
-        # setattr(self, event_type, self.LastRunEvent(start_time, last_ids))
-        # event_type_from_str = next(filter(lambda x: x.name == event_type, event_types))
-        # self.event_types.append(event_type_from_str)
-        ...
-
-
-def get_last_run_from_dict(data: dict, event_types: list[str]) -> LastRun:
-    new_last_run = LastRun()
-    demisto.debug(f"{LOG_LINE} - Starting to parse last run from server: {str(data.get(LAST_RUN, 'Missing Last Run key'))}")
-
-    for event_type in data.get(LAST_RUN, {}):
-        demisto.debug(f"{LOG_LINE} - Parsing {event_type=}")
-
-        time = datetime.fromisoformat(data[LAST_RUN].get(event_type, {}).get("last_fetch_timestamp"))
-        ids = set(data[LAST_RUN].get(event_type, {}).get("last_fetch_last_ids", []))
-        demisto.debug(f"{LOG_LINE} - found id and timestamp in data, adding. \n {ids=}, {time=}")
-
-        new_last_run.add_event_type(event_type, time, ids, event_types)
-
-    demisto.debug(f"{LOG_LINE} - last run was loaded successfully.")
-
-    return new_last_run
-
-
-class DeviceApproval(LoginStepDeviceApproval):
-    def __init__(
-        self,
-        params: KeeperParams,
-    ):
-        self.params = params
-
-    @property
-    def username(self):
-        pass
-
-    def cancel(self):
-        pass
-
-    def send_push(self, channel: DeviceApprovalChannel, encryptedDeviceToken: bytes, encryptedLoginToken: bytes):
-        LoginV3Flow.verifyDevice(
-            self.params, encryptedDeviceToken, encryptedLoginToken, approval_action="push", approval_channel=channel
-        )
-
-    def send_code(self, channel: DeviceApprovalChannel, encryptedDeviceToken: bytes, encryptedLoginToken: bytes, code: str):
-        LoginV3Flow.verifyDevice(
-            self.params,
-            encryptedDeviceToken,
-            encryptedLoginToken,
-            approval_action="code",
-            approval_channel=channel,
-            approval_code=code,
-        )
-
-    def resume(self):
-        pass
-
-
-class PasswordStep(LoginStepPassword):
-    def __init__(self, params: KeeperParams, salt_bytes, salt_iterations):
-        self.params = params
-        self.salt_bytes = salt_bytes
-        self.salt_iterations = salt_iterations
-
-    @property
-    def username(self):
-        pass
-
-    def forgot_password(self):
-        pass
-
-    def verify_password(self, params: KeeperParams, encryptedLoginToken: bytes) -> APIRequest_pb2.LoginResponse:
-        params.auth_verifier = crypto.derive_keyhash_v1(params.password, self.salt_bytes, self.salt_iterations)  # type: ignore
-        return LoginV3API.validateAuthHashMessage(params, encryptedLoginToken)
-
-    def verify_biometric_key(self, biometric_key):
-        pass
-
-    def cancel(self):
-        pass
-
-
-def start_registering_device(device_approval: DeviceApproval, params: KeeperParams, new_device: bool = False):
-    encryptedDeviceToken = LoginV3API.get_device_id(params, new_device)
-    resp: APIRequest_pb2.LoginResponse = LoginV3API.startLoginMessage(
-        params, encryptedDeviceToken, cloneCode=None, loginType="NORMAL"
-    )
-
-    append_to_integration_context(
-        {
-            "device_private_key": params.device_private_key,
-            "device_token": params.device_token,
-            "login_token": utils.base64_url_encode(resp.encryptedLoginToken),  # type: ignore
-        }
-    )
-
-    if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # type: ignore # client goes to “standard device approval”.
-        device_approval.send_push(
-            DeviceApprovalChannel.Email,
-            encryptedDeviceToken,
-            resp.encryptedLoginToken,  # type: ignore
-        )
-    elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
-        raise DemistoException("Try running the finish registration device command without supplying a code")
-    else:
-        raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
-
-
-def finish_registering_device(
-    device_approval: DeviceApproval, params: KeeperParams, encrypted_login_token: bytes, code: str = ""
-):
-    encrypted_device_token = utils.base64_url_decode(params.device_token)  # type: ignore
-    if code:
-        device_approval.send_code(
-            DeviceApprovalChannel.Email,
-            encrypted_device_token,
-            encrypted_login_token,
-            code,
-        )
-    resp = LoginV3API.startLoginMessage(params, encrypted_device_token)
-    if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
-        salt = api.get_correct_salt(resp.salt)  # type: ignore
-        password_step = PasswordStep(params, salt_bytes=salt.salt, salt_iterations=salt.iterations)
-        verify_password_response = password_step.verify_password(params, encrypted_login_token)
-        if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # type: ignore
-            LoginV3Flow.post_login_processing(params, verify_password_response)
-        else:
-            raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")  # type: ignore
-    else:
-        raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
-
-
-def start_login(device_approval: DeviceApproval, params: KeeperParams):
-    try:
-        start_registering_device(device_approval, params)
-    except InvalidDeviceToken:
-        logging.warning("Registering new device")
-        start_registering_device(device_approval, params, new_device=True)
-
-
-def complete_login(device_approval: DeviceApproval, params: KeeperParams, code: str):
-    integration_context = get_integration_context()
-    encrypted_login_token = utils.base64_url_decode(integration_context["login_token"])
-    finish_registering_device(device_approval, params, encrypted_login_token, code)
-    append_to_integration_context(
-        {
-            "session_token": params.session_token,
-            "clone_code": params.clone_code,
-        }
-    )
-
-
-""" MAIN FUNCTION """
 
 
 def load_integration_context_into_keeper_params(
@@ -321,66 +56,224 @@ def append_to_integration_context(context_to_append: dict[str, Any]):
     set_integration_context(integration_context)
 
 
+""" CLIENT CLASS """
+
+
+class Client:
+    class DeviceApproval(LoginStepDeviceApproval):
+        @property
+        def username(self):
+            pass
+
+        def cancel(self):
+            pass
+
+        def send_push(
+            self,
+            params: KeeperParams,
+            channel: DeviceApprovalChannel,
+            encryptedDeviceToken: bytes,
+            encryptedLoginToken: bytes,
+        ):
+            LoginV3Flow.verifyDevice(
+                params, encryptedDeviceToken, encryptedLoginToken, approval_action="push", approval_channel=channel
+            )
+
+        def send_code(
+            self,
+            params: KeeperParams,
+            channel: DeviceApprovalChannel,
+            encryptedDeviceToken: bytes,
+            encryptedLoginToken: bytes,
+            code: str,
+        ):
+            LoginV3Flow.verifyDevice(
+                params,
+                encryptedDeviceToken,
+                encryptedLoginToken,
+                approval_action="code",
+                approval_channel=channel,
+                approval_code=code,
+            )
+
+        def resume(self):
+            pass
+
+    class PasswordStep(LoginStepPassword):
+        def __init__(self, salt_bytes: bytes, salt_iterations: int):
+            self.salt_bytes = salt_bytes
+            self.salt_iterations = salt_iterations
+
+        @property
+        def username(self):
+            pass
+
+        def forgot_password(self):
+            pass
+
+        def verify_password(self, params: KeeperParams, encryptedLoginToken: bytes) -> APIRequest_pb2.LoginResponse:
+            params.auth_verifier = crypto.derive_keyhash_v1(params.password, self.salt_bytes, self.salt_iterations)  # type: ignore
+            return LoginV3API.validateAuthHashMessage(params, encryptedLoginToken)
+
+        def verify_biometric_key(self, biometric_key):
+            pass
+
+        def cancel(self):
+            pass
+
+    def __init__(
+        self,
+        server_url: str,
+        username: str,
+        password: str,
+    ) -> None:
+        self.keeper_params: KeeperParams = load_integration_context_into_keeper_params(
+            username=username,
+            password=password,
+            server_url=server_url,
+        )
+
+    def start_registering_device(self, device_approval: DeviceApproval, new_device: bool = False):
+        encryptedDeviceToken = LoginV3API.get_device_id(self.keeper_params, new_device)
+        resp: APIRequest_pb2.LoginResponse = LoginV3API.startLoginMessage(
+            self.keeper_params, encryptedDeviceToken, cloneCode=None, loginType="NORMAL"
+        )
+
+        append_to_integration_context(
+            {
+                "device_private_key": self.keeper_params.device_private_key,
+                "device_token": self.keeper_params.device_token,
+                "login_token": utils.base64_url_encode(resp.encryptedLoginToken),  # type: ignore
+            }
+        )
+
+        if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # type: ignore # client goes to “standard device approval”.
+            device_approval.send_push(
+                DeviceApprovalChannel.Email,
+                encryptedDeviceToken,
+                resp.encryptedLoginToken,  # type: ignore
+            )
+        elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
+            raise DemistoException("Try running the 'complete-authentication' command without supplying a code argument")
+        else:
+            raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
+
+    def finish_registering_device(self, device_approval: DeviceApproval, encrypted_login_token: bytes, code: str = ""):
+        encrypted_device_token = utils.base64_url_decode(params.device_token)  # type: ignore
+        if code:
+            device_approval.send_code(
+                self.keeper_params,
+                DeviceApprovalChannel.Email,
+                encrypted_device_token,
+                encrypted_login_token,
+                code,
+            )
+        resp = LoginV3API.startLoginMessage(self.keeper_params, encrypted_device_token)
+        if resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
+            salt = api.get_correct_salt(resp.salt)  # type: ignore
+            password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
+            verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
+            if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # type: ignore
+                LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
+            else:
+                raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")  # type: ignore
+        else:
+            raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
+
+    def start_login(self):
+        device_approval = self.DeviceApproval()
+        try:
+            self.start_registering_device(device_approval)
+        except InvalidDeviceToken:
+            demisto.info("Registering new device")
+            self.start_registering_device(device_approval, new_device=True)
+
+    def complete_login(self, code: str):
+        device_approval = self.DeviceApproval()
+        integration_context = get_integration_context()
+        encrypted_login_token = utils.base64_url_decode(integration_context["login_token"])
+        self.finish_registering_device(device_approval, encrypted_login_token, code)
+        append_to_integration_context(
+            {
+                "session_token": self.keeper_params.session_token,
+                "clone_code": self.keeper_params.clone_code,
+            }
+        )
+        if not self.keeper_params.session_token:
+            raise DemistoException("Could not find session token")
+
+    def query_audit_logs(self, limit: int, start_event_time: int) -> dict[str, Any]:
+        request_query = {
+            "command": "get_audit_event_reports",
+            "report_type": "raw",
+            "scope": "enterprise",
+            "limit": limit,
+            "order": "ascending",
+            "filter": {"min": start_event_time},
+        }
+        return api.communicate(self.keeper_params, request_query)
+
+
+def test_module() -> None:
+    raise DemistoException(
+        "In order to authorize the instance, first run the command `!ksm-event-collector-auth-start`."
+        " A code will be sent to your email, copy it and paste that value in the command"
+        " `!ksm-event-collector-auth-complete` as an argument to finish the process."
+    )
+
+
+""" MAIN FUNCTION """
+
+
 def load_json(path: str):
     with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
-def get_audit_logs(keeper_params: KeeperParams, start_event_time: int, max_fetch_limit: int, last_fetched_ids: set[str]):
-    last_fetched_ids = {"11099258860", "11099258861", "11099258862"}
+def get_audit_logs(
+    client: Client, start_event_time: int, max_fetch_limit: int, last_fetched_ids: set[str]
+) -> list[dict[str, Any]]:
     max_fetch_limit = 9
-    # start_event_time -> UNIX epoch time in seconds
-
     continue_fetching = True
-    events_to_return = []
+    events_to_return: list[dict[str, Any]] = []
+    # start_event_time -> UNIX epoch time in seconds
     start_time_to_fetch = start_event_time
-    next_run_fetched_ids = last_fetched_ids
+    fetched_ids = last_fetched_ids
     limit = max_fetch_limit
-    rq = {
-        "command": "get_audit_event_reports",
-        "report_type": "raw",
-        "scope": "enterprise",
-        "limit": limit,
-        "order": "ascending",
-    }
-
-    rq["filter"] = {
-        "created": {"min": 0}  # return audit events starting start_event_time
-    }
     while continue_fetching:
-        rq["limit"] = limit
-        rq["filter"] = {
-            "created": {"min": start_time_to_fetch}  # return audit events starting start_event_time
-        }
-        # rs = api.communicate(keeper_params, rq)
-        # audit_events = rs["audit_event_overview_report_rows"]
+        # query_response = client.query_audit_logs(limit=limit, start_event_time=start_time_to_fetch)
+        # audit_events = query_response["audit_event_overview_report_rows"]
         audit_events: list[dict[str, Any]] = load_json("mocked_data_2.json")
         audit_events_count = len(audit_events)
-        demisto.debug(f"{LOG_LINE} got {len(audit_events)} events from API")
+        demisto.debug(f"{LOG_LINE} got {audit_events_count} events from API")
         if audit_events:
             # dedup
-            dedupped_audit_events = dedup_events(audit_events, last_fetched_ids)
+            dedupped_audit_events = dedup_events(audit_events, fetched_ids)
             if audit_events_count == limit and dedupped_audit_events:
-                dedupped_events_count = len(dedupped_audit_events)
+                # We fetched the maximum amount, and we fetched new events
                 # We need to make up for dedupped events by running another fetch
+                dedupped_events_count = len(dedupped_audit_events)
                 limit = audit_events_count - dedupped_events_count
             else:
+                # We did not reach the limit, or all events have been dropped
+                # No need to continue fetching
                 continue_fetching = False
+            if dedupped_audit_events:
+                events_to_return.extend(dedupped_audit_events)
 
-            events_to_return.extend(dedupped_audit_events)
-
-            # Getting last events's creation date, assuming asc order
-            start_time_to_fetch: int = int(dedupped_audit_events[-1]["created"])
-            # We get the event IDs that have the same creation time as the latest event in the response
-            # We use them to dedup in the next run
-            next_run_fetched_ids: set[str] = {
-                str(audit_event["id"])
-                for audit_event in dedupped_audit_events
-                if int(audit_event["created"]) == start_time_to_fetch
-            }
+                # Getting last events's creation date, assuming asc order
+                start_time_to_fetch: int = int(dedupped_audit_events[-1]["created"])
+                # We get the event IDs that have the same creation time as the latest event in the response
+                # We use them to dedup in the next run
+                fetched_ids: set[str] = {
+                    str(audit_event["id"])
+                    for audit_event in dedupped_audit_events
+                    if int(audit_event["created"]) == start_time_to_fetch
+                }
         else:
             continue_fetching = False
-    demisto.setLastRun({"last_fetch_epoch_time": str(start_time_to_fetch), "last_fetch_ids": list(next_run_fetched_ids)})
+    demisto.setLastRun({"last_fetch_epoch_time": str(start_time_to_fetch), "last_fetch_ids": list(fetched_ids)})
+    return events_to_return
 
 
 def dedup_events(audit_events: list[dict[str, Any]], last_fetched_ids: set[str]) -> list[dict[str, Any]]:
@@ -393,21 +286,28 @@ def dedup_events(audit_events: list[dict[str, Any]], last_fetched_ids: set[str])
     return dedupped_audit_events
 
 
-def fetch_events(keeper_params: KeeperParams, last_run: dict[str, Any], max_fetch_limit: int):
+def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int):
     demisto.debug(f"last_run: {last_run}" if last_run else "last_run is empty")
     # We save the last_fetch_epoch_time in string format, to gracefully handle how the backend server handles
     # data saved to the last run object
     last_fetch_epoch_time: int = int(last_run.get("last_fetch_epoch_time", "0"))
 
     # (if 0) returns False
-    last_fetch_epoch_time = int(last_fetch_epoch_time) if last_fetch_epoch_time else int(datetime.now().timestamp())
+    last_fetch_epoch_time = last_fetch_epoch_time if last_fetch_epoch_time else int(datetime.now().timestamp())
     last_fetched_ids: set[str] = set(last_run.get("last_fetch_ids", []))
     audit_log = get_audit_logs(
-        keeper_params=keeper_params,
+        client=client,
         start_event_time=last_fetch_epoch_time,
         max_fetch_limit=max_fetch_limit,
         last_fetched_ids=last_fetched_ids,
     )
+
+
+def test_authorization(
+    client: Client,
+) -> CommandResults:
+    client.query_audit_logs(limit=1, start_event_time=0)
+    return CommandResults(readable_output="Successful connection.")
 
 
 def main() -> None:
@@ -418,73 +318,32 @@ def main() -> None:
     """
     params = demisto.params()
     command = demisto.command()
+    args = demisto.args()
     username = params.get("credentials", {})["identifier"]
     password = params.get("credentials", {})["password"]
     server_url = params.get("url") or "keepersecurity.com"
-    keeper_params = load_integration_context_into_keeper_params(username, password, server_url)
-    device_approval = DeviceApproval(keeper_params)
-    # start_login(device_approval, keeper_params)
-    # complete_login(device_approval, keeper_params, "")
-    if not keeper_params.session_token:
-        exit(1)
-    print("logged in")
-    # TODO: make sure you properly handle authentication
-    # api_key = demisto.params().get('credentials', {}).get('password')
-
-    # get the service API url
-
-    # if your Client class inherits from BaseClient, SSL verification is
-    # handled out of the box by it, just pass ``verify_certificate`` to
-    # the Client constructor
-    verify_certificate = not demisto.params().get("insecure", False)
-
-    # if your Client class inherits from BaseClient, system proxy is handled
-    # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get("proxy", False)
-
+    client = Client(
+        server_url=server_url,
+        username=username,
+        password=password,
+    )
+    client.start_login()
+    # client.complete_login(device_approval, keeper_params, "")
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
-        headers: Dict = {}
-
-        client = Client(base_url=server_url, verify=verify_certificate, headers=headers, proxy=proxy)
-
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
-
-        # TODO: REMOVE the following dummy command case:
-        elif command == "baseintegration-dummy":
-            events = []
-            finished = False
-            # UNIX epoch time in seconds
-            last_event_time = 0
-            logged_ids = set()
-            finished = True
-            rq = {
-                "command": "get_audit_event_reports",
-                "report_type": "raw",
-                "scope": "enterprise",
-                "limit": 1000,
-                "order": "ascending",
-            }
-
-            if last_event_time > 0:
-                rq["filter"] = {
-                    "created": {"min": last_event_time}  # return audit events starting last_event_time
-                }
-
-            rs = api.communicate(keeper_params, rq)
-            audit_events = rs["audit_event_overview_report_rows"]
-            demisto.info(len(rs))
-            return_results(baseintegration_dummy_command(client, demisto.args()))
-        # TODO: ADD command cases for the commands you will implement
+            return_results(test_module())
+        elif command == "ksm-event-collector-auth-start":
+            client.start_login()
+        elif command == "ksm-event-collector-auth-complete":
+            client.complete_login(code=args.get("code", ""))
+        elif command == "ksm-event-collector-auth-test":
+            return_results(test_authorization(client=client))
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             fetch_events(
-                keeper_params=keeper_params,
+                client=client,
                 last_run=last_run,
                 max_fetch_limit=DEFAULT_MAX_FETCH,
             )
@@ -494,7 +353,7 @@ def main() -> None:
             # demisto.setLastRun(next_run)
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
