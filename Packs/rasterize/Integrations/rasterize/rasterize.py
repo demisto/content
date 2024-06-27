@@ -261,7 +261,7 @@ def get_chrome_browser(port: str) -> pychrome.Browser | None:
             exp_str = str(exp)
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
-                demisto.debug(f"Failed to connect to Chrome on prot {port} on iteration {i + 1}. {connection_refused}")
+                demisto.debug(f"Failed to connect to Chrome on port {port} on iteration {i + 1}. {connection_refused}")
             else:
                 demisto.debug(
                     f"Failed to connect to Chrome on port {port} on iteration {i + 1}. ConnectionError, {exp_str=}, {exp=}")
@@ -435,7 +435,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
     # it can compare between the fetched 'None' string and the 'None' that assigned.
     instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
-    chrome_options = demisto.params().get('chrome_options', 'None')
+    chrome_options = demisto.params().get('chrome_options') or 'None'
     chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH)
     instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
         get_chrome_instances_contents_dictionaries(chrome_instances_contents)
