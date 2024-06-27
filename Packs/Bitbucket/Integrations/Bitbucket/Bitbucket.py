@@ -1,3 +1,5 @@
+from time import sleep
+
 from requests import Response
 
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -778,6 +780,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
         headers=headers
     )
     outputs = response
+    sleep(1)
     if partial_response:
         outputs = branch_partial_result(response)
     return CommandResults(
