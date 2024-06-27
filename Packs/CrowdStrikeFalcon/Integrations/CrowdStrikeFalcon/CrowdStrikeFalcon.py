@@ -1233,15 +1233,12 @@ def get_file(file_id: list) -> dict:
     return response
 
 
-def list_files(page_size: int = None) -> dict:
+def list_files() -> dict:
     """
         Get a list of put-file ID's that are available to the user for the put command.
-        :param page_size: The maximum number of entries to return per page
         :return: Response JSON which contains errors (if exist) and retrieved resources
     """
     endpoint_url = '/real-time-response/entities/put-files/v2'
-    if page_size:
-        endpoint_url += f'?pageSize={page_size}'
     response = http_request('GET', endpoint_url)
     return response
 
@@ -4271,10 +4268,8 @@ def get_file_command():
 
 
 def list_files_command():
-    args = demisto.args()
-    page_size = arg_to_number(args.get('page_size'))
+    response = list_files()
 
-    response = list_files(page_size)
     resources: list = response.get('resources', [])
 
     files_output = []
