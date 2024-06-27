@@ -1,3 +1,4 @@
+import sys
 from time import sleep
 
 from requests import Response
@@ -782,6 +783,9 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     outputs = response
     sleep(1)
     print('1')
+    demisto.results('')
+    return_outputs('')
+    sys.exit(1)
     if partial_response:
         outputs = branch_partial_result(response)
     return CommandResults(
