@@ -188,6 +188,8 @@ script:
     - name: hide_polling_output
       description: Whether to hide the polling result (automatically filled by polling).
       deprecated: true
+      hidden: true
+      defaultValue: true
     outputs:
     - contextPath: ThreatGrid.Sample.id
       description: The sample id.

@@ -998,9 +998,7 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
     Returns:
         ScheduledCommand: Command, args, timeout and interval for CommandResults.
     """
-    first_run = False
     if "sample_id" not in args:
-        first_run = True
         command_results = upload_sample_command(client, args)
         if not dict_safe_get(command_results.raw_response, ["analyzing"]):
             return PollResult(
@@ -1042,8 +1040,6 @@ def schedule_command(args: dict[str, Any], client: Client) -> PollResult:
                     f"Upload sample is executing. Sample ID: {sample_id}."
                 ),
             )
-            if first_run
-            else None
         ),
     )
 
