@@ -1011,7 +1011,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The IP, Hostname or ID of the Endpoint
+  description: The IP, hostname, or ID of the endpoint.
   playbookInputQuery:
 - key: AlertID
   value:
