@@ -41,6 +41,10 @@ configuration:
   name: event_type
   options:
   - DetectionSummaryEvent
+  - EppDetectionSummaryEvent
+  - XdrDetectionSummaryEvent
+  - IncidentSummaryEvent
+  - IdpDetectionSummaryEvent
   - AuthActivityAuditEvent
   - CustomerIOCEvent
   - UserActivityAuditEvent
