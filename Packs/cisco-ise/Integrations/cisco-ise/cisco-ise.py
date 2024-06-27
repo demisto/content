@@ -464,7 +464,7 @@ def update_endpoint_group_command():
         return_error('Failed to get endpoint %s' % endpoint_id)
 
     try:
-        updated_endpoint_details = {'ERSEndPoint': {}}
+        updated_endpoint_details = {'ERSEndPoint': {}}  # type: Dict[Dict]
         updated_endpoint_details['ERSEndPoint']['groupId'] = endpoint_group_id
         updated_endpoint_details['ERSEndPoint']['id'] = endpoint_details.get('ERSEndPoint', {}).get('id')
         updated_endpoint_details['ERSEndPoint']['mac'] = endpoint_details.get('ERSEndPoint', {}).get('mac')
