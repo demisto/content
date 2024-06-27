@@ -197,7 +197,7 @@ script:
     - name: rule_id
       description: The ID of the rule. Use harmony-ep-rule-metadata-list command to get all rule IDs.
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -218,7 +218,7 @@ script:
       required: true
       default: true
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -340,7 +340,7 @@ script:
     - name: remediation_operation_id
       description: Remediation operations ID.
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -396,7 +396,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -435,7 +435,7 @@ script:
       required: true
       default: true
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -535,7 +535,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -670,7 +670,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -795,7 +795,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -936,7 +936,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1068,7 +1068,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1200,7 +1200,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1307,7 +1307,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1414,7 +1414,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1542,7 +1542,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1670,7 +1670,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1791,7 +1791,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -1883,7 +1883,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -2097,7 +2097,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -2231,7 +2231,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -2384,7 +2384,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -2526,7 +2526,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -2653,7 +2653,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -2780,7 +2780,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -2904,7 +2904,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -3048,7 +3048,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -3173,7 +3173,7 @@ script:
       description: The maximum number of records to retrieve.
       defaultValue: '50'
     - name: interval
-      description: The interval between each poll in seconds. Minimum value is `10`. 
+      description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
     - name: timeout
       description: The timeout for the polling in seconds.
@@ -3209,7 +3209,7 @@ script:
       type: String
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.10.14.99474
   isfetch: false
   script: ''
 fromversion: 6.10.0
