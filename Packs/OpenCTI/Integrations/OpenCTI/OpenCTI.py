@@ -107,14 +107,21 @@ def get_indicators(client: OpenCTIApiClient, indicator_types: list[str], score=N
         indicators: dict of indicators
     """
     indicator_type = build_indicator_list(indicator_types)
-    filters = [{
-        'key': 'entity_type',
-        'values': indicator_type
-    }]
+    filters: dict[str, Any] = {
+        'mode': 'and',
+        'filters': [{
+            'key': 'entity_type',
+            'values': indicator_type,
+            'operator': 'eq',
+            'mode': 'or'
+        }],
+        'filterGroups': []}
     if score:
-        filters.append({
+        filters["filters"].append({
             'key': 'x_opencti_score',
-            'values': score
+            'values': score,
+            'operator': 'eq',
+            'mode': 'or'
         })
 
     indicators = client.stix_cyber_observable.list(after=last_run_id, first=limit,
@@ -133,11 +140,11 @@ def get_indicators_command(client: OpenCTIApiClient, args: dict) -> CommandResul
     Returns:
         readable_output, raw_response
     """
-    indicator_types = argToList(args.get("indicator_types"))
+    indicator_types = argToList(args.get("indicator_types", "ALL"))
     last_run_id = args.get("last_run_id")
     limit = arg_to_number(args.get('limit', 50))
-    start = arg_to_number(args.get('score_start'))
-    end = arg_to_number(args.get('score_end'))  # type:ignore
+    start = arg_to_number(args.get('score_start', 0))
+    end = arg_to_number(args.get('score_end', 100))  # type:ignore
     score = args.get('score')
     search = args.get("search", "")
     scores = None
@@ -637,9 +644,10 @@ def main():
     credentials = params.get('credentials', {})
     api_key = credentials.get('password')
     base_url = params.get('base_url').strip('/')
+    verify = not argToBoolean(params.get('insecure'))
 
     try:
-        client = OpenCTIApiClient(base_url, api_key, ssl_verify=params.get('insecure'), log_level='error',
+        client = OpenCTIApiClient(base_url, api_key, ssl_verify=verify, log_level='error',
                                   proxies=handle_proxy())
         command = demisto.command()
         demisto.info(f"Command being called is {command}")

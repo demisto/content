@@ -6,14 +6,15 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - Remediation Guidance
+* Cortex ASM - Detect Service
+* Cortex ASM - Email Notification
+* Cortex ASM - Enrichment
+* Cortex ASM - Instant Message
 * Cortex ASM - Jira Notification
 * Cortex ASM - Remediation
-* Cortex ASM - Detect Service
+* Cortex ASM - Remediation Guidance
 * Cortex ASM - Remediation Path Rules
 * Cortex ASM - ServiceNow Notification
-* Cortex ASM - Enrichment
-* Cortex ASM - Email Notification
 
 ### Integrations
 
@@ -21,15 +22,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GridFieldSetup
 * DeleteContext
 * GenerateASMReport
+* GridFieldSetup
 
 ### Commands
 
-* setAlert
-* send-mail
 * closeInvestigation
+* send-mail
+* setAlert
 
 ## Playbook Inputs
 
@@ -48,6 +49,7 @@ This playbook does not use any integrations.
 | AcceptedRiskOther | Comma-separated list of other items that are considered an accepted risk and that should be closed. For example, a list of folders numbers in GCP and subscription IDs in Azure. |  | Optional |
 | JiraProjectKey | The Jira project key to associate with the issue. |  | Required |
 | AWSAssumeRoleName | If assuming roles for AWS, this is the name of the role to assume \(should be the same for all organizations\). |  | Optional |
+| InstantMessageChannel | Channel to send instant messages for notification purposes.  For Slack, this will be the channel ID. |  | Optional |
 
 ## Playbook Outputs
 

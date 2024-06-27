@@ -2,9 +2,6 @@ name: Manage Contribution Board - Daily
 on:
   schedule:
     - cron: "0 0 * * *"
-permissions:
-  contents: read
-
 jobs:
   manage_project_board:
     runs-on: ubuntu-latest
@@ -23,4 +20,4 @@ jobs:
         run: |
           github-automation manage -c .github/project_conf/contributions.ini
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.CONTENTBOT_GH_ADMIN_TOKEN }}

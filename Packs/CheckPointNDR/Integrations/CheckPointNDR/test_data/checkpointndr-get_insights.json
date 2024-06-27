@@ -1,0 +1,29 @@
+{
+    "objects": [
+        {
+            "id": 636750,
+            "domain": "test",
+            "type": "Behavioral",
+            "criteria": "Behavioral.Geo.Bulgaria",
+            "updated": 1703387404367,
+            "created": 1662869207390,
+            "data": {
+                "color": 6,
+                "engine": "Geo.Incoming",
+                "description": "An anomaly detected from 127.0.0.1"
+            },
+            "actions": null,
+            "handled": false,
+            "assign": null,
+            "mdr": false,
+            "probability": 100,
+            "handledBy": null,
+            "events": [
+                950961
+            ],
+            "attachments": [],
+            "editable": true
+        }
+    ],
+    "count": 1
+}

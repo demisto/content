@@ -41,7 +41,7 @@ class DataExplorerClient:
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
         self.scope = f'{cluster_url}/user_impersonation offline_access user.read' if 'Authorization' not in connection_type \
-            else 'https://management.azure.com/.default'
+            else f'{cluster_url}/.default'
         self.client_activity_prefix = client_activity_prefix
         client_args = assign_params(
             self_deployed=True,

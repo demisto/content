@@ -317,8 +317,11 @@ var installPacks = function(packs_to_install, file_url, entry_id, skip_verify, s
             logDebug(pack_id + ' pack installed successfully')
             installed_packs.push(pack_id)
         }
-
-        return 'The following packs installed successfully: ' + installed_packs.join(", ")
+        if (installed_packs.length === 0) {
+            return 'No pack has been installed, please check that the pack name and version are correct.'
+        } else {
+            return 'The following packs installed successfully: ' + installed_packs.join(", ")
+        }
     }
 };
 

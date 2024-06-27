@@ -18,6 +18,7 @@ splunk
 splunkpy
 hec
 splunk-search
+drilldown
 
 [file:classifier-SplunkPy.json]
 ignore=BA101
