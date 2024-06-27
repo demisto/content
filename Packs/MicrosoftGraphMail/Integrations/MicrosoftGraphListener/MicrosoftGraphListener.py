@@ -148,6 +148,8 @@ def main():     # pragma: no cover
     # in other case it's retrieved from integration context.
     refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
 
+    demiso.debug(f'Instantiating a client with {mailbox_to_fetch=} and {folder_to_fetch=}')
+
     client = MsGraphListenerClient(
         self_deployed=self_deployed,
         tenant_id=tenant_id,
