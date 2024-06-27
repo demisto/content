@@ -742,22 +742,27 @@ def get_blacklist_endpoints():
     return_outputs(tableToMarkdown('CiscoISE Blacklist Endpoints', data, removeNull=True), context, endpoints)
 
 
-def get_endpoint_id_by_name(endpoint_name=None):
+def get_endpoint_id_by_name(mac_address=None):
     """
     Returns endpoint id by specific mac address
     Only compatible with Cisco ISE versions 2.3
     """
-    api_endpoint = f'/ers/config/endpoint/name/{endpoint_name}'
+    if not is_mac_address(mac_address):
+        return_error('Given MAC address is invalid')
+
+    api_endpoint = f'/ers/config/endpoint/name/{mac_address}'
     return http_request('GET', api_endpoint, '')
 
 
 def get_endpoint_id_by_name_command():
 
-    endpoint_name = demisto.args().get('name')
+    mac_address = demisto.args().get('mac_address')
 
-    endpoint_data = get_endpoint_id_by_name(endpoint_name)
+    if not is_mac_address(mac_address):
+        return_error('Given MAC address is invalid')
+
+    endpoint_data = get_endpoint_id_by_name(mac_address)
     endpoint_id = endpoint_data.get('ERSEndPoint', {}).get('id', None)
-    mac_address = endpoint_data.get('ERSEndPoint', {}).get('mac', None)
 
     entry_context = {
         'Endpoint(val.ID === obj.ID)': {
