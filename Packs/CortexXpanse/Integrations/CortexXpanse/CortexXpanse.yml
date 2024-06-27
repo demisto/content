@@ -572,11 +572,15 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - true
-      - false
+      - 'True'
+      - 'False'
       defaultValue: true
       description: "If you would like to overwrite the current note on the asset, set to 'false'. If you would like to append to the current note, set to 'true' (Note: Default value is 'true')."
     description: Adds a note to an asset in Xpanse.
+    outputs:
+    - contextPath: ASM.AssetAnnotation.status
+      description: Status of the note being added to the asset in Xpanse.
+      type: String
   - name: asm-tag-asset-remove
     arguments:
     - name: asm_id_list
@@ -814,6 +818,21 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
+    - contextPath: ASM.TIM.IP.name 
+      description: The existing Xpanse IP address recently updated in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.indicator_type
+      description: The existing Xpanse indicator type in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.id  
+      description: The existing indicator ID in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.reliability 
+      description: The existing indicator reliability recently updated in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.score
+      description: The existing indicator score recently updated in XSOAR indicators.
+      type: Number
     description: Returns enrichment for an IP address.
   - name: domain
     arguments:
@@ -866,6 +885,21 @@ script:
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: String
+    - contextPath: ASM.TIM.Domain.name
+      description: The existing Xpanse domain recently updated in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.indicator_type 
+      description: The existing Xpanse indicator type in XSOAR indicators  .
+      type: String
+    - contextPath: ASM.TIM.Domain.id 
+      description: The existing indicator ID in XSOAR indicators  .
+      type: String
+    - contextPath: ASM.TIM.Domain.reliability 
+      description: The existing indicator reliability recently updated in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.score 
+      description: The existing indicator score recently updated in XSOAR indicators.
+      type: Number
     description: Returns enrichment for a domain.
   - name: asm-get-incident
     arguments:
