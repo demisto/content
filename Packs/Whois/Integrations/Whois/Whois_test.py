@@ -684,7 +684,7 @@ def test_arrange_raw_to_context(raw_data, domain, expected):
     "servers, expected",
     [
         (None, []),
-        ("example.com", "example.com"),
+        ("example.com", ["example.com"]),
         ("example.com\nexample.net", ["example.com", "example.net"]),
         (["EXAMPLE.COM", "example.com", "example.NET"], ["example.com", "example.net"]),
         (["server1.com", "server2.com", "server1.com"], ["server1.com", "server2.com"]),

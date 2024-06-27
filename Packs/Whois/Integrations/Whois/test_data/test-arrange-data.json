@@ -207,10 +207,10 @@
                 ],
                 "FeedRelatedIndicators": [
                     {
-                        "Email": "test-example@markmonitor.com"
+                        "Type": "email", "Value": "test-example@markmonitor.com"
                     },
                     {
-                        "Email": "test-example@markmonitor.com"
+                        "Type": "email", "Value": "test-example@markmonitor.com"
                     }
                 ],
                 "Raw": "domain_name: ['GOOGLE.COM', 'google.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: , updated_date: ['(2019, 9, 9, 15, 39, 4)', '(2019, 9, 9, 15, 39, 4, )'], creation_date: ['(1997, 9, 15, 4, 0)', '(1997, 9, 15, 7, 0, )'], expiration_date: ['(2028, 9, 14, 4, 0)', '(2028, 9, 13, 7, 0, )'], name_servers: ['NS1.GOOGLE.COM', 'NS2.GOOGLE.COM', 'NS3.GOOGLE.COM', 'NS4.GOOGLE.COM', 'ns2.google.com', 'ns3.google.com', 'ns1.google.com', 'ns4.google.com'], status: ['clientDeleteProhibited https://icann.org/test-example', 'clientTransferProhibited https://icann.org/epp#test-example'], emails: ['test-example@markmonitor.com', 'test-example@markmonitor.com'], dnssec: unsigned, name: , org: Google LLC, address: , city: , state: CA, registrant_postal_code: , country: US"
@@ -253,16 +253,16 @@
                 ],
                 "FeedRelatedIndicators": [
                     {
-                        "Email": "test-example@markmonitor.com"
+                        "Type": "email", "Value": "test-example@markmonitor.com"
                     },
                     {
-                        "Email": "test-example@domains.microsoft"
+                        "Type": "email", "Value": "test-example@domains.microsoft"
                     },
                     {
-                        "Email": "test-example@microsoft.com"
+                        "Type": "email", "Value": "test-example@microsoft.com"
                     },
                     {
-                        "Email": "test-example@markmonitor.com"
+                        "Type": "email", "Value": "test-example@markmonitor.com"
                     }
                 ],
                 "Raw": "domain_name: ['microsoft.com', 'microsoft.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: , updated_date: ['(2023, 8, 18, 16, 15, 54)', '(2023, 8, 18, 16, 15, 54)'], creation_date: ['(1991, 5, 2, 4, 0)', '(1991, 5, 2, 4, 0)'], expiration_date: ['(2025, 5, 3, 4, 0)', '(2025, 5, 3, 0, 0)'], name_servers: ['NS1-39.AZURE-DNS.COM', 'NS2-39.AZURE-DNS.NET', 'NS3-39.AZURE-DNS.ORG', 'NS4-39.AZURE-DNS.INFO', 'ns1-39.azure-dns.com', 'ns3-39.azure-dns.org', 'ns2-39.azure-dns.net', 'ns4-39.azure-dns.info'], status: ['clientDeleteProhibited https://icann.org/epp#test-example', 'clientTransferProhibited https://icann.org/epp#test-example'], emails: ['test-example@markmonitor.com', 'test-example@domains.microsoft', 'test-example@microsoft.com', 'test-example@markmonitor.com'], dnssec: unsigned, name: Domain Administrator, org: Microsoft Corporation, address: One Microsoft Way,, city: Redmond, state: WA, registrant_postal_code: 98052, country: US"
@@ -310,16 +310,16 @@
                 ],
                 "FeedRelatedIndicators": [
                     {
-                        "Email": "abuse@comlaude.com"
+                        "Type": "email", "Value": "abuse@comlaude.com"
                     },
                     {
-                        "Email": "test-example.com-Registrant@anonymised.email"
+                        "Type": "email", "Value": "test-example.com-Registrant@anonymised.email"
                     },
                     {
-                        "Email": "test-example.com-Admin@anonymised.email"
+                        "Type": "email", "Value": "test-example.com-Admin@anonymised.email"
                     },
                     {
-                        "Email": "test-example.com-Tech@anonymised.email"
+                        "Type": "email", "Value": "test-example.com-Tech@anonymised.email"
                     }
                 ],
                 "Raw": "domain_name: ['APPLE.COM', 'apple.com'], registrar: NOM-IQ Ltd dba Com Laude, whois_server: whois.comlaude.com, referral_url: , updated_date: ['(2023, 8, 28, 18, 33, 11)', '(2024, 5, 3, 9, 53, 59)'], creation_date: (1987, 2, 19, 5, 0), expiration_date: ['(2025, 2, 20, 5, 0)', '(2025, 2, 20, 0, 0)'], name_servers: ['A.NS.APPLE.COM', 'B.NS.APPLE.COM', 'C.NS.APPLE.COM', 'D.NS.APPLE.COM', 'a.ns.apple.com', 'b.ns.apple.com', 'c.ns.apple.com', 'd.ns.apple.com'], status: ['clientDeleteProhibited https://icann.org/epp#test-example', 'clientTransferProhibited https://icann.org/epp#test-example', 'clientUpdateProhibited https://icann.org/epp#test-example', 'serverDeleteProhibited https://icann.org/epp#test-example'], emails: ['abuse@comlaude.com', 'test-example.com-Registrant@anonymised.email', 'test-example.com-Admin@anonymised.email', 'test-example.com-Tech@anonymised.email'], dnssec: ['unsigned', 'Unsigned'], name: REDACTED FOR PRIVACY, org: Apple Inc., address: REDACTED FOR PRIVACY, city: REDACTED FOR PRIVACY, state: CA, registrant_postal_code: REDACTED FOR PRIVACY, country: US"
