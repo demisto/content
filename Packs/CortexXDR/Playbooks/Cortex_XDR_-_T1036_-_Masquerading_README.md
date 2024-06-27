@@ -74,7 +74,7 @@ xdr-snippet-code-script-execute
 | FilePath | The file path to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_path | Optional |
 | Username | The alert's username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
 | EndpointID | The IP, hostname or ID of the endpoint. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
-| AlertID | The ID of the alert | PaloAltoNetworksXDR.Incident.alerts.aler_id | Optional |
+| AlertID | The ID of the alert. | PaloAltoNetworksXDR.Incident.alerts.aler_id | Optional |
 
 ## Playbook Outputs
 
