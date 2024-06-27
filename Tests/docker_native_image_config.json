@@ -134,15 +134,6 @@
             ]
         },
         {
-            "id":"RegexExtractAll",
-            "reason":"Issue: CIAC-6005",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
-            ]
-        },
-        {
             "id":"ConvertFile",
             "reason":"Issue: CIAC-7625",
             "ignored_native_images":[
