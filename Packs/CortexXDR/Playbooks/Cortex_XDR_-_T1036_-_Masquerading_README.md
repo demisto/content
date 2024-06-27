@@ -73,7 +73,7 @@ xdr-snippet-code-script-execute
 | FileSHA256 | The file SHA256 to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_sha256 | Optional |
 | FilePath | The file path to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_path | Optional |
 | Username | The alert's username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
-| EndpointID | The IP, Hostname or ID of the Endpoint | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
+| EndpointID | The IP, hostname or ID of the endpoint. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
 | AlertID | The ID of the alert | PaloAltoNetworksXDR.Incident.alerts.aler_id | Optional |
 
 ## Playbook Outputs
