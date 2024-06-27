@@ -50,6 +50,7 @@ configuration:
   section: Collect
 - display: Incident type
   name: incidentType
+  defaultvalue: 'XMCO Serenety Alert'
   type: 13
 description: 'Fetch Serenety alert from XMCO.'
 display: Serenety

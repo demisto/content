@@ -158,9 +158,9 @@ def fetch_incidents(client: Client,
                     'occurred': created.strftime(ISO_8601_FORMAT),  # type: ignore[union-attr]
                     'rawJSON': json.dumps(data),
                     'type': 'XMCO Serenety Alert',
+                    'Category': data['custom_fields']['category'],
                     'CustomFields': {
-                        'xmcoserenetycategory': data['custom_fields']['category'],
-                        'xmcoserenetysubcategory': data['custom_fields']['subcategory'],
+                        'subcategory': data['custom_fields']['subcategory'],
                         'xmcoserenetyidentification': data['custom_fields']['identification'],
                         'xmcoserenetymonitoring': data['custom_fields']['scope'],
                         'renderedhtml': data['description']

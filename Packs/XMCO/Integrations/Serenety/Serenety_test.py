@@ -77,7 +77,7 @@ def test_test_module(requests_mock):
     requests_mock.register_uri('GET', f'{BASE_URL}/user/current', json=mock_response)
 
     result = test_module(client)
-    assert result == "User XMCO Serenety is authenticated"
+    assert result == "ok"
 
     mock_response_unauthorized = util_load_json('test_data/user_unauthorized.json')
 
@@ -110,7 +110,6 @@ def test_fetch_incidents(requests_mock):
 
     current_datetime = datetime.utcnow().astimezone(timezone.utc)
     current_datetime.strftime("%Y-%m-%dT%H:%M:%S")
-    # assert next_run['last_fetch'] == current_iso_format_time
 
     next_run, incidents = fetch_incidents(client, last_run, first_fetch, scope="65e83a81cba69ffd2d9384c1")
 
@@ -120,3 +119,13 @@ def test_fetch_incidents(requests_mock):
     assert incidents[0]['CustomFields']['xmcoserenetysubcategory'] == 'image_and_reputation_suspicious_domain'
     assert incidents[0]['CustomFields']['xmcoserenetymonitoring'] == 'out_of_scope'
     assert incidents[0]['CustomFields']['xmcoserenetyidentification'] == 'manual'
+
+    # Test no result
+    mock_response = util_load_json('test_data/serenety_alerts_no_result.json')
+    requests_mock.register_uri('GET', f'{BASE_URL}/ticketor/serenety', json=mock_response)
+    last_run: dict = {'last_fetch': first_fetch}
+
+    next_run, incidents = fetch_incidents(client, last_run, first_fetch)
+
+    assert next_run.get('last_fetch') > last_run.get('last_fetch')
+    assert incidents == []

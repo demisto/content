@@ -8,19 +8,11 @@
         "XMCO Serenety Alert": {
             "dontMapEventToLabels": false,
             "internalMapping": {
-                "Serenety category": {
-                    "complex": null,
-                    "simple": "category"
-                },
-                "Serenety subcategory": {
-                    "complex": null,
-                    "simple": "subcategory"
-                },
-                "Serenety identification": {
+                "XMCO Serenety identification": {
                     "complex": null,
                     "simple": "identification"
                 },
-                "Serenety monitoring": {
+                "XMCO Serenety monitoring": {
                     "complex": null,
                     "simple": "monitoring"
                 }
