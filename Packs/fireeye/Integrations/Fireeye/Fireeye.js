@@ -238,6 +238,7 @@ var sendRequest = function(url, method, token, setContentType, args) {
     return res;
 }
 
+logDebug("DEBUG: Login - getting token")
 
 var token = sendRequest(commandDictionary.login.url, commandDictionary.login.method).Headers['X-Feapi-Token'];
 
@@ -330,29 +331,60 @@ switch (command) {
         break;
 
     default:
+        logDebug("DEBUG: Running command by template: " + commandDictionary[command].method)
         response = sendRequest(replaceInTemplatesAndRemove(commandDictionary[command].url, args), commandDictionary[command].method, token, commandDictionary[command].setContentType, args);
         result = response.Body;
+        logDebug("DEBUG: Showing Raw Result for debuging: " + result)
         contentType = response.Headers && response.Headers['Content-Type'] && response.Headers['Content-Type'][0];
+        logDebug("DEBUG: Result type: " + contentType)
         if (contentType && contentType.indexOf('application/json') !== -1) {
-          result = JSON.parse(response.Body);
+            try {
+                logDebug("DEBUG: parse JSON response")
+                result = JSON.parse(response.Body);
+            }
+            catch(e) {
+                logDebug("DEBUG: the response.Body" + response.Body)
+                logDebug("DEBUG: We got an error during JSON.parse: " + e)
+            }
+            result = JSON.parse(response.Body);
         }
         if (contentType && contentType.indexOf('application/xml') !== -1) {
-          result = JSON.parse(x2j(response.Body));
+            try {
+                    parsed_response_body = x2j(response.Body)
+            }
+            catch(e) {
+                logDebug("DEBUG: We got an error during x2j: " + e)
+                logDebug("DEBUG: the response.Body" + response.Body)
+            }
+            logDebug("DEBUG: The result after parsing: " + parsed_response_body)
+          try {
+            result = JSON.parse(parsed_response_body)
+          } catch(e) {
+            logDebug("DEBUG: the parsed_response_body" + parsed_response_body)
+            logDebug("DEBUG: the response.Body" + response.Body)
+            logDebug("DEBUG: We got an error while parsing xml to json: " + e)
+            result = {}
+          }
+          result = JSON.parse(parsed_response_body);
         }
 }
+logDebug("DEBUG: logging out: ")
 sendRequest(commandDictionary.logout.url, commandDictionary.logout.method, token);
 
 
 if (typeof result === 'object' && !result['submission_Key'] && command != 'fe-submit-status') {
-  result['submission_Key'] = submissionKey;
+    logDebug("DEBUG: Getting submission key")
+    result['submission_Key'] = submissionKey;
 }
 
 currentCommand = commandDictionary[command];
 var entries = [];
 if (currentCommand.extended) {
+    logDebug("DEBUG: extended command detected: ")
     if(command === 'fe-submit-url'){
         result = result.response;
     }
+    logDebug("DEBUG: Translating results: ")
     for (var j in currentCommand.translator) {
         var current = currentCommand.translator[j];
         var entry = {
@@ -367,9 +399,21 @@ if (currentCommand.extended) {
         entry.EntryContext = {};
         var context = createContext(translated);
         entry.EntryContext[current.contextPath] = context;
+        logDebug("DEBUG: extracting data from results: ")
 
         if(command === 'fe-submit-result' || command === 'fe-submit-url-result'){
+            logDebug("DEBUG: Getting md5")
+            if (command === 'fe-submit-result' && result.hasOwnProperty('submissionStatus') && result.submissionStatus.submissionStatus === 'In Progress'){
+                return {
+                    Type: entryTypes.note,
+                    Contents: result,
+                    ContentsType: formats.json,
+                    ReadableContentsFormat: formats.text,
+                    HumanReadable: `The submission status is ${result.submissionStatus.submissionStatus}, please try again later.`
+                };
+            }
             var md5 = result.alerts.alert.explanation['malware-detected'].malware.md5sum;
+            logDebug("DEBUG: creating entry")
             if(context.Severity === 'majr'){
                 entry.EntryContext.DBotScore = [{'Indicator': md5, 'Type': 'hash', 'Vendor': 'Fireeye', 'Score': 3}];
                 var malFile = {};
