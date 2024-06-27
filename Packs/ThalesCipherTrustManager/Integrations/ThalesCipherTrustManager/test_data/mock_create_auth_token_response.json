@@ -1,0 +1,8 @@
+{
+    "jwt": "12345aaa",
+    "duration": 300,
+    "token_type": "Bearer",
+    "client_id": "12345aaa",
+    "refresh_token_id": "12345aaa",
+    "refresh_token": "12345aaa"
+}
