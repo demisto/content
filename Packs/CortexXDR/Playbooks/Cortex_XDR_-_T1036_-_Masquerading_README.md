@@ -69,7 +69,7 @@ xdr-snippet-code-script-execute
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| AutoContainment | Setting this input to True will quarantine the file automatically in case of malicious file. | True | Optional |
+| AutoContainment | Setting this input to True will quarantine the file automatically in case of a malicious file. | True | Optional |
 | FileSHA256 | The file SHA256 to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_sha256 | Optional |
 | FilePath | The file path to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_path | Optional |
 | Username | The alert's username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
