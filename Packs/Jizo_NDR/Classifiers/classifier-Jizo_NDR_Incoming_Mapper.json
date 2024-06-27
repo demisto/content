@@ -1,0 +1,34 @@
+{
+	"feed": false,
+	"id": "Jizo NDR - Incoming Mapper",
+	"locked": false,
+	"logicalVersion": 14,
+	"mapping": {
+		"Jizo Alert": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Jizo Alert Category": {
+					"simple": "category"
+				},
+				"Jizo Alert ID": {
+					"simple": "id"
+				},
+				"Jizo Alert Name": {
+					"simple": "name"
+				},
+				"Jizo Alert Type ": {
+					"simple": "alert_type"
+				}
+			}
+		}
+	},
+	"name": "Jizo NDR - Incoming Mapper",
+	"nameRaw": "Jizo NDR - Incoming Mapper",
+	"propagationLabels": [
+		"all"
+	],
+	"system": false,
+	"transformer": {},
+	"type": "mapping-incoming",
+	"version": -1
+}
