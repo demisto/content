@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -71,16 +72,15 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def alert_workflow_update_request_v2(self, request_id: str) -> dict:
+    def alert_workflow_update_request_with_results(self, request_id: str) -> dict:
         suffix_url = f'jobs/v1/orgs/{self.cb_org_key}/jobs/{request_id}'
         response = self._http_request('GET', suffix_url)
         return response
-        
-        
+       
+       
     def alert_workflow_update_request(self, alert_id: str, state: None | str = None, comment: None | str = None,
                                       determination: None | str = None, time_range: None | str = None, start: None | str = None,
                                       end: None | str = None, closure_reason: None | str = None) -> dict:
-        demisto.debug("alert_workflow_update_request: ")
         suffix_url = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/workflow'
         body = assign_params(
             time_range=assign_params(start=start, end=end, range=time_range),
@@ -90,13 +90,13 @@ class Client(BaseClient):
             status=state,
             note=comment,
         )
-        
+       
         demisto.debug(f"{body=}")
         try:
             response = self._http_request('POST', suffix_url, json_data=body)
         except Exception as e:
             if 'determination' in e.args[0] and 'status' in e.args[0]:
-                raise e#('error_code: BAD_REQUEST, message: Must specify at least one of determination or state.')
+                raise e  # error_code: BAD_REQUEST, message: Must specify at least one of determination or state.
         return response
 
     def devices_list_request(self, device_id: list = None, status: list = None, device_os: list = None,
@@ -359,8 +359,8 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
-                                      limit: int, start_time: str = None,
-                                      end_time: str = None, start: int = 0) -> dict:
+                                      limit: int, start_time: None | str= None,
+                                      end_time:None | str = None, start: int = 0) -> dict:
         if not process_hash and not process_name and not event_id and not query:
             raise Exception("To perform an process search, please provide at least one of the following: "
                             "'process_hash', 'process_name', 'event_id' or 'query'")
@@ -458,7 +458,7 @@ class Client(BaseClient):
         suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
 
         return self._http_request('GET', suffix_url)
-    
+   
 
 def test_module(client):
     """
@@ -550,20 +550,20 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
         if state == 'DISMISSED':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
             state = 'CLOSED'
         comment = args.get('comment')
-        
+       
         if start or end:
             if not start or not end:
                 raise DemistoException('Need to specify start and end timestamps')
             if start > end:
                 raise DemistoException('start timestamp needs to be before end timestamp')
-        
-        
+       
+       
         demisto.debug('calling alert_workflow_update_request function')
         response = client.alert_workflow_update_request(
             alert_id, state, comment, determination, time_range, start, end, closure_reason)
-        
+       
         demisto.debug(f'{response=}')
-        
+       
         return PollResult(
             partial_result=CommandResults(readable_output="running polling"),
             response=None,
@@ -572,9 +572,9 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
             )
 
     request_id = args['request_id']
-        
+       
     demisto.debug('now calling the second endpoint')
-    response = client.alert_workflow_update_request_v2(request_id)  #There for sure will be a request id once we get here
+    response = client.alert_workflow_update_request_with_results(request_id)  #There for sure will be a request id once we get here
     demisto.debug(f'{response=}')
 
     status = response['status']
@@ -590,7 +590,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
             continue_to_poll=True,
             args_for_next_run={"request_id": request_id,
                             **args})
-      
+     
     message = CommandResults(
         readable_output= tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
                                          {'changed_by':response['job_parameters']['job_parameters']['userWorkflowDto']['changed_by'],
@@ -1283,7 +1283,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             'rawJSON': json.dumps(alert)
         }
         incidents.append(incident)
-        parsed_date = dateparser.parse(alert_create_date)    #This is where the code falls
+        parsed_date = dateparser.parse(alert_create_date)
         assert parsed_date is not None, f'failed parsing {alert_create_date}'
         latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
                                                      '%Y-%m-%dT%H:%M:%S.000Z')
@@ -1294,13 +1294,15 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
 
 @polling_function(
     name='cb-eedr-process-search',
-    interval=60, #arg_to_number(demisto.args.get('interval', 60)),
-    timeout= 600, #arg_to_number(demisto.args.get('timeout', 600)),
+    interval=arg_to_number(demisto.args().get('interval', 60)),
+    timeout= arg_to_number(demisto.args().get('timeout', 600)),
     requires_polling_arg=False
     )
 def process_search_command_with_polling(args: dict, client: Client) -> PollResult:
-    job_id = arg_to_number(args.get('job_id'))
+    job_id = args.get('job_id')
     interval_in_seconds = arg_to_number(args.get('interval_in_seconds'))
+    if interval_in_seconds and interval_in_seconds < 10:
+        interval_in_seconds = 10
     demisto.debug(f'in process_search_command_with_polling function, {job_id=}')
     if not job_id: # if this is the first time
         process_name = args.get('process_name', '')
@@ -1310,29 +1312,20 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
         start_time = str(args.get('start_time', '1 day'))
         end_time = str(args.get('end_time', ''))
         limit = args.get('limit')
-        if not limit:
-            limit = 20
-        try:
-            limit = int(limit)
-        except ValueError:
-            raise ValueError("Please provide a number as limit.")
 
         response = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
                                                         event_id=event_id, query=query, limit=limit,
                                                         start_time=start_time, end_time=end_time)
-        demisto.debug(f'{response=}')
+        demisto.debug(f'got {response=}')
         return PollResult( partial_result = CommandResults(readable_output=f"job_id is {response.get('job_id')}."),
                            response = None,
                            continue_to_poll= True,
                            args_for_next_run={"job_id":  response['job_id']} | args
                            )
-        
-    job_id = args['job_id']
-    demisto.debug(f'have job id trying to poll {job_id=}')
-    # this is not the first time
+       
+    # this is not the first time, there is a job_id
     response = client.get_search_process_request(job_id=args['job_id'])
     status = 'Completed' if response.get('contacted') == response.get('completed') else 'In Progress'
-    demisto.debug(f'{response=}')
     if status != 'Completed':
         message = CommandResults(
             readable_output=f"Checking again in {interval_in_seconds} seconds...")
@@ -1342,7 +1335,7 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
             continue_to_poll=True,
             args_for_next_run={"job_id": job_id,
                             **args})
-    
+   
     # status is Completed
     output = {'status': status, 'job_id': job_id, 'results': response.get('results')}
     title = "Completed Search Results:"
@@ -1357,21 +1350,11 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
         response=message,
         continue_to_poll=False)
    
-"""
-def process_search_command(args: dict, client: Client) -> CommandResults | PollResult:
-    
-    Gets arguments for a process search task, and returns the task's id and status.
-    
-    demisto.debug('in process search command')
-    polling = argToBoolean(args.get('polling'))
-    if polling:
-        return process_search_command_with_polling(args, client)
-    
-    else:
-        return process_search_command_without_polling(client, args)
-"""
-        
+       
 def process_search_command_without_polling(client: Client, args: dict) -> CommandResults:
+    """
+    Gets arguments for a process search task, and returns the task id and status.
+    """
     process_name = args.get('process_name', '')
     process_hash = args.get('process_hash', '')
     event_id = args.get('event_id', '')
@@ -1676,7 +1659,7 @@ def main():
                 return return_results(process_search_command_with_polling(demisto.args(), client))
             else:
                 return return_results(process_search_command_without_polling(client, demisto.args()))
-            
+           
         elif demisto.command() == 'cb-eedr-process-search-results':
             for command_result_item in process_search_get_command(client, demisto.args()):
                 return_results(command_result_item)
