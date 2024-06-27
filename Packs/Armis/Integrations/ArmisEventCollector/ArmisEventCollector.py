@@ -69,6 +69,7 @@ class Client(BaseClient):
         self._access_token = access_token
 
     def perform_fetch(self, params):
+        demisto.info(f"info-log: preparing to preform_fetch with {params=}")
         try:
             raw_response = self._http_request(url_suffix='/search/', method='GET', params=params, headers=self._headers)
         except Exception as e:
@@ -112,7 +113,7 @@ class Client(BaseClient):
         aql_query = f'{aql_query} after:{after.strftime(DATE_FORMAT)}'
         if before:
             aql_query = f'{aql_query} before:{before.strftime(DATE_FORMAT)}'
-            demisto.info(f"info-log: Fetching events until {before}.")
+            demisto.info(f"info-log: Fetching events from {after} until {before}.")
         params: dict[str, Any] = {'aql': aql_query, 'includeTotal': 'true', 'length': max_fetch, 'orderBy': order_by}
         if from_param:
             params['from'] = from_param
@@ -124,6 +125,7 @@ class Client(BaseClient):
         # pagination (using the 'from' request parameter), or null if there are no more pages left.
         try:
             while next and (len(results) < max_fetch):
+                demisto.info("info-log: performing another fetch loop.")
                 if len(results) < max_fetch:
                     params['length'] = max_fetch - len(results)
                 params['from'] = next
@@ -375,6 +377,7 @@ def fetch_by_event_type(client: Client, event_type: EVENT_TYPE, events: dict, ma
 
     if not next:  # we wish to update the time only in case the next is 0 because the next is relative to the time.
         event_type_fetch_start_time = new_events[-1].get(event_type.order_by) if new_events else last_fetch_time
+        demisto.info(f'debug-log: no next was found, set event_type_fetch_start_time to {event_type_fetch_start_time}')
         #  can empty the list.
     next_run[last_fetch_next_field] = next
     if isinstance(event_type_fetch_start_time, datetime):
