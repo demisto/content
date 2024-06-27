@@ -698,7 +698,7 @@ tasks:
       id: 126e5181-f7f7-409a-89f4-fa800188ffcc
       version: -1
       name: Check if File Hash is in NSRL DB
-      description: Sends a HTTP request with advanced capabilities
+      description: Sends an HTTP request with advanced capabilities
       scriptName: HttpV2
       type: regular
       iscommand: false
