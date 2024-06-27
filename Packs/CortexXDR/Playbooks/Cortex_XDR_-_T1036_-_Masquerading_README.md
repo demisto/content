@@ -22,7 +22,7 @@ The playbook's first response action is a containment plan which is based on the
 * Auto file quarantine
 * Manual endpoint isolation
 
-When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment and eradication, is executed.
+When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment and eradication.
 
 This phase will execute the following containment actions:
 
