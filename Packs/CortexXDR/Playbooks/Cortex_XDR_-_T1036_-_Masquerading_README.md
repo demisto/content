@@ -61,7 +61,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* xdr-snippet-code-script-execute
+xdr-snippet-code-script-execute
 
 ## Playbook Inputs
 
