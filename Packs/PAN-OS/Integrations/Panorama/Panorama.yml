@@ -9495,7 +9495,7 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.95792
+  dockerimage: demisto/pan-os-python:1.0.0.99653
   isfetch: true
   runonce: false
   script: ''
