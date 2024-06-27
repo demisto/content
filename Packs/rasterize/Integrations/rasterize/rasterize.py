@@ -244,7 +244,7 @@ def count_running_chromes(port):
         return 0
 
 
-def is_chrome_running_locally(port):
+def get_chrome_browser(port: str) -> pychrome.Browser | None:
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
@@ -253,7 +253,7 @@ def is_chrome_running_locally(port):
 
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
-            demisto.debug(f"is_chrome_running_locally, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
+            demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
@@ -345,7 +345,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
             demisto.debug(f'New Chrome session active on Port {chrome_port}')
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
-            browser = is_chrome_running_locally(chrome_port)
+            browser = get_chrome_browser(chrome_port)
             if browser:
                 new_row = f"{chrome_port}\t{instance_id}\t{chrome_options}"
                 write_file(CHROME_INSTANCES_FILE_PATH, new_row)
@@ -450,12 +450,12 @@ def chrome_manager() -> tuple[Any | None, str | None]:
         return generate_new_chrome_instance(instance_id, chrome_options)
 
     chrome_port = instance_id_to_port.get(instance_id, '')
-    browser = is_chrome_running_locally(chrome_port)
+    browser = get_chrome_browser(chrome_port)
     return browser, chrome_port
 
 
 def get_chrome_instances_contents_dictionaries(chrome_instances_contents: str) -> tuple[
-        Dict[str, str], Dict[str, str], List[str], List[str]]:
+    Dict[str, str], Dict[str, str], List[str], List[str]]:
     """
     Parses the chrome instances content to extract and return two dictionaries and two lists.
 
