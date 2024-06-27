@@ -781,6 +781,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
     )
     outputs = response
     sleep(1)
+    print('1')
     if partial_response:
         outputs = branch_partial_result(response)
     return CommandResults(
