@@ -14,20 +14,10 @@ configuration:
   required: false
   section: Connect
   type: 0
-- display: 'User'
-  name: user
+- display: username
+  name: credentials
+  type: 9
   required: false
-  section: Collect
-  type: 0
-  additionalinfo: It supports anonymous login. Just type anonymous as user
-- display: 'Password'
-  displaypassword: API Key
-  hiddenusername: true
-  name: passwd
-  required: false
-  section: Connect
-  type: 4
-  additionalinfo: If user is anonymous, leave passwd as empty
 - advanced: true
   display: Use system proxy settings
   name: proxy

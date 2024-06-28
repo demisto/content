@@ -9,8 +9,8 @@ from ftplib import FTP
 def main():
     HOST = demisto.params().get('host')
     PORT = demisto.params().get('port') if demisto.params().get('port') else '21'
-    USER =  demisto.params().get('user')
-    PASSWD = demisto.params().get('passwd')
+    USER = demisto.params()['credentials']['identifier']
+    PASSWD = demisto.params()['credentials']['password']
 
     if demisto.command() == "test-module":
         try:
@@ -30,12 +30,11 @@ def main():
             with FTP() as ftp:
                 ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
-                outputs = {
-                    'ContentsFormat': formats["markdown"],
-                    'Type': entryTypes["note"],
-                    'ReadableContentsFormat': formats['markdown'],
-                    'Contents': ftp.nlst(f"{list_path}"),
-                    'HumanReadable': tableToMarkdown("Files and Folders", {'Files and Folders': ftp.nlst(f'{list_path}')})
+                outputs = CommandResults(
+                    outputs_prefix='FTP.List',
+                    outputs={
+                        'Files': ftp.nlst(f"{list_path}")
+                    }
                 }
                 return_results(outputs)
 
