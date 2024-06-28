@@ -22,6 +22,31 @@
     "testInterval": 20,
     "tests": [
         {
+        "integrations": "CipherTrust",
+        "playbookID": "Thales CipherTrust Test Playbook - Access Management",
+        "fromversion": "6.10.0"
+    },
+    {
+        "integrations": "CipherTrust",
+        "playbookID": "Thales CipherTrust Test Playbook - CA",
+        "fromversion": "6.10.0"
+
+    },
+
+{
+            "playbookID": "Test Playbook - Impossible Traveler - Enrichment",
+            "integrations": [
+                "Active Directory Query v2",
+                "Microsoft Graph User",
+                "AbuseIPDB"
+            ],
+            "instance_names": [
+                "active_directory_80k",
+                "ms_graph_user_dev"
+            ]
+        },
+
+        {
             "playbookID": "Endpoint Investigation Plan - Test",
             "timeout": 600
         },
@@ -140,7 +165,8 @@
                 "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
-            "timeout": 1200
+            "timeout": 1200,
+            "memory_threshold": 200
         },
         {
             "integrations": "Twitter v2",
@@ -924,13 +950,15 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook execute script commands",
             "fromversion": "4.1.0",
-            "timeout": 3000
+            "timeout": 3000,
+            "memory_threshold": 200
         },
         {
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
-            "timeout": 2500
+            "timeout": 2500,
+            "memory_threshold": 200
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -942,7 +970,8 @@
             "integrations": "Cortex XDR - IR",
             "playbookID": "Test XDR Playbook retrieve file command",
             "fromversion": "4.1.0",
-            "timeout": 3500
+            "timeout": 3500,
+            "memory_threshold": 200
         },
         {
             "integrations": "Cortex XDR - IOC",
@@ -4629,6 +4658,7 @@
         {
             "playbookID": "Cortex XDR - IOC - Test without fetch",
             "fromversion": "5.5.0",
+            "memory_threshold": 200,
             "integrations": [
                 "Cortex XDR - IR",
                 "Cortex XDR - IOC"
