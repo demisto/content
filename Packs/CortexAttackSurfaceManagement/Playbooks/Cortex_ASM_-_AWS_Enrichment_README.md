@@ -6,8 +6,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* AWS - Enrichment
 * AWS - Unclaimed S3 Bucket Validation
+* AWS - Enrichment
 
 ### Integrations
 
@@ -15,8 +15,8 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* Set
 * GridFieldSetup
+* Set
 
 ### Commands
 

@@ -1,4 +1,4 @@
-This playbook contains all the cloud provider sub playbooks for remediation
+This playbook contains all the cloud provider sub playbooks for remediation.
 
 ## Dependencies
 
@@ -6,11 +6,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* AWS - Unclaimed S3 Bucket Remediation
-* AWS - Security Group Remediation v2
 * Cortex ASM - On Prem Remediation
+* AWS - Unclaimed S3 Bucket Remediation
 * GCP - Firewall Remediation
 * Azure - Network Security Group Remediation
+* Cortex ASM - Cortex Endpoint Remediation
+* AWS - EC2 Package Upgrade
+* AWS - Security Group Remediation v2
 
 ### Integrations
 

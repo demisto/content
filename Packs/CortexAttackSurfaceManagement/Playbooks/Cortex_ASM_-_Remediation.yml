@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: e8d9de22-8cb1-45cb-8336-7a3634a2eaef
+    taskid: 41328bf8-d0ab-4322-8df0-3ef3a6f7911b
     type: start
     task:
-      id: e8d9de22-8cb1-45cb-8336-7a3634a2eaef
+      id: 41328bf8-d0ab-4322-8df0-3ef3a6f7911b
       version: -1
       name: ''
       iscommand: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: 4d5d4d16-ec25-4600-8aa3-9db0085d2be4
+    taskid: 03e4d9b5-c02b-41a6-8332-7353523c27e7
     type: condition
     task:
-      id: 4d5d4d16-ec25-4600-8aa3-9db0085d2be4
+      id: 03e4d9b5-c02b-41a6-8332-7353523c27e7
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -61,8 +61,30 @@ tasks:
       - '12'
       Unclaimed S3 Bucket:
       - '7'
+      Patching:
+      - "15"
     separatecontext: false
     conditions:
+    - label: Patching
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmsystemids.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ASSET-SSM-PLATFORM-NAME
+            iscontext: true
+          right:
+            value: {}
     - label: AWS
       condition:
       - - operator: containsGeneral
@@ -108,11 +130,11 @@ tasks:
                 root: alert
                 accessor: asmattacksurfaceruleid
                 transformers:
-                - operator: StripChars
-                  args:
+                - args:
                     chars:
                       value:
                         simple: '[\"]'
+                  operator: StripChars
             iscontext: true
           right:
             value:
@@ -129,23 +151,23 @@ tasks:
           right:
             value:
               simple: On Prem
-    - label: Cortex Endpoint
-      condition:
-      - - operator: isNotEmpty
-          left:
+    - condition:
+      - - left:
+            iscontext: true
             value:
               complex:
-                root: alert.asmsystemids
                 filters:
-                - - operator: isEqualString
-                    left:
+                - - left:
+                      iscontext: true
                       value:
                         simple: alert.asmsystemids.type
-                      iscontext: true
+                    operator: isEqualString
                     right:
                       value:
                         simple: CORTEX-ENDPOINT-ASSET-ID
-            iscontext: true
+                root: alert.asmsystemids
+          operator: isNotEmpty
+      label: Cortex Endpoint
     continueonerrortype: ''
     view: |-
       {
@@ -163,10 +185,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '4':
     id: '4'
-    taskid: 025137d8-71d5-4a03-87fc-593dc78f0167
+    taskid: f8177daa-c79e-4080-8d8a-40ea707367aa
     type: title
     task:
-      id: 025137d8-71d5-4a03-87fc-593dc78f0167
+      id: f8177daa-c79e-4080-8d8a-40ea707367aa
       version: -1
       name: Completed
       type: title
@@ -191,10 +213,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '6':
     id: '6'
-    taskid: 8755ee7e-a021-424c-8a4c-0159367c490a
+    taskid: 57d9147d-2a07-41d4-8cc9-f54a8950643f
     type: playbook
     task:
-      id: 8755ee7e-a021-424c-8a4c-0159367c490a
+      id: 57d9147d-2a07-41d4-8cc9-f54a8950643f
       version: -1
       name: Azure - Network Security Group Remediation
       description: |-
@@ -260,7 +282,7 @@ tasks:
       {
         "position": {
           "x": 1070,
-          "y": 560
+          "y": 640
         }
       }
     note: false
@@ -272,10 +294,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: 4a5a1b3f-8f19-486d-8778-6bdadca1adc9
+    taskid: c03179f9-4132-4a54-8f0f-4a63d31a6f40
     type: playbook
     task:
-      id: 4a5a1b3f-8f19-486d-8778-6bdadca1adc9
+      id: c03179f9-4132-4a54-8f0f-4a63d31a6f40
       version: -1
       name: AWS - Unclaimed S3 Bucket Remediation
       description: The playbook will create the unclaimed S3 bucket.
@@ -310,8 +332,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 0,
-          "y": 550
+          "x": -20,
+          "y": 580
         }
       }
     note: false
@@ -323,10 +345,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '8':
     id: '8'
-    taskid: ac918c29-4d5f-48b5-8060-94a4c15cc060
+    taskid: 0d8eb068-70f3-4fe0-80ef-ca218e2cd125
     type: playbook
     task:
-      id: ac918c29-4d5f-48b5-8060-94a4c15cc060
+      id: 0d8eb068-70f3-4fe0-80ef-ca218e2cd125
       version: -1
       name: AWS - Security Group Remediation v2
       description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive. It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
@@ -381,8 +403,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 835
+          "x": -470,
+          "y": 795
         }
       }
     note: false
@@ -394,10 +416,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '9':
     id: '9'
-    taskid: 3bfc76d9-be4e-4402-84eb-1b09f3af599f
+    taskid: 3008b5df-87a9-407c-894b-e346377b1145
     type: playbook
     task:
-      id: 3bfc76d9-be4e-4402-84eb-1b09f3af599f
+      id: 3008b5df-87a9-407c-894b-e346377b1145
       version: -1
       name: GCP - Firewall Remediation
       type: playbook
@@ -485,10 +507,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '10':
     id: '10'
-    taskid: 7c022be5-c22d-4413-854c-d2a87249e532
+    taskid: 231659ad-e527-4ca9-806c-e9392b78dabb
     type: condition
     task:
-      id: 7c022be5-c22d-4413-854c-d2a87249e532
+      id: 231659ad-e527-4ca9-806c-e9392b78dabb
       version: -1
       name: Is AWSAssumeRoleName Input defined?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -514,8 +536,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -260,
-          "y": 400
+          "x": -470,
+          "y": 390
         }
       }
     note: false
@@ -527,10 +549,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '11':
     id: '11'
-    taskid: 85ddd43d-66b3-48f5-8861-a1c60e51024e
+    taskid: 438b1fed-2bbe-4214-8883-bcfd8f9e2000
     type: playbook
     task:
-      id: 85ddd43d-66b3-48f5-8861-a1c60e51024e
+      id: 438b1fed-2bbe-4214-8883-bcfd8f9e2000
       version: -1
       name: AWS - Security Group Remediation v2
       description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
@@ -606,8 +628,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -510,
-          "y": 655
+          "x": -810,
+          "y": 665
         }
       }
     note: false
@@ -619,10 +641,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '12':
     id: '12'
-    taskid: 0300188b-1a4f-4da1-8d6f-559597a8873c
+    taskid: c8e87bd8-3019-42db-8ac9-2e8193077cc6
     type: playbook
     task:
-      id: 0300188b-1a4f-4da1-8d6f-559597a8873c
+      id: c8e87bd8-3019-42db-8ac9-2e8193077cc6
       version: -1
       name: Cortex ASM - On Prem Remediation
       description: "This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.\n\nConditions:\nThis is currently limited to stand-alone firewalls for PAN-OS."
@@ -697,8 +719,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1300,
-          "y": 390
+          "x": 1310,
+          "y": 420
         }
       }
     note: false
@@ -710,10 +732,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '13':
     id: '13'
-    taskid: 56f329df-f61c-49b0-8b5d-048a4330f190
+    taskid: 9597ebaa-a391-45d6-8b94-367e5f110b7f
     type: playbook
     task:
-      id: 56f329df-f61c-49b0-8b5d-048a4330f190
+      id: 9597ebaa-a391-45d6-8b94-367e5f110b7f
       version: -1
       name: Cortex ASM - Cortex Endpoint Remediation
       type: playbook
@@ -764,14 +786,120 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ""
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      ASM Rule ID:
+        simple: ${alert.asmattacksurfaceruleid}
+      Account ID:
+        simple: ${AWS.EC2.Instances.AccountId}
+      Assume Role:
+        simple: ${inputs.AWSAssumeRoleName}
+      Instance ID:
+        complex:
+          accessor: id
+          filters:
+          - - left:
+                iscontext: true
+                value:
+                  simple: alert.asmsystemids.type
+              operator: isEqualString
+              right:
+                value:
+                  simple: ASSET-ID
+          root: alert.asmsystemids
+      Region:
+        complex:
+          accessor: region
+          root: alert.asmcloud
+          transformers:
+          - operator: FirstArrayElement
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ""
+      description: This playbook upgrades supported packages on an AWS EC2 instance using AWS Systems manager.
+      id: 707d4565-0132-4c06-8d56-a8ea7a371b69
+      iscommand: false
+      name: AWS - EC2 Package Upgrade
+      playbookId: AWS - EC2 Package Upgrade
+      type: playbook
+      version: -1
+    taskid: 707d4565-0132-4c06-8d56-a8ea7a371b69
+    timertriggers: []
+    type: playbook
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 655
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmcloud.provider
+          operator: containsGeneral
+          right:
+            value:
+              simple: AWS
+      label: AWS
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "4"
+      AWS:
+      - "14"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0d3d92e3-f643-4834-86d1-9a80002e16ee
+      iscommand: false
+      name: What is the cloud provider?
+      type: condition
+      version: -1
+    taskid: 0d3d92e3-f643-4834-86d1-9a80002e16ee
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 1840,
+          "y": 390
+        }
+      }
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
         "height": 1105,
-        "width": 2190,
-        "x": -510,
+        "width": 3030,
+        "x": -810,
         "y": 20
       }
     }
