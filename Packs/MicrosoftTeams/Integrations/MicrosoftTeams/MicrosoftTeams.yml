@@ -91,6 +91,8 @@ configuration:
   - High
   - Critical
   required: false
+  hidden:
+    - marketplacev2
 - display: Disable Automatic Notifications
   name: auto_notifications
   type: 8
@@ -709,7 +711,7 @@ script:
   - description: Run this command if you need to rerun the authentication process.
     name: microsoft-teams-auth-reset
     arguments: []
-  dockerimage: demisto/teams:1.0.0.98020
+  dockerimage: demisto/teams:1.0.0.99724
   longRunning: true
   longRunningPort: true
   script: ''
