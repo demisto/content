@@ -43,10 +43,10 @@ tasks:
       version: -1
       name: Xpanse - NMap - Detect Service
       description: Looks at what ASM sub-type the alert is and uses NMap to do a validation scan.
-      playbookName: Xpanse - NMap - Detect Service
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Xpanse - NMap - Detect Service
     nexttasks:
       '#none#':
       - "6"
@@ -72,7 +72,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 250
+          "y": 180
         }
       }
     note: false
@@ -100,7 +100,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 980
+          "y": 1370
         }
       }
     note: false
@@ -119,10 +119,10 @@ tasks:
       version: -1
       name: Xpanse - Alert Self-Enrichment
       description: Enrichment on the alert itself using Cortex Xpanse APIs.
-      playbookName: Xpanse - Alert Self-Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Xpanse - Alert Self-Enrichment
     nexttasks:
       '#none#':
       - "4"
@@ -137,7 +137,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 580
+          "y": 470
         }
       }
     note: false
@@ -155,21 +155,21 @@ tasks:
       id: eb478d2a-e73f-4840-8682-b02f063b587a
       version: -1
       name: Xpanse - Alert Enrichment
-      playbookName: Xpanse - Alert Enrichment
       type: playbook
       iscommand: false
       brand: ""
+      playbookId: Xpanse - Alert Enrichment
       description: ''
     nexttasks:
       '#none#':
-      - "2"
+      - "10"
     separatecontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 780
+          "y": 630
         }
       }
     note: false
@@ -200,7 +200,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 80
+          "y": 50
         }
       }
     note: false
@@ -231,7 +231,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 420
+          "y": 340
         }
       }
     note: false
@@ -241,20 +241,196 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "7":
+    continueonerrortype: ""
+    form:
+      description: Add one or multiple tags to the assets(s) associated with the current XSOAR incident.
+      expired: false
+      questions:
+      - defaultrows: []
+        fieldassociated: ""
+        gridcolumns: []
+        id: "0"
+        label: ""
+        labelarg:
+          simple: What tag(s) do you want to add to asset(s)?
+        options: []
+        optionsarg: []
+        placeholder: ""
+        readonly: false
+        required: false
+        tooltip: specificy what tags you want to add to the asset(s) associated to the current XSOAR incident in comma separated value format
+        type: shortText
+      sender: Your SOC team
+      title: Determine tags to add to asset(s)
+      totalanswers: 0
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    message:
+      bcc:
+      body:
+      cc:
+      format: ""
+      methods: []
+      subject:
+      timings:
+        completeafterreplies: 1
+        completeaftersla: false
+        completeafterv2: true
+        retriescount: 2
+        retriesinterval: 360
+      to:
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: b1d7833b-72f0-41b3-830e-898d61780676
+      iscommand: false
+      name: Determine tags to add to asset(s)
+      type: collection
+      version: -1
+    taskid: b1d7833b-72f0-41b3-830e-898d61780676
+    timertriggers: []
+    type: collection
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1020
+        }
+      }
+  "9":
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      asm_id_list:
+        complex:
+          accessor: xpanseassetids
+          root: incident
+          transformers:
+          - args:
+              delimiter:
+                value:
+                  simple: ','
+            operator: split
+      tags:
+        simple: ${Determine tags to add to asset(s).Answers.0}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Cortex Xpanse
+      description: Assigns tags to a list of assets.
+      id: faa8b718-7e1b-4b27-8f50-7ceaac85553e
+      iscommand: true
+      name: Assign Tag to Asset(s)
+      script: Cortex Xpanse|||asm-tag-asset-assign
+      type: regular
+      version: -1
+    taskid: faa8b718-7e1b-4b27-8f50-7ceaac85553e
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+  "10":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                root: inputs.WriteToExpanse
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      label: "yes"
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determine whether playbook should write data back to Expanse.
+      id: 975df226-fac6-4079-8cc3-66114bddd065
+      iscommand: false
+      name: Are we writing to Expanse?
+      type: condition
+      version: -1
+    taskid: 975df226-fac6-4079-8cc3-66114bddd065
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 790
+        }
+      }
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "10_2_#default#": 0.9,
+      "10_7_yes": 0.49
+    },
     "paper": {
       "dimensions": {
-        "height": 1125,
+        "height": 1515,
         "width": 380,
         "x": 450,
         "y": -80
       }
     }
   }
-inputs: []
+inputs:
+- description: Write data back to Expanse? Default is False.
+  key: WriteToXpanse
+  playbookInputQuery:
+  required: false
+  value:
+    simple: "False"
 outputs: []
 tests:
 - No tests (auto formatted)
 fromversion: 6.8.0
+contentitemexportablefields:
+  contentitemfields: {}
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - WriteToXpanse
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
