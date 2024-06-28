@@ -296,6 +296,7 @@ tasks:
       name: Determine tags to add to asset(s)
       type: collection
       version: -1
+      description: Add one or multiple tags to the assets(s) associated with the current XSOAR incident.
     taskid: 54995d00-c6c0-4549-8ded-319d5bc01e0e
     timertriggers: []
     type: collection
@@ -395,10 +396,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Determine whether playbook should write data back to Expanse.
+      description: Determine whether playbook should write data back to Xpanse.
       id: 62fb488b-6b5a-469d-800e-80a6e253d8b1
       iscommand: false
-      name: Are we writing to Expanse?
+      name: Are we writing to Xpanse?
       type: condition
       version: -1
     taskid: 62fb488b-6b5a-469d-800e-80a6e253d8b1
@@ -426,7 +427,7 @@ view: |-
     }
   }
 inputs:
-- description: Write data back to Expanse? Default is False.
+- description: Write data back to Xpanse? Default is False.
   key: WriteToXpanse
   playbookInputQuery:
   required: false
