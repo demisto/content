@@ -479,7 +479,7 @@ def test_get_remote_data_command_should_not_update(requests_mock, mocker):
 
 
 @pytest.mark.parametrize(argnames='incident_status', argvalues=XDR_RESOLVED_STATUS_TO_XSOAR.keys())
-def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incident_status):
+def test_get_remote_data_command_should_close_issue(capfd, requests_mock, mocker, incident_status):
     """
     Given:
         -  an XDR client
@@ -536,7 +536,8 @@ def test_get_remote_data_command_should_close_issue(requests_mock, mocker, incid
     mocker.patch("CortexXDRIR.ALERTS_LIMIT_PER_INCIDENTS", new=50)
     mocker.patch.object(Client, 'save_modified_incidents_to_integration_context')
     mocker.patch.object(Client, 'get_multiple_incidents_extra_data', return_value=raw_incident['reply'])
-    response = get_remote_data_command(client, args)
+    with capfd.disabled():
+        response = get_remote_data_command(client, args)
     sort_all_list_incident_fields(expected_modified_incident)
 
     assert response.mirrored_object == expected_modified_incident
@@ -877,7 +878,7 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
         Then:
             - Ensure no error is raised, and return `ok`
         """
-    from CortexXDRIR import Client
+    from CortexXDRIR import Client, validate_custom_close_reasons_mapping
 
     # using two different credentials object as they both fields need to be encrypted
     base_url = urljoin("dummy_url", '/public_api/v1')
@@ -895,10 +896,10 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
     with capfd.disabled():
         if should_raise_error:
             with pytest.raises(DemistoException):
-                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+                validate_custom_close_reasons_mapping(mapping=custom_mapping, direction=direction)
         else:
             try:
-                client.validate_custom_mapping(mapping=custom_mapping, direction=direction)
+                validate_custom_close_reasons_mapping(mapping=custom_mapping, direction=direction)
             except DemistoException as e:
                 pytest.fail(f"Unexpected exception raised for input {input}: {e}")
 
