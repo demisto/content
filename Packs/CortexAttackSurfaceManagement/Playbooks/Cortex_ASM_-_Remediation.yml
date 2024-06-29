@@ -877,12 +877,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 0d3d92e3-f643-4834-86d1-9a80002e16ee
+      description: What is the cloud service provider?
+      id: a9cba362-351c-422f-829e-7387e8d16c1c
       iscommand: false
       name: What is the cloud provider?
       type: condition
       version: -1
-    taskid: 0d3d92e3-f643-4834-86d1-9a80002e16ee
+    taskid: a9cba362-351c-422f-829e-7387e8d16c1c
     timertriggers: []
     type: condition
     view: |-
