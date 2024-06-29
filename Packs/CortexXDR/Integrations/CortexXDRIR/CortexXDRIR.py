@@ -138,11 +138,11 @@ def get_xsoar_close_reasons():
     custom_close_reasons = []
     try:
         server_config = get_server_config()
+        demisto.debug(f'get_xsoar_close_reasons server-config: {str(server_config)}')
         if server_config:
             custom_close_reasons: list = argToList(server_config.get('incident.closereasons', ''))
     except Exception as e:
         demisto.error(f"Could not get server configuration: {e}")
-
     return default_xsoar_close_reasons + custom_close_reasons
 
 
