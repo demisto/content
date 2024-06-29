@@ -775,16 +775,16 @@ def sub_data(playbook):
 
 def create_config_file(pb_name, ignore_playbook):
     """
-    This function accepts the playbook names and the name of the playbooks to be ignored to avoid the data repetition, as they are already
-    covered in the subplaybooks, and then create complete configuration data for those playbooks and subplaybooks
+    This function accepts the playbook names and the name of the playbooks to be ignored to avoid the data repetition, as they
+    are already covered in the subplaybooks, and then create complete configuration data for those playbooks and subplaybooks
 
     Args:
     pb_name: playbook name
     ignore_playbook: list having the playbook names to be ignored
 
     Returns:
-    playbook : dictionary containing the complete data for playbooks, that is automtion, subplaybook and all the configuration data of
-    integration for that particular playbook
+    playbook : dictionary containing the complete data for playbooks, that is automtion, subplaybook and all the
+    configuration data of integration for that particular playbook
     """
     global autodata
     playbook = get_playbook_data(pb_name)
@@ -841,7 +841,8 @@ def main():  # pragma: no cover
     """
     try:
         args = demisto.args()
-        global layouts, incident_types, incident_fields, classifiers, incoming_mappers, outgoing_mappers, playbooks, automations, integrations, ignore_playbook, configuration
+        global layouts, incident_types, incident_fields, classifiers, incoming_mappers, outgoing_mappers
+        global playbooks, automations, integrations, ignore_playbook, configuration
         incident_fields = get_incident_fields()
         layouts = get_layouts()
         incident_types = get_incident_types()
