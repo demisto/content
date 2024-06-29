@@ -7,7 +7,7 @@
     ],
     "name": "BmcITSM Display ID",
     "ownerOnly": false,
-    "cliName": "bmcdisplayid",
+    "cliName": "bmcitsmdisplayid",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
