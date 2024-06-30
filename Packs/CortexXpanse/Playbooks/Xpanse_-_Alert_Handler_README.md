@@ -12,7 +12,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* Cortex Xpanse
+Cortex Xpanse
 
 ### Scripts
 
@@ -20,7 +20,7 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* asm-tag-asset-assign
+asm-tag-asset-assign
 
 ## Playbook Inputs
 
