@@ -12,7 +12,7 @@
         "field": ""
     },
     "fromDateLicense": "0001-01-01T00:00:00Z",
-    "name": "Cortex XDR Events Grouping",
+    "name": "Cortex XDR Events Grouping(XSOAR SAAS)",
     "layout": [
         {
             "id": "cf432d50-b95f-11eb-bc3c-579f145ea812",
