@@ -11638,7 +11638,28 @@ def split_data_to_chunks(data, target_chunk_size):
         data = data.split('\n')
     for data_part in data:
         if sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            demisto.debug("skipped object with size: {size}".format(size=sys.getsizeof(data_part)))
+            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(data_part)))
+            if isinstance(data_part, str):
+                try:
+                    data_dict = json.loads(data_part)
+                    if data_dict.get('output'):
+                        demisto.debug("replacing output key")
+                        data_dict['output'] = "WARNING: Output is too big to display, please check the value in th UI."
+                        data_part = json.dumps(data_dict)
+                        demisto.debug("new size is: {size}".format(size=sys.getsizeof(data_part)))
+                    else:
+                        demisto.debug("skipping object...")
+                        continue
+                except Exception as e:
+                    demisto.debug("could not parse object: {e}".format(e=e))
+                    continue
+            # if isinstance(data_part, dict) and data_part.get('output'):
+            #     demisto.debug("replacing output key")
+            #     data_part['output'] = "WARNING: Output is too big to display, please check the value in th UI."
+            #     demisto.debug("new size is: {size}".format(size=sys.getsizeof(data_part)))
+            # else:
+            #     demisto.debug("skipping object...")
+            #     continue
             # demisto.debug("object is: {object}".format(object=data_part))
             # try:
             #     with open("/tmp/vulns_test.json", "w") as test_file:
@@ -11646,7 +11667,6 @@ def split_data_to_chunks(data, target_chunk_size):
             #         demisto.debug("finished writing to file")
             # except Exception as e:
             #     demisto.debug("failed writing to json file: {e}".format(e=e))
-            continue
         if chunk_size + sys.getsizeof(data_part) > target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
