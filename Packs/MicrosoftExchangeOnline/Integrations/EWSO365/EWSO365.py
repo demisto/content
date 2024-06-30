@@ -130,6 +130,8 @@ class CustomDomainOAuth2Credentials(OAuth2AuthorizationCodeCredentials):
     def __init__(self, azure_cloud: AzureCloud, **kwargs):
         self.ad_base_url = azure_cloud.endpoints.active_directory or 'https://login.microsoftonline.com'
         self.exchange_online_scope = azure_cloud.endpoints.exchange_online or 'https://outlook.office365.com'
+        demisto.debug(f'Initializing {self.__class__}: '
+                      f'{azure_cloud.abbreviation=} | {self.ad_base_url=} | {self.exchange_online_scope}')
         super().__init__(**kwargs)
 
     @property
@@ -223,6 +225,7 @@ class EWSClient:
             self_deployed=self_deployed,
             scope=f"{azure_cloud.endpoints.exchange_online}/.default",
             command_prefix="ews",
+            azure_cloud=azure_cloud
         )
         self.folder_name = folder
         self.is_public_folder = is_public_folder

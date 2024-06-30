@@ -692,6 +692,7 @@ class MicrosoftClient(BaseClient):
             command_prefix: The prefix for all integration commands.
         """
         self.command_prefix = command_prefix
+        demisto.debug(f'Initializing MicrosoftClient with: {endpoint=} | {azure_cloud.abbreviation}')
         if endpoint != "__NA__":
             # Backward compatible.
             self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
