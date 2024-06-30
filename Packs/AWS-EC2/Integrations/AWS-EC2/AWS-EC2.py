@@ -4,6 +4,7 @@ from datetime import date
 from AWSApiModule import *  # noqa: E402
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
+from threading import current_thread
 
 """CONSTANTS"""
 
@@ -11,6 +12,7 @@ PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
 IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
+
 
 """HELPER FUNCTIONS"""
 
@@ -100,17 +102,25 @@ def build_client(args: dict):
         aws_access_key_id, aws_secret_access_key
     )
 
-    return AWSClient(
+    demisto.debug('building client')
+    client = AWSClient(
         aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
         aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
         retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url
-    ).aws_session(
+    )
+    demisto.debug('client built')
+
+    demisto.debug('creating session')
+    client = client.aws_session(
         service='ec2',
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
+    demisto.debug('session created')
+
+    return client
 
 
 def run_on_all_accounts(func: Callable[[dict], CommandResults]):
@@ -137,6 +147,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
         accounts = argToList(PARAMS.get('accounts_to_access'))
 
         def run_command(account_id: str) -> CommandResults:
+            demisto.debug(f'running command with {account_id=}, thread_id={current_thread().name}')
             new_args = args | {
                 #  the role ARN must be of the format: arn:aws:iam::<account_id>:role/<role_name>
                 'roleArn': f'arn:aws:iam::{account_id}:role/{role_name}',
@@ -144,7 +155,9 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                 'roleSessionDuration': args.get('roleSessionDuration', 900),
             }
             try:
+                demisto.debug(f'running command func {func.__name__}')
                 result = func(new_args)
+                demisto.debug('command func ran successfully')
                 result.readable_output = f'#### Result for account `{account_id}`:\n{result.readable_output}'
                 if isinstance(result.outputs, list):
                     for obj in result.outputs:
@@ -153,6 +166,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                     result.outputs['AccountId'] = account_id
                 return result
             except Exception as e:  # catch any errors raised from "func" to be tagged with the account ID and displayed
+                demisto.debug(f'error raised: {e}, {e.args}')
                 return CommandResults(
                     readable_output=f'#### Error in command call for account `{account_id}`\n{e}',
                     entry_type=EntryType.ERROR,
@@ -163,10 +177,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
             results = executor.map(run_command, accounts)
         return list(results)
 
-    if (ROLE_NAME and not IS_ARN_PROVIDED):
-        support_multithreading()
-        return account_runner
-    return func
+    return account_runner if (ROLE_NAME and not IS_ARN_PROVIDED) else func
 
 
 """MAIN FUNCTIONS"""
@@ -377,7 +388,9 @@ def describe_images_command(args: dict) -> CommandResults:
 
 @run_on_all_accounts
 def describe_addresses_command(args: dict) -> CommandResults:
+    demisto.debug('calling build_client')
     client = build_client(args)
+    demisto.debug(f'build_client called: {client=}, {dir(client)=}')
 
     obj = vars(client._client_config)
     kwargs = {}
@@ -390,7 +403,9 @@ def describe_addresses_command(args: dict) -> CommandResults:
     if args.get('allocationIds') is not None:
         kwargs.update({'AllocationIds': parse_resource_ids(args.get('allocationIds'))})
 
+    demisto.debug('calling describe_addresses')
     response = client.describe_addresses(**kwargs)
+    demisto.debug('describe_addresses called')
 
     if len(response['Addresses']) == 0:
         return CommandResults(readable_output='No addresses were found.')
@@ -3078,6 +3093,10 @@ def main():
         args = demisto.args()
 
         demisto.debug(f'Command being called is {command}')
+
+        if (ROLE_NAME and not IS_ARN_PROVIDED):
+            support_multithreading()
+            demisto.debug('using multiple accounts')
 
         match command:
             case 'test-module':
