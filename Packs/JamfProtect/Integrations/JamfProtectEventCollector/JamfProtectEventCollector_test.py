@@ -8,7 +8,7 @@ from pathlib import Path
 MOCK_BASEURL = "https://example.protect.jamfcloud.com"
 MOCK_CLIENT_ID = "example_client_id"
 MOCK_CLIENT_PASSWORD = "example_pass"
-MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00Z"
+MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00.000000Z"
 
 
 def util_load_json(path: str) -> dict:
