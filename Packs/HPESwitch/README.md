@@ -12,7 +12,7 @@ Follow these steps to configure forwarding of event logs from an HPE switch to a
 1. Connect to the switch CLI (Command Line Interface). 
 2. Type **enable** to move from the _Operator Level_ mode to  _Manager Level_ mode, followed by the *Manager Level* password if prompted. 
 3. Type **config** to enter the _Global Configuration_ command mode. 
-4. Type **logging**  **_\<IP\>_** **udp** **_\<PORT\>_** where _\<IP\>_ and _\<PORT\>_ are the corresponding IP address and port of the target [XSIAM Syslog Broker VM](#broker-vm). 
+4. Type **logging**  **_\<IP\>_** **udp** **_\<PORT\>_** where _\<IP\>_ and _\<PORT\>_ are the corresponding IP address and port of the target [Cortex XSIAM Syslog Broker VM](#broker-vm). 
 5. Type **write memory** (or **running-config startup-config**) to commit the updated configuration settings to the _startup configuration_ file. 
 6. Type **exit** to exit the _Global Configuration_ command mode and return back to the _Manager Level_ command mode. 
 7. Type **exit** again to terminate the _Manager Level_ mode session. 
