@@ -1888,7 +1888,7 @@ tasks:
 
         **Attacker's Goals:**
 
-        An attacker is attempting to masquerade as standard windows images by using a trusted name to execute malicious code.
+        An attacker is attempting to masquerade as standard Windows images by using a trusted name to execute malicious code.
 
         **Investigative Actions:**
 
@@ -1907,7 +1907,7 @@ tasks:
         * Auto file quarantine
         * Manual endpoint isolation
 
-        When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment and eradication, is executed.
+        When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment and eradication.
 
         This phase will execute the following containment actions:
 
@@ -1920,7 +1920,7 @@ tasks:
 
         [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
 
-        [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
+        [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Analytics-Alert-Reference-by-Alert-name/Possible-Microsoft-process-masquerading).
       playbookName: Cortex XDR - T1036 - Masquerading
       type: playbook
       iscommand: false

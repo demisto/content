@@ -31,7 +31,7 @@ description: |-
 
   [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
 
-  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading).
+  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Analytics-Alert-Reference-by-Alert-name/Possible-Microsoft-process-masquerading).
 starttaskid: "0"
 tasks:
   "0":
@@ -414,7 +414,7 @@ tasks:
       id: 86e7f5ab-1903-4db6-8ea3-f8915c94af1c
       version: -1
       name: Cortex XDR - Endpoint Investigation
-      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
+      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
       playbookName: Cortex XDR - Endpoint Investigation
       type: playbook
       iscommand: false
@@ -682,7 +682,7 @@ tasks:
       id: 126e5181-f7f7-409a-89f4-fa800188ffcc
       version: -1
       name: Check if File Hash is in NSRL DB
-      description: Sends a HTTP request with advanced capabilities
+      description: Sends an HTTP request with advanced capabilities
       scriptName: HttpV2
       type: regular
       iscommand: false
@@ -897,7 +897,7 @@ inputs:
   value:
     simple: "False"
   required: false
-  description: Setting this input to True will quarantine the file automatically in case of malicious file.
+  description: Setting this input to True will quarantine the file automatically in case of a malicious file.
   playbookInputQuery:
 - key: FileSHA256
   value:
@@ -959,7 +959,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The IP, Hostname or ID of the Endpoint
+  description: The IP, hostname, or ID of the endpoint.
   playbookInputQuery:
 - key: AlertID
   value:
@@ -979,7 +979,7 @@ inputs:
       transformers:
       - operator: uniq
   required: false
-  description: The ID of the alert
+  description: The ID of the alert.
   playbookInputQuery:
 outputs: []
 tests:
