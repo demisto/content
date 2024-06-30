@@ -115,7 +115,7 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         event_id = 4633, arrayindex(regextract(msg, "Mac-notify traps ([\w\/]+)"), 0), 
         event_id = 4986, arrayindex(regextract(msg, "enabled port ([\w\/]+)"), 0), 
         event_id = 5052, arrayindex(regextract(msg, "^Configuration conversion for \S+ ([\w\/]+)"), 0), 
-        arrayindex(regextract(msg, "[Pp]ort ([\w\/]+)"), 0)), // General fall back
+        arrayindex(regextract(msg, "\s+[Pp]ort ([\w\/]+)"), 0)), // General fall back
     src_ip = if( 
         event_id in (3, 3087, 5328), arrayindex(regextract(msg, "to (\S+)"), 0),
         event_id in (11, 91, 97, 98, 99, 112, 236, 237, 419, 468, 469, 470, 609, 610, 611, 618, 619, 620, 621, 622, 636, 637, 639, 640, 754, 982, 983, 984, 985, 2205, 2206, 2207, 2210, 2211, 2219, 2220, 2419, 2420, 2421, 2422, 2425, 2667, 2684, 2686, 3310, 3311, 3318, 3345, 3362, 3363, 3387, 3390, 4215, 4216, 4241, 4242, 4244, 4245, 4281, 4542, 4558, 456, 4575, 4832, 4834, 4872, 4873, 5005, 5006, 5016, 5312, 5313, 5314, 5329, 5653), arrayindex(regextract(msg, "from (\S+)"), 0),
@@ -192,23 +192,21 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         event_id = 4831, arrayindex(regextract(msg, "limit is reached for \'?([\w\\]+)\'?\."), 0), 
         event_id = 2668, arrayindex(regextract(msg, "for the User \'?([\w\\]+)\'?\."), 0), 
         event_id = 5409, arrayindex(regextract(msg, "for user (\S+):") , 0)),
-    user_role = coalesce(
-        arrayindex(regextract(msg, "^Failed to apply user role (\S+) to"), 0),
-        arrayindex(regextract(msg, "Applying secondary user role (\S+)"), 0),
-        arrayindex(regextract(msg, "^admin-edge-port in user role (\S+) to"), 0),
-        arrayindex(regextract(msg, "user role (\S+) has"), 0),
-        arrayindex(regextract(msg, "apply user role (\S)"), 0),
-        arrayindex(regextract(msg, "Local user \S+ is \S+ \S+ the group ([\w\_\']+)"), 0)),
+    user_role = if(
+        event_id in (5204, 5205, 5206, 5207, 5208, 5209, 5210, 5211, 5212, 5213, 5411, 5412, 5619, 5563, 5717, 5722, 5724, 5725, 5797, 5798, 5799, 5800, 5801, 5802, 5803, 5804, 5805, 5806, 5814), arrayindex(regextract(msg, "user[\s\-]+role \'?(.+?)\'? (?:to|has|with|is|\.)"), 0),
+        event_id in (3391, 3392, 3393, 3394), arrayindex(regextract(msg, "group \'?(.+?)\'?\s*\."), 0),
+        event_id in (5620, 5621), arrayindex(regextract(msg, "^\'?(.+?)\'? client"), 0),
+        event_id in (5715, 5716), arrayindex(regextract(msg, "^Initial role \'?(.+?)\'? is"), 0)),
     vlan_id = if(
-        event_id in (1,2), arrayindex(regextract(msg, "^0*(\d+) virtual LAN"), 0),
-        event_id = 316, arrayindex(regextract(msg, "^VLAN ID out of range \(?0*(\d+)"), 0), 
-        event_id = 964, arrayindex(regextract(msg, "^Failed to allocate memory for 0*(\d+)"), 0), 
-        event_id = 3815, arrayindex(regextract(msg, "^0*(\d+) \S+ Port \S+ moved"), 0), 
-        event_id = 3824, arrayindex(regextract(msg, "^GVRP could not create 0*(\d+) because"), 0), 
-        event_id = 3826, arrayindex(regextract(msg, "^GVRP could not add port \S+ to 0*(\d+)"), 0), 
-        event_id = 3828, arrayindex(regextract(msg, "^Port \S+ unblocked on 0*(\d+)"), 0), 
-        event_id = 4588, arrayindex(regextract(msg, "^Unable to add binding for 0*(\d+)"), 0),
-        arrayindex(regextract(msg, "(?:VID|vid|VLAN|vlan|Vlan|Vlan-id|VLAN-id)\s*:?\s*0*(\d+)"), 0)) // default fallback  
+        event_id in (1,2), arrayindex(regextract(msg, "^(\d+) virtual LAN"), 0),
+        event_id = 316, arrayindex(regextract(msg, "^VLAN ID out of range \(?(\d+)"), 0), 
+        event_id = 964, arrayindex(regextract(msg, "^Failed to allocate memory for (\d+)"), 0), 
+        event_id = 3815, arrayindex(regextract(msg, "^(\d+) \S+ Port \S+ moved"), 0), 
+        event_id = 3824, arrayindex(regextract(msg, "^GVRP could not create (\d+) because"), 0), 
+        event_id = 3826, arrayindex(regextract(msg, "^GVRP could not add port \S+ to (\d+)"), 0), 
+        event_id = 3828, arrayindex(regextract(msg, "^Port \S+ unblocked on (\d+)"), 0), 
+        event_id = 4588, arrayindex(regextract(msg, "^Unable to add binding for (\d+)"), 0),
+        arrayindex(regextract(msg, "(?:VID|vid|VLAN|vlan|Vlan|Vlan-id|VLAN-id)\s*:?\s*(\d+)"), 0)) // default fallback  
 
 | alter // Post Extraction Processing 
     formatted_mac_address = arraystring(regextract(mac_address, "[\da-fA-F]{2}"), ":"), 
@@ -333,7 +331,7 @@ filter _raw_log ~= "%\S+\-\d\-\S+:"
         arrayindex(regextract(msg ,"Username:\s*()"), 0),
         arrayindex(regextract(msg ,"by\s+(\S+)\s+on\s+"), 0),
         arrayindex(regextract(msg ,"\(\d+\.\d+\.\d+\.\d+\)\)\,\suser\s(\S+)"), 0)),
-    vlan = arrayindex(regextract(msg, "(?:VID|vid|VLAN|vlan|Vlan|Vlan-id|VLAN-id)\s*:?\s*0*(\d+)"), 0)
+    vlan = arrayindex(regextract(msg, "(?:VID|vid|VLAN|vlan|Vlan|Vlan-id|VLAN-id)\s*:?\s*(\d+)"), 0)
 
 | alter // post-extraction formatting 
     client_mac_formatted = arraystring(regextract(client_mac_address, "[\da-fA-F]{2}"), ":"), 
