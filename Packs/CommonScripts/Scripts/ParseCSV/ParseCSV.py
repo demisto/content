@@ -186,7 +186,7 @@ def main():
         if sum(1 for line in open(file_path)) <= 1:  # checks if there are less than one line
             return_error('No data to parse. CSV file might be empty or one-lined. try the `ParseAll=yes` argument.')
 
-        with open(file_path, 'rU') as f:
+        with open(file_path) as f:
             has_header = csv.Sniffer().has_header(f.read(1024))
             f.seek(0)
             csv_data = csv.reader(f)
