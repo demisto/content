@@ -1,6 +1,6 @@
 category: Case Management
 commonfields:
-  id: ServiceNow v2
+  id: ServiceNow v2 - try
   version: -1
 configuration:
 - display: ServiceNow URL, in the format https://company.service-now.com/
@@ -243,8 +243,8 @@ configuration:
   type: 0
   required: false
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
-display: ServiceNow v2
-name: ServiceNow v2
+display: ServiceNow v2 - try
+name: ServiceNow v2 - try
 script:
   commands:
   - arguments:
@@ -351,7 +351,7 @@ script:
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -361,6 +361,7 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
+      - std_change_template
     - auto: PREDEFINED
       description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
