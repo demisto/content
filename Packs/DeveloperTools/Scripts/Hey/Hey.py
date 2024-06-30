@@ -68,8 +68,7 @@ def construct_hey_query(url: str,
         query_args.append('-disable-redirects')
     if headers:
         for header_key, header_val in name_value_arg_to_dict(headers).items():
-            query_args.append('-H')
-            query_args.append(f'{header_key}:{header_val}')
+            query_args.extend(('-H', f'{header_key}:{header_val}'))
     for k, v in hey_map.items():
         query_args.extend([f"-{k}", v])
     query_args.append(url)
