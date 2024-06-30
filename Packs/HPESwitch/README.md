@@ -8,7 +8,7 @@ This section describes the basic mandatory steps you should perform on an HPE sw
 ### Configure Syslog forwarding
 HPE's switches support forwarding the audited messages to a remote Syslog server. This is done via the ***[logging](https://www.arubanetworks.com/techdocs/AOS-CX/10.14/HTML/diagnostics_8100-83xx-9300-10000/Content/Chp_RSyslog/RSyslog_cmds/log-10.htm)*** command. 
 
-Follow these steps to configure forwarding of event logs from an HPE switch to an XSIAM Syslog Broker VM over UDP:
+Follow these steps to configure forwarding of event logs from an HPE switch to a Cortex XSIAM Syslog Broker VM over UDP:
 1. Connect to the switch CLI (Command Line Interface). 
 2. Type **enable** to move from the _Operator Level_ mode to  _Manager Level_ mode, followed by the *Manager Level* password if prompted. 
 3. Type **config** to enter the _Global Configuration_ command mode. 
