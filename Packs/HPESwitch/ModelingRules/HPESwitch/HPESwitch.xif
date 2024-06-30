@@ -224,6 +224,7 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
     xdm.alert.severity = severity,
     xdm.auth.auth_method = access_mode,
     xdm.event.description = msg, 
+    xdm.event.id = to_string(event_id),
     xdm.event.is_completed = if(
         event_id in (91, 375, 666, 734, 2552, 2568, 2802, 3318, 3802, 4762), to_boolean("FALSE"),
         event_id in (93, 94, 131, 150, 202, 376, 667, 735, 796, 2553, 2558, 2569, 2803, 3310, 3803, 4050, 4066, 4185, 4215, 4763, 5024, 5033, 5034, 4612), to_boolean("TRUE")),
@@ -240,7 +241,7 @@ filter _raw_log !~= "%\S+\-\d\-\S+:"
         msg ~= "(?i)ERROR|FAIL|REJECTED|UNABLE|ABORT|INCORRECT|PROBLEM|FAULT|DENY|DENIED|MISMATCH|COLLISIONS|CANNOT|UNREACHABLE|CORRUPTED|NOT FOUND|NOT SUCCEED|UNABLE TO PERMIT|NOT APPLIED|NOT MODIFIED|NOT REACHABLE|CANCELED BECAUSE|CAN\'T REACH", XDM_CONST.OUTCOME_FAILED,
         msg ~= "(?i)SUCCESS|SUCCEEDED", XDM_CONST.OUTCOME_SUCCESS),
     xdm.event.outcome_reason = outcome_reason,
-    xdm.event.type = coalesce(to_string(event_id), facility),
+    xdm.event.type = facility,
     xdm.intermediate.host.hostname = gateway_name,
     xdm.intermediate.ipv4 = device_ip,
     xdm.intermediate.ipv6 = gw_ipv6,
@@ -341,7 +342,6 @@ filter _raw_log ~= "%\S+\-\d\-\S+:"
 | alter // XDM mappings
     xdm.alert.severity = severity,
     xdm.event.description = msg,
-    xdm.event.id = sequence_number,
     xdm.event.log_level = if(
         severity = "0", XDM_CONST.LOG_LEVEL_EMERGENCY, 
         severity = "1", XDM_CONST.LOG_LEVEL_ALERT , 
@@ -359,7 +359,7 @@ filter _raw_log ~= "%\S+\-\d\-\S+:"
         event_name_mnemonic = "FAIL" and msg ~= "(?i)Authorization failed", "AUTHORIZATION_FAILED",
         event_name_mnemonic = "FAIL" and msg ~= "(?i)Authentication failed", "AUTHENTICATION_FAILED",
         event_name_mnemonic),
-    xdm.network.session_id = session_id,
+    xdm.network.session_id = sequence_number,
     xdm.observer.name = device_hostname,
     xdm.observer.type = facility,
     xdm.observer.unique_identifier = coalesce(device_serial_number, device_hostname),
