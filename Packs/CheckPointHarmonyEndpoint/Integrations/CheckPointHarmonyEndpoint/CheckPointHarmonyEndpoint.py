@@ -254,6 +254,9 @@ FILTER_TYPES = [
     "Between",
 ]
 SCHEDULED_COMMANDS_MAPPER = {
+    "harmony-ep-policy-rule-install": ScheduleCommandMetadata(
+        outputs_prefix="PolicyRuleInstall", message="Policies was installed successfully."
+    ),
     "harmony-ep-policy-rule-modifications-get": ScheduleCommandMetadata(
         outputs_prefix="Rule",
         message="Rule {id} modification:",
@@ -634,6 +637,23 @@ class Client(BaseClient):
             "PUT",
             f"/policy/{rule_id}/assignments/remove",
             json_data=entities_ids,
+        )
+
+    def rule_policy_install(self) -> dict[str, Any]:
+        """Installs all policies. If a rule ID is specified,
+            only the policies associated with that rule will be installed.
+
+        Args:
+            rule_id (str, optional): The ID of the rule. Defaults to None.
+
+        Returns:
+            dict[str, Any]: API response.
+        """
+        self._headers["x-mgmt-run-as-job"] = "on"
+
+        return self._http_request(
+            "POST",
+            "/policy/install",
         )
 
     def rule_modifications_get(
@@ -1369,6 +1389,30 @@ def rule_assignments_remove_command(
     return CommandResults(
         readable_output=f"Entities {entities_ids} were removed from rule {rule_id} successfully."
     )
+
+
+@polling_function(
+    name="harmony-ep-policy-rule-install",
+    interval=arg_to_number(demisto.args().get("interval", 30)),
+    timeout=arg_to_number(demisto.args().get("timeout", 600)),
+    poll_message="Policy installation request is executing",
+    requires_polling_arg=False,
+)
+def rule_policy_install_command(args: dict[str, Any], client: Client) -> PollResult:
+    """Installs all policies. If a rule ID is specified, only the policies associated with that rule will be installed.
+
+    Args:
+        client (Client): Harmony API client.
+        args (dict): Command arguments from XSOAR.
+
+    Returns:
+        PollResult: outputs, readable outputs and raw response for XSOAR.
+    """
+    if not args.get("job_id"):
+        response = client.rule_policy_install()
+        args["job_id"] = response.get("jobId")
+
+    return schedule_command(args, client, "harmony-ep-policy-rule-install")
 
 
 @polling_function(
@@ -2707,6 +2751,7 @@ def main() -> None:
             "harmony-ep-policy-rule-assignments-get": rule_assignments_get_command,
             "harmony-ep-policy-rule-assignments-add": rule_assignments_add_command,
             "harmony-ep-policy-rule-assignments-remove": rule_assignments_remove_command,
+            "harmony-ep-policy-rule-install": rule_policy_install_command,
             "harmony-ep-policy-rule-modifications-get": rule_modifications_get_command,
             "harmony-ep-policy-rule-metadata-list": rule_metadata_list_command,
             "harmony-ep-push-operation-status-list": push_operation_status_list_command,

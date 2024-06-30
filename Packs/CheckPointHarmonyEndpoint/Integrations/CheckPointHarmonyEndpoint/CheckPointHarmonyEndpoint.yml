@@ -191,6 +191,23 @@ script:
       description: The entity IDs to remove.
       required: true
       isArray: true
+  - name: harmony-ep-policy-rule-install
+    description: Installs all policies.
+    arguments:
+    - name: interval
+      description: The interval between each poll in seconds. Minimum value is `10`.
+      defaultValue: '30'
+    - name: timeout
+      description: The timeout for the polling in seconds.
+      defaultValue: '600'
+    - name: job_id
+      description: The job ID to fetch data for. Hidden argument.
+      hidden: true
+    polling: true
+    outputs:
+    - contextPath: HarmonyEP.PolicyRuleInstall.job_id
+      description: The job ID of the policy installation.
+      type: String
   - name: harmony-ep-policy-rule-modifications-get
     description: Gets information on modifications to a given rule. (Modifications are the additions or removal of assignments on a rule since it was last installed).
     arguments:

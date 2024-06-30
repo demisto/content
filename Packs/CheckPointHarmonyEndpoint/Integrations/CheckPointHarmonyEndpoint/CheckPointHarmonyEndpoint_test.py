@@ -614,6 +614,13 @@ def test_schedule_command(
     "command_name,request_method,request_function,command_args,endpoint",
     [
         (
+            "harmony-ep-policy-rule-install",
+            "POST",
+            CheckPointHarmonyEndpoint.rule_policy_install_command,
+            {"job_id": None},
+            "policy/1994/install",
+        ),
+        (
             "harmony-ep-policy-rule-modifications-get",
             "GET",
             CheckPointHarmonyEndpoint.rule_modifications_get_command,

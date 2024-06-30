@@ -368,6 +368,49 @@ There is no context output for this command.
 
 >Entities ['000'] were removed from rule 1a2b successfully.
 
+### harmony-ep-policy-rule-install
+
+***
+Installs all policies.
+
+#### Base Command
+
+`harmony-ep-policy-rule-install`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| interval | The interval between each poll in seconds. Minimum value is `10`. Default is 30. | Optional | 
+| timeout | The timeout for the polling in seconds. Default is 600. | Optional | 
+| job_id | The job ID to fetch data for. Hidden argument. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| HarmonyEP.PolicyRuleInstall.job_id | String | The job ID of the policy installation. | 
+
+#### Command example
+```!harmony-ep-policy-rule-install job_id=976```
+#### Context Example
+```json
+{
+    "HarmonyEP": {
+        "PolicyRuleInstall": {
+            "job_id": "976"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy was installed successfully.
+>Job ID: 976
+>**No entries.**
+
+
 ### harmony-ep-policy-rule-modifications-get
 
 ***
