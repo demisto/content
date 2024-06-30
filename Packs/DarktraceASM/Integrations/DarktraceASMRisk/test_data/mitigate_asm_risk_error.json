@@ -1,0 +1,19 @@
+{
+    "errors": [
+      {
+        "message": "ID is not a Risk",
+        "locations": [
+          {
+            "line": 1,
+            "column": 24
+          }
+        ],
+        "path": [
+          "closeRisk"
+        ]
+      }
+    ],
+    "data": {
+      "closeRisk": null
+    }
+  }
