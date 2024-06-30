@@ -279,8 +279,8 @@ tasks:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
-        retriescount: 2
-        retriesinterval: 360
+        retriescount: 0
+        retriesinterval: 0
       to:
     nexttasks:
       '#none#':
@@ -338,9 +338,15 @@ tasks:
             operator: replace
       tags:
         complex:
-          accessor: 0}
-          root: ${Determine tags to add to asset.Answers.[0]
+          accessor: Answers}
+          root: ${Determine tags to add to asset
           transformers:
+          - operator: LastArrayElement
+          - args:
+              field:
+                value:
+                  simple: "0"
+            operator: getField
           - args:
               delimiter:
                 value:
