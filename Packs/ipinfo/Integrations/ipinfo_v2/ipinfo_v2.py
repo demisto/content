@@ -14,6 +14,7 @@ class Client(BaseClient):
         """
         super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
         time_sensitive = is_time_sensitive()
+        # TODO DELETE ME
         demisto.debug(f'{time_sensitive=}')
 
         self.timeout = 2 if time_sensitive else 20
