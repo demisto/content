@@ -1,10 +1,10 @@
 {
-    "id": "incident_exabeamsessionids",
+    "id": "incident_exabeamadvancedanalyticssessionids",
     "version": -1,
     "modified": "2024-06-30T09:57:24.730584014Z",
-    "name": "Exabeam Session IDs",
+    "name": "Exabeam Advanced Analytics Session IDs",
     "ownerOnly": false,
-    "cliName": "exabeamsessionids",
+    "cliName": "exabeamadvancedanalyticssessionids",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,

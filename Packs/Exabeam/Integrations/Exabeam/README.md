@@ -1374,3 +1374,19 @@ Returns incidents from Exabeam.
 
 #### Command Example
 ```!exabeam-list-incident priority=high```
+### exabeam-reset-notable-users-cached
+
+***
+Reset integration context for notable users fetch.
+
+#### Base Command
+
+`exabeam-reset-notable-users-cached`
+
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+There is no context output for this command.
