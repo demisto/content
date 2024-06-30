@@ -102,25 +102,17 @@ def build_client(args: dict):
         aws_access_key_id, aws_secret_access_key
     )
 
-    demisto.debug('building client')
-    client = AWSClient(
+    return AWSClient(
         aws_default_region, aws_role_arn, aws_role_session_name, aws_role_session_duration,
         aws_role_policy, aws_access_key_id, aws_secret_access_key, verify_certificate, timeout,
         retries, sts_endpoint_url=sts_endpoint_url, endpoint_url=endpoint_url
-    )
-    demisto.debug('client built')
-
-    demisto.debug('creating session')
-    client = client.aws_session(
+    ).aws_session(
         service='ec2',
         region=args.get('region'),
         role_arn=args.get('roleArn'),
         role_session_name=args.get('roleSessionName'),
         role_session_duration=args.get('roleSessionDuration'),
     )
-    demisto.debug('session created')
-
-    return client
 
 
 def run_on_all_accounts(func: Callable[[dict], CommandResults]):
