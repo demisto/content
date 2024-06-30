@@ -30,7 +30,7 @@ Bellow is an example execution of the commands above for forwarding messages ove
 ```
 
 #### Remark 
-For additional examples and command options, such as setting the logging severity level, filtering logging only for certain event id's and forwarding syslog messages over TCP or TLS, checkout HPE's [Remote Syslog logging command reference](https://www.arubanetworks.com/techdocs/AOS-CX/10.14/HTML/diagnostics_8100-83xx-9300-10000/Content/Chp_RSyslog/RSyslog_cmds/rem-sys-com.htm).
+For additional examples and command options, such as setting the logging severity level, filtering logging only for certain event ID's and forwarding syslog messages over TCP or TLS, see HPE's [Remote Syslog logging command reference](https://www.arubanetworks.com/techdocs/AOS-CX/10.14/HTML/diagnostics_8100-83xx-9300-10000/Content/Chp_RSyslog/RSyslog_cmds/rem-sys-com.htm).
 
 
  ## Configuration on Cortex XSIAM
