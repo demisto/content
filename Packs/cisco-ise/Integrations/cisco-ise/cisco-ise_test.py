@@ -2,8 +2,8 @@ import importlib
 import demistomock as demisto
 import pytest
 
-cisco_ise = importlib.import_module("cisco-ise")
-
+PARAMS = {'serverURL': 'http://example.com', 'serverPort': '1234', 'credentials':
+          {'identifier': 'test@example.com', 'password': '1234'}}
 MAC_ADDRESS = '11:22:33:44:55:66'
 EMPTY_SEARCH_RES = {'SearchResult': {'resources': []}}
 
@@ -17,6 +17,8 @@ def test_get_endpoint_id_command(mocker):
     Then:
         - The command is not failed even when there is no endpoint for the mac address.
     """
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    cisco_ise = importlib.import_module("cisco-ise")
     m = mocker.patch.object(cisco_ise, 'return_outputs')
     mocker.patch.object(demisto, 'args', return_value={'macAddress': MAC_ADDRESS})
     mocker.patch.object(cisco_ise, 'get_endpoint_id', return_value=EMPTY_SEARCH_RES)
@@ -35,7 +37,8 @@ def test_get_endpoint_details_command(mocker, requests_mock):
     Then:
         - The command returns error entry for Endpoint was not found.
     """
-
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    cisco_ise = importlib.import_module("cisco-ise")
     results = mocker.spy(demisto, 'results')
 
     mocker.patch.object(cisco_ise, 'http_request', return_value=None)
@@ -58,7 +61,8 @@ def test_update_endpoint_group_command(mocker):
     Then:
         - The command returns error entry for Endpoint was not found for the group.
     """
-    
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    cisco_ise = importlib.import_module("cisco-ise")
     results = mocker.spy(demisto, 'results')
 
     mocker.patch.object(demisto, 'args', return_value={'groupName': 'group1'})
@@ -81,6 +85,8 @@ def test_update_endpoint_group_command_populate_endpoint_data(mocker):
     Then:
         - The update_endpoint_by_id method args contains the data from get_endpoint_details res.
     """
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    cisco_ise = importlib.import_module("cisco-ise")
     m = mocker.patch.object(cisco_ise, 'update_endpoint_by_id', return_value={'ERSResponse':{}})
     mocker.patch.object(demisto, 'args', return_value={'groupId': '1', 'id': '2', 'macAddress': MAC_ADDRESS})
     mocker.patch.object(cisco_ise, 'get_endpoint_details', return_value=
@@ -97,7 +103,8 @@ def test_get_blacklist_endpoints_request(mocker):
     Then:
         - The command returns error entry for No blacklist endpoint were found.
     """
-    
+    mocker.patch.object(demisto, 'params', return_value=PARAMS)
+    cisco_ise = importlib.import_module("cisco-ise")
     results = mocker.spy(demisto, 'results')
     mocker.patch.object(cisco_ise, 'get_blacklist_group_id', return_value=EMPTY_SEARCH_RES)
     
