@@ -113,7 +113,7 @@ def should_filter_out_pack(pack_data: dict, fields: dict, remove_deprecated: boo
 
 
 def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: str, verify_ssl: bool,
-                            all_packs: bool = False) -> None:
+                            use_defaut_filter: bool = False) -> None:
     """ Download and save packs under """
     if 'Packs' not in id_set_json:
         raise ValueError('Packs missing from id_set.json.')
@@ -127,7 +127,7 @@ def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: st
                 continue
             # In case no input is given (and only in that case) we automatically get all packs,
             # we want to get only relevant packs.
-            if all_packs and should_filter_out_pack(id_set_packs[pack_name],
+            if use_defaut_filter and should_filter_out_pack(id_set_packs[pack_name],
                                                     fields={"author": 'Cortex XSOAR'},
                                                     remove_deprecated=True):
                 print(f"\t{pack_d_name} filtered out. Skipping pack download.")
@@ -214,7 +214,7 @@ def main():
         download_and_save_packs(pack_names, id_set_json,
                                 os.path.join(output_path, 'packs'),
                                 verify_ssl,
-                                all_packs=not bool(packs))
+                                use_defaut_filter=not bool(packs))
     else:
         print('Skipping packs.zip creation')
     if pack_names:
