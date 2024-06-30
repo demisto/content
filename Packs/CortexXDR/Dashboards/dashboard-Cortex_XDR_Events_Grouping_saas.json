@@ -34,10 +34,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "",
-                "shouldCommit": false,
                 "name": "Cortex XDR Grouping - Incidents",
                 "prevName": "Cortex XDR Grouping - Incidents",
                 "dataType": "scripts",
@@ -89,10 +86,7 @@
                 "propagationLabels": [
                     "all"
                 ],
-                "vcShouldIgnore": false,
                 "vcShouldKeepItemLegacyProdMachine": false,
-                "commitMessage": "Widget imported",
-                "shouldCommit": true,
                 "name": "Cortex XDR Groups - Scatter",
                 "prevName": "Cortex XDR Groups - Scatter",
                 "dataType": "scripts",
