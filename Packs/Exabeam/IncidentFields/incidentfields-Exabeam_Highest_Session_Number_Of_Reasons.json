@@ -1,10 +1,10 @@
 {
-    "id": "incident_exabeamhighestsessionnumberofreasons",
+    "id": "incident_exabeamadvancedanalyticshighestsessionnumberofreasons",
     "version": -1,
     "modified": "2024-06-23T09:01:03.308095116Z",
-    "name": "Exabeam Highest Session Number Of Reasons",
+    "name": "Exabeam Advanced Analytics Highest Session Number Of Reasons",
     "ownerOnly": false,
-    "cliName": "exabeamhighestsessionnumberofreasons",
+    "cliName": "exabeamadvancedanalyticshighestsessionnumberofreasons",
     "type": "number",
     "closeForm": false,
     "editForm": true,

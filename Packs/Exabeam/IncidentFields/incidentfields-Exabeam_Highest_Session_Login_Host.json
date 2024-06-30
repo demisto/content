@@ -1,10 +1,10 @@
 {
-    "id": "incident_exabeamhighestsessionloginhost",
+    "id": "incident_exabeamadvancedanalyticshighestsessionloginhost",
     "version": -1,
     "modified": "2024-06-23T09:00:50.674970362Z",
-    "name": "Exabeam Highest Session Login Host",
+    "name": "Exabeam Advanced Analytics Highest Session Login Host",
     "ownerOnly": false,
-    "cliName": "exabeamhighestsessionloginhost",
+    "cliName": "exabeamadvancedanalyticshighestsessionloginhost",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,

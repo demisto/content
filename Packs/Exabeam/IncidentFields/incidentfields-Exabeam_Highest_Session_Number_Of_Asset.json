@@ -1,10 +1,10 @@
 {
-    "id": "incident_exabeamhighestsessionnumberofasset",
+    "id": "incident_exabeamadvancedanalyticshighestsessionnumberofasset",
     "version": -1,
     "modified": "2024-06-23T09:00:26.500910853Z",
-    "name": "Exabeam Highest Session Number Of Asset",
+    "name": "Exabeam Advanced Analytics Highest Session Number Of Asset",
     "ownerOnly": false,
-    "cliName": "exabeamhighestsessionnumberofasset",
+    "cliName": "exabeamadvancedanalyticshighestsessionnumberofasset",
     "type": "number",
     "closeForm": false,
     "editForm": true,

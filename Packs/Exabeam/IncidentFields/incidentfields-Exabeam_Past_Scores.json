@@ -1,10 +1,10 @@
 {
-    "id": "incident_exabeampastscores",
+    "id": "incident_exabeamadvancedanalyticspastscores",
     "version": -1,
     "modified": "2024-06-23T08:26:37.01054087Z",
-    "name": "Exabeam Past Scores",
+    "name": "Exabeam Advanced Analytics Past Scores",
     "ownerOnly": false,
-    "cliName": "exabeampastscores",
+    "cliName": "exabeamadvancedanalyticspastscores",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,

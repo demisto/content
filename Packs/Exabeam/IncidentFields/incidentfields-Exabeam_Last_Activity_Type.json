@@ -1,10 +1,10 @@
 {
-    "id": "incident_exabeamlastactivitytype",
+    "id": "incident_exabeamadvancedanalyticslastactivitytype",
     "version": -1,
     "modified": "2024-06-23T08:52:37.631645622Z",
-    "name": "Exabeam Last Activity Type",
+    "name": "Exabeam Advanced Analytics Last Activity Type",
     "ownerOnly": false,
-    "cliName": "exabeamlastactivitytype",
+    "cliName": "exabeamadvancedanalyticslastactivitytype",
     "type": "shortText",
     "closeForm": false,
     "editForm": true,
