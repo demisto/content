@@ -20,5 +20,6 @@
         "xsoar",
         "marketplacev2",
         "xpanse"
-    ]
+    ],
+    "defaultDataSource": "Jira Event Collector"
 }

@@ -381,6 +381,11 @@ class XSOAR2STIXParser:
             demisto.debug(f'No such indicator type: {xsoar_type} in stix format.')
             return {}, {}, {}
 
+        indicator_value = xsoar_indicator.get("value")
+        if (stix_type == "file") and (get_hash_type(indicator_value) == "Unknown"):
+            demisto.debug(f"Skip indicator of type 'file' with value: '{indicator_value}', as it is not a valid hash.")
+            return {}, {}, {}
+
         created_parsed = parse(xsoar_indicator.get('timestamp')).strftime(STIX_DATE_FORMAT)  # type: ignore[arg-type]
 
         try:
@@ -399,7 +404,7 @@ class XSOAR2STIXParser:
             stix_object['object_refs'] = [ref['objectstixid']
                                           for ref in xsoar_indicator['CustomFields'].get('reportobjectreferences', [])]
         if is_sdo:
-            stix_object['name'] = xsoar_indicator.get('value')
+            stix_object['name'] = indicator_value
             stix_object = self.add_sdo_required_field_2_1(stix_object, xsoar_indicator)
             stix_object = self.add_sdo_required_field_2_0(stix_object, xsoar_indicator)
         else:
