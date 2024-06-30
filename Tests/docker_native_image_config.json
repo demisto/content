@@ -141,15 +141,6 @@
             ]
         },
         {
-            "id":"Ping",
-            "reason":"see CIAC-8493",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
-            ]
-        },
-        {
             "id": "Github Feed",
             "reason": "update docker image",
             "ignored_native_images": [
