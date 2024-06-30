@@ -2227,13 +2227,13 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
 
     existing_usernames: list[str] = get_integration_context().get("usernames", [])
     demisto.debug(f"Existing {len(existing_usernames)} usernames in context")
-    fetch_user_duplicates = argToBoolean(args.get("fetch_user_duplicates") or False)
+    fetch_duplicated_users = argToBoolean(args.get("fetch_duplicated_users") or False)
     new_risky_users = []
     new_usernames = []
     for user in users:
         user_details = user.get("user", {})
         username, risk_score = user_details.get("username", ""), user_details.get("riskScore", -1)
-        if risk_score >= minimum_risks and (fetch_user_duplicates or username not in existing_usernames):
+        if risk_score >= minimum_risks and (fetch_duplicated_users or username not in existing_usernames):
             new_risky_users.append(user)
             new_usernames.append(username)
 

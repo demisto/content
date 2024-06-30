@@ -549,7 +549,7 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
                 "notable_users_first_fetch": "3 months",
                 "max_fetch_users": "50",
                 "minimum_risk_score_to_fetch_users": "90",
-                "fetch_user_duplicates": "yes",
+                "fetch_duplicated_users": "yes",
             },
             {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
             {"usernames": ["old_username_risky"]},

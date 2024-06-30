@@ -144,8 +144,8 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: 90
-- display: Fetch user duplicates
-  name: fetch_user_duplicates
+- display: Fetch Duplicated Users
+  name: fetch_duplicated_users
   type: 8
   section: Collect
   advanced: true
