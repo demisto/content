@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Carbon Black Enterprise EDR Dev
+  id: Carbon Black Enterprise EDR
   version: -1
 configuration:
 - display: Server URL (e.g. https://defense.conferdeploy.net)
@@ -85,22 +85,22 @@ script:
       predefined:
       - DISMISSED
       - OPEN
-    - name: determination
-      description: Value judgement of whether the alert(s) represent a true or false positive.
+    - description: Value judgement of whether the alert(s) represent a true or false positive.
+      name: determination
       auto: PREDEFINED
       predefined:
       - TRUE_POSITIVE
       - FALSE_POSITIVE
       - NONE
-    - name: time_range
-      description: Relative time range for the request
+    - description: Relative time range for the request.
+      name: time_range
       defaultValue: -2w
     - name: start
       description: The lower bound of the time range. Requires end and must be a timestamp before end.
     - name: end
       description: The upper bound of the time range Requires start and must be a timestamp after start.
     - name: closure_reason
-      description: need to check this
+      description: need to check this.
       predefined:
       - NO_REASON
       - RESOLVED
@@ -109,11 +109,11 @@ script:
       - OTHER
     - description: Comment to include with the operation.
       name: comment
-    - description: Request id to retrieve
+    - description: Request id to retrieve.
       name: request_id
-    description: Updates the workflow of a single event.
+      hidden: true
+    description: Updates the workflow of a single alert.
     name: cb-eedr-alert-workflow-update
-    polling: true
     outputs:
     - contextPath: CarbonBlackEEDR.Alert.AlertID
       description: The alert ID.
@@ -130,6 +130,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.State
       description: The alert state.
       type: String
+    polling: true
   - arguments:
     - description: The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values.
       name: device_id
@@ -419,23 +420,23 @@ script:
       name: device_name
     - description: Process name. Supports comma-separated values.
       name: process_name
-    - auto: PREDEFINED
-      defaultValue: first_event_timestamp
-      description: Field by which to sort the results. Can be "first_event_timestamp", or "last_event_timestamp".
+    - description: Field by which to sort the results. Can be "first_event_timestamp", or "last_event_timestamp".
       name: sort_field
+      auto: PREDEFINED
+      defaultValue: first_event_timestamp
       predefined:
       - first_event_timestamp
       - last_event_timestamp
-    - auto: PREDEFINED
-      defaultValue: DESC
-      description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
+    - description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
       name: sort_order
+      auto: PREDEFINED
+      defaultValue: DESC
       predefined:
       - ASC
       - DESC
-    - defaultValue: '10'
-      description: The maximum number of results to return.
+    - description: The maximum number of results to return.
       name: limit
+      defaultValue: '10'
     - description: Alert start time.
       name: start_time
     - description: Alert end time.
@@ -1117,9 +1118,13 @@ script:
       name: end_time
     - description: Index of first records to fetch. Default is 0.
       name: start
-    - description: wether to run polling command 
+    - description: job_id to retrieve.
+      name: job_id
+      hidden: true
+    - description: wether to run polling command.
       name: polling
       defaultValue: true
+      auto: PREDEFINED
       predefined:
       - true
       - false
@@ -1129,7 +1134,6 @@ script:
     - description: the time in seconds in which the command will stop retrying polling.
       name: time_out
       defaultValue: 600
-    polling: true
     description: Creates a process search job.
     name: cb-eedr-process-search
     outputs:
@@ -1139,6 +1143,7 @@ script:
     - contextPath: CarbonBlackEEDR.SearchProcess.status
       description: The status of the job found by the search.
       type: String
+    polling: true
   - arguments:
     - description: The process GUID to search. Must be focused on a single process.
       name: process_guid

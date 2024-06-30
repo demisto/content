@@ -10,11 +10,11 @@ import demistomock as demisto
 from freezegun import freeze_time
 
 client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
+    base_url='https://server_url.com',
+    use_ssl=False,
+    use_proxy=False,
+    token=None,
+    cb_org_key="123")
 
 PROCESS_CASES = [
     (
@@ -284,6 +284,7 @@ def test_add_alert_notes_command(mocker):
     assert "Successfully added notes to alert: \"789012\"" in result.readable_output
     assert result.raw_response == MOCK_UPDATE_ALERT_NOTES_RESPONSE
 
+
 def test_test_module(mocker):
     """
     Given:
@@ -301,16 +302,16 @@ def test_test_module(mocker):
     test_module(client=client)
     assert 'api/alerts/v7/orgs' in http_request.call_args.kwargs['url_suffix']
     assert http_request.call_args.kwargs['json_data']['start'] == 1
-    
-    
+
+
 def test_search_alerts_request(mocker):
     """
     Given:
         - All argument needed for a search_alert_request
-    
+
     When:
         - calling search_alert_request function
-        
+
     Then:
         - The http request is called with the right API version.
         - the 'start' field in the body of the request equals to 1.
@@ -318,77 +319,79 @@ def test_search_alerts_request(mocker):
     http_request = mocker.patch.object(client, '_http_request', return_value=[])
     client.search_alerts_request()
     assert 'api/alerts/v7/orgs' in http_request.call_args[0][1]
-    assert http_request.call_args.kwargs['json_data']['start'] ==1
-    
-    
+    assert http_request.call_args.kwargs['json_data']['start'] == 1
+
+
 def test_alert_workflow_update_request_with_results(mocker):
     """
     Given:
         - A request_id
-        
+
     When:
         - Calling alert_workflow_update_request_with_results function
-        
+
     Then:
         - The http request is called with the request_id.
     """
-    http_request = mocker.patch.object(client,'_http_request', return_value=[])
+    http_request = mocker.patch.object(client, '_http_request', return_value=[])
     client.alert_workflow_update_request_with_results('1234')
     assert '1234' in http_request.call_args[0][1]
-    
-    
+
+
 def test_alert_workflow_update_request_good_arguments(mocker):
     """
     Given:
         - All required arguments.
-    
+
     When:
         - Calling alert_workflow_update_request function.
-    
+
     Then:
         - The http request is called with the right version.
         - The http request is called with the right json body.
     """
-    http_request = mocker.patch.object(client,'_http_request', return_value=[])
+    http_request = mocker.patch.object(client, '_http_request', return_value=[])
     client.alert_workflow_update_request(alert_id='1234', state='OPEN', comment='bla1', determination='NONE',
                                          time_range='-2w', start='1', end='2', closure_reason='bla2')
     assert 'api/alerts/v7/orgs' in http_request.call_args[0][1]
     assert http_request.call_args.kwargs['json_data'] == {'time_range': {'start': '1', 'end': '2', 'range': '-2w'},
                                                           'criteria': {'id': ['1234']}, 'determination': 'NONE',
                                                           'closure_reason': 'bla2', 'status': 'OPEN', 'note': 'bla1'}
-    
-    
+
+
 def test_alert_workflow_update_request_bad_arguments(mocker):
     """
     Given:
         - All required Argument except 'determination' or 'state'
-        
+
     When:
         - Calling alert_workflow_update_request function.
-        
+
     Then:
         - The correct exception is raised.
     """
-    http_request = mocker.patch.object(client,'_http_request', return_value=[])
-    client.alert_workflow_update_request(alert_id='1234', comment='bla1',time_range='-2w',
+    http_request = mocker.patch.object(client, '_http_request', return_value=[])
+    client.alert_workflow_update_request(alert_id='1234', comment='bla1', time_range='-2w',
                                          start='1', end='2', closure_reason='bla2')
 
 
 alert_workflow_update_command_data = [
     ({'process_name': 'bla', 'polling': }, # case polling arg is True
-    'process_search_command_with_polling'),  # expected func to be called
-    ({}, # case polling arg is False
-    'process_search_command_without_polling' )  # expected func to be called
+     'process_search_command_with_polling'),  # expected func to be called
+    ({},  # case polling arg is False
+     'process_search_command_without_polling')  # expected func to be called
 ]
+
+
 @pytest.mark.parametrize('args, expected_func_to_bee_called', alert_workflow_update_command_data)
 def test_process_search_command(mocker):
     """
     Given:
         - All required Argument.
-        
+
     When:
         - Running 'cb-eedr-process-search' command
-        
+
     Then:
         - According to 'polling' argument, the correct function is called.
     """
