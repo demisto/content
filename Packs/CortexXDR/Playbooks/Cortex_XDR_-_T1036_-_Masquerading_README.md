@@ -1,13 +1,13 @@
 This playbook handles masquerading alerts based on the MITRE T1036 technique.
-An attacker might leverage Microsoft Windows well-known image names to run malicious processes without being caught.
+An attacker might leverage Microsoft Windows' well-known image names to run malicious processes without being caught.
 
 **Attacker's Goals:**
 
-An attacker is attempting to masquerade as standard Windows images by using a trusted name to execute malicious code.
+An attacker attempts to masquerade as standard Windows images by using a trusted name to execute malicious code.
 
 **Investigative Actions:**
 
-Investigate the executed process image and verify if it is malicious using:
+Enrich and Investigate the executed process image and endpoint and verify if it is malicious using:
 
 * File Reputation
 * NSRL DB
@@ -17,12 +17,10 @@ Investigate the executed process image and verify if it is malicious using:
 
 **Response Actions**
 
-When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment, is executed.
+When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with the following containment actions:
 
-This phase will execute the following containment actions:
-
+* Auto Process termination
 * Auto file quarantine
-* Auto process termination
 
 External resources:
 
@@ -36,24 +34,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Endpoint Investigation
-* Command-Line Analysis
 * Cortex XDR - Quarantine File v2
+* Cortex XDR - Endpoint Investigation
 * Entity Enrichment - Generic v3
+* Command-Line Analysis
 
 ### Integrations
 
-CortexXDRIR
+* CortexXDRIR
 
 ### Scripts
 
-* GetErrorsFromEntry
 * HttpV2
 * ParseJSON
 
 ### Commands
 
-xdr-snippet-code-script-execute
+* xdr-snippet-code-script-execute
 
 ## Playbook Inputs
 
@@ -64,8 +61,8 @@ xdr-snippet-code-script-execute
 | AutoContainment | Setting this input to True will quarantine the file automatically in case of a malicious file. | False | Optional |
 | FileSHA256 | The file SHA256 to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_sha256 | Optional |
 | FilePath | The file path to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_path | Optional |
-| EndpointID | The IP, Hostname or ID of the Endpoint | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
-| AlertID | The ID of the alert | PaloAltoNetworksXDR.Incident.alerts.alert_id | Optional |
+| EndpointID | The IP, hostname, or ID of the endpoint. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
+| AlertID | The ID of the alert. | PaloAltoNetworksXDR.Incident.alerts.alert_id | Optional |
 
 ## Playbook Outputs
 

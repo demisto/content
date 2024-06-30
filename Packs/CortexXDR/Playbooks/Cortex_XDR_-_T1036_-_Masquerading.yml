@@ -408,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "116":
     id: "116"
-    taskid: 86e7f5ab-1903-4db6-8ea3-f8915c94af1c
+    taskid: 22a45520-2020-4e2d-8a13-59fa2e61f46a
     type: playbook
     task:
-      id: 86e7f5ab-1903-4db6-8ea3-f8915c94af1c
+      id: 22a45520-2020-4e2d-8a13-59fa2e61f46a
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
@@ -676,10 +676,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "128":
     id: "128"
-    taskid: 126e5181-f7f7-409a-89f4-fa800188ffcc
+    taskid: c72640de-c3fa-4b2d-83df-009c1bb512b1
     type: regular
     task:
-      id: 126e5181-f7f7-409a-89f4-fa800188ffcc
+      id: c72640de-c3fa-4b2d-83df-009c1bb512b1
       version: -1
       name: Check if File Hash is in NSRL DB
       description: Sends an HTTP request with advanced capabilities
@@ -688,8 +688,6 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
-      '#error#':
-      - "131"
       '#none#':
       - "129"
     scriptarguments:
@@ -710,12 +708,12 @@ tasks:
                 iscontext: true
     separatecontext: false
     continueonerror: true
-    continueonerrortype: errorPath
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1400,
-          "y": 1310
+          "y": 1330
         }
       }
     note: false
@@ -727,10 +725,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "129":
     id: "129"
-    taskid: 3db624ff-ee53-4a70-86a2-d1be22677ce3
+    taskid: f857333a-c371-4cec-8878-d6d5f62307bb
     type: regular
     task:
-      id: 3db624ff-ee53-4a70-86a2-d1be22677ce3
+      id: f857333a-c371-4cec-8878-d6d5f62307bb
       version: -1
       name: Parse HTTP response
       description: 'Parse a given JSON string "value" to a representative object. Example: ''{"a": "value"}'' => {"a": "value"}.'
@@ -749,46 +747,12 @@ tasks:
           root: HttpRequest.Response
           accessor: ParsedBody
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1400,
-          "y": 1520
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "131":
-    id: "131"
-    taskid: f001a0d4-7faa-4e01-8d2f-150a01d7d1a4
-    type: regular
-    task:
-      id: f001a0d4-7faa-4e01-8d2f-150a01d7d1a4
-      version: -1
-      name: Not Found in NSRL DB
-      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
-      scriptName: GetErrorsFromEntry
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "14"
-    scriptarguments:
-      entry_id:
-        simple: ${lastCompletedTaskEntries}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1840,
           "y": 1520
         }
       }
@@ -880,13 +844,13 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "117_41_#default#": 0.43,
+      "117_136_yes": 0.37,
       "37_41_#default#": 0.16
     },
     "paper": {
       "dimensions": {
         "height": 2505,
-        "width": 1250,
+        "width": 950,
         "x": 970,
         "y": 390
       }
