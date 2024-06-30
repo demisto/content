@@ -6,7 +6,7 @@ This pack includes Cortex XSIAM content.
 This section describes the basic mandatory steps you should perform on an HPE switch device in order to forward its audited logs to Cortex XSIAM via Syslog. 
 
 ### Configure Syslog forwarding
-HPE's switches supports forwarding the audited messages to a remote Syslog server. This is done via the ***[logging](https://www.arubanetworks.com/techdocs/AOS-CX/10.14/HTML/diagnostics_8100-83xx-9300-10000/Content/Chp_RSyslog/RSyslog_cmds/log-10.htm)*** command. 
+HPE's switches support forwarding the audited messages to a remote Syslog server. This is done via the ***[logging](https://www.arubanetworks.com/techdocs/AOS-CX/10.14/HTML/diagnostics_8100-83xx-9300-10000/Content/Chp_RSyslog/RSyslog_cmds/log-10.htm)*** command. 
 
 Follow these steps to configure forwarding of event logs from an HPE switch to an XSIAM Syslog Broker VM over UDP:
 1. Connect to the switch CLI (Command Line Interface). 
