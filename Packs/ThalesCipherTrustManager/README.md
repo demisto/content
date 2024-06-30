@@ -11,7 +11,7 @@ This pack provides comprehensive tools and functionalities centered around three
 
 - **Users Management**: The pack supports efficient user account management with secure access capabilities. It facilitates authentication across multiple systems, including LDAP and AD, enabling a streamlined and secure user management process.
 
-- **Certificate Authority Management**: The pack includes features to manage digital certificates, which are vital for maintaining secure communication channels. It enables the creation and management of both local and external Certificate Authorities (CAs), and the generation and issuance of certificates to ensure communication security.
+- **Certificate Authority Management**: The pack includes features for managing digital certificates, which are vital for maintaining secure communication channels. It enables the creation and management of both local and external Certificate Authorities (CAs), and the generation and issuance of certificates to ensure communication security.
 
 
 ### Use Cases
