@@ -1,0 +1,8 @@
+!reversinglabs-titaniumscale-upload-sample-and-get-results entryId="371@b26c8c3a-8d0e-459f-8f2c-c0b8783a8422" custom_token="a-custom-token"
+!reversinglabs-titaniumscale-upload-sample entryId="371@b26c8c3a-8d0e-459f-8f2c-c0b8783a8422" custom_token="a-custom-token"
+!reversinglabs-titaniumscale-get-results taskUrl="https://tiscale-worker-integrations-demo-01.rl.lan/api/tiscale/v1/task/40"
+!reversinglabs-titaniumscale-list-processing-tasks age="60" custom_token="a-custom-token"
+!reversinglabs-titaniumscale-get-processing-task-info task_id="40"
+!reversinglabs-titaniumscale-delete-processing-task task_id="100"
+!reversinglabs-titaniumscale-delete-multiple-tasks age="20"
+!reversinglabs-titaniumscale-get-yara-id
