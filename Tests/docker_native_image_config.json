@@ -109,15 +109,6 @@
             ]
         },
         {
-            "id":"FetchIndicatorsFromFile",
-            "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
-            ]
-        },
-        {
             "id":"Rasterize",
             "reason":"Issue: CRTX-72338 and CIAC-7694",
             "ignored_native_images":[
