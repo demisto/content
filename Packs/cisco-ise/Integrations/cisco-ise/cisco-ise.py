@@ -409,7 +409,6 @@ def update_endpoint_custom_attribute_command():
 
         update_result = update_endpoint_by_id(endpoint_id, endpoint_details)
         if not update_result:
-            # result = update_result.get('ERSResponse', {}).get('messages', [])
             demisto.results("Update failed for endpoint " + endpoint_id + ". Please check if the custom "
                                                                           "fields are defined in the system. "
                                                                           "Got the following response: "

@@ -26,7 +26,6 @@ def test_get_endpoint_id_command(mocker):
     assert m.call_args[0][1] == {'Endpoint(val.ID === obj.ID)': {'ID': None, 'MACAddress': MAC_ADDRESS}}
 
 
-
 def test_get_endpoint_details_command(mocker, requests_mock):
     """
     Given:
@@ -36,7 +35,6 @@ def test_get_endpoint_details_command(mocker, requests_mock):
     Then:
         - The command returns error entry for Endpoint was not found.
     """
-
 
     results = mocker.spy(demisto, 'results')
 
@@ -50,7 +48,6 @@ def test_get_endpoint_details_command(mocker, requests_mock):
     assert results.call_args[0][0]["Contents"] == 'Endpoint was not found.'
     assert results.call_args[0][0]["Type"] == 4 #error entry
         
-
 
 def test_update_endpoint_group_command(mocker):
     """
@@ -75,6 +72,23 @@ def test_update_endpoint_group_command(mocker):
     assert results.call_args[0][0]["Type"] == 4 #error entry
 
 
+def test_update_endpoint_group_command_populate_endpoint_data(mocker):
+    """
+    Given:
+        - Endpoint details and group id.
+    When:
+        - Calling update_endpoint_group_command.
+    Then:
+        - The update_endpoint_by_id method args contains the data from get_endpoint_details res.
+    """
+    m = mocker.patch.object(cisco_ise, 'update_endpoint_by_id', return_value={'ERSResponse':{}})
+    mocker.patch.object(demisto, 'args', return_value={'groupId': '1', 'id': '2', 'macAddress': MAC_ADDRESS})
+    mocker.patch.object(cisco_ise, 'get_endpoint_details', return_value=
+                        {'ERSEndPoint': {'id': '3', 'mac': MAC_ADDRESS, 'name': 'endpoint1'}})
+
+    cisco_ise.update_endpoint_group_command()
+    assert m.call_args[0][1] == {'ERSEndPoint': {'groupId': '1', 'id': '3', 'mac': MAC_ADDRESS, 'name': 'endpoint1'}}
+
 
 def test_get_blacklist_endpoints_request(mocker):
     """
@@ -92,4 +106,3 @@ def test_get_blacklist_endpoints_request(mocker):
 
     assert results.call_args[0][0]["Contents"] == 'No blacklist endpoint were found.'
     assert results.call_args[0][0]["Type"] == 4 #error entry
-
