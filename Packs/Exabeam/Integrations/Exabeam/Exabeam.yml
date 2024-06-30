@@ -144,6 +144,11 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: 90
+- display: Fetch user duplicates
+  name: fetch_user_duplicates
+  type: 8
+  section: Collect
+  advanced: true
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
 display: Exabeam Advanced Analytics
 name: Exabeam
