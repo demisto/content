@@ -43,8 +43,8 @@ select = [
     "IT100", "IT101", "IT102", "IT103",
     "MR100",
 ]
-warning = ["DS107", "LO107", "RN103"]
 
+warning = ["DS107", "LO107", "RN103" ]
 
 [path_based_validations]
 select = [
