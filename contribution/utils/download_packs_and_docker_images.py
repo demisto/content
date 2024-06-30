@@ -128,8 +128,8 @@ def download_and_save_packs(pack_names: dict, id_set_json: dict, output_path: st
             # In case no input is given (and only in that case) we automatically get all packs,
             # we want to get only relevant packs.
             if use_defaut_filter and should_filter_out_pack(id_set_packs[pack_name],
-                                                    fields={"author": 'Cortex XSOAR'},
-                                                    remove_deprecated=True):
+                                                            fields={"author": 'Cortex XSOAR'},
+                                                            remove_deprecated=True):
                 print(f"\t{pack_d_name} filtered out. Skipping pack download.")
                 continue
 
