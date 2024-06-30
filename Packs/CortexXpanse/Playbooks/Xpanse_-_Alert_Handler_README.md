@@ -28,7 +28,7 @@ This playbook does not use any scripts.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| WriteToXpanse | Write data back to Expanse? Default is False. | False | Optional |
+| WriteToXpanse | Whether to write data back to Cortex Expanse. | False | Optional |
 
 ## Playbook Outputs
 
