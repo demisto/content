@@ -65,6 +65,7 @@ class Client(BaseClient):
         res = self._http_request(method='GET', url_suffix='auth/public/v1/users',
                                  headers=self._headers,
                                  params=params)
+
         users = []
         for user in res.get('content'):
             if user.get('email') == email or user.get('id') == user_id:
