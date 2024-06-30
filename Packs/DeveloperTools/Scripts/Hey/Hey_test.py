@@ -76,7 +76,7 @@ def test_construct_hey_query():
     headers = "a=1,b=2,c=3 4"
     res = hey.construct_hey_query(url, headers=headers)
     assert res[0] == {}
-    assert res[1] == ["hey", "-H", "a:1", "-H", "b:2", 'c:3 4', url]
+    assert res[1] == ["hey", "-H", "a:1", "-H", "b:2", "-H", "c:3 4", url]
 
     body = "{}"
     res = hey.construct_hey_query(url, body=body)
@@ -130,6 +130,8 @@ def test_construct_hey_query():
         "a:1",
         "-H",
         "b:2",
+        "-H",
+        "c:3 4",
         "-t",
         "2",
         "-n",
