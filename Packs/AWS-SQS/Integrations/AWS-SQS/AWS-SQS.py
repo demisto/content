@@ -10,7 +10,7 @@ def create_entry(title, data, ec):
         'ReadableContentsFormat': formats['markdown'],
         'HumanReadable': tableToMarkdown(title, data) if data else 'No result were found',
         'EntryContext': ec
-        # TODO DELETE ME
+        # TODO DELETE ME 
     }
 
 
