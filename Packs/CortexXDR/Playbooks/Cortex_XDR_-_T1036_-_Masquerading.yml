@@ -129,10 +129,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 5b9df2b0-9f79-4054-8df7-9144debe11c1
+    taskid: 66d87a9c-5118-41e9-8b70-207cceee7d28
     type: title
     task:
-      id: 5b9df2b0-9f79-4054-8df7-9144debe11c1
+      id: 66d87a9c-5118-41e9-8b70-207cceee7d28
       version: -1
       name: Containment
       type: title
@@ -152,7 +152,9 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -160,10 +162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 3bbe35e6-a7a6-47b9-8140-6a2beb1a1957
+    taskid: a62d9115-d542-4fb9-8d0e-5c0f0a30916c
     type: condition
     task:
-      id: 3bbe35e6-a7a6-47b9-8140-6a2beb1a1957
+      id: a62d9115-d542-4fb9-8d0e-5c0f0a30916c
       version: -1
       name: Are there investigation findings?
       description: Checks if there are findings from the Endpoint Investigation stage.
@@ -188,43 +190,19 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
-          ignorecase: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CommandlineVerdict
-                accessor: SuspiciousLolbinExecution
-            iscontext: true
-          right:
-            value:
-              simple: "True"
+              simple: "3"
           ignorecase: true
         - operator: isNotEmpty
           left:
             value:
               complex:
                 root: CommandlineVerdict
-                accessor: foundIndicators
             iscontext: true
-        - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: CommandlineVerdict
-                accessor: suspiciousParameters
-                transformers:
-                - operator: uniq
-            iscontext: true
-          right:
-            value:
-              simple: "True"
           ignorecase: true
         - operator: lessThanOrEqual
           left:
             value:
-              simple: NSRLresults.hashlookup:trust
+              simple: NSRL_results.hashlookup:trust
             iscontext: true
           right:
             value:
@@ -270,10 +248,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 272b8a57-aee1-47be-88b8-8b89066b272d
+    taskid: 558dd79b-8beb-4805-8b90-edb40eb4b7c7
     type: title
     task:
-      id: 272b8a57-aee1-47be-88b8-8b89066b272d
+      id: 558dd79b-8beb-4805-8b90-edb40eb4b7c7
       version: -1
       name: Done
       type: title
@@ -286,12 +264,14 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 2840
+          "y": 2830
         }
       }
     note: false
     timertriggers:
     - fieldname: containmentsla
+      action: stop
+    - fieldname: incidentduration
       action: stop
     ignoreworker: false
     skipunavailable: false
@@ -300,10 +280,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: 170f0218-4e95-45f5-8ae5-b7df67305a78
+    taskid: fc92dc32-4630-4027-8b9e-8a6361240d98
     type: title
     task:
-      id: 170f0218-4e95-45f5-8ae5-b7df67305a78
+      id: fc92dc32-4630-4027-8b9e-8a6361240d98
       version: -1
       name: Enrichment & Analysis
       type: title
@@ -428,10 +408,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "116":
     id: "116"
-    taskid: 382a28d2-1a1a-4689-81ff-b49e3755715d
+    taskid: 86e7f5ab-1903-4db6-8ea3-f8915c94af1c
     type: playbook
     task:
-      id: 382a28d2-1a1a-4689-81ff-b49e3755715d
+      id: 86e7f5ab-1903-4db6-8ea3-f8915c94af1c
       version: -1
       name: Cortex XDR - Endpoint Investigation
       description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow; read the input descriptions for details."
@@ -476,7 +456,7 @@ tasks:
         complex:
           root: inputs.EndpointID
       timeRange:
-        simple: 7 days ago
+        simple: 2 hours ago
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -512,7 +492,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "135"
+      - "41"
       "yes":
       - "136"
     separatecontext: false
@@ -546,10 +526,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: d2213fdb-3690-48c4-820a-7f8a0d826f1f
+    taskid: e24a0587-3cb6-4157-8d5c-22b771c4fc63
     type: condition
     task:
-      id: d2213fdb-3690-48c4-820a-7f8a0d826f1f
+      id: e24a0587-3cb6-4157-8d5c-22b771c4fc63
       version: -1
       name: Execution was Blocked?
       description: ""
@@ -614,7 +594,11 @@ tasks:
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: incidentduration
+      action: start
+    - fieldname: detectionsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -846,42 +830,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "135":
-    id: "135"
-    taskid: c1279c5e-0fdd-42a7-89ca-cbef634438cd
-    type: regular
-    task:
-      id: c1279c5e-0fdd-42a7-89ca-cbef634438cd
-      version: -1
-      name: Perform manual containment
-      description: |-
-        Follow the steps below to effectively contain the threat:
-
-        1. **Quarantine Suspicious Files**: Identify and quarantine any suspicious files associated with the masquerading alert. Follow your organization's approved procedures for isolating potentially malicious files.
-
-        2. **Isolate the Endpoint**: Disconnect the affected endpoint from the network to prevent any further communication with potentially compromised entities. Ensure proper procedures are followed to isolate the endpoint securely.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "41"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1400,
-          "y": 2670
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "136":
     id: "136"
     taskid: f110e78b-1db0-48cf-8f51-e833d3d4c1ce
@@ -918,8 +866,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 960,
-          "y": 2670
+          "x": 1190,
+          "y": 2680
         }
       }
     note: false
@@ -932,14 +880,14 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "117_135_#default#": 0.43,
+      "117_41_#default#": 0.43,
       "37_41_#default#": 0.16
     },
     "paper": {
       "dimensions": {
-        "height": 2515,
-        "width": 1260,
-        "x": 960,
+        "height": 2505,
+        "width": 1250,
+        "x": 970,
         "y": 390
       }
     }
@@ -947,7 +895,7 @@ view: |-
 inputs:
 - key: AutoContainment
   value:
-    simple: "True"
+    simple: "False"
   required: false
   description: Setting this input to True will quarantine the file automatically in case of malicious file.
   playbookInputQuery:
