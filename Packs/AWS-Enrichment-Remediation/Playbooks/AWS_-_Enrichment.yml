@@ -684,8 +684,6 @@ tasks:
       - "2"
       "yes":
       - "24"
-      '#none#':
-      - "25"
     note: false
     quietmode: 0
     separatecontext: false

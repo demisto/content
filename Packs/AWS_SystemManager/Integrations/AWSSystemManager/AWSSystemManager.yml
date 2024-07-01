@@ -2390,5 +2390,6 @@ fromversion: 6.9.0
 marketplaces:
 - xsoar
 - marketplacev2
+- xpanse
 tests:
 - No tests (auto formatted)
