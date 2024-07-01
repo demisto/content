@@ -346,14 +346,12 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
     :param client: Client object for performing API requests.
     :param args: A dictionary of command arguments:
         - 'schema_id': The ID of the schema to retrieve object types from.
-        - 'query': A string to filter object types by name or other attributes.
         - 'exclude': A string to specify object types that should be excluded from the results.
         - 'limit': The maximum number of object types to return. Defaults to 50.
         - 'all_results': A boolean indicating whether to return all results or to respect the limit. Defaults to False.
     :return: A CommandResults object containing the list of object types as output, and a human-readable markdown table.
     """
     schema_id = args.get('schema_id', '')
-    query = args.get('query')
     exclude = args.get('exclude')
     limit = args.get('limit', 50)
     all_results = argToBoolean(args.get('all_results', False))

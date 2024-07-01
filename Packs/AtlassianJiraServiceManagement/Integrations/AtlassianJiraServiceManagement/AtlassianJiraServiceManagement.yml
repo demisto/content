@@ -67,8 +67,6 @@ script:
     - description: The schema from which the command will retrieve object types. Values can be received by running the `jira-asset-object-schema-list` command.
       name: schema_id
       required: true
-    - description: Query to filter on available object types.
-      name: query
     - description: Object types with that name will be excluded from the results.
       name: exclude
     - description: The amount of object types to retrieve.
@@ -113,7 +111,7 @@ script:
       description: Is this object type abstract (can only be inherited).
       type: Boolean
     - contextPath: JiraAsset.ObjectType.ParentObjectTypeInherited
-      description: ''
+      description: Whether this object type inherits from a parent object type.
       type: Boolean
   - arguments:
     - description: The object type for which the command will retrieve attributes. Values can be received by running the `jira-asset-object-type-list` command.
@@ -131,7 +129,7 @@ script:
       predefined:
       - "true"
       - "false"
-    - description: Query to filter on available object type attributes.
+    - description: Query to filter on available object type attributes. Filter attributes that start with the query.
       name: query
     - description: Should the response only include attributes where attribute values exists.
       name: include_value_exist
@@ -325,7 +323,7 @@ script:
       description: The name of the object.
       type: String
   - arguments:
-    - description: A ql query to search objects by. View https://support.atlassian.com/jira-service-management-cloud/docs/use-assets-query-language-aql/ for further details.
+    - description: An aql query to search objects by. View https://support.atlassian.com/jira-service-management-cloud/docs/use-assets-query-language-aql/ for further details.
       name: ql_query
       required: true
     - description: Whether to include the attributes structure in the response.
@@ -463,7 +461,7 @@ script:
       description: Is the author of the comment deleted.
       type: Boolean
     - contextPath: JiraAsset.Comment.Role
-      description: ''
+      description: The role of the author of the comment.
       type: Number
     - contextPath: JiraAsset.Comment.Comment
       description: The body of the comment that was newly added.
@@ -546,7 +544,7 @@ script:
       description: The id of the newly created comment.
       type: Number
     - contextPath: JiraAsset.Comment.Role
-      description: ''
+      description: The role of the author of the comment.
       type: Number
     - contextPath: JiraAsset.Comment.Comment
       description: The body of the comment that was newly added.
@@ -603,7 +601,7 @@ script:
     - description: Id of the object that attachments will be fetched for.
       name: object_id
       required: true
-    - description: Whether to download the attachments for this object.
+    - description: Whether to download the attachments for this object in a zipped format.
       name: download_file
       auto: PREDEFINED
       predefined:
