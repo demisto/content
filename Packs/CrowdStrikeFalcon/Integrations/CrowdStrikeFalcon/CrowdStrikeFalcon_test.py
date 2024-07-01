@@ -6954,7 +6954,7 @@ def test_error_handler():
         assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'
 
 @pytest.mark.parametrize('Post_Raptor_release, url_suffix', [
-    (True, 'alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'),
+    (True, 'alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'),
      (False, '/detects/queries/detects/v1')
      ])
 def test_get_detection___url(mocker, Post_Raptor_release, url_suffix):
@@ -6968,7 +6968,7 @@ Then:
 
 Test Scenarios:
     1. When `Post_Raptor_release` is True, the `url_suffix` should be:
-       "alerts/queries/alerts/v2?filter=product:'epp'%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+       "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
        since all parameters are part of the URL and are URL-encoded.
     2. When `Post_Raptor_release` is False, the `url_suffix` should be:
        "/detects/queries/detects/v1" since all the provided parameters are passed under 'parameters'.
@@ -7010,7 +7010,7 @@ def test_resolve_detection(mocker, Post_Raptor_release, url_suffix, data):
 
 
 @pytest.mark.parametrize('post_raptor_release, url_suffix, request_params', [
-    (True, '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
+    (True, '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
 , {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3}),
     (False, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
 ])
@@ -7025,7 +7025,7 @@ def test_get_fetch_detections__url(mocker, post_raptor_release, url_suffix, requ
 
     Test Scenarios:
         1. When `Post_Raptor_release` is True, the `url_suffix` should be:
-        "/alerts/queries/alerts/v2?filter=product:'epp'%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+        '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
         All parameters (except 'limit') are part of the URL and are URL-encoded.
         2. When `Post_Raptor_release` is False, the `url_suffix` should be "/detects/queries/detects/v1"
         All the provided parameters are passed under 'parameters'.
