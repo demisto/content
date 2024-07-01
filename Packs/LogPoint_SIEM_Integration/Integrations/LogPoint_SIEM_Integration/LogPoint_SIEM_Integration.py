@@ -4,11 +4,12 @@ from CommonServerPython import *  # noqa: F401
 
 ''' IMPORTS '''
 
-import dateparser
 import json
 import traceback
+from datetime import datetime, timedelta
+
+import dateparser
 import urllib3
-from datetime import timedelta, datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -310,6 +311,8 @@ class Client(BaseClient):
         :param limit: Number of search results to fetch
 
         :param repos: LogPoint repos from where logs should be fetched
+
+        :param timeout: LogPoint search timeout
 
         :return: dict containing response from API call
         """

@@ -715,6 +715,7 @@ script:
       isArray: true
       name: repos
     - defaultValue: '60'
+      description: LogPoint search timeout. The default timeout is 60.
       name: timeout
     description: Gets the search ID based on the provided search parameters.
     name: lp-get-searchid
@@ -732,7 +733,7 @@ script:
     - contextPath: LogPoint.SearchLogs
       description: Search results.
       type: String
-  dockerimage: demisto/python3:3.10.14.97608
+  dockerimage: demisto/python3:3.10.14.99865
   isfetch: true
   runonce: false
   script: ''
@@ -742,4 +743,5 @@ tests:
 - LogPoint SIEM Integration - Test Playbook 1
 - LogPoint SIEM Integration - Test Playbook 2
 - LogPoint SIEM Integration - Test Playbook 3
+defaultmapperin: LogPoint SIEM Integration - Incoming Mapper
 fromversion: 6.0.0

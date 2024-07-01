@@ -723,68 +723,17 @@ Gets Incident users and user groups.
 | LogPoint.Incidents.users.name | String | LogPoint Incidents Users Name | 
 | LogPoint.Incidents.users.usergroups | String | LogPoint Incidents Users Usergroups | 
 
-
-
-#### Command Example
-```!lp-get-users```
-
-#### Context Example
-```json
-{
-    "LogPoint": {
-        "Incidents": {
-            "users": [
-                {
-                    "id": "5bebd9fdd8aaa42840edc853",
-                    "name": "admin",
-                    "usergroups": [
-                        {
-                            "id": "5bebd9fdd8aaa42840edc84f",
-                            "name": "LogPoint Administrator"
-                        }
-                    ]
-                },
-                {
-                    "id": "5fd9d95769d3a4ea5684fccf",
-                    "name": "sbs",
-                    "usergroups": [
-                        {
-                            "id": "5bebd9fdd8aaa42840edc850",
-                            "name": "User Account Administrator"
-                        },
-                        {
-                            "id": "5bebd9fdd8aaa42840edc84f",
-                            "name": "LogPoint Administrator"
-                        }
-                    ]
-                }
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Incident Users
->|Id|Name|Usergroups|
->|---|---|---|
->| 5bebd9fdd8aaa42840edc853 | admin | {'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
->| 5fd9d95769d3a4ea5684fccf | sbs | {'id': '5bebd9fdd8aaa42840edc850', 'name': 'User Account Administrator'},<br/>{'id': '5bebd9fdd8aaa42840edc84f', 'name': 'LogPoint Administrator'} |
-
 ### lp-get-users-preference
-
 ***
 Gets LogPoint user's preference such as timezone, date format, etc.
+
 
 #### Base Command
 
 `lp-get-users-preference`
-
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
+There are no input arguments for this command.
 
 #### Context Output
 
@@ -793,7 +742,6 @@ Gets LogPoint user's preference such as timezone, date format, etc.
 | LogPoint.User.Preference.timezone | String | LogPoint user's timezone. | 
 | LogPoint.User.Preference.date_format | String | LogPoint user's date format. | 
 | LogPoint.User.Preference.hour_format | String | LogPoint user's hour format. | 
-
 
 
 #### Command Example
@@ -821,7 +769,53 @@ Gets LogPoint user's preference such as timezone, date format, etc.
 >|---|---|---|
 >| UTC | %Y/%m/%d | 24 Hour |
 
+### lp-get-users-preference
 
+***
+Gets LogPoint user's preference such as timezone, date format, etc.
+
+#### Base Command
+
+`lp-get-users-preference`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.User.Preference.timezone | String | LogPoint user's timezone. | 
+| LogPoint.User.Preference.date_format | String | LogPoint user's date format. | 
+| LogPoint.User.Preference.hour_format | String | LogPoint user's hour format. | 
+
+
+
+#### Base Command
+
+`lp-get-repos`
+#### Input
+
+There are no input arguments for this command.
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.Repos.repo | String | LogPoint repo name. | 
+| LogPoint.Repos.address | String | LogPoint repo address. | 
+
+
+#### Command Example
+```!lp-get-repos```
+
+#### Context Example
+```json
+{
+    "LogPoint": {
+        "Repos": [
 ### lp-get-logpoints
 
 ***
@@ -842,108 +836,6 @@ Gets user's LogPoints.
 | --- | --- | --- |
 | LogPoint.LogPoints.name | String | LogPoint name. | 
 | LogPoint.LogPoints.ip | String | LogPoint's IP address. | 
-
-
-
-#### Command Example
-```!lp-get-logpoints```
-
-#### Context Example
-```json
-{
-    "LogPoint": {
-        "LogPoints": {
-            "ip": "127.0.0.1",
-            "name": "LogPoint"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### LogPoints
->|Name|Ip|
->|---|---|
->| LogPoint | 127.0.0.1 |
-
-
-### lp-get-repos
-
-***
-Gets the list of LogPoint repos that can be accessed by the user.
-
-#### Base Command
-
-`lp-get-repos`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| LogPoint.Repos.repo | String | LogPoint repo name. | 
-| LogPoint.Repos.address | String | LogPoint repo address. | 
-
-
-
-#### Command Example
-```!lp-get-repos```
-
-#### Context Example
-```json
-{
-    "LogPoint": {
-        "Repos": [
-            {
-                "address": "127.0.0.1:5504/default",
-                "repo": "default"
-            },
-            {
-                "address": "127.0.0.1:5504/_logpoint",
-                "repo": "_logpoint"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### LogPoint Repos
->|Repo|Address|
->|---|---|
->| default | 127.0.0.1:5504/default |
->| _logpoint | 127.0.0.1:5504/_logpoint |
-
-
-
-### lp-get-devices
-
-***
-Gets devices associated with LogPoint.
-
-#### Base Command
-
-`lp-get-devices`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| LogPoint.Devices.name | String | Device name. | 
-| LogPoint.Devices.address | String | Device IP address. | 
-
-
 
 #### Command Example
 ```!lp-get-devices```
@@ -967,27 +859,14 @@ Gets devices associated with LogPoint.
             }
         ]
     }
-}
-```
-
-#### Human Readable Output
-
->### Devices
->|Name|Address|
->|---|---|
->| localhost | 127.0.0.1/127.0.0.1 |
->| localhost | 127.0.0.1/::1 |
->| Windows Server | 127.0.0.1/192.168.1.20 |
-
-
-### lp-get-livesearches
+### lp-get-repos
 
 ***
-Gets live search results of the alerts and dashboards.
+Gets the list of LogPoint repos that can be accessed by the user.
 
 #### Base Command
 
-`lp-get-livesearches`
+`lp-get-repos`
 
 #### Input
 
@@ -998,29 +877,9 @@ Gets live search results of the alerts and dashboards.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogPoint.LiveSearches.generated_by | String | Who generated the live search. | 
-| LogPoint.LiveSearches.searchname | String | The name of the live search. | 
-| LogPoint.LiveSearches.description | String | A description of the live search. | 
-| LogPoint.LiveSearches.query | String | The live search query. | 
+| LogPoint.Repos.repo | String | LogPoint repo name. | 
+| LogPoint.Repos.address | String | LogPoint repo address. | 
 
-
-
-#### Command Example
-```!lp-get-livesearches```
-
-#### Context Example
-```json
-{
-    "LogPoint": {
-        "LiveSearches": [
-            {
-                "description": "",
-                "flush_on_trigger": false,
-                "generated_by": "alert",
-                "life_id": "c4e38a6fe8226ec0975ee5ed935a733003bd1f11",
-                "limit": 25,
-                "query": "\"use\"> 86 col_type=filesystem ",
-                "query_info": {
                     "aliases": [],
                     "columns": [],
                     "fieldsToExtract": [
@@ -1051,63 +910,27 @@ Gets live search results of the alerts and dashboards.
 >### Live Searches
 >|Description|Flush On Trigger|Generated By|Life Id|Limit|Query|Query Info|Searchname|Tid|Timerange Day|Timerange Hour|Timerange Minute|Timerange Second|Vid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  | false | alert | c4e38a6fe8226ec0975ee5ed935a733003bd1f11 | 25 | "use"> 86 col_type=filesystem  | fieldsToExtract: use,<br/>col_type<br/>aliases: <br/>success: true<br/>query_filter: "use"> 86 col_type=filesystem<br/>columns: <br/>query_type: simple<br/>lucene_query: (_num_use:{86 TO *} AND col_type:filesystem)<br/>grouping:  | Memory greater than 86 |  | 0 | 1 | 0 | 0 |  |
-
-
-### lp-get-searchid
+### lp-get-devices
 
 ***
-Gets the search ID based on the provided search parameters.
+Gets devices associated with LogPoint.
 
 #### Base Command
 
-`lp-get-searchid`
+`lp-get-devices`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | LogPoint search query. This should be the exact query to use to search logs in the LogPoint UI. | Required | 
-| time_range | Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use "Last 5 minutes" as the time range by default. Default is Last 5 minutes. | Optional | 
-| limit | Number of logs to fetch. If not provided, the first 100 logs will be displayed. Default is 100. | Optional | 
-| repos | A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos. | Optional | 
-| timeout | None Default is 60. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogPoint.search_id | String | Search ID. Use this ID in the lp-search-logs command to get the search result. | 
+| LogPoint.Devices.name | String | Device name. | 
+| LogPoint.Devices.address | String | Device IP address. | 
 
-
-
-#### Command Example
-```!lp-get-searchid query="| chart count() by col_type" limit=5 time_range="Last 30 minutes"```
-
-#### Context Example
-```json
-{
-    "LogPoint": {
-        "search_id": "97df79d3-b2b8-4260-bd12-805b69434591"
-    }
-}
-```
-
-#### Human Readable Output
-
->### Search Id: 97df79d3-b2b8-4260-bd12-805b69434591
-
-### lp-search-logs
-***
-Gets LogPoint search result. Uses the value of search_id as an argument.
-
-
-#### Base Command
-
-`lp-search-logs`
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | search_id | Search ID obtained from the lp-get-searchid command. | Required | 
 
@@ -1142,20 +965,49 @@ Gets LogPoint search result. Uses the value of search_id as an argument.
                     "filesystem"
                 ],
                 "_type_ip": "",
-                "_type_num": " count()",
-                "_type_str": " col_type count()",
-                "col_type": "filesystem",
-                "count()": 3658
-            }
-        ]
-    }
-}
-```
+### lp-get-livesearches
 
-#### Human Readable Output
+***
+Gets live search results of the alerts and dashboards.
 
->### Found 2 logs
->|Group|Type Ip|Type Num|Type Str|Col Type|Count()|
->|---|---|---|---|---|---|
->| office365 |  |  count() |  col_type count() | office365 | 312 |
->| filesystem |  |  count() |  col_type count() | filesystem | 3658 |
+#### Base Command
+
+`lp-get-livesearches`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.LiveSearches.generated_by | String | Who generated the live search. | 
+| LogPoint.LiveSearches.searchname | String | The name of the live search. | 
+| LogPoint.LiveSearches.description | String | A description of the live search. | 
+| LogPoint.LiveSearches.query | String | The live search query. | 
+### lp-get-searchid
+
+***
+Gets the search ID based on the provided search parameters.
+
+#### Base Command
+
+`lp-get-searchid`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | LogPoint search query. This should be the exact query to use to search logs in the LogPoint UI. | Required | 
+| time_range | Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use "Last 5 minutes" as the time range by default. Default is Last 5 minutes. | Optional | 
+| limit | Number of logs to fetch. If not provided, the first 100 logs will be displayed. Default is 100. | Optional | 
+| repos | A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos. | Optional | 
+| timeout | LogPoint search timeout. The default timeout is 60. Default is 60. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| LogPoint.search_id | String | Search ID. Use this ID in the lp-search-logs command to get the search result. | 
