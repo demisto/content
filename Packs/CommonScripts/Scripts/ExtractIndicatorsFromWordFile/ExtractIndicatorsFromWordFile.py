@@ -3,7 +3,6 @@ from CommonServerPython import *
 from CommonServerUserPython import *
 import subprocess
 from docx import Document
-from typing import List, Dict
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
 from docx.opc.exceptions import PackageNotFoundError
 
