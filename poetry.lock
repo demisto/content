@@ -806,86 +806,87 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.31.0"
+version = "1.31.1"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
-python-versions = "^3.8,<3.12"
-files = []
-develop = false
+python-versions = ">=3.8,<3.12"
+files = [
+    {file = "demisto_sdk-1.31.1-py3-none-any.whl", hash = "sha256:5e5ea52da60f4d453f60e54fb3b98e91045287e872b4784ac059af74dc663ab8"},
+    {file = "demisto_sdk-1.31.1.tar.gz", hash = "sha256:2494a368517611b2185f1f21a566ca7faa5ea7fcfeb55e1c3758a848475ebcdf"},
+]
 
 [package.dependencies]
-autopep8 = "^2.0.4"
-bandit = "^1.7.4"
-beautifulsoup4 = "^4.11.1"
+autopep8 = ">=2.0.4,<3.0.0"
+bandit = ">=1.7.4,<2.0.0"
+beautifulsoup4 = ">=4.11.1,<5.0.0"
 chardet = ">=4,<6"
-click = "^8.0.0"
-coloredlogs = "^15.0.1"
-configparser = "^5.2.0"
-coverage = "^7.2.1,<7.4"
-dateparser = "^1.1.1"
-decorator = "^5.1.1"
-demisto-py = "^3.2.10"
-dictdiffer = "^0.9.0"
-dictor = "^0.1.9"
-docker = "^7.1.0"
-flatten-dict = "^0.4.2"
-gitdb = "^4.0.9"
-GitPython = "^3.1.37"
-giturlparse = "^0.10.0"
-google-cloud-secret-manager = "^2.18.3"
-google-cloud-storage = "^2.13.0"
-imagesize = "^1.3.0"
-importlib-resources = "^5.6.0"
-inflection = "^0.5.1"
-json5 = "^0.9.14"
-jsonschema = "^4.4.0"
-junitparser = "^3.1.0"
-lxml = "^5.0.0"
-mergedeep = "^1.3.4"
-more-itertools = "^9.0.0"
-mypy = "^0.982"
-neo4j = "^5.14.0"
-networkx = "^2.7.1"
-nltk = "^3.7"
-ordered-set = "^4.1.0"
-orjson = "^3.8.3"
-packaging = "^24.0"
-paramiko = "^2.11.0"
+click = ">=8.0.0,<9.0.0"
+coloredlogs = ">=15.0.1,<16.0.0"
+configparser = ">=5.2.0,<6.0.0"
+coverage = ">=7.2.1,<7.4"
+dateparser = ">=1.1.1,<2.0.0"
+decorator = ">=5.1.1,<6.0.0"
+demisto-py = ">=3.2.10,<4.0.0"
+dictdiffer = ">=0.9.0,<0.10.0"
+dictor = ">=0.1.9,<0.2.0"
+docker = ">=7.1.0,<8.0.0"
+flatten-dict = ">=0.4.2,<0.5.0"
+gitdb = ">=4.0.9,<5.0.0"
+GitPython = ">=3.1.37,<4.0.0"
+giturlparse = ">=0.10.0,<0.11.0"
+google-cloud-secret-manager = ">=2.18.3,<3.0.0"
+google-cloud-storage = ">=2.13.0,<3.0.0"
+imagesize = ">=1.3.0,<2.0.0"
+importlib-resources = ">=5.6.0,<6.0.0"
+inflection = ">=0.5.1,<0.6.0"
+json5 = ">=0.9.14,<0.10.0"
+jsonschema = ">=4.4.0,<5.0.0"
+junitparser = ">=3.1.0,<4.0.0"
+lxml = ">=5.0.0,<6.0.0"
+mergedeep = ">=1.3.4,<2.0.0"
+more-itertools = ">=9.0.0,<10.0.0"
+mypy = ">=0.982,<0.983"
+neo4j = ">=5.14.0,<6.0.0"
+networkx = ">=2.7.1,<3.0.0"
+nltk = ">=3.7,<4.0"
+ordered-set = ">=4.1.0,<5.0.0"
+orjson = ">=3.8.3,<4.0.0"
+packaging = ">=24.0,<25.0"
+paramiko = ">=2.11.0,<3.0.0"
 Pebble = ">=4.6.3,<6.0.0"
-pre-commit = "^3.5.0"
-prettytable = "^3.2.0"
-pydantic = "^1.10"
-pykwalify = "^1.8.0"
-pylint = "^2.17.0,<2.18"
-PyPDF2 = "^1.28.6"
-pyspellchecker = "^0.6.3"
-pytest-freezegun = "^0.4.2"
-python-dotenv = "^0.20.0"
-requests = "^2.27.1"
-"ruamel.yaml" = "^0.17.21"
-slack-sdk = "^3.17.0"
+pre-commit = ">=3.5.0,<4.0.0"
+prettytable = ">=3.2.0,<4.0.0"
+pydantic = ">=1.10,<2.0"
+pykwalify = ">=1.8.0,<2.0.0"
+pylint = ">=2.17.0,<2.18"
+PyPDF2 = ">=1.28.6,<2.0.0"
+pyspellchecker = ">=0.6.3,<0.7.0"
+pytest-freezegun = ">=0.4.2,<0.5.0"
+python-dotenv = ">=0.20.0,<0.21.0"
+requests = ">=2.27.1,<3.0.0"
+"ruamel.yaml" = ">=0.17.21,<0.18.0"
+slack-sdk = ">=3.17.0,<4.0.0"
 tabulate = ">=0.8.9,<0.10.0"
-tenacity = "^8.4.1"
-toml = "^0.10.2"
-typer = {version = "^0.9.0", extras = ["all"]}
-typing-extensions = "^4.1.1"
-ujson = "^5.1.0"
+tenacity = ">=8.4.1,<9.0.0"
+toml = ">=0.10.2,<0.11.0"
+typer = {version = ">=0.9.0,<0.10.0", extras = ["all"]}
+typing-extensions = ">=4.1.1,<5.0.0"
+ujson = ">=5.1.0,<6.0.0"
 urllib3 = ">=1.26,<3"
-uv = "^0.1.5"
-vulture = "^2.3"
-wcmatch = "^8.3"
-werkzeug = "^2.2.0"
-yamlordereddictloader = "^0.4.0"
+uv = ">=0.1.5,<0.2.0"
+vulture = ">=2.3,<3.0"
+wcmatch = ">=8.3,<9.0"
+werkzeug = ">=2.2.0,<3.0.0"
+yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
 generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 
 [package.source]
-type = "git"
-url = "https://github.com/demisto/demisto-sdk.git"
-reference = "test_content_new"
-resolved_reference = "3482eb483b6709dba8b37973a5ad88592285d8c7"
+type = "legacy"
+url = "https://pypi.org/simple"
+reference = "pypi-public"
 
 [[package]]
 name = "deprecated"
@@ -1178,13 +1179,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "google-api-core"
-version = "2.19.1"
+version = "2.19.0"
 description = "Google API client core library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-api-core-2.19.1.tar.gz", hash = "sha256:f4695f1e3650b316a795108a76a1c416e6afb036199d1c1f1f110916df479ffd"},
-    {file = "google_api_core-2.19.1-py3-none-any.whl", hash = "sha256:f12a9b8309b5e21d92483bbd47ce2c445861ec7d269ef6784ecc0ea8c1fa6125"},
+    {file = "google-api-core-2.19.0.tar.gz", hash = "sha256:cf1b7c2694047886d2af1128a03ae99e391108a08804f87cfd35970e49c9cd10"},
+    {file = "google_api_core-2.19.0-py3-none-any.whl", hash = "sha256:8661eec4078c35428fd3f69a2c7ee29e342896b70f01d1a1cbcb334372dd6251"},
 ]
 
 [package.dependencies]
@@ -1193,7 +1194,7 @@ googleapis-common-protos = ">=1.56.2,<2.0.dev0"
 grpcio = {version = ">=1.33.2,<2.0dev", optional = true, markers = "extra == \"grpc\""}
 grpcio-status = {version = ">=1.33.2,<2.0.dev0", optional = true, markers = "extra == \"grpc\""}
 proto-plus = ">=1.22.3,<2.0.0dev"
-protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<6.0.0.dev0"
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0.dev0"
 requests = ">=2.18.0,<3.0.0.dev0"
 
 [package.extras]
@@ -1475,18 +1476,18 @@ reference = "pypi-public"
 
 [[package]]
 name = "googleapis-common-protos"
-version = "1.63.2"
+version = "1.63.1"
 description = "Common protobufs used in Google APIs"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "googleapis-common-protos-1.63.2.tar.gz", hash = "sha256:27c5abdffc4911f28101e635de1533fb4cfd2c37fbaa9174587c799fac90aa87"},
-    {file = "googleapis_common_protos-1.63.2-py2.py3-none-any.whl", hash = "sha256:27a2499c7e8aff199665b22741997e485eccc8645aa9176c7c988e6fae507945"},
+    {file = "googleapis-common-protos-1.63.1.tar.gz", hash = "sha256:c6442f7a0a6b2a80369457d79e6672bb7dcbaab88e0848302497e3ec80780a6a"},
+    {file = "googleapis_common_protos-1.63.1-py2.py3-none-any.whl", hash = "sha256:0e1c2cdfcbc354b76e4a211a35ea35d6926a835cba1377073c4861db904a1877"},
 ]
 
 [package.dependencies]
 grpcio = {version = ">=1.44.0,<2.0.0.dev0", optional = true, markers = "extra == \"grpc\""}
-protobuf = ">=3.20.2,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<6.0.0.dev0"
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<6.0.0.dev0"
 
 [package.extras]
 grpc = ["grpcio (>=1.44.0,<2.0.0.dev0)"]
@@ -1498,19 +1499,19 @@ reference = "pypi-public"
 
 [[package]]
 name = "grpc-google-iam-v1"
-version = "0.13.1"
+version = "0.13.0"
 description = "IAM API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "grpc-google-iam-v1-0.13.1.tar.gz", hash = "sha256:3ff4b2fd9d990965e410965253c0da6f66205d5a8291c4c31c6ebecca18a9001"},
-    {file = "grpc_google_iam_v1-0.13.1-py2.py3-none-any.whl", hash = "sha256:c3e86151a981811f30d5e7330f271cee53e73bb87755e88cc3b6f0c7b5fe374e"},
+    {file = "grpc-google-iam-v1-0.13.0.tar.gz", hash = "sha256:fad318608b9e093258fbf12529180f400d1c44453698a33509cc6ecf005b294e"},
+    {file = "grpc_google_iam_v1-0.13.0-py2.py3-none-any.whl", hash = "sha256:53902e2af7de8df8c1bd91373d9be55b0743ec267a7428ea638db3775becae89"},
 ]
 
 [package.dependencies]
 googleapis-common-protos = {version = ">=1.56.0,<2.0.0dev", extras = ["grpc"]}
 grpcio = ">=1.44.0,<2.0.0dev"
-protobuf = ">=3.20.2,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<6.0.0dev"
+protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
 
 [package.source]
 type = "legacy"
@@ -2394,13 +2395,12 @@ reference = "pypi-public"
 
 [[package]]
 name = "neo4j"
-version = "5.22.0"
+version = "5.20.0"
 description = "Neo4j Bolt driver for Python"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "neo4j-5.22.0-py3-none-any.whl", hash = "sha256:8146755ac93d33cee594975172c15cffb68ab158e3358bb7a73b5e0b83367006"},
-    {file = "neo4j-5.22.0.tar.gz", hash = "sha256:199677239ce11fcecabce9962af515df271c1313ba110e737dd7d668fccd0c04"},
+    {file = "neo4j-5.20.0.tar.gz", hash = "sha256:c59e54a0c0fa1f109f1d2fa5293c29c2bb30ba388b4f9dd9656919793c10063a"},
 ]
 
 [package.dependencies]
@@ -4245,13 +4245,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "setuptools"
-version = "70.1.1"
+version = "70.1.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "setuptools-70.1.1-py3-none-any.whl", hash = "sha256:a58a8fde0541dab0419750bcc521fbdf8585f6e5cb41909df3a472ef7b81ca95"},
-    {file = "setuptools-70.1.1.tar.gz", hash = "sha256:937a48c7cdb7a21eb53cd7f9b59e525503aa8abaf3584c730dc5f7a5bec3a650"},
+    {file = "setuptools-70.1.0-py3-none-any.whl", hash = "sha256:d9b8b771455a97c8a9f3ab3448ebe0b29b5e105f1228bba41028be116985a267"},
+    {file = "setuptools-70.1.0.tar.gz", hash = "sha256:01a1e793faa5bd89abc851fa15d0a0db26f160890c7102cd8dce643e886b47f5"},
 ]
 
 [package.extras]
@@ -4401,13 +4401,13 @@ reference = "pypi-public"
 
 [[package]]
 name = "tenacity"
-version = "8.4.2"
+version = "8.4.1"
 description = "Retry code until it succeeds"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "tenacity-8.4.2-py3-none-any.whl", hash = "sha256:9e6f7cf7da729125c7437222f8a522279751cdfbe6b67bfe64f75d3a348661b2"},
-    {file = "tenacity-8.4.2.tar.gz", hash = "sha256:cd80a53a79336edba8489e767f729e4f391c896956b57140b5d7511a64bbd3ef"},
+    {file = "tenacity-8.4.1-py3-none-any.whl", hash = "sha256:28522e692eda3e1b8f5e99c51464efcc0b9fc86933da92415168bc1c4e2308fa"},
+    {file = "tenacity-8.4.1.tar.gz", hash = "sha256:54b1412b878ddf7e1f1577cd49527bad8cdef32421bd599beac0c6c3f10582fd"},
 ]
 
 [package.extras]
@@ -5307,4 +5307,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "68d4fce9a0c91f4ca136d68bd8fb5922f224e944c41d60c296f85c6adc70a397"
+content-hash = "385cef9b6fa44130488f1acdf896113885e35c0a9b46e76d05d80102cac20f02"
