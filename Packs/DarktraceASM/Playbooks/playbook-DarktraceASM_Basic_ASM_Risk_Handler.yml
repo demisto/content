@@ -1,0 +1,315 @@
+id: Darktrace ASM Basic Risk Handler
+version: -1
+name: Darktrace ASM Basic Risk Handler
+starttaskid: "0"
+description: Runs a common ASM Risk workflow for fetched ASM Risk alerts.
+fromversion: 6.6.0
+tasks:
+  "0":
+    id: "0"
+    taskid: abfb3c79-b29b-4580-8bc8-04756ce78cc1
+    type: start
+    task:
+      id: abfb3c79-b29b-4580-8bc8-04756ce78cc1
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": -180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 32ca0da3-2d46-458a-8d07-18c3723984cf
+    type: condition
+    task:
+      id: 32ca0da3-2d46-458a-8d07-18c3723984cf
+      version: -1
+      name: Apply a comment on Darktrace?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "No":
+      - "6"
+      "Yes":
+      - "5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 80
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 55a51166-2813-4aab-89c9-247beea7a3fa
+    type: regular
+    task:
+      id: 55a51166-2813-4aab-89c9-247beea7a3fa
+      version: -1
+      name: Apply a comment
+      description: Post a comment to a Darktrace ASM risk or asset within the Darktrace
+        UI.
+      script: Darktrace ASM|||darktrace-asm-post-comment
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      comment:
+        simple: ${comment.Answers.0}
+      id:
+        simple: ${incident.darktraceasmriskid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: d17145e1-2676-4096-8d03-1dec34660c84
+    type: collection
+    task:
+      id: d17145e1-2676-4096-8d03-1dec34660c84
+      version: -1
+      name: Specify a comment message
+      type: collection
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 260
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body: null
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: What comment would you like to post to this risk?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: shortText
+        options: []
+        optionsarg: []
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: comment
+      description: ""
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: f341f404-45ac-495d-883e-b80609fb65c3
+    type: condition
+    task:
+      id: f341f404-45ac-495d-883e-b80609fb65c3
+      version: -1
+      name: Accept risk on Darktrace?
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ""
+    nexttasks:
+      "No":
+      - "7"
+      "Yes":
+      - "8"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 700
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: 'Warning: manually accepting a risk without taking action to actually
+          mitigate the risk means it will still be present, but it will no longer
+          appear within the Darktrace UI.'
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "Yes"
+      - "No"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d7936c6d-c8d5-4a0a-8a8a-5b56a441362e
+    type: regular
+    task:
+      id: d7936c6d-c8d5-4a0a-8a8a-5b56a441362e
+      version: -1
+      name: Close investigation
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 100,
+          "y": 1250
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 581a0edf-f0b6-4392-8e13-fed6dd68c17c
+    type: regular
+    task:
+      id: 581a0edf-f0b6-4392-8e13-fed6dd68c17c
+      version: -1
+      name: Mitigate risk
+      description: Mitigate Darktrace ASM Risk within the Darktrace UI.
+      script: Darktrace ASM|||darktrace-asm-mitigate-risk
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      risk_id:
+        simple: ${incident.darktraceasmriskid}
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 380,
+          "y": 980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 1525,
+        "width": 660,
+        "x": 100,
+        "y": -180
+      }
+    }
+  }
+inputs: []
+outputs: []
