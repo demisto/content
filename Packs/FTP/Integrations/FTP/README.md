@@ -11,7 +11,7 @@ This integration was integrated and tested with version xx of FTP.
     | --- | --- |
     | Host | True |
     | Port | False |
-    | User | False |
+    | Username | False |
     | Password | False |
     | Use system proxy settings | False |
 
