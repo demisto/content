@@ -68,19 +68,19 @@
                 "Email": {
                     "simple": "user.info.email"
                 },
-                "Exabeam Advanced Analytics Average Risk Score": {
+                "Exabeam Average Risk Score": {
                     "simple": "user.averageRiskScore"
                 },
-                "Exabeam Advanced Analytics Highest Session Login Host": {
+                "Exabeam Highest Session Login Host": {
                     "simple": "highestRiskSession.loginHost"
                 },
-                "Exabeam Advanced Analytics Highest Session Number Of Reasons": {
+                "Exabeam Highest Session Number Of Reasons": {
                     "simple": "highestRiskSession.numOfReasons"
                 },
-                "Exabeam Advanced Analytics Last Activity Time": {
+                "Exabeam Last Activity Time": {
                     "simple": "user.lastActivityTime"
                 },
-                "Exabeam Advanced Analytics Last Activity Type": {
+                "Exabeam Last Activity Type": {
                     "simple": "user.lastActivityType"
                 },
                 "External End Time": {
