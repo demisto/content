@@ -14,7 +14,7 @@ configuration:
   required: false
   section: Connect
   type: 0
-- display: username
+- display: Username
   name: credentials
   type: 9
   required: false

@@ -35,7 +35,7 @@ def main():
                     outputs={
                         'Files': ftp.nlst(f"{list_path}")
                     }
-                }
+                )
                 return_results(outputs)
 
         except IndexError:
