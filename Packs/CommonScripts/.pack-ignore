@@ -175,6 +175,8 @@ qr
 cv
 unescape_url
 unescape
+hyperlinks
+Auth
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124

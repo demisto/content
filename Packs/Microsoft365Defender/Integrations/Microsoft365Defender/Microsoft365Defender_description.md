@@ -1,5 +1,5 @@
-## Methods to Authenticate Microsoft 365 Defender
-You can use the following methods to authenticate Microsoft 365 Defender.
+## Methods to Authenticate Microsoft Defender XDR
+You can use the following methods to authenticate Microsoft Defender XDR.
 - Device Code Flow
 - Client Credentials Flow
 - Azure Managed Identities
@@ -8,9 +8,9 @@ You can use the following methods to authenticate Microsoft 365 Defender.
 ___
 
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
-to link Microsoft 365 Defender with Cortex XSOAR.
+to link Microsoft Defender XDR with Cortex XSOAR.
 
-To connect to the Microsoft 365 Defender:
+To connect to the Microsoft Defender XDR:
 1. Fill in the required parameters.
 2. Run the ***!microsoft-365-defender-auth-start*** command. 
 3. Follow the instructions that appear.
