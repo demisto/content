@@ -25,7 +25,7 @@ Aditionally, [a list of integrations used for the Active Response playbook can b
 
 ### Demo Video
 
-[![Active Response in Cortex Xpanse](https://raw.githubusercontent.com/demisto/content/98ead849e9e32921f64f7ac07fda2bff1b5f7c0b/Packs/CortexAttackSurfaceManagement/doc_files/Active_Response_in_Cortex_Xpanse.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
+[![Active Response in Cortex Xpanse](https://github.com/demisto/content/raw/master/Packs/CortexAttackSurfaceManagement/doc_files/Active_Response_in_Cortex_Xpanse.jpg)](https://www.youtube.com/watch?v=rryAQ23uuqw "Active Response in Cortex Xpanse")
 
 ### Automated Remediation Requirements
 
@@ -89,6 +89,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Email Notification](#cortex-asm---email-notification)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
   - [Cortex ASM - GCP Enrichment](#cortex-asm---gcp-enrichment)
+  - [Cortex ASM - Instant Message](#cortex-asm---instant-message)
   - [Cortex ASM - Jira Notification](#cortex-asm---jira-notification)
   - [Cortex ASM - On Prem Enrichment](#cortex-asm---on-prem-enrichment)
   - [Cortex ASM - On Prem Remediation](#cortex-asm---on-prem-remediation)
@@ -183,6 +184,12 @@ A playbook that is used as a container folder for all enrichments of ASM alerts.
 A playbook that given the IP address enriches GCP information relevant to ASM alerts.
 
 ![Cortex ASM - GCP Enrichment](https://github.com/demisto/content/raw/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_GCP_Enrichment.png)
+
+#### Cortex ASM - Instant Message
+
+A playbook that is used to create instant messages toward service owners to notify them of their internet exposures.
+
+![Cortex ASM - Instant Message](https://github.com/demisto/content/raw/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Instant_Message.png)
 
 #### Cortex ASM - Jira Notification
 
