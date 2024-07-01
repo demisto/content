@@ -9171,17 +9171,7 @@ class Topology:
             # If it's already a direct connection
             return firewall
 
-        if ip_address:
-            ip_address = ip_address
-
-            return PanDevice.create_from_device(
-                hostname=ip_address,
-                api_username=self.username,
-                api_password=self.password,
-                api_key=self.api_key
-            )
-
-        ip_address = (firewall.show_system_info().get("system") or {}).get("ip-address")
+        ip_address = ip_address or (firewall.show_system_info().get("system") or {}).get("ip-address")
 
         return PanDevice.create_from_device(
             hostname=ip_address,
