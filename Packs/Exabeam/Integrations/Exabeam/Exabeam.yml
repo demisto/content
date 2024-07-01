@@ -1741,7 +1741,7 @@ script:
       type: String
   - name: exabeam-reset-notable-users-cached
     description: Reset integration context for notable users fetch.
-  dockerimage: demisto/python3:3.10.14.99474
+  dockerimage: demisto/python3:3.10.14.99865
   isfetch: true
   runonce: false
   script: '-'
