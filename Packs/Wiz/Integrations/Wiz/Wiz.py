@@ -674,7 +674,35 @@ def fetch_issues(max_fetch):
         {'time': datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
 
 
-def get_filtered_issues(issue_type, resource_id, severity, limit, issue_id=''):
+def get_issue(issue_id):
+    demisto.info(f"Issue id is {issue_id}\n")
+
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        demisto.debug(message)
+        return message
+
+    issue_variables = {
+        "first": 5,
+        "filterBy": {
+            "id": issue_id
+        }
+    }
+
+    response_json = checkAPIerrors(PULL_ISSUES_QUERY, issue_variables)
+
+    demisto.debug(f"The API response is {response_json}")
+
+    issues = {}
+    if response_json['data']['issues']['nodes'] != []:
+        issues = response_json['data']['issues']['nodes']
+    else:
+        demisto.info(f"There was no result for Issue ID: {issue_id}")
+
+    return issues
+
+
+def get_filtered_issues(issue_type, resource_id, severity, limit):
     """
     Retrieves Filtered Issues
     """
@@ -683,7 +711,7 @@ def get_filtered_issues(issue_type, resource_id, severity, limit, issue_id=''):
                  f"Severity is {severity}")
     error_msg = ''
 
-    if not severity and not issue_type and not resource_id and not issue_id:
+    if not severity and not issue_type and not resource_id:
         error_msg = "You should pass (at least) one of the following parameters:\n\tissue_type\n\tresource_id" \
                     "\n\tseverity\n"
 
@@ -784,18 +812,6 @@ def get_filtered_issues(issue_type, resource_id, severity, limit, issue_id=''):
                          "in upper or lower case.")
             return ("You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL in "
                     "upper or lower case.")
-
-    if issue_id:
-        is_valid_id, message = is_valid_issue_id(issue_id)
-        if not is_valid_id:
-            return message
-
-        issue_variables = {
-            "first": 5,
-            "filterBy": {
-                "id": issue_id
-            }
-        }
 
     demisto.info(f"Query is {query}")
     demisto.info(f"Issue variables is {issue_variables}")
@@ -1462,6 +1478,15 @@ def main():
                 resolution_note=resolution_note
             )
             command_result = CommandResults(readable_output=issue_response, raw_response=issue_response)
+            return_results(command_result)
+
+        elif command == 'wiz-get-issue':
+            demisto_args = demisto.args()
+            issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+            issue_result = get_issue(
+                issue_id=issue_id,
+            )
+            command_result = CommandResults(readable_output=issue_result, raw_response=issue_result)
             return_results(command_result)
 
         elif command == 'wiz-issue-in-progress':

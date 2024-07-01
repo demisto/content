@@ -130,7 +130,7 @@ configuration:
   required: false
 - defaultvalue: "100"
   display: Max incidents per fetch (for each selected Log Type Query)
-  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible.
+  additionalinfo: The maximum number of incidents to fetch per Log Type Query. To ensure optimal efficiency, it is strongly advised to keep the limit as low as possible. The maximum is 5,000.
   name: max_fetch
   type: 0
   section: Collect
@@ -9468,7 +9468,7 @@ script:
       name: rule_name
       required: true
     - auto: PREDEFINED
-      description: The rule type. 
+      description: The rule type.
       name: rule_type
       required: true
       predefined:
@@ -9495,7 +9495,7 @@ script:
     - contextPath: Panorama.AuditComment.rule_type
       description: The rule type.
       type: String
-  dockerimage: demisto/pan-os-python:1.0.0.91683
+  dockerimage: demisto/pan-os-python:1.0.0.99653
   isfetch: true
   runonce: false
   script: ''

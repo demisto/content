@@ -1,5 +1,6 @@
 [INGEST:vendor="linux", product="linux", target_dataset="linux_linux_raw", no_hit=keep]
-filter _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}"
+// Filter to apply the parsing rule only on logs ingested via syslog and not xdrc.
+filter _raw_log ~= "\w{3}\s+\d{1,2}\s\d{2}:\d{2}:\d{2}" and  _collector_type != "XDR Collector"
 | alter
 // Get the current year and timestamp.
     tmp_get_current_year = arrayindex(regextract(to_string(_insert_time), "\d{4}"), 0),
