@@ -460,7 +460,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
 
 
 def get_chrome_instances_contents_dictionaries(chrome_instances_contents: str) -> tuple[
-    Dict[str, str], Dict[str, str], List[str], List[str]]:
+        Dict[str, str], Dict[str, str], List[str], List[str]]:
     """
     Parses the chrome instances content to extract and return two dictionaries and two lists.
 
