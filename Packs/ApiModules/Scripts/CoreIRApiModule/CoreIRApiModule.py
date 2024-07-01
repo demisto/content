@@ -150,9 +150,13 @@ FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDA
 
 class CoreClient(BaseClient):
 
-    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
+    def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False,
+                 using_base_client_http_request: bool = True
+                 ):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+        # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
+        self.using_base_client_http_request = using_base_client_http_request
 
     def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
                       params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
@@ -200,7 +204,7 @@ class CoreClient(BaseClient):
                 establish a connection to a remote machine before a timeout occurs.
                 can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
         '''
-        if not FORWARD_USER_RUN_RBAC:
+        if (not FORWARD_USER_RUN_RBAC) or self.using_base_client_http_request:
             return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
                                             method=method,
                                             url_suffix=url_suffix,
@@ -225,7 +229,11 @@ class CoreClient(BaseClient):
         )
         if ok_codes and response.get('status') not in ok_codes:
             self._handle_error(error_handler, response, with_metrics)
-        return json.loads(response['data'])
+        try:
+            return json.loads(response['data'])
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response['data']
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
