@@ -1,6 +1,6 @@
 category: Analytics & SIEM
 commonfields:
-  id: Exabeam
+  id: Exabeam - dev
   version: -1
 configuration:
 - display: Server URL (e.g https://100.24.16.156:8484)
@@ -117,9 +117,13 @@ configuration:
   required: false
   section: Connect
   advanced: true
-- display: Fetch Notable Users
-  name: is_fetch_notable_users
-  type: 8
+- display: Type Fetch
+  defaultvalue: Exabeam Incident
+  name: type_fetch
+  type: 16
+  options:
+  - Exabeam Incident
+  - Exabeam Notable User
   section: Collect
 - display: Max Users Per Fetch
   name: max_fetch_users
@@ -144,14 +148,9 @@ configuration:
   section: Collect
   advanced: true
   defaultvalue: 90
-- display: Fetch Duplicated Users
-  name: fetch_duplicated_users
-  type: 8
-  section: Collect
-  advanced: true
 description: The Exabeam Security Management Platform provides end-to-end detection, User Event Behavioral Analytics, and SOAR.
-display: Exabeam Advanced Analytics
-name: Exabeam
+display: Exabeam Advanced Analytics - dev
+name: Exabeam - dev
 script:
   commands:
   - arguments:

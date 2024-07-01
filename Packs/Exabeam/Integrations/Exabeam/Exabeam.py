@@ -17,6 +17,7 @@ DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
 DEFAULT_LIMIT = "50"
 MAX_LENGTH_CONTEXT = 10000
+DEFAULT_FETCH_TYPE = ["Exabeam Incident"]
 
 
 class Client(BaseClient):
@@ -2110,15 +2111,30 @@ def reset_notable_users_cached(client: Client, args: dict[str, str]):
 
 
 def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
-    look_back = arg_to_number(args.get('look_back')) or 1
+    incidents: list[dict] = []
     last_run: dict[str, Any] = demisto.getLastRun()
     demisto.debug(f"Last run before the fetch run: {last_run}")
-    incidents: list[dict] = []
+    type_fetch = args.get("type_fetch", DEFAULT_FETCH_TYPE)
 
-    last_run_notable_users = ""
-    if args.get('is_fetch_notable_users', False):
+    if "Exabeam Notable User" in type_fetch:
         incidents, last_run_notable_users = fetch_notable_users(client, args, last_run)
         demisto.debug(f'After fetch notable users, there are {len(incidents)} new incidents')
+    else:
+        last_run_notable_users = last_run.get('last_run_notable_users', '')
+
+    if "Exabeam Incident" in type_fetch:
+        exabeam_incidents, updated_last_run = fetch_exabeam_incidents(client, args, last_run)
+        incidents.extend(exabeam_incidents)
+        last_run.update(updated_last_run)
+
+    last_run['last_run_notable_users'] = last_run_notable_users
+    demisto.debug(f"Last run after the fetch run: {last_run}")
+    return incidents, last_run
+
+
+def fetch_exabeam_incidents(client: Client, args: dict[str, str], last_run: dict[str, Any]) -> tuple[list, dict]:
+    incidents: list[dict] = []
+    look_back = arg_to_number(args.get('look_back')) or 1.
 
     start_time, end_time = get_fetch_run_time_range(
         last_run=last_run,
@@ -2190,8 +2206,6 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
         date_format=DATETIME_FORMAT_MILISECONDS,
         increase_last_run_time=True
     )
-    last_run['last_run_notable_users'] = last_run_notable_users
-    demisto.debug(f"Last run after the fetch run: {last_run}")
     return incidents, last_run
 
 
@@ -2227,13 +2241,12 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
 
     existing_usernames: list[str] = get_integration_context().get("usernames", [])
     demisto.debug(f"Existing {len(existing_usernames)} usernames in context")
-    fetch_duplicated_users = argToBoolean(args.get("fetch_duplicated_users") or False)
     new_risky_users = []
     new_usernames = []
     for user in users:
         user_details = user.get("user", {})
         username, risk_score = user_details.get("username", ""), user_details.get("riskScore", -1)
-        if risk_score >= minimum_risks and (fetch_duplicated_users or username not in existing_usernames):
+        if risk_score >= minimum_risks and username not in existing_usernames:
             new_risky_users.append(user)
             new_usernames.append(username)
 
