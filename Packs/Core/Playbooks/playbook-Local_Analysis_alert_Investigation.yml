@@ -69,6 +69,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "2":
     id: "2"
     taskid: c91fc254-410b-425e-87b2-c69a28f65349
@@ -327,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 2075
+          "y": 2070
         }
       }
     note: false
@@ -389,7 +390,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 2370
+          "y": 2250
         }
       }
     note: false
@@ -497,7 +498,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 4100
+          "y": 3990
         }
       }
     note: false
@@ -543,7 +544,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3300
+          "y": 3310
         }
       }
     note: false
@@ -589,7 +590,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3640
+          "y": 3650
         }
       }
     note: false
@@ -607,7 +608,7 @@ tasks:
     task:
       id: da1d7739-25a2-416b-8c41-98d80f898913
       version: -1
-      name: Continue with the incident investigation
+      name: Continue with the alert investigation
       description: Continue manually with the alert investigation.
       type: regular
       iscommand: false
@@ -620,7 +621,7 @@ tasks:
       {
         "position": {
           "x": 1270,
-          "y": 3810
+          "y": 3820
         }
       }
     note: false
@@ -651,7 +652,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3145
+          "y": 3115
         }
       }
     note: false
@@ -679,7 +680,7 @@ tasks:
       {
         "position": {
           "x": 40,
-          "y": 4170
+          "y": 4160
         }
       }
     note: false
@@ -930,6 +931,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "61":
     id: "61"
     taskid: 109f06df-2f1f-4c89-8b00-e84b143cf481
@@ -1041,8 +1043,6 @@ tasks:
         simple: Quarantine
       HostContainment:
         simple: 'True'
-      IAMUserDomain:
-        simple: ''
       UserContainment:
         simple: "True"
       UserVerification:
@@ -1073,6 +1073,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "63":
     id: "63"
     taskid: 461f2351-9e50-443b-8486-795bc963d33c
@@ -1136,6 +1137,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "64":
     id: "64"
     taskid: f232d4e1-9457-469a-805a-2064f2f0c30e
@@ -1266,6 +1268,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "65":
     id: "65"
     taskid: d59aca07-8dd0-410e-8c3f-a971980653cf
@@ -1336,7 +1339,7 @@ tasks:
       {
         "position": {
           "x": 900,
-          "y": 3050
+          "y": 2940
         }
       }
     note: false
@@ -1346,6 +1349,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "66":
     id: "66"
     taskid: 32acfe19-fb1e-43f7-8302-9f695f5173cb
@@ -1388,8 +1392,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1370,
-          "y": 3470
+          "x": 1270,
+          "y": 3480
         }
       }
     note: false
@@ -1399,6 +1403,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "67":
     id: "67"
     taskid: 58f335fb-7b1f-4de2-83e6-5c80421dbdc5
@@ -1656,7 +1661,7 @@ tasks:
       {
         "position": {
           "x": 1760,
-          "y": 3240
+          "y": 3140
         }
       }
     note: false
@@ -1702,7 +1707,7 @@ tasks:
       {
         "position": {
           "x": 430,
-          "y": 1840
+          "y": 1815
         }
       }
     note: false
@@ -1865,6 +1870,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "80":
     id: "80"
     taskid: 8ac754b3-8eb9-4480-8804-df4cf57620fa
@@ -2105,7 +2111,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1560,
+          "x": 1550,
           "y": 1010
         }
       }
@@ -2136,7 +2142,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1110,
+          "x": 1130,
           "y": 1010
         }
       }
@@ -2147,7 +2153,6 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {
@@ -2156,13 +2161,14 @@ view: |-
       "2_81_True Positive": 0.62,
       "34_39_No": 0.58,
       "34_67_Yes": 0.54,
-      "46_47_#default#": 0.54,
+      "46_47_#default#": 0.35,
       "46_66_yes": 0.49,
       "47_48_#default#": 0.5,
       "55_35_#default#": 0.19,
       "58_35_#default#": 0.33,
       "6_35_Blocked": 0.12,
       "6_57_#default#": 0.58,
+      "70_50_#default#": 0.18,
       "70_71_Benign": 0.63,
       "75_67_#default#": 0.67,
       "78_39_no": 0.14,
@@ -2173,9 +2179,9 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 6155,
-        "width": 1710,
-        "x": 430,
+        "height": 6025,
+        "width": 2100,
+        "x": 40,
         "y": -1800
       }
     }
@@ -2452,4 +2458,3 @@ tests:
 fromversion: 6.6.0
 marketplaces:
   - marketplacev2
-

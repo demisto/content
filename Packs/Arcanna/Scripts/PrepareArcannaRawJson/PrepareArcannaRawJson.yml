@@ -3,11 +3,11 @@ args:
   description: Input string to transform to JSON escaped object.
   name: input
   required: true
-comment: Loads a json from string input, and returns a json escaped result.
+comment: Deprecated. No available replacement.
 commonfields:
   id: PrepareArcannaRawJson
   version: -1
-dockerimage: demisto/python3:3.10.14.95956
+dockerimage: demisto/python3:3.10.14.98471
 enabled: true
 name: PrepareArcannaRawJson
 outputs:
@@ -20,6 +20,7 @@ subtype: python3
 tags:
 - Utility
 type: python
+deprecated: true
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

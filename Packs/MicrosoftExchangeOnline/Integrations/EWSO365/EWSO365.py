@@ -3,11 +3,10 @@ import hashlib
 import json
 import logging
 import os
-import random
-import string
 import subprocess
 import sys
 import traceback
+import uuid
 import warnings
 from email.policy import SMTP, SMTPUTF8
 from io import StringIO
@@ -368,6 +367,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, []  # type: ignore
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -375,6 +375,7 @@ class EWSClient:
         reply = reply.save(account.drafts)
         m = account.inbox.get(id=reply.id)  # pylint: disable=E1101
 
+        attachments += htmlAttachments
         for attachment in attachments:
             if not attachment.get('cid'):
                 new_attachment = FileAttachment(name=attachment.get('name'), content=attachment.get('data'))
@@ -577,18 +578,23 @@ def start_logging():
 """ Helper Functions """
 
 
-def get_attachment_name(attachment_name, eml_extension=False):
+def get_attachment_name(attachment_name, eml_extension=False, content_id="", attachment_id=""):
     """
     Retrieve attachment name or error string if none is provided
     :param attachment_name: attachment name to retrieve
     :param eml_extension: Indicates whether the eml extension should be added
     :return: string
     """
+    identifier_id = content_id
+    if not identifier_id or identifier_id == "None":
+        identifier_id = attachment_id
     if attachment_name is None or attachment_name == "":
-        return "demisto_untitled_attachment.eml" if eml_extension else "demisto_untitled_attachment"
+        return (f"{identifier_id}-imageName:demisto_untitled_attachment.eml"
+                if eml_extension
+                else f"{identifier_id}-imageName:demisto_untitled_attachment")
     elif eml_extension and not attachment_name.endswith(".eml"):
-        return f'{attachment_name}.eml'
-    return attachment_name
+        return f'{identifier_id}-imageName:{attachment_name}.eml'
+    return f'{identifier_id}-imageName:{attachment_name}'
 
 
 def get_entry_for_object(title, context_key, obj, headers=None):
@@ -875,7 +881,8 @@ def get_entry_for_file_attachment(item_id, attachment):
     :param attachment: attachment dict
     :return: file entry dict for attachment
     """
-    entry = fileResult(get_attachment_name(attachment.name), attachment.content)
+    entry = fileResult(get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id,
+                       attachment_id=attachment.attachment_id.id), attachment.content)
     entry["EntryContext"] = {
         CONTEXT_UPDATE_EWS_ITEM_FOR_ATTACHMENT
         + CONTEXT_UPDATE_FILE_ATTACHMENT: parse_attachment_as_dict(item_id, attachment)
@@ -901,7 +908,9 @@ def parse_attachment_as_dict(item_id, attachment):
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            "attachmentName": get_attachment_name(attachment.name),
+            "attachmentName": get_attachment_name(attachment_name=attachment.name,
+                                                  content_id=attachment.content_id,
+                                                  attachment_id=attachment.attachment_id.id),
             "attachmentSHA256": hashlib.sha256(attachment_content).hexdigest()
             if attachment_content
             else None,
@@ -921,7 +930,9 @@ def parse_attachment_as_dict(item_id, attachment):
         return {
             ATTACHMENT_ORIGINAL_ITEM_ID: item_id,
             ATTACHMENT_ID: attachment.attachment_id.id,
-            "attachmentName": get_attachment_name(attachment.name),
+            "attachmentName": get_attachment_name(attachment_name=attachment.name,
+                                                  content_id=attachment.content_id,
+                                                  attachment_id=attachment.attachment_id.id),
             "attachmentSHA256": None,
             "attachmentContentType": attachment.content_type,
             "attachmentContentId": attachment.content_id,
@@ -948,7 +959,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result.update(
         parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True)
     )
-    title = f'EWS get attachment got item for "{target_email}", "{get_attachment_name(attachment.name)}"'
+    title = (f'EWS get attachment got item for "{target_email}", '
+             f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, attachment_id=attachment.attachment_id.id)}"')  # noqa: E501
 
     return get_entry_for_object(
         title,
@@ -1038,7 +1050,7 @@ def delete_attachments_for_message(
 
 
 def fetch_attachments_for_message(
-    client: EWSClient, item_id, target_mailbox=None, attachment_ids=None
+    client: EWSClient, item_id, target_mailbox=None, attachment_ids=None, identifiers_filter=""
 ):  # pragma: no cover
     """
     Fetches attachments for a message
@@ -1046,32 +1058,39 @@ def fetch_attachments_for_message(
     :param item_id: item id
     :param (Optional) target_mailbox: target mailbox
     :param (Optional) attachment_ids: attachment ids
+    :param (Optional) identifiers_filter: attachment ids or content ids to create a fileResult
     :return: list of parsed entries
     """
+    identifiers_filter = argToList(identifiers_filter)
     account = client.get_account(target_mailbox)
     attachments = client.get_attachments_for_item(item_id, account, attachment_ids)
     entries = []
     for attachment in attachments:
-        if isinstance(attachment, FileAttachment):
-            try:
-                if attachment.content:
-                    entries.append(get_entry_for_file_attachment(item_id, attachment))
-            except TypeError as e:
-                if str(e) != "must be string or buffer, not None":
-                    raise
-        else:
-            entries.append(
-                get_entry_for_item_attachment(
-                    item_id, attachment, account.primary_smtp_address
-                )
-            )
-            if attachment.item.mime_content:
+        if (not identifiers_filter
+            or attachment.content_id in identifiers_filter
+                or attachment.attachment_id.id in identifiers_filter):
+            if isinstance(attachment, FileAttachment):
+                try:
+                    if attachment.content:
+                        entries.append(get_entry_for_file_attachment(item_id, attachment))
+                except TypeError as e:
+                    if str(e) != "must be string or buffer, not None":
+                        raise
+            else:
                 entries.append(
-                    fileResult(
-                        get_attachment_name(attachment.name, eml_extension=True),
-                        attachment.item.mime_content,
+                    get_entry_for_item_attachment(
+                        item_id, attachment, account.primary_smtp_address
                     )
                 )
+                if attachment.item.mime_content:
+                    entries.append(
+                        fileResult(
+                            get_attachment_name(attachment_name=attachment.name, eml_extension=True,
+                                                content_id=attachment.attachment.content_id,
+                                                attachment_id=attachment.attachment_id.id),
+                            attachment.item.mime_content,
+                        )
+                    )
 
     return entries
 
@@ -1648,14 +1667,7 @@ def mark_item_as_read(
     return readable_output, output, marked_items
 
 
-def random_word_generator(length):
-    """Generate a random string of given length
-    """
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
-
-
-def handle_html(html_body):
+def handle_html(html_body) -> tuple[str, List[Dict[str, Any]]]:
     """
     Extract all data-url content from within the html and return as separate attachments.
     Due to security implications, we support only images here
@@ -1666,12 +1678,13 @@ def handle_html(html_body):
     last_index = 0
     for i, m in enumerate(
             re.finditer(r'<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"', html_body, re.I)):
+        name = f'image{i}'
+        cid = (f'{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}')
         attachment = {
             'data': base64.b64decode(m.group(3)),
-            'name': f'image{i}'
+            'name': name
         }
-        attachment['cid'] = f'{attachment["name"]}@{random_word_generator(8)}.{random_word_generator(8)}'
-
+        attachment['cid'] = cid
         attachments.append(attachment)
         clean_body += html_body[last_index:m.start(1)] + 'cid:' + attachment['cid']
         last_index = m.end() - 1
@@ -1842,7 +1855,7 @@ def create_message_object(to, cc, bcc, subject, body, additional_headers, from_a
     )
 
 
-def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=None,
+def create_message(to, subject='', body='', bcc=None, cc=None, html_body=None, attachments=[],
                    additional_headers=None, from_address=None, reply_to=None, importance=None):  # pragma: no cover
     """Creates the Message object that will be sent.
 
@@ -2182,7 +2195,9 @@ def parse_incident_from_item(item):  # pragma: no cover
                         label_attachment_id_type = "attachmentId"
 
                         # save the attachment
-                        file_name = get_attachment_name(attachment.name)
+                        file_name = get_attachment_name(attachment_name=attachment.name,
+                                                        content_id=attachment.content_id,
+                                                        attachment_id=attachment.attachment_id.id)
                         demisto.debug(f"saving content number {attachment_counter}, "
                                       f"of size {sys.getsizeof(attachment.content)}, of email with id {item.id}")
                         file_result = fileResult(file_name, attachment.content)
@@ -2196,8 +2211,9 @@ def parse_incident_from_item(item):  # pragma: no cover
                         incident["attachment"].append(
                             {
                                 "path": file_result["FileID"],
-                                "name": get_attachment_name(attachment.name),
-                                "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
+                                "name": get_attachment_name(attachment_name=attachment.name,
+                                                            content_id=attachment.content_id,
+                                                            attachment_id=attachment.attachment_id.id),
                             }
                         )
                 except TypeError as e:
@@ -2256,7 +2272,9 @@ def parse_incident_from_item(item):  # pragma: no cover
                                         raise err
 
                     data = decode_email_data(attached_email)
-                    file_result = fileResult(get_attachment_name(attachment.name, eml_extension=True), data)
+                    file_result = fileResult(get_attachment_name(attachment_name=attachment.name,
+                                             eml_extension=True, content_id=attachment.content_id,
+                                             attachment_id=attachment.attachment_id.id), data)
 
                 if file_result:
                     # check for error
@@ -2268,15 +2286,19 @@ def parse_incident_from_item(item):  # pragma: no cover
                     incident["attachment"].append(
                         {
                             "path": file_result["FileID"],
-                            "name": get_attachment_name(attachment.name, eml_extension=True),
-                            "description": FileAttachmentType.ATTACHED if not attachment.is_inline else "",
+                            "name": get_attachment_name(attachment_name=attachment.name,
+                                                        eml_extension=True,
+                                                        content_id=attachment.content_id,
+                                                        attachment_id=attachment.attachment_id.id),
                         }
                     )
 
             labels.append(
                 {
                     "type": label_attachment_type,
-                    "value": get_attachment_name(attachment.name),
+                    "value": get_attachment_name(attachment_name=attachment.name,
+                                                 content_id=attachment.content_id,
+                                                 attachment_id=attachment.attachment_id.id),
                 }
             )
             labels.append(
@@ -2557,7 +2579,6 @@ def sub_main():  # pragma: no cover
             demisto.debug(f"{incident_filter=}")
             incidents = fetch_emails_as_incidents(client, last_run, incident_filter)
             demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
-
             demisto.incidents(incidents)
         elif command == "send-mail":
             commands_res = send_email(client, **args)
