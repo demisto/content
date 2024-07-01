@@ -22,18 +22,16 @@
     "testInterval": 20,
     "tests": [
         {
-        "integrations": "CipherTrust",
-        "playbookID": "Thales CipherTrust Test Playbook - Access Management",
-        "fromversion": "6.10.0"
-    },
-    {
-        "integrations": "CipherTrust",
-        "playbookID": "Thales CipherTrust Test Playbook - CA",
-        "fromversion": "6.10.0"
-
-    },
-
-{
+            "integrations": "CipherTrust",
+            "playbookID": "Thales CipherTrust Test Playbook - Access Management",
+            "fromversion": "6.10.0"
+        },
+        {
+            "integrations": "CipherTrust",
+            "playbookID": "Thales CipherTrust Test Playbook - CA",
+            "fromversion": "6.10.0"
+        },
+        {
             "playbookID": "Test Playbook - Impossible Traveler - Enrichment",
             "integrations": [
                 "Active Directory Query v2",
@@ -45,10 +43,14 @@
                 "ms_graph_user_dev"
             ]
         },
-
         {
             "playbookID": "Endpoint Investigation Plan - Test",
             "timeout": 600
+        },
+        {
+            "playbookID": "Test Playbook - IOC Alert",
+            "integrations": "VirusTotal (API v3)",
+            "instance_names": "virus_total_v3"
         },
         {
             "playbookID": "playbook-AzureLogAnalytics-test",
