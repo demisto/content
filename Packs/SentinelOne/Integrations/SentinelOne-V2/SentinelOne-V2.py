@@ -284,7 +284,7 @@ class Client(BaseClient):
             displayName__like=display_name,
             displayName=display_name,
             query=query,
-            ids=argToList(threat_ids),
+            ids=threat_ids,
             limit=int(limit),
             classifications=argToList(classifications),
             siteIds=site_ids,
@@ -2624,21 +2624,19 @@ def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults
     agents_affected = raw_response.get('affected', 0)
 
     # Parse response into context & content entries
-    if agents_affected > 0:
-        agents = client.list_agents_request({'ids': agent_ids})
-        contents = [{
-            'NetworkStatus': agent.get('networkStatus'),
-            'ID': agent.get('id')
-        } for agent in agents]
+    agents = client.list_agents_request({'ids': ','.join(agent_ids)})
+    contents = [{
+        'NetworkStatus': agent.get('networkStatus'),
+        'ID': agent.get('id')
+    } for agent in agents]
+    contents.append({'AgentsAffected': agents_affected})
 
-        return CommandResults(
-            readable_output=f'{agents_affected} agent(s) successfully connected to the network.',
-            outputs_prefix='SentinelOne.Agent',
-            outputs_key_field='ID',
-            outputs=contents,
-            raw_response=raw_response)
-
-    return 'No agents were connected to the network.'
+    return CommandResults(
+        readable_output=f'{agents_affected} agent(s) successfully connected to the network.',
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='ID',
+        outputs=contents,
+        raw_response=raw_response)
 
 
 def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandResults, str]:
@@ -2651,21 +2649,18 @@ def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandRe
     raw_response = client.disconnect_from_network_request(agent_ids)
     agents_affected = raw_response.get('affected', 0)
 
-    if agents_affected > 0:
-        agents = client.list_agents_request({'ids': agent_ids})
-        contents = [{
-            'NetworkStatus': agent.get('networkStatus'),
-            'ID': agent.get('id')
-        } for agent in agents]
+    agents = client.list_agents_request({'ids': ','.join(agent_ids)})
+    contents = [{
+        'NetworkStatus': agent.get('networkStatus'),
+        'ID': agent.get('id')
+    } for agent in agents]
 
-        return CommandResults(
-            readable_output=f'{agents_affected} agent(s) successfully disconnected from the network.',
-            outputs_prefix='SentinelOne.Agent',
-            outputs_key_field='ID',
-            outputs=contents,
-            raw_response=raw_response)
-
-    return 'No agents were disconnected from the network.'
+    return CommandResults(
+        readable_output=f'{agents_affected} agent(s) successfully disconnected from the network.',
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='ID',
+        outputs=contents,
+        raw_response=raw_response)
 
 
 def broadcast_message(client: Client, args: dict) -> CommandResults:

@@ -1,0 +1,477 @@
+id: MattermostV2 - testplaybook
+version: -1
+name: MattermostV2 - testplaybook
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b9c0e612-09b8-4e05-80e1-498c7f3cfd30
+    type: start
+    task:
+      id: b9c0e612-09b8-4e05-80e1-498c7f3cfd30
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -90
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: d468b666-e9fa-4214-8a61-26afa164437e
+    type: regular
+    task:
+      id: d468b666-e9fa-4214-8a61-26afa164437e
+      version: -1
+      name: mattermost-get-team
+      description: Gets a team details.
+      script: MattermostV2|||mattermost-get-team
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      team_name:
+        simple: PANW
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: fdc038b7-61e6-4c28-8a40-3fda07fa21fe
+    type: regular
+    task:
+      id: fdc038b7-61e6-4c28-8a40-3fda07fa21fe
+      version: -1
+      name: mattermost-create-channel
+      description: Creates a channel.
+      script: MattermostV2|||mattermost-create-channel
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      display_name:
+        simple: channel_test_playbook_${RandomString}
+      name:
+        simple: channel_test_playbook_${RandomString}
+      team:
+        simple: ${Mattermost.Team.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 380
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 271aef1c-3a4e-481e-891f-1a8cb952352b
+    type: condition
+    task:
+      id: 271aef1c-3a4e-481e-891f-1a8cb952352b
+      version: -1
+      name: Check list-channels
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Mattermost.Channel
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 02af1a20-c1dc-44a5-84f4-e225f484a34e
+    type: regular
+    task:
+      id: 02af1a20-c1dc-44a5-84f4-e225f484a34e
+      version: -1
+      name: mattermost-list-users
+      description: Lists users.
+      script: MattermostV2|||mattermost-list-users
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      limit:
+        simple: "1"
+      team_name:
+        simple: ${Mattermost.Team.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 71ba0d16-6003-46b2-89c8-36ec0b812f25
+    type: regular
+    task:
+      id: 71ba0d16-6003-46b2-89c8-36ec0b812f25
+      version: -1
+      name: mattermost-add-channel-member
+      description: Adds a channel member.
+      script: MattermostV2|||mattermost-add-channel-member
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      channel:
+        simple: channel_test_playbook_${RandomString}
+      team:
+        simple: ${Mattermost.Team.name}
+      user_id:
+        simple: ${Mattermost.User.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: f8265688-c1fa-4e1b-8b1e-81046a010b15
+    type: regular
+    task:
+      id: f8265688-c1fa-4e1b-8b1e-81046a010b15
+      version: -1
+      name: mattermost-remove-channel-member
+      description: Removes a channel member.
+      script: MattermostV2|||mattermost-remove-channel-member
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      channel:
+        simple: channel_test_playbook_${RandomString}
+      team:
+        simple: ${Mattermost.Team.name}
+      user_id:
+        simple: ${Mattermost.User.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: c6d57e48-cb3d-4c7d-8c40-c60d6bdf9b58
+    type: regular
+    task:
+      id: c6d57e48-cb3d-4c7d-8c40-c60d6bdf9b58
+      version: -1
+      name: mattermost-close-channel
+      description: Deletes a channel.
+      script: MattermostV2|||mattermost-close-channel
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    scriptarguments:
+      channel:
+        simple: ${Mattermost.Channel.name}
+      channel_name:
+        simple: channel_test_playbook_${RandomString}
+      team_name:
+        simple: ${Mattermost.Team.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1930
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 61463f88-bea8-40f9-830e-1970e186433c
+    type: regular
+    task:
+      id: 61463f88-bea8-40f9-830e-1970e186433c
+      version: -1
+      name: mattermost-list-channels
+      description: Lists channels.
+      script: MattermostV2|||mattermost-list-channels
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      limit:
+        simple: "2"
+      team:
+        simple: ${Mattermost.Team.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: ea7afcbe-22f3-4f68-87bb-7e5ae53a120d
+    type: regular
+    task:
+      id: ea7afcbe-22f3-4f68-87bb-7e5ae53a120d
+      version: -1
+      name: FileCreateAndUploadV2
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    scriptarguments:
+      data:
+        simple: "123"
+      filename:
+        simple: MattermostV2test
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1570
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: c73cc8f1-7dcf-4ec3-8545-f7d442ce47eb
+    type: regular
+    task:
+      id: c73cc8f1-7dcf-4ec3-8545-f7d442ce47eb
+      version: -1
+      name: mattermost-send-file
+      description: Deletes a channel.
+      script: MattermostV2|||mattermost-send-file
+      type: regular
+      iscommand: true
+      brand: MattermostV2
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      channel:
+        simple: ${Mattermost.Channel.name}
+      channel_name:
+        simple: ${Mattermost.Channel.name}
+      entry_id:
+        simple: ${File.EntryID}
+      message:
+        simple: test message with file
+      team_name:
+        simple: ${Mattermost.Team.name}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1750
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 6c361b08-ebc7-4ce9-8313-deaf4c862a74
+    type: regular
+    task:
+      id: 6c361b08-ebc7-4ce9-8313-deaf4c862a74
+      version: -1
+      name: GenerateRandomString
+      description: Generates random string
+      scriptName: GenerateRandomString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      Digits:
+        simple: "True"
+      Length:
+        simple: "4"
+      Lowercase:
+        simple: "True"
+      Punctuation:
+        simple: "False"
+      Uppercase:
+        simple: "False"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2115,
+        "width": 380,
+        "x": 450,
+        "y": -90
+      }
+    }
+  }
+inputs: []
+outputs: []
+fromversion: 6.10.0
+description: ''

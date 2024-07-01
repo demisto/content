@@ -11,12 +11,15 @@ urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 
-
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 API_VERSION = '2022-09-01'
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
+                       'Authorization Code': AUTHORIZATION_CODE,
+                       'Client Credentials': CLIENT_CREDENTIALS}
 SCOPE_BY_CONNECTION = {'Device Code': "https://management.azure.com/user_impersonation offline_access user.read",
-                       'Authorization Code': "https://management.azure.com/.default"}
+                       'Authorization Code': "https://management.azure.com/.default",
+                       'Client Credentials': "https://management.azure.com/.default"}
+
 DEFAULT_LIMIT = 50
 PREFIX_URL = 'https://management.azure.com/subscriptions/'
 ''' CLIENT CLASS '''
@@ -34,11 +37,11 @@ class AzureNSGClient:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
         base_url = f'{PREFIX_URL}{subscription_id}/' \
-            f'resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups'
+                   f'resourceGroups/{resource_group_name}/providers/Microsoft.Network/networkSecurityGroups'
         client_args = assign_params(
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
-                                 # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
-                                 # flow and most of the same arguments should be set, as we're !not! using OProxy.
+            # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
+            # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
             token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
                                                                                                        connection_type else None,
@@ -47,7 +50,7 @@ class AzureNSGClient:
             verify=verify,
             proxy=proxy,
             resource='https://management.core.windows.net' if 'Device Code' in connection_type
-            else None,   # disable-secrets-detection
+            else None,  # disable-secrets-detection
             scope=SCOPE_BY_CONNECTION.get(connection_type),
             ok_codes=(200, 201, 202, 204),
             azure_ad_endpoint=azure_ad_endpoint,
@@ -529,7 +532,7 @@ def test_module(client: AzureNSGClient) -> str:
                                "and `!azure-nsg-auth-complete` to log in."
                                "You can validate the connection by running `!azure-nsg-auth-test`\n"
                                "For more details press the (?) button.")
-    elif client.connection_type == 'Azure Managed Identities':
+    elif client.connection_type == 'Azure Managed Identities' or client.connection_type == 'Client Credentials':
         client.ms_client.get_access_token()
         return 'ok'
 
@@ -541,7 +544,7 @@ def test_module(client: AzureNSGClient) -> str:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:     # pragma: no cover
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()

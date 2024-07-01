@@ -52,6 +52,7 @@ DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
+MAX_ERROR_MESSAGE_LENGTH = 50000
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -4256,7 +4257,7 @@ class Common(object):
         :return: None
         :rtype: ``None``
         """
-        CONTEXT_PATH = 'Email(val.Address && val.Address == obj.Address)'
+        CONTEXT_PATH = 'Account(val.Email.Address && val.Email.Address == obj.Email.Address)'
 
         def __init__(self, address, dbot_score, domain=None, blocked=None, relationships=None, description=None,
                      internal=None, stix_id=None, tags=None, traffic_light_protocol=None):
@@ -4282,7 +4283,7 @@ class Common(object):
 
         def to_context(self):
             email_context = {
-                'Address': self.address
+                'Email': {'Address': self.address}
             }
 
             if self.blocked:
@@ -7247,7 +7248,7 @@ def return_error(message, error='', outputs=None):
         Returns error entry with given message and exits the script
 
         :type message: ``str``
-        :param message: The message to return in the entry (required)
+        :param message: The message to return to the entry (required)
 
         :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
@@ -7286,6 +7287,10 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
+        if len(message) > MAX_ERROR_MESSAGE_LENGTH:
+            half_length = MAX_ERROR_MESSAGE_LENGTH // 2
+            message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
+
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],

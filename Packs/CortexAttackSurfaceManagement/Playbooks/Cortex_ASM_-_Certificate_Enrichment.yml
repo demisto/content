@@ -1,0 +1,782 @@
+description: Playbook to enrich certificate information.
+id: 'Cortex ASM - Certificate Enrichment'
+inputSections:
+- description: Generic group for inputs
+  inputs:
+  - Hostname
+  name: General (Inputs group)
+inputs:
+- description: Input for Certificate enrichment
+  key: Hostname
+  playbookInputQuery:
+  required: false
+  value:
+    simple: ${alert.hostname}
+name: Cortex ASM - Certificate Enrichment
+outputSections:
+- description: Generic group for outputs
+  name: General (Outputs group)
+  outputs: []
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "16"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 0804bf72-274c-489c-86fa-0c78f7930d42
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 0804bf72-274c-489c-86fa-0c78f7930d42
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -80
+        }
+      }
+  "1":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: VenafiTLSProtect
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      - - left:
+            iscontext: true
+            value:
+              simple: inputs.Hostname
+          operator: isExists
+      label: "yes"
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Checks if there’s an active instance of the Venafi TLS Protect integration enabled.
+      id: de7247d4-2023-4a4b-8094-57e373d36ffd
+      iscommand: false
+      name: Is Venafi TLS Protect enabled and Input defined?
+      type: condition
+      version: -1
+    taskid: de7247d4-2023-4a4b-8094-57e373d36ffd
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 215
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "9"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      CN:
+        simple: ${inputs.Hostname}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VenafiTLSProtect
+      description: 'Gets Venafi certificates query. All dates are in 2016-11-12T00:00:00.0000000Z format. For additional field information, see: https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-attribute.htm and https://ao-tlspd.dev.ven-eco.com/aperture/help/Content/SDK/WebSDK/r-SDK-Certificates-search-status.htm'
+      id: c8fc2b77-e986-4817-8daa-8386909b3e4b
+      iscommand: true
+      name: Get Certificate ID from Venafi
+      script: VenafiTLSProtect|||venafi-get-certificates
+      type: regular
+      version: -1
+    taskid: c8fc2b77-e986-4817-8daa-8386909b3e4b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 440
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6e37cbda-0468-468d-8bc2-fa3f2f2040d8
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: 6e37cbda-0468-468d-8bc2-fa3f2f2040d8
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 2510
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "17"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      guid:
+        simple: ${Venafi.Certificate.ID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: VenafiTLSProtect
+      description: Uses a certificate GUID to extract more details from the certificate store.
+      id: d5cc8b99-47db-4db3-8c2e-f9098ced9989
+      iscommand: true
+      name: Extract additional details from the venafi certificate store.
+      script: VenafiTLSProtect|||venafi-get-certificate-details
+      type: regular
+      version: -1
+    taskid: d5cc8b99-47db-4db3-8c2e-f9098ced9989
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 840
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Certificate
+      val2:
+        simple: "true"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 06891dbc-f1d9-4683-83cd-e6c877ee86c3
+      iscommand: false
+      name: Set ASM enrichment status to true
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 06891dbc-f1d9-4683-83cd-e6c877ee86c3
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -900,
+          "y": 2260
+        }
+      }
+  "8":
+    continueonerrortype: ""
+    id: "8"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmenrichmentstatus
+      keys:
+        simple: source,record_exists,timestamp
+      val1:
+        simple: Certificate
+      val2:
+        simple: "false"
+      val3:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
+        `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
+      id: 183d7b27-a308-455c-8bca-f5715de02c12
+      iscommand: false
+      name: Set ASM enrichment status to false
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 183d7b27-a308-455c-8bca-f5715de02c12
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": -390,
+          "y": 2260
+        }
+      }
+  "9":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Venafi.Certificate.X509.CN
+                    operator: inList
+                    right:
+                      iscontext: true
+                      value:
+                        simple: inputs.Hostname
+                root: Venafi.Certificate.X509.CN
+          operator: isNotEmpty
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "9"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are results from Venafi.
+      id: e02f629f-b980-4090-84a3-3601fffe17ca
+      iscommand: false
+      name: Are there results from Venafi?
+      type: condition
+      version: -1
+    taskid: e02f629f-b980-4090-84a3-3601fffe17ca
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 630
+        }
+      }
+  "10":
+    continueonerrortype: ""
+    id: "10"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: asm_fields_set_for_certificate
+      value:
+        simple: "true"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Set a value in context under the key you entered.
+      id: b4946827-072f-43c9-8afd-55c42b9ba184
+      iscommand: false
+      name: Set true flag for completed enrichment
+      script: Set
+      type: regular
+      version: -1
+    taskid: b4946827-072f-43c9-8afd-55c42b9ba184
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1800
+        }
+      }
+  "11":
+    continueonerrortype: ""
+    id: "11"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "12"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 6efaf535-f561-4465-8dc5-ebffce303c83
+      iscommand: false
+      name: Service Owner
+      type: title
+      version: -1
+      description: ''
+    taskid: 6efaf535-f561-4465-8dc5-ebffce303c83
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1140
+        }
+      }
+  "12":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: Venafi.Certificate.CertificateDetails.Subject
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: '@'
+                root: Venafi.Certificate.CertificateDetails.Subject
+                transformers:
+                - args:
+                    error_if_no_match: {}
+                    ignore_case: {}
+                    multi_line: {}
+                    period_matches_newline: {}
+                    regex:
+                      value:
+                        simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
+                    unpack_matches: {}
+                  operator: RegexExtractAll
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "12"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "13"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if there are any emails in Subject.
+      id: d67f3e5e-8afb-4521-8ab2-2514809b5846
+      iscommand: false
+      name: Are there emails in Certificate Subject?
+      type: condition
+      version: -1
+    taskid: d67f3e5e-8afb-4521-8ab2-2514809b5846
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1320
+        }
+      }
+  "13":
+    continueonerrortype: ""
+    id: "13"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmserviceownerunrankedraw
+      keys:
+        simple: name,email,source,timestamp
+      val1:
+        simple: n/a
+      val2:
+        complex:
+          accessor: Subject
+          root: Venafi.Certificate.CertificateDetails
+          transformers:
+          - args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: '[\w-\.]+@[\w-]+\.+[\w-]{2,4}'
+              unpack_matches: {}
+            operator: RegexExtractAll
+      val3:
+        simple: Certificate-Venafi
+      val4:
+        simple: TIMESTAMP
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: |-
+        Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 436ba802-82ee-47f1-823e-19f0c231ef09
+      iscommand: false
+      name: Set service owner grid field
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 436ba802-82ee-47f1-823e-19f0c231ef09
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 90,
+          "y": 1565
+        }
+      }
+  "14":
+    continueonerrortype: ""
+    id: "14"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "15"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 000c1044-7744-4fb0-8168-5a2e14e6d6d9
+      iscommand: false
+      name: Closing stage
+      type: title
+      version: -1
+      description: ''
+    taskid: 000c1044-7744-4fb0-8168-5a2e14e6d6d9
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 1825
+        }
+      }
+  "15":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              simple: asm_fields_set_for_certificate
+          operator: isTrue
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "15"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "8"
+      "yes":
+      - "7"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Check if enrichment is performed.
+      id: d9180488-10ff-4a1e-85ea-81a5b09ef5f0
+      iscommand: false
+      name: Was enrichment performed?
+      type: condition
+      version: -1
+    taskid: d9180488-10ff-4a1e-85ea-81a5b09ef5f0
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": -660,
+          "y": 2080
+        }
+      }
+  "16":
+    continueonerrortype: ""
+    id: "16"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 22628f06-3656-4c77-8876-eeb4ebe83a25
+      iscommand: false
+      name: Venafi enrichment
+      type: title
+      version: -1
+      description: ''
+    taskid: 22628f06-3656-4c77-8876-eeb4ebe83a25
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 60
+        }
+      }
+  "17":
+    continueonerrortype: ""
+    id: "17"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "11"
+      - "18"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9e6da600-66c4-47f4-8b6a-ecd99f4470e7
+      iscommand: false
+      name: Set fields
+      type: title
+      version: -1
+      description: ''
+    taskid: 9e6da600-66c4-47f4-8b6a-ecd99f4470e7
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1000
+        }
+      }
+  "18":
+    continueonerrortype: ""
+    id: "18"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "19"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 9aa996ab-38c4-4e2c-85d9-07f65777702d
+      iscommand: false
+      name: System IDs
+      type: title
+      version: -1
+      description: ''
+    taskid: 9aa996ab-38c4-4e2c-85d9-07f65777702d
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1140
+        }
+      }
+  "19":
+    continueonerrortype: ""
+    id: "19"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "10"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      gridfield:
+        simple: asmsystemids
+      keys:
+        simple: type,id,link
+      val1:
+        simple: CERTIFICATE-VENAFI-ID
+      val2:
+        simple: ${Venafi.Certificate.ID}
+      val3:
+        simple: n/a
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Automation used to more easily populate a grid field.  This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Example of command:
+        `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
+      id: 578b389a-0877-4f32-88aa-127256ad227b
+      iscommand: false
+      name: Set system IDs grid field (Certificate ID)
+      script: GridFieldSetup
+      type: regular
+      version: -1
+    taskid: 578b389a-0877-4f32-88aa-127256ad227b
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 750,
+          "y": 1320
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 2655,
+        "width": 2030,
+        "x": -900,
+        "y": -80
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.10.0
