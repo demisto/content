@@ -219,11 +219,6 @@ class PychromeEventHandler:
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
 
-    # def network_response_received(self, requestId, loaderId, timestamp, type, response, hasExtraInfo, frameId=None):
-    #     demisto.debug(f'PychromeEventHandler.network_response_received, {requestId=}, {response=}')
-    #     if 'url' in response:
-    #         demisto.debug(f'PychromeEventHandler.network_response_received, got URL, {requestId=}, {response=}')
-
     def page_frame_stopped_loading(self, frameId):
         demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}')
         if self.start_frame == frameId:
