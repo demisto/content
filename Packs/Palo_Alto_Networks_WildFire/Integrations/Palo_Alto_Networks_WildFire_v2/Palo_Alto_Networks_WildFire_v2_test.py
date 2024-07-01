@@ -339,32 +339,6 @@ def test_running_polling_command_pending(mocker):
     assert command_results[0].scheduled_command is not None
 
 
-def test_running_polling_command_pending_2(mocker):
-    """
-    Given:
-         An upload request of a url or a file using the polling flow, that was already initiated priorly and is not
-          completed yet.
-    When:
-         When, while in the polling flow, we are checking the status of on an upload that was initiated earlier and is
-         not complete yet.
-    Then:
-        Return a command results object, with scheduling a new command.
-    """
-    args = {'url': 'wwwdom'}
-    response_upload = util_load_json('./tests_data/upload_url_response.json')
-    upload_url_data = {'url': 'https://www.demisto.com',
-                       'sha256': 'c51a8231d1be07a2545ac99e86a25c5d68f88380b7ebf7ac91501661e6d678bb',
-                       'md5': '67632f32e6af123aa8ffd1fe8765a783'}
-    mocker.patch('CommonServerPython.ScheduledCommand.raise_error_if_not_supported')
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.wildfire_upload_url', return_value=(response_upload, upload_url_data))
-    response_report = util_load_json('./tests_data/report_url_response_pending.json')
-    mocker.patch('Palo_Alto_Networks_WildFire_v2.http_request', return_value=response_report)
-    command_results = run_polling_command(args, 'wildfire-upload-url', wildfire_upload_url_command,
-                                          wildfire_get_report_command, 'URL')
-    assert command_results[0].outputs is None
-    assert command_results[0].scheduled_command is not None
-
-
 def test_running_polling_command_new_search(mocker):
     """
     Given:
