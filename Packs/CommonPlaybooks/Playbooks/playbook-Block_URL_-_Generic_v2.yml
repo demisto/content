@@ -814,8 +814,8 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Administrator,Analyst
-        simple:marketplacev2: Investigator,Instance Administrator
+        simple: Analyst
+        simple:marketplacev2: Investigator
       subject:
         simple: 'User Verification - Block URLs (Inc #${incident.id})'
       body:

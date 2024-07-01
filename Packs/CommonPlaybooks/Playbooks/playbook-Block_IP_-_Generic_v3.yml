@@ -1290,8 +1290,8 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst,Administrator
-        simple:marketplacev2: Investigator,Instance Administrator
+        simple: Analyst
+        simple:marketplacev2: Investigator
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
@@ -1308,8 +1308,6 @@ tasks:
       format: html
       bcc:
       cc:
-        simple: Administrator
-        simple:marketplacev2: Administrator
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -3056,8 +3054,8 @@ tasks:
     ignoreworker: false
     message:
       to:
-        simple: Analyst,Administrator
-        simple:marketplacev2: Investigator,Instance Administrator
+        simple: Analyst
+        simple:marketplacev2: Investigator
       subject:
         simple: Block IP Playbook - Analyst's Verification
       body:
@@ -3072,8 +3070,6 @@ tasks:
       format: html
       bcc:
       cc:
-        simple: Administrator
-        simple:marketplacev2: Instance Administrator
       timings:
         retriescount: 2
         retriesinterval: 360

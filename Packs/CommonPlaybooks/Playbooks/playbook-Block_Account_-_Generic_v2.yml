@@ -1321,8 +1321,6 @@ tasks:
       format: html
       bcc:
       cc:
-        simple: Administrator
-        simple:marketplacev2: Instance Administrator
       timings:
         retriescount: 2
         retriesinterval: 360
@@ -1402,8 +1400,6 @@ tasks:
       format: html
       bcc:
       cc:
-        simple: Administrator
-        simple:marketplacev2: Instance Administrator
       timings:
         retriescount: 2
         retriesinterval: 360
