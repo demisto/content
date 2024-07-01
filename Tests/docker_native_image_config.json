@@ -110,7 +110,7 @@
         },
         {
             "id":"Rasterize",
-            "reason":"Issue: CRTX-72338 and CIAC-7694 and CIAC-10544",
+            "reason":"Issue: CRTX-72338 and CIAC-7694",
             "ignored_native_images":[
                 "native:8.6",
                 "native:candidate"
