@@ -878,7 +878,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "composite_id"
+                                            "simple": "detection_id"
                                         }
                                     }
                                 },
@@ -890,7 +890,7 @@
                 "External Link": {
                     "complex": {
                         "filters": [],
-                        "root": "composite_id",
+                        "root": "detection_id",
                         "transformers": [
                             {
                                 "args": {
@@ -935,7 +935,7 @@
                 "External Severity": {
                     "complex": {
                         "filters": [],
-                        "root": "severity",
+                        "root": "max_severity",
                         "transformers": [
                             {
                                 "args": {
@@ -957,7 +957,7 @@
                 "External System ID": {
                     "complex": {
                         "filters": [],
-                        "root": "composite_id",
+                        "root": "detection_id",
                         "transformers": [
                             {
                                 "args": {
@@ -1102,7 +1102,7 @@
 								"args": {
 									"conditions": {
 										"value": {
-											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
+											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{detection_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{detection_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
 										}
 									},
 									"flags": {}
@@ -1122,7 +1122,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "severity"
+                                            "simple": "max_severity"
                                         }
                                     }
                                 },
