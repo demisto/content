@@ -11256,15 +11256,9 @@ class FirewallCommand:
         :param ip_address: An ip address to use for service route enabled firewalls
         """
 
-        if ip_address:
-            for firewall in topology.firewalls(target=target):
-                direct_firewall_connection = topology.get_direct_device(firewall, ip_address)
-                direct_firewall_connection.xapi.export(category="device-state")
-                return direct_firewall_connection.xapi.export_result.get("content")
-
         for firewall in topology.firewalls(target=target):
             # Connect directly to the firewall
-            direct_firewall_connection = topology.get_direct_device(firewall)
+            direct_firewall_connection = topology.get_direct_device(firewall, ip_address)
             direct_firewall_connection.xapi.export(category="device-state")
             return direct_firewall_connection.xapi.export_result.get("content")
 
