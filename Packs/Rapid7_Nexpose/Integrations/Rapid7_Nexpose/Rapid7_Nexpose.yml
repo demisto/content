@@ -2127,12 +2127,12 @@ script:
     - name: color
       auto: PREDEFINED
       predefined:
-      - Blue
-      - Green
-      - Orange
-      - Red
-      - Purple
-      - Default
+      - blue
+      - green
+      - orange
+      - red
+      - purple
+      - default
       description: The tag color - relevant only for "custom" type.
       defaultValue: Default
     - name: ip_address_is

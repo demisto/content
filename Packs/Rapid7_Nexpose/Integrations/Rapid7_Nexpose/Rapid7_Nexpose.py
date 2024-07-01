@@ -18,7 +18,7 @@ CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-err
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
 VALID_TAG_TYPES = ["custom", "location", "owner"]
 VALID_ASSET_GROUP_TYPES = ["dynamic", "static"]
-VALID_TAG_COLORS = ["Blue", "Green", "Orange", "Red", "Purple", "Default"]
+VALID_TAG_COLORS = ["blue", "green", "orange", "red", "purple", "default"]
 
 urllib3.disable_warnings()  # Disable insecure warnings
 

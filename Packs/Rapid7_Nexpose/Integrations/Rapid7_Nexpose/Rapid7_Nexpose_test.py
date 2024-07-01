@@ -1711,11 +1711,11 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, host
 @pytest.mark.parametrize(
     "name, type, color, ip_address_is, match, expected_post_data",
     [
-        ("test", "custom", "Red", "3.3.3.3", "Any",
+        ("test", "custom", "red", "3.3.3.3", "Any",
             {
                 "name": "test",
                 "type": "custom",
-                "color": "Red",
+                "color": "red",
                 "searchCriteria": {
                     "filters": [
                         {"field": "ip-address", "operator": "is", "value": "3.3.3.3"}
