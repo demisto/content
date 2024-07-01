@@ -70,8 +70,8 @@ class Client:
         client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
-            token_retrieval_url = f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if 'Client Credentials' in auth_type
-                                                                            else 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url=f'https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token' if 'Client Credentials'
+            in auth_type else 'https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
             grant_type=GRANT_BY_CONNECTION[auth_type],
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
