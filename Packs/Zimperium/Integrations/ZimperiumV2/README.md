@@ -51,6 +51,7 @@ Search users. Only a user created as a "Team admin" is authorized to perform thi
 | page | Page number. Default is 0. | Optional | 
 | limit | Number of total results to return. Default is 50. | Optional | 
 | team_id | Used to filter the user data by the team the user belongs to. | Optional | 
+| email | The email of the user to search. | Optional |
 
 #### Context Output
 
