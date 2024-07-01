@@ -1,5 +1,4 @@
 Use Anomali Match to search indicators and enrich domains.
-
 ## Configure Anomali Match on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -14,14 +13,10 @@ Use Anomali Match to search indicators and enrich domains.
 | proxy | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
-
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 ### anomali-enterprise-retro-forensic-search
-
 ***
 Initiates a forensic search of the indicators.
 
@@ -29,7 +24,6 @@ Initiates a forensic search of the indicators.
 #### Base Command
 
 `anomali-enterprise-retro-forensic-search`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -48,11 +42,9 @@ Initiates a forensic search of the indicators.
 
 
 #### Command Example
-
 ```!anomali-enterprise-retro-forensic-search indicators=1.1.1.1 from="1 month"```
 
 #### Context Example
-
 ```json
 {
     "AnomaliEnterprise": {
@@ -67,14 +59,12 @@ Initiates a forensic search of the indicators.
 #### Human Readable Output
 
 >### Forensic search started:
-
 >|job_id|status|
 >|---|---|
 >| job1271604409989806 | in progress |
 
 
 ### anomali-enterprise-retro-forensic-search-results
-
 ***
 Retrieves the forensic search results.
 
@@ -82,7 +72,6 @@ Retrieves the forensic search results.
 #### Base Command
 
 `anomali-enterprise-retro-forensic-search-results`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -108,11 +97,9 @@ Retrieves the forensic search results.
 
 
 #### Command Example
-
 ```!anomali-enterprise-retro-forensic-search-results job_id=job1251604409794526```
 
 #### Context Example
-
 ```json
 {
     "AnomaliEnterprise": {
@@ -147,20 +134,16 @@ Retrieves the forensic search results.
 #### Human Readable Output
 
 >### Forensic search metadata:
-
 >|status|job_id|category|totalFiles|scannedEvents|
 >|---|---|---|---|---|
 >| completed | job1251604409794526 | forensic_api_result | 1 | 361295 |
-
 >### Forensic search results:
-
 >|count|event.dest|event.src|event_time|
 >|---|---|---|---|
 >| 1 | 1.1.1.1 | 1.1.1.1 | 2020-10-14T09:10:00.000+0000 |
 
 
 ### anomali-enterprise-dga-domain-status
-
 ***
 The search domains Domain Generation Algorithm (DGA).
 
@@ -168,7 +151,6 @@ The search domains Domain Generation Algorithm (DGA).
 #### Base Command
 
 `anomali-enterprise-dga-domain-status`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -186,11 +168,9 @@ The search domains Domain Generation Algorithm (DGA).
 
 
 #### Command Example
-
 ```!anomali-enterprise-dga-domain-status domains=amazon.com```
 
 #### Context Example
-
 ```json
 {
     "AnomaliEnterprise": {
@@ -206,14 +186,12 @@ The search domains Domain Generation Algorithm (DGA).
 #### Human Readable Output
 
 >### Domains DGA:
-
 >|domain|probability|
 >|---|---|
 >| amazon.com | 0 |
 
 
 ### domain
-
 ***
 The search domains Domain Generation Algorithm (DGA). Includes DBotScore and domain information.
 There is no distinction between benign to unknown domains in Anomali Enterprise.
@@ -225,7 +203,6 @@ else, the reputation is Unknown.
 #### Base Command
 
 `domain`
-
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -243,18 +220,16 @@ else, the reputation is Unknown.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Score | Number | The actual DBot score. | 
 | Domain.Name | String | The domain name. For example, "google.com". | 
 | Domain.Malicious.Vendor | String | The vendor that reported that the domain is malicious. | 
 | Domain.Malicious.Description | String | A description of the malicious domain. | 
 
 
 #### Command Example
-
 ```!domain domain=google.com```
 
 #### Context Example
-
 ```json
 {
     "AnomaliEnterprise": {
@@ -279,7 +254,6 @@ else, the reputation is Unknown.
 #### Human Readable Output
 
 >### Domains DGA:
-
 >|domain|probability|
 >|---|---|
 >| google.com | 0 |
