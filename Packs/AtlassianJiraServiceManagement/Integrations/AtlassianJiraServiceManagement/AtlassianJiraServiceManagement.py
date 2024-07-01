@@ -32,15 +32,11 @@ class Client(BaseClient):
             url_suffix='/objectschema/list'
         )
 
-    def get_object_type_list(self, schema_id: str, query, exclude):
+    def get_object_type_list(self, schema_id: str, exclude):
         url_suffix = f'objectschema/{schema_id}/objecttypes/flat'
 
         # build request params
-        params = {}
-        if query:
-            params['query'] = query
-        if exclude:
-            params['exclude'] = exclude
+        params = {'exclude': exclude} if exclude else {}
 
         return self._http_request(method='GET', url_suffix=url_suffix, params=params)
 
@@ -360,7 +356,7 @@ def jira_asset_object_type_list_command(client: Client, args: dict[str, Any]) ->
         raise ValueError("schema_id is a required argument")
 
     # build outputs
-    res = client.get_object_type_list(schema_id, query, exclude)
+    res = client.get_object_type_list(schema_id, exclude)
     outputs = [{k: v for k, v in ot.items() if k != 'icon'} for ot in res]
     if not all_results:
         limit = int(limit)

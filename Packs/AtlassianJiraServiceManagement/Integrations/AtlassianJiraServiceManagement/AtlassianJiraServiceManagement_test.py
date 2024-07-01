@@ -378,7 +378,7 @@ def test_jira_asset_object_type_list_command_with_limit_2(mocker: MockerFixture)
     mocked_return_value = command_test_data['object_type_list']['response']
     mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
     command_results = JSM.jira_asset_object_type_list_command(client, args)
-    mocked_client.assert_called_with('1', None, None)
+    mocked_client.assert_called_with('1', None)
     assert len(command_results.outputs) == expected_len
 
 
@@ -396,7 +396,7 @@ def test_jira_asset_object_type_list_command_with_limit_4(mocker: MockerFixture)
     mocked_return_value = command_test_data['object_type_list']['response']
     mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
     command_results = JSM.jira_asset_object_type_list_command(client, args)
-    mocked_client.assert_called_with('1', None, None)
+    mocked_client.assert_called_with('1', None)
     assert len(command_results.outputs) == expected_len
 
 
@@ -414,7 +414,7 @@ def test_jira_asset_object_type_list_command_all_results(mocker: MockerFixture):
     mocked_return_value = command_test_data['object_type_list']['response']
     mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
     command_results = JSM.jira_asset_object_type_list_command(client, args)
-    mocked_client.assert_called_with('1', None, None)
+    mocked_client.assert_called_with('1', None)
     assert len(command_results.outputs) == expected_len
 
 
@@ -432,7 +432,7 @@ def test_jira_asset_object_type_list_command_all_results_with_limit(mocker: Mock
     mocked_return_value = command_test_data['object_type_list']['response']
     mocked_client = mocker.patch.object(client, 'get_object_type_list', return_value=mocked_return_value)
     command_results = JSM.jira_asset_object_type_list_command(client, args)
-    mocked_client.assert_called_with('1', None, None)
+    mocked_client.assert_called_with('1', None)
     assert len(command_results.outputs) == expected_len
 
 
