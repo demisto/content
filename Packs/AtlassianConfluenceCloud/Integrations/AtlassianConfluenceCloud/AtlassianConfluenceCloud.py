@@ -28,8 +28,10 @@ URL_SUFFIX = {
     "CONTENT": "/wiki/rest/api/content",
     "USER": "/wiki/rest/api/search/user?cql=type=user",
     "SPACE": "/wiki/rest/api/space",
-    "PRIVATE_SPACE": "/wiki/rest/api/space/_private"
+    "PRIVATE_SPACE": "/wiki/rest/api/space/_private",
+    "EVENTS": "/wiki/rest/api/audit/"
 }
+
 MESSAGES = {
     "REQUIRED_URL_FIELD": "Site Name can not be empty.",
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",
@@ -88,6 +90,9 @@ LEGAL_DELETION_TYPES = {
     "permanent delete": "trashed",
     "permanent delete draft": "draft"
 }
+VENDOR = "Atlassian"
+PRODUCT = "Confluence"
+
 ''' CLIENT CLASS '''
 
 
@@ -142,6 +147,9 @@ class Client(BaseClient):
                 err_msg = '{}'.format(response.text)
 
         raise DemistoException(err_msg)
+
+    def search_events(self, limit: int, start: int = None, start_time: str = None) -> List[Dict]:
+        return self.http_request(urlsuffix=URL_SUFFIX['EVENTS'])
 
 
 ''' HELPER FUNCTIONS '''
@@ -1333,6 +1341,30 @@ def confluence_cloud_group_list_command(client: Client, args: Dict[str, str]) ->
         raw_response=response_json)
 
 
+def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[Dict, List[Dict]]:
+    last_index = last_run.get('last_index')
+
+    if last_index:
+        start = last_index + 1
+        events = client.search_events(start=start, limit=limit)
+
+    else:
+        start_time = str(round((time.time() - 60) * 1000))
+        events = client.search_events(start_time=start_time, limit=limit)
+
+    last_index += len(events)
+    demisto.debug(f'Fetched event with id: {last_index}.')
+
+    # Save the next_run as a dict with the last_fetch key to be stored
+    next_run = {'last_index': last_index}
+    demisto.debug(f'Setting next run {next_run}.')
+    return next_run, events
+
+
+def confluence_cloud_get_events():
+    pass
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1379,7 +1411,7 @@ def main() -> None:
             'confluence-cloud-space-list': confluence_cloud_space_list_command,
             'confluence-cloud-comment-create': confluence_cloud_comment_create_command,
             'confluence-cloud-content-create': confluence_cloud_content_create_command,
-            'confluence-cloud-space-create': confluence_cloud_space_create_command
+            'confluence-cloud-space-create': confluence_cloud_space_create_command,
         }
         command = demisto.command()
         args = demisto.args()
@@ -1391,6 +1423,21 @@ def main() -> None:
             return_results(test_module(client))
         elif command in commands:
             return_results(commands[command](client, args))
+
+        elif command == 'fetch-events':
+            last_run = demisto.getLastRun()
+            next_run, events = fetch_events()
+
+        elif command == 'confluence-cloud-get-events':
+            should_push_events = argToBoolean(args.get('should_push_events'))
+            events, results = confluence_cloud_get_events()
+            return_results(results)
+            if should_push_events:
+                send_events_to_xsiam(
+                    events,
+                    vendor=VENDOR,
+                    product=PRODUCT
+                )
     # Log exceptions and return errors
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
