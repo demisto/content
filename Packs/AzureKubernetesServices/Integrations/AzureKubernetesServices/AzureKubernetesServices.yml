@@ -28,7 +28,7 @@ configuration:
   name: auth_type
   required: true
   type: 15
-  additionalinfo: Type of authentication. Can be Authorization Code Flow (recommended), Device Code Flow, or Azure Managed Identities.
+  additionalinfo: Type of authentication. Can be Authorization Code Flow (recommended), Device Code Flow, Azure Managed Identities or Client Credentials flow.
   defaultvalue: Device Code
   options:
   - Authorization Code
