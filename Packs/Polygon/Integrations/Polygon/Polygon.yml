@@ -368,7 +368,7 @@ script:
       description: Malware families.
       type: string
     description: Check file reputation.
-  dockerimage: demisto/python3:3.10.14.99474
+  dockerimage: demisto/python3:3.10.14.99865
   runonce: false
   script: '-'
   subtype: python3

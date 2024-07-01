@@ -2094,7 +2094,7 @@ script:
       description: Domain updated date.
       type: String
     description: Checks the reputation of a domain.
-  dockerimage: demisto/python3:3.10.14.99474
+  dockerimage: demisto/python3:3.10.14.99865
   isfetch: true
   runonce: false
   script: "-"
