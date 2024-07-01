@@ -144,8 +144,7 @@
             "id": "Github Feed",
             "reason": "update docker image",
             "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         }
     ],
