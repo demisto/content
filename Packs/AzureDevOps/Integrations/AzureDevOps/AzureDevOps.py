@@ -33,7 +33,7 @@ GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
                        'Authorization Code': AUTHORIZATION_CODE,
                        'Client Credentials': CLIENT_CREDENTIALS}
 SCOPE_DEVICE_AUTH_FLOW = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
-SCOPE_CLIENT_CREDENTIALS_FLOW ='499b84ac-1321-427f-aa17-267ca6975798/.default'
+SCOPE_CLIENT_CREDENTIALS_FLOW = '499b84ac-1321-427f-aa17-267ca6975798/.default'
 
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
