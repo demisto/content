@@ -600,7 +600,7 @@ script:
       description: The size of the file in bytes.
       type: Number
   - arguments: []
-    description: Returns a list of put-file IDs that are available for the user in the 'put' command.
+    description: Returns a list of put-file IDs that are available for the user in the 'put' command. Due to an API limitation, the maximum number of files returned is 100.
     name: cs-falcon-list-files
     outputs:
     - contextPath: CrowdStrike.File.ID
@@ -2918,7 +2918,7 @@ script:
     name: cve
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator value.
+      description: The indicator that was tested.
       type: String
     - contextPath: DBotScore.Type
       description: The indicator type.
@@ -5032,7 +5032,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA Rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.97242
+  dockerimage: demisto/py3-tools:1.0.0.98401
   isfetch: true
   ismappable: true
   isremotesyncin: true
