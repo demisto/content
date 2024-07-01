@@ -255,7 +255,7 @@ FILTER_TYPES = [
 ]
 SCHEDULED_COMMANDS_MAPPER = {
     "harmony-ep-policy-rule-install": ScheduleCommandMetadata(
-        outputs_prefix="PolicyRuleInstall", message="Policy was installed successfully."
+        outputs_prefix="PolicyRuleInstall", message="Policies have been installed successfully."
     ),
     "harmony-ep-policy-rule-modifications-get": ScheduleCommandMetadata(
         outputs_prefix="Rule",
@@ -639,7 +639,7 @@ class Client(BaseClient):
             json_data=entities_ids,
         )
 
-    def rule_policy_install(self, rule_id: str = None) -> dict[str, Any]:
+    def rule_policy_install(self) -> dict[str, Any]:
         """Installs all policies. If a rule ID is specified,
             only the policies associated with that rule will be installed.
 
@@ -653,7 +653,7 @@ class Client(BaseClient):
 
         return self._http_request(
             "POST",
-            (f"/policy/{rule_id}/install" if rule_id else "/policy/install"),
+            "/policy/install",
         )
 
     def rule_modifications_get(
@@ -1409,8 +1409,7 @@ def rule_policy_install_command(args: dict[str, Any], client: Client) -> PollRes
         PollResult: outputs, readable outputs and raw response for XSOAR.
     """
     if not args.get("job_id"):
-        rule_id = args.get("rule_id")
-        response = client.rule_policy_install(rule_id)
+        response = client.rule_policy_install()
         args["job_id"] = response.get("jobId")
 
     return schedule_command(args, client, "harmony-ep-policy-rule-install")

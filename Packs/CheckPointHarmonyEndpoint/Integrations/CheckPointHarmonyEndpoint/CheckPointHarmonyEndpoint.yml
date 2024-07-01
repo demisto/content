@@ -192,10 +192,8 @@ script:
       required: true
       isArray: true
   - name: harmony-ep-policy-rule-install
-    description: Installs all policies. If a rule ID is specified, only the policies associated with that rule will be installed.
+    description: Installs all policies.
     arguments:
-    - name: rule_id
-      description: The ID of the rule. Use harmony-ep-rule-metadata-list command to get all rule IDs.
     - name: interval
       description: The interval between each poll in seconds. Minimum value is `10`.
       defaultValue: '30'
