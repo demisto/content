@@ -1,8 +1,8 @@
 In order to connect to the Azure DevOps using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
 
-1. *Authorization Code Flow* (Recommended).
-2. *Device Code Flow*.
-3. *Client Credentials Flow*.
+- *Authorization Code Flow* (Recommended).
+- *Device Code Flow*.
+- *Client Credentials Flow*.
 
 ## Self-Deployed Azure App
 
@@ -68,4 +68,6 @@ To configure a Microsoft integration that uses this authorization flow with a se
    6. Save the instance.
     
 ### Testing authentication and connectivity
-If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure DevOps service run the ***!azure-devops-auth-test*** command. If you are using Client Credentials Flow click on **Test** when you are configuring the instance.
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure DevOps service run the ***!azure-devops-auth-test*** command. 
+
+If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
