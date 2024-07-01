@@ -781,7 +781,7 @@ def branch_get_command(client: Client, args: Dict) -> CommandResults:
         headers=headers
     )
     outputs = response
-    sleep(1)
+    sleep(11)
     print('1')
     LOG('0')
     demisto.results('')
