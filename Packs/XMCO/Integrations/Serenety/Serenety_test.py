@@ -103,8 +103,8 @@ def test_fetch_incidents(requests_mock):
 
     # Assertions
     assert incidents[0]['name'] == 'Test Ticketor 01'
-    assert incidents[0]['CustomFields']['xmcoserenetycategory'] == 'image_and_reputation'
-    assert incidents[0]['CustomFields']['xmcoserenetysubcategory'] == 'image_and_reputation_suspicious_domain'
+    assert incidents[0]['Category'] == 'image_and_reputation'
+    assert incidents[0]['CustomFields']['subcategory'] == 'image_and_reputation_suspicious_domain'
     assert incidents[0]['CustomFields']['xmcoserenetymonitoring'] == 'out_of_scope'
     assert incidents[0]['CustomFields']['xmcoserenetyidentification'] == 'manual'
 
@@ -115,8 +115,8 @@ def test_fetch_incidents(requests_mock):
 
     # Assertions
     assert incidents[0]['name'] == 'Test Ticketor 01'
-    assert incidents[0]['CustomFields']['xmcoserenetycategory'] == 'image_and_reputation'
-    assert incidents[0]['CustomFields']['xmcoserenetysubcategory'] == 'image_and_reputation_suspicious_domain'
+    assert incidents[0]['Category'] == 'image_and_reputation'
+    assert incidents[0]['CustomFields']['subcategory'] == 'image_and_reputation_suspicious_domain'
     assert incidents[0]['CustomFields']['xmcoserenetymonitoring'] == 'out_of_scope'
     assert incidents[0]['CustomFields']['xmcoserenetyidentification'] == 'manual'
 
