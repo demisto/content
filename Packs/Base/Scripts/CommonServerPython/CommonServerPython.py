@@ -9300,7 +9300,7 @@ if 'requests' in sys.modules:
 
 def generic_http_request(method,
                          server_url,
-                         timeout=10,
+                         timeout=60,
                          verify=True,
                          proxy=False,
                          client_headers=None,
