@@ -61,7 +61,10 @@
                     ]
                 },
                 "size": 0,
-                "category": ""
+                "category": "",
+                "fromDate": "0001-01-01T00:00:00Z",
+                "toDate": "0001-01-01T00:00:00Z",
+                "fromDateLicense": "0001-01-01T00:00:00Z"
             }
         },
         {
@@ -110,7 +113,10 @@
                 "params": {
                 },
                 "size": 0,
-                "category": ""
+                "category": "",
+                "fromDate": "0001-01-01T00:00:00Z",
+                "toDate": "0001-01-01T00:00:00Z",
+                "fromDateLicense": "0001-01-01T00:00:00Z"
             }
         }
     ],
