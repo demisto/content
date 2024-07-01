@@ -83,6 +83,29 @@
                 "Exabeam Last Activity Type": {
                     "simple": "user.lastActivityType"
                 },
+                "Exabeam Past Scores": {
+                    "complex": {
+                        "accessor": "pastScores",
+                        "filters": [],
+                        "root": "user",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "item": {
+                                        "isContext": true,
+                                        "value": {
+                                            "simple": "highestRiskScore"
+                                        }
+                                    }
+                                },
+                                "operator": "append"
+                            }
+                        ]
+                    }
+                },
+                "Exabeam Session IDs": {
+                    "simple": "notableSessionIds"
+                },
                 "External End Time": {
                     "simple": "highestRiskSession.endTime"
                 },
