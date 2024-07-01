@@ -1,3 +1,5 @@
+Note: Support for this Pack will be moved to Partner starting July 28, 2024.
+
 Team Cymru provides various service options dedicated to mapping IP numbers to BGP prefixes and ASNs. Each of the services is based on the same BGP feeds from 50+ BGP peers and is updated at 4-hour intervals.
 
 ## What does this pack do?
