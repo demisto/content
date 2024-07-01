@@ -190,7 +190,7 @@ def blacklist_url(url):
     cmd_url = "/security/advanced/blacklistUrls?action=ADD_TO_LIST"
     data = {"blacklistUrls": urls_to_blacklist}
     json_data = json.dumps(data)
-    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='text')
     list_of_urls = ""
     for url in urls_to_blacklist:
         list_of_urls += "- " + url + "\n"
