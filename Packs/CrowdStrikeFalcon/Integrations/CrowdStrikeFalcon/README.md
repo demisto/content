@@ -763,7 +763,7 @@ Returns files based on the provided IDs. These files are used for the RTR 'put' 
 ### 12. cs-falcon-list-files
 
 ---
-Returns a list of put-file ID's that are available for the user in the `put` command.
+Returns a list of put-file ID's that are available for the user in the `put` command. Due to an API limitation, the maximum number of files returned is 100.
 
 #### Base Command
 

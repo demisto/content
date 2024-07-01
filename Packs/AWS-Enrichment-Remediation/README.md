@@ -1,12 +1,12 @@
 ##### What does this pack do?
 
 The pack contains AWS playbooks that conduct enrichment and/or remediation and can use multiple other AWS content packs:
-- Enrichment: Give an IP address, see if there is a EC2 instance associated and if so pull information on the security group associated.
-- Remediation: Give the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved.
+- Enrichment: Given an IP address, see if there is an associated EC2 instance and if so pull information on the associated security group. If an SSM agent is installed on the instance, pull information from the SSM agent.
+- Remediation: Given the information collected from enrichment, replace the security group with a "quarantine" security group until vulnerabilities are resolved.
 - Unclaimed S3 Bucket Validation: The playbook sends a HTTP get response to the domain and validates the missing bucket information.
 - Unclaimed S3 Bucket Remediation: The playbook will create the unclaimed S3 bucket.
 
-There are multiple AWS content packs for multiple AWS products (EC2, IAM, Route53, S3, etc).  The intent was that users can install and use only the packs they need.  However, if an AWS playbook uses multiple pack integrations (such as EC2, S3 and IAM), the integrations can't reside in one of the current packs because they include content from multiple pack integrations.  This pack was created as a place to put AWS playbooks that use AWS integrations from multiple packs with a focus on enrichment and remediation.
+There are multiple AWS content packs for multiple AWS products (EC2, IAM, Route53, S3, SSM, etc.).  The intent was that users can install and use only the packs they need. However, if an AWS playbook uses multiple pack integrations (such as EC2, S3, SSM, and IAM), the integrations can't reside in one of the current packs because they include content from multiple pack integrations. This pack was created as a place to put AWS playbooks that use AWS integrations from multiple packs with a focus on enrichment and remediation.
 
 ### Playbooks
 

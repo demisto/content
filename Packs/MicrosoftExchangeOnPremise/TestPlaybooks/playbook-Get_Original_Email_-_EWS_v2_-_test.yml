@@ -233,7 +233,7 @@ tasks:
       version: -1
       name: Send mail with file
       description: Sends an email using Microsoft Graph.
-      script: '|||send-mail'
+      script: 'EWS v2|||send-mail'
       type: regular
       iscommand: true
       brand: ""
