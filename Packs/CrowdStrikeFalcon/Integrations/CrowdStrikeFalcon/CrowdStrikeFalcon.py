@@ -1483,7 +1483,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
 
     if POST_RAPTOR_RELEASE:
         endpoint_url = "alerts/queries/alerts/v2?filter=product"
-        text_to_encode = ":'epp'"
+        text_to_encode = ":'epp'+type:'ldt'"
         # in Raptor we send only the filter_arg argument as encoded string without the params
         if filter_arg:
             text_to_encode += f"+{filter_arg}"
@@ -1522,7 +1522,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     endpoint_url = '/detects/queries/detects/v1' if not POST_RAPTOR_RELEASE else "/alerts/queries/alerts/v2?filter=product"
    
     if POST_RAPTOR_RELEASE:
-        endpoint_url += urllib.parse.quote_plus(f":'epp'+{params.pop('filter', None)}")
+        endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter', None)}")
 
     response = http_request('GET', endpoint_url, params)
         
