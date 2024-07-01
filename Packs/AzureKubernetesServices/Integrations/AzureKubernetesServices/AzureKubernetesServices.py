@@ -47,8 +47,9 @@ class AKSClient:
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url= urljoin(azure_cloud.endpoints.active_directory,  tenant_id + '/oauth2/v2.0/token')
-            if auth_type == 'Client Credentials' else urljoin(azure_cloud.endpoints.active_directory, 'organizations/oauth2/v2.0/token'),
+            token_retrieval_url=urljoin(azure_cloud.endpoints.active_directory, f"{tenant_id}/oauth2/v2.0/token")
+            if auth_type == 'Client Credentials' else urljoin(azure_cloud.endpoints.active_directory,
+                                                              'organizations/oauth2/v2.0/token'),
             grant_type=auth_types_dict.get(auth_type, {}).get('grant_type'),
             base_url=urljoin(azure_cloud.endpoints.resource_manager, f'subscriptions/{subscription_id}'),
             verify=verify,
