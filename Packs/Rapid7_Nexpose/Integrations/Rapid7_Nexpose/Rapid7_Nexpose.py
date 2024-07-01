@@ -16,7 +16,7 @@ REMOVE_RESPONSE_LINKS = True  # Whether to remove `links` keys from responses.
 REPORT_DOWNLOAD_WAIT_TIME = 60  # Time in seconds to wait before downloading a report after starting its generation
 CONNECTION_ERRORS_RETRIES = 5  # num of times to retry in case of connection-errors
 CONNECTION_ERRORS_INTERVAL = 1  # num of seconds between each time to send an http-request in case of a connection error.
-VALID_TAG_TYPES = ["Custom", "Location", "Owner"]
+VALID_TAG_TYPES = ["custom", "location", "owner"]
 VALID_ASSET_GROUP_TYPES = ["dynamic", "static"]
 VALID_TAG_COLORS = ["Blue", "Green", "Orange", "Red", "Purple", "Default"]
 
@@ -2970,7 +2970,7 @@ def validate_input(input_value: str | None, valid_options: list[str], arg_name: 
     """
     if input_value is None and not is_required:
         return True
-    elif input_value not in valid_options:
+    elif not input_value or input_value.lower() not in valid_options:
         raise DemistoException(f"{input_value} is an invalid {arg_name} the only options are: {', '.join(valid_options)}")
     return True
 
@@ -5619,7 +5619,7 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
         client (Client): Client to use for API requests.
         name (str): The tag name.
         type (str): The tag type.
-        color (str): The tag color - relevant only for "Custom" type.
+        color (str): The tag color - relevant only for "custom" type.
         ip_address_is (str, optional): A specific IP address to search for.
         host_name_is (str, optional): A specific host name to search for.
         risk_score_higher_than (str, optional): A minimum risk score to use as a filter.
@@ -5637,8 +5637,8 @@ def create_tag_command(client: Client, name: str, type: str, color: str, ip_addr
     validate_input(type, VALID_TAG_TYPES, "type", True)
     validate_input(color, VALID_TAG_COLORS, "color", False)
 
-    if type != "Custom" and color != "Default":
-        raise DemistoException("color argument is only relevant for “Custom” type.")
+    if type.lower() != "custom" and color.lower() != "default":
+        raise DemistoException("color argument is only relevant for “custom” type.")
 
     filters_data = parse_asset_filters(
         client=client,
@@ -5915,9 +5915,9 @@ def add_site_asset_command(client: Client, target_type: str, site_id: str, asset
         added_assets = f"asset group IDs {asset_group_ids}"
 
     else:
-        raise DemistoException("Must provide at least one assets or asset_group_ids")
+        raise DemistoException("Must provide at least one Asset ID or Asset Group ID")
 
-    return CommandResults(readable_output=f"Added {added_assets} to site with ID {site_id_int}")
+    return CommandResults(readable_output=f"Added assets- {added_assets} to site ID - {site_id_int}.")
 
 
 def remove_site_asset_command(client: Client, target_type: str, site_id: str, assets: str | None = None,
@@ -5948,7 +5948,7 @@ def remove_site_asset_command(client: Client, target_type: str, site_id: str, as
     else:
         raise DemistoException("Must provide at least one assets or asset_group_ids")
 
-    return CommandResults(readable_output=f"Removed {removed_assets} from site with ID {site_id_int}")
+    return CommandResults(readable_output=f"Removed assets-{removed_assets} from site ID {site_id_int}.")
 
 
 def list_site_assets_command(client: Client, site_id: str, asset_type: str, target_type: str):

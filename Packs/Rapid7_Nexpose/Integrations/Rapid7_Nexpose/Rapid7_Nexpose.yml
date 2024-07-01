@@ -2120,9 +2120,9 @@ script:
       required: true
       auto: PREDEFINED
       predefined:
-      - Owner
-      - Location
-      - Custom
+      - owner
+      - location
+      - custom
       description: The tag type.
     - name: color
       auto: PREDEFINED
@@ -2133,7 +2133,7 @@ script:
       - Red
       - Purple
       - Default
-      description: The tag color - relevant only for "Custom" type.
+      description: The tag color - relevant only for "custom" type.
       defaultValue: Default
     - name: ip_address_is
       description: A specific IP address to search for.
@@ -2154,13 +2154,10 @@ script:
       predefined:
       - All
       - Any
-      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included.
-        "Any" requires only one filter to match for an asset to be included.
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
       defaultValue: Any
     - name: query
-      description: Additional queries to use as a filter, following the Search Criteria API standard.
-        The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
-        For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
     description: Create a tag.
     outputs:
     - contextPath: Nexpose.Tag.id
@@ -2181,9 +2178,9 @@ script:
     - name: type
       auto: PREDEFINED
       predefined:
-      - Owner
-      - Location
-      - Custom
+      - owner
+      - location
+      - custom
       description: Filters the returned tags to only those of this type.
     - name: page_size
       description: Number of records to retrieve in each API call when pagination is used.
@@ -2264,13 +2261,10 @@ script:
       predefined:
       - All
       - Any
-      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included.
-        "Any" requires only one filter to match for an asset to be included.
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
       defaultValue: Any
     - name: query
-      description: Additional queries to use as a filter, following the Search Criteria API standard.
-        The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
-        For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
     - name: overwrite
       auto: PREDEFINED
       predefined:
@@ -2337,17 +2331,14 @@ script:
     - name: asset_id
       required: true
       description: The asset ID.
-    description: Remove an asset from a tag. Note that the asset must be added through the asset or tag.
-      If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
+    description: Remove an asset from a tag. Note that the asset must be added through the asset or tag. If the asset is added using a site, asset group, or search criteria, this action will not remove the asset from the tag.
   - name: nexpose-add-site-included-asset
     arguments:
     - name: site_id
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's included scan assets.
-        Each address is a string that can represent either a hostname,
-        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to add to the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
       isArray: true
     - name: asset_group_ids
       isArray: true
@@ -2360,9 +2351,7 @@ script:
       description: A URL parameter.
     - name: assets
       isArray: true
-      description: List of addresses to remove from the site's included scan assets.
-        Each address is a string that can represent either a hostname,
-        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to remove from the site's included scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       isArray: true
       description: List of asset group identifiers.
@@ -2399,9 +2388,7 @@ script:
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to add to the site's excluded scan assets.
-        Each address is a string that can represent either a hostname,
-        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to add to the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       description: List of asset group IDs to exclude.
     description: Add excluded assets to a site.
@@ -2411,9 +2398,7 @@ script:
       required: true
       description: A URL parameter.
     - name: assets
-      description: List of addresses to remove from the site's excluded scan assets.
-        Each address is a string that can represent either a hostname,
-        IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
+      description: List of addresses to remove from the site's excluded scan assets. Each address is a string that can represent either a hostname, IPv4 address, IPv4 address range, IPv6 address, or CIDR notation.
     - name: asset_group_ids
       description: List of asset group IDs to remove from the site's exclusion list.
     description: Remove excluded assets from a site.
@@ -2477,13 +2462,10 @@ script:
       predefined:
       - All
       - Any
-      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included.
-        "Any" requires only one filter to match for an asset to be included.
+      description: Operator to determine how to match filters. "All" requires that all filters match for an asset to be included. "Any" requires only one filter to match for an asset to be included.
       defaultValue: Any
     - name: query
-      description: Additional queries to use as a filter, following the Search Criteria API standard.
-        The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator.
-        For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
+      description: Additional queries to use as a filter, following the Search Criteria API standard. The structure is {field} {operator} {value}. Multiple queries can be specified, separated by a ";" separator. For example, 'ip-address in-range 192.0.2.0,192.0.2.1;host-name is myhost'.
     description: 'Create an asset group. Note: All filters are relevant only for Dynamic asset groups.'
     outputs:
     - contextPath: Nexpose.AssetGroup.id
@@ -2545,7 +2527,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.96411
+  dockerimage: demisto/python3:3.10.14.99865
 fromversion: 5.0.0
 tests:
 - nexpose_test

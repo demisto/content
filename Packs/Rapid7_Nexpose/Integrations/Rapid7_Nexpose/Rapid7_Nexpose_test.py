@@ -1711,10 +1711,10 @@ def test_start_site_scan_command(mocker, mock_client: Client, site_id: str, host
 @pytest.mark.parametrize(
     "name, type, color, ip_address_is, match, expected_post_data",
     [
-        ("test", "Custom", "Red", "3.3.3.3", "Any",
+        ("test", "custom", "Red", "3.3.3.3", "Any",
             {
                 "name": "test",
-                "type": "Custom",
+                "type": "custom",
                 "color": "Red",
                 "searchCriteria": {
                     "filters": [
@@ -1763,7 +1763,7 @@ def test_delete_tag_command(mocker, mock_client, tag_id):
 
 
 @pytest.mark.parametrize("name, type, tag_id, page_size, api_mock_file", [
-    ("test", "Owner", None, "2", "client_get_list_tag"),
+    ("test", "owner", None, "2", "client_get_list_tag"),
     (None, None, "1", None, "client_get_list_tag")
 ])
 def test_get_list_tag_command(mocker, mock_client, name, type, tag_id, page_size, api_mock_file):
@@ -1777,7 +1777,7 @@ def test_get_list_tag_command(mocker, mock_client, name, type, tag_id, page_size
             url_suffix="/tags",
             method="GET",
             resp_type="json",
-            params={"name": "test", "type": "Owner"},
+            params={"name": "test", "type": "owner"},
             page_size=2,
             page=None,
             limit=None
