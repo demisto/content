@@ -11,6 +11,7 @@ configuration:
   name: credentials
   type: 9
   required: false
+  deprecated: true
 - display: Organization name
   name: org
   required: true
@@ -77,11 +78,13 @@ configuration:
   required: false
   additionalinfo: When selected, closing the Cortex XSOAR incident  will close the incident in IBM Resilient
 description: Case management that enables visibility across your tools for continual IR improvement.
-display: IBM Resilient Systems
+display: IBM Security QRadar SOAR
 name: IBM Resilient Systems
 script:
   commands:
-  - arguments:
+  - name: rs-search-incidents
+    description: Query for incidents
+    arguments:
     - description: Comma-separated list of incident severity, e.g., Low,Medium,High.
       name: severity
     - description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
@@ -146,8 +149,6 @@ script:
       - Closed
     - description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
       name: due-in
-    description: Query for incidents
-    name: rs-search-incidents
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
       description: Created date of the incident.
@@ -170,7 +171,10 @@ script:
     - contextPath: Resilient.Incidents.Description
       description: Incident description.
       type: string
-  - arguments:
+
+  - name: rs-update-incident
+    description: Updates incidents.
+    arguments:
     - description: Incident ID to update.
       name: incident-id
       required: true
@@ -234,14 +238,14 @@ script:
       - Web
     - description: 'A JSON object of the form: {field_name: new_field_value}. For example: `{"description": {"textarea": {"format": "html", "content": "The new description"}}, "name": {"text": "The new name"}}`. The name should be the path to it in the incident separated by "." For example: `{"properties.incident_summary": {"text": "The new name"}}". Because of API limitations we currently support only fields of the following types: ID, list of IDS, Number, Boolean, Text, Data, Textarea. For more information, refer to https://xsoar.pan.dev/docs/reference/integrations/ibm-resilient-systems. In case of conflicts between the other-fields argument and the regular fields arguments, the other-fields value will be used.'
       name: other-fields
-    description: Updates incidents.
-    name: rs-update-incident
-  - arguments:
+
+
+  - name: rs-incidents-get-members
+    description: Gets members of the incident.
+    arguments:
     - description: Incident ID to get members of.
       name: incident-id
       required: true
-    description: Gets members of the incident.
-    name: rs-incidents-get-members
     outputs:
     - contextPath: Resilient.Incidents.ID
       description: Incident ID.
@@ -258,12 +262,13 @@ script:
     - contextPath: Resilient.Incidents.Members.Email
       description: Member's email address.
       type: string
-  - arguments:
+
+  - name: rs-get-incident
+    description: Gets an individual incident by ID.
+    arguments:
     - description: ID of incident to get.
       name: incident-id
       required: true
-    description: Gets an individual incident by ID.
-    name: rs-get-incident
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
       description: Created date of the incident.
@@ -307,30 +312,34 @@ script:
     - contextPath: Resilient.Incidents.NistAttackVectors
       description: Incident NIST attack vectors.
       type: Unknown
-  - arguments:
+
+  - name: rs-incidents-update-member
+    description: Updates the incident's members.
+    arguments:
     - description: ID of the incident for which to update its members.
       name: incident-id
       required: true
     - description: A comma-separated list of members to add, e.g. 1,2,3.
       name: members
       required: true
-    description: Updates the incident's members.
-    name: rs-incidents-update-member
-  - description: Gets a list of all users in the system.
-    name: rs-get-users
-  - arguments:
+
+  - name: rs-get-users
+    description: Gets a list of all users in the system.
+
+  - description: Closes an incident.
+    name: rs-close-incident
+    arguments:
     - default: true
       description: ID of the incident to close.
       name: incident-id
       required: true
-    description: Closes an incident.
-    name: rs-close-incident
-  - arguments:
+
+  - name: rs-create-incident
+    description: Creates an incident.
+    arguments:
     - description: Incident name.
       name: name
       required: true
-    description: Creates an incident.
-    name: rs-create-incident
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -338,12 +347,13 @@ script:
     - contextPath: Resilient.Incidents.Name
       description: Incident name.
       type: string
-  - arguments:
+
+  - name: rs-incident-artifacts
+    description: Gets incident artifacts.
+    arguments:
     - description: Incident ID to get artifacts of.
       name: incident-id
       required: true
-    description: Gets incident artifacts.
-    name: rs-incident-artifacts
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -387,12 +397,14 @@ script:
     - contextPath: Resilient.Incidents.Artifacts.Attachments.Size
       description: Attachment size.
       type: number
-  - arguments:
+
+
+  - name: rs-incident-attachments
+    description: Gets incident attachments.
+    arguments:
     - description: Incident ID to get attachments from.
       name: incident-id
       required: true
-    description: Gets incident attachments.
-    name: rs-incident-attachments
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -421,12 +433,14 @@ script:
     - contextPath: Resilient.Incidents.Attachments.Size
       description: Attachment size.
       type: number
-  - arguments:
+
+  - name: rs-related-incidents
+    description: Gets related incidents.
+    arguments:
     - description: Incident ID to get related incidents of.
       name: incident-id
       required: true
-    description: Gets related incidents.
-    name: rs-related-incidents
+
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -452,12 +466,14 @@ script:
     - contextPath: Resilient.Incidents.Related.Artifacts.Creator
       description: Creator of the artifact.
       type: string
-  - arguments:
+
+  - name: rs-incidents-get-tasks
+    description: Gets tasks of incidents.
+    arguments:
     - description: Incident ID to get tasks of.
       name: incident-id
       required: true
-    description: Gets tasks of incidents.
-    name: rs-incidents-get-tasks
+
     outputs:
     - contextPath: Resilient.Incidents.Id
       description: Incident ID.
@@ -489,15 +505,17 @@ script:
     - contextPath: Resilient.Incidents.Tasks.Status
       description: Task status (Open/Closed).
       type: string
-  - arguments:
+
+
+  - name: rs-add-note
+    description: Add a note to an incident.
+    arguments:
     - description: The ID of the incident.
       name: incident-id
       required: true
     - description: The text of the note.
       name: note
       required: true
-    description: Add a note to an incident.
-    name: rs-add-note
     outputs:
     - contextPath: Resilient.IncidentNote.type
       description: The type of the note (incident or task).

@@ -1,5 +1,5 @@
 {
-    "name": "IBM Resilient Systems",
+    "name": "IBM Security SOAR",
     "description": "Case management that enables visibility across your tools for continual IR improvement",
     "support": "xsoar",
     "currentVersion": "1.1.9",
@@ -12,7 +12,7 @@
     ],
     "tags": [],
     "useCases": [],
-    "keywords": [],
+    "keywords": ["IBM Resilient Systems"],
     "marketplaces": [
         "xsoar",
         "marketplacev2"
