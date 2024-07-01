@@ -193,6 +193,7 @@ class AutoBumperManager:
             state="open", sort="created", base=BASE
         ):
             if pr.draft:
+                # The bot does not go through a PR that is in draft
                 continue
 
             print(
