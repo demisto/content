@@ -28,14 +28,13 @@ configuration:
   advanced: true
   required: false
   hidden: false
-- display: Use old version
+- additionalinfo: Get the Legacy output of context data for 'whois' and 'domain' commands.
+  display: Use old version
   name: old-version
   type: 8
   section: Collect
   advanced: true
   required: false
-  defaultValue: false
-  additionalinfo: Indicates whether to use the previous/legacy implementation of the integration commands and their outputs or the new ones.
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: B - Usually reliable
   display: Source Reliability
@@ -159,7 +158,7 @@ script:
       description: The phone of the registrar.
       type: string
     - contextPath: Domain.Registrar.Url
-      description: The url of the registrar.
+      description: The URL of the registrar.
       type: string
     - contextPath: Domain.Emails
       description: The abuse emails.
@@ -213,7 +212,7 @@ script:
       description: The fax of the registrant.
       type: string
     - contextPath: Domain.Registrant.Id
-      description: The id of the registrant.
+      description: The ID of the registrant.
       type: string
     - contextPath: Domain.Registrant.Number
       description: The number of the registrant.
@@ -309,13 +308,13 @@ script:
       description: The email of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Registrar.Id
-      description: The id of the registrar.
+      description: The ID of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Registrar.Phone
       description: The phone of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Registrar.Url
-      description: The url of the registrar.
+      description: The URL of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Emails
       description: The abuse emails.
@@ -372,7 +371,7 @@ script:
       description: The fax of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Id
-      description: The id of the registrant.
+      description: The ID of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Number
       description: The number of the registrant.
@@ -429,22 +428,22 @@ script:
       description: The ID of the domain.
       type: string
     - contextPath: Domain.FeedRelatedIndicators.Type
-      description: Indicators that are associated with the Domain.
+      description: Indicators that are associated with the domain.
       type: String
     - contextPath: Domain.FeedRelatedIndicators.Value
-      description: The type of the indicators that are associated with the Domain.
+      description: The type of the indicators that are associated with the domain.
       type: String
     - contextPath: Domain.WHOIS.FeedRelatedIndicators.Type
-      description: Indicators that are associated with the Domain.
+      description: Indicators that are associated with the domain.
       type: String
     - contextPath: Domain.WHOIS.FeedRelatedIndicators.Value
-      description: The type of the indicators that are associated with the Domain.
+      description: The type of the indicators that are associated with the domain.
       type: String
     - contextPath: Domain.FeedRelatedIndicators.type
-      description: (Legacy output) Indicators that are associated with the Domain.
+      description: (Legacy output) Indicators that are associated with the domain.
       type: String
     - contextPath: Domain.FeedRelatedIndicators.value
-      description: (Legacy output) The type of the indicators that are associated with the Domain.
+      description: (Legacy output) The type of the indicators that are associated with the domain.
       type: String
     - contextPath: Domain.Whois.Name
       description: (Legacy output) The domain name.
@@ -489,10 +488,10 @@ script:
       description: (Legacy output) The country of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.name
-      description: (Legacy output) The name of domain administrator.
+      description: (Legacy output) The name of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.state
-      description: (Legacy output) The state of domain administrator.
+      description: (Legacy output) The state of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.email
       description: (Legacy output) The email address of the domain administrator.
@@ -504,7 +503,7 @@ script:
       description: (Legacy output) The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: (Legacy output) The street of the domain admin.
+      description: (Legacy output) The street of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: (Legacy output) The phone number of the domain administrator.
@@ -513,13 +512,13 @@ script:
       description: (Legacy output) The city of the domain administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.country
-      description: (Legacy output) The country of tech administrator.
+      description: (Legacy output) The country of the tech administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.name
-      description: (Legacy output) The name of tech administrator.
+      description: (Legacy output) The name of the tech administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.state
-      description: (Legacy output) The state of tech administrator.
+      description: (Legacy output) The state of the tech administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.email
       description: (Legacy output) The email address of the tech administrator.
@@ -645,13 +644,13 @@ script:
       description: The email of the registrar.
       type: string
     - contextPath: Domain.Registrar.Id
-      description: The id of the registrar.
+      description: The ID of the registrar.
       type: string
     - contextPath: Domain.Registrar.Phone
-      description: The phone of the registrar.
+      description: The phone number of the registrar.
       type: string
     - contextPath: Domain.Registrar.Url
-      description: The url of the registrar.
+      description: The URL of the registrar.
       type: string
     - contextPath: Domain.Emails
       description: The abuse emails.
@@ -702,7 +701,7 @@ script:
       description: The fax of the registrant.
       type: string
     - contextPath: Domain.Registrant.Id
-      description: The id of the registrant.
+      description: The ID of the registrant.
       type: string
     - contextPath: Domain.Registrant.Number
       description: The number of the registrant.
@@ -756,16 +755,16 @@ script:
       description: The street of the tech contact.
       type: string
     - contextPath: Domain.FeedRelatedIndicators.Type
-      description: Indicators that are associated with the Domain.
+      description: Indicators that are associated with the domain.
       type: String
     - contextPath: Domain.FeedRelatedIndicators.Value
-      description: The type of the indicators that are associated with the Domain.
+      description: The type of the indicators that are associated with the domain.
       type: String
     - contextPath: Domain.WHOIS.FeedRelatedIndicators.Type
-      description: Indicators that are associated with the Domain.
+      description: Indicators that are associated with the domain.
       type: String
     - contextPath: Domain.WHOIS.FeedRelatedIndicators.Value
-      description: The type of the indicators that are associated with the Domain.
+      description: The type of the indicators that are associated with the domain.
       type: String
     - contextPath: Domain.WHOIS.Name
       description: The domain name.
@@ -810,13 +809,13 @@ script:
       description: The email of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Registrar.Id
-      description: The id of the registrar.
+      description: The ID of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Registrar.Phone
-      description: The phone of the registrar.
+      description: The phone number of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Registrar.Url
-      description: The url of the registrar.
+      description: The URL of the registrar.
       type: string
     - contextPath: Domain.WHOIS.Emails
       description: The abuse emails.
@@ -873,7 +872,7 @@ script:
       description: The fax of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Id
-      description: The id of the registrant.
+      description: The ID of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Number
       description: The number of the registrant.
@@ -984,7 +983,7 @@ script:
       description: (Legacy output) The postal code of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.street
-      description: (Legacy output) The street of the domain admin.
+      description: (Legacy output) The street of the domain administrator.
       type: string
     - contextPath: Domain.Whois.Administrator.phone
       description: (Legacy output) The phone number of the domain administrator.
@@ -993,13 +992,13 @@ script:
       description: (Legacy output) The city of the domain administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.country
-      description: (Legacy output) The country of tech administrator.
+      description: (Legacy output) The country of the tech administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.name
-      description: (Legacy output) The name of tech administrator.
+      description: (Legacy output) The name of the tech administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.state
-      description: (Legacy output) The state of tech administrator.
+      description: (Legacy output) The state of the tech administrator.
       type: string
     - contextPath: Domain.Whois.TechAdmin.email
       description: (Legacy output) The email address of the tech administrator.
@@ -1077,10 +1076,10 @@ script:
       description: (Legacy output) The state of the registrant.
       type: String
     - contextPath: Domain.FeedRelatedIndicators.type
-      description: (Legacy output) Indicators that are associated with the Domain.
+      description: (Legacy output) Indicators that are associated with the domain.
       type: String
     - contextPath: Domain.FeedRelatedIndicators.value
-      description: (Legacy output) The type of the indicators that are associated with the Domain.
+      description: (Legacy output) The type of the indicators that are associated with the domain.
       type: String
   - arguments:
     - default: true

@@ -12,7 +12,7 @@ Use the Whois integration to get enriched data for domains and ips.
   * **socks4a**: SOCKS version 4 with remote DNS resolving.
   * **socks4**: SOCKS version 4 with local DNS resolving.
   * **http**: HTTP proxy with support for CONNECT method on port 43 (default Whois port). Note that most HTTP proxies block the CONNECT method to non-HTTP/HTTPS standard ports (such as the default Whois port 43).
-- **Use old version**: Set to `false` to receive the new context data output layout."
+- **Use old version**: Get the Legacy output of context data for 'whois' and 'domain' commands."
   
 **For the IP command:**
 - **Use system proxy settings**: Use the system proxy settings for the `ip` command.
