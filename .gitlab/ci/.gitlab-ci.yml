@@ -1,9 +1,9 @@
 variables:  
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH 
+  CURRENT_BRANCH_NAME: file_not_found_fix
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: file_not_found_fix
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
