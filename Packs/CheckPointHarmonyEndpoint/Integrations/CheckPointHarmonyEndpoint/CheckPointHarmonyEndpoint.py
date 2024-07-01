@@ -255,7 +255,7 @@ FILTER_TYPES = [
 ]
 SCHEDULED_COMMANDS_MAPPER = {
     "harmony-ep-policy-rule-install": ScheduleCommandMetadata(
-        outputs_prefix="PolicyRuleInstall", message="Policies was installed successfully."
+        outputs_prefix="PolicyRuleInstall", message="Policies have been installed successfully."
     ),
     "harmony-ep-policy-rule-modifications-get": ScheduleCommandMetadata(
         outputs_prefix="Rule",
