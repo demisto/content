@@ -1,0 +1,201 @@
+{
+    "data": {
+        "listComputers": {
+            "items": [
+                {
+                    "serial": "dummy",
+                    "uuid": "dummy",
+                    "provisioningUDID": "dummy",
+                    "updated": "2024-06-08T20: 49: 03.368645Z",
+                    "checkin": "2024-06-08T20: 49: 03.242000Z",
+                    "connectionStatus": "Connected",
+                    "lastConnection": "2024-06-08T20: 49: 03.242000Z",
+                    "lastConnectionIp": "0.0.0.0",
+                    "lastDisconnection": "2024-06-05T17: 33: 51.746000Z",
+                    "lastDisconnectionReason": "SERVER_INITIATED_DISCONNECT",
+                    "insightsUpdated": "2024-06-08T20: 49: 03.242000Z",
+                    "insightsStatsFail": 0,
+                    "insightsStatsPass": 0,
+                    "insightsStatsUnknown": 0,
+                    "version": "0.0.0",
+                    "signaturesVersion": 0,
+                    "installType": "systemExtension",
+                    "plan": {
+                        "hash": "00000",
+                        "id": "1",
+                        "name": "Default",
+                        "logLevel": "VERBOSE"
+                    },
+                    "scorecard": [
+                        {
+                            "uuid": "00000",
+                            "label": "Account Disabled",
+                            "section": "System Access",
+                            "pass": true,
+                            "tags": [
+                                "Level 1"
+                            ],
+                            "enabled": true
+                        },
+                        {
+                            "uuid": "1111",
+                            "label": "System",
+                            "section": "System Settings",
+                            "pass": false,
+                            "tags": [
+                                "Level 2"
+                            ],
+                            "enabled": true
+                        }
+                    ],
+                    "osMajor": 1,
+                    "osMinor": 2,
+                    "osPatch": 3,
+                    "osString": "Version 1 (Build 0000)",
+                    "arch": "xxxxx",
+                    "certid": "0000",
+                    "configHash": "0000",
+                    "created": "2024-01-01T14:33:12.000Z",
+                    "hostName": "VM2222",
+                    "kernelVersion": "Darwin Kernel",
+                    "memorySize": 0,
+                    "modelName": "VMware0",
+                    "label": "",
+                    "webProtectionActive": false,
+                    "fullDiskAccess": "Authorized",
+                    "tags": null
+                },
+                {
+                    "serial": "dummy",
+                    "uuid": "dummy",
+                    "provisioningUDID": "dummy",
+                    "updated": "2024-06-08T20: 49: 03.368645Z",
+                    "checkin": "2024-06-08T20: 49: 03.242000Z",
+                    "connectionStatus": "Connected",
+                    "lastConnection": "2024-06-08T20: 49: 03.242000Z",
+                    "lastConnectionIp": "0.0.0.0",
+                    "lastDisconnection": "2024-06-05T17: 33: 51.746000Z",
+                    "lastDisconnectionReason": "SERVER_INITIATED_DISCONNECT",
+                    "insightsUpdated": "2024-06-08T20: 49: 03.242000Z",
+                    "insightsStatsFail": 0,
+                    "insightsStatsPass": 0,
+                    "insightsStatsUnknown": 0,
+                    "version": "0.0.0",
+                    "signaturesVersion": 0,
+                    "installType": "systemExtension",
+                    "plan": {
+                        "hash": "00000",
+                        "id": "1",
+                        "name": "Default",
+                        "logLevel": "VERBOSE"
+                    },
+                    "scorecard": [
+                        {
+                            "uuid": "00000",
+                            "label": "Account Disabled",
+                            "section": "System Access",
+                            "pass": true,
+                            "tags": [
+                                "Level 1"
+                            ],
+                            "enabled": true
+                        },
+                        {
+                            "uuid": "1111",
+                            "label": "System",
+                            "section": "System Settings",
+                            "pass": false,
+                            "tags": [
+                                "Level 2"
+                            ],
+                            "enabled": true
+                        }
+                    ],
+                    "osMajor": 1,
+                    "osMinor": 2,
+                    "osPatch": 3,
+                    "osString": "Version 1 (Build 0000)",
+                    "arch": "xxxxx",
+                    "certid": "0000",
+                    "configHash": "0000",
+                    "created": "2024-01-01T14:33:12.000Z",
+                    "hostName": "VM2222",
+                    "kernelVersion": "Darwin Kernel",
+                    "memorySize": 0,
+                    "modelName": "VMware0",
+                    "label": "",
+                    "webProtectionActive": false,
+                    "fullDiskAccess": "Authorized",
+                    "tags": null
+                },
+                {
+                    "serial": "dummy",
+                    "uuid": "dummy",
+                    "provisioningUDID": "dummy",
+                    "updated": "2024-06-08T20: 49: 03.368645Z",
+                    "checkin": "2024-06-08T20: 49: 03.242000Z",
+                    "connectionStatus": "Connected",
+                    "lastConnection": "2024-06-08T20: 49: 03.242000Z",
+                    "lastConnectionIp": "0.0.0.0",
+                    "lastDisconnection": "2024-06-05T17: 33: 51.746000Z",
+                    "lastDisconnectionReason": "SERVER_INITIATED_DISCONNECT",
+                    "insightsUpdated": "2024-06-08T20: 49: 03.242000Z",
+                    "insightsStatsFail": 0,
+                    "insightsStatsPass": 0,
+                    "insightsStatsUnknown": 0,
+                    "version": "0.0.0",
+                    "signaturesVersion": 0,
+                    "installType": "systemExtension",
+                    "plan": {
+                        "hash": "00000",
+                        "id": "1",
+                        "name": "Default",
+                        "logLevel": "VERBOSE"
+                    },
+                    "scorecard": [
+                        {
+                            "uuid": "00000",
+                            "label": "Account Disabled",
+                            "section": "System Access",
+                            "pass": true,
+                            "tags": [
+                                "Level 1"
+                            ],
+                            "enabled": true
+                        },
+                        {
+                            "uuid": "1111",
+                            "label": "System",
+                            "section": "System Settings",
+                            "pass": false,
+                            "tags": [
+                                "Level 2"
+                            ],
+                            "enabled": true
+                        }
+                    ],
+                    "osMajor": 1,
+                    "osMinor": 2,
+                    "osPatch": 3,
+                    "osString": "Version 1 (Build 0000)",
+                    "arch": "xxxxx",
+                    "certid": "0000",
+                    "configHash": "0000",
+                    "created": "2024-01-01T14:33:12.000Z",
+                    "hostName": "VM2222",
+                    "kernelVersion": "Darwin Kernel",
+                    "memorySize": 0,
+                    "modelName": "VMware0",
+                    "label": "",
+                    "webProtectionActive": false,
+                    "fullDiskAccess": "Authorized",
+                    "tags": null
+                }
+            ],
+            "pageInfo": {
+                "next": null,
+                "total": 1
+            }
+        }
+    }
+}
