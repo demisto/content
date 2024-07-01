@@ -551,7 +551,9 @@ def main():
     proxy = params.get('proxy', False)
     command = demisto.command()
     args = demisto.args()
-
+    if params.get('feedIncremental') and params.get('feedExpirationPolicy') == 'suddenDeath':
+        raise DemistoException('In order to use the feedIncremental parameter, the feedExpirationPolicy must be set to '
+                               'a value other than suddenDeath.')
     demisto.debug(f'Command being called is {command}')
     try:
         client = Client(
