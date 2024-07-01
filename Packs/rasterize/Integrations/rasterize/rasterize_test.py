@@ -530,7 +530,7 @@ def test_chrome_manager_case_instance_id_exist_but_new_chrome_options(mocker):
     mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
     mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
                         return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
-    mocker.patch.object(rasterize, 'is_chrome_running_locally', return_value=None)
+    mocker.patch.object(rasterize, 'get_chrome_browser', return_value=None)
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     mocker.patch.object(rasterize, 'delete_row_with_old_chrome_configurations_from_chrome_instances_file', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
@@ -574,7 +574,7 @@ def test_chrome_manager_case_instance_id_and_chrome_options_exist_and_linked(moc
     mocker.patch.object(rasterize, 'read_file', return_value=mock_file_content_edited)
     mocker.patch.object(rasterize, 'get_chrome_instances_contents_dictionaries',
                         return_value=[instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options])
-    mocker.patch.object(rasterize, 'is_chrome_running_locally', return_value="browser_object")
+    mocker.patch.object(rasterize, 'get_chrome_browser', return_value="browser_object")
     terminate_chrome_mocker = mocker.patch.object(rasterize, 'terminate_chrome', return_value=None)
     generate_new_chrome_instance_mocker = mocker.patch.object(rasterize, 'generate_new_chrome_instance',
                                                               return_value=["browser_object", "chrome_port"])
