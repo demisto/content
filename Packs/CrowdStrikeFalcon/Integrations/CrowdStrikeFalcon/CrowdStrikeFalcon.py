@@ -318,10 +318,11 @@ SCHEDULE_INTERVAL_STR_TO_INT = {
 
 class IncidentType(Enum):
     INCIDENT = 'inc'
-    DETECTION = ('ldt' ,'ods')      #TODO: check again why do we need it, why detections are returned as "ods" and not only "ldt", since this will badly affect the mirroring of On-Demand Scans
+    DETECTION = 'ldt'
     IDP_OR_MOBILE_DETECTION = ':ind:'
     IOM_CONFIGURATIONS = 'iom_configurations'
     IOA_EVENTS = 'ioa_events'
+    ON_DEMAND = 'ods'
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get('mirror_direction'))
@@ -719,7 +720,7 @@ def incident_to_incident_context(incident):
 
 def detection_to_incident_context(detection, detection_type, start_time_key: str = 'start_time'):
     """
-        Creates an incident context of an IDP/Mobile detection.
+        Creates an incident context of an IDP/Mobile/ODS detection.
 
         :type detection: ``dict``
         :param detection: Single detection object.
@@ -733,7 +734,7 @@ def detection_to_incident_context(detection, detection_type, start_time_key: str
         'occurred': detection.get(start_time_key),
         'rawJSON': json.dumps(detection)
     }
-    if detection_type in (IDP_DETECTION_FETCH_TYPE , ON_DEMAND_SCANS_DETECTION_TYPE):
+    if detection_type in (IDP_DETECTION_FETCH_TYPE, ON_DEMAND_SCANS_DETECTION_TYPE):
         incident_context['name'] = f'{detection_type} ID: {detection.get("composite_id")}'
         incident_context['last_updated'] = detection.get('updated_timestamp')
     elif detection_type == MOBILE_DETECTION_FETCH_TYPE:
@@ -1573,14 +1574,14 @@ def get_incidents_ids(last_created_timestamp=None, filter_arg=None, offset: int 
 
 def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FETCH, product_type='idp'):
     """
-        Send a request to retrieve IDP detections IDs.
+        Send a request to retrieve IDP/ODS detections IDs.
 
         :type filter_arg: ``str``
         :param filter_arg: The filter to add to the query.
         :type offset: ``int``
         :param offset: The offset for the query.
         :type limit: ``int``
-        :param limit: limit of idp detections to retrieve each request.
+        :param limit: limit of idp/ods detections to retrieve each request.
 
         :return: The response.
         :rtype ``dict``
@@ -1617,7 +1618,7 @@ def get_incidents_entities(incidents_ids: list):
 
 def get_detection_entities(incidents_ids: list):
     """
-        Send a request to retrieve IDP and mobile detection entities.
+        Send a request to retrieve IDP/ODS and mobile detection entities.
 
         :type incidents_ids: ``list``
         :param incidents_ids: The list of ids to search their entities.
@@ -2425,12 +2426,12 @@ def get_remote_data_command(args: dict[str, Any]):
 def find_incident_type(remote_incident_id: str):
     if  IncidentType.INCIDENT.value in remote_incident_id:
         return IncidentType.INCIDENT
-    for subtype in IncidentType.DETECTION.value:
-        if subtype in remote_incident_id:
-            return IncidentType.DETECTION
+    if IncidentType.DETECTION.value in remote_incident_id:
         return IncidentType.DETECTION
     if IncidentType.IDP_OR_MOBILE_DETECTION.value in remote_incident_id:
         return IncidentType.IDP_OR_MOBILE_DETECTION
+    if IncidentType.ON_DEMAND.value in remote_incident_id:
+        return IncidentType.ON_DEMAND
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
@@ -2687,7 +2688,7 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 if result:
                     demisto.debug(f'Incident updated successfully. Result: {result}')
 
-            elif incident_type in IncidentType.DETECTION:
+            elif incident_type in (IncidentType.DETECTION, IncidentType.ON_DEMAND):
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f'Detection updated successfully. Result: {result}')
@@ -3104,7 +3105,7 @@ def fetch_incidents():
 def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
                                     fetch_query: str, detections_type: str, detection_name_prefix: str,
                                     start_time_key: str) -> tuple[List, dict]:
-    """The fetch logic for idp and mobile detections.
+    """The fetch logic for idp, ods and mobile detections.
 
     Args:
         current_fetch_info (dict): The last run object.
