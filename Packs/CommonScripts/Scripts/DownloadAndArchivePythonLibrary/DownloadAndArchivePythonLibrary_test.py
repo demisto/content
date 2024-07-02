@@ -7,7 +7,7 @@ import os
 import subprocess
 
 # Import the functions from the script
-from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'your_script' with the actual script name
+from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'DownloadAndArchivePythonLibrary' with the actual script name
 
 class TestInstallLibrary(unittest.TestCase):
     @patch('DownloadAndArchivePythonLibrary.subprocess.Popen')
@@ -48,12 +48,12 @@ class TestInstallLibrary(unittest.TestCase):
         # Ensure the correct result is returned
         self.assertEqual(result, ('fake_library.zip', b'test data'))
 
-    @patch('your_script.installLibrary')
-    @patch('your_script.demisto.args')
-    @patch('your_script.return_results')
-    @patch('your_script.return_error')
-    @patch('your_script.Path')
-    @patch('your_script.mkdtemp')
+    @patch('DownloadAndArchivePythonLibrary.installLibrary')
+    @patch('DownloadAndArchivePythonLibrary.demisto.args')
+    @patch('DownloadAndArchivePythonLibrary.return_results')
+    @patch('DownloadAndArchivePythonLibrary.return_error')
+    @patch('DownloadAndArchivePythonLibrary.Path')
+    @patch('DownloadAndArchivePythonLibrary.mkdtemp')
     def test_main_success(self, mock_mkdtemp, mock_path, mock_return_error, mock_return_results, mock_args, mock_installLibrary):
         # Prepare
         mock_args.return_value = {'library_name': 'fake_library'}
@@ -70,12 +70,12 @@ class TestInstallLibrary(unittest.TestCase):
         mock_return_results.assert_called_once_with(mock_result)
         mock_return_error.assert_not_called()
 
-    @patch('your_script.installLibrary')
-    @patch('your_script.demisto.args')
-    @patch('your_script.return_results')
-    @patch('your_script.return_error')
-    @patch('your_script.Path')
-    @patch('your_script.mkdtemp')
+    @patch('DownloadAndArchivePythonLibrary.installLibrary')
+    @patch('DownloadAndArchivePythonLibrary.demisto.args')
+    @patch('DownloadAndArchivePythonLibrary.return_results')
+    @patch('DownloadAndArchivePythonLibrary.return_error')
+    @patch('DownloadAndArchivePythonLibrary.Path')
+    @patch('DownloadAndArchivePythonLibrary.mkdtemp')
     def test_main_failure(self, mock_mkdtemp, mock_path, mock_return_error, mock_return_results, mock_args, mock_installLibrary):
         # Prepare
         mock_args.return_value = {'library_name': 'fake_library'}
