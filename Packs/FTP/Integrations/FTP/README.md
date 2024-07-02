@@ -1,4 +1,4 @@
-FTP integration to download or upload file to remote ftp server. Please be noted that FTP transfer is insecure. Please use it with care. 
+FTP integration to download or upload files to a remote FTP server. Please note that FTP transfer is insecure. Please use it with care.
 
 ## Configure FTP on Cortex XSOAR
 
@@ -24,7 +24,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### ftp-ls
 
 ***
-List all the files under current folder.
+List all the files under the current folder.
 
 #### Base Command
 
@@ -42,7 +42,7 @@ There is no context output for this command.
 ### ftp-put
 
 ***
-Upload file to ftp server.
+Upload file to FTP server.
 
 #### Base Command
 
@@ -61,7 +61,7 @@ There is no context output for this command.
 ### ftp-get
 
 ***
-Download file from ftp server.
+Download file from FTP server.
 
 #### Base Command
 
