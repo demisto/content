@@ -6,7 +6,7 @@ from CommonServerUserPython import *
 import urllib3
 from MicrosoftGraphMailApiModule import *  # noqa: E402
 
-# Disable insecure warnings
+# Disable insecure warnings todo
 urllib3.disable_warnings()
 
 
