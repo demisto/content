@@ -415,6 +415,65 @@ class Client(BaseClient):
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/search_jobs/{job_id}/results?rows={rows}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
+    def get_devices(self, body: dict) -> dict:
+        """Searches for Carbon Black devices
+            using the 'appservices/v6/orgs/{org_key}/devices/_search' API endpoint
+
+        All the parameters are passed directly to the API as HTTP POST parameters in the request
+
+        :type device_id: ``Optional[List[str]]``
+        :param device_id: The id of the device
+
+        :type status: ``Optional[List[str]]``
+        :param status: The status of the device.
+            Options are: 'PENDING' or 'REGISTERED' or 'DEREGISTERED' or 'BYPASS ,ACTIVE' or 'INACTIVE' or 'ERROR' or
+            'ALL' or 'BYPASS_ON' or 'LIVE' or 'SENSOR_PENDING_UPDATE'
+
+        :type device_os: ``Optional[List[str]]``
+        :param device_os: The Operating System.
+            Options are: 'WINDOWS' or 'MAC' or 'LINUX' or 'OTHER'.
+
+        :type last_contact_time: ``Optional[dict]``
+        :param last_contact_time:
+
+        :type target_priority: ``Optional[List[str]]``
+        :param target_priority: The id of the device
+
+        :type query: ``Optional[str]``
+        :param query: Query in lucene syntax.
+
+        :type rows: ``Optional[int]``
+        :param rows: The number of results to return. default is 20.
+
+        :return: Dict containing a List with the found Carbon Black devices as dicts
+        :rtype: ``Dict[str, Any]``
+        """
+        suffix_url = f'/appservices/v6/orgs/{self.organization_key}/devices/_search'
+        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
+
+    def execute_an_action_on_the_device(self, device_id: List[int], action_type: str, options: dict) -> str:
+        """execute actions on devices
+            using the 'appservices/v6/orgs/{org_key}/device_actions' API endpoint
+
+        All the parameters are passed directly to the API as HTTP POST parameters in the request
+
+        :type device_id: ``Optional[List[int]]``
+        :param device_id: The id of the device
+
+        :type action_type: ``Optional[str]``
+        :param action_type: Action to perform on selected devices.
+
+        :type options: ``Optional[dict]``
+        :param options: A dict {"toggle": "ON/OFF"}
+        """
+        suffix_url = f'appservices/v6/orgs/{self.organization_key}/device_actions'
+        body = assign_params(
+            action_type=action_type,
+            device_id=device_id,
+            options=options
+        )
+        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body, resp_type='text')
+
 
 ''' COMMAND FUNCTIONS '''
 
@@ -933,6 +992,115 @@ def find_observation_command(args: dict, client: Client):
     )
 
 
+def device_search_command(client: Client, args: dict):
+    start_time, end_time = args.get("start_time"), args.get("end_time")
+
+    if (not start_time and end_time) or (start_time and not end_time):
+        raise ValueError("both start_time and end_time must be set")
+
+    last_location = {'start': start_time, 'end': end_time} if start_time and end_time else None
+
+    body = assign_params(
+        criteria=assign_params(
+            id=argToList(args.get('device_id')),
+            status=argToList(args.get('status')),
+            os=argToList(args.get('os')),
+            last_contact_time=last_location,
+            target_priority=argToList(args.get('target_priority'))
+        ),
+        query=args.get('query'),
+        rows=arg_to_number(args.get('rows'))
+    )
+
+    result = client.get_devices(body)
+
+    devices = result.get('results', [])
+    if not devices:
+        return 'No devices were found.'
+
+    headers = ['id', 'name', 'os', 'policy_name', 'quarantined', 'status', 'target_priority',
+               'last_internal_ip_address', 'last_external_ip_address', 'last_contact_time', 'last_location']
+
+    return CommandResults(
+        outputs_prefix='CarbonBlackDefense.Device',
+        outputs_key_field='id',
+        outputs=devices,
+        readable_output=tableToMarkdown('Carbon Black Defense Devices List Results', devices, headers,
+                                        headerTransform=string_to_table_header, removeNull=True),
+        raw_response=result
+    )
+
+
+def device_quarantine_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+
+    client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "ON"})
+
+    return CommandResults(readable_output="Device quarantine successfully")
+
+
+def device_unquarantine_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+
+    client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "OFF"})
+
+    return CommandResults(readable_output="Device unquarantine successfully")
+
+
+def device_background_scan_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+
+    client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "ON"})
+
+    return CommandResults(readable_output="Background scan started successfully")
+
+
+def device_background_scan_stop_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+
+    client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "OFF"})
+
+    return CommandResults(readable_output="Background scan stopped successfully")
+
+
+def device_bypass_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+
+    client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "ON"})
+
+    return CommandResults(readable_output="Device bypass successfully")
+
+
+def device_unbypass_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+
+    client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "OFF"})
+
+    return CommandResults(readable_output="Device unbypass successfully")
+
+
+def device_policy_update_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+    policy_id = args.get('policy_id')
+
+    client.execute_an_action_on_the_device(device_id, 'UPDATE_POLICY', {"policy_id": policy_id})
+
+    return CommandResults(readable_output="Policy updated successfully")
+
+
+def device_update_sensor_version_command(client: Client, args: dict):
+    device_id = argToList(args['device_id'])
+    sensor_version = args.get('sensor_version')
+
+    if not sensor_version:
+        return "The sensor_version argument is required."
+    sensor_version = json.loads(sensor_version)
+    client.execute_an_action_on_the_device(device_id, 'UPDATE_SENSOR_VERSION',
+                                           {"sensor_version": sensor_version})
+
+    return CommandResults(readable_output=f"Version update to {sensor_version} was successful")
+
+
 ''' HELPER FUNCTIONS '''
 
 
@@ -1181,6 +1349,24 @@ def main() -> None:
             results = find_observation_details_command(client=client, args=args)
         elif command == 'cbd-find-observation':
             results = find_observation_command(client=client, args=args)
+        elif command == 'cbd-device-search':
+            results = device_search_command(client=client, args=args)
+        elif command == 'cbd-device-quarantine':
+            results = device_quarantine_command(client=client, args=args)
+        elif command == 'cbd-device-unquarantine':
+            results = device_unquarantine_command(client=client, args=args)
+        elif command == 'cbd-device-background-scan':
+            results = device_background_scan_command(client=client, args=args)
+        elif command == 'cbd-device-background-scan-stop':
+            results = device_background_scan_stop_command(client=client, args=args)
+        elif command == 'cbd-device-bypass':
+            results = device_bypass_command(client=client, args=args)
+        elif command == 'cbd-device-unbypass':
+            results = device_unbypass_command(client=client, args=args)
+        elif command == 'cbd-device-policy-update':
+            results = device_policy_update_command(client=client, args=args)
+        elif command == 'cbd-device-update-sensor-version':
+            results = device_update_sensor_version_command(client=client, args=args)
         else:
             raise NotImplementedError(f"Command {command} not implemented.")
 
