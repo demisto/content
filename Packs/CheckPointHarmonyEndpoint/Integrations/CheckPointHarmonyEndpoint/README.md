@@ -371,7 +371,7 @@ There is no context output for this command.
 ### harmony-ep-policy-rule-install
 
 ***
-Installs all policies. If a rule ID is specified, only the policies associated with that rule will be installed.
+Installs all policies.
 
 #### Base Command
 
@@ -381,7 +381,6 @@ Installs all policies. If a rule ID is specified, only the policies associated w
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| rule_id | The ID of the rule. Use harmony-ep-rule-metadata-list command to get all rule IDs. | Optional | 
 | interval | The interval between each poll in seconds. Minimum value is `10`. Default is 30. | Optional | 
 | timeout | The timeout for the polling in seconds. Default is 600. | Optional | 
 | job_id | The job ID to fetch data for. Hidden argument. | Optional | 
