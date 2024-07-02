@@ -57,7 +57,7 @@ switch (command) {
         if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
             logDebug('Running on XSOAR version 8');
 
-            // check if the process already holds the lock
+            // check if a lock already exists in the integration context
             [lock, version] = getLock();
 
             if (typeof version === "object") {
@@ -65,13 +65,14 @@ switch (command) {
             }
             logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
 
-            
+            // if no lock found, try to acquire a new lock
             if (!lock.guid) {
                 attemptToAcquireLock(guid, lockInfo, version)
                 wait(1)
                 lock_candidate = getLock();
             }
 
+            // stopping condition - the lock is acquired successfully
             if (lock_candidate && lock_candidate[0].guid === guid) {
                 var md = '### Demisto Locking Mechanism\n';
                 md += 'Lock acquired successfully\n';
@@ -79,7 +80,7 @@ switch (command) {
                 logDebug(md)
                 return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
             }
-            else {
+            else { // polling condition - the lock acquire attempt failed (another lock already exist)
                 var timeout_err_msg = 'Timeout waiting for lock\n';
                 timeout_err_msg += 'Lock name: ' + lockName + '\n';
                 timeout_err_msg += 'Lock info: ' + lock.info + '\n';
