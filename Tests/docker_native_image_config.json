@@ -117,6 +117,14 @@
             ]
         },
         {
+            "id":"Intezer v2",
+            "reason":"Issue: CIAC-10263",
+            "ignored_native_images":[
+                "native:8.6",
+                "native:candidate"
+            ]
+        },
+        {
             "id":"ConvertFile",
             "reason":"Issue: CIAC-7625",
             "ignored_native_images":[
