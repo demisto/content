@@ -10,11 +10,11 @@ import subprocess
 from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'your_script' with the actual script name
 
 class TestInstallLibrary(unittest.TestCase):
-    @patch('your_script.subprocess.Popen')
-    @patch('your_script.Path.mkdir')
-    @patch('your_script.zipfile.ZipFile')
-    @patch('your_script.open', new_callable=mock_open, read_data=b'test data')
-    @patch('your_script.mkdtemp')
+    @patch('DownloadAndArchivePythonLibrary.subprocess.Popen')
+    @patch('DownloadAndArchivePythonLibrary.Path.mkdir')
+    @patch('DownloadAndArchivePythonLibrary.zipfile.ZipFile')
+    @patch('DownloadAndArchivePythonLibrary.open', new_callable=mock_open, read_data=b'test data')
+    @patch('DownloadAndArchivePythonLibrary.mkdtemp')
     def test_installLibrary(self, mock_mkdtemp, mock_open, mock_zipfile, mock_mkdir, mock_popen):
         # Prepare
         mock_dir_path = Path('/fake/dir')
