@@ -45,7 +45,7 @@ from exchangelib.errors import (
     ResponseMessageError,
 )
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.protocol import BaseProtocol
 from exchangelib.services.common import EWSAccountService, EWSService
 from exchangelib.util import MNS, TNS, add_xml_child, create_element
 from exchangelib.version import EXCHANGE_O365
@@ -136,11 +136,21 @@ class ProxyAdapter(requests.adapters.HTTPAdapter):
         return super().send(*args, **kwargs)
 
 
-class InsecureProxyAdapter(NoVerifyHTTPAdapter):
+class InsecureProxyAdapter(SSLAdapter):
     """
     Insecure Proxy Adapter used to add PROXY and INSECURE to requests
     NoVerifyHTTPAdapter is a built-in insecure HTTPAdapter class
     """
+
+    def __init__(self, *args, **kwargs):
+        # Processing before init call
+        kwargs.pop('verify', None)
+        super().__init__(verify=False, **kwargs)
+
+    def cert_verify(self, conn, url, verify, cert):
+        # We're overriding a method, so we have to keep the signature, although verify is unused
+        del verify
+        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
