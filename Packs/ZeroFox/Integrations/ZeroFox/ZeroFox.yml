@@ -1375,7 +1375,7 @@ script:
       description: Gets compromised credentials data for a given ZeroFox alert and uploads it to the current investigation War Room.
       arguments:
         - name: alert_id
-          description: tofill
+          description: The alert ID to get credentials from.
           required: true
       outputs:
         - contextPath: File.Size
