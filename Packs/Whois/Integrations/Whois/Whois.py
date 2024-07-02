@@ -8926,6 +8926,7 @@ def get_info_by_prefix(domain_data: dict, prefix: str) -> dict:
         return (
             "Name"
             if key == "registrar"
+            else "Admin" if key == "admin"
             else key.removeprefix(prefix + "_").capitalize()
         )
 
@@ -8947,6 +8948,7 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
     Returns:
         dict: A dictionary containing structured WHOIS context data.
     """
+    res = {}
     context_data = {
         "Name": domain,
         "ID": raw_data.get("domain_id"),
@@ -8962,6 +8964,7 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
         "State": raw_data.get("state"),
         "Country": raw_data.get("country"),
         "Dnssec": raw_data.get("dnssec"),
+        "Admin": get_info_by_prefix(raw_data, "admin"),
         "Registrant": get_info_by_prefix(raw_data, "registrant"),
         "Registrar": get_info_by_prefix(raw_data, "registrar"),
         "Tech": get_info_by_prefix(raw_data, "tech"),
@@ -8980,12 +8983,16 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
         "Raw": ", ".join([f"{key}: {value}" for key, value in raw_data.items()]),
     }
     remove_nulls_from_dictionary(context_data)
-    return {"WHOIS": context_data}
+    res.update({"WHOIS": context_data})
+    res.update(context_data)
+    res.pop("Raw", None)
+    return res
 
 
-def new_domain_comand(command: str, reliability: str) -> list[CommandResults]:
+def whois_and_domain_comand(command: str, reliability: str) -> list[CommandResults]:
     args = demisto.args()
     domains = argToList(args.get("query") or args.get("domain"))
+    execution_metrics = ExecutionMetrics()
     results: List[CommandResults] = []
     demisto.debug(f"{command=} is called with the query '{domains}'")
     for domain in domains:
@@ -8995,9 +9002,9 @@ def new_domain_comand(command: str, reliability: str) -> list[CommandResults]:
             demisto.debug(
                 f"'python-whois' lib return raw_data for {domain=} is: {domain_data=}"
             )
+            execution_metrics.success += 1
             whois_res = {}
             context_output = arrange_raw_whois_data_to_context(domain_data, domain)
-            context_output.update(context_output["WHOIS"])
             whois_res.update({Common.Domain.CONTEXT_PATH: context_output})
             whois_res.update(
                 Common.DBotScore(
@@ -9026,7 +9033,7 @@ def new_domain_comand(command: str, reliability: str) -> list[CommandResults]:
                 CommandResults(
                     outputs=whois_res,
                     readable_output=tableToMarkdown(
-                        "Whois NEW results for {}".format(domain),
+                        "Whois results for {}".format(domain),
                         context_output,
                         headers=hr_headers,
                         removeNull=True,
@@ -9038,6 +9045,12 @@ def new_domain_comand(command: str, reliability: str) -> list[CommandResults]:
             demisto.error(
                 f"Exception of type {e.__class__.__name__} was caught while performing whois lookup with the domain '{domain}'"
             )
+            execution_metrics = increment_metric(
+                execution_metrics=execution_metrics,
+                mapping=whois_exception_mapping,
+                caught_exception=type(e)
+            )
+            
             output = {
                 outputPaths["domain"]: {
                     "Name": domain,
@@ -9052,7 +9065,7 @@ def new_domain_comand(command: str, reliability: str) -> list[CommandResults]:
                     raw_response=str(e),
                 )
             )
-    return results
+    return append_metrics(execution_metrics=execution_metrics, results=results)
 
 
 def new_test_command():
@@ -9090,7 +9103,7 @@ def main():  # pragma: no cover
     if old_version == False and command != "ip":
         demisto.debug("Run by new context data layout")
         if command == "domain" or command == "whois":
-            return_results(new_domain_comand(command, reliability))
+            return_results(whois_and_domain_comand(command, reliability))
         if command == 'test-module':
             return_results(new_test_command())
     else:

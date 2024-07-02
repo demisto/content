@@ -48,6 +48,7 @@ This pack relies on free services for WHOIS information. As with many free servi
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Domain.Name | string | The domain name. | 
 | Domain.DomainStatus | string | The domain status. | 
 | Domain.Dnssec | string | The domain name system security extension \(DNSSEC\). | 
@@ -69,6 +70,25 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.Organization | string | The organization domain name. | 
 | Domain.Whois_server | string | The whois server name. | 
 | Domain.Phone | string | The phone number of the tech administrator. | 
+| Domain.Admin | object | Admin information. | 
+| Domain.Admin.Address | string | The address of the administrator. | 
+| Domain.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.Admin.C | string | The C field of the administrator. | 
+| Domain.Admin.City | string | The city of the administrator. | 
+| Domain.Admin.Country | string | The country of the administrator. | 
+| Domain.Admin.Email | string | The email address of the administrator. | 
+| Domain.Admin.Fax | string | The fax number of the administrator. | 
+| Domain.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.Admin.Id | string | The ID of the administrator. | 
+| Domain.Admin.Name | string | The name of the administrator. | 
+| Domain.Admin.Org | string | The organization of the administrator. | 
+| Domain.Admin.Organization | string | The organization name of the administrator. | 
+| Domain.Admin.Phone | string | The phone number of the administrator. | 
+| Domain.Admin.Phone_ext | string | The phone extension of the administrator. | 
+| Domain.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.Admin.State | string | The state of the administrator. | 
+| Domain.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.Admin.Street | string | The street of the administrator. | 
 | Domain.Registrant.Name | string | The name of the registrant. | 
 | Domain.Registrant.Email | string | The email address of the registrant. | 
 | Domain.Registrant.Country | string | The country of the registrant. | 
@@ -121,6 +141,25 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.WHOIS.Organization | string | The organization domain name. | 
 | Domain.WHOIS.Whois_server | string | The whois server name. | 
 | Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
+| Domain.WHOIS.Admin | object | Admin information. | 
+| Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
+| Domain.WHOIS.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
+| Domain.WHOIS.Admin.City | string | The city of the administrator. | 
+| Domain.WHOIS.Admin.Country | string | The country of the administrator. | 
+| Domain.WHOIS.Admin.Email | string | The email address of the administrator. | 
+| Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. | 
+| Domain.WHOIS.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.WHOIS.Admin.Id | string | The ID of the administrator. | 
+| Domain.WHOIS.Admin.Name | string | The name of the administrator. | 
+| Domain.WHOIS.Admin.Org | string | The organization of the administrator. | 
+| Domain.WHOIS.Admin.Organization | string | The organization name of the administrator. | 
+| Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. | 
+| Domain.WHOIS.Admin.Phone_ext | string | The phone extension of the administrator. | 
+| Domain.WHOIS.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.WHOIS.Admin.State | string | The state of the administrator. | 
+| Domain.WHOIS.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.WHOIS.Admin.Street | string | The street of the administrator. | 
 | Domain.WHOIS.Registrant.Name | string | The name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | string | The email address of the registrant. | 
 | Domain.WHOIS.Registrant.Country | string | The country of the registrant. | 
@@ -339,6 +378,7 @@ Provides data enrichment for domains.
 | DBotScore.Indicator | string | The indicator that was tested. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
 | Domain.Name | string | The domain name. | 
 | Domain.DomainStatus | String | The domain status. | 
 | Domain.ExpirationDate | Date | The date that the domain expires \(UTC\). | 
@@ -361,6 +401,25 @@ Provides data enrichment for domains.
 | Domain.Address | string | The abuse address. | 
 | Domain.Whois_server | string | The whois server name. | 
 | Domain.Phone | string | The phone number of the tech administrator. | 
+| Domain.Admin | object | Admin information. | 
+| Domain.Admin.Address | string | The address of the administrator. | 
+| Domain.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.Admin.C | string | The C field of the administrator. | 
+| Domain.Admin.City | string | The city of the administrator. | 
+| Domain.Admin.Country | string | The country of the administrator. | 
+| Domain.Admin.Email | string | The email address of the administrator. | 
+| Domain.Admin.Fax | string | The fax number of the administrator. | 
+| Domain.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.Admin.Id | string | The ID of the administrator. | 
+| Domain.Admin.Name | string | The name of the administrator. | 
+| Domain.Admin.Org | string | The organization of the administrator. | 
+| Domain.Admin.Organization | string | The organization name of the administrator. | 
+| Domain.Admin.Phone | string | The phone number of the administrator. | 
+| Domain.Admin.Phone_ext | string | The phone extension of the administrator. | 
+| Domain.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.Admin.State | string | The state of the administrator. | 
+| Domain.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.Admin.Street | string | The street of the administrator. | 
 | Domain.Registrant.Name | string | The name of the registrant. | 
 | Domain.Registrant.Email | string | The email address of the registrant. | 
 | Domain.Registrant.Country | string | The country of the registrant. | 
@@ -417,6 +476,25 @@ Provides data enrichment for domains.
 | Domain.WHOIS.Organization | string | The organization domain name. | 
 | Domain.WHOIS.Whois_server | string | The whois server name. | 
 | Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
+| Domain.WHOIS.Admin | object | Admin information. | 
+| Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
+| Domain.WHOIS.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
+| Domain.WHOIS.Admin.City | string | The city of the administrator. | 
+| Domain.WHOIS.Admin.Country | string | The country of the administrator. | 
+| Domain.WHOIS.Admin.Email | string | The email address of the administrator. | 
+| Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. | 
+| Domain.WHOIS.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.WHOIS.Admin.Id | string | The ID of the administrator. | 
+| Domain.WHOIS.Admin.Name | string | The name of the administrator. | 
+| Domain.WHOIS.Admin.Org | string | The organization of the administrator. | 
+| Domain.WHOIS.Admin.Organization | string | The organization name of the administrator. | 
+| Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. | 
+| Domain.WHOIS.Admin.Phone_ext | string | The phone extension of the administrator. | 
+| Domain.WHOIS.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.WHOIS.Admin.State | string | The state of the administrator. | 
+| Domain.WHOIS.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.WHOIS.Admin.Street | string | The street of the administrator. | 
 | Domain.WHOIS.Registrant.Name | string | The name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | string | The email address of the registrant. | 
 | Domain.WHOIS.Registrant.Country | string | The country of the registrant. | 

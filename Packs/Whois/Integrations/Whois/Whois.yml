@@ -29,7 +29,7 @@ configuration:
   required: false
   hidden: false
 - additionalinfo: Get the Legacy output of context data for 'whois' and 'domain' commands.
-  display: Use old version
+  display: Use legacy context
   name: old-version
   type: 8
   section: Collect
@@ -174,6 +174,63 @@ script:
       type: string
     - contextPath: Domain.Phone
       description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.Admin
+      description: Admin information.
+      type: object
+    - contextPath: Domain.Admin.Address
+      description: The address of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Application_purpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Fax_ext
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Org
+      description: The organization of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Organization
+      description: The organization name of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Phone_ext
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Postal_code
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.Admin.State_province
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Street
+      description: The street of the administrator.
       type: string
     - contextPath: Domain.Registrant.Name
       description: The name of the registrant.
@@ -330,6 +387,63 @@ script:
       type: string
     - contextPath: Domain.WHOIS.Phone
       description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin
+      description: Admin information.
+      type: object
+    - contextPath: Domain.WHOIS.Admin.Address
+      description: The address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Application_purpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Fax_ext
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Org
+      description: The organization of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Organization
+      description: The organization name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Phone_ext
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Postal_code
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.State_province
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Street
+      description: The street of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Name
       description: The name of the registrant.
@@ -664,6 +778,63 @@ script:
     - contextPath: Domain.Phone
       description: The phone number of the tech administrator.
       type: string
+    - contextPath: Domain.Admin
+      description: Admin information.
+      type: object
+    - contextPath: Domain.Admin.Address
+      description: The address of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Application_purpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Fax_ext
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Org
+      description: The organization of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Organization
+      description: The organization name of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Phone_ext
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Postal_code
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.Admin.State_province
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.Admin.Street
+      description: The street of the administrator.
+      type: string
     - contextPath: Domain.Registrant.Name
       description: The name of the registrant.
       type: string
@@ -831,6 +1002,63 @@ script:
       type: string
     - contextPath: Domain.WHOIS.Phone
       description: The phone number of the tech administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin
+      description: Admin information.
+      type: object
+    - contextPath: Domain.WHOIS.Admin.Address
+      description: The address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Application_purpose
+      description: The application purpose of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.C
+      description: The C field of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.City
+      description: The city of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Country
+      description: The country of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Email
+      description: The email address of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Fax
+      description: The fax number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Fax_ext
+      description: The fax extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Id
+      description: The ID of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Name
+      description: The name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Org
+      description: The organization of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Organization
+      description: The organization name of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Phone
+      description: The phone number of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Phone_ext
+      description: The phone extension of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Postal_code
+      description: The postal code of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.State
+      description: The state of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.State_province
+      description: The state or province of the administrator.
+      type: string
+    - contextPath: Domain.WHOIS.Admin.Street
+      description: The street of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Name
       description: The name of the registrant.

@@ -3823,6 +3823,12 @@
             "fromversion": "4.5.0"
         },
         {
+            "playbookID": "Whois_by_python-whois_lib",
+            "integrations": "Whois",
+            "instance_names": "New_context_output",
+            "fromversion": "6.9.0"
+        },
+        {
             "integrations": "F5 ASM",
             "playbookID": "playbook-F5_ASM-Test",
             "timeout": 600,
