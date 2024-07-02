@@ -28,7 +28,7 @@ Manage Git repositories in Azure DevOps Services. Integration capabilities inclu
 4. Click **Test** to validate the URLs, token, and connection.
 
 
-In order to connect to the Azure DevOps using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
+In order to connect to the Azure DevOps using the Self-Deployed Azure App, use one of the following methods:
 
 - *Authorization Code Flow* (Recommended).
 - *Device Code Flow*.
