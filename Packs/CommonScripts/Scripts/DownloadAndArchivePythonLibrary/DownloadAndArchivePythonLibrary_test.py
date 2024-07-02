@@ -6,7 +6,7 @@ import zipfile
 import subprocess
 
 # Import the functions from the script
-from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'DownloadAndArchivePythonLibrary' with the actual script name
+from DownloadAndArchivePythonLibrary import installLibrary, main
 
 class TestInstallLibrary(unittest.TestCase):
     @patch('DownloadAndArchivePythonLibrary.subprocess.Popen')
