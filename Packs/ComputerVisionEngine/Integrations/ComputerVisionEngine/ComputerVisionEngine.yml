@@ -3,10 +3,11 @@ commonfields:
   id: Computer Vision Engine
   version: -1
 configuration: []
-description: |-
-  This integration is processing images or movies and detects objects on them by using Machine Learning.
+description: 'This integration is processing images or movies and detects objects on them by using Machine Learning.
+
   It is using OpenCV with:
-  YOLO COCO
+
+  YOLO COCO'
 display: Computer Vision Engine
 name: Computer Vision Engine
 script:
@@ -27,7 +28,7 @@ script:
     - contextPath: ComputerVision
       description: The key holds down the information about detected objects in the picture
       type: Unknown
-  dockerimage: demisto/yolo-coco:1.0.0.15530
+  dockerimage: demisto/yolo-coco:1.0.0.98891
   runonce: false
   script: '-'
   subtype: python3
