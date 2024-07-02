@@ -238,7 +238,7 @@ def test_get_incidents_by_query_with_populate_fields_with_pipe_separator(mocker)
         "limit": "10",
         "includeContext": "false",
         "pageSize": "10",
-        "populateFields": "id,name,testField"
+        "populateFields": "id|name|testField"
     }
     results = get_incidents_by_query(args)
     assert len(results) == 4
@@ -253,7 +253,7 @@ def test_get_incidents_by_query_with_context(mocker):
     - includeContext is true
     Then:
     - Ensure the expected 4 incidents are returned
-    - Ensure each incidents has a non-empty context key
+    - Ensure each incident has a non-empty context key
     """
     mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
     args = {
