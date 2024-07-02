@@ -54,6 +54,11 @@ def load_json(file: str):
         return json.load(f)
 
 
+def load_file(file: str):
+    with open(file) as f:
+        return f.read()
+
+
 def fetch_alert_endpoint(alert_id: str):
     return f"/1.0/alerts/{alert_id}/"
 
@@ -1314,8 +1319,10 @@ def test_get_compromised_credentials_command(requests_mock, mocker):
         It should return a csv file with compromised cred contents
     """
     alert_id = 123
-    breach_data = ""
+    file_id = "dummyId"
+    breach_data = load_file("test_data/breach_data/breach_123.csv")
     client = build_zf_client()
+    mocker.patch.object(demisto, "uniqueFile", return_value=file_id)
     requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
     requests_mock.get(
         f"/2.0/alerts/{alert_id}/breach_csv/", text=breach_data)
@@ -1323,4 +1330,12 @@ def test_get_compromised_credentials_command(requests_mock, mocker):
 
     results = get_compromised_credentials_command(client, args)
 
-    assert {} == results
+    expected = {
+        'Contents': '',
+        'ContentsFormat': 'text',
+        'File': 'breach_123.csv',
+        'FileID': file_id,
+        'Type': 3
+    }
+
+    assert results == expected
