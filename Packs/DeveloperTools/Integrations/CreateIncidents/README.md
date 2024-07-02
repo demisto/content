@@ -56,7 +56,7 @@ Creates incidents from json file, and stores it in the instance context.
 | **Argument Name** | **Description** | **Required** |
 | --- | - |----------|
 | incident_raw_json | The json object that represents the incident. | Optional  | 
-| incident_entry_id | The entry ID of the json file that represents the incidents. | Optional  | 
+| incident_entry_id | The entry ID of the JSON file that represents the incidents. | Optional  | 
 | attachment_paths | The paths of the files to be added to incidents as attachment. Will be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml. | Optional | 
 | attachment_entry_ids | The enry IDs of the incident attachments. | Optional | 
 
