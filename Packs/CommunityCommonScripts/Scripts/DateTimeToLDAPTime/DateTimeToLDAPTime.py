@@ -15,10 +15,9 @@ def main():
         # Get Args
         args = demisto.args()
         str_utc_time = args.get('value')
-        fmt = args.get('input_format')
 
         # Convert UTC time string to a datetime type
-        utc_time = datetime.strptime(str_utc_time, fmt)
+        utc_time = dateparser.parse(str_utc_time)
 
         # Convert to LDAP time
         return_results(convert_time_command(time=utc_time))
