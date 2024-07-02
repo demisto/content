@@ -31,6 +31,14 @@ function setLock(guid, info, version) {
         return [integrationContext[lockName], null];
     }
 }
+function attemptToAcquireLock(guid, lockInfo, version) {
+    logDebug("Attempting to acquire lock");
+    try {
+        setLock(guid, lockInfo, version);
+    } catch (err) {
+        logDebug(err.message);
+    }
+}
 var lockName = args.name || 'Default';
 
 switch (command) {
@@ -44,7 +52,7 @@ switch (command) {
 
         var guid = args.guid || guid();
         var time = 0;
-        var lock, version;
+        var lock, version, lock_candidate;
 
         if (isDemistoVersionGE('8.0.0')) {  // XSOAR 8 lock implementation with polling.
             logDebug('Running on XSOAR version 8');
@@ -57,7 +65,14 @@ switch (command) {
             }
             logDebug('Task guid: ' + guid + ' | Current lock is: ' + JSON.stringify(lock) + ', version: ' + version);
 
-            if (lock.guid === guid) {
+            
+            if (!lock.guid) {
+                attemptToAcquireLock(guid, lockInfo, version)
+                wait(1)
+                lock_candidate = getLock();
+            }
+
+            if (lock_candidate && lock_candidate[0].guid === guid) {
                 var md = '### Demisto Locking Mechanism\n';
                 md += 'Lock acquired successfully\n';
                 md += 'GUID: ' + guid;
@@ -65,15 +80,6 @@ switch (command) {
                 return { ContentsFormat: formats.markdown, Type: entryTypes.note, Contents: md };
             }
             else {
-                // attempt to acquire the lock
-                if (!lock.guid) {
-                    logDebug("Attempting to acquire lock")
-                    try {
-                        setLock(guid, lockInfo, version);
-                    } catch (err) {
-                        logDebug(err.message);
-                    }
-                }
                 var timeout_err_msg = 'Timeout waiting for lock\n';
                 timeout_err_msg += 'Lock name: ' + lockName + '\n';
                 timeout_err_msg += 'Lock info: ' + lock.info + '\n';
