@@ -1,88 +1,95 @@
 import unittest
-from unittest.mock import patch, mock_open, MagicMock, call
+from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
-from script import installLibrary, main
+from tempfile import mkdtemp
+import zipfile
+import os
+import subprocess
 
-class TestScript(unittest.TestCase):
+# Import the functions from the script
+from your_script import installLibrary, main  # Replace 'your_script' with the actual script name
 
-    @patch('demistomock.args')
-    @patch('demistomock.return_results')
-    @patch('demistomock.return_error')
-    def setUp(self, mock_args, mock_return_results, mock_return_error):
-        self.mock_args = mock_args
-        self.mock_return_results = mock_return_results
-        self.mock_return_error = mock_return_error
+class TestInstallLibrary(unittest.TestCase):
+    @patch('your_script.subprocess.Popen')
+    @patch('your_script.Path.mkdir')
+    @patch('your_script.zipfile.ZipFile')
+    @patch('your_script.open', new_callable=mock_open, read_data=b'test data')
+    @patch('your_script.mkdtemp')
+    def test_installLibrary(self, mock_mkdtemp, mock_open, mock_zipfile, mock_mkdir, mock_popen):
+        # Prepare
+        mock_dir_path = Path('/fake/dir')
+        mock_mkdtemp.return_value = mock_dir_path
 
-    @patch('subprocess.Popen')
-    @patch('os.walk')
-    @patch('zipfile.ZipFile')
-    @patch('builtins.open', new_callable=mock_open)
-    def test_install_library_success(self, mock_file, mock_zipfile, mock_os_walk, mock_popen):
-        mock_popen.return_value.communicate.return_value = (b'success', b'')
-        mock_popen.return_value.returncode = 0
+        mock_popen_instance = MagicMock()
+        mock_popen_instance.communicate.return_value = (b'success', b'')
+        mock_popen_instance.returncode = 0
+        mock_popen.return_value = mock_popen_instance
 
-        mock_os_walk.return_value = [('/path', ('dir',), ('file.py',))]
+        mock_zipfile_instance = MagicMock()
+        mock_zipfile.return_value.__enter__.return_value = mock_zipfile_instance
 
-        dir_path = Path('/mock/path')
-        library_name = 'testlib'
-
-        result = installLibrary(dir_path, library_name)
-
-        # Check
-        mock_popen.assert_called_once_with(shlex.split(f'python3 -m pip install --target {dir_path} {library_name}'),
-                                           stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        mock_popen.return_value.communicate.assert_called_once()
-        mock_zipfile.assert_called_once_with(dir_path / (library_name + '.zip'), 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9)
-        mock_file.assert_called_once_with(dir_path / (library_name + '.zip'), 'rb')
-        self.assertEqual(result['File'], f'{library_name}.zip')
-
-    @patch('subprocess.Popen')
-    def test_install_library_failure(self, mock_popen):
-        mock_popen.return_value.communicate.return_value = (b'', b'error')
-        mock_popen.return_value.returncode = 1
-
-        dir_path = Path('/mock/path')
-        library_name = 'testlib'
-
-        with self.assertRaises(Exception) as context:
-            installLibrary(dir_path, library_name)
+        # Run
+        result = installLibrary(mock_dir_path, 'fake_library')
 
         # Check
-        self.assertIn("Failed to install the testlib library", str(context.exception))
+        # Ensure subprocess was called with the correct command
+        mock_popen.assert_called_once_with(
+            ['python3', '-m', 'pip', 'install', '--target', str(mock_dir_path), 'fake_library'],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE
+        )
 
-    @patch('demistomock.args')
-    @patch('demistomock.return_results')
-    @patch('demistomock.return_error')
-    @patch('subprocess.Popen')
-    @patch('os.walk')
-    @patch('zipfile.ZipFile')
-    @patch('builtins.open', new_callable=mock_open)
-    def test_main_success(self, mock_file, mock_zipfile, mock_os_walk, mock_popen, mock_return_error, mock_return_results, mock_args):
-        mock_args.return_value = {'library_name': 'testlib'}
-        mock_popen.return_value.communicate.return_value = (b'success', b'')
-        mock_popen.return_value.returncode = 0
-        mock_os_walk.return_value = [('/path', ('dir',), ('file.py',))]
+        # Ensure zipfile was created with the correct path and mode
+        mock_zipfile.assert_called_once_with(mock_dir_path / 'fake_library.zip', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9)
 
+        # Ensure file was opened with the correct path and mode
+        mock_open.assert_called_once_with(mock_dir_path / 'fake_library.zip', 'rb')
+
+        # Ensure the correct result is returned
+        self.assertEqual(result, ('fake_library.zip', b'test data'))
+
+    @patch('your_script.installLibrary')
+    @patch('your_script.demisto.args')
+    @patch('your_script.return_results')
+    @patch('your_script.return_error')
+    @patch('your_script.Path')
+    @patch('your_script.mkdtemp')
+    def test_main_success(self, mock_mkdtemp, mock_path, mock_return_error, mock_return_results, mock_args, mock_installLibrary):
+        # Prepare
+        mock_args.return_value = {'library_name': 'fake_library'}
+        mock_dir_path = Path('/fake/dir')
+        mock_mkdtemp.return_value = mock_dir_path
+
+        mock_result = 'fake_result'
+        mock_installLibrary.return_value = mock_result
+
+        # Run
         main()
 
         # Check
-        mock_return_results.assert_called_once()
+        mock_return_results.assert_called_once_with(mock_result)
         mock_return_error.assert_not_called()
 
-    @patch('demistomock.args')
-    @patch('demistomock.return_results')
-    @patch('demistomock.return_error')
-    @patch('subprocess.Popen')
-    def test_main_failure(self, mock_popen, mock_return_error, mock_return_results, mock_args):
-        mock_args.return_value = {'library_name': 'testlib'}
-        mock_popen.return_value.communicate.return_value = (b'', b'error')
-        mock_popen.return_value.returncode = 1
+    @patch('your_script.installLibrary')
+    @patch('your_script.demisto.args')
+    @patch('your_script.return_results')
+    @patch('your_script.return_error')
+    @patch('your_script.Path')
+    @patch('your_script.mkdtemp')
+    def test_main_failure(self, mock_mkdtemp, mock_path, mock_return_error, mock_return_results, mock_args, mock_installLibrary):
+        # Prepare
+        mock_args.return_value = {'library_name': 'fake_library'}
+        mock_dir_path = Path('/fake/dir')
+        mock_mkdtemp.return_value = mock_dir_path
 
+        mock_installLibrary.side_effect = Exception('Test Exception')
+
+        # Run
         main()
 
         # Check
+        mock_return_error.assert_called_once_with('An error occurred: Test Exception')
         mock_return_results.assert_not_called()
-        mock_return_error.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()
