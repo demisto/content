@@ -4,12 +4,55 @@ from CommonServerUserPython import *
 
 ''' IMPORTS '''
 import ssl
-from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, ALL_ATTRIBUTES, SUBTREE
+from ldap3 import Server, Connection, Tls, BASE, AUTO_BIND_TLS_BEFORE_BIND, AUTO_BIND_NO_TLS, ALL_ATTRIBUTES, SUBTREE, \
+    ALL_OPERATIONAL_ATTRIBUTES
 from ldap3.utils.dn import parse_dn
 from ldap3.core.exceptions import LDAPBindError, LDAPInvalidDnError, LDAPSocketOpenError, LDAPInvalidPortError, \
     LDAPSocketReceiveError, LDAPStartTLSError
 
+'''CONSTANTS'''
+
+MAX_PAGE_SIZE = 2000
+
 ''' LDAP Authentication CLIENT '''
+
+
+def create_entries_search_filter(args: dict) -> str:
+    '''
+    '''
+    cn_filter = f"(cn={args.get('cn')})" if args.get('cn') else ''
+    description_filter = f"(description={args.get('description')})" if args.get('description') else ''
+    object_class = f"(objectClass={args.get('object_class')})" if args.get('object_class') else ''
+    uid = f"(uid={args.get('uid')})" if args.get('uid') else ''
+    search_filter = args.get('search_filter', '')
+    return f'(|{cn_filter}{description_filter}{object_class}{uid}{search_filter})'
+
+def get_search_attributes(attributes: str) -> Optional[list[str] | str]:
+    if attributes == 'all':
+        return [ALL_ATTRIBUTES, ALL_OPERATIONAL_ATTRIBUTES]
+    return {
+        'none': None,
+        'all_user_attributes': ALL_ATTRIBUTES,
+        'all_operational_attributes': ALL_OPERATIONAL_ATTRIBUTES
+
+    }.get(attributes, argToList(attributes))
+
+
+def entries_paged_search(connection: Connection, search_params: dict, page: int, page_size: int) -> list[dict]:
+    if page_size > MAX_PAGE_SIZE:
+        raise Exception('The page size must be less than or equal to 2000')
+    if page == 1:
+        return connection.extend.standard.paged_search(**search_params, paged_size=page_size)
+    results_to_skip = page_size * (page - 1)
+    connection.search(**search_params, paged_size=results_to_skip)
+    cookie = connection.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
+    connection.search(**search_params, paged_size=page_size, paged_cookie=cookie)
+    return connection.response
+
+
+def entries_search(connection: Connection, search_params: dict, limit: int) -> list[dict]:
+    connection.search(**search_params, size_limit=limit)
+    return connection.response
 
 
 class LdapClient:
@@ -505,7 +548,7 @@ class LdapClient:
             referrals = ldap_conn.result.get('referrals')
 
             if self.GROUPS_IDENTIFIER_ATTRIBUTE not in entry \
-                    or not entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value:
+                or not entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value:
                 raise Exception(f"LDAP Authentication - OpenLDAP user's {self.GROUPS_IDENTIFIER_ATTRIBUTE} not found")
 
             return entry, referrals
@@ -638,43 +681,28 @@ class LdapClient:
                                                         mail_attribute=mail_attribute, name_attribute=name_attribute,
                                                         phone_attribute=phone_attribute)
 
-    def _create_entries_search_filter(self, args: dict) -> str:
-        pass
-
-    def _entries_paged_search(self, connection: Connection, search_params: dict, page: int, page_size: int) -> list[dict]:
-        if page == 1:
-            return connection.extend.standard.paged_search(**search_params, paged_size=page_size)
-        results_to_skip = page_size * (page - 1)
-        connection.search(**search_params, paged_size=results_to_skip)
-        cookie = connection.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
-        connection.search(**search_params, paged_size=page_size, paged_cookie=cookie)
-        return connection.response
-
-    def _entries_search(self, connection: Connection, search_params: dict, limit: int) -> list[dict]:
-        connection.search(**search_params, size_limit=limit)
-        return connection.response
-
     def entries_search(self, args: dict[str, Any]) -> CommandResults:
         """
         Implements entries search command.
         """
+
         search_params = {'search_base': args.get('base_dn', self._base_dn),
                          'search_scope': args.get('search_scope', SUBTREE),
-                         'search_filter': self._create_entries_search_filter(args),
-                         'attributes': args.get('attributes', ALL_ATTRIBUTES),
+                         'search_filter': create_entries_search_filter(args),
+                         'attributes': get_search_attributes(args.get('attributes')),
                          }
 
         auto_bind = self._get_auto_bind_value()
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             if page := args.get('page'):
-                response = self._entries_paged_search(connection=ldap_conn,
-                                                      search_params=search_params,
-                                                      page=page,
-                                                      page_size=args.get('page_size', self._page_size))
-            else:
-                response = self._entries_search(connection=ldap_conn,
+                response = entries_paged_search(connection=ldap_conn,
                                                 search_params=search_params,
-                                                limit=args.get('limit', 0))
+                                                page=page,
+                                                page_size=args.get('page_size', 50))
+            else:
+                response = entries_search(connection=ldap_conn,
+                                          search_params=search_params,
+                                          limit=args.get('limit', 0))
 
         return CommandResults(
             outputs_prefix='LDAP.Search',
@@ -704,7 +732,7 @@ class LdapClient:
         self._get_formatted_custom_attributes()
 
         if build_number != LdapClient.DEV_BUILD_NUMBER \
-                and int(build_number) < LdapClient.SUPPORTED_BUILD_NUMBER:
+            and int(build_number) < LdapClient.SUPPORTED_BUILD_NUMBER:
             raise Exception(f'LDAP Authentication integration is supported from build number:'
                             f' {LdapClient.SUPPORTED_BUILD_NUMBER}')
 
