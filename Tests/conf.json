@@ -4899,7 +4899,7 @@
                 }
             },
             "memory_threshold": 160,
-            "pid_threshold": 80
+            "pid_threshold": 200
         },
         {
             "playbookID": "PCAP Search test",
