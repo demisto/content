@@ -1395,11 +1395,13 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
 
     try:
         handle_submitted_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        demisto.debug(f'####splunk incidents to be submitted: {len(incidents)} incidents')
         if cache_object.done_submitting() and cache_object.done_handling():
             fetch_notables(service=service, cache_object=cache_object, enrich_notables=True, mapper=mapper,
                            comment_tag_to_splunk=comment_tag_to_splunk,
                            comment_tag_from_splunk=comment_tag_from_splunk)
         submit_notables(service, incidents, cache_object, mapper, comment_tag_to_splunk, comment_tag_from_splunk)
+        demisto.debug(f'####splunk submitted incidents: {len(incidents)} incidents')
 
     except Exception as e:
         err = f'Caught an exception while executing the enriching fetch mechanism. Additional Info: {str(e)}'
@@ -1409,11 +1411,13 @@ def run_enrichment_mechanism(service: client.Service, integration_context, mappe
             raise e
 
     finally:
+        demisto.debug(f'####splunk storing incidents in integration context: {len(incidents)} incidents')
         store_incidents_for_mapping(incidents, integration_context)
         handled_but_not_created_incidents = cache_object.organize()
         cache_object.dump_to_integration_context(integration_context)
         incidents += [notable.to_incident(mapper, comment_tag_to_splunk, comment_tag_from_splunk)
                       for notable in handled_but_not_created_incidents]
+        demisto.debug(f'####splunk Created {len(incidents)} incidents, with the following IDs: {[incident.get("id") for incident in incidents]}')
         demisto.incidents(incidents)
 
 
