@@ -1328,7 +1328,7 @@ Impersonation rights are required. To perform actions on the target mailbox of o
 
 
 ### Limitations
-No known limitations.
+When sending the email to an Outlook account, Outlook UI fails to display custom headers. This does not happens when sending to Gmail account.
 
 ### Inputs
 | **Argument Name** | **Description** | **Required** |
