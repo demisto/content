@@ -115,7 +115,7 @@ If Exchange is configured with an international flavor `Inbox` will be named acc
 
 # Commands
 
-<details> <summary>ews-get-attachment</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-attachment</h3></summary>
 
 ### Description
 Retrieves the actual attachments from an email message. To get all attachments for a message, only specify the item-id argument.
@@ -211,7 +211,7 @@ No known limitations.
 ```
 
 </details>
-<details> <summary>ews-delete-attachment</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-delete-attachment</h3></summary>
 
 ### Description
 Deletes the attachments of an item (email message).
@@ -267,7 +267,7 @@ No known limitations.
 
 </details>
 
-<details> <summary>ews-get-searchable-mailboxes</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-searchable-mailboxes</h3></summary>
 
 ### Description
 Get a list of searchable mailboxes.
@@ -324,7 +324,7 @@ There are no input arguments for this command.
 </details>
 
 
-<details> <summary>ews-move-item</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-move-item</h3></summary>
 
 ### Description
 Move an item to a different folder in the mailbox.
@@ -380,7 +380,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-delete-items</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-delete-items</h3></summary>
 
 ### Description
 Delete an item from a mailbox
@@ -432,7 +432,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-search-mailbox</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-search-mailbox</h3></summary>
 
 ### Description
 Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
@@ -542,7 +542,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-get-contacts</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-contacts</h3></summary>
 
 ### Description
 Retrieves contacts for a specified mailbox.
@@ -616,7 +616,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-get-out-of-office</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-out-of-office</h3></summary>
 
 ### Description
 Retrieves the out-of-office status for a specified mailbox.
@@ -679,7 +679,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-recover-messages</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-recover-messages</h3></summary>
 
 ### Description
 Recovers messages that were soft-deleted.
@@ -736,7 +736,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-create-folder</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-create-folder</h3></summary>
 
 ### Description
 Creates a new folder in a specified mailbox.
@@ -769,7 +769,7 @@ There is no context output for this command.
 
 </details>
 
-<details> <summary>ews-mark-item-as-junk</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-mark-item-as-junk</h3></summary>
 
 ### Description
 Marks an item as junk. This is commonly used to block an email address. For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
@@ -820,7 +820,7 @@ There is no context output for this command.
 </details>
 
 
-<details> <summary>ews-find-folders</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-find-folders</h3></summary>
 
 ### Description
 Retrieves information for the folders of the specified mailbox. Only folders with read permissions will be returned. Your visual folders on the mailbox, such as "Inbox", are under the folder "Top of Information Store".
@@ -920,7 +920,7 @@ root
 </details>
 
 
-<details> <summary>ews-get-items-from-folder</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-items-from-folder</h3></summary>
 
 ### Description
 Retrieves items from a specified folder in a mailbox. The items are ordered by the item created time, most recent is first.
@@ -1033,7 +1033,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-get-items</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-items</h3></summary>
 
 ### Description
 Retrieves items by item ID.
@@ -1095,7 +1095,7 @@ Identical outputs to `ews-get-items-from-folder` command.
 </details>
 
 
-<details> <summary>ews-move-item-between-mailboxes</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-move-item-between-mailboxes</h3></summary>
 
 ### Description
 Moves an item from one mailbox to a different mailbox.
@@ -1148,7 +1148,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-get-folder</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-folder</h3></summary>
 
 ### Description
 Retrieves a single folder.
@@ -1210,7 +1210,7 @@ No known limitations.
 </details>
 
 
-<details> <summary>ews-expand-group</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-expand-group</h3></summary>
 
 ### Description
 Expands a distribution list to display all members. By default, expands only the first layer of the distribution list. If recursive-expansion is "True", the command expands nested distribution lists and returns all members.
@@ -1262,7 +1262,7 @@ There is no context output for this command.
 
 </details>
 
-<details> <summary>ews-mark-items-as-read</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-mark-items-as-read</h3></summary>
 
 ### Description
 Marks items as read or unread.
@@ -1318,7 +1318,7 @@ No known limitations.
 
 </details>
 
-<details> <summary>send-mail</summary>
+<details><summary><h3 style={{display: 'inline'}}>send-mail</h3></summary>
 
 ### Description
 Sends an email.
@@ -1369,7 +1369,7 @@ There is no context output for this command.
 
 </details>
 
-<details> <summary>ews-get-items-as-eml</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-get-items-as-eml</h3></summary>
 
 ### Description
 Retrieves items by item ID and uploads its content as an EML file.
@@ -1406,7 +1406,7 @@ No known limitations.
 
 </details>
 
-<details> <summary>reply-mail</summary>
+<details><summary><h3 style={{display: 'inline'}}>reply-mail</h3></summary>
 
 ### Description
 Reply to an email
@@ -1450,7 +1450,7 @@ There is no context output for this command.
 
 </details>
 
-<details> <summary>ews-auth-reset</summary>
+<details><summary><h3 style={{display: 'inline'}}>ews-auth-reset</h3></summary>
 
 ### Description
 Rerun the authentication process.
@@ -1490,10 +1490,13 @@ There is no context output for this command.
 
 # Troubleshooting
 
-<details> <summary>Instance Configuration </summary> TEST </details>
-<details> <summary> Fetch command </summary>Test</details>
-<details> <summary> General </summary> 
+<details><summary><h3 style={{display: 'inline'}}>Instance Configuration </h3></summary> TEST </details>
+<details><summary><h3 style={{display: 'inline'}}> Fetch command </h3></summary>
+- If incidents are not being fetched, verify no `pre process` rule is configured that might filter some incidents out.
+- "address parts cannot contain CR or LF" In the logs means an corrupted email might have fail the process. In order to solve you might need to remove the email from the folder being fetched. Contact Support Team if you believe the email is not corrupted. 
 
+</details>
+<details><summary><h3 style={{display: 'inline'}}> General </h3></summary> 
 - ews-get-searchable-mailboxes: |-
     When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained [https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019].
 </details>
