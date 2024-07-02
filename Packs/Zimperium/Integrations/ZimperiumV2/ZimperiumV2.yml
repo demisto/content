@@ -76,6 +76,8 @@ script:
       name: limit
     - description: Used to filter the user data by the Team the user belongs to.
       name: team_id
+    - description: The email of the user to search.
+      name: email
     description: Search users. Only a user created as a "Team admin" is authorized to perform this request. Also, it will only get information about the teams that this user is associated with. Users that are not part of any team (such as account admin) won’t appear in the response.
     name: zimperium-users-search
     outputs:
@@ -1342,7 +1344,7 @@ script:
     - contextPath: Zimperium.PolicyDeviceInactivity.teamId
       description: The team ID for the policy device inactivity.
       type: String
-  dockerimage: demisto/python3:3.10.13.90168
+  dockerimage: demisto/python3:3.10.14.99865
   isfetch: true
   runonce: false
   script: '-'
