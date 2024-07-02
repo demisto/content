@@ -1,19 +1,19 @@
 id: TAXII2 Server Performance Test
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: TAXII2 Server Performance Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: cd603bed-c6f9-4f27-8b43-83026bb7f831
+    taskid: c174e0f7-a04f-473c-82a8-0b104e7b6745
     type: start
     task:
-      id: cd603bed-c6f9-4f27-8b43-83026bb7f831
+      id: c174e0f7-a04f-473c-82a8-0b104e7b6745
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -22,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 2f5059c6-115d-40db-8df1-ab2039258f2e
+    taskid: ec691cb8-3095-4784-8a78-1a85220f3248
     type: regular
     task:
-      id: 2f5059c6-115d-40db-8df1-ab2039258f2e
+      id: ec691cb8-3095-4784-8a78-1a85220f3248
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -58,7 +58,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -71,15 +71,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 1f0b540e-cef5-4c30-8faa-c74a85418241
+    taskid: 70a17264-8b17-4773-88f7-eb524f2bf63f
     type: title
     task:
-      id: 1f0b540e-cef5-4c30-8faa-c74a85418241
+      id: 70a17264-8b17-4773-88f7-eb524f2bf63f
       version: -1
       name: 10,000 Indicators
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "61"
@@ -88,8 +89,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2820
+          "x": 265,
+          "y": 3170
         }
       }
     note: false
@@ -101,16 +102,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
+    taskid: 4a3cd81b-9e89-4d8c-8c4c-d6eecaa5488d
     type: playbook
     task:
-      id: 427f4a6f-a7d5-44b6-8a67-7e32c4c3be3e
+      id: 4a3cd81b-9e89-4d8c-8c4c-d6eecaa5488d
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -152,8 +154,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4690
+          "x": 265,
+          "y": 5065
         }
       }
     note: false
@@ -165,16 +167,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 9136f288-916e-4b86-8fa5-ed592a5f87f1
+    taskid: 76e69b6a-8733-43b3-8638-a2de35ad3c53
     type: playbook
     task:
-      id: 9136f288-916e-4b86-8fa5-ed592a5f87f1
+      id: 76e69b6a-8733-43b3-8638-a2de35ad3c53
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "10"
@@ -212,8 +215,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6935
+          "x": 265,
+          "y": 7310
         }
       }
     note: false
@@ -225,15 +228,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 0ebc5090-e80b-489e-8495-7b653356b281
+    taskid: 8574ff95-2471-4af1-8680-7b5adfe6470c
     type: title
     task:
-      id: 0ebc5090-e80b-489e-8495-7b653356b281
+      id: 8574ff95-2471-4af1-8680-7b5adfe6470c
       version: -1
       name: 50,000 Indicators
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "38"
@@ -242,8 +246,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5215
+          "x": 265,
+          "y": 5590
         }
       }
     note: false
@@ -255,15 +259,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 4cb3dee5-788a-42dd-8299-1128ab1a079d
+    taskid: 4769f2ef-d5c1-440f-8c94-5cb4421d3d91
     type: title
     task:
-      id: 4cb3dee5-788a-42dd-8299-1128ab1a079d
+      id: 4769f2ef-d5c1-440f-8c94-5cb4421d3d91
       version: -1
       name: 90,000 Indicators
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "48"
@@ -272,8 +277,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7460
+          "x": 265,
+          "y": 7835
         }
       }
     note: false
@@ -285,16 +290,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
+    taskid: 2c1ceb9a-db26-4b81-8a45-5ef901010ac5
     type: playbook
     task:
-      id: 0bbe286d-228e-47b9-8fd4-5047604e4b0e
+      id: 2c1ceb9a-db26-4b81-8a45-5ef901010ac5
       version: -1
       name: TAXII2 Performance Test - Concurrency
       playbookName: TAXII2 Performance Test - Concurrency
       type: playbook
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -332,8 +338,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9180
+          "x": 265,
+          "y": 9555
         }
       }
     note: false
@@ -345,10 +351,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: e343a521-be81-4c7a-8012-cb1c3b8b496d
+    taskid: 3dd57892-d98b-43b5-8aeb-077bfbc9aeba
     type: regular
     task:
-      id: e343a521-be81-4c7a-8012-cb1c3b8b496d
+      id: 3dd57892-d98b-43b5-8aeb-077bfbc9aeba
       version: -1
       name: Set Small Outputs
       description: Set a value in context under the key you entered.
@@ -370,8 +376,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4865
+          "x": 265,
+          "y": 5240
         }
       }
     note: false
@@ -383,10 +389,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: ba6d1029-39fb-49b5-89f0-c654866d4e3b
+    taskid: 61d29501-c906-41c5-8d9d-5abdbc95670f
     type: regular
     task:
-      id: ba6d1029-39fb-49b5-89f0-c654866d4e3b
+      id: 61d29501-c906-41c5-8d9d-5abdbc95670f
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -408,8 +414,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5040
+          "x": 265,
+          "y": 5415
         }
       }
     note: false
@@ -421,10 +427,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 3615c5ac-22e6-4fb5-829e-89a408e3cc9c
+    taskid: bad788f5-7208-44a9-8461-38dfc2942762
     type: regular
     task:
-      id: 3615c5ac-22e6-4fb5-829e-89a408e3cc9c
+      id: bad788f5-7208-44a9-8461-38dfc2942762
       version: -1
       name: Set Medium Outputs
       description: Set a value in context under the key you entered.
@@ -445,8 +451,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7110
+          "x": 265,
+          "y": 7485
         }
       }
     note: false
@@ -458,10 +464,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 1f4e4943-44e4-4d44-860b-7b12f8de05c9
+    taskid: 84dbb9c2-8122-4164-8bb3-b02438225d12
     type: regular
     task:
-      id: 1f4e4943-44e4-4d44-860b-7b12f8de05c9
+      id: 84dbb9c2-8122-4164-8bb3-b02438225d12
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -483,8 +489,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7285
+          "x": 265,
+          "y": 7660
         }
       }
     note: false
@@ -496,10 +502,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 1123495a-200f-4f67-8fc7-885b502e6aa5
+    taskid: f7b3b4b6-10c1-4079-8ffb-148be2557410
     type: regular
     task:
-      id: 1123495a-200f-4f67-8fc7-885b502e6aa5
+      id: f7b3b4b6-10c1-4079-8ffb-148be2557410
       version: -1
       name: Set Large Outputs
       description: Set a value in context under the key you entered.
@@ -520,8 +526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9355
+          "x": 265,
+          "y": 9730
         }
       }
     note: false
@@ -533,10 +539,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 3fae1920-4bfc-49e2-870a-68b4162d6de8
+    taskid: 58ba413b-6227-44a5-8ccd-0b5fa827834f
     type: regular
     task:
-      id: 3fae1920-4bfc-49e2-870a-68b4162d6de8
+      id: 58ba413b-6227-44a5-8ccd-0b5fa827834f
       version: -1
       name: Check IP Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -557,7 +563,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -570,10 +576,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 4ce02c35-7a88-4dce-8861-eb753b530390
+    taskid: f3b64882-cc5b-471c-822a-ee8c622f57c0
     type: condition
     task:
-      id: 4ce02c35-7a88-4dce-8861-eb753b530390
+      id: f3b64882-cc5b-471c-822a-ee8c622f57c0
       version: -1
       name: Verify IP Is Ready
       type: condition
@@ -597,7 +603,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 545
         }
       }
@@ -610,10 +616,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ccca8790-864e-45d7-89af-28116b9d5669
+    taskid: 96c3b56e-96ba-40b2-87ce-9bbbedd47a40
     type: regular
     task:
-      id: ccca8790-864e-45d7-89af-28116b9d5669
+      id: 96c3b56e-96ba-40b2-87ce-9bbbedd47a40
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -633,8 +639,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 885
+          "x": 265,
+          "y": 895
         }
       }
     note: false
@@ -646,10 +652,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: a7838c25-73b5-46d7-83fc-d8c65be0c97a
+    taskid: cc78bd3d-211c-4b13-8aec-98a5ecf8ed9c
     type: playbook
     task:
-      id: a7838c25-73b5-46d7-83fc-d8c65be0c97a
+      id: cc78bd3d-211c-4b13-8aec-98a5ecf8ed9c
       version: -1
       name: GenericPolling
       description: |-
@@ -694,7 +700,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 720
         }
       }
@@ -707,10 +713,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: c2efbff9-21e8-4387-8110-2c2723329f10
+    taskid: d05d239b-c24a-4a41-83d6-b4337f1889e7
     type: regular
     task:
-      id: c2efbff9-21e8-4387-8110-2c2723329f10
+      id: d05d239b-c24a-4a41-83d6-b4337f1889e7
       version: -1
       name: Check Domain Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -731,7 +737,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1070
         }
       }
@@ -744,10 +750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 98947149-2db3-4d22-8e63-df4e6b0cc662
+    taskid: b4f3b802-6470-4a5f-8a3d-0f0c8f156f04
     type: condition
     task:
-      id: 98947149-2db3-4d22-8e63-df4e6b0cc662
+      id: b4f3b802-6470-4a5f-8a3d-0f0c8f156f04
       version: -1
       name: Verify Domain Is Ready
       type: condition
@@ -771,7 +777,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1245
         }
       }
@@ -784,10 +790,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 837122db-ac7f-45e7-863c-04ae627675de
+    taskid: 8becf270-9a9b-4fc5-81f4-a7dee2e82285
     type: regular
     task:
-      id: 837122db-ac7f-45e7-863c-04ae627675de
+      id: 8becf270-9a9b-4fc5-81f4-a7dee2e82285
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -807,7 +813,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1595
         }
       }
@@ -820,10 +826,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 81e4b5ed-6cdf-4715-89af-cc3facda9c17
+    taskid: fd8c2a87-d8ea-4611-854d-186dfeb174e7
     type: playbook
     task:
-      id: 81e4b5ed-6cdf-4715-89af-cc3facda9c17
+      id: fd8c2a87-d8ea-4611-854d-186dfeb174e7
       version: -1
       name: GenericPolling
       description: |-
@@ -868,7 +874,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 1420
         }
       }
@@ -881,10 +887,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: d2180ff0-aa03-45a1-85a6-0fa982e24794
+    taskid: 3da5c251-2e36-41fa-868a-a64b0c1c96a9
     type: regular
     task:
-      id: d2180ff0-aa03-45a1-85a6-0fa982e24794
+      id: 3da5c251-2e36-41fa-868a-a64b0c1c96a9
       version: -1
       name: Check URL Is Ready
       description: Returns, whether there're, are enough indicators in the system.
@@ -905,7 +911,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1770
         }
       }
@@ -918,10 +924,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: b81cafbb-5b5c-4ad8-8d40-7748f2886daf
+    taskid: ae06704b-493f-49c2-8336-64e9def2d7cb
     type: regular
     task:
-      id: b81cafbb-5b5c-4ad8-8d40-7748f2886daf
+      id: ae06704b-493f-49c2-8336-64e9def2d7cb
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -941,7 +947,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2295
         }
       }
@@ -954,10 +960,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 350b4390-92d7-496c-823a-67d5985ba800
+    taskid: 6e3ad612-0ac5-4e90-889b-4a8121567c85
     type: condition
     task:
-      id: 350b4390-92d7-496c-823a-67d5985ba800
+      id: 6e3ad612-0ac5-4e90-889b-4a8121567c85
       version: -1
       name: Verify URL Is Ready
       type: condition
@@ -981,7 +987,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 1945
         }
       }
@@ -994,10 +1000,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 282f5177-8cf2-4ed6-8a34-c17e009f4850
+    taskid: 6264e90d-9e45-4151-8bca-433c2d8e11df
     type: playbook
     task:
-      id: 282f5177-8cf2-4ed6-8a34-c17e009f4850
+      id: 6264e90d-9e45-4151-8bca-433c2d8e11df
       version: -1
       name: GenericPolling
       description: |-
@@ -1042,7 +1048,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 162.5,
+          "x": 377.5,
           "y": 2120
         }
       }
@@ -1055,12 +1061,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
+    taskid: e9590d38-5892-4db1-8537-02c02693a2df
     type: regular
     task:
-      id: cdd30184-abc9-47b2-8a5a-07ed7d7aaa1e
+      id: e9590d38-5892-4db1-8537-02c02693a2df
       version: -1
-      name: Set URL
+      name: Set URL For XSOAR 6
       description: Set a value in context under the key you entered.
       scriptName: Set
       type: regular
@@ -1088,8 +1094,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2645
+          "x": 40,
+          "y": 2995
         }
       }
     note: false
@@ -1101,10 +1107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
+    taskid: 53546b09-b369-4b42-87b3-5d334bb7a8a3
     type: regular
     task:
-      id: 38277ffb-60a7-4bfe-88d6-b8356b3c86d7
+      id: 53546b09-b369-4b42-87b3-5d334bb7a8a3
       version: -1
       name: Get Server URL
       description: Get the Server URL.
@@ -1114,13 +1120,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
+      - "62"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 2470
         }
       }
@@ -1133,10 +1139,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: dc963372-3942-43f0-87e2-2d88f8d314a2
+    taskid: 104829be-9fce-47af-8074-664e5e42ecb0
     type: regular
     task:
-      id: dc963372-3942-43f0-87e2-2d88f8d314a2
+      id: 104829be-9fce-47af-8074-664e5e42ecb0
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1175,13 +1181,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=10000&match[type]=url
+      password:
+        simple: '{TOMMED}7DTVwutgvncbdicYdK+lcNcle4o2axLVpe1Mi2sYrPUTUmnpHkG5dA6AWVsYqi1MNN0p8t9NN0S0MGY1N4JZfw=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3115
+          "x": 265,
+          "y": 3490
         }
       }
     note: false
@@ -1193,10 +1203,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 3ca965c9-be26-4736-83b2-e8191d00c7fd
+    taskid: 5cf5c3ba-0ad0-4328-8ea3-5715894cbdab
     type: condition
     task:
-      id: 3ca965c9-be26-4736-83b2-e8191d00c7fd
+      id: 5cf5c3ba-0ad0-4328-8ea3-5715894cbdab
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1225,8 +1235,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3290
+          "x": 265,
+          "y": 3665
         }
       }
     note: false
@@ -1238,10 +1248,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 018015db-908c-4087-885c-3769ea9b0483
+    taskid: f8b482d3-3c45-411a-85d7-1caff5555743
     type: regular
     task:
-      id: 018015db-908c-4087-885c-3769ea9b0483
+      id: f8b482d3-3c45-411a-85d7-1caff5555743
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1280,13 +1290,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=10000&match[type]=ip
+      password:
+        simple: '{TOMMED}YwM9remcfGtE9Y2ML4wibuEegHEe2nfY+9H45JuIenEil468ga9ETa4Wktt/DU7HLaC6UU6YdiO333UxzhKY+w=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3640
+          "x": 265,
+          "y": 4015
         }
       }
     note: false
@@ -1298,10 +1312,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 25ee9bf6-f687-4bb4-8795-03c238818fec
+    taskid: e66eb6db-9cdb-4bff-811e-e923e4271e45
     type: condition
     task:
-      id: 25ee9bf6-f687-4bb4-8795-03c238818fec
+      id: e66eb6db-9cdb-4bff-811e-e923e4271e45
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1330,8 +1344,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3815
+          "x": 265,
+          "y": 4190
         }
       }
     note: false
@@ -1343,10 +1357,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 1d1f55f2-c1c6-4712-8484-4f0efd3f23b7
+    taskid: e5549a41-0298-495d-8679-a4845aa287bf
     type: regular
     task:
-      id: 1d1f55f2-c1c6-4712-8484-4f0efd3f23b7
+      id: e5549a41-0298-495d-8679-a4845aa287bf
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1368,8 +1382,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3465
+          "x": 265,
+          "y": 3840
         }
       }
     note: false
@@ -1381,10 +1395,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 6373a0d1-85be-4905-8f51-945b607d867c
+    taskid: 7a4fe24b-e6cb-4d5c-8ddb-3215aa8449d3
     type: regular
     task:
-      id: 6373a0d1-85be-4905-8f51-945b607d867c
+      id: 7a4fe24b-e6cb-4d5c-8ddb-3215aa8449d3
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1406,8 +1420,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 3990
+          "x": 265,
+          "y": 4365
         }
       }
     note: false
@@ -1419,10 +1433,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: b09015ed-04fe-4df3-878c-74c3d3dd5520
+    taskid: 14f83d9b-8656-4ac1-8112-fd20ab94da47
     type: regular
     task:
-      id: b09015ed-04fe-4df3-878c-74c3d3dd5520
+      id: 14f83d9b-8656-4ac1-8112-fd20ab94da47
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1461,13 +1475,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=10000&match[type]=domain-name
+      password:
+        simple: '{TOMMED}JCR0pYmZ+ugzFhDC4RZoITBilAR23eYT3zvNyM4yJGClh1L9nI3riYf9WnEz3HweZnqfqWQIZaefTo6SCdWfrg=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4165
+          "x": 265,
+          "y": 4540
         }
       }
     note: false
@@ -1479,10 +1497,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 0200298b-dff9-47b0-8a9f-e2b51790f6cb
+    taskid: 66a666cc-f63e-44f2-86bc-c35ce4f31f46
     type: condition
     task:
-      id: 0200298b-dff9-47b0-8a9f-e2b51790f6cb
+      id: 66a666cc-f63e-44f2-86bc-c35ce4f31f46
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1511,8 +1529,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4340
+          "x": 265,
+          "y": 4715
         }
       }
     note: false
@@ -1524,10 +1542,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
+    taskid: cc58cce3-ff4c-4fbc-88ff-2a88ff91dc75
     type: regular
     task:
-      id: 85d84ae2-94c1-4533-8081-e6e722f2fd9e
+      id: cc58cce3-ff4c-4fbc-88ff-2a88ff91dc75
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1571,8 +1589,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5360
+          "x": 265,
+          "y": 5735
         }
       }
     note: false
@@ -1584,10 +1602,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: cc030986-2d75-4e05-8b19-82d8c9513ae8
+    taskid: 3a0b9bad-7cdc-45ef-8549-faf1f2a5d83c
     type: condition
     task:
-      id: cc030986-2d75-4e05-8b19-82d8c9513ae8
+      id: 3a0b9bad-7cdc-45ef-8549-faf1f2a5d83c
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1616,8 +1634,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5535
+          "x": 265,
+          "y": 5910
         }
       }
     note: false
@@ -1629,10 +1647,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: e3c51ee0-c14b-46c6-825e-0b1046b2693a
+    taskid: 84fd65d7-aa2d-46c6-8dad-6449e30c51fb
     type: regular
     task:
-      id: e3c51ee0-c14b-46c6-825e-0b1046b2693a
+      id: 84fd65d7-aa2d-46c6-8dad-6449e30c51fb
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1654,8 +1672,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5710
+          "x": 265,
+          "y": 6085
         }
       }
     note: false
@@ -1667,10 +1685,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
+    taskid: f4206e7a-66e5-4671-84f0-2989b8408634
     type: regular
     task:
-      id: 4e75f5f2-67be-4e7b-8c04-76e2bade989d
+      id: f4206e7a-66e5-4671-84f0-2989b8408634
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -1709,13 +1727,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=50000&match[type]=ip
+      password:
+        simple: '{TOMMED}uSjAdmbmM1unDamEQa1/EJI/1i6iVKwLNGPvsJLAey7otipiGhTSCqL4vLQ8r8NqlLLSzjPiQ7PfOdtiJFglWg=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 5885
+          "x": 265,
+          "y": 6260
         }
       }
     note: false
@@ -1727,10 +1749,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: 7bc7a0a0-df72-465f-8df8-d3029412eeb9
+    taskid: 91aff103-83cc-407a-8c3e-602d2fdb2421
     type: condition
     task:
-      id: 7bc7a0a0-df72-465f-8df8-d3029412eeb9
+      id: 91aff103-83cc-407a-8c3e-602d2fdb2421
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1759,8 +1781,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6060
+          "x": 265,
+          "y": 6435
         }
       }
     note: false
@@ -1772,10 +1794,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 72389367-a574-4e80-8ec9-220623b5c990
+    taskid: 5d4e21a9-548b-4dbd-844a-7000363c6977
     type: regular
     task:
-      id: 72389367-a574-4e80-8ec9-220623b5c990
+      id: 5d4e21a9-548b-4dbd-844a-7000363c6977
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -1797,8 +1819,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6235
+          "x": 265,
+          "y": 6610
         }
       }
     note: false
@@ -1810,10 +1832,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 029df56c-f3ed-4996-869e-dbfb55d41a26
+    taskid: a92a42bc-73a0-407c-80b8-f81d5e2b8e0d
     type: regular
     task:
-      id: 029df56c-f3ed-4996-869e-dbfb55d41a26
+      id: a92a42bc-73a0-407c-80b8-f81d5e2b8e0d
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -1852,13 +1874,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=50000&match[type]=domain-name
+      password:
+        simple: '{TOMMED}Z4chu/0OpDgxA9fTz+QdRQIsB8PVuqEOJmBaBKArMa5qQKrA3ri1I3Pp2SefhlZnXok33mjaU6C7edS4f/7oFg=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6410
+          "x": 265,
+          "y": 6785
         }
       }
     note: false
@@ -1870,10 +1896,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 279a25d8-679b-4c68-8f93-57b0f87f3f73
+    taskid: a0ced84b-7178-435b-8b51-c207aa548e50
     type: condition
     task:
-      id: 279a25d8-679b-4c68-8f93-57b0f87f3f73
+      id: a0ced84b-7178-435b-8b51-c207aa548e50
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -1902,8 +1928,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6585
+          "x": 265,
+          "y": 6960
         }
       }
     note: false
@@ -1915,10 +1941,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "48":
     id: "48"
-    taskid: 5885567d-48a4-421c-8052-53c0bd9c845a
+    taskid: 91b9f75c-52cd-41d9-8f27-eaa9bec446c3
     type: regular
     task:
-      id: 5885567d-48a4-421c-8052-53c0bd9c845a
+      id: 91b9f75c-52cd-41d9-8f27-eaa9bec446c3
       version: -1
       name: Send URL Query
       description: Sends http request. Returns the response as json.
@@ -1957,13 +1983,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=90000&match[type]=url
+      password:
+        simple: '{TOMMED}e1QFW9pvG8dkIYzXlzgA4kahSMEvIdUnfkVkGBQCIq1uD4VDh3NjCspmKd6vgfcMlp4eOBm0A+SBbtHnZr7Xqw=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7605
+          "x": 265,
+          "y": 7980
         }
       }
     note: false
@@ -1975,10 +2005,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "49":
     id: "49"
-    taskid: da32e3ed-c0c9-4256-89df-bcc6df50cdeb
+    taskid: 74d44457-cd3b-4476-8ead-26cbc8eaa4a1
     type: condition
     task:
-      id: da32e3ed-c0c9-4256-89df-bcc6df50cdeb
+      id: 74d44457-cd3b-4476-8ead-26cbc8eaa4a1
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -2007,8 +2037,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7780
+          "x": 265,
+          "y": 8155
         }
       }
     note: false
@@ -2020,10 +2050,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "50":
     id: "50"
-    taskid: 50d7ffef-fb81-4664-8dc3-f877387ef07b
+    taskid: dd85446a-845f-483e-8882-119990d770d4
     type: regular
     task:
-      id: 50d7ffef-fb81-4664-8dc3-f877387ef07b
+      id: dd85446a-845f-483e-8882-119990d770d4
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2045,8 +2075,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 7955
+          "x": 265,
+          "y": 8330
         }
       }
     note: false
@@ -2058,10 +2088,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "51":
     id: "51"
-    taskid: 2d344e33-4e0a-4554-8f60-71314311144d
+    taskid: de2e3836-8db7-4b92-8ba4-e5f74008cdd6
     type: regular
     task:
-      id: 2d344e33-4e0a-4554-8f60-71314311144d
+      id: de2e3836-8db7-4b92-8ba4-e5f74008cdd6
       version: -1
       name: Send IP Query
       description: Sends http request. Returns the response as json.
@@ -2100,13 +2130,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=90000&match[type]=ip
+      password:
+        simple: '{TOMMED}Kg7sk21JDBQZCO9obK8cU9HH5LvISQxYm9i+M2JckD761Y/okAQg3ph2cucSFhOCUifnpvVQceZRnmB1adrmDA=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 8130
+          "x": 265,
+          "y": 8505
         }
       }
     note: false
@@ -2118,10 +2152,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "52":
     id: "52"
-    taskid: 8f00d7af-273c-40b2-88a3-ab1b2dd360ca
+    taskid: 31b18644-ad70-4a74-88ce-22674f7624b1
     type: condition
     task:
-      id: 8f00d7af-273c-40b2-88a3-ab1b2dd360ca
+      id: 31b18644-ad70-4a74-88ce-22674f7624b1
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -2150,8 +2184,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 8305
+          "x": 265,
+          "y": 8680
         }
       }
     note: false
@@ -2163,10 +2197,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: b655cfc8-b2e0-4df4-8c83-ea060dd2d746
+    taskid: 62266d71-a27d-4c4e-8193-e3cfd985e1bb
     type: regular
     task:
-      id: b655cfc8-b2e0-4df4-8c83-ea060dd2d746
+      id: 62266d71-a27d-4c4e-8193-e3cfd985e1bb
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2188,8 +2222,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 8480
+          "x": 265,
+          "y": 8855
         }
       }
     note: false
@@ -2201,10 +2235,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
+    taskid: 64bd8b29-c6f9-419e-84b0-c3929f237a19
     type: regular
     task:
-      id: 3ae9690c-2a6d-4607-80dc-e9bf58490de6
+      id: 64bd8b29-c6f9-419e-84b0-c3929f237a19
       version: -1
       name: Send Domain Query
       description: Sends http request. Returns the response as json.
@@ -2243,13 +2277,17 @@ tasks:
               suffix:
                 value:
                   simple: /objects/?limit=90000&match[type]=domain-name
+      password:
+        simple: '{TOMMED}hN8Z2Wla7d/ubqIFl5FVSmCbTHPjHAHo8iVEZ59AB9vpZ72BLofUaRkGG/JPNKMCTCcN9iWnVIPTmZnZSjak7w=='
+      username:
+        simple: ${inputs.username}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 8655
+          "x": 265,
+          "y": 9030
         }
       }
     note: false
@@ -2261,10 +2299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "55":
     id: "55"
-    taskid: 475203a0-79ab-401b-8cef-0daf9efeb1b2
+    taskid: 0d4faba9-8600-4a21-817d-89d738c44708
     type: condition
     task:
-      id: 475203a0-79ab-401b-8cef-0daf9efeb1b2
+      id: 0d4faba9-8600-4a21-817d-89d738c44708
       version: -1
       name: Assert Search Time OK
       type: condition
@@ -2293,8 +2331,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 8830
+          "x": 265,
+          "y": 9205
         }
       }
     note: false
@@ -2306,22 +2344,23 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 7d45d389-de47-4680-8351-349e59da125b
+    taskid: e126d2f0-84a1-4432-86a0-51684a9007a9
     type: title
     task:
-      id: 7d45d389-de47-4680-8351-349e59da125b
+      id: e126d2f0-84a1-4432-86a0-51684a9007a9
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9705
+          "x": 265,
+          "y": 10080
         }
       }
     note: false
@@ -2333,10 +2372,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "57":
     id: "57"
-    taskid: 974eb66b-f3ee-438b-8150-8196d5204687
+    taskid: f637c17a-581b-41ef-80f4-81efe6f7cedb
     type: regular
     task:
-      id: 974eb66b-f3ee-438b-8150-8196d5204687
+      id: f637c17a-581b-41ef-80f4-81efe6f7cedb
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2358,8 +2397,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 4515
+          "x": 265,
+          "y": 4890
         }
       }
     note: false
@@ -2371,10 +2410,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "58":
     id: "58"
-    taskid: bb1fe041-3e69-4bed-8787-26eabe40ad0b
+    taskid: 14fe4b23-c2aa-4c51-85f9-f03978aa02d9
     type: regular
     task:
-      id: bb1fe041-3e69-4bed-8787-26eabe40ad0b
+      id: 14fe4b23-c2aa-4c51-85f9-f03978aa02d9
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2396,8 +2435,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 6760
+          "x": 265,
+          "y": 7135
         }
       }
     note: false
@@ -2409,10 +2448,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "59":
     id: "59"
-    taskid: 45327fbd-6f64-4877-8462-ce3d744f2674
+    taskid: 227c57a8-3164-4479-81ed-9bf6b9c03d10
     type: regular
     task:
-      id: 45327fbd-6f64-4877-8462-ce3d744f2674
+      id: 227c57a8-3164-4479-81ed-9bf6b9c03d10
       version: -1
       name: Clear Context
       description: Delete field from context
@@ -2434,8 +2473,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9005
+          "x": 265,
+          "y": 9380
         }
       }
     note: false
@@ -2447,10 +2486,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "60":
     id: "60"
-    taskid: 4f088905-a0bd-490c-8d32-5ebd6a7f2c78
+    taskid: 70f23180-2183-442c-8e3d-3136a46fbe7d
     type: regular
     task:
-      id: 4f088905-a0bd-490c-8d32-5ebd6a7f2c78
+      id: 70f23180-2183-442c-8e3d-3136a46fbe7d
       version: -1
       name: Clear HeyConcurrency Context
       description: Delete field from context
@@ -2472,8 +2511,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 9530
+          "x": 265,
+          "y": 9905
         }
       }
     note: false
@@ -2485,10 +2524,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "61":
     id: "61"
-    taskid: c22b6109-8027-4413-833c-957ce796e110
+    taskid: 56c4d34a-a8f8-467b-80ff-99f87b904697
     type: regular
     task:
-      id: c22b6109-8027-4413-833c-957ce796e110
+      id: 56c4d34a-a8f8-467b-80ff-99f87b904697
       version: -1
       name: taxii-server-list-collections
       description: Returns all the collections.
@@ -2504,8 +2543,138 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 2950
+          "x": 265,
+          "y": 3315
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "62":
+    id: "62"
+    taskid: f156d5c3-9cfb-4699-8371-7a97b07b3382
+    type: regular
+    task:
+      id: f156d5c3-9cfb-4699-8371-7a97b07b3382
+      version: -1
+      name: Get server info
+      description: Get version and URL of current XSOAR server.
+      scriptName: GetServerInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "63"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "63":
+    id: "63"
+    taskid: b3a43523-7d49-47ea-8bff-ea8b00dc3e19
+    type: condition
+    task:
+      id: b3a43523-7d49-47ea-8bff-ea8b00dc3e19
+      version: -1
+      name: Is XSOAR 6
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "64"
+      "yes":
+      - "27"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: ServerInfo.version.version
+            iscontext: true
+          right:
+            value:
+              simple: "6"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "64":
+    id: "64"
+    taskid: 31720589-f13c-43ca-8684-4489f4b5fc3f
+    type: regular
+    task:
+      id: 31720589-f13c-43ca-8684-4489f4b5fc3f
+      version: -1
+      name: Set URL For XSOAR 8
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      key:
+        simple: ServerURL
+      value:
+        complex:
+          root: ServerURL
+          accessor: URL
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /xsoar/instance/execute/taxii2server/
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: https://ext-
+              toReplace:
+                value:
+                  simple: https://
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2995
         }
       }
     note: false
@@ -2520,9 +2689,9 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 9720,
-        "width": 492.5,
-        "x": 50,
+        "height": 10095,
+        "width": 820,
+        "x": 40,
         "y": 50
       }
     }
@@ -2533,23 +2702,29 @@ inputs:
     simple: edl
   required: false
   description: EDL instance URL.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: z
   value: {}
   required: false
   description: Duration of application to send requests.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: "n"
   value: {}
   required: false
   description: The number of requests to run. Default is 200.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: iocs_in_xsoar
   value:
     simple: "90000"
   required: false
   description: Expected number of indicators in the system.
-  playbookInputQuery: null
+  playbookInputQuery:
+- key: username
+  value:
+    simple: test12
+  required: false
+  description: The username for the TAXII server.
+  playbookInputQuery:
 outputs: []
 fromversion: 6.1.0
 description: ''
