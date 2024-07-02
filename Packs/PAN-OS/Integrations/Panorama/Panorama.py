@@ -9161,7 +9161,7 @@ class Topology:
 
         return topology
 
-    def get_direct_device(self, firewall: Firewall) -> PanDevice:
+    def get_direct_device(self, firewall: Firewall, ip_address: Optional[str] = None) -> PanDevice:
         """
         Given a firewall object that's proxied via Panorama, create a device that uses a direct API connection
         instead. Used by any command that can't be routed via Panorama.
@@ -9171,7 +9171,7 @@ class Topology:
             # If it's already a direct connection
             return firewall
 
-        ip_address = (firewall.show_system_info().get("system") or {}).get("ip-address")
+        ip_address = ip_address or (firewall.show_system_info().get("system") or {}).get("ip-address")
 
         return PanDevice.create_from_device(
             hostname=ip_address,
@@ -11246,17 +11246,19 @@ class FirewallCommand:
         )
 
     @staticmethod
-    def get_device_state(topology: Topology, target: str):
+    def get_device_state(topology: Topology, target: str, ip_address: Optional[str] = None):
         """
         Returns an exported device state, as binary data. Note that this will attempt to connect directly to the target
         firewall, as it cannot be exported via the Panorama proxy. If there are network issues that prevent that, this command
         will time out.
         :param topology: `Topology` instance.
         :param target: The target serial number to retrieve the device state from.
+        :param ip_address: An ip address to use for service route enabled firewalls
         """
+
         for firewall in topology.firewalls(target=target):
             # Connect directly to the firewall
-            direct_firewall_connection = topology.get_direct_device(firewall)
+            direct_firewall_connection = topology.get_direct_device(firewall, ip_address)
             direct_firewall_connection.xapi.export(category="device-state")
             return direct_firewall_connection.xapi.export_result.get("content")
 
