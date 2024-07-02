@@ -7,7 +7,7 @@ import os
 import subprocess
 
 # Import the functions from the script
-from your_script import installLibrary, main  # Replace 'your_script' with the actual script name
+from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'your_script' with the actual script name
 
 class TestInstallLibrary(unittest.TestCase):
     @patch('your_script.subprocess.Popen')
