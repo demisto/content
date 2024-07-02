@@ -1,5 +1,4 @@
 FTP integration to download or upload file to remote ftp server. Please be noted that FTP transfer is insecure. Please use it with care. 
-This integration was integrated and tested with version xx of FTP.
 
 ## Configure FTP on Cortex XSOAR
 
