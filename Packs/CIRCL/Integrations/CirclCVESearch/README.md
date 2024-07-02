@@ -88,10 +88,10 @@ Returns CVE information by CVE ID.
 | CVE.vulnerableproduct | Dict | Vulnerable products in CPE format |
 | CVE.Tags | List | A list of tags |
 | CVE.Relationships | List | List of relationships for the CVE |
-| DBotScore.Indicator | String | The indicator value. |
-| DBotScore.Score | Number | The indicator score. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor reporting the score of the indicator. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 
 ##### Command Example
