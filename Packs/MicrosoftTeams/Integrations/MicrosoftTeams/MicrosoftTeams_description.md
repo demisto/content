@@ -1,5 +1,4 @@
 Use the Microsoft Teams integration to send messages and notifications to your team members and create meetings. 
-Note: The integration is supported in Cortex XSOAR 8 and Cortex XSIAM without using an engine.
 
 To create an instance of the Microsoft Teams integration in Cortex XSOAR, complete the following:
 
