@@ -4,3 +4,4 @@ If you are using a none default partition in your hosts and wish to monitor it u
 | Key | Value |
 | --- | --- |
 | server.disk.partition | Path and name of the partition. |
+
