@@ -2758,7 +2758,7 @@ def handle_host_list_detection_result(raw_response: requests.Response) -> tuple[
     if isinstance(response_requested_value, dict):
         response_requested_value = [response_requested_value]
 
-    return response_requested_value, str(response_next_url)
+    return response_requested_value or [], str(response_next_url)
 
 
 def handle_vulnerabilities_result(raw_response: requests.Response) -> list:
@@ -2911,7 +2911,7 @@ def get_host_list_detections_events(client, since_datetime) -> list:
 
     while True:
         host_list_detections = client.get_host_list_detection(since_datetime, next_page=next_page)
-        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
+        host_list_assets, next_url = handle_host_list_detection_result(host_list_detections)
         assets += host_list_assets
         next_page = get_next_page_from_url(next_url, 'id_min')
         if not next_page:
@@ -3065,7 +3065,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
                 previous_run_time_field=ACTIVITY_LOGS_SINCE_DATETIME_PREV_RUN,
             )
         if is_fetch_assets:
-            since_datetime = arg_to_datetime('3 days').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            since_datetime = arg_to_datetime('3 hours').strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
             fetch_assets(client=client, since_datetime=since_datetime)
     else:
         build_args_dict({'launched_after_datetime': TEST_FROM_DATE}, COMMANDS_ARGS_DATA["test-module"], False)
