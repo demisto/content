@@ -39,7 +39,7 @@ class Client(BaseClient):
 
         access_token_obj = self._http_request(
             method='POST',
-            url_suffix=url,
+            url=url,
             headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=json.dumps(json_data),
         )
@@ -57,6 +57,9 @@ class Client(BaseClient):
             'token': token,
             'expire_date': str(expire_date)
         })
+
+    def authenticate(self, args: dict[str, Any]) -> dict:
+        pass
 
     # def get_certificates(self, args: dict[str, Any]) -> dict:
     #     """
