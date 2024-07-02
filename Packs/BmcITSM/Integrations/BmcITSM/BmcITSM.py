@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 # mypy: ignore-errors
 from copy import deepcopy
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 from datetime import datetime
 
@@ -159,6 +159,15 @@ TICKET_TYPE_TO_LIST_FORM = {
 }
 
 TICKET_TYPE_TO_DELETE_FORM = {
+    CHANGE_REQUEST: "CHG:Infrastructure Change",
+    INCIDENT: "HPD:Help Desk",
+    TASK: "TMS:Task",
+    PROBLEM_INVESTIGATION: "PBM:Problem Investigation",
+    KNOWN_ERROR: "PBM:Known Error",
+    WORK_ORDER: "WOI:WorkOrderInterface",
+}
+
+TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM = {
     CHANGE_REQUEST: "CHG:Infrastructure Change",
     INCIDENT: "HPD:Help Desk",
     TASK: "TMS:Task",
@@ -351,9 +360,8 @@ class Client(BaseClient):
         """
         integration_context = get_integration_context()
         now = int(datetime.now().timestamp())
-        if integration_context.get("token") and integration_context.get("expires_in"):
-            if now < integration_context["expires_in"]:
-                return integration_context["token"]
+        if integration_context.get("token") and integration_context.get("expires_in") and now < integration_context["expires_in"]:
+            return integration_context["token"]
 
         try:
             token = self._http_request(
@@ -387,11 +395,36 @@ class Client(BaseClient):
             query (str): Query qualification.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         params = remove_empty_elements({"q": query})
         response = self._http_request("GET", f"arsys/v1/entry/{form}", params=params)
         return response
+
+    def worklog_attachment_get_request(self, worklog_id: str) -> List[fileResult]:
+        """
+        Get BmcITSM Work Log Attachments.
+
+        Args:
+            worklog_id (str): The Work Log ID to pull the attachments from.
+
+        Returns:
+            Dict[str, Any]: API response from BmcITSM.
+        """
+        attachments = []
+        for i in range(1,4):
+            res = self._http_request("GET",
+                                     f"arsys/v1/entry/HPD:WorkLog/{worklog_id}/attach/z2AF Work Log0{i}",
+                                     resp_type="response")
+            try:
+                content_disposition = res.headers['content-disposition']
+            except KeyError:
+                continue
+            m = re.search(r"filename\*?=([^;]+)", content_disposition, flags=re.IGNORECASE)
+            name = m.group(0).strip().strip('"')
+            attachments.append(fileResult(name, res.content))
+
+        return attachments
 
     def ticket_delete_request(self, ticket_form: str, ticket_id: str) -> str:
         """
@@ -402,13 +435,56 @@ class Client(BaseClient):
             ticket_id (str): The ID of the ticket to delete.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         response = self._http_request("DELETE",
                                       f"arsys/v1/entry/{ticket_form}/{ticket_id}",
                                       resp_type="text")
         return response
+
+    def ticket_create_relationship_request(self,
+                                           request_type: str,
+                                           request_description: str,
+                                           association_type: str,
+                                           first_form_name: str,
+                                           first_request_id: str,
+                                           second_form_name: str,
+                                           second_request_id: str,
+                                           ) -> str:
+        """
+        BmcITSM ticket relationship request.
+
+        Args:
+            request_type (str): The ticket type to create relationship.
+            request_description (str): The description of the relationship.
+            association_type: The association type of the relationship.
+            first_form_name: The form name of the incident.
+            first_request_id: The ID of the incident to create relationship.
+            second_form_name: The form name of the incident.
+            second_request_id: The ID of the incident to create relationship.
+
+        Returns:
+            str: API response from BmcITSM.
+        """
+
+        data = {
+            "values": {
+                "Request Type01": request_type,
+                "Request Description01": request_description,
+                "Association Type01": association_type,
+                "Form Name01": first_form_name,
+                "Request ID01": first_request_id,
+                "Form Name02": second_form_name,
+                "Request ID02": second_request_id
+            }
+        }
+        self._http_request("POST",
+                           "arsys/v1/entry/HPD:Associations",
+                           json_data=data,
+                           resp_type="text")
+
+        return f"Created relationship between {first_request_id} and {second_request_id}."
 
     def create_service_request_request(
         self,
@@ -436,7 +512,7 @@ class Client(BaseClient):
             status (str): Request status.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -502,7 +578,7 @@ class Client(BaseClient):
             status_reason (str): Reasin for status change.
 
             Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
 
         """
 
@@ -572,7 +648,7 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "First_Name": first_name,
@@ -659,7 +735,7 @@ class Client(BaseClient):
             status_reason (str): Reason for changing the status.
             resolution (str): Ticket resolution.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -732,7 +808,7 @@ class Client(BaseClient):
             customer_last_name (str): Customer last name.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "First Name": first_name,
@@ -816,7 +892,7 @@ class Client(BaseClient):
             region (str): Region.
             company (str): Company.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
 
 
         """
@@ -909,7 +985,7 @@ class Client(BaseClient):
             scedulded_end_date (str):  Schedulded end date.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -990,7 +1066,7 @@ class Client(BaseClient):
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -1083,7 +1159,7 @@ class Client(BaseClient):
             first_name (str, optional): Requester first name. Defaults to None.
             last_name (str, optional): Request last name. Defaults to None.
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         action = "PROBLEM" if problem_type == PROBLEM_INVESTIGATION else "KNOWNERROR"
@@ -1191,7 +1267,7 @@ class Client(BaseClient):
             investigation_driver (str): Problem Investigation driver.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "First Name": first_name,
@@ -1280,7 +1356,7 @@ class Client(BaseClient):
             resolution (str): Resolution.
 
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
         properties = remove_empty_elements({
             "Detailed Decription": details,
@@ -1349,12 +1425,12 @@ class Client(BaseClient):
             status (str): Ticket status.
             priority (str): Ticket priority.
             work_order_type (str): Work order type.
-            location_company (str): Company assoiciated with work order process.
+            location_company (str): Company associated with work order process.
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
 
         Returns:
-            Dict[str, Any]: API respnse from BmcITSM.
+            Dict[str, Any]: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -1421,7 +1497,7 @@ class Client(BaseClient):
             scedulded_start_date (str): Schedulded start date.
             scedulded_end_date (str):  Schedulded end date.
         Returns:
-            str: API respnse from BmcITSM.
+            str: API response from BmcITSM.
         """
 
         properties = remove_empty_elements({
@@ -1646,6 +1722,58 @@ def ticket_delete_command(client: Client, args: Dict[str, Any]) -> List[CommandR
     return commands_results
 
 
+def ticket_create_relationship_command(client: Client, args: Dict[str, Any]) -> List[CommandResults]:
+    """BmcITSM ticket create relationship command.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+
+    request_type = args.get("request_type")
+    request_description = args.get("request_description")
+    association_type = args.get("association_type")
+    first_form_name = args.get("first_form_name")
+    first_request_id = args.get("first_request_id")
+    second_form_name = args.get("second_form_name")
+    second_request_id = args.get("second_request_id")
+    bidirectional = argToBoolean(args.get("bidirectional"))
+    res = client.ticket_create_relationship_request(
+        request_type=request_type,
+        request_description=request_description,
+        association_type=association_type,
+        first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
+        first_request_id=first_request_id,
+        second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
+        second_request_id=second_request_id,
+    )
+
+    if bidirectional:
+        association_types = {
+            "Caused": "Caused by",
+            "Caused by": "Caused",
+            "Duplicate of": "Original of",
+            "Original of": "Duplicate of",
+            "Resolved": "Resolved by",
+            "Resolved by": "Resolved",
+        }
+
+        res = client.ticket_create_relationship_request(
+            request_type=request_type,
+            request_description=request_description,
+            association_type=association_types[association_type],
+            first_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[second_form_name],
+            first_request_id=second_request_id,
+            second_form_name=TICKET_TYPE_TO_CREATE_RELATIONSHIP_FORM[first_form_name],
+            second_request_id=first_request_id,
+        )
+
+    return res
+
+
 def service_request_definition_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """List BmcITSM service request definitions command.
 
@@ -1673,6 +1801,46 @@ def service_request_definition_list_command(client: Client, args: Dict[str, Any]
         record_id_key="Request ID",
     )
     return command_results
+
+
+def worklog_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """List BmcITSM Work Log command.
+
+    Args:
+        client (Client): BmcITSM API client.
+        args (Dict[str, Any]): command arguments.
+
+    Returns:
+        CommandResults: Command results with raw response, outputs and readable outputs.
+    """
+    context_output_mapper = {
+        "Work Log Type": "Type",
+        "Description": "Description",
+        "Detailed Description": "DetailedDescription",
+        "Work Log Submitter": "Submitter",
+        "Communication Type": "CommunicationType",
+        "Communication Source": "CommunicationSource",
+        "Number of Attachments": "NumberOfAttachments",
+        "Work Log ID": "WorklogID",
+    }
+    args["ids"] = argToList(args.get("ticket_ids"))
+    command_results = list_command(
+        client,
+        args,
+        "HPD:WorkLog",
+        context_output_mapper,
+        header_prefix="List Work Logs.",
+        outputs_prefix="BmcITSM.WorkLog",
+        outputs_key_field="ID",
+        record_id_key="Incident Number",
+    )
+    return command_results
+
+
+def worklog_attachment_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    worklog_id = args.get("worklog_id")
+    res = client.worklog_attachment_get_request(worklog_id)
+    return res
 
 
 def incident_template_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
@@ -1897,7 +2065,7 @@ def incident_create_command(client: Client, args: Dict[str, Any]) -> CommandResu
     company = args.get("location_company")
     assigned_support_organization = args.get("assigned_support_organization")
     assigned_support_company = args.get("assigned_support_company")
-    assigned_support_group_name = args.get("support_group_name")
+    assigned_support_group_name = args.get("assigned_group")
     assignee_login_id = args.get("assignee_login_id")
     assignee = args.get("assignee")
     site_group = args.get("site_group")
@@ -2914,7 +3082,7 @@ def get_paginated_records_with_hr(
     limit: Optional[int],
     page: int = None,
     page_size: int = None,
-) -> Tuple[list, str]:
+) -> tuple[list, str]:
     """
     Retrieve the required page either with Automatic or Manual pagination,
     and the matching readable output header.
@@ -2995,7 +3163,7 @@ def validate_related_arguments_provided(**related_args):
 
 
 def extract_args_from_additional_fields_arg(additional_fields: str,
-                                            field_name: str) -> Tuple[Any, List[str]]:
+                                            field_name: str) -> tuple[Any, List[str]]:
     """
     Extract dictionary structure from additional field argument.
 
@@ -3298,7 +3466,7 @@ def fetch_relevant_tickets(
     impact_filter: List[str],
     urgency_filter: List[str],
     custom_query: str,
-) -> Tuple[list, dict]:
+) -> tuple[list, dict]:
     """
     Fetch the relevant tickets according to the provided filter arguments.
     The Tickets are fetched Iteratively, by their ticket type until the capacity
@@ -3425,10 +3593,7 @@ def all_keys_empty(dict_obj: Dict[str, Any]) -> bool:
     Returns:
         bool: Wheter or not all keys have None value.
     """
-    for value in dict_obj.values():
-        if value:
-            return False
-    return True
+    return all(not value for value in dict_obj.values())
 
 
 def gen_multi_filters_statement(filter_mapper: Dict[str, Any], oper_in_filter: str,
@@ -3915,6 +4080,9 @@ def main() -> None:
         commands = {
             "bmc-itsm-ticket-list": ticket_list_command,
             "bmc-itsm-ticket-delete": ticket_delete_command,
+            "bmc-itsm-ticket-create-relationship": ticket_create_relationship_command,
+            "bmc-itsm-worklog-list": worklog_list_command,
+            "bmc-itsm-worklog-attachment-get": worklog_attachment_get_command,
             "bmc-itsm-user-list": user_list_command,
             "bmc-itsm-company-list": company_list_command,
             "bmc-itsm-service-request-create": service_request_create_command,
@@ -3983,3 +4151,4 @@ def main() -> None:
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
+
