@@ -63,6 +63,7 @@ configuration:
   required: false
   options:
   - new
+  - reopened
   - under_investigation
   - resolved_no_longer_observed
   - resolved_no_risk
@@ -302,7 +303,33 @@ script:
       name: search_from
     - description: Represents the end offset index of results.
       name: search_to
-    description: Get a list of all your internet exposures filtered by IP address, domain, type, and/or if there is an active external service. Maximum result limit is 100 assets.
+    - description: List of asm ids.
+      name: asm_id_list
+    - description: IPv6 address on which to search.
+      name: ipv6_address
+    - description: Search based on GCP cloud tags.
+      name: gcp_cloud_tags
+    - description: Search based on AWS cloud tags.
+      name: aws_cloud_tags
+    - description: Search based on AZURE cloud tags.
+      name: azure_cloud_tags
+    - description: Search based on xdr agent.
+      name: has_xdr_agent
+    - description: Search on externally detected providers.
+      name: externally_detected_providers
+    - description: Search on externally inferred cve.
+      name: externally_inferred_cves
+    - description: Search on Business units list.
+      name: business_units_list
+    - auto: PREDEFINED
+      description: Whether it has BU overrides.
+      name: has_bu_overrides
+      predefined:
+      - "True"
+      - "False"
+    - description: Search based on MAC address.
+      name: mac_address
+    description: Get a list of all your internet exposures filtered by IP address, domain, type, asm id, IPv6 address, AWS/GCP/Azure tags, has XDR agent, Externally detected providers, Externally inferred cves, Business units list, has BU overrides and/or if there is an active external service. Maximum result limit is 100 assets.
     name: asm-list-asset-internet-exposure
     outputs:
     - contextPath: ASM.AssetInternetExposure.asm_ids
@@ -417,6 +444,7 @@ script:
       auto: PREDEFINED
       predefined:
       - new
+      - reopened
       - under_investigation
       - resolved_no_longer_observed
       - resolved_no_risk
@@ -525,6 +553,34 @@ script:
       required: true
       description: The name of the tags to apply to supplied assets.
     description: Assigns tags to a list of assets.
+  - name: asm-add-note-to-asset
+    arguments:
+    - name: asset_id
+      description: The asset ID to add a note to.
+      required: true
+    - name: entity_type
+      description: "The type of Xpanse asset. Allowed values are: 'asset' or 'ip_range'."
+      auto: PREDEFINED
+      predefined:
+      - ip_range
+      - asset
+      required: true
+    - name: note_to_add
+      required: true
+      description: The custom note to be added to the notes section of the asset in Cortex Xpanse.
+    - name: should_append
+      required: false
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: true
+      description: Set to 'false' to overwrite the current note on the asset. Set to 'true' to append to the current note. 
+    description: Adds a note to an asset in Xpanse.
+    outputs:
+    - contextPath: ASM.AssetAnnotation.status
+      description: Status of the note being added to the asset in Cortex Xpanse.
+      type: String
   - name: asm-tag-asset-remove
     arguments:
     - name: asm_id_list
@@ -542,7 +598,7 @@ script:
   - name: asm-tag-range-remove
     arguments:
     - name: range_id_list
-      description: Comma-separated list of range IDs to remove tags from.
+      description: 'Comma-separated list of range IDs to remove tags from.'
     - name: tags
       description: The name of the tags to remove from supplied IP ranges.
     description: Removes tags from a list of IP ranges.
@@ -553,12 +609,12 @@ script:
     - name: description
       description: String to search for within the incident description field.
     - name: status
+      description: Status to search incidents for.
       auto: PREDEFINED
       predefined:
       - new
       - under_investigation
       - resolved
-      description: Status to search incidents for.
     - name: lte_creation_time
       description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
     - name: gte_creation_time
@@ -651,8 +707,8 @@ script:
   - name: asm-update-incident
     arguments:
     - name: incident_id
-      required: true
       description: ID of the incident to modify.
+      required: true
     - name: alert_id
       description: Used for scoping updates such as comments to the alert level.
     - name: assigned_user_mail
@@ -688,6 +744,7 @@ script:
       auto: PREDEFINED
       predefined:
       - new
+      - reopened
       - under_investigation
       - resolved
       - resolved_contested_asset
@@ -712,8 +769,8 @@ script:
     - name: ip
       description: IP address to enrich.
       required: true
-      default: true
       isArray: true
+      default: true
     outputs:
     - contextPath: ASM.IP.ip
       description: The IP address of the asset.
@@ -761,12 +818,27 @@ script:
     - contextPath: IP.Address
       description: IP address.
       type: String
+    - contextPath: ASM.TIM.IP.name 
+      description: The existing Cortex Xpanse IP address recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.indicator_type
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.id  
+      description: The existing indicator ID in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.reliability 
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.IP.score
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
+      type: Number
     description: Returns enrichment for an IP address.
   - name: domain
     arguments:
     - name: domain
-      description: Domain to enrich.
       required: true
+      description: Domain to enrich.
       isArray: true
       default: true
     outputs:
@@ -813,12 +885,27 @@ script:
     - contextPath: Domain.Name
       description: 'The domain name, for example: "google.com".'
       type: String
+    - contextPath: ASM.TIM.Domain.name
+      description: The existing Cortex Xpanse domain recently updated in XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.indicator_type 
+      description: The existing Cortex Xpanse indicator type in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.id 
+      description: The existing indicator ID in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.reliability 
+      description: The existing indicator reliability recently updated in the Cortex XSOAR indicators.
+      type: String
+    - contextPath: ASM.TIM.Domain.score 
+      description: The existing indicator score recently updated in the Cortex XSOAR indicators.
+      type: Number
     description: Returns enrichment for a domain.
   - name: asm-get-incident
     arguments:
     - name: incident_id
-      required: true
       description: The ID of the incident to be fetched.
+      required: true
     outputs:
     - contextPath: ASM.Incident.incident_id
       description: The ID of the incident.
@@ -854,7 +941,7 @@ script:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
     description: Get external websites assets.
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.99474
   isFetchSamples: true
   isfetch: true
   script: ''

@@ -21,9 +21,6 @@ from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
 from PyPDF2 import PdfReader
 
-pypdf_logger = logging.getLogger("PyPDF2")
-pypdf_logger.setLevel(logging.ERROR)  # Supress warnings, which would come out as XSOAR errors while not being errors
-
 # region constants and configurations
 
 pypdf_logger = logging.getLogger("PyPDF2")
@@ -37,7 +34,7 @@ os.environ['no_proxy'] = 'localhost,127.0.0.1'
 os.environ['HOME'] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0" \
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0" \
              " Safari/537.36"
 CHROME_OPTIONS = ["--headless",
                   "--disable-gpu",
@@ -210,7 +207,7 @@ class PychromeEventHandler:
             demisto.debug(f'Frame (reload) started loading: {frameId}, clearing {self.request_id=}')
             self.request_id = None
             self.response_received = False
-            self.start_frame = None
+            # self.start_frame = None
         else:
             demisto.debug(f'Frame started loading: {frameId}, no request_id')
 
@@ -221,6 +218,12 @@ class PychromeEventHandler:
             self.request_id = requestId
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
+
+    def page_frame_stopped_loading(self, frameId):
+        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}')
+        if self.start_frame == frameId:
+            demisto.debug('PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event')
+            self.tab_ready_event.set()
 
 # endregion
 
@@ -422,8 +425,10 @@ def setup_tab_event(browser, tab):
 
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
+    # tab.Network.responseReceived = tab_event_handler.network_response_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
+    tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
 
     return tab_event_handler, tab_ready_event
 
@@ -432,7 +437,7 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
     tab_event_handler, tab_ready_event = setup_tab_event(browser, tab)
 
     try:
-        demisto.debug(f'Starting tab navigation to given path: {path} on {tab.id=}')
+        demisto.info(f'Starting tab navigation to given path: {path} on {tab.id=}')
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
         demisto.debug(f'allTimeSamplingProfile before navigation {allTimeSamplingProfile=} on {tab.id=}')
@@ -444,6 +449,19 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         else:
             tab.Page.navigate(url=path)
 
+        demisto.debug(f'Waiting for tab_ready_event on {tab.id=}')
+        success_flag = tab_ready_event.wait(navigation_timeout)
+        demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
+
+        if not success_flag:
+            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
+            demisto.error(message)
+            return_error(message)
+
+        if wait_time > 0:
+            demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
+        else:
+            demisto.debug(f'Not sleeping before capturing screenshot, {wait_time=}')
         time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
@@ -498,7 +516,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
     if screenshot_data:
         demisto.debug(f"Screenshot image of {path=} on {tab.id=}, available after {operation_time} seconds.")
     else:
-        demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available available after {operation_time} seconds.")
+        demisto.info(f"Screenshot image of {path=} on {tab.id=}, not available after {operation_time} seconds.")
 
     allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
     demisto.debug(f'allTimeSamplingProfile after screenshot {allTimeSamplingProfile=} on {tab.id=}')
@@ -532,7 +550,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
         if request_id:
             demisto.debug(f"request_id available after {request_id_operation_time} seconds.")
         else:
-            demisto.info(f"request_id not available available after {request_id_operation_time} seconds.")
+            demisto.info(f"request_id not available after {request_id_operation_time} seconds.")
         demisto.debug(f"Got {request_id=} after {request_id_operation_time} seconds.")
 
         try:
@@ -543,7 +561,7 @@ def screenshot_image(browser, tab, path, wait_time, navigation_timeout, full_scr
             if response_body:
                 demisto.debug(f"Response Body available after {operation_time} seconds, {len(response_body)=}")
             else:
-                demisto.info(f"Response Body not available available after {operation_time} seconds.")
+                demisto.info(f"Response Body not available after {operation_time} seconds.")
 
         except Exception as ex:  # This exception is raised when a non-existent URL is provided.
             demisto.info(f'Exception when calling Network.getResponseBody with {request_id=}, {ex=}')
@@ -569,7 +587,7 @@ def screenshot_pdf(browser, tab, path, wait_time, navigation_timeout, include_ur
     if pdf_data:
         demisto.debug(f"PDF Data available after {operation_time} seconds.")
     else:
-        demisto.info(f"PDF Data not available available after {operation_time} seconds.")
+        demisto.info(f"PDF Data not available after {operation_time} seconds.")
 
     ret_value = base64.b64decode(pdf_data)
     return ret_value, None
@@ -717,10 +735,13 @@ def rasterize_email_command():  # pragma: no cover
     full_screen = argToBoolean(demisto.args().get('full_screen', False))
 
     offline = demisto.args().get('offline', 'false') == 'true'
-    rasterize_type = RasterizeType(demisto.args().get('type', 'png').lower())
+
+    rasterize_type_arg = demisto.args().get('type', 'png').lower()
     file_name = demisto.args().get('file_name', 'email')
+    file_name = f'{file_name}.{rasterize_type_arg}'
+    rasterize_type = RasterizeType(rasterize_type_arg)
+
     navigation_timeout = int(demisto.args().get('max_page_load_time', DEFAULT_PAGE_LOAD_TIME))
-    file_name = f'{file_name}.{rasterize_type}'
 
     with open('htmlBody.html', 'w', encoding='utf-8-sig') as f:
         f.write(f'<html style="background:white";>{html_body}</html>')

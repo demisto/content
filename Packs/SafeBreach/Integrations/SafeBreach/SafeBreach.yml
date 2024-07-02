@@ -1,21 +1,22 @@
 category: Deception & Breach Simulation
-description: SafeBreach automatically executes thousands of breach methods from its extensive and growing Hacker’s Playbook™ to validate security control effectiveness. Simulations are automatically correlated with network, endpoint, and SIEM solutions providing data-driven SafeBreach Insights for holistic remediation to harden enterprise defenses.
+description: For enterprises using SafeBreach and XSOAR, integrating this package streamlines operations by allowing you to operate SafeBreach through XSOAR, making SafeBreach an integral part of the enterprise workflows. This integration includes commands for managing tests, insight indicators, simulators and deployments, users, API keys, integration issues, and more.
 commonfields:
   id: Safebreach
   version: -1
 name: Safebreach
-display: Safebreach
+display: SafeBreach
 configuration:
 - display: Server URL
   name: base_url
   type: 0
   required: true
   additionalinfo: This is base URL for your instance.
-- display: API Key
-  name: credentials
+- name: credentials
   type: 9
   required: true
   additionalinfo: This is API key for your instance, this can be created in Safe Breach User                 Administration -> API keys, it must be saved as there is no way to view it again.
+  displaypassword: API Key
+  hiddenusername: true
 - display: Account ID
   name: account_id
   type: 1
@@ -2038,7 +2039,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.88772
+  dockerimage: demisto/python3:3.10.14.97374
   feed: false
   isfetch: false
   runonce: false

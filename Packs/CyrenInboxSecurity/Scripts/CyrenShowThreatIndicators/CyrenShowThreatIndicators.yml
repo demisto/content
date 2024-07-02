@@ -7,7 +7,7 @@ comment: |-
 commonfields:
   id: Cyren-Show-Threat-Indicators
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.14.95956
 enabled: true
 name: Cyren-Show-Threat-Indicators
 script: ''
