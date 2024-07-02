@@ -1,0 +1,61 @@
+args:
+- name: user
+  description: The recipient of the message
+  type: textArea
+- name: message
+  required: true
+  description: The message to send to the user or channel.
+  type: textArea
+- name: space_id
+  required: true
+  description: The ID of the space where the message will be send to. 
+  type: textArea
+- name: option1
+  description: The first reply option. The default is "Yes" with a blue button. To
+    change the color of the button, add the pound sign (#) followed by the name of
+    the new color (Blue, White, or Red). For example, "Yes#blue".
+  type: textArea
+- name: option2
+  description: The second reply option. The default is "No" with a red button. To
+    change the button color, add the pound sign (#) followed by the name of the new
+    color (Blue, White, or Red). For example, "No#red".
+  type: textArea
+- name: additional_options
+  description: A CSV list of additional options.
+  type: textArea
+- name: task
+  description: The task to close with the reply. If empty, then no playbook tasks
+    will be closed.
+  type: textArea
+- name: lifetime
+  defaultValue: 1 day
+  description: Time until the question expires. For example - 1 day. When it expires,
+    a default response is sent.
+  type: textArea
+- name: response_type
+  description: How the user should respond to the question.
+  auto: PREDEFINED
+  defaultValue: button
+  predefined:
+  - button
+  - dropdown
+  type: textArea
+comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
+commonfields:
+  id: GoogleChatAsk
+  version: -1
+enabled: true
+name: GoogleChatAsk
+script: '-'
+subtype: python3
+tags:
+- googleChat
+timeout: '0'
+type: python
+dockerimage: demisto/fastapi:1.0.0.79757
+tests:
+- no test - Untestable
+dependson:
+  must:
+  - GoogleChat|||send-notification
+fromversion: 5.0.0

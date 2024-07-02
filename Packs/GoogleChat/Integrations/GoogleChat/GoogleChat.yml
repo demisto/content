@@ -1,0 +1,85 @@
+category: Messaging and Conferencing
+commonfields:
+  id: GoogleChat
+  version: -1
+configuration:
+- section: Connect
+  display: Google Chat Space ID
+  name: space_id
+  type: 0
+  required: true
+- displaypassword: Google Chat Space Key
+  name: space_key
+  required: false
+  section: Connect
+  hiddenusername: true
+  type: 9
+- displaypassword: Google Chat Space Token
+  name: space_token
+  required: false
+  section: Connect
+  hiddenusername: true
+  type: 9
+- display: Long running instance
+  name: longRunning
+  type: 8
+  required: false
+- display: Listen Port
+  name: longRunningPort
+  type: 0
+  section: Collect
+  required: false
+  additionalinfo: You must enable Long running instance to run the web server on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances.
+- display: Trust any certificate (not secure)
+  name: insecure
+  defaultvalue: "false"
+  type: 8
+  required: false
+description: Google chat integration enables you to send messages and send survey bot.
+display: Google Chat
+name: GoogleChat
+script:
+  commands:
+  - name: send-notification
+    arguments:
+    - name: message
+      required: true
+      description: The message content
+      type: textArea
+    - name: to
+      description: The recipient of the message
+      type: textArea
+    - name: space_id
+      required: true
+      description: The ID of the space to which to send the message
+      type: textArea
+    - name: thread_id
+      description: If replying to a thread, use this argument to specify the thread
+        name to reply to
+      type: textArea
+    - name: adaptive_card
+      description: 'Card to send. See Card Builder here: https://addons.gsuite.google.com/uikit/builder'
+      type: textArea
+    - name: entitlement
+      description: Full entitlement for GoogleChatAsk script.
+      type: textArea
+      hidden: true
+    - name: expiry
+      description: Expiry time for waiting to the user response.
+      type: textArea
+      hidden: true
+    - name: default_reply
+      description: Default reply if the expiration time of the message has exceeded.
+      type: textArea
+      hidden: true
+    description: Send messages through google chat
+  runonce: false
+  longRunning: true
+  longRunningPort: true
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/fastapi:1.0.0.83979
+fromversion: 5.5.0
+tests:
+- No tests (auto formatted)
