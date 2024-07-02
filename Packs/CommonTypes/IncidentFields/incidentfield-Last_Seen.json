@@ -9,7 +9,8 @@
         "Nutanix Hypervisor Alert",
 		"OpsGenie Alert",
 		"Microsoft Sentinel Incident",
-		"Prisma Cloud - VM Alert Prioritization"
+		"Prisma Cloud - VM Alert Prioritization",
+        "Exabeam Notable User"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,

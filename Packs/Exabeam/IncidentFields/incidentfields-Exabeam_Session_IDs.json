@@ -1,10 +1,10 @@
 {
-    "id": "incident_usergroups",
+    "id": "incident_exabeamsessionids",
     "version": -1,
-    "modified": "2023-06-13T21:36:13.191337431Z",
-    "name": "User Groups",
+    "modified": "2024-06-30T09:57:24.730584014Z",
+    "name": "Exabeam Session IDs",
     "ownerOnly": false,
-    "cliName": "usergroups",
+    "cliName": "exabeamsessionids",
     "type": "multiSelect",
     "closeForm": false,
     "editForm": true,
@@ -19,7 +19,6 @@
     "hidden": false,
     "openEnded": true,
     "associatedTypes": [
-        "Data Loss Prevention",
         "Exabeam Notable User"
     ],
     "associatedToAll": false,
@@ -28,5 +27,5 @@
     "caseInsensitive": true,
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.8.0"
+    "fromVersion": "6.10.0"
 }
