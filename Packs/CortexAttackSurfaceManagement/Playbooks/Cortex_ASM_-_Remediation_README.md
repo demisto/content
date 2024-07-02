@@ -6,7 +6,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* AWS - EC2 Package Upgrade
+* AWS - Package Upgrade
 * AWS - Security Group Remediation v2
 * AWS - Unclaimed S3 Bucket Remediation
 * Azure - Network Security Group Remediation
