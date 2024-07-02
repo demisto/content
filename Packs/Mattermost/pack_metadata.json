@@ -2,7 +2,7 @@
     "name": "Mattermost",
     "description": "Send messages and notifications to your Mattermost Team.",
     "support": "xsoar",
-    "currentVersion": "2.0.0",
+    "currentVersion": "2.0.1",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,6 +14,7 @@
     "useCases": [],
     "keywords": [],
     "marketplaces": [
-        "xsoar_on_prem"
+        "xsoar",
+        "marketplacev2"
     ]
 }
