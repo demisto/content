@@ -7,7 +7,7 @@ import dateparser
 def convert_time_command(time):
     # ((current time - epoch start date) in seconds + seconds since 1/1/1601) * 10000000 (to get nanoseconds)
     res = ((time - datetime(1970, 1, 1, tzinfo=timezone.utc)).total_seconds() + 11644473600) * 10000000
-    return int(res)
+    return str(int(res))
 
 
 def main():
