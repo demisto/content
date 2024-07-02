@@ -1417,7 +1417,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
 
 #### Command Example
 
-```!cs-falcon-search-custom-iocs types="domain"```
+```!cs-falcon-search-custom-iocs limit=2```
 
 #### Context Example
 
@@ -1426,14 +1426,38 @@ Returns a list of your uploaded IOCs that match the search criteria.
     "CrowdStrike": {
         "IOC": [
             {
-                "CreatedTime": "2020-09-30T10:59:37Z",
-                "Expiration": "2020-10-30T00:00:00Z",
-                "ID": "domain:value",
-                "ModifiedTime": "2020-09-30T10:59:37Z",
-                "Policy": "none",
-                "ShareLevel": "red",
-                "Type": "domain",
-                "Value": "value"
+                "Action": "no_action",
+                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "CreatedTime": "2022-02-16T17:17:25.992164453Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "1.1.8.9"
+            },
+            {
+                "Action": "no_action",
+                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "CreatedTime": "2022-02-16T17:16:44.514398876Z",
+                "Description": "test",
+                "Expiration": "2022-02-17T13:47:57Z",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "ModifiedTime": "2022-02-16T17:16:44.514398876Z",
+                "Platforms": [
+                    "mac"
+                ],
+                "Severity": "informational",
+                "Source": "Cortex XSOAR",
+                "Type": "ipv4",
+                "Value": "4.1.8.9"
             }
         ]
     }
@@ -1444,9 +1468,10 @@ Returns a list of your uploaded IOCs that match the search criteria.
 
 >### Indicators of Compromise
 
->|CreatedTime|Expiration|ID|ModifiedTime|Policy|ShareLevel|Type|Value|
->|---|---|---|---|---|---|---|---|
->| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | domain:value | 2020-09-30T10:59:37Z | none | red | domain | value |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
 
 ### cs-falcon-get-custom-ioc
 
@@ -1485,7 +1510,7 @@ Gets the full definition of one or more indicators that you are watching.
 
 #### Command Example
 
-```!cs-falcon-get-custom-ioc type="domain" value="test.domain.com"```
+```!cs-falcon-get-custom-ioc type=ipv4 value=7.5.9.8```
 
 #### Context Example
 
@@ -1493,16 +1518,24 @@ Gets the full definition of one or more indicators that you are watching.
 {
     "CrowdStrike": {
         "IOC": {
-            "CreatedTime": "2020-10-02T13:55:26Z",
-            "Description": "Test ioc",
-            "Expiration": "2020-11-01T00:00:00Z",
-            "ID": "domain:test.domain.com",
-            "ModifiedTime": "2020-10-02T13:55:26Z",
-            "Policy": "none",
-            "ShareLevel": "red",
-            "Source": "Demisto playbook",
-            "Type": "domain",
-            "Value": "test.domain.com"
+            "Action": "no_action",
+            "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "CreatedTime": "2022-02-16T14:25:22.968603813Z",
+            "Expiration": "2022-02-17T17:55:09Z",
+            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "ModifiedTime": "2022-02-16T14:25:22.968603813Z",
+            "Platforms": [
+                "linux"
+            ],
+            "Severity": "informational",
+            "Source": "cortex xsoar",
+            "Tags": [
+                "test",
+                "test1"
+            ],
+            "Type": "ipv4",
+            "Value": "7.5.9.8"
         }
     }
 }
@@ -1512,9 +1545,9 @@ Gets the full definition of one or more indicators that you are watching.
 
 >### Indicator of Compromise
 
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
->|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
+>|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
 
 
 ### cs-falcon-upload-custom-ioc
@@ -1565,7 +1598,7 @@ Uploads an indicator for CrowdStrike to monitor.
 
 #### Command Example
 
-```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" policy="none" share_level="red" source="Demisto playbook" description="Test ioc"```
+```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
 
 #### Context Example
 
@@ -1576,13 +1609,14 @@ Uploads an indicator for CrowdStrike to monitor.
             "CreatedTime": "2020-10-02T13:55:26Z",
             "Description": "Test ioc",
             "Expiration": "2020-11-01T00:00:00Z",
-            "ID": "domain:test.domain.com",
+            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
             "ModifiedTime": "2020-10-02T13:55:26Z",
-            "Policy": "none",
-            "ShareLevel": "red",
+            "Action": "prevent",
+            "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
-            "Value": "test.domain.com"
+            "Value": "test.domain.com",
+            "Platforms": ["mac"]
         }
     }
 }
@@ -1592,9 +1626,9 @@ Uploads an indicator for CrowdStrike to monitor.
 
 >### Custom IOC was created successfully
 
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
 ### cs-falcon-update-custom-ioc
 
@@ -2214,11 +2248,6 @@ Lists incident summaries.
 | CrowdStrike.Incidents.fine_score | Number | The incident score. | 
 
 
-#### Command Example
-
-```!cs-falcon-list-incident-summaries```
-
-
 ### endpoint
 
 ***
@@ -2299,7 +2328,6 @@ Create a host group.
 | description | The description of the host. | Optional | 
 | assignment_rule | The assignment rule. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -2312,7 +2340,6 @@ Create a host group.
 | CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
 | CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-
 
 #### Command Example
 
@@ -2345,346 +2372,10 @@ Create a host group.
 >|---|---|---|---|---|---|---|---|
 >| api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_description | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
 
-### cs-falcon-update-host-group
-
-***
-Updates a host group.
-
-#### Base Command
-
-`cs-falcon-update-host-group`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_group_id | The ID of the host group. | Required | 
-| name | The name of the host group. | Optional | 
-| description | The description of the host group. | Optional | 
-| assignment_rule | The assignment rule. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
-| CrowdStrike.HostGroup.name | String | The name of the host group. | 
-| CrowdStrike.HostGroup.description | String | The description of the host group. | 
-| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-
-
-#### Command Example
-
-```!cs-falcon-update-host-group host_group_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 name="test_name_update_1" description="test_description_update"```
-
-#### Context Example
-
-```json
-{
-    "CrowdStrike": {
-        "HostGroup": {
-            "assignment_rule": "device_id:[''],hostname:['']",
-            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
-            "description": "test_description_update",
-            "group_type": "static",
-            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
-            "name": "test_name_update_1"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
-
->|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
->|---|---|---|---|---|---|---|---|---|
->| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
-
-### cs-falcon-list-host-group-members
-
-***
-Gets the list of host group members.
-
-#### Base Command
-
-`cs-falcon-list-host-group-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_group_id | The ID of the host group. | Optional | 
-| filter | The query to filter the devices that belong to the host group. | Optional | 
-| offset | Page offset. | Optional | 
-| limit | The maximum number of results on a page. Default is 50. | Optional | 
-| sort | The property to sort by (e.g. status.desc or hostname.asc). | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Device.ID | String | The ID of the device. | 
-| CrowdStrike.Device.LocalIP | String | The local IP address of the device. | 
-| CrowdStrike.Device.ExternalIP | String | The external IP address of the device. | 
-| CrowdStrike.Device.Hostname | String | The host name of the device. | 
-| CrowdStrike.Device.OS | String | The operating system of the device. | 
-| CrowdStrike.Device.MacAddress | String | The MAC address of the device. | 
-| CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
-| CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
-| CrowdStrike.Device.Status | String | The device status. | 
-
-
-#### Command Example
-
-```!cs-falcon-list-host-group-members```
-
-#### Context Example
-
-```json
-{
-    "CrowdStrike": {
-        "Device": [
-            {
-                "ExternalIP": "35.224.136.145",
-                "FirstSeen": "2021-08-12T16:13:26Z",
-                "Hostname": "FALCON-CROWDSTR",
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "LastSeen": "2021-08-23T04:59:48Z",
-                "LocalIP": "10.128.0.21",
-                "MacAddress": "42-01-0a-80-00-15",
-                "OS": "Windows Server 2019",
-                "Status": "normal"
-            },
-            {
-                "ExternalIP": "35.224.136.145",
-                "FirstSeen": "2020-02-10T12:40:18Z",
-                "Hostname": "FALCON-CROWDSTR",
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "LastSeen": "2021-08-25T07:42:47Z",
-                "LocalIP": "10.128.0.7",
-                "MacAddress": "42-01-0a-80-00-07",
-                "OS": "Windows Server 2019",
-                "Status": "contained"
-            },
-            {
-                "ExternalIP": "35.224.136.145",
-                "FirstSeen": "2021-08-23T05:04:41Z",
-                "Hostname": "INSTANCE-1",
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "LastSeen": "2021-08-25T07:49:06Z",
-                "LocalIP": "10.128.0.20",
-                "MacAddress": "42-01-0a-80-00-14",
-                "OS": "Windows Server 2019",
-                "Status": "normal"
-            },
-            {
-                "ExternalIP": "35.224.136.145",
-                "FirstSeen": "2021-08-11T13:57:29Z",
-                "Hostname": "INSTANCE-1",
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "LastSeen": "2021-08-23T04:45:37Z",
-                "LocalIP": "10.128.0.20",
-                "MacAddress": "42-01-0a-80-00-14",
-                "OS": "Windows Server 2019",
-                "Status": "normal"
-            },
-            {
-                "ExternalIP": "35.224.136.145",
-                "FirstSeen": "2021-08-08T11:33:21Z",
-                "Hostname": "falcon-crowdstrike-sensor-centos7",
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "LastSeen": "2021-08-25T07:50:47Z",
-                "LocalIP": "10.128.0.19",
-                "MacAddress": "42-01-0a-80-00-13",
-                "OS": "CentOS 7.9",
-                "Status": "normal"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### Devices
-
->|ID|External IP|Local IP|Hostname|OS|Mac Address|First Seen|Last Seen|Status|
->|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
-
-### cs-falcon-add-host-group-members
-
-***
-Add host group members.
-
-#### Base Command
-
-`cs-falcon-add-host-group-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_group_id | The ID of the host group. | Required | 
-| host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.). | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
-| CrowdStrike.HostGroup.name | String | The name of the host group. | 
-| CrowdStrike.HostGroup.description | String | The description of the host group. | 
-| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-
-
-#### Command Example
-
-```!cs-falcon-add-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
-
-#### Context Example
-
-```json
-{
-    "CrowdStrike": {
-        "HostGroup": {
-            "assignment_rule": "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7','']",
-            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
-            "description": "test_description_update",
-            "group_type": "static",
-            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
-            "name": "test_name_update_1"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
-
->|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
->|---|---|---|---|---|---|---|---|---|
->| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
-
-### cs-falcon-remove-host-group-members
-
-***
-Remove host group members.
-
-#### Base Command
-
-`cs-falcon-remove-host-group-members`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| host_group_id | The ID of the host group. | Required | 
-| host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.). | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
-| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
-| CrowdStrike.HostGroup.name | String | The name of the host group. | 
-| CrowdStrike.HostGroup.description | String | The description of the host group. | 
-| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-
-
-#### Command Example
-
-```!cs-falcon-remove-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
-
-#### Context Example
-
-```json
-{
-    "CrowdStrike": {
-        "HostGroup": {
-            "assignment_rule": "device_id:[''],hostname:['']",
-            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
-            "description": "test_description_update",
-            "group_type": "static",
-            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
-            "name": "test_name_update_1"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Results
-
->|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
->|---|---|---|---|---|---|---|---|---|
->| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
-
-### cs-falcon-resolve-incident
-
-***
-Resolve and update incidents using the specified settings.
-
-#### Base Command
-
-`cs-falcon-resolve-incident`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | A comma-separated list of incident IDs. | Required | 
-| status | The new status of the incident. Can be "New", "In Progress", "Reopened", "Closed". Possible values are: New, In Progress, Reopened, Closed. | Optional | 
-| assigned_to_uuid | UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument. | Optional | 
-| username | Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user. | Optional | 
-| add_tag | Add a new tag to the incidents. | Optional | 
-| remove_tag | Remove a tag from the incidents. | Optional | 
-| add_comment | Add a comment to the incident. | Optional | 
-
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command Example
-
-```!cs-falcon-resolve-incident ids="inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" status="Closed"```
-
-#### Human Readable Output
-
->inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
->inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
-
 ### cs-falcon-list-host-groups
 
 ***
 List the available host groups.
-
 
 #### Base Command
 
@@ -2698,7 +2389,6 @@ List the available host groups.
 | offset | Page offset. | Optional | 
 | limit | Maximum number of results on a page. Default is 50. | Optional | 
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -2708,9 +2398,9 @@ List the available host groups.
 | CrowdStrike.HostGroup.name | String | The name of the host group. | 
 | CrowdStrike.HostGroup.description | String | The description of the host group. | 
 | CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
-| CrowdStrike.HostGroup.created_timestamp | Date | The datetime when the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
-| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime when the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
 
 #### Command Example
@@ -3267,8 +2957,7 @@ List the available host groups.
 ### cs-falcon-delete-host-groups
 
 ***
-Delete the requested host groups.
-
+Deletes the requested host groups.
 
 #### Base Command
 
@@ -3279,7 +2968,6 @@ Delete the requested host groups.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | host_group_id | A comma-separated list of the IDs of the host groups to be deleted. | Required | 
-
 
 #### Context Output
 
@@ -3295,90 +2983,168 @@ There is no context output for this command.
 >host group id a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 deleted successfully
 
 
-### cs-falcon-search-custom-iocs
+### cs-falcon-update-host-group
 
 ***
-Returns a list of your uploaded IOCs that match the search criteria.
-
+Updates a host group.
 
 #### Base Command
 
-`cs-falcon-search-custom-iocs`
+`cs-falcon-update-host-group`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| types | A comma-separated list of indicator types. Valid types are: "sha256", "sha1", "md5", "domain", "ipv4", "ipv6". | Optional | 
-| values | A comma-separated list of indicator values. | Optional | 
-| sources | A comma-separated list of IOC sources. | Optional | 
-| expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ). | Optional | 
-| limit | The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 50. | Optional | 
-| sort | The order in which the results are returned. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc". | Optional | 
-| offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional | 
-
+| host_group_id | The ID of the host group. | Required | 
+| name | The name of the host group. | Optional | 
+| description | The description of the host group. | Optional | 
+| assignment_rule | The assignment rule. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.IOC.Type | string | The type of the IOC. | 
-| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
-| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
-| CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
-| CrowdStrike.IOC.Expiration | date | The datetime when the indicator will expire. | 
-| CrowdStrike.IOC.Description | string | The description of the IOC. | 
-| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
-| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
-| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
-| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
 
-#### Command example
+#### Command Example
 
-```!cs-falcon-search-custom-iocs limit=2```
+```!cs-falcon-update-host-group host_group_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 name="test_name_update_1" description="test_description_update"```
 
 #### Context Example
 
 ```json
 {
     "CrowdStrike": {
-        "IOC": [
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-list-host-group-members
+
+***
+Gets the list of host group members.
+
+#### Base Command
+
+`cs-falcon-list-host-group-members`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| host_group_id | The ID of the host group. | Optional | 
+| filter | The query to filter the devices that belong to the host group. | Optional | 
+| offset | Page offset. | Optional | 
+| limit | The maximum number of results on a page. Default is 50. | Optional | 
+| sort | The property to sort by (e.g., status.desc or hostname.asc). | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.Device.ID | String | The ID of the device. | 
+| CrowdStrike.Device.LocalIP | String | The local IP address of the device. | 
+| CrowdStrike.Device.ExternalIP | String | The external IP address of the device. | 
+| CrowdStrike.Device.Hostname | String | The hostname of the device. | 
+| CrowdStrike.Device.OS | String | The operating system of the device. | 
+| CrowdStrike.Device.MacAddress | String | The MAC address of the device. | 
+| CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
+| CrowdStrike.Device.LastSeen | String | The last time the device was seen. | 
+| CrowdStrike.Device.Status | String | The device status. | 
+
+
+#### Command Example
+
+```!cs-falcon-list-host-group-members```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "Device": [
             {
-                "Action": "no_action",
-                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "CreatedTime": "2022-02-16T17:17:25.992164453Z",
-                "Description": "test",
-                "Expiration": "2022-02-17T13:47:57Z",
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "ModifiedTime": "2022-02-16T17:17:25.992164453Z",
-                "Platforms": [
-                    "mac"
-                ],
-                "Severity": "informational",
-                "Source": "Cortex XSOAR",
-                "Type": "ipv4",
-                "Value": "1.1.8.9"
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-12T16:13:26Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-23T04:59:48Z",
+                "LocalIP": "10.128.0.21",
+                "MacAddress": "42-01-0a-80-00-15",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
             },
             {
-                "Action": "no_action",
-                "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "CreatedTime": "2022-02-16T17:16:44.514398876Z",
-                "Description": "test",
-                "Expiration": "2022-02-17T13:47:57Z",
-                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-                "ModifiedTime": "2022-02-16T17:16:44.514398876Z",
-                "Platforms": [
-                    "mac"
-                ],
-                "Severity": "informational",
-                "Source": "Cortex XSOAR",
-                "Type": "ipv4",
-                "Value": "4.1.8.9"
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2020-02-10T12:40:18Z",
+                "Hostname": "FALCON-CROWDSTR",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-25T07:42:47Z",
+                "LocalIP": "10.128.0.7",
+                "MacAddress": "42-01-0a-80-00-07",
+                "OS": "Windows Server 2019",
+                "Status": "contained"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-23T05:04:41Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-25T07:49:06Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-11T13:57:29Z",
+                "Hostname": "INSTANCE-1",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-23T04:45:37Z",
+                "LocalIP": "10.128.0.20",
+                "MacAddress": "42-01-0a-80-00-14",
+                "OS": "Windows Server 2019",
+                "Status": "normal"
+            },
+            {
+                "ExternalIP": "35.224.136.145",
+                "FirstSeen": "2021-08-08T11:33:21Z",
+                "Hostname": "falcon-crowdstrike-sensor-centos7",
+                "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+                "LastSeen": "2021-08-25T07:50:47Z",
+                "LocalIP": "10.128.0.19",
+                "MacAddress": "42-01-0a-80-00-13",
+                "OS": "CentOS 7.9",
+                "Status": "normal"
             }
         ]
     }
@@ -3387,232 +3153,61 @@ Returns a list of your uploaded IOCs that match the search criteria.
 
 #### Human Readable Output
 
->### Indicators of Compromise
+>### Devices
 
->|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
+>|ID|External IP|Local IP|Hostname|OS|Mac Address|First Seen|Last Seen|Status|
+>|---|---|---|---|---|---|---|---|---|
+>| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
 
-### cs-falcon-get-custom-ioc
+### cs-falcon-add-host-group-members
 
 ***
-Gets the full definition of one or more indicators that you are watching.
-
+Add host group members.
 
 #### Base Command
 
-`cs-falcon-get-custom-ioc`
+`cs-falcon-add-host-group-members`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Either ioc_id or ioc_type and value must be provided. | Optional | 
-| value | The string representation of the indicator. Either ioc_id or ioc_type and value must be provided. | Optional | 
-| ioc_id | The ID of the IOC to get. Can be retrieved by running the cs-falcon-search-custom-iocs command. Either ioc_id or ioc_type and value must be provided. | Optional | 
-
+| host_group_id | The ID of the host group. | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands. The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.IOC.Type | string | The type of the IOC. | 
-| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
-| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
-| CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
-| CrowdStrike.IOC.Expiration | date | The datetime when the indicator will expire. | 
-| CrowdStrike.IOC.Description | string | The description of the IOC. | 
-| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
-| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
-| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
-| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-
-
-#### Command example
-
-```!cs-falcon-get-custom-ioc type=ipv4 value=7.5.9.8```
-
-#### Context Example
-
-```json
-{
-    "CrowdStrike": {
-        "IOC": {
-            "Action": "no_action",
-            "CreatedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "CreatedTime": "2022-02-16T14:25:22.968603813Z",
-            "Expiration": "2022-02-17T17:55:09Z",
-            "ID": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "ModifiedBy": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
-            "ModifiedTime": "2022-02-16T14:25:22.968603813Z",
-            "Platforms": [
-                "linux"
-            ],
-            "Severity": "informational",
-            "Source": "cortex xsoar",
-            "Tags": [
-                "test",
-                "test1"
-            ],
-            "Type": "ipv4",
-            "Value": "7.5.9.8"
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Indicator of Compromise
-
->|ID|Action|Severity|Type|Value|Expiration|CreatedBy|CreatedTime|Description|ModifiedBy|ModifiedTime|Platforms|Policy|ShareLevel|Source|Tags|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
-
-### cs-falcon-upload-custom-ioc
-
-***
-Uploads an indicator for CrowdStrike to monitor.
-
-
-#### Base Command
-
-`cs-falcon-upload-custom-ioc`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ioc_type | The type of the indicator. Possible values are: "sha256", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | A comma separated list of indicators. More than one value can be supplied in order to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments). | Required | 
-| action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Required | 
-| platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Required | 
-| severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
-| expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ). | Optional | 
-| source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
-| description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
-| applied_globally | Whether the indicator is applied globally. Either applied_globally or host_groups must be provided. Possible values are: true, false. | Optional | 
-| host_groups | List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided. | Optional | 
-| tags | List of tags to apply to the indicator. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.IOC.Type | string | The type of the IOC. | 
-| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
-| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
-| CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
-| CrowdStrike.IOC.Expiration | date | The datetime when the indicator will expire. | 
-| CrowdStrike.IOC.Description | string | The description of the IOC. | 
-| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
-| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
-| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
-| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
-| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
-
-#### Command Example
-
-```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" action="prevent" severity="high" source="Demisto playbook" description="Test ioc" platforms="mac"```
-
-#### Context Example
-
-```json
-{
-    "CrowdStrike": {
-        "IOC": {
-            "CreatedTime": "2020-10-02T13:55:26Z",
-            "Description": "Test ioc",
-            "Expiration": "2020-11-01T00:00:00Z",
-            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-            "ModifiedTime": "2020-10-02T13:55:26Z",
-            "Action": "prevent",
-            "Severity": "high",
-            "Source": "Demisto playbook",
-            "Type": "domain",
-            "Value": "test.domain.com",
-            "Platforms": ["mac"]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Custom IOC was created successfully
-
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
->|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
-
-### cs-falcon-update-custom-ioc
-
-***
-Updates an indicator for CrowdStrike to monitor.
-
-
-#### Base Command
-
-`cs-falcon-update-custom-ioc`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ioc_id | The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command. | Required | 
-| action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity > Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. | Optional | 
-| platforms | The platforms that the indicator applies to. You can enter multiple platform names, separated by commas. Possible values are: mac, windows and linux. | Optional | 
-| severity | The severity level to apply to this indicator. Possible values are: informational, low, medium, high and critical. | Required for the prevent and detect actions. Optional for no_action. | 
-| expiration | The date on which the indicator will become inactive (ISO 8601 format, i.e. YYYY-MM-DDThh:mm:ssZ). | Optional | 
-| source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
-| description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
-| applied_globally | Whether the indicator is applied globally. Possible values are: true and false. Either applied_globally or host_groups must be provided. | Optional |
-| host_groups | List of host group IDs that the indicator applies to. Can be retrieved by running the cs-falcon-list-host-groups command. Either applied_globally or host_groups must be provided. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.IOC.Type | string | The type of the IOC. | 
-| CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| CrowdStrike.IOC.ID | string | The full ID of the indicator \(type:value\). | 
-| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
-| CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
-| CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
-| CrowdStrike.IOC.Description | string | The description of the IOC. | 
-| CrowdStrike.IOC.CreatedTime | string | The datetime the IOC was created. | 
-| CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
-| CrowdStrike.IOC.ModifiedTime | string | The date and time the indicator was last modified. | 
-| CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 
 
 #### Command Example
 
-```!cs-falcon-update-custom-ioc  ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r" severity="high"```
+```!cs-falcon-add-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
 
 #### Context Example
 
 ```json
 {
     "CrowdStrike": {
-        "IOC": {
-            "CreatedTime": "2020-10-02T13:55:26Z",
-            "Description": "Test ioc",
-            "Expiration": "2020-11-01T00:00:00Z",
-            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
-            "ModifiedTime": "2020-10-02T13:55:26Z",
-            "Action": "prevent",
-            "Severity": "high",
-            "Source": "Demisto playbook",
-            "Type": "domain",
-            "Value": "test.domain.com"
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7','']",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
         }
     }
 }
@@ -3620,28 +3215,94 @@ Updates an indicator for CrowdStrike to monitor.
 
 #### Human Readable Output
 
->### Custom IOC was updated successfully
+>### Results
 
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
->|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### cs-falcon-delete-custom-ioc
+### cs-falcon-remove-host-group-members
 
 ***
-Deletes a monitored indicator.
-
+Remove host group members.
 
 #### Base Command
 
-`cs-falcon-delete-custom-ioc`
+`cs-falcon-remove-host-group-members`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ioc_id | The ID of the IOC to delete. Can be retrieved by running the cs-falcon-search-custom-iocs command. | Required | 
+| host_group_id | The ID of the host group. | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands. The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command. | Required | 
 
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CrowdStrike.HostGroup.id | String | The ID of the host group. | 
+| CrowdStrike.HostGroup.group_type | String | The group type of the host group. | 
+| CrowdStrike.HostGroup.name | String | The name of the host group. | 
+| CrowdStrike.HostGroup.description | String | The description of the host group. | 
+| CrowdStrike.HostGroup.created_by | String | The client that created the host group. | 
+| CrowdStrike.HostGroup.created_timestamp | Date | The datetime the host group was created in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+| CrowdStrike.HostGroup.modified_by | String | The client that modified the host group. | 
+| CrowdStrike.HostGroup.modified_timestamp | Date | The datetime the host group was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
+
+
+#### Command Example
+
+```!cs-falcon-remove-host-group-members host_group_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" host_ids="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"```
+
+#### Context Example
+
+```json
+{
+    "CrowdStrike": {
+        "HostGroup": {
+            "assignment_rule": "device_id:[''],hostname:['']",
+            "created_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "created_timestamp": "2021-08-22T07:48:35.111070562Z",
+            "description": "test_description_update",
+            "group_type": "static",
+            "id": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_by": "api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+            "modified_timestamp": "2021-08-25T08:02:05.295663156Z",
+            "name": "test_name_update_1"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Results
+
+>|assignment_rule|created_by|created_timestamp|description|group_type|id|modified_by|modified_timestamp|name|
+>|---|---|---|---|---|---|---|---|---|
+>| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
+
+### cs-falcon-resolve-incident
+
+***
+Resolve and update incidents using the specified settings.
+
+#### Base Command
+
+`cs-falcon-resolve-incident`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of incident IDs. | Required | 
+| status | The new status of the incident. Possible values are: New, In Progress, Reopened, Closed. | Optional | 
+| assigned_to_uuid | UUID of a user to assign the incident to. Mutually exclusive with the 'username' argument. | Optional | 
+| username | Username of a user to assign the incident to. Mutually exclusive with the 'assigned_to_uuid' argument. Using this parameter instead of 'assigned_to_uuid' will result in an additional API call in order to fetch the UUID of the user. | Optional | 
+| add_tag | Add a new tag to the incidents. | Optional | 
+| remove_tag | Remove a tag from the incidents. | Optional | 
+| add_comment | Add a comment to the incident. | Optional | 
 
 #### Context Output
 
@@ -3649,12 +3310,12 @@ There is no context output for this command.
 
 #### Command Example
 
-```!cs-falcon-delete-custom-ioc ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r"```
-
+```!cs-falcon-resolve-incident ids="inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" status="Closed"```
 
 #### Human Readable Output
 
->Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
+>inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
+>inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
 
 ### cs-falcon-batch-upload-custom-ioc
 
@@ -3669,7 +3330,7 @@ Uploads a batch of indicators.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| multiple_indicators_json | A JSON object with list of CS Falcon indicators to upload. | Required | 
+| multiple_indicators_json | A JSON object with a list of CrowdStrike Falcon indicators to upload. | Required | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. Default is 180. | Optional | 
 
 #### Context Output
