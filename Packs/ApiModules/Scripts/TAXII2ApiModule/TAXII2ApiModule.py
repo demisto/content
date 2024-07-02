@@ -2168,7 +2168,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
             # if the address is https://example.com/x/ we want the x
             demisto.debug(f"The API Root URL is: {api_root.url}")
             prase_result = urlparse(str(api_root.url))
-            api_root_name = prase_result.path[-2] if len(prase_result.path) >= 2 else api_root.url
+            api_root_name = prase_result.path.replace("/", "") if prase_result.path else api_root.url
             demisto.debug(f"The API Root Name is: {api_root_name}")
             demisto.debug(f'closing api_root._conn for {api_root.url}')
             demisto.debug(f'closing api_root._conn for {api_root_name}')
