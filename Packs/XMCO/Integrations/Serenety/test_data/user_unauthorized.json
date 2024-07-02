@@ -1,0 +1,7 @@
+{
+    "_status": "ERR",
+    "_error": {
+        "code": 401,
+        "message": "Vous devez vous authentifier pour accéder à cette page."
+    }
+}
