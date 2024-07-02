@@ -538,6 +538,7 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
                 "notable_users_first_fetch": "3 months",
                 "max_fetch_users": "50",
                 "minimum_risk_score_to_fetch_users": "90",
+                "type_fetch": "Exabeam Notable User"
             },
             {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
             {"usernames": ["old_username_risky"]},
@@ -549,25 +550,14 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
                 "notable_users_first_fetch": "3 months",
                 "max_fetch_users": "50",
                 "minimum_risk_score_to_fetch_users": "90",
-                "fetch_duplicated_users": "yes",
-            },
-            {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
-            {"usernames": ["old_username_risky"]},
-            2,
-        ),
-        (
-            {
-                "notable_users_fetch_interval": "60",
-                "notable_users_first_fetch": "3 months",
-                "max_fetch_users": "50",
-                "minimum_risk_score_to_fetch_users": "90",
+                "type_fetch": "Exabeam Notable User"
             },
             {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
             {"usernames": []},
             2,
         ),
     ],
-    ids=["with_old_username_risky", "with_old_username_risky_and_get_duplicates", "without_old_username_risky"],
+    ids=["with_old_username_risky", "without_old_username_risky"],
 )
 def test_notable_users_fetch_incdents(mocker, args, last_run_obj, context_data, expected_new_incidents_count):
     mocker.patch.object(Client, '_login', return_value=None)

@@ -119,7 +119,7 @@ configuration:
   advanced: true
 - display: Type Fetch
   defaultvalue: Exabeam Incident
-  name: type_fetch
+  name: fetch_type
   type: 16
   options:
   - Exabeam Incident

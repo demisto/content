@@ -2114,11 +2114,12 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     incidents: list[dict] = []
     last_run: dict[str, Any] = demisto.getLastRun()
     demisto.debug(f"Last run before the fetch run: {last_run}")
-    type_fetch = args.get("type_fetch", DEFAULT_FETCH_TYPE)
+    type_fetch = args.get("fetch_type", DEFAULT_FETCH_TYPE)
 
     if "Exabeam Notable User" in type_fetch:
         incidents, last_run_notable_users = fetch_notable_users(client, args, last_run)
         demisto.debug(f'After fetch notable users, there are {len(incidents)} new incidents')
+        last_run['last_run_notable_users'] = last_run_notable_users
     else:
         last_run_notable_users = last_run.get('last_run_notable_users', '')
 
@@ -2127,7 +2128,6 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
         incidents.extend(exabeam_incidents)
         last_run.update(updated_last_run)
 
-    last_run['last_run_notable_users'] = last_run_notable_users
     demisto.debug(f"Last run after the fetch run: {last_run}")
     return incidents, last_run
 
