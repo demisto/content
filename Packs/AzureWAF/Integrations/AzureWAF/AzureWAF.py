@@ -42,7 +42,7 @@ class AzureWAFClient:
                 'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
             },
             'Client Credentials' : {
-                'grant_type': AUTHORIZATION_CODE,
+                'grant_type': CLIENT_CREDENTIALS,
                 'resource': None,
                 'scope': 'https://management.azure.com/.default'
             }
@@ -528,6 +528,9 @@ def test_module(client, params):
 
     elif params.get('auth_type') == 'Azure Managed Identities':
         test_connection(client, params)
+        return 'ok'
+    elif params.get('auth_type') == 'Client Credentials':
+        client.ms_client.get_access_token()
         return 'ok'
     return None
 
