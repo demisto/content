@@ -41,7 +41,7 @@ def get_entry_id_list(attachments, files):
     entry_id_list = []
     files = [files] if not isinstance(files, list) else files
     for attachment in attachments:
-        attachment_name = attachment.get('name', '')
+        attachment_name = attachment.get('Name', '')
         for file in files:
             if attachment_name == file.get('Name'):
                 entry_id_list.append((attachment_name, file.get('EntryID')))
@@ -52,10 +52,9 @@ def get_entry_id_list(attachments, files):
 def main(args):
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields', {})
-    html_body = custom_fields.get('renderedhtml', '') or \
-        custom_fields.get('emailhtml', '') or \
+    html_body = custom_fields.get('emailhtml', '') or \
         custom_fields.get('emailbody', '')
-    attachments = incident.get('attachment', {})
+    attachments = demisto.get(demisto.context(), 'Email.AttachmentsData', [])
     files = demisto.context().get('File', [])
 
     html_body = f'<div style= "background-color: white;"> {html_body} </div>'
