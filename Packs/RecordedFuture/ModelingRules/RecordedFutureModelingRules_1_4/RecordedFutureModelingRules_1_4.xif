@@ -15,14 +15,11 @@ event_type = type ,
 alert_name = title ,
 // Description of the alert from AI insights
 alert_description = ai_insights -> text,
-// Link to the event in RF system
-link_url = url -> portal,
 // Event hits
 alert_risks = json_extract_array(hits,"$.") 
 
 | alter xdm.alert.original_alert_id = alert_id ,
 xdm.alert.risks = alert_risks,
-xdm.network.http.url = link_url ,
 xdm.event.description = event_description ,
 xdm.event.id = event_id ,
 xdm.alert.subcategory = alert_subcat ,
