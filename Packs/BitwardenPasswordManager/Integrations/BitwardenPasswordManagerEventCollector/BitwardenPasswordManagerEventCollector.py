@@ -2,6 +2,8 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
+MINUTES_BEFORE_TOKEN_EXPIRED = 2
+
 
 class Client(BaseClient):
     """
@@ -18,53 +20,41 @@ class Client(BaseClient):
             expires_date = integration_context.get('expires')
             if expires_date and not self.is_token_expired(expires_date):
                 return token
-            else:
-                refresh_token = integration_context.get('refresh_token')
-                json_data = {
-                    'client_id': client_id,
-                    'refresh_token': refresh_token
-                }
-                return self.create_new_token(json_data, is_token_exist=True)
 
         json_data = {
-            'username': username,
-            'password': password,
             'client_id': client_id,
-            'scope': 'certificate'
+            'client_secret': client_secret,
+            'grant_type': 'client_credentials',
+            'scope': 'api.organization'
         }
-        return self.create_new_token(json_data, is_token_exist=False)
+        return self.create_new_token(json_data)
 
     def is_token_expired(self, expires_date: str) -> bool:
         utc_now = get_current_time()
         expires_datetime = arg_to_datetime(expires_date)
         return utc_now > expires_datetime
 
-    def create_new_token(self, json_data: dict, is_token_exist: bool) -> str:
-        if is_token_exist:
-            url_suffix = '/vedauth/authorize/token'
-        else:
-            url_suffix = '/vedauth/authorize/oauth'
+    def create_new_token(self, json_data: dict) -> str:
+        url = 'https://identity.bitwarden.com/connect/token'
 
         access_token_obj = self._http_request(
             method='POST',
-            url_suffix=url_suffix,
-            headers={'Content-Type': 'application/json'},
+            url_suffix=url,
+            headers={'Content-Type': 'application/x-www-form-urlencoded'},
             data=json.dumps(json_data),
         )
 
         new_token = access_token_obj.get('access_token', '')
         expire_in = arg_to_number(access_token_obj.get('expires_in')) or 1
-        refresh_token = access_token_obj.get('refresh_token', '')
-        self.store_token_in_context(new_token, refresh_token, expire_in)
+        self.store_token_in_context(new_token, expire_in)
 
         return new_token
 
-    def store_token_in_context(self, token: str, refresh_token: str, expire_in: int) -> None:
+    def store_token_in_context(self, token: str, expire_in: int) -> None:
 
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context({
             'token': token,
-            'refresh_token': refresh_token,
             'expire_date': str(expire_date)
         })
 
