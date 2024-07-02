@@ -179,9 +179,9 @@ name: Cortex XDR - IR
 script:
   commands:
   - arguments:
-    - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved.
+    - description: A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or before the specified date/time will be retrieved.
       name: lte_creation_time
-    - description: A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved.
+    - description: A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or after the specified date/time will be retrieved.
       name: gte_creation_time
     - description: Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.
       name: lte_modification_time
