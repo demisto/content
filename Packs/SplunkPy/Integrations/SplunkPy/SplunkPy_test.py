@@ -2645,3 +2645,43 @@ def test_handle_message(item: dict | results.Message, expected: bool):
     Tests that passing a results.Message object returns True
     """
     assert splunk.handle_message(item) is expected
+
+
+def test_single_drilldown_searches(mocker):
+    """
+    Given: - notable with single string represent dict, in the drilldown_searches key.
+    When:  - call to drilldown_enrichment.
+    Then:  - validate there is no errors in the process.
+
+    """
+    
+    drilldown_searches = json.dumps(
+        {
+            "name": "test drilldown", 
+            "search": "| from datamodel: test",
+            "earliest":1719218100,
+            "latest":1719823500
+        }
+    )
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(splunk, 'build_drilldown_search', return_value=None)
+    
+    splunk.drilldown_enrichment(
+        service=None,
+        notable_data={'drilldown_searches': drilldown_searches, 'event_id': 'test_id'},
+        num_enrichment_events=1)
+    
+    assert demisto.error.call_count == 0, 'Something was wrong in the drilldown_enrichment process'
+
+@pytest.mark.parametrize('drilldown_data, expected',
+                         [({'drilldown_search': 'test'},['test']),
+                         ({'drilldown_searches': ['{"search_1":"test_1"}','{"search_2":"test_2"}']},[{'search_1':'test_1'},{'search_2':'test_2'}]),
+                         ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1':'test_1'}])])
+def test_get_drilldown_searches(drilldown_data, expected):
+    """
+    Given:  - drildown search in various formats.
+    When:   - call to get_drilldown_searches.
+    Then:   - validate the result are as expectedץ
+    """
+    
+    assert splunk.get_drilldown_searches(drilldown_data) == expected
