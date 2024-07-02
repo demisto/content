@@ -1,11 +1,11 @@
 commonfields:
-  id: Demisto Lock 02-07-24
+  id: Demisto Lock
   version: -1
 sectionOrder:
 - Connect
 - Collect
-name: Demisto Lock 02-07-24
-display: Demisto Lock 02-07-24
+name: Demisto Lock
+display: Demisto Lock
 category: Utilities
 description: Locking mechanism that prevents concurrent execution of different tasks.
 configuration:
