@@ -262,7 +262,7 @@ tasks:
         tooltip: Specify a comma-separated list of tags you want to add to the asset(s) associated to the current Cortex XSOAR incident.
         type: shortText
       sender: Your SOC team
-      title: Determine tags to add to asset(s)
+      title: Determine tags to add to asset
       totalanswers: 0
     id: "7"
     ignoreworker: false
