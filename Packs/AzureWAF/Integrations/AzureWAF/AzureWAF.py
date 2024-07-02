@@ -41,7 +41,7 @@ class AzureWAFClient:
                 'resource': 'https://management.core.windows.net',
                 'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
             },
-            'Client Credentials' : {
+            'Client Credentials': {
                 'grant_type': CLIENT_CREDENTIALS,
                 'resource': None,
                 'scope': 'https://management.azure.com/.default'
