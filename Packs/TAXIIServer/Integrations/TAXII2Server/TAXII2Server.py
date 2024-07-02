@@ -39,6 +39,7 @@ TAXII_REQUIRED_FILTER_FIELDS = {'name', 'type', 'modified', 'createdTime', 'desc
 TAXII_V20_REQUIRED_FILTER_FIELDS = {"tags", "identity_class"}
 TAXII_V21_REQUIRED_FILTER_FIELDS = {"ismalwarefamily", "published"}
 PAGE_SIZE = 2000
+TEST = "Trigger TPB Build"
 
 ''' TAXII2 Server '''
 
