@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 from tempfile import mkdtemp
 import subprocess
+import zipfile
 # Import the functions from the script
 from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'DownloadAndArchivePythonLibrary' with the actual script name
 
