@@ -6,13 +6,13 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex ASM - On Prem Remediation
-* AWS - Unclaimed S3 Bucket Remediation
-* GCP - Firewall Remediation
-* Azure - Network Security Group Remediation
-* Cortex ASM - Cortex Endpoint Remediation
 * AWS - EC2 Package Upgrade
 * AWS - Security Group Remediation v2
+* AWS - Unclaimed S3 Bucket Remediation
+* Azure - Network Security Group Remediation
+* Cortex ASM - Cortex Endpoint Remediation
+* Cortex ASM - On Prem Remediation
+* GCP - Firewall Remediation
 
 ### Integrations
 

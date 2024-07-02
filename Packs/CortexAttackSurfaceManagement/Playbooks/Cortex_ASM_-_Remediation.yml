@@ -806,7 +806,7 @@ tasks:
       ASM Rule ID:
         simple: ${alert.asmattacksurfaceruleid}
       Account ID:
-        simple: ${AWS.EC2.Instances.AccountId}
+        simple: ${alert.asmcloud.project}
       Assume Role:
         simple: ${inputs.AWSAssumeRoleName}
       Instance ID:
@@ -833,13 +833,13 @@ tasks:
     task:
       brand: ""
       description: This playbook upgrades supported packages on an AWS EC2 instance using AWS Systems manager.
-      id: 707d4565-0132-4c06-8d56-a8ea7a371b69
+      id: d22ca941-9360-417f-8d13-c86eae687622
       iscommand: false
       name: AWS - EC2 Package Upgrade
       playbookId: AWS - EC2 Package Upgrade
       type: playbook
       version: -1
-    taskid: 707d4565-0132-4c06-8d56-a8ea7a371b69
+    taskid: d22ca941-9360-417f-8d13-c86eae687622
     timertriggers: []
     type: playbook
     view: |-

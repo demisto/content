@@ -7,14 +7,14 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 ### Sub-playbooks
 
 * Cortex ASM - Detect Service
-* Cortex ASM - Instant Message
-* Cortex ASM - ServiceNow Notification
-* Cortex ASM - Remediation Path Rules
-* Cortex ASM - Enrichment
-* Cortex ASM - Jira Notification
-* Cortex ASM - Remediation Guidance
 * Cortex ASM - Email Notification
+* Cortex ASM - Enrichment
+* Cortex ASM - Instant Message
+* Cortex ASM - Jira Notification
 * Cortex ASM - Remediation
+* Cortex ASM - Remediation Guidance
+* Cortex ASM - Remediation Path Rules
+* Cortex ASM - ServiceNow Notification
 
 ### Integrations
 
@@ -22,15 +22,15 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* GenerateASMReport
 * DeleteContext
+* GenerateASMReport
 * GridFieldSetup
 
 ### Commands
 
-* setAlert
 * closeInvestigation
 * send-mail
+* setAlert
 
 ## Playbook Inputs
 

@@ -217,10 +217,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: caba25c2-b5ef-4694-8aa8-11ccd448ea62
+    taskid: 06d9bc06-59ea-4f26-8e72-62158cfaaefa
     type: condition
     task:
-      id: caba25c2-b5ef-4694-8aa8-11ccd448ea62
+      id: 06d9bc06-59ea-4f26-8e72-62158cfaaefa
       version: -1
       name: Meets automated remediation requirements?
       description: Determines if the alert meets the criteria for automated remediation.
@@ -234,13 +234,135 @@ tasks:
       - "52"
       Unclaimed S3 Bucket:
       - "33"
-      "yes":
-      - "34"
       AWS Systems Manager:
       - "58"
+      Restrict Open Ports:
+      - "34"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "AWS Systems Manager"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - System Manager
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+            iscontext: true
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmsystemids.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ASSET-SSM-PLATFORM-NAME
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: ubuntu
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert
+                accessor: asmattacksurfaceruleid
+                transformers:
+                - args:
+                    chars:
+                      value:
+                        simple: '[\"]'
+                  operator: StripChars
+            iscontext: true
+          right:
+            value:
+              simple: InsecureOpenSSH
+      - - operator: inList
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmsystemids.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ASSET-SSM-PLATFORM-TYPE
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: linux
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                accessor: id
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: alert.asmsystemids.type
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: ASSET-SSM-AGENT-STATUS
+                root: alert.asmsystemids
+                transformers:
+                - operator: toLowerCase
+          operator: isEqualString
+          right:
+            value:
+              simple: active
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmdevcheckdetails.result
+          operator: isTrue
+        - left:
+            iscontext: true
+            value:
+              simple: inputs.BypassDevCheck
+          operator: isEqualString
+          right:
+            value:
+              simple: "True"
+      - - left:
+            iscontext: true
+            value:
+              simple: alert.asmserviceowner
+          operator: isNotEmpty
+    - label: "Restrict Open Ports"
       condition:
       - - operator: inList
           left:
@@ -405,110 +527,6 @@ tasks:
                       value:
                         simple: active
             iscontext: true
-    - condition:
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.brand
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: AWS - System Manager
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: modules.state
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: active
-                root: modules
-          operator: isExists
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: id
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: alert.asmsystemids.type
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: ASSET-SSM-PLATFORM-NAME
-                root: alert.asmsystemids
-                transformers:
-                - operator: toLowerCase
-          operator: inList
-          right:
-            value:
-              simple: ubuntu
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: asmattacksurfaceruleid
-                root: alert
-                transformers:
-                - args:
-                    chars:
-                      value:
-                        simple: '[\"]'
-                  operator: StripChars
-          operator: inList
-          right:
-            value:
-              simple: InsecureOpenSSH
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: id
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: alert.asmsystemids.type
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: ASSET-SSM-PLATFORM-TYPE
-                root: alert.asmsystemids
-                transformers:
-                - operator: toLowerCase
-          operator: inList
-          right:
-            value:
-              simple: linux
-      - - left:
-            iscontext: true
-            value:
-              complex:
-                accessor: id
-                filters:
-                - - left:
-                      iscontext: true
-                      value:
-                        simple: alert.asmsystemids.type
-                    operator: isEqualString
-                    right:
-                      value:
-                        simple: ASSET-SSM-AGENT-STATUS
-                root: alert.asmsystemids
-                transformers:
-                - operator: toLowerCase
-          operator: isEqualString
-          right:
-            value:
-              simple: active
-      label: AWS Systems Manager
     continueonerrortype: ""
     view: |-
       {
@@ -2183,7 +2201,7 @@ view: |-
   {
     "linkLabelsPosition": {
       "10_33_Unclaimed S3 Bucket": 0.55,
-      "10_34_yes": 0.83,
+      "10_34_Restrict Open Ports": 0.83,
       "10_52_Cortex Endpoint": 0.66,
       "16_17_yes": 0.55,
       "23_48_Jira": 0.88,

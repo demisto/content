@@ -14,10 +14,10 @@ This playbook does not use any sub-playbooks.
 
 ### Scripts
 
-* RemediationPathRuleEvaluation
+* GetTime
 * GridFieldSetup
 * Set
-* GetTime
+* RemediationPathRuleEvaluation
 
 ### Commands
 

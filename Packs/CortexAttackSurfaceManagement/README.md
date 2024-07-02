@@ -47,6 +47,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Unclaimed S3 Bucket*
 - Asset one of the following:
   - AWS EC2 Instance
+  - AWS SSM agent (active) on AWS EC2 Instance
   - Azure Compute Instance
   - GCP Compute Engine (VM)
   - On-prem asset protected with a Palo Alto Networks Firewall
@@ -54,7 +55,6 @@ Automated remediation is only possible when the right conditions are met.  These
 - Service owner information found through one of the following:
   - Active Directory
   - AWS IAM
-  - AWS SSM
   - Azure IAM
   - Venafi
   - Cortex Endpoint (XSIAM/XDR)
