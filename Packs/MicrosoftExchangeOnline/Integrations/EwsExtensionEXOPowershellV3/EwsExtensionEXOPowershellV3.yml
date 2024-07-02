@@ -1986,6 +1986,239 @@ script:
     - contextPath: EWS.MailboxAuditBypassAssociation.WhenCreatedUTC
       description: The date in UTC format of when the mailbox audit bypass association was created.
       type: Date
+  - name: ews-export-quarantinemessage
+    arguments:
+    - name: identities
+      description: A comma-separated list of identities of the messages to export.
+      isArray: true
+    - name: identity
+      description: The identity of a single message to export.
+    - name: compress_output
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Specify whether the output should be compressed.
+      defaultValue: "false"
+    - name: entity_type
+      auto: PREDEFINED
+      predefined:
+      - Message
+      - Phish
+      - Malware
+      - Spam
+      description: The type of entity being exported.
+    - name: force_conversion_to_mime
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Specify whether to force conversion to MIME format.
+      defaultValue: "false"
+    - name: password
+      description: Password to encrypt the exported file.
+    - name: reason_for_export
+      description: Reason for exporting the message.
+    - name: recipient_address
+      description: Email address to send the exported message to.
+    outputs:
+    - contextPath: EWS.QuarantineMessageExport.Action
+      description: Action taken ('Export').
+      type: string
+    - contextPath: EWS.QuarantineMessageExport.Identity
+      description: Unique identifier for the exported message.
+      type: string
+    - contextPath: EWS.QuarantineMessageExport.FilePath
+      description: Path to the exported file.
+      type: string
+    - contextPath: EWS.QuarantineMessageExport.Compressed
+      description: Indicates if the output was compressed.
+      type: boolean
+    - contextPath: EWS.QuarantineMessageExport.EntityType
+      description: Type of the entity exported.
+      type: string
+    - contextPath: EWS.QuarantineMessageExport.Error
+      description: Error (if any) returned by remote command.
+      type: string
+    description: Export quarantine messages. Uses PowerShell Export-QuarantineMessage
+      cmdlet.
+    execution: true
+  - name: ews-get-quarantinemessage
+    arguments:
+    - name: identity
+      description: The identity of a single message to retrieve.
+    - name: entity_type
+      auto: PREDEFINED
+      predefined:
+      - Message
+      - Phish
+      - Malware
+      - Spam
+      description: The type of entity being retrieved.
+    - name: recipient_address
+      description: Email address of the recipient.
+    - name: sender_address
+      description: Email address of the sender.
+    - name: teams_conversation_types
+      description: Types of Teams conversations to retrieve.
+    - name: direction
+      description: Direction of the message (Inbound/Outbound).
+    - name: domain
+      description: Domain associated with the message.
+    - name: end_expires_date
+      description: End date for the message expiration.
+    - name: end_received_date
+      description: End date for when the message was received.
+    - name: include_messages_from_blocked_sender_address
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Include messages from blocked sender addresses.
+      defaultValue: "false"
+    - name: message_id
+      description: ID of the message.
+    - name: my_items
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Include only items belonging to the user.
+      defaultValue: "false"
+    - name: page
+      description: Page number for pagination.
+    - name: page_size
+      description: Number of items per page.
+    - name: policy_name
+      description: Name of the policy associated with the message.
+    - name: policy_types
+      description: Types of policies associated with the message.
+    - name: quarantine_types
+      description: Types of quarantine associated with the message.
+    - name: recipient_tag
+      description: Tag associated with the recipient.
+    - name: release_status
+      description: Release status of the message.
+    - name: reported
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Include only reported messages.
+      defaultValue: "false"
+    - name: start_expires_date
+      description: Start date for the message expiration.
+    - name: start_received_date
+      description: Start date for when the message was received.
+    - name: subject
+      description: Subject of the message.
+    - name: type
+      description: Type of the message.
+    outputs:
+    - contextPath: EWS.QuarantineMessage.Action
+      description: Action taken ('Get').
+      type: string
+    - contextPath: EWS.QuarantineMessage.Identity
+      description: Unique identifier for the retrieved message.
+      type: string
+    - contextPath: EWS.QuarantineMessage.RecipientAddress
+      description: Email address of the recipient.
+      type: string
+    - contextPath: EWS.QuarantineMessage.SenderAddress
+      description: Email address of the sender.
+      type: string
+    - contextPath: EWS.QuarantineMessage.Subject
+      description: Subject of the message.
+      type: string
+    - contextPath: EWS.QuarantineMessage.ReceivedDate
+      description: Date the message was received.
+      type: string
+    - contextPath: EWS.QuarantineMessage.Error
+      description: Error (if any) returned by remote command.
+      type: string
+    description: Retrieve quarantine messages. Uses PowerShell Get-QuarantineMessage
+      cmdlet.
+    execution: true
+  - name: ews-release-quarantinemessage
+    arguments:
+    - name: user
+      description: The user associated with the quarantine message.
+    - name: identities
+      description: A comma-separated list of identities of the messages to release.
+      isArray: true
+    - name: identity
+      description: The identity of a single message to release.
+    - name: release_to_all
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Specify whether to release the message to all recipients.
+      defaultValue: "false"
+    - name: allow_sender
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Specify whether to allow the sender.
+      defaultValue: "false"
+    - name: entity_type
+      auto: PREDEFINED
+      predefined:
+      - Message
+      - Phish
+      - Malware
+      - Spam
+      description: The type of entity being released.
+    - name: force
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Specify whether to force the release.
+      defaultValue: "false"
+    - name: report_false_positive
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Specify whether to report the message as a false positive.
+      defaultValue: "false"
+    - name: action_type
+      description: The type of action to take when releasing the message.
+    - name: confirm
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Confirm the action before proceeding.
+      defaultValue: "false"
+    - name: what_if
+      auto: PREDEFINED
+      predefined:
+      - "false"
+      - "true"
+      description: Simulate the action without making any changes.
+      defaultValue: "false"
+    outputs:
+    - contextPath: EWS.QuarantineMessageRelease.Action
+      description: Action taken ('Release').
+      type: string
+    - contextPath: EWS.QuarantineMessageRelease.Identity
+      description: Unique identifier for the released message.
+      type: string
+    - contextPath: EWS.QuarantineMessageRelease.User
+      description: User associated with the released message.
+      type: string
+    - contextPath: EWS.QuarantineMessageRelease.EntityType
+      description: Type of the entity released.
+      type: string
+    - contextPath: EWS.QuarantineMessageRelease.Error
+      description: Error (if any) returned by remote command.
+      type: string
+    description: Release quarantine messages. Uses PowerShell Release-QuarantineMessage
+      cmdlet.
+    execution: true
   - name: ews-remove-tenant-allow-block-list-items
     arguments:
     - name: entries
