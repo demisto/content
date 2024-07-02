@@ -549,7 +549,7 @@ Creates new ServiceNow ticket.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | short_description | Short description of the ticket. | Optional | 
-| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", or "sn_si_incident". Default is "incident". | Optional |
+| ticket_type | Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident". | Optional |
 | urgency | Ticket urgency. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | severity | Ticket severity. You can either select from the predefined options or enter another value, for example: "Urgent" or "5". | Optional | 
 | impact | Ticket impact. | Optional | 
