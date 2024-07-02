@@ -1,5 +1,9 @@
 To get an The API client ID and secret please contact the crowdstrike support: support@crowdstrike.com
 
+
+#### Important:
+For the CrowdStrike Next Generation (Raptor release) version, make sure to select the "Post Raptor Release" checkbox.
+
 ### Required API client scope
 In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
 - Real Time Response - Read and Write

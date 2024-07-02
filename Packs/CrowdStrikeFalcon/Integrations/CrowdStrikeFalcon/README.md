@@ -26,7 +26,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Use system proxy settings |  | False |
     | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
     | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
-    | Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
+    | Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is for Post Raptor release only.| False |
     | Reopen Statuses | Crowdsrike Falcon statuses that will reopen an incident in XSOAR if closed. You can choose any combination. | False |
     | Incidents Fetch Interval |  | False |
     | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
@@ -252,6 +252,7 @@ Searches for a device that matches the query.
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
 
 ### 2. Get a behavior
+Deprecated. 
 
 ---
 Searches for and fetches the behavior that matches the query.
@@ -365,8 +366,8 @@ or by providing the IDs of the detections.
 | CrowdStrike.Detection.Behavior.UserName | String | The user name related to the behavior. | 
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. | 
-| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior. | 
-| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. | 
+| CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior.| 
+| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. Note: this field dose not exist in the new "post raptor" version| 
 | CrowdStrike.Detection.System | String | The system name of the detection. | 
 | CrowdStrike.Detection.CustomerID | String | The ID of the customer \(CID\). | 
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. | 
@@ -1997,7 +1998,7 @@ Lists detection summaries.
 | CrowdStrike.Detections.device.modified_timestamp | Date | The datetime the device was last modified in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.Detections.behaviors.device_id | String | The ID of the device associated with the behavior. | 
 | CrowdStrike.Detections.behaviors.timestamp | Date | The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.Detections.behaviors.behavior_id | String | The ID of the behavior. | 
+| CrowdStrike.Detections.behaviors.behavior_id | String | The ID of the behavior.  Note: This output does not exist in the 'post raptor' version.| 
 | CrowdStrike.Detections.behaviors.filename | String | The file name of the triggering process. | 
 | CrowdStrike.Detections.behaviors.alleged_filetype | String | The file extension of the behavior's filename. | 
 | CrowdStrike.Detections.behaviors.cmdline | String | The command line of the triggering process. | 
@@ -2009,8 +2010,8 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.confidence | Number | The true positive confidence rating for the behavior. The value can be any integer between 1-100. | 
 | CrowdStrike.Detections.behaviors.ioc_type | String | The type of the triggering IOC. Possible values are: "hash_sha256", "hash_md5", "domain", "filename", "registry_key", "command_line", and "behavior". | 
 | CrowdStrike.Detections.behaviors.ioc_value | String | The IOC value. | 
-| CrowdStrike.Detections.behaviors.ioc_source | String | The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". | 
-| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description. | 
+| CrowdStrike.Detections.behaviors.ioc_source | String | The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.behaviors.user_name | String | The user name. | 
 | CrowdStrike.Detections.behaviors.user_id | String | The Security Identifier \(SID\) of the user in Windows. | 
 | CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. | 
@@ -2037,15 +2038,15 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.process_blocked | Boolean | Whether the process is blocked. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation is blocked. | 
 | CrowdStrike.Detections.email_sent | Boolean | Whether an email is sent about this detection. | 
-| CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior. | 
-| CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior. | 
-| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100. | 
-| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100. | 
-| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". | 
+| CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.show_in_ui | Boolean | Whether the detection displays in the UI. | 
 | CrowdStrike.Detections.status | String | The status of the detection. | 
-| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned. | 
-| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned. | 
+| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned.  Note: This output does not exist in the post raptor version.| 
+| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned.  Note: This output does not exist in the post raptor version.| 
 | CrowdStrike.Detections.hostinfo.domain | String | The domain of the Active Directory. | 
 | CrowdStrike.Detections.seconds_to_triaged | Number | The amount of time it took to move a detection from "new" to "in_progress". | 
 | CrowdStrike.Detections.seconds_to_resolved | Number | The amount of time it took to move a detection from new to a resolved state \("true_positive", "false_positive", and "ignored"\). | 

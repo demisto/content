@@ -2220,7 +2220,7 @@ class TestFetch:
                                           })
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {}]
+            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {},{}]
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -6036,23 +6036,33 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 
 
 class TestCSFalconResolveIdentityDetectionCommand:
-    def test_http_request_arguments(self, mocker: MockerFixture):
+    @pytest.mark.parametrize('Post_Raptor_release, url_suffix, ids_request_key', [
+        (True,'/alerts/entities/alerts/v3', 'composite_ids'),
+         (False, '/alerts/entities/alerts/v2', 'ids')])
+    def test_http_request_arguments(self, mocker: MockerFixture, Post_Raptor_release, url_suffix, ids_request_key):
         """
         Given:
             - Arguments for the cs-falcon-resolve-identity-detection command.
+            case 1: Post_Raptor_release is True
+            case 2: Post_Raptor_release is False
         When
             - Making a http request.
         Then
             - Validate that the arguments are mapped correctly to the json body.
+            - Validate the url_suffix and the ids_request_key according to the Post_Raptor_release value:
+                case 1: url_suffix should be '/alerts/entities/alerts/v3' and the ids_request_key should be 'composite_ids'
+                case 2: url_suffix should be '/alerts/entities/alerts/v2' and the ids_request_key should be 'ids'
         """
         from CrowdStrikeFalcon import resolve_detections_request
+        mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
         http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
         ids = ['1,2']
         action_param_values = {'update_status': 'new', 'assign_to_name': 'bot'}
         action_params_http_body = [{'name': 'update_status', 'value': 'new'}, {'name': 'assign_to_name', 'value': 'bot'}]
         resolve_detections_request(ids=ids, **action_param_values)
+        assert http_request_mocker.call_args_list[0][1].get('url_suffix') == url_suffix
         assert http_request_mocker.call_args_list[0][1].get('json') == {'action_parameters': action_params_http_body,
-                                                                        'ids': ids}
+                                                                        ids_request_key: ids}
 
     def test_resolve_identity_detection(self, mocker: MockerFixture):
         """
@@ -6942,3 +6952,267 @@ def test_error_handler():
         error_handler(arg_res)
     except DemistoException as e:
         assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'
+
+@pytest.mark.parametrize('Post_Raptor_release, url_suffix', [
+    (True, 'alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'),
+     (False, '/detects/queries/detects/v1')
+     ])
+def test_get_detection___url(mocker, Post_Raptor_release, url_suffix):
+    """
+    Given:
+    - The `Post_Raptor_release` flag
+When:
+    - Invoking `get_fetch_detections` with various input parameters
+Then:
+    - Verify that the correct `url_suffix` is used
+
+Test Scenarios:
+    1. When `Post_Raptor_release` is True, the `url_suffix` should be:
+       "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"
+       since all parameters are part of the URL and are URL-encoded.
+    2. When `Post_Raptor_release` is False, the `url_suffix` should be:
+       "/detects/queries/detects/v1" since all the provided parameters are passed under 'parameters'.
+    """
+    from CrowdStrikeFalcon import get_detections
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    get_detections(last_behavior_time='2024-06-19T15:25:00Z', behavior_id=123,
+                   filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'")
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+        
+
+@pytest.mark.parametrize('Post_Raptor_release, url_suffix, data', [
+        (True,"/alerts/entities/alerts/v3",
+         '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}], "composite_ids": ["123"]}'),
+         (False, '/detects/entities/detects/v2',
+          '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')])
+def test_resolve_detection(mocker, Post_Raptor_release, url_suffix, data):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running resolve_detection
+    Then:
+        - Validate that the correct url_suffix is used
+            case 1: Post_Raptor_release is True, the url_suffix should be alerts/entities/alerts/v2
+            case 2: Post_Raptor_release is False, the url_suffix should be /detects/entities/detects/v1
+    """
+    from CrowdStrikeFalcon import resolve_detection
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    resolve_detection(ids=["123"],status= "resolved", assigned_to_uuid="123",show_in_ui="True",comment="comment")
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+    assert http_request_mocker.call_args_list[0][1]["data"] == data
+
+
+
+
+@pytest.mark.parametrize('post_raptor_release, url_suffix, request_params', [
+    (True, '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
+, {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3}),
+    (False, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
+])
+def test_get_fetch_detections__url(mocker, post_raptor_release, url_suffix, request_params):
+    """
+    Given:
+        - The `Post_Raptor_release` flag
+    When:
+        - Invoking `get_fetch_detections` with various input parameters
+    Then:
+        - Verify that the correct `url_suffix` is used and the input parameters are correctly passed
+
+    Test Scenarios:
+        1. When `Post_Raptor_release` is True, the `url_suffix` should be:
+        '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
+        All parameters (except 'limit') are part of the URL and are URL-encoded.
+        2. When `Post_Raptor_release` is False, the `url_suffix` should be "/detects/queries/detects/v1"
+        All the provided parameters are passed under 'parameters'.
+    """
+    from CrowdStrikeFalcon import get_fetch_detections
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', post_raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+
+    get_fetch_detections(filter_arg=None, offset=5,
+                         last_updated_timestamp='2024-06-19T15:25:00Z',
+                         has_limit=True, limit=3)
+
+    assert http_request_mocker.call_args_list[0][0][1] == url_suffix
+    assert http_request_mocker.call_args_list[0][0][2] == request_params
+
+
+@pytest.mark.parametrize('Post_Raptor_release, expected_output', [
+        (True, [{'status': 'open', 'max_severity': 'critical', 'detection_id': '456', 'created_time': '2022-01-01T00:00:00Z'}]),
+         (False, [{'status': 'open', 'max_severity': 'high', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}])])
+def test_detections_to_human_readable(mocker, expected_output, Post_Raptor_release):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running detections_to_human_readable
+    Then:
+        - Validate that the correct output is returned based on the Post_Raptor_release flag
+    """
+    from CrowdStrikeFalcon import detections_to_human_readable
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    mock_table_to_markdown =  mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
+    input = {'status': 'open','max_severity_displayname': 'high','detection_id': '123',
+                 'created_timestamp': '2022-01-01T00:00:00Z','severity_name': 'critical','composite_id': '456'},
+    detections_to_human_readable(input)
+    
+    assert mock_table_to_markdown.call_args[0][1] == expected_output
+    
+    
+
+def test_modify_detection_summaries_outputs():
+    """
+    Given:
+        - A detection dictionary
+    When:
+        - Running modify_detection_summaries_outputs
+    Then:
+        - Validate that the output is correctly modified
+    """
+    from CrowdStrikeFalcon import modify_detection_summaries_outputs
+    # Arrange
+    detection = {
+        "pattern_disposition_details": "details",
+        "timestamp": "time",
+        "device": {"device_id": "device1", "hostinfo": "info"},
+        "filename": "file",
+        "cmdline": "cmd",
+        "pattern_disposition": "disposition",
+        "parent_details": {"sha256": "parent_sha256_test", "cmdline": "parent_cmd_test",
+                           "md5": "parent_md5_test", "process_graph_id": "parent_id_test"},
+        "composite_id": "composite"
+    }
+
+    modified_detection = modify_detection_summaries_outputs(detection)
+
+    assert modified_detection["behaviors"]["device_id"] == "device1"
+    assert modified_detection["behaviors"]["filename"] == "file"
+    assert modified_detection["hostinfo"] == "info"
+    assert modified_detection["detection_id"] == "composite"
+    assert modified_detection["behaviors"]["parent_details"]["parent_sha256"] == "parent_sha256_test"
+    assert modified_detection["behaviors"]["parent_details"]["parent_cmdline"] == "parent_cmd_test"
+    assert modified_detection["behaviors"]["parent_details"]["parent_md5"] == "parent_md5_test"
+    assert modified_detection["behaviors"]["timestamp"] == "time"
+    
+
+def test_truncate_long_time_str():
+    """
+    Given:
+        - A list of detections
+    When:
+        - Running truncate_long_time_str
+    Then:
+        - Validate that the time string is correctly truncated to 6 digits after the dot
+    """
+    from CrowdStrikeFalcon import truncate_long_time_str
+    
+    detections = [{"time": "2022-01-01T00:00:00.000000000000000000000000000Z"},
+                   {"time": "2022-01-01T00:00:00.000000Z"},
+                   {"time": "2022-01-01T00:00:00.000000000000000000000000000Z"}]
+    time_key = "time"
+    
+    assert truncate_long_time_str(detections, time_key) == [{'time': '2022-01-01T00:00:00.000000Z'},
+                                                            {'time': '2022-01-01T00:00:00.000000Z'},
+                                                            {'time': '2022-01-01T00:00:00.000000Z'}]
+
+@pytest.mark.parametrize('Post_Raptor_release, expected_url', [
+    (True, '/alerts/entities/alerts/v2'),
+    (False, '/detects/entities/summaries/GET/v1')
+])
+def test_get_detections_entities__url(mocker, Post_Raptor_release, expected_url):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running get_detections_entities
+    Then:
+        - Validate that the correct url is used based on the Post_Raptor_release flag
+    """
+    from CrowdStrikeFalcon import get_detections_entities
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+    get_detections_entities(["123"])
+    assert http_request_mocker.call_args_list[0][0][1] == expected_url
+    
+
+@pytest.mark.parametrize('Post_Raptor_release, expected_url', [
+    (True, '/alerts/queries/alerts/v2?filter=created_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'),
+    (False, '/alerts/queries/alerts/v1')
+])
+def test_get_detections_ids__url(mocker, Post_Raptor_release, expected_url):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running get_detections_ids
+    Then:
+        - Validate that the correct url is used based on the Post_Raptor_release flag
+    """
+    from CrowdStrikeFalcon import get_detections_ids
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+    get_detections_ids(filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'")
+    assert http_request_mocker.call_args_list[0][0][1] == expected_url
+
+
+def test_modify_detection_outputs(mocker):
+    """
+    Given:
+        - A detection dictionary
+    When:
+        - Running modify_detection_outputs
+    Then:
+        - Validate that the output is correctly modified
+    """
+    from CrowdStrikeFalcon import modify_detection_outputs
+    mocker.patch('CrowdStrikeFalcon.DETECTIONS_BEHAVIORS_KEY_MAP', {"key1": "value1", "key2": "value2"})
+    
+    detection = {"key1": "value1", "key2": "value2", "key3": "value3", "parent_details": "details",
+                 "triggering_process_graph_id": "id", "testing": "test"}
+    
+    assert modify_detection_outputs(detection) ==  {'key3': 'value3', 'testing': 'test',
+                                                    'behaviors': [{'key1': 'value1',
+                                                    'key2': 'value2',
+                                                    'parent_details': 'details', 'triggering_process_graph_id': 'id'}]}
+    
+@pytest.mark.parametrize('Post_Raptor_release, expected_results', [
+    (True, {'action_parameters': [{'name': 'key1', 'value': 'value1'}], 'composite_ids': ['123']}),
+    (False, {'action_parameters': [{'name': 'key1', 'value': 'value1'}], 'ids': ['123']})
+])
+def test_resolve_detections_prepare_body_request(mocker, Post_Raptor_release, expected_results):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running resolve_detections_prepare_body_request
+    Then:
+        - Validate that the correct body is returned based on the Post_Raptor_release flag
+    """
+    from CrowdStrikeFalcon import resolve_detections_prepare_body_request
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    assert resolve_detections_prepare_body_request(ids=["123"], action_params_values={"key1": "value1"}) == expected_results
+
+
+@pytest.mark.parametrize('Post_Raptor_release, expected_url', [
+    (True, '/alerts/entities/alerts/v3'),
+    (False, '/alerts/entities/alerts/v2')
+])
+def test_resolve_detections_request__url(mocker, Post_Raptor_release, expected_url):
+    """
+    Given:
+        - The Post_Raptor_release flag
+    When:
+        - Running resolve_detections_request
+    Then:
+        - Validate that the correct url is used based on the Post_Raptor_release flag
+    """
+    from CrowdStrikeFalcon import resolve_detections_request
+    mocker.patch('CrowdStrikeFalcon.POST_RAPTOR_RELEASE', Post_Raptor_release)
+    http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
+    resolve_detections_request(ids=["123"])
+    assert http_request_mocker.call_args_list[0][1]['url_suffix'] == expected_url
