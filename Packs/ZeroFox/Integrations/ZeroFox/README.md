@@ -9,7 +9,7 @@ This integration was integrated and tested with versions 1.0 and 2.0 of ZeroFox.
 
     | **Parameter** | **Required** |
     | --- | --- |
-    | URL (e.g., https://api.zerofox.com/) | True |
+    | URL (e.g., <https://api.zerofox.com/>) | True |
     | Username | True |
     | Password | True |
     | Fetch only escalated alerts | False |
@@ -557,6 +557,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### zerofox-get-policy-types
 
 ***
@@ -573,6 +574,7 @@ There are no input arguments for this command.
 #### Context Output
 
 There is no context output for this command.
+
 ### zerofox-modify-alert-notes
 
 ***
@@ -702,6 +704,7 @@ Sends an attachment to a specified alert.
 #### Context Output
 
 There is no context output for this command.
+
 ### zerofox-get-alert-attachments
 
 ***
@@ -847,6 +850,7 @@ Looks for registered exploits in ZeroFox's CTI feeds.
 
 You can enable incident mirroring between Cortex XSOAR incidents and ZeroFox corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
