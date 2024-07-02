@@ -2,6 +2,7 @@
   "core_packs_list": [
     "Active_Directory_Query",
     "AWS-EC2",
+    "AWS-Enrichment-Remediation",
     "AWS-IAM",
     "AWS-Organizations",
     "AWS-Route53",
@@ -34,12 +35,15 @@
     "qualys",
     "Rapid7_Nexpose",
     "ServiceNow",
+    "Slack",
     "SplunkPy",
-    "Tenable_io"
+    "Tenable_io",
+    "Venafi"
   ],
   "update_core_packs_list": [
     "Active_Directory_Query",
     "AWS-EC2",
+    "AWS-Enrichment-Remediation",
     "AWS-IAM",
     "AWS-Organizations",
     "AWS-Route53",
@@ -72,7 +76,9 @@
     "qualys",
     "Rapid7_Nexpose",
     "ServiceNow",
+    "Slack",
     "SplunkPy",
-    "Tenable_io"
+    "Tenable_io",
+    "Venafi"
   ]
 }
