@@ -343,6 +343,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     """
     Get all PR's that are currently open from the same author, filter the list and return reviewer if reviewer is part
     of the current contribution round
+    The check for reviewer is done with assignees because reviewers list after initial review is empty.
     Arguments:
     - other_prs_by_same_user - list of opened PR's
 
