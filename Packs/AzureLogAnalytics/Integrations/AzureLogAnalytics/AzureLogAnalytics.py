@@ -35,11 +35,13 @@ class Client:
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
         self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        demisto.debug(f'##### demisto.debug ##### {self.azure_cloud.name=}')
         suffix = (
             f"subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/"
             + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
         )
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
+        demisto.debug(f'##### demisto.debug ##### {base_url=}')
 
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
@@ -66,6 +68,9 @@ class Client:
             command_prefix="azure-log-analytics",
             azure_cloud=azure_cloud
         )
+        demisto.debug('##### demisto.debug ##### MicrosoftClient created successfully')
+        demisto.debug(f'##### demisto.debug ##### {self.ms_client._base_url}=')
+
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
 
@@ -624,6 +629,7 @@ def main():
     args = demisto.args()
 
     demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"##### demisto.debug ##### {params.get('azure_cloud')=}")
 
     try:
         self_deployed = params.get('self_deployed', False)

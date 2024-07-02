@@ -25,7 +25,6 @@ configuration:
   section: Connect
   display: Server URL
   advanced: true
-  defaultvalue: https://management.azure.com
   hidden: false
   additionalinfo: Use this option when required to customize the URL to the Azure management endpoint. More information can be found here - https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#using-national-cloud
 - additionalinfo: Received from the authorization process or from the self-deployed configuration process (find the tenant ID in your app overview page in the Azure portal)
