@@ -2186,20 +2186,6 @@ script:
       defaultValue: "false"
     - name: action_type
       description: The type of action to take when releasing the message.
-    - name: confirm
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Confirm the action before proceeding.
-      defaultValue: "false"
-    - name: what_if
-      auto: PREDEFINED
-      predefined:
-      - "false"
-      - "true"
-      description: Simulate the action without making any changes.
-      defaultValue: "false"
     outputs:
     - contextPath: EWS.QuarantineMessageRelease.Action
       description: Action taken ('Release').
