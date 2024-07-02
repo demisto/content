@@ -27,19 +27,19 @@ class Client:
         self.resource_group_name = resource_group_name
         AUTH_TYPES_DICT: dict = {
             'Authorization Code': {
-            'grant_type': AUTHORIZATION_CODE,
-            'resource': None,
-            'scope': 'https://management.azure.com/.default'
+                'grant_type': AUTHORIZATION_CODE,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
             },
             'Device Code': {
-            'grant_type': DEVICE_CODE,
-            'resource': 'https://management.core.windows.net',
-            'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
+                'grant_type': DEVICE_CODE,
+                'resource': 'https://management.core.windows.net',
+                'scope': 'https://management.azure.com/user_impersonation offline_access user.read'
             },
-            'Client Credentials' : {
-            'grant_type': CLIENT_CREDENTIALS,
-            'resource': None,
-            'scope': 'https://management.azure.com/.default'
+            'Client Credentials': {
+                'grant_type': CLIENT_CREDENTIALS,
+                'resource': None,
+                'scope': 'https://management.azure.com/.default'
             }
         }
         if '@' in app_id:
