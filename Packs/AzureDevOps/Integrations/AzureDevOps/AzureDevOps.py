@@ -78,7 +78,7 @@ class Client:
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
             proxy=proxy,
-            scope=SCOPE_CLIENT_CREDENTIALS_FLOW if 'Client Credentials' in auth_type else SCOPE_DEVICE_AUTH_FLOW,
+            scope=SCOPE_CLIENT_CREDENTIALS_FLOW if 'Device Code' not in auth_type else SCOPE_DEVICE_AUTH_FLOW,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
