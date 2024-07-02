@@ -1,0 +1,21 @@
+args:
+- name: input
+  required: true
+  description: The input to be defanged.
+comment: Defangs IP, Mail and URL address to prevent them from being recognized.
+commonfields:
+  id: Defang
+  version: -1
+name: Defang
+outputs:
+- contextPath: Defang.output
+  description: The defanged output.
+  type: string
+script: '-'
+subtype: python3
+tags:
+- Utilities
+timeout: '0'
+type: python
+fromversion: 5.0.0
+dockerimage: demisto/python3:3.10.14.99474
