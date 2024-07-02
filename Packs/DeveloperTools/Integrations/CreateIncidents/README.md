@@ -30,7 +30,7 @@ Creates incidents from JSON files provided, and stores them in the instance cont
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incidents_path | The path of the json file containing incidents. Can contain one incident or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json. | Required | 
+| incidents_path | The path of the JSON file containing incidents. Can contain one incident or a list of incidents. For example: Packs/somePack/TestPlaybooks/examples.json. | Required | 
 | attachment_paths | The paths of the files to be added to incidents as attachment. Will be added to all incidents provided in the incident_path file. For example: Packs/somePack/TestPlaybooks/attach.eml. | Optional | 
 
 
