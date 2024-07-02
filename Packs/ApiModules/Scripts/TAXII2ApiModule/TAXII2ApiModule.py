@@ -2217,9 +2217,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
                 )
 
     def initialise(self):
-        demisto.debug(f'TAXII2Feed_Test: initialise')
         self.init_server()
-        demisto.debug(f'TAXII2Feed_Test: init_roots')
         self.init_roots()
         self.init_collections()
         self.init_collection_to_fetch()
