@@ -16,7 +16,7 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "12"
     separatecontext: false
     view: |-
       {
@@ -56,8 +56,13 @@ tasks:
     view: |-
       {
         "position": {
+<<<<<<< Updated upstream
           "x": 50,
           "y": 195
+=======
+          "x": 265,
+          "y": 545
+>>>>>>> Stashed changes
         }
       }
     note: false
@@ -306,6 +311,7 @@ tasks:
     continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
+<<<<<<< Updated upstream
   "8":
     id: "8"
     taskid: 306b2d8c-734a-4cb2-87c1-2909d1fb3a7f
@@ -385,6 +391,372 @@ tasks:
     type: condition
     task:
       id: 8b897ccd-ee8a-4a70-8bfb-a4144ef3b577
+=======
+  "3":
+    id: "3"
+    taskid: f0db71aa-e449-4a5a-8e4f-f45b9725eb3c
+    type: condition
+    task:
+      id: f0db71aa-e449-4a5a-8e4f-f45b9725eb3c
+      version: -1
+      name: Check Prediction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Malicious
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotPredictPhishingWords
+                accessor: Probability
+                transformers:
+                - operator: precision
+                  args:
+                    by:
+                      value:
+                        simple: "2"
+            iscontext: true
+          right:
+            value:
+              simple: "0.68"
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 5183b8ff-ca1f-48a9-8bb7-b14c5681fa39
+    type: title
+    task:
+      id: 5183b8ff-ca1f-48a9-8bb7-b14c5681fa39
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 77722f64-31d6-4da4-87b2-9b876ab1eb3f
+    type: regular
+    task:
+      id: 77722f64-31d6-4da4-87b2-9b876ab1eb3f
+      version: -1
+      name: Predict Using Out Of The Box Model - Not Malicious
+      description: Predict phishing incidents using the out-of-the-box pre-trained model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      emailBodyHTML:
+        simple: "<html><head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head><body>Hi testbox@demistodev.onmicrosoft.com,<br>We've received your email and are investigating.<br>Do not touch the email until further notice.<br><br>Cordially, <br>Your friendly neighborhood security team<img src=\"http://url1065.crtx.paloaltonetworks.com/wf/open?upn=u001.PWP6w-2FUrPFnPIydrIbh9BCq0sbr1-2Bi-2BgB79bnitiQ1-2BfCNta3rZ9R8LrhB23bNCmvmP6fHxTizQAbG4UiirWZBAQgIyP4g5rny3HmeD-2BeZ5Z40keUI0AVhGb2MARRpdZDQ516IuTB92wEQUIBexQC6R-2F5wtS7Gvht7cyAF7j6KqnJCYsd5YAz8CKhH8GdPnlojwgLq5SjVVuu2VhhMWRmHXHzbiuETOpwsDgajk3DyI6nrma7zjteQbStckNzgfg\" alt=\"\" width=\"1\" height=\"1\" border=\"0\" style=\"height:1px !important;width:1px !important;border-width:0 !important;margin-top:0 !important;margin-bottom:0 !important;margin-right:0 !important;margin-left:0 !important;padding-top:0 !important;padding-bottom:0 !important;padding-right:0 !important;padding-left:0 !important;\"><footer><div style=\"width: 100%;height: 27px;font-style: italic;font-weight: 400;font-size: 12px;\t\tline-height: 16px;text-align: center;letter-spacing: 0.002em;color: #707070;flex: none;order: 0;flex-grow: 0;text-decoration: none;margin-top: 3em;pointer-events: none;\">Sent By <a href=\"\" style=\"color: inherit;    \t\ttext-decoration: none;    \t\tpointer-events: none;\">viso-2mr8iuvn2lsg8yuadhf7eb.crtx-qa2-uat.us.paloaltonetworks.com</a> using Cortex XSOAR</div></footer></body></html>"
+      emailSubject:
+        simple: 'Re: Phishing Investigation - Message from Cortex XSOAR Security Operations Server'
+      confidenceThreshold:
+        simple: "0.5"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 6140b6eb-2472-4dc0-81b9-b0c222947802
+    type: regular
+    task:
+      id: 6140b6eb-2472-4dc0-81b9-b0c222947802
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 306b2d8c-734a-4cb2-87c1-2909d1fb3a7f
+    type: regular
+    task:
+      id: 306b2d8c-734a-4cb2-87c1-2909d1fb3a7f
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: d36fbfea-a8d8-472f-8614-a56c73f2950c
+    type: regular
+    task:
+      id: d36fbfea-a8d8-472f-8614-a56c73f2950c
+      version: -1
+      name: Predict Using Out Of The Box Model
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      confidenceThreshold:
+        simple: "0.5"
+      emailBodyHTML:
+        simple: "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\">\n<title>Untitled Document</title>\n<style type=\"text/css\">\n\t@media screen and (max-width: 620px) {\n\t\t#main {\n\t\t\twidth: 100%!important;\n\t\t\tmin-widtht: 100%!important;\n\t\t}\n\t}\n</style>\n</head>\n<body>\n<table id=\"main\" align=\"center\" bgcolor=\"#ffffff\" border=\"0\" cellpadding=\"3\" cellspacing=\"0\" width=\"600\" style=\"font-family: sans-serif;\">\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>\n\t\t\t\t<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" width=\"100%\" style=\"font-family: sans-serif;\">\n\t\t\t\t\t<tbody>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t<h2 style=\"color:#650099; font-family: sans-serif; font-weight: bold;\"> Delivery Notification</h2>\n\t\t\t\t\t\t\t\t<hr>\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t<p> <strong>Order:</strong> SGH-9226-99950127<br>\n\t\t\t\t\t\t\t\t</p>\n\t\t\t\t\t\t\t\t<p> <b>Dear Customer,</b></p>\n\t\t\t\t\t\t\t\t<p> Your parcel has arrived at the post office. Our courier attempted but was unable to deliver the parcel to you.</p>\n\t\t\t\t\t\t\t\t<p> To receive your parcel, please go to the nearest office and show this receipt.</p>\n\t\t\t\t\t\t\t\t<br>\n\t\t\t\t\t\t\t\t </td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td>\n\t\t\t\t\t\t\t\t<table align=\"center\" border=\"0\" cellpadding=\"6\" cellspacing=\"0\" width=\"240\" style=\"font-family: sans-serif;\">\n\t\t\t\t\t\t\t\t\t<tbody>\n\t\t\t\t\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t\t\t\t\t<td bgcolor=\"#650099\">\n\t\t\t\t\t\t\t\t\t\t\t\t<h3 style=\"color:#fff;text-align:center;margin-top:0px;margin-bottom:0px;margin-right:0px;margin-left:0px;\"> <a href=\"https://urldefense.proofpoint.com/v2/url?u=https-3A__delivery.freightinternationalservices.com_ef1c1e_5fc32f14-2D7e5b-2D4471-2Db8fd-2D87f3e48da98c&amp;d=DwMFaQ&amp;c=V9IgWpI5PvzTw83UyHGVSoW3Uc1MFWe5J8PTfkrzVSo&amp;r=24YQLN_Sh_gvLDk6FGdAh2N3O5zmamaHplXYrCCq33I&amp;m=6L6v56FU7OEY83Yf9gXhg4CJJoNon7UfmLU58s86BKqkLOyzsFr7PzUuIPeTpJUY&amp;s=-e7_KrdqJn9qnajWirWERmCWImzj9AaHvEIYA2vL4D0&amp;e=\" style=\"color:#fffffe; text-decoration:none; font-weight: bold;\">GET AND PRINT RECEIPT</a>\n</h3>\n\t\t\t\t\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t\t\t\t</tbody>\n\t\t\t\t\t\t\t\t</table>\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t\t<tr>\n\t\t\t\t\t\t\t<td> <br>\n\t\t\t\t\t\t\t\t<p> Thank you</p>\n\t\t\t\t\t\t\t</td>\n\t\t\t\t\t\t</tr>\n\t\t\t\t\t</tbody>\n\t\t\t\t</table>\n\t\t\t</td>\n\t\t</tr>\n\t</tbody>\n</table>\n<img nosend=\"true\" moz-do-not-send=\"true\" border=\"0\" height=\"2\" width=\"2\" alt=\"\" lowsrc=\"https://AhV3cTpms4e.freightinternationalservices.com/1/5fc32f14-7e5b-4471-b8fd-87f3e48da98c.png\" src=\"https://AhV3cTpms4e.freightinternationalservices.com/2/5fc32f14-7e5b-4471-b8fd-87f3e48da98c.png\">\n<img src=\"https://AhV3cTpms4e.freightinternationalservices.com/3/5fc32f14-7e5b-4471-b8fd-87f3e48da98c.png\" border=\"0\" height=\"2\" width=\"2\" alt=\"\">\n<bgsound volume=\"-100\" alt=\"\" src=\"https://AhV3cTpms4e.freightinternationalservices.com/4/5fc32f14-7e5b-4471-b8fd-87f3e48da98c.wav\"></bgsound>\n<table height=\"2\" width=\"1\" border=\"0\"><tr><td background=\"https://AhV3cTpms4e.freightinternationalservices.com/5/5fc32f14-7e5b-4471-b8fd-87f3e48da98c.gif\"> </td></tr></table>\n</body>\n</html>"
+      emailSubject:
+        simple: Package Undeliverable
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 957eb504-5786-40b2-8b7f-6f96f50bb0b9
+    type: regular
+    task:
+      id: 957eb504-5786-40b2-8b7f-6f96f50bb0b9
+      version: -1
+      name: Load docker
+      description: Predict phishing incidents using the out-of-the-box pre-trained model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 92a208ec-ac9e-45f0-841b-c66135010363
+    type: regular
+    task:
+      id: 92a208ec-ac9e-45f0-841b-c66135010363
+      version: -1
+      name: Clear Context
+      description: Delete field from context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+      - "16"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: f871509d-b1c4-41ce-828c-0659b033b9b1
+    type: condition
+    task:
+      id: f871509d-b1c4-41ce-828c-0659b033b9b1
+      version: -1
+      name: Check Prediction
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "YES":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "YES"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotPredictPhishingWords.Label
+            iscontext: true
+          right:
+            value:
+              simple: Non-Malicious
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotPredictPhishingWords
+                accessor: Probability
+                transformers:
+                - operator: precision
+                  args:
+                    by:
+                      value:
+                        simple: "2"
+            iscontext: true
+          right:
+            value:
+              simple: "0.60"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: e1ba8eba-a7e3-43e8-8a8a-031a51f1b99f
+    type: condition
+    task:
+      id: e1ba8eba-a7e3-43e8-8a8a-031a51f1b99f
+>>>>>>> Stashed changes
       version: -1
       name: Check Prediction
       type: condition
@@ -408,17 +780,67 @@ tasks:
       - - operator: isEqualNumber
           left:
             value:
-              simple: DBotPredictPhishingWords.Probability
+              complex:
+                root: DBotPredictPhishingWords
+                accessor: Probability
+                transformers:
+                - operator: precision
+                  args:
+                    by:
+                      value:
+                        simple: "2"
             iscontext: true
           right:
             value:
+<<<<<<< Updated upstream
               simple: "0.9477831721305847"
+=======
+              simple: "0.95"
+>>>>>>> Stashed changes
     continueonerrortype: ""
     view: |-
       {
         "position": {
+<<<<<<< Updated upstream
           "x": 50,
           "y": 1595
+=======
+          "x": 265,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: aef63f50-e238-4ad9-81e8-926c63ea16a4
+    type: regular
+    task:
+      id: aef63f50-e238-4ad9-81e8-926c63ea16a4
+      version: -1
+      name: Load docker
+      description: Predict phishing incidents using the out-of-the-box pre-trained model.
+      scriptName: DBotPredictOutOfTheBoxV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+>>>>>>> Stashed changes
         }
       }
     note: false
@@ -433,8 +855,13 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
+<<<<<<< Updated upstream
         "height": 1785,
         "width": 380,
+=======
+        "height": 2135,
+        "width": 810,
+>>>>>>> Stashed changes
         "x": 50,
         "y": 50
       }
