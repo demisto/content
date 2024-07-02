@@ -277,11 +277,6 @@ class Client(BaseClient):
         :return: dict containing a job_id to using it in get_events_details_results.
         :rtype: ``dict``
         """
-        # if alert_id and event_ids:
-        #     raise ValueError("Either 'alert_id' or 'observation_ids' must be specified, not both.")
-        # if not alert_id and not event_ids:
-        #     raise ValueError("One of 'alert_id' or 'observation_ids' must be specified.")
-
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
@@ -613,12 +608,10 @@ def fetch_incidents(client: Client, params: dict):
 def get_alert_details_command(client: Client, args: dict):
     res = client.get_alert_by_id(args['alertId'])
 
-    # headers = ['id', 'device_id', 'device_name', 'device_username', 'create_time', 'ioc_hit', 'policy_name',
-    #            'process_name', 'type', 'severity']
-    new_headers = ['id', 'device_id', 'device_name', 'device_username', 'ioc_hit', 'reason', 'type',
-                   'threat_id', 'device_policy', 'severity']
+    headers = ['id', 'device_id', 'device_name', 'device_username', 'ioc_hit', 'reason', 'type',
+               'threat_id', 'device_policy', 'severity']
 
-    readable_output = tableToMarkdown('Carbon Black Defense Get Alert Details', res, new_headers,
+    readable_output = tableToMarkdown('Carbon Black Defense Get Alert Details', res, headers,
                                       headerTransform=string_to_table_header, removeNull=True)
 
     return CommandResults(
@@ -656,11 +649,9 @@ def alerts_search_command(client: Client, args: dict):
     if not alerts:
         return 'No alerts were found.'
 
-    # headers = ['id', 'category', 'device_id', 'device_name', 'device_username', 'create_time', 'ioc_hit', 'policy_name',
-    #            'process_name', 'type', 'severity']
-    new_headers = ['id', 'device_id', 'device_name', 'device_username', 'backend_timestamp']
+    headers = ['id', 'device_id', 'device_name', 'device_username', 'backend_timestamp']
 
-    readable_output = tableToMarkdown('Carbon Black Defense Alerts List Results', alerts, new_headers,
+    readable_output = tableToMarkdown('Carbon Black Defense Alerts List Results', alerts, headers,
                                       headerTransform=string_to_table_header, removeNull=True)
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Alert',
@@ -674,14 +665,13 @@ def alerts_search_command(client: Client, args: dict):
 def get_policy_command(client: Client, args: dict):
     res = client.get_policy_by_id(args['policyId'])
 
-    # headers = ["id", "description", "name", "latestRevision", "version", "priorityLevel", "systemPolicy"]
-    new_headers = ["id", "name", "priority_level", "is_system", "description"]
+    headers = ["id", "name", "priority_level", "is_system", "description"]
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Policy',
         outputs_key_field='id',
         outputs=res,
-        readable_output=tableToMarkdown('Carbon Black Defense Policy', res, headers=new_headers,
+        readable_output=tableToMarkdown('Carbon Black Defense Policy', res, headers=headers,
                                         headerTransform=string_to_table_header),  # , removeNull=True),
         raw_response=res
     )
@@ -858,6 +848,7 @@ def find_observation_details_command(args: dict, client: Client):
             count_unique_devices=argToBoolean(args.get('count_unique_devices') or False),
             max_rows=rows
         )
+        validate_observation_details_request_body(body)
         res = client.get_observation_details(body)
         job_id = res['job_id']
         return PollResult(
@@ -956,41 +947,6 @@ def map_alert_type(old_type: str | None):
         'all': None
     }
     return alert_type_mapping.get(old_type, None) if old_type else None
-
-
-def format_alerts_body_request(args: dict):
-    first_event_time = args.get('first_event_time')
-    first_event_time_json = json.loads(first_event_time) if first_event_time else None
-
-    assign_params(
-        criteria=assign_params(
-            device_id=argToList(args.get('device_id')),
-            first_event_time=first_event_time_json,
-            policy_id=argToList(args.get('policy_id')),
-            process_sha256=argToList(args.get('process_sha256')),
-            reputation=argToList(args.get('reputation')),
-            tags=argToList(args.get('tags')),
-            device_username=argToList(args.get('device_username')),
-            minimum_severity=arg_to_number(args.get('min_severity')),
-            type=argToList(map_alert_type(args.get('type')))
-        ),
-        query=args.get('query'),
-        rows=arg_to_number(args.get('rows'), required=False),
-        start=arg_to_number(args.get('start'), required=False),
-    )
-    # body
-    # if is_fetch:
-
-    #     time_range=assign_params(
-    #         start=last_fetched_alert_create_time,
-    #         end=datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
-    #     ),
-    #     sort=[assign_params(
-    #         field='backend_timestamp',
-    #         order='ASC',
-    #     )],
-    #     rows=fetch_limit,
-    # )
 
 
 def convert_to_demisto_severity(severity: int) -> int:
@@ -1134,8 +1090,34 @@ def format_request_body(args: dict):
 
     if not body.get('criteria') and not body.get('query'):
         raise DemistoException("At least one criteria filter or query must be provided.")
+    # elif body.get('criteria') and body.get('query'):
+    #     raise DemistoException('')
 
     return body
+
+
+def validate_observation_details_request_body(request_body: dict):
+    alert_id = request_body.get('alert_id')
+    observation_ids = request_body.get('observation_ids')
+    process_hash = request_body.get('process_hash')
+    device_id = request_body.get('device_id')
+    count_unique_devices = request_body.get('count_unique_devices')
+
+    if alert_id:
+        # If alert_id is provided, nothing else should be present
+        if observation_ids or process_hash or device_id or count_unique_devices:
+            raise ValueError("Invalid request body: 'alert_id' must be specified alone.")
+    elif observation_ids:
+        # If observation_ids is provided, nothing else should be present
+        if alert_id or process_hash or device_id or count_unique_devices:
+            raise ValueError("Invalid request body: 'observation_ids' must be specified alone.")
+    elif process_hash:
+        # If process_hash is provided, it can be alone, with device_id, or with count_unique_devices
+        if device_id and count_unique_devices:
+            raise ValueError(
+                "Invalid request body: 'process_hash' can only be combined with 'device_id' or 'count_unique_devices', not both.")
+    else:
+        raise ValueError("Invalid request body: 'alert_id', 'observation_ids', or 'process_hash' must be specified.")
 
 
 ''' MAIN FUNCTION '''
