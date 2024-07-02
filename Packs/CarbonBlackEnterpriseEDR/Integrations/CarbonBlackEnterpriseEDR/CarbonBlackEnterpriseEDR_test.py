@@ -357,42 +357,54 @@ def test_alert_workflow_update_request_good_arguments(mocker):
     assert http_request.call_args.kwargs['json_data'] == {'time_range': {'start': '1', 'end': '2', 'range': '-2w'},
                                                           'criteria': {'id': ['1234']}, 'determination': 'NONE',
                                                           'closure_reason': 'bla2', 'status': 'OPEN', 'note': 'bla1'}
-
-
-def test_alert_workflow_update_request_bad_arguments(mocker):
+    
+    
+alert_workflow_update_command_func_called_data = [
+    ({'alert_id': '123', 'status': 'OPEN'},  # case first time polling (no request_id).
+     'alert_workflow_update_request'  # func to be called.
+     ),
+    ({'alert_id': '123', 'request_id': '12345'}, # case there is a request_id.
+    'alert_workflow_update_request_with_results'  # func to be called.
+    )]
+@pytest.mark.parametrize('args, func_to_be_called', alert_workflow_update_command_func_called_data)
+def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_called):
     """
     Given:
-        - All required Argument except 'determination' or 'state'
-
+        - All arguments needed.
+    
     When:
-        - Calling alert_workflow_update_request function.
-
+        - Running 'cb-eedr-alert-workflow-update' command.
+    
     Then:
-        - The correct exception is raised.
+        - The right function is called regarding polling.
     """
-    http_request = mocker.patch.object(client, '_http_request', return_value=[])
-    client.alert_workflow_update_request(alert_id='1234', comment='bla1', time_range='-2w',
-                                         start='1', end='2', closure_reason='bla2')
+    from CarbonBlackEnterpriseEDR import alert_workflow_update_command
+    execute_command = mocker.patch.object(client, func_to_be_called)
+    alert_workflow_update_command(args, client)
+    assert execute_command.called is True
+    
 
-
-alert_workflow_update_command_data = [
-    ({'process_name': 'bla', 'polling': }, # case polling arg is True
-     'process_search_command_with_polling'),  # expected func to be called
-    ({},  # case polling arg is False
-     'process_search_command_without_polling')  # expected func to be called
-]
-
-
-@pytest.mark.parametrize('args, expected_func_to_bee_called', alert_workflow_update_command_data)
-def test_process_search_command(mocker):
+alert_workflow_update_command_bad_argument_data = [
+    ({'alert_id': '123'}),  # case no status and no determination.
+    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z'}), # case there is start but no end.
+    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z', 'end': '2018-01-01T11:00:00.157Z'}) # case end is before start
+    ]
+@pytest.mark.parametrize('args', alert_workflow_update_command_bad_argument_data)
+def test_alert_workflow_update_command_bad_arguments(args):
     """
     Given:
-        - All required Argument.
-
+        - Bad arguments.
     When:
-        - Running 'cb-eedr-process-search' command
-
+        - Running 'cb-eedr-alert-workflow-update' command.
+    
     Then:
-        - According to 'polling' argument, the correct function is called.
+        - The right exception is called.
     """
-    alert_workflow_update_mock = mocker.patch.object(args, "alert_workflow_update_command", return_value="mock")
+    from CarbonBlackEnterpriseEDR import alert_workflow_update_command
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException):
+        alert_workflow_update_command(args, client)
+
+    
+    
+    
