@@ -1,3 +1,4 @@
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
@@ -20,30 +21,29 @@ class Client(BaseClient):
                                                                              'X-Auth-Token': self.token})
 
     def test_module_request(self):
-        url_suffix = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
+        url_suffix = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/_search'
         body = {
             "criteria": {
                 "group_results": True,
                 "minimum_severity": 3
             },
-            "sort": [{"field": "first_event_time", "order": "DESC"}],
-            "rows": 1,
-            "start": 0
+            "sort": [{"field": "first_event_timestamp", "order": "DESC"}],
+            "rows": 0,
+            "start": 1
         }
 
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
 
-    def search_alerts_request(self, group_results: bool = None, minimum_severity: int = None, create_time: dict = None,
-                              device_os_version: list = None, policy_id: list = None, alert_tag: list = None,
-                              alert_id: list = None, device_username: list = None, device_id: list = None,
-                              device_os: list = None, process_sha256: list = None, policy_name: list = None,
-                              reputation: list = None, alert_type: list = None, alert_category: list = None,
-                              workflow: list = None, device_name: list = None, process_name: list = None,
-                              sort_field: str = None, sort_order: str = None, limit: str = None) -> dict:
-        suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/_search'
+    def search_alerts_request(self, minimum_severity: None | int = None, create_time: None | dict = None,
+                              device_os_version: None | list = None, policy_id: None | list = None, alert_tag: None | list = None,
+                              alert_id: None | list = None, device_username: None | list = None, device_id: None | list = None,
+                              device_os: None | list = None, process_sha256: None | list = None, policy_name: None | list = None,
+                              reputation: None | list = None, alert_type: None | list = None, device_name: None | list = None,
+                              process_name: None | list = None, sort_field: None | str = None, sort_order: None | str = None,
+                              limit: None | str = None) -> dict:
+        suffix_url = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/_search'
         body = {
             'criteria': assign_params(
-                group_results=group_results,
                 minimum_severity=minimum_severity,
                 create_time=create_time,
                 device_os_version=device_os_version,
@@ -57,8 +57,6 @@ class Client(BaseClient):
                 policy_name=policy_name,
                 reputation=reputation,
                 type=alert_type,
-                category=alert_category,
-                workflow=workflow,
                 device_name=device_name,
                 process_name=process_name
             ),
@@ -69,26 +67,40 @@ class Client(BaseClient):
                 }
             ],
             'rows': limit,
-            'start': 0
+            'start': 1
         }
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def alert_workflow_update_request(self, alert_id: str = None, state: str = None, comment: str = None,
-                                      remediation_state: str = None) -> dict:
-        suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/alerts/{alert_id}/workflow'
+    def alert_workflow_update_request_with_results(self, request_id: str) -> dict:
+        suffix_url = f'jobs/v1/orgs/{self.cb_org_key}/jobs/{request_id}'
+        response = self._http_request('GET', suffix_url)
+        return response
+
+    def alert_workflow_update_request(self, alert_id: str, state: None | str = None, comment: None | str = None,
+                                      determination: None | str = None, time_range: None | str = None, start: None | str = None,
+                                      end: None | str = None, closure_reason: None | str = None) -> dict:
+        suffix_url = f'/api/alerts/v7/orgs/{self.cb_org_key}/alerts/workflow'
         body = assign_params(
-            state=state,
-            comment=comment,
-            remediation_state=remediation_state
+            time_range=assign_params(start=start, end=end, range=time_range),
+            criteria=assign_params(id=[alert_id]),
+            determination=determination,
+            closure_reason=closure_reason,
+            status=state,
+            note=comment,
         )
 
-        return self._http_request('POST', suffix_url, json_data=body)
+        demisto.debug(f"{body=}")
+        try:
+            response = self._http_request('POST', suffix_url, json_data=body)
+        except Exception as e:
+            raise e
+        return response
 
-    def devices_list_request(self, device_id: list = None, status: list = None, device_os: list = None,
-                             last_contact_time: dict[str, Any | None] = None, ad_group_id: list = None,
-                             policy_id: list = None, target_priority: list = None, limit: int = None,
-                             sort_field: str = None, sort_order: str = None) -> dict:
+    def devices_list_request(self, device_id: None | list = None, status: None | list = None, device_os: None | list = None,
+                             last_contact_time: None | dict[str, Any | None] = None, ad_group_id: None | list = None,
+                             policy_id: None | list = None, target_priority: None | list = None, limit: None | int = None,
+                             sort_field: None | str = None, sort_order: None | str = None) -> dict:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/devices/_search'
 
         body = {
@@ -113,7 +125,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def device_quarantine_request(self, device_id: list = None) -> None:
+    def device_quarantine_request(self, device_id: None | list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -126,7 +138,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_unquarantine_request(self, device_id: list = None) -> None:
+    def device_unquarantine_request(self, device_id: None | list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -139,7 +151,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_bypass_request(self, device_id: list = None) -> None:
+    def device_bypass_request(self, device_id: None | list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -152,7 +164,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_unbypass_request(self, device_id: list = None) -> None:
+    def device_unbypass_request(self, device_id: None | list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -165,7 +177,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_background_scan_request(self, device_id: list = None) -> None:
+    def device_background_scan_request(self, device_id: None | list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -178,7 +190,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_background_scan_request_stop(self, device_id: list = None) -> None:
+    def device_background_scan_request_stop(self, device_id: None | list = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -191,7 +203,7 @@ class Client(BaseClient):
 
         self._http_request('POST', suffix_url, json_data=body, resp_type='content')
 
-    def device_policy_update(self, device_id: list = None, policy_id: str = None) -> None:
+    def device_policy_update(self, device_id: None | list = None, policy_id: None | str = None) -> None:
         suffix_url = f'/appservices/v6/orgs/{self.cb_org_key}/device_actions'
 
         body = {
@@ -208,28 +220,28 @@ class Client(BaseClient):
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists'
         return self._http_request('GET', suffix_url)
 
-    def get_watchlist_by_id_request(self, watchlist_id: str = None) -> dict:
+    def get_watchlist_by_id_request(self, watchlist_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         return self._http_request('GET', suffix_url)
 
-    def delete_watchlist_request(self, watchlist_id: str = None) -> None:
+    def delete_watchlist_request(self, watchlist_id: None | str = None) -> None:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def watchlist_alert_status_request(self, watchlist_id: str = None) -> dict:
+    def watchlist_alert_status_request(self, watchlist_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         return self._http_request('GET', suffix_url)
 
-    def enable_watchlist_alert_request(self, watchlist_id: str = None) -> dict:
+    def enable_watchlist_alert_request(self, watchlist_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         return self._http_request('PUT', suffix_url)
 
-    def disable_watchlist_alert_request(self, watchlist_id: str = None) -> None:
+    def disable_watchlist_alert_request(self, watchlist_id: None | str = None) -> None:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def create_watchlist_request(self, watchlist_name: str = None, description: str = None, tags_enabled: bool = None,
-                                 alerts_enabled: bool = None, report_ids: list = None, classifier: dict = None) -> dict:
+    def create_watchlist_request(self, watchlist_name: None | str = None, description: None | str = None, tags_enabled: None | bool = None,
+                                 alerts_enabled: None | bool = None, report_ids: None | list = None, classifier: None | dict = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists'
         body = assign_params(
             name=watchlist_name,
@@ -242,9 +254,9 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def update_watchlist_request(self, watchlist_id: str = None, watchlist_name: str = None, description: str = None,
-                                 tags_enabled: bool = None, alerts_enabled: bool = None, report_ids: list = None,
-                                 classifier: dict = None) -> dict:
+    def update_watchlist_request(self, watchlist_id: None | str = None, watchlist_name: None | str = None, description: None | str = None,
+                                 tags_enabled: None | bool = None, alerts_enabled: None | bool = None, report_ids: None | list = None,
+                                 classifier: None | dict = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         body = assign_params(
             name=watchlist_name,
@@ -256,28 +268,28 @@ class Client(BaseClient):
         )
         return self._http_request('PUT', suffix_url, json_data=body)
 
-    def get_ignore_ioc_status_request(self, report_id: str = None, ioc_id: str = None) -> dict:
+    def get_ignore_ioc_status_request(self, report_id: None | str = None, ioc_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id})/iocs/{ioc_id}/ignore'
 
         return self._http_request('GET', suffix_url)
 
-    def ignore_ioc_request(self, report_id: str = None, ioc_id: str = None) -> dict:
+    def ignore_ioc_request(self, report_id: None | str = None, ioc_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/iocs/{ioc_id}/ignore'
 
         return self._http_request('PUT', suffix_url)
 
-    def reactivate_ioc_request(self, report_id: str = None, ioc_id: str = None) -> None:
+    def reactivate_ioc_request(self, report_id: None | str = None, ioc_id: None | str = None) -> None:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id})/iocs/{ioc_id}/ignore'
 
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def get_report_request(self, report_id: str = None) -> dict:
+    def get_report_request(self, report_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
 
         return self._http_request('GET', suffix_url)
 
-    def create_report_request(self, title: str = None, description: str = None, tags: list = None, severity: int = None,
-                              iocs: dict = None, timestamp: int = None) -> dict:
+    def create_report_request(self, title: None | str = None, description: None | str = None, tags: None | list = None, severity: None | int = None,
+                              iocs: None | dict = None, timestamp: None | int = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports'
 
         body = assign_params(
@@ -290,28 +302,28 @@ class Client(BaseClient):
         )
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def ignore_report_request(self, report_id: str = None) -> dict:
+    def ignore_report_request(self, report_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
 
         return self._http_request('PUT', suffix_url)
 
-    def reactivate_report_request(self, report_id: str = None) -> None:
+    def reactivate_report_request(self, report_id: None | str = None) -> None:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
 
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def get_report_ignore_status_request(self, report_id: str = None) -> dict:
+    def get_report_ignore_status_request(self, report_id: None | str = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}/ignore'
         return self._http_request('GET', suffix_url)
 
-    def remove_report_request(self, report_id: str = None) -> None:
+    def remove_report_request(self, report_id: None | str = None) -> None:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
 
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def update_report_request(self, report_id: str = None, title: str = None, description: str = None,
-                              severity: int = None, iocs: dict = None, tags: list = None,
-                              timestamp: int = None) -> dict:
+    def update_report_request(self, report_id: None | str = None, title: None | str = None, description: None | str = None,
+                              severity: None | int = None, iocs: None | dict = None, tags: None | list = None,
+                              timestamp: None | int = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports/{report_id}'
         body = assign_params(
             title=title,
@@ -323,15 +335,15 @@ class Client(BaseClient):
         )
         return self._http_request('PUT', suffix_url, json_data=body)
 
-    def get_file_device_summary_request(self, sha256: str = None) -> dict:
+    def get_file_device_summary_request(self, sha256: None | str = None) -> dict:
         suffix_url = f'ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/device'
         return self._http_request('GET', suffix_url)
 
-    def get_file_metadata_request(self, sha256: str = None) -> dict:
+    def get_file_metadata_request(self, sha256: None | str = None) -> dict:
         suffix_url = f'ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/metadata'
         return self._http_request('GET', suffix_url)
 
-    def get_file_request(self, sha256: list = None, expiration_seconds: int = None) -> dict:
+    def get_file_request(self, sha256: None | list = None, expiration_seconds: None | int = None) -> dict:
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/file/_download'
         body = assign_params(
             sha256=sha256,
@@ -340,13 +352,13 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def get_file_path_request(self, sha256: str = None) -> dict:
+    def get_file_path_request(self, sha256: None | str = None) -> dict:
         suffix_url = f'/ubs/v1/orgs/{self.cb_org_key}/sha256/{sha256}/summary/file_path'
         return self._http_request('GET', suffix_url)
 
     def create_search_process_request(self, process_hash: str, process_name: str, event_id: str, query: str,
-                                      limit: int, start_time: str = None,
-                                      end_time: str = None, start: int = 0) -> dict:
+                                      limit: None | int = None, start_time: None | str = None,
+                                      end_time: None | str = None, start: None | int = 0) -> dict:
         if not process_hash and not process_name and not event_id and not query:
             raise Exception("To perform an process search, please provide at least one of the following: "
                             "'process_hash', 'process_name', 'event_id' or 'query'")
@@ -382,7 +394,7 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
     def create_search_event_by_process_request(self, process_guid: str, event_type: str,
-                                               query: str, limit: int, start_time: str, end_time: str = None,
+                                               query: str, limit: int, start_time: str, end_time: None | str = None,
                                                start: int = 0) -> dict:
         if event_type and event_type not in ['filemod', 'netconn', 'regmod', 'modload', 'crossproc', 'childproc']:
             raise Exception("Only the following event types can be searched: "
@@ -411,7 +423,7 @@ class Client(BaseClient):
         response = self._http_request('POST', suffix_url, json_data=body)
         return response
 
-    def update_threat_tags(self, threat_id: str = None, tags: list = None) -> dict:
+    def update_threat_tags(self, threat_id: None | str = None, tags: None | list = None) -> dict:
 
         suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
 
@@ -421,7 +433,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def create_threat_notes(self, threat_id: str = None, notes: str = None) -> dict:
+    def create_threat_notes(self, threat_id: None | str = None, notes: None | str = None) -> dict:
 
         suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/notes'
         body = {
@@ -429,7 +441,7 @@ class Client(BaseClient):
         }
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def update_alert_notes(self, alert_id: str = None, notes: str = None) -> dict:
+    def update_alert_notes(self, alert_id: None | str = None, notes: None | str = None) -> dict:
 
         suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/alerts/{alert_id}/notes'
 
@@ -439,7 +451,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def get_threat_tags(self, threat_id: str = None) -> dict:
+    def get_threat_tags(self, threat_id: None | str = None) -> dict:
 
         suffix_url = f'api/alerts/v7/orgs/{self.cb_org_key}/threats/{threat_id}/tags'
 
@@ -461,7 +473,6 @@ def test_module(client):
 
 
 def alert_list_command(client: Client, args: dict) -> CommandResults | str:
-    group_results = args.get('group_results')
     minimum_severity = args.get('minimum_severity')
     create_time = assign_params(
         start=args.get('start_time'),
@@ -478,8 +489,6 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     policy_name = argToList(args.get('policy_name'))
     reputation = argToList(args.get('reputation'))
     alert_type = argToList(args.get('alert_type'))
-    alert_category = argToList(args.get('alert_category'))
-    workflow = argToList(args.get('workflow'))
     device_name = argToList(args.get('device_name'))
     process_name = argToList(args.get('process_name'))
     sort_field = args.get('sort_field')
@@ -489,10 +498,10 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     headers = ['AlertID', 'CreateTime', 'DeviceID', 'DeviceName', 'DeviceOS', 'PolicyName', 'ProcessName', 'Type',
                'WorkflowState']
 
-    result = client.search_alerts_request(group_results, minimum_severity, create_time,
+    result = client.search_alerts_request(minimum_severity, create_time,
                                           device_os_version, policy_id, alert_tag, alert_id, device_username,
                                           device_id, device_os, process_sha256, policy_name,
-                                          reputation, alert_type, alert_category, workflow, device_name,
+                                          reputation, alert_type, device_name,
                                           process_name, sort_field, sort_order, limit)
 
     alerts = result.get('results', [])
@@ -501,14 +510,14 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     for alert in alerts:
         contents.append({
             'AlertID': alert.get('id'),
-            'CreateTime': alert.get('create_time'),
+            'CreateTime': alert.get('backend_timestamp'),
             'DeviceID': alert.get('device_id'),
             'DeviceName': alert.get('device_name'),
             'DeviceOS': alert.get('device_os'),
-            'PolicyName': alert.get('policy_name'),
+            'PolicyName': alert.get('device_policy'),
             'ProcessName': alert.get('process_name'),
             'Type': alert.get('type'),
-            'WorkflowState': alert.get('workflow', {}).get('state')
+            'WorkflowState': alert.get('workflow', {}).get('status')
         })
 
     readable_output = tableToMarkdown('Alerts list results', contents, headers, removeNull=True)
@@ -522,32 +531,96 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     return results
 
 
-def alert_workflow_update_command(client: Client, args: dict) -> CommandResults:
-    alert_id = args.get('alert_id')
-    state = args.get('state')
-    comment = args.get('comment')
-    remediation_state = args.get('remediation_state')
+@polling_function(name='cb-eedr-alert-workflow-update', interval=60, requires_polling_arg=False)
+def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
+    """
+       Updates the given alret's workflow. This is a polling function.
 
-    result = client.alert_workflow_update_request(alert_id, state, comment, remediation_state)
+    Args:
+        args (dict): Including alert_id and fields to update.
+        client (Client): The client.
 
-    readable_output = tableToMarkdown(f'Successfully updated the alert: "{alert_id}"', result, removeNull=True)
-    outputs = {
-        'AlertID': alert_id,
-        'State': result.get('state'),
-        'Remediation': result.get('remediation'),
-        'LastUpdateTime': result.get('last_update_time'),
-        'Comment': result.get('comment'),
-        'ChangedBy': result.get('changed_by')
-    }
+    Returns:
+        PollResult: If request status is COMPLETED will stop polling, otherwise will poll again.
+    """
+    request_id = arg_to_number(args.get('request_id'))
+    alert_id = args['alert_id']
 
-    results = CommandResults(
-        outputs_prefix='CarbonBlackEEDR.Alert',
-        outputs_key_field='AlertID',
-        outputs=outputs,
-        readable_output=readable_output,
-        raw_response=result
-    )
-    return results
+    demisto.debug(f'got {request_id=}, {alert_id=}')
+
+    if not request_id:  # if this is the first time
+        demisto.debug('trying to get all relevant args for first run')
+        determination = args.get('determination')
+        time_range = args.get('time_range')
+        start = args.get('start')
+        end = args.get('end')
+        closure_reason = args.get('closure_reason')
+        comment = args.get('comment')
+        status = args.get('status')
+
+        # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
+        if status == 'DISMISSED' or status == 'dismissed':
+            status = 'CLOSED'
+        if status == "open":
+            "OPEN"
+
+        if not determination and not status:
+            raise DemistoException('Must specify at least one of \"determination\" or \"status\".')
+
+        if start or end:
+            if not start or not end:
+                raise DemistoException('Need to specify start and end timestamps')
+            if start > end:
+                raise DemistoException('start timestamp needs to be before end timestamp')
+
+        demisto.debug('calling alert_workflow_update_request function')
+        response = client.alert_workflow_update_request(
+            alert_id, status, comment, determination, time_range, start, end, closure_reason)
+
+        demisto.debug(f'{response=}')
+
+        return PollResult(
+            partial_result=CommandResults(readable_output="running polling"),
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"request_id": response['request_id']} | args
+        )
+
+    request_id = args['request_id']
+
+    demisto.debug('now calling the second endpoint')
+    response = client.alert_workflow_update_request_with_results(
+        request_id)
+    demisto.debug(f'{response=}')
+
+    request_status = response['status']
+    demisto.debug(f'{request_status=}')
+
+    if request_status != 'COMPLETED':
+        message = CommandResults(
+            readable_output="Checking again in 60 seconds...")
+        demisto.debug('returning PollResult with continue_to_poll=True')
+        return PollResult(
+            partial_result=message,
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"request_id": request_id,
+
+                               **args})
+
+    state_HR = response.get('job_parameters').get('job_parameters').get('request').get('status') if args.get('status') else None
+    message = CommandResults(
+        readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
+                                        {'changed_by': response['job_parameters']['job_parameters']['userWorkflowDto']['changed_by'],
+                                         'last_update_time': response['last_update_time'],
+                                         'determination': args.get('determination'),
+                                         'comment': args.get('comment'),
+                                         'closure reason': args.get('closure_reason'),
+                                         'status': state_HR}, removeNull=True))
+    demisto.debug('returning PollResult with continue_to_poll=False')
+    return PollResult(
+        response=message,
+        continue_to_poll=False)
 
 
 def list_devices_command(client: Client, args: dict) -> CommandResults | str:
@@ -1197,6 +1270,9 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
+    # The new API version (v7) always returns one duplicate alert, except for the first run.
+    if last_run:
+        fetch_limit = 1 + arg_to_number(fetch_limit)  # type: ignore - we are sending 50 if user doesn't choose a limit.
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
@@ -1207,7 +1283,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     incidents = []
 
     response = client.search_alerts_request(
-        sort_field='first_event_time',
+        sort_field='first_event_timestamp',
         sort_order='ASC',
         create_time=assign_params(
             start=last_fetched_alert_create_time,
@@ -1216,14 +1292,14 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         limit=fetch_limit,
     )
     alerts = response.get('results', [])
-
+    demisto.debug(f'got {len(alerts)} alerts from server')
     for alert in alerts:
         alert_id = alert.get('id')
         if alert_id == last_fetched_alert_id:
-            # got an alert we already fetched, skipping it
+            demisto.debug('got an alert we already fetched, skipping it')
             continue
 
-        alert_create_date = alert.get('create_time')
+        alert_create_date = alert.get('backend_timestamp')
         incident = {
             'name': f'Carbon Black Enterprise EDR alert {alert_id}',
             'occurred': alert_create_date,
@@ -1235,12 +1311,81 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
                                                      '%Y-%m-%dT%H:%M:%S.000Z')
         latest_alert_id = alert_id
-
+    demisto.debug(f'sending {len(incidents)} incidents')
     res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
     return incidents, res
 
 
-def process_search_command(client: Client, args: dict) -> CommandResults:
+@polling_function(
+    name='cb-eedr-process-search',
+    interval=arg_to_number(demisto.args().get('interval_in_seconds')) or 60,
+    timeout=arg_to_number(demisto.args().get('timeout')) or 600,
+    requires_polling_arg=False
+)
+def process_search_command_with_polling(args: dict, client: Client) -> PollResult:
+    """
+        Returns the process search results. This is a polling function.
+
+    Args:
+        args (dict): The input arguments from the user.
+        client (Client): The client.
+
+    Returns:
+        PollResult: If the job's status is COMPLETED will stop polling, otherwise will poll again.
+    """
+    job_id = args.get('job_id')
+    interval_in_seconds = arg_to_number(args.get('interval_in_seconds'))
+    demisto.debug(f'in process_search_command_with_polling function, {job_id=}')
+
+    if not job_id:  # if this is the first time
+        process_name = args.get('process_name', '')
+        process_hash = args.get('process_hash', '')
+        event_id = args.get('event_id', '')
+        query = args.get('query', '')
+        start_time = str(args.get('start_time', '1 day'))
+        end_time = str(args.get('end_time', ''))
+        limit = arg_to_number(args.get('limit'))
+        start = arg_to_number(args.get('start'))
+
+        response = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
+                                                        event_id=event_id, query=query, limit=limit,
+                                                        start_time=start_time, end_time=end_time, start=start)
+        demisto.debug(f'got {response=}')
+        return PollResult(partial_result=CommandResults(readable_output=f"job_id is {response.get('job_id')}."),
+                          response=None,
+                          continue_to_poll=True,
+                          args_for_next_run={"job_id": response['job_id']} | args
+                          )
+
+    # this is not the first time, there is a job_id
+    response = client.get_search_process_request(job_id=args['job_id'])
+    status = 'Completed' if response.get('contacted') == response.get('completed') else 'In Progress'
+    if status != 'Completed':
+        message = CommandResults(
+            readable_output=f"Checking again in {interval_in_seconds} seconds...")
+        return PollResult(
+            partial_result=message,
+            response=None,
+            continue_to_poll=True,
+            args_for_next_run={"job_id": job_id,
+                               **args})
+
+    # status is Completed
+    output = {'status': status, 'job_id': job_id, 'results': response.get('results')}
+    title = "Completed Search Results:"
+    headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
+    human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
+    message = CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
+                                            outputs=output,
+                                            outputs_key_field='job_id',
+                                            raw_response=response,
+                                            readable_output=human_readable)
+    return PollResult(
+        response=message,
+        continue_to_poll=False)
+
+
+def process_search_command_without_polling(client: Client, args: dict) -> CommandResults:
     """
     Gets arguments for a process search task, and returns the task's id and status.
     """
@@ -1412,17 +1557,21 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     cb_custom_key = demisto.params().get('credentials_custom', {}).get('password') or demisto.params().get('custom_key')
+    demisto.debug('got custom_key')
     cb_custom_id = demisto.params().get('credentials_custom', {}).get('identifier') or demisto.params().get('custom_id')
+    demisto.debug('got custom_id')
     if not (cb_custom_key and cb_custom_id):
         raise DemistoException('Custom ID and Custom key must be provided.')
     cb_org_key = demisto.params().get('organization_key')
+    demisto.debug('got organization_key')
     token = f'{cb_custom_key}/{cb_custom_id}'
     # get the service API url
     base_url = demisto.params().get('url')
-
+    demisto.debug('got base_url')
     verify_certificate = not demisto.params().get('insecure', False)
+    demisto.debug('got insecure')
     proxy = demisto.params().get('proxy', False)
-
+    demisto.debug('got proxy')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -1431,6 +1580,7 @@ def main():
             use_proxy=proxy,
             token=token,
             cb_org_key=cb_org_key)
+        demisto.debug('created client')
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1439,17 +1589,23 @@ def main():
 
         elif demisto.command() == 'fetch-incidents':
             fetch_time = demisto.params().get('fetch_time', '3 days')
+            demisto.debug('got fetch_time')
             fetch_limit = demisto.params().get('fetch_limit', '50')
+            demisto.debug('got fetch_limit')
             # Set and define the fetch incidents command to run after activated via integration settings.
             incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())
+            demisto.debug('ran fetch_incidents')
             demisto.incidents(incidents)
+            demisto.debug('sended incidents')
             demisto.setLastRun(last_run)
+            demisto.debug('set last_run was executed')
 
         elif demisto.command() == 'cb-eedr-list-alerts':
             return_results(alert_list_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
-            return_results(alert_workflow_update_command(client, demisto.args()))
+            # args have to be sent before client because this is a polling function!
+            return_results(alert_workflow_update_command(demisto.args(), client))
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))
@@ -1542,7 +1698,13 @@ def main():
             return_results(get_file_path_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-process-search':
-            return_results(process_search_command(client, demisto.args()))
+            demisto.debug('in main for search command')
+            polling = argToBoolean(demisto.args().get('polling'))
+            if polling:
+                # args have to be sent before client because this is a polling function!!
+                return return_results(process_search_command_with_polling(demisto.args(), client))
+            else:
+                return return_results(process_search_command_without_polling(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-process-search-results':
             for command_result_item in process_search_get_command(client, demisto.args()):

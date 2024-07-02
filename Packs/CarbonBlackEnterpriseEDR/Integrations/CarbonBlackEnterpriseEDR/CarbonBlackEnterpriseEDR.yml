@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Carbon Black Enterprise EDR
+  id: Carbon Black Enterprise EDR Dev
   version: -1
 configuration:
 - display: Server URL (e.g. https://defense.conferdeploy.net)
@@ -71,8 +71,8 @@ configuration:
   required: false
   type: 19
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter).
-display: Carbon Black Enterprise EDR
-name: Carbon Black Enterprise EDR
+display: Carbon Black Enterprise EDR Dev
+name: Carbon Black Enterprise EDR Dev
 script:
   commands:
   - arguments:
@@ -80,16 +80,42 @@ script:
       name: alert_id
       required: true
     - auto: PREDEFINED
-      description: Workflow state to update.
-      name: state
+      description: Workflow status to update.
+      name: status
       predefined:
-      - dismissed
-      - open
+      - IN_PROGRESS
+      - CLOSED
+      - DISMISSED
+      - OPEN
+    - description: Value judgement of whether the alert(s) represent a true or false positive.
+      name: determination
+      auto: PREDEFINED
+      predefined:
+      - TRUE_POSITIVE
+      - FALSE_POSITIVE
+      - NONE
+    - description: Relative time range for the request.
+      name: time_range
+      defaultValue: -2w
+    - name: start
+      description: The lower bound of the time range. Requires end and must be a timestamp before end.
+    - name: end
+      description: The upper bound of the time range Requires start and must be a timestamp after start.
+    - name: closure_reason
+      description: The closure reason.
+      auto: PREDEFINED
+      predefined:
+      - NO_REASON
+      - RESOLVED
+      - RESOLVED_BENIGN_KNOWN_GOOD
+      - DUPLICATE_CLEANUP
+      - OTHER
     - description: Comment to include with the operation.
       name: comment
-    - description: Description of the changes done in the workflow state.
-      name: remediation_state
-    description: Updates the workflow of a single event.
+    - description: Request id to retrieve.
+      name: request_id
+      hidden: true
+    description: Updates the workflow of a single alert.
     name: cb-eedr-alert-workflow-update
     outputs:
     - contextPath: CarbonBlackEEDR.Alert.AlertID
@@ -104,12 +130,10 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.LastUpdateTime
       description: Last time the alert was updated.
       type: Date
-    - contextPath: CarbonBlackEEDR.Alert.Remediation
-      description: Description or justification for the change.
-      type: String
     - contextPath: CarbonBlackEEDR.Alert.State
       description: The alert state.
       type: String
+    polling: true
   - arguments:
     - description: The devices on which to perform the action. Get the ID from the devices-list command. Supports comma-separated values.
       name: device_id
@@ -371,13 +395,6 @@ script:
       description: The MAC address of the endpoint.
       type: String
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: Whether to group results.
-      name: group_results
-      predefined:
-      - 'true'
-      - 'false'
     - description: Alert minimum severity (In range of 1-10).
       name: minimum_severity
     - description: Device OS version. Supports comma-separated values.
@@ -402,31 +419,27 @@ script:
       name: reputation
     - description: Alert type. Supports comma-separated values.
       name: alert_type
-    - description: Alert category. Supports comma-separated values.
-      name: alert_category
-    - description: Alert workflow. Supports comma-separated values.
-      name: workflow
-    - description: Device name. Supports comma-separated values.
+    - description: Device name. Supports comma-separated values. Note, the slashes in the device name should be doubled.
       name: device_name
-    - description: Process name. Supports comma-separated values.
+    - description: Process name. Supports comma-separated values. Note, the slashes in the process name should be doubled.
       name: process_name
-    - auto: PREDEFINED
-      defaultValue: first_event_time
-      description: Field by which to sort the results. Can be "first_event_time", or "last_event_time".
+    - description: Field by which to sort the results. Can be "first_event_timestamp", or "last_event_timestamp".
       name: sort_field
+      auto: PREDEFINED
+      defaultValue: first_event_timestamp
       predefined:
-      - first_event_time
-      - last_event_time
-    - auto: PREDEFINED
-      defaultValue: DESC
-      description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
+      - first_event_timestamp
+      - last_event_timestamp
+    - description: How to order the results. Can be "ASC" (ascending) or "DESC" (descending).
       name: sort_order
+      auto: PREDEFINED
+      defaultValue: DESC
       predefined:
       - ASC
       - DESC
-    - defaultValue: '10'
-      description: The maximum number of results to return.
+    - description: The maximum number of results to return.
       name: limit
+      defaultValue: '10'
     - description: Alert start time.
       name: start_time
     - description: Alert end time.
@@ -437,7 +450,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.threat_id
       description: Threat ID.
       type: String
-    - contextPath: CarbonBlackEEDR.Alert.first_event_time
+    - contextPath: CarbonBlackEEDR.Alert.first_event_timestamp
       description: First event time.
       type: Date
     - contextPath: CarbonBlackEEDR.Alert.target_value
@@ -548,9 +561,6 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.severity
       description: Alert severity.
       type: Number
-    - contextPath: CarbonBlackEEDR.Alert.category
-      description: Alert category.
-      type: String
     - contextPath: CarbonBlackEEDR.Alert.threat_cause_vector
       description: Threat cause vector.
       type: String
@@ -569,8 +579,8 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.workflow.remediation
       description: Alert workflow - remediation.
       type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.state
-      description: Alert workflow - state.
+    - contextPath: CarbonBlackEEDR.Alert.workflow.status
+      description: Alert workflow - status.
       type: String
   - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
@@ -1126,6 +1136,22 @@ script:
       name: end_time
     - description: Index of first records to fetch. Default is 0.
       name: start
+    - description: job_id to retrieve.
+      name: job_id
+      hidden: true
+    - description: wether to run polling command.
+      name: polling
+      defaultValue: true
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+    - description: the time in seconds to wait between polling.
+      name: interval_in_seconds
+      defaultValue: '60'
+    - description: the time in seconds in which the command will stop retrying polling.
+      name: time_out
+      defaultValue: 600
     description: Creates a process search job.
     name: cb-eedr-process-search
     outputs:
@@ -1135,6 +1161,7 @@ script:
     - contextPath: CarbonBlackEEDR.SearchProcess.status
       description: The status of the job found by the search.
       type: String
+    polling: true
   - arguments:
     - description: The process GUID to search. Must be focused on a single process.
       name: process_guid

@@ -61,6 +61,8 @@ tasks:
         simple: ${inputs.process_name}
       query:
         simple: ${inputs.query}
+      polling:
+        simple: "false"
     separatecontext: false
     view: |-
       {
