@@ -7,7 +7,7 @@ import time
 import urllib3
 
 import resilient
-
+from resilient.co3 import SimpleClient
 ''' IMPORTS '''
 logging.basicConfig()
 
@@ -1075,7 +1075,13 @@ def fetch_incidents(client):
     demisto.incidents(incidents)
 
 
-def test():
+def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
+    scripts = client.get('/scripts')
+
+    return CommandResults(readable_output=str(scripts))
+
+
+def test_module():
     """Verify that the first_fetch parameter is according to the standards, if exists.
 
     Returns:
@@ -1101,19 +1107,18 @@ def get_client():
         'cafile': os.environ.get('SSL_CERT_FILE') if USE_SSL else 'false',
         'org': ORG_NAME
     }
-    if USERNAME and PASSWORD:
-        opts_dict.update({
-            'email': USERNAME,
-            'password': PASSWORD
-        })
-    elif API_KEY_ID and API_KEY_SECRET:
+    if API_KEY_ID and API_KEY_SECRET:
         opts_dict.update({
             'api_key_id': API_KEY_ID,
             'api_key_secret': API_KEY_SECRET
         })
+    elif USERNAME and PASSWORD:
+        opts_dict.update({
+            'email': USERNAME,
+            'password': PASSWORD
+        })
     else:
-        return_error('Credentials were not provided. Configure either the username and password'
-                     ' or the API Key and API Secret')
+        return_error('Credentials were not provided. Please configure API key ID and API key secret')
     resilient_client = resilient.get_client(opts=opts_dict)
     return resilient_client
 
@@ -1128,41 +1133,45 @@ def main():
     LOG('command is %s' % (demisto.command(),))
 
     try:
+        command = demisto.command()
         args = demisto.args()
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # Checks if there is an authenticated session
-            test()
-        elif demisto.command() == 'fetch-incidents':
+            test_module()
+        elif command == 'fetch-incidents':
             fetch_incidents(client)
-        elif demisto.command() == 'rs-search-incidents':
+        elif command == 'rs-search-incidents':
             demisto.results(search_incidents_command(client, args))
-        elif demisto.command() == 'rs-update-incident':
+        elif command == 'rs-update-incident':
             demisto.results(update_incident_command(client, args))
-        elif demisto.command() == 'rs-incidents-get-members':
+        elif command == 'rs-incidents-get-members':
             demisto.results(get_members_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-get-incident':
+        elif command == 'rs-get-incident':
             demisto.results(get_incident_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-incidents-update-member':
+        elif command == 'rs-incidents-update-member':
             demisto.results(set_member_command(client, args['incident-id'], args['members']))
-        elif demisto.command() == 'rs-incidents-get-tasks':
+        elif command == 'rs-incidents-get-tasks':
             demisto.results(get_tasks_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-get-users':
+        elif command == 'rs-get-users':
             demisto.results(get_users_command(client))
-        elif demisto.command() == 'rs-close-incident':
+        elif command == 'rs-close-incident':
             demisto.results(close_incident_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-create-incident':
+        elif command == 'rs-create-incident':
             demisto.results(create_incident_command(client, args))
-        elif demisto.command() == 'rs-incident-artifacts':
+        elif command == 'rs-incident-artifacts':
             demisto.results(incident_artifacts_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-incident-attachments':
+        elif command == 'rs-incident-attachments':
             demisto.results(incident_attachments_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-related-incidents':
+        elif command == 'rs-related-incidents':
             demisto.results(related_incidents_command(client, args['incident-id']))
-        elif demisto.command() == 'rs-add-note':
+        elif command == 'rs-add-note':
             demisto.results(add_note_command(client, args['incident-id'], args['note']))
-        elif demisto.command() == 'rs-add-artifact':
+        elif command == 'rs-add-artifact':
             demisto.results(add_artifact_command(client, args['incident-id'], args['artifact-type'],
                                                  args['artifact-value'], args.get('artifact-description')))
+        elif command == 'rs-list-scripts':
+            return_results(list_scripts_command(client, args))
+
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
