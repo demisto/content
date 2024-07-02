@@ -42,9 +42,11 @@ select = [
     "DA100", "DA101",
     "IT100", "IT101", "IT102", "IT103",
     "MR100",
+    "RN103",
+    "LO107"
 ]
 
-warning = ["DS107", "LO107", "RN103" ]
+warning = ["DS107"]
 
 [path_based_validations]
 select = [
@@ -66,8 +68,9 @@ select = [
     "RP101",
     "IT102", "IT103",
     "MR100",
+    "LO107"
 ]
-warning = ["IN101", "LO107"]
+warning = []
 
 
 [Custom_Categories]

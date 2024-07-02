@@ -382,7 +382,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad).'
+      description: 'The actual score.'
       type: Number
     - contextPath: IP.Address
       description: The IP address of the artifact.
@@ -439,7 +439,7 @@ script:
       description: The vendor used to calculate the score.
       type: String
     - contextPath: DBotScore.Score
-      description: 'The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad).'
+      description: 'The actual score.'
       type: Number
     - contextPath: Domain.Name
       description: The domain name of the artifact.
@@ -6698,7 +6698,7 @@ script:
     - contextPath: GoogleChronicleBackstory.Events.securityResult.urlBackToProduct
       description: URL to direct you to the source product console for this security event.
       type: String
-  dockerimage: demisto/googleapi-python3:1.0.0.97032
+  dockerimage: demisto/googleapi-python3:1.0.0.100240
   isfetch: true
   runonce: false
   script: '-'

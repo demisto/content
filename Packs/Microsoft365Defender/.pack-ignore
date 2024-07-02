@@ -1,6 +1,3 @@
-[file:Microsoft365Defender.yml]
-ignore=IN124
-
 [known_words]
 safelinks
 
