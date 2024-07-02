@@ -1,0 +1,120 @@
+{
+    "items": [
+        {
+            "uuid": "80ee2ccc-11e3-4416",
+            "title": "Feed Enriched",
+            "created_at": 1574343159,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "updated_at": 1687958505,
+            "updated_by": "59899459-d385-48da",
+            "updated_by_type": "application",
+            "community_uuid": "52bd045f-4199-4361",
+            "short_id": "ALL1A4SKUUUU",
+            "entity": {
+                "uuid": "7f7676e7-a254-43c3",
+                "name": "Information Technology TEST"
+            },
+            "urgency": {
+                "current_value": 20,
+                "value": 20,
+                "severity": 40,
+                "criticity": 0,
+                "display": "Moderate"
+            },
+            "alert_type": {
+                "value": "brute-force",
+                "category": "intrusion-attempts"
+            },
+            "status": {
+                "uuid": "8f206505-af6d-433e",
+                "name": "Acknowledged",
+                "description": "The alert was checked by an operator"
+            },
+            "rule": {
+                "uuid": "ebcb5113-dcd1-4563",
+                "name": "Feed Enriched",
+                "description": "description test",
+                "severity": 40,
+                "type": null,
+                "pattern": "[ipv4-addr:value = '1.2.3.4']"
+            },
+            "detection_type": null,
+            "source": "1.2.3.4",
+            "target": null,
+            "similar": 11,
+            "details": "details test",
+            "ttps": [],
+            "adversaries": [],
+            "stix": {},
+            "kill_chain_short_id": "KCXKNfnJuuuu",
+            "number_of_total_comments": 1,
+            "first_seen_at": "2019-11-21T13:32:39.839600Z",
+            "last_seen_at": null,
+            "assets": [],
+            "time_to_detect": null,
+            "time_to_acknowledge": 113615345,
+            "time_to_respond": null,
+            "time_to_resolve": 111893849
+        },
+        {
+            "uuid": "07fe3fc0-ddb7-44f3",
+            "title": "Unauthorized IP access",
+            "created_at": 1574343161,
+            "created_by": "59899459-d385-48da",
+            "created_by_type": "application",
+            "updated_at": 1687958712,
+            "updated_by": "59899459-d385-48da",
+            "updated_by_type": "application",
+            "community_uuid": "52bd045f-4199-4361",
+            "short_id": "ALN1JwGVLxxx",
+            "entity": {
+                "uuid": "7f7676e7-a254-43c3",
+                "name": "Information Technology TEST"
+            },
+            "urgency": {
+                "current_value": 35,
+                "value": 35,
+                "severity": 0,
+                "criticity": 70,
+                "display": "Moderate"
+            },
+            "alert_type": {
+                "value": "unauthorised-information-access",
+                "category": "information-content-security"
+            },
+            "status": {
+                "uuid": "8f206505-af6d-433e",
+                "name": "Acknowledged",
+                "description": "The alert was checked by an operator"
+            },
+            "rule": {
+                "uuid": "0c5f57f6-d063-4352",
+                "name": "Unauthorized IP access",
+                "description": "Unauthorized network access from one lan to an other one",
+                "severity": 0,
+                "type": null,
+                "pattern": "[network-traffic:src_ref.value NOT IN ('1.2.3.4','5.6.7.8') AND network-traffic:dst_ref.value IN ('7.3.4.4') AND network-traffic:dst_port=22]"
+            },
+            "detection_type": null,
+            "source": "1.2.3.4",
+            "target": "DMZ-01 (7.7.7.7)",
+            "similar": 2,
+            "details": "Unauthorized network access from one lan to an other one",
+            "ttps": [],
+            "adversaries": [],
+            "stix": {},
+            "kill_chain_short_id": null,
+            "number_of_total_comments": 1,
+            "first_seen_at": "2019-11-21T13:32:41.902000Z",
+            "last_seen_at": null,
+            "assets": [
+                "c50cc586-f3d9-4198"
+            ],
+            "time_to_detect": null,
+            "time_to_acknowledge": 113615550,
+            "time_to_respond": null,
+            "time_to_resolve": 111893860
+        }
+    ]
+}
