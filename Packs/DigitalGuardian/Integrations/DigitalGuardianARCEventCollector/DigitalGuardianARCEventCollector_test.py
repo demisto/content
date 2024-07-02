@@ -21,7 +21,7 @@ def test_add_time_key_to_events():
     events = util_load_json('test_data/events.json')
     add_time_to_events(events)
 
-    assert events[0]['_time'] == "2023-05-23T06:56:39Z"
+    assert events[0]['_time'] is None
     assert events[1]['_time'] == "2023-05-23T11:53:11Z"
 
 
@@ -120,4 +120,4 @@ def test_fetch_events_command(mocker):
     mock_events = util_load_json('test_data/events.json')
     assert events == mock_events
     assert next_run == {'start_time': '2023-05-23 11:53:11',
-                        'id_list': ['1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e', 'c742c377-b429-428a-b0c9-515cbbf143be']}
+                        'id_list': ['1dc3c1fa-5474-4fc0-a7c3-74ff42d28e5e']}

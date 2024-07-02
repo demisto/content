@@ -600,7 +600,7 @@ script:
       description: The size of the file in bytes.
       type: Number
   - arguments: []
-    description: Returns a list of put-file IDs that are available for the user in the 'put' command.
+    description: Returns a list of put-file IDs that are available for the user in the 'put' command. Due to an API limitation, the maximum number of files returned is 100.
     name: cs-falcon-list-files
     outputs:
     - contextPath: CrowdStrike.File.ID
