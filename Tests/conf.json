@@ -23,8 +23,7 @@
     "tests": [
         {
             "playbookID": "Test Playbook - Possible External RDP Brute-Force - Set Verdict",
-            "timeout": 600,
-            "integrations": "Cortex XDR - IR"
+            "timeout": 600
         },
         {
             "integrations": "CipherTrust",
