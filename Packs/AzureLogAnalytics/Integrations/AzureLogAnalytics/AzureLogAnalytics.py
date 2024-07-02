@@ -1,4 +1,5 @@
 from collections.abc import Callable
+
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
@@ -23,18 +24,23 @@ SAVED_SEARCH_HEADERS = [
 ]
 LOG_ANALYTICS_RESOURCE = 'https://api.loganalytics.io'
 AZURE_MANAGEMENT_RESOURCE = 'https://management.azure.com'
-AUTH_CODE_SCOPE = 'https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation'
+AUTH_CODE_SCOPE = "https://api.loganalytics.io/Data.Read%20https://management.azure.com/user_impersonation"
 
 
 class Client:
     def __init__(self, self_deployed, refresh_token, auth_and_token_url, enc_key, redirect_uri, auth_code,
                  subscription_id, resource_group_name, workspace_name, verify, proxy, certificate_thumbprint,
-                 private_key, client_credentials, managed_identities_client_id=None):
+                 private_key, client_credentials, azure_cloud, managed_identities_client_id=None):
 
         tenant_id = refresh_token if self_deployed else ''
         refresh_token = get_integration_context().get('current_refresh_token') or refresh_token
-        base_url = f'https://management.azure.com/subscriptions/{subscription_id}/resourceGroups/' \
-            f'{resource_group_name}/providers/Microsoft.OperationalInsights/workspaces/{workspace_name}'
+        self.azure_cloud = azure_cloud or AZURE_WORLDWIDE_CLOUD
+        suffix = (
+            f"subscriptions/{subscription_id}/resourceGroups/{resource_group_name}/"
+            + f"providers/Microsoft.OperationalInsights/workspaces/{workspace_name}"
+        )
+        base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
+
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
             auth_id=auth_and_token_url,  # client_id for client credential
@@ -58,6 +64,7 @@ class Client:
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.management_azure,
             command_prefix="azure-log-analytics",
+            azure_cloud=azure_cloud
         )
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
@@ -116,9 +123,7 @@ def validate_params(refresh_token, managed_identities_client_id, client_credenti
     if not refresh_token:
         raise DemistoException('Token / Tenant ID must be provided.')
     if not managed_identities_client_id:
-        if client_credentials and not enc_key:
-            raise DemistoException("Client Secret must be provided for client credentials flow.")
-        elif not self_deployed and not enc_key:
+        if not self_deployed and not enc_key:
             raise DemistoException('Key must be provided when not using self deployed flow. For further information see '
                                    'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
         elif not enc_key and not (certificate_thumbprint and private_key):
@@ -660,6 +665,7 @@ def main():
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             client_credentials=client_credentials,
+            azure_cloud=get_azure_cloud(params, 'Azure Log Analytics'),
             managed_identities_client_id=managed_identities_client_id,
         )
 
