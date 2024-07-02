@@ -42,6 +42,39 @@ class ZFClient(BaseClient):
         self.only_escalated = only_escalated
         self.auth_token = ""
 
+    def raw_api_request(
+        self,
+        method: str,
+        url_suffix: str = "/",
+        full_url: str | None = None,
+        params: dict[str, str] | None = None,
+        data: dict[str, Any] | None = None,
+        ok_codes: tuple[int, ...] = None,
+        files: dict[str, Any] | None = None,
+        prefix: str | None = "1.0",
+        empty_response: bool = False,
+        error_handler: Callable[[Any], Any] | None = None,
+        **kwargs
+    ) -> Response:
+        pref_string = f"/{prefix}" if prefix else ""
+
+        headers = self.get_api_request_header()
+        return self._http_request(
+            method=method,
+            url_suffix=urljoin(pref_string, url_suffix),
+            full_url=full_url,
+            headers=headers,
+            params=params,
+            json_data=data,
+            ok_codes=ok_codes,
+            empty_valid_codes=(200, 201),
+            return_empty_response=empty_response,
+            error_handler=error_handler,
+            files=files,
+            resp_type="response",
+            **kwargs
+        )
+
     def api_request(
         self,
         method: str,
@@ -56,7 +89,7 @@ class ZFClient(BaseClient):
         empty_response: bool = False,
         error_handler: Callable[[Any], Any] | None = None,
         **kwargs
-    ) -> dict[str, Any] | Response:
+    ) -> dict[str, Any]:
         """
         :param method: HTTP request type
         :param url_suffix: The suffix of the URL
@@ -496,12 +529,11 @@ class ZFClient(BaseClient):
         :return: HTTP request content.
         """
         url_suffix = f"/alerts/{alert_id}/breach_csv/"
-        response_content = self.api_request(
+        response_content = self.raw_api_request(
             "GET",
             prefix="2.0",
             ok_codes=(200, 404),
             url_suffix=url_suffix,
-            resp_type="response"
         )
         if response_content.status_code == 404:
             return ""
@@ -1786,7 +1818,11 @@ def get_compromised_credentials_command(
     credentials = client.get_compromised_credentials(alert_id)
     if credentials:
         return fileResult(f"breach_{alert_id}.csv", credentials)
-    return (f"No compromised credentials were found for {alert_id=}")
+    return CommandResults(
+        readable_output=f"No compromised credentials were found for {alert_id=}",
+        outputs={},
+        outputs_prefix="File"
+    )
 
 
 def compromised_domain_command(
