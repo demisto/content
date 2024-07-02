@@ -19,7 +19,7 @@ THRESHOLD_IN_SECONDS = 43200    # 12 hours in seconds
 class Client(BaseClient):
     def __init__(self, url: str, feed_url_to_config: Optional[Dict[str, dict]] = None, fieldnames: str = '',
                  insecure: bool = False, credentials: dict = None, ignore_regex: str = None, encoding: str = 'latin-1',
-                 delimiter: str = ',', doublequote: bool = True, escapechar: Union[str, None]  = None,
+                 delimiter: str = ',', doublequote: bool = True, escapechar: Union[str, None] = None,
                  quotechar: str = '"', skipinitialspace: bool = False, polling_timeout: int = 20, proxy: bool = False,
                  feedTags: Optional[str] = None, tlp_color: Optional[str] = None, value_field: str = 'value', **kwargs):
         """
@@ -375,17 +375,18 @@ def fetch_indicators_command(client: Client, default_indicator_type: str, auto_d
                                                               value)
                     raw_json['type'] = indicator_type
                     # if relationships param is True and also the url returns relationships
-                    if create_relationships and config.get(url, {}).get('relationship_name'):
-                        if fields_mapping.get('relationship_entity_b'):
-                            relationships_lst = EntityRelationship(
-                                name=config.get(url, {}).get('relationship_name'),
-                                entity_a=value,
-                                entity_a_type=indicator_type,
-                                entity_b=fields_mapping.get('relationship_entity_b'),
-                                entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
-                                    config.get(url, {}).get('relationship_entity_b_type')),
-                            )
-                            relationships_of_indicator = [relationships_lst.to_indicator()]
+                    if create_relationships \
+                            and config.get(url, {}).get('relationship_name') \
+                            and fields_mapping.get('relationship_entity_b'):
+                        relationships_lst = EntityRelationship(
+                            name=config.get(url, {}).get('relationship_name'),
+                            entity_a=value,
+                            entity_a_type=indicator_type,
+                            entity_b=fields_mapping.get('relationship_entity_b'),
+                            entity_b_type=FeedIndicatorType.indicator_type_by_server_version(
+                                config.get(url, {}).get('relationship_entity_b_type')),
+                        )
+                        relationships_of_indicator = [relationships_lst.to_indicator()]
 
                     indicator = {
                         'value': value,
