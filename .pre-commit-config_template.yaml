@@ -210,7 +210,9 @@ repos:
     language: system
     entry: validate-file-permission-changes
     files: ^Packs/
-    pass_filenames: false
+    pass_filenames: true
+    args:
+    - --ci
 
   - id: validate-conf-json
     name: validate-conf-json
