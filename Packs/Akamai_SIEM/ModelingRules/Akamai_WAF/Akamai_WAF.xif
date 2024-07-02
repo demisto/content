@@ -1,3 +1,8 @@
+[RULE: set_first_name]
+alter 
+    xdm.event.description = concat(get_name, " Epstein");
+
+
 [MODEL: dataset = akamai_waf_raw]
 /* 
     Reference: https://techdocs.akamai.com/siem-integration/reference/get-configid
