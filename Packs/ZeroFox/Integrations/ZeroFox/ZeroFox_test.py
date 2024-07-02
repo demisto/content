@@ -23,6 +23,7 @@ from ZeroFox import (
     get_modified_remote_data_command,
     get_policy_types_command,
     get_remote_data_command,
+    get_compromised_credentials_command,
     list_alerts_command,
     list_entities_command,
     malicious_hash_command,
@@ -1301,3 +1302,25 @@ def test_get_alert_attachments_command(requests_mock, mocker):
     assert alert_id == alert_id_called
     assert isinstance(results.outputs, list)
     assert results.outputs_prefix == "ZeroFox.AlertAttachments"
+
+
+def test_get_compromised_credentials_command(requests_mock, mocker):
+    """
+    Given
+        An alert of type compromised credentials
+    When
+        Calling get_compromised_credentials_command
+    Then
+        It should return a csv file with compromised cred contents
+    """
+    alert_id = 123
+    breach_data = ""
+    client = build_zf_client()
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.get(
+        f"/2.0/alerts/{alert_id}/breach_csv/", text=breach_data)
+    args = {"alert_id": alert_id}
+
+    results = get_compromised_credentials_command(client, args)
+
+    assert {} == results
