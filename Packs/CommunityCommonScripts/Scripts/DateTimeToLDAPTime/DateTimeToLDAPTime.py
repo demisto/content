@@ -24,7 +24,6 @@ def main():
         return_results(convert_time_command(time=utc_time))
 
     except Exception as e:
-        demisto.error(format_exc())
         return_error(f'Convert DateTimeToLDAPTime to LDAP Time command failed. Error: {e}')
 
 
