@@ -1,0 +1,76 @@
+{
+    "fromDate": "0001-01-01T00:00:00Z",
+    "fromDateLicense": "0001-01-01T00:00:00Z",
+    "id": "Palo Alto Networks Maintenance Notifications",
+    "layout": [
+        {
+            "forceRange": false,
+            "h": 10,
+            "i": "4fb10b40-0971-11ec-bec9-8fb9dbbe5fb4",
+            "id": "4fb10b40-0971-11ec-bec9-8fb9dbbe5fb4",
+            "reflectDimensions": true,
+            "w": 12,
+            "widget": {
+                "Cache": null,
+                "cacheVersn": 0,
+                "category": "",
+                "commitMessage": "",
+                "dataType": "scripts",
+                "dateRange": {
+                    "fromDate": "0001-01-01T00:00:00Z",
+                    "fromDateLicense": "0001-01-01T00:00:00Z",
+                    "period": {
+                        "by": "",
+                        "byFrom": "",
+                        "byTo": "",
+                        "field": "",
+                        "fromValue": null,
+                        "toValue": null
+                    },
+                    "toDate": "0001-01-01T00:00:00Z"
+                },
+                "definitionId": "",
+                "fromServerVersion": "",
+                "id": "24b8c823-873e-4153-81bf-a79d04743d28",
+                "isPredefined": false,
+                "itemVersion": "",
+                "modified": "2021-08-30T09:04:40.421253809Z",
+                "name": "Palo Alto Networks Maintenance Schedule",
+                "packID": "",
+                "packName": "",
+                "params": {
+                    "insecure": "true",
+                    "url": "https://status.paloaltonetworks.com/history.rss"
+                },
+                "prevName": "Unit42 Blog Feed",
+                "propagationLabels": [
+                    "all"
+                ],
+                "query": "RSSWidget",
+                "shouldCommit": false,
+                "sizeInBytes": 0,
+                "toServerVersion": "",
+                "vcShouldIgnore": false,
+                "vcShouldKeepItemLegacyProdMachine": false,
+                "version": 1,
+                "widgetType": "text"
+            },
+            "x": 0,
+            "y": 0
+        }
+    ],
+    "name": "Palo Alto Networks Maintenance Notifications",
+    "period": {
+        "by": "",
+        "byFrom": "days",
+        "byTo": "",
+        "field": "",
+        "fromValue": 30,
+        "toValue": null
+    },
+    "toDate": "0001-01-01T00:00:00Z",
+    "version": -1,
+    "fromVersion": "6.10.0",
+    "description": "",
+    "isPredefined": true
+}
