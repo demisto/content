@@ -5,10 +5,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 1592fb22-24f7-4f6c-8981-477d576b4aef
+    taskid: 263d81f0-60c6-4d82-8ee5-b1e5d9173557
     type: start
     task:
-      id: 1592fb22-24f7-4f6c-8981-477d576b4aef
+      id: 263d81f0-60c6-4d82-8ee5-b1e5d9173557
       version: -1
       name: ""
       iscommand: false
@@ -32,12 +32,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "1":
     id: "1"
-    taskid: 1fb834e4-87d2-4c30-8275-8edf8146f8f6
+    taskid: bfc43620-d01a-4701-85e5-702f9fbad013
     type: title
     task:
-      id: 1fb834e4-87d2-4c30-8275-8edf8146f8f6
+      id: bfc43620-d01a-4701-85e5-702f9fbad013
       version: -1
       name: Concurrency 1
       type: title
@@ -62,12 +63,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "3":
     id: "3"
-    taskid: 2f5077ce-f0d9-4252-8911-f93a13524f0d
+    taskid: 734ec090-da07-42f2-855f-7d302e715723
     type: title
     task:
-      id: 2f5077ce-f0d9-4252-8911-f93a13524f0d
+      id: 734ec090-da07-42f2-855f-7d302e715723
       version: -1
       name: Concurrency 10
       type: title
@@ -92,12 +94,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "6":
     id: "6"
-    taskid: 29510033-5303-4090-817d-bbd3c0be4ee2
+    taskid: 5989e654-f19c-4ffe-8e45-c4afd4054b38
     type: title
     task:
-      id: 29510033-5303-4090-817d-bbd3c0be4ee2
+      id: 5989e654-f19c-4ffe-8e45-c4afd4054b38
       version: -1
       name: Concurrency 20
       type: title
@@ -122,12 +125,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "8":
     id: "8"
-    taskid: e6c4b55b-28ee-41fd-894c-df08f832654a
+    taskid: 7aa168ef-16a9-43a8-8808-6fc6cf16a9aa
     type: title
     task:
-      id: e6c4b55b-28ee-41fd-894c-df08f832654a
+      id: 7aa168ef-16a9-43a8-8808-6fc6cf16a9aa
       version: -1
       name: Concurrency 100
       type: title
@@ -152,12 +156,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "11":
     id: "11"
-    taskid: 2bee193b-5df2-47a0-8861-ab8cf16eef77
+    taskid: d2150ac8-78c1-4713-8185-edd93a0b1e7e
     type: title
     task:
-      id: 2bee193b-5df2-47a0-8861-ab8cf16eef77
+      id: d2150ac8-78c1-4713-8185-edd93a0b1e7e
       version: -1
       name: Concurrency 200
       type: title
@@ -182,12 +187,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "12":
     id: "12"
-    taskid: d9ba7d7c-959f-404c-89e6-f7a1391338f1
+    taskid: 218bcd1a-10fb-4406-8e58-527889da1f23
     type: playbook
     task:
-      id: d9ba7d7c-959f-404c-89e6-f7a1391338f1
+      id: 218bcd1a-10fb-4406-8e58-527889da1f23
       version: -1
       name: TAXII2 Indicator Performance Test
       playbookName: TAXII2 Indicator Performance Test
@@ -212,6 +218,8 @@ tasks:
           root: inputs.url
       z:
         simple: ${inputs.z}
+      base64_of_the_test_password:
+        simple: ${inputs.base64_of_the_test_password}
     separatecontext: true
     loop:
       iscommand: false
@@ -232,12 +240,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "13":
     id: "13"
-    taskid: 47d02a6f-9986-452e-8c44-cbc5a9039cf6
+    taskid: 49de863c-d837-4798-8bd6-6c2b317be83e
     type: playbook
     task:
-      id: 47d02a6f-9986-452e-8c44-cbc5a9039cf6
+      id: 49de863c-d837-4798-8bd6-6c2b317be83e
       version: -1
       name: TAXII2 Indicator Performance Test
       playbookName: TAXII2 Indicator Performance Test
@@ -262,6 +271,8 @@ tasks:
           root: inputs.url
       z:
         simple: ${inputs.z}
+      base64_of_the_test_password:
+        simple: ${inputs.base64_of_the_test_password}
     separatecontext: true
     loop:
       iscommand: false
@@ -282,12 +293,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "14":
     id: "14"
-    taskid: ae4fe9ec-a082-4f27-830b-9788db4b1359
+    taskid: 925c26c6-86f0-4e80-8e56-127cb71f5abd
     type: playbook
     task:
-      id: ae4fe9ec-a082-4f27-830b-9788db4b1359
+      id: 925c26c6-86f0-4e80-8e56-127cb71f5abd
       version: -1
       name: TAXII2 Indicator Performance Test
       playbookName: TAXII2 Indicator Performance Test
@@ -312,6 +324,8 @@ tasks:
           root: inputs.url
       z:
         simple: ${inputs.z}
+      base64_of_the_test_password:
+        simple: ${inputs.base64_of_the_test_password}
     separatecontext: true
     loop:
       iscommand: false
@@ -332,12 +346,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "15":
     id: "15"
-    taskid: 6be478b1-1da5-4d5e-8e90-384558c63bb8
+    taskid: e963ad50-67f0-4c94-872f-3e57c4ff9c01
     type: playbook
     task:
-      id: 6be478b1-1da5-4d5e-8e90-384558c63bb8
+      id: e963ad50-67f0-4c94-872f-3e57c4ff9c01
       version: -1
       name: TAXII2 Indicator Performance Test
       playbookName: TAXII2 Indicator Performance Test
@@ -362,6 +377,8 @@ tasks:
           root: inputs.url
       z:
         simple: ${inputs.z}
+      base64_of_the_test_password:
+        simple: ${inputs.base64_of_the_test_password}
     separatecontext: true
     loop:
       iscommand: false
@@ -382,12 +399,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "16":
     id: "16"
-    taskid: 1d3f2ffd-e1c5-453e-82f2-f77eb4d4b1af
+    taskid: 3fb25dad-c126-48d1-8ffe-8fce927c9da8
     type: playbook
     task:
-      id: 1d3f2ffd-e1c5-453e-82f2-f77eb4d4b1af
+      id: 3fb25dad-c126-48d1-8ffe-8fce927c9da8
       version: -1
       name: TAXII2 Indicator Performance Test
       playbookName: TAXII2 Indicator Performance Test
@@ -412,6 +430,8 @@ tasks:
           root: inputs.url
       z:
         simple: ${inputs.z}
+      base64_of_the_test_password:
+        simple: ${inputs.base64_of_the_test_password}
     separatecontext: true
     loop:
       iscommand: false
@@ -432,12 +452,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "17":
     id: "17"
-    taskid: d5a14775-ef54-494b-8cde-b1fba02d063d
+    taskid: 3b38dcfb-bb4d-488d-83eb-7622321eb6e8
     type: regular
     task:
-      id: d5a14775-ef54-494b-8cde-b1fba02d063d
+      id: 3b38dcfb-bb4d-488d-83eb-7622321eb6e8
       version: -1
       name: Set HeyConcurrency
       description: Set a value in context under the key you entered.
@@ -468,12 +489,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "18":
     id: "18"
-    taskid: d6a54306-4c81-4d89-85c2-da0c30c7fba6
+    taskid: 65209b10-ed5e-4e58-8e74-ae4e829545a2
     type: regular
     task:
-      id: d6a54306-4c81-4d89-85c2-da0c30c7fba6
+      id: 65209b10-ed5e-4e58-8e74-ae4e829545a2
       version: -1
       name: Clear Hey Context
       description: Delete field from context
@@ -504,12 +526,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "19":
     id: "19"
-    taskid: 26c25dfc-ca36-424c-81fa-64e6554cb083
+    taskid: c7cfc48b-72d6-4f65-8b5c-bb88c3498101
     type: regular
     task:
-      id: 26c25dfc-ca36-424c-81fa-64e6554cb083
+      id: c7cfc48b-72d6-4f65-8b5c-bb88c3498101
       version: -1
       name: Set HeyConcurrency
       description: Set a value in context under the key you entered.
@@ -542,12 +565,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "20":
     id: "20"
-    taskid: 876d3a7d-5f8c-4812-85eb-c4fe5b760b04
+    taskid: e5d4c9f1-602c-4c17-87c4-3aee17ca3742
     type: regular
     task:
-      id: 876d3a7d-5f8c-4812-85eb-c4fe5b760b04
+      id: e5d4c9f1-602c-4c17-87c4-3aee17ca3742
       version: -1
       name: Clear Hey Context
       description: Delete field from context
@@ -578,12 +602,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "21":
     id: "21"
-    taskid: cd2ff040-ac7f-4c87-8654-fb20db6fdaf5
+    taskid: aee199ed-e8e1-4531-8867-c77bb9377941
     type: regular
     task:
-      id: cd2ff040-ac7f-4c87-8654-fb20db6fdaf5
+      id: aee199ed-e8e1-4531-8867-c77bb9377941
       version: -1
       name: Set HeyConcurrency
       description: Set a value in context under the key you entered.
@@ -616,12 +641,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "22":
     id: "22"
-    taskid: 6485c2e3-e283-4146-8ee6-c239ea66d292
+    taskid: bdba4507-1d5c-454e-8583-28e310f537db
     type: regular
     task:
-      id: 6485c2e3-e283-4146-8ee6-c239ea66d292
+      id: bdba4507-1d5c-454e-8583-28e310f537db
       version: -1
       name: Clear Hey Context
       description: Delete field from context
@@ -652,12 +678,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "23":
     id: "23"
-    taskid: e8c93645-e662-45da-80f5-dcfb62288f51
+    taskid: b24555fc-7b31-4c62-8dd7-76dd0735c37f
     type: regular
     task:
-      id: e8c93645-e662-45da-80f5-dcfb62288f51
+      id: b24555fc-7b31-4c62-8dd7-76dd0735c37f
       version: -1
       name: Set HeyConcurrency
       description: Set a value in context under the key you entered.
@@ -690,12 +717,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "24":
     id: "24"
-    taskid: 01782155-5bfc-4416-8cf7-8afe1524dc40
+    taskid: 9709b065-99b2-48cf-8e85-a8e5c803684e
     type: regular
     task:
-      id: 01782155-5bfc-4416-8cf7-8afe1524dc40
+      id: 9709b065-99b2-48cf-8e85-a8e5c803684e
       version: -1
       name: Clear Hey Context
       description: Delete field from context
@@ -726,12 +754,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "25":
     id: "25"
-    taskid: 922b03c7-e1df-41f2-864c-a3b58df6e0c2
+    taskid: d26dba59-c69e-4363-87df-512fe72638aa
     type: regular
     task:
-      id: 922b03c7-e1df-41f2-864c-a3b58df6e0c2
+      id: d26dba59-c69e-4363-87df-512fe72638aa
       version: -1
       name: Set HeyConcurrency
       description: Set a value in context under the key you entered.
@@ -764,12 +793,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
   "26":
     id: "26"
-    taskid: 71753358-5578-4bd8-8531-ba8459bdccf5
+    taskid: fae9e0f8-4800-46f2-8f96-82f9f0343174
     type: regular
     task:
-      id: 71753358-5578-4bd8-8531-ba8459bdccf5
+      id: fae9e0f8-4800-46f2-8f96-82f9f0343174
       version: -1
       name: Clear Hey Context
       description: Delete field from context
@@ -797,6 +827,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerrortype: ""
 view: |-
   {
     "linkLabelsPosition": {},
@@ -829,6 +860,12 @@ inputs:
   value: {}
   required: false
   description: ""
+  playbookInputQuery:
+- key: base64_of_the_test_password
+  value:
+    simple: dGVzdDEyOnRlc3QxMg==
+  required: false
+  description: The base64 of the test12 password for the TAXII
   playbookInputQuery:
 outputs:
 - contextPath: HeyConcurrency
