@@ -1,0 +1,15 @@
+!jira-asset-object-schema-list all_results=true
+!jira-asset-object-type-list schema_id=1
+!jira-asset-object-type-attribute-list object_type_id=2
+!jira-asset-object-create object_type_id=2 attributes=`{"6": ["John Doe"]}`
+!jira-asset-object-update object_id=12 attributes=`{"6": ["Jane Doe"]}`
+!jira-asset-object-delete object_id=12
+!jira-asset-object-get object_id=13
+!jira-asset-object-search ql_query=`Label = "John Doe"`
+!jira-asset-attribute-json-create object_type_id=2
+!jira-asset-comment-create object_id=13 comment="This is a comment"
+!jira-asset-comment-list object_id=13
+!jira-asset-connected-ticket-list object_id=13
+!jira-asset-attachment-add object_id=13 entry_id=2851@7dcf50de-b5cd-42d6-8a63-d129e03d1578
+!jira-asset-attachment-remove id=1
+!jira-asset-attachment-list object_id=13
