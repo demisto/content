@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: CrowdStrike Indicator Feed
+  id: CrowdStrike Indicator Feed DEV
   version: -1
 configuration:
 - defaultvalue: 'true'
@@ -51,6 +51,16 @@ configuration:
   type: 0
   additionalinfo: Maximum number of indicators per fetch. Value should be between 1 - 10000. A large value may result in a timeout.
   required: false
+- additionalinfo: "Choose which indicator field to fetch indicators by. Note: pagination is not supported when fetching by `Published Date` field. Default field is 'Last Updated'."
+  display: Indicator field to fetch by
+  name: fetch_by_field
+  options:
+  - Last Updated
+  - Published Date
+  defaultvalue: Last Updated
+  type: 15
+  required: false
+  section: Collect
 - additionalinfo: Malicious confidence level to filter by.
   display: Malicious confidence
   name: malicious_confidence
@@ -162,8 +172,8 @@ configuration:
   hidden: true
   required: false
 description: Retrieves indicators from the CrowdStrike Falcon Intel Feed.
-display: CrowdStrike Indicator Feed
-name: CrowdStrike Indicator Feed
+display: CrowdStrike Indicator Feed DEV
+name: CrowdStrike Indicator Feed DEV
 script:
   commands:
   - arguments:
@@ -229,7 +239,7 @@ script:
       type: Unknown
   - description: 'Resets the retrieving start time according to the `First Fetch Time` parameter, WARNING: This command will reset your fetch history.'
     name: crowdstrike-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.92207
   feed: true
   runonce: false
   script: '-'

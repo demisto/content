@@ -1,12 +1,12 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import copy
-
-from CommonServerUserPython import *  # noqa
-from CrowdStrikeApiModule import *  # noqa: E402
 
 # IMPORTS
 import urllib3
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa
+from CrowdStrikeApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 
@@ -76,6 +76,27 @@ INDICATOR_TO_CROWDSTRIKE_RELATION_DICT: Dict[str, Any] = {
 }
 CROWDSTRIKE_INDICATOR_RELATION_FIELDS = ['reports', 'actors', 'malware_families', 'vulnerabilities', 'relations']
 
+"""
+`FETCH_BY_FIELDS` is used to dynamically retrieve indicators based on the 'Last Updated'/'Published Date' indicator fields,
+according to the `fetch_by_field` parameter. Both of them considered valid last_run values.
+"""
+FETCH_BY_FIELDS = {
+    "Last Updated": {
+        "field_name": "last_updated",
+        "sort": "_marker|asc",
+        "last_run_query": "_marker:>'{last_run_value}'",
+        "response_resources_ref": "_marker",
+        "context_value": "last_marker_time",
+    },
+    "Published Date": {
+        "field_name": "published_date",
+        "sort": "published_date|asc",
+        "last_run_query": "published_date:>{last_run_value}",
+        "response_resources_ref": "published_date",
+        "context_value": "last_published_date_time",
+    },
+}
+
 
 def kill_chain_standard_values(phases: list | None):
     """
@@ -98,10 +119,25 @@ def kill_chain_standard_values(phases: list | None):
 
 
 class Client(CrowdStrikeClient):
-
-    def __init__(self, credentials, base_url, include_deleted, type, limit, tlp_color=None, feed_tags=None,
-                 malicious_confidence=None, filter_string=None, generic_phrase=None, insecure=True, proxy=False,
-                 first_fetch=None, create_relationships=True, timeout='10'):
+    def __init__(
+        self,
+        credentials,
+        base_url,
+        include_deleted,
+        type,
+        limit,
+        fetch_by_field,
+        tlp_color=None,
+        feed_tags=None,
+        malicious_confidence=None,
+        filter_string=None,
+        generic_phrase=None,
+        insecure=True,
+        proxy=False,
+        first_fetch=None,
+        create_relationships=True,
+        timeout="10",
+    ):
         params = assign_params(credentials=credentials,
                                server_url=base_url,
                                insecure=insecure,
@@ -119,6 +155,7 @@ class Client(CrowdStrikeClient):
         self.limit = limit
         self.first_fetch = first_fetch
         self.create_relationships = create_relationships
+        self.fetch_by_field = fetch_by_field
 
     def get_indicators(self, params):
         response = super().http_request(
@@ -144,7 +181,12 @@ class Client(CrowdStrikeClient):
                          offset: int = 0,
                          fetch_command: bool = False,
                          manual_last_run: int = 0) -> list:
-        """ Get indicators from CrowdStrike API
+        """Get indicators from CrowdStrike API
+        This function and all helper functions it uses take into consideration that there are two types fo field options
+        to fetch by (`Last Updated`, `Published Date`).
+        The flow for each option is slightly different and documented where needed.
+        Different values for said options are set in the `FETCH_BY_FIELDS` constant,
+        which is used dynamically in this function wherever the differentiation between the two options is needed.
 
         Args:
             limit(int): number of indicators to return
@@ -171,38 +213,31 @@ class Client(CrowdStrikeClient):
                             if filter_string else f'(last_updated:>={manual_last_run})'
 
         if fetch_command:
-            if last_run := self.get_last_run():
-                filter_string = f'{filter_string}+({last_run})' if filter_string else f'({last_run})'
-            else:
+            if last_run := self.get_last_run(self.fetch_by_field, self.first_fetch):
+                filter_string = f"{filter_string}+({last_run})" if filter_string else f"({last_run})"
+            elif self.fetch_by_field == "Last Updated":
+                # pre 2.1.0 use-case is only relevant when fetching indicators by the "Last Updated" field.
                 filter_string, indicators = self.handle_first_fetch_context_or_pre_2_1_0(filter_string)
                 if indicators:
                     limit = limit - len(indicators)
 
         if filter_string or not fetch_command:
             demisto.debug(f'{filter_string=}')
-            params = assign_params(include_deleted=self.include_deleted,
-                                   limit=limit,
-                                   offset=offset, q=self.generic_phrase,
-                                   filter=filter_string,
-                                   sort='_marker|asc')
+            params = assign_params(
+                include_deleted=self.include_deleted,
+                limit=limit,
+                offset=offset,
+                q=self.generic_phrase,
+                filter=filter_string,
+                sort=FETCH_BY_FIELDS[self.fetch_by_field]["sort"],
+            )
 
             response = self.get_indicators(params=params)
 
-            # need to fetch all indicators after the limit
-            if resources := response.get('resources', []):
-                new_last_marker_time = resources[-1].get('_marker')
-            else:
-                new_last_marker_time = demisto.getIntegrationContext().get('last_marker_time')
-                last_marker_time_for_debug = new_last_marker_time or 'No data yet'
-                demisto.debug('There are no indicators, '
-                              f'using last_marker_time={last_marker_time_for_debug} from Integration Context')
+            new_last_run_timestamp = self.get_updated_last_run_time(response)
 
             if fetch_command:
-                context = demisto.getIntegrationContext()
-                demisto.info(f"last_marker_time before updating: {context.get('last_marker_time')}")
-                context.update({'last_marker_time': new_last_marker_time})
-                demisto.setIntegrationContext(context)
-                demisto.info(f'set last_run to: {new_last_marker_time}')
+                self.set_integration_context_with_updated_last_run(new_last_run_timestamp)
 
             indicators.extend(self.create_indicators_from_response(response,
                                                                    self.get_actors_names_request,
@@ -211,6 +246,46 @@ class Client(CrowdStrikeClient):
                                                                    self.create_relationships,
                                                                    ))
         return indicators
+
+    def set_integration_context_with_updated_last_run(self, new_last_run_timestamp):
+        """Update the integration context according to the newly calculated last_run.
+        This function take into consideration that there are two types fo field options
+        to fetch by (`Last Updated`, `Published Date`),
+        and will set the integration context with the updated last_run timestamp according to the `fetch_by_field` parameter.
+
+        Args:
+            new_last_run_timestamp (str): The updated last_run timestamp for the next fetch cycle.
+        """
+        context_value = FETCH_BY_FIELDS[self.fetch_by_field]["context_value"]
+        context = demisto.getIntegrationContext()
+        demisto.info(f"{context_value} before updating: {context.get(context_value)}")
+        context.update({context_value: new_last_run_timestamp})
+        demisto.setIntegrationContext(context)
+        demisto.info(f"set last_run to: {new_last_run_timestamp}")
+
+    def get_updated_last_run_time(self, response):
+        """Calculate the updated last run time according to the received API response.
+        This function take into consideration that there are two types fo field options
+        to fetch by (`Last Updated`, `Published Date`),
+        and will calculate the updated last_run timestamp according to the `fetch_by_field` parameter.
+
+        Args:
+            response (dict): API response dictionary.
+
+        Returns:
+            str: The updated last_run timestamp for next fetch cycle.
+        """
+        context_value = FETCH_BY_FIELDS[self.fetch_by_field]["context_value"]
+        if resources := response.get("resources", []):
+            new_last_run_timestamp = str(resources[-1].get(FETCH_BY_FIELDS[self.fetch_by_field]["response_resources_ref"]))
+            demisto.debug(f"There are new indicators, new last_run is {context_value}={new_last_run_timestamp}")
+        else:
+            new_last_run_timestamp = demisto.getIntegrationContext().get(context_value)
+            last_run_timestamp_for_debug = new_last_run_timestamp or f"No data on last_run for {self.fetch_by_field} yet"
+            demisto.debug(
+                f"There are no new indicators, using {context_value}={last_run_timestamp_for_debug} from Integration Context"
+            )
+        return new_last_run_timestamp
 
     def handle_first_fetch_context_or_pre_2_1_0(self, filter_string: str) -> tuple[str, list[dict]]:
         '''
@@ -260,21 +335,44 @@ class Client(CrowdStrikeClient):
         return '', []
 
     @staticmethod
-    def get_last_run() -> str:
-        """ Gets last run time in timestamp
+    def get_last_run(fetch_by_field: str, first_fetch) -> str:
+        """Gets last run time in timestamp.
+        This function take into consideration that there are two types
+        fo field options to fetch by (`Last Updated`, `Published Date`).
+        Given the passed `fetch_by_field` parameter,
+        it will attempt to get the matching last_run argument from the integration context accordingly.
 
         Returns:
-            last run in timestamp, or '' if no last run.
-            Taken from Integration Context key last_marker_time.
+            last run in timestamp, or '' if no last run is found.
+            Taken from Integration Context key last_marker_time / last_published_date_time.
 
         """
-        if last_run := demisto.getIntegrationContext().get('last_marker_time'):
-            demisto.info(f'get last_run: {last_run}')
-            params = f"_marker:>'{last_run}'"
+
+        # Case 1: This is not the first fetch cycle and there is a last_run value saved in the Integration Context
+        if last_run := demisto.getIntegrationContext().get(FETCH_BY_FIELDS[fetch_by_field]["context_value"]):
+            last_run_query = FETCH_BY_FIELDS[fetch_by_field]["last_run_query"].format(last_run_value=last_run)
+            demisto.info(f"got last_run from Integration Context: {last_run}. filter parameter is: {last_run_query=}")
+        # Case 2: fetch_by_field=`Published Date` and its the first fetch cycle, create a timestamp out of `first_fetch` parameter
+        elif fetch_by_field == "Published Date":
+            first_fetch_datetime = arg_to_datetime(first_fetch, required=True)
+            first_fetch_timestamp = int(first_fetch_datetime.timestamp()) if first_fetch_datetime else None
+            if first_fetch_timestamp:
+                last_run_query = last_run_query = FETCH_BY_FIELDS[fetch_by_field]["last_run_query"].format(
+                    last_run_value=first_fetch_timestamp
+                )
+            else:
+                raise DemistoException(
+                    "Could not create timestamp for first fetch. Please verify `First fetch time` parameter validity."
+                )
+        # Case 3: fetch_by_field=`Last Updated` and its the first fetch cycle
+        # `filter_string` is handled later in `handle_first_fetch_context_or_pre_2_1_0`` function
         else:
-            demisto.debug('There is no last_run (last_marker_time in Integration Context)')
-            params = ''
-        return params
+            demisto.debug(
+                f'There is no last_run ({FETCH_BY_FIELDS[fetch_by_field]["context_value"]}) \
+                    value in the Integration Context. Setting `last_run_query` to an empty string.'
+            )
+            last_run_query = ""
+        return last_run_query
 
     @staticmethod
     def create_indicators_from_response(raw_response, get_actors_names_request_func, tlp_color=None, feed_tags=None,
@@ -455,10 +553,7 @@ def fetch_indicators_command(client: Client):
     Returns:
         list of indicators(list)
     """
-    parsed_indicators = client.fetch_indicators(
-        fetch_command=True,
-        limit=client.limit
-    )
+    parsed_indicators = client.fetch_indicators(fetch_command=True, limit=client.limit)
     # we submit the indicators in batches
     for b in batch(parsed_indicators, batch_size=2000):
         demisto.createIndicators(b)
@@ -547,6 +642,7 @@ def main() -> None:
     feed_tags = argToList(params.get('feedTags'))
     create_relationships = params.get('create_relationships', True)
     timeout = params.get('timeout')
+    fetch_by_field = params.get("fetch_by_field")
 
     args = demisto.args()
 
@@ -559,6 +655,7 @@ def main() -> None:
             base_url=base_url,
             insecure=insecure,
             proxy=proxy,
+            fetch_by_field=fetch_by_field,
             tlp_color=tlp_color,
             feed_tags=feed_tags,
             include_deleted=include_deleted,
@@ -569,7 +666,7 @@ def main() -> None:
             limit=max_fetch,
             first_fetch=first_fetch,
             create_relationships=create_relationships,
-            timeout=timeout
+            timeout=timeout,
         )
 
         if command == 'test-module':
@@ -594,4 +691,4 @@ def main() -> None:
 ''' ENTRY POINT '''
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()
+    main()  # FIX: Remove `DEV` from display,name and id values in yml when development is finished
