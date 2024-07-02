@@ -117,7 +117,7 @@ configuration:
   required: false
   section: Connect
   advanced: true
-- display: Type Fetch
+- display: Fetch Type
   defaultvalue: Exabeam Incident
   name: fetch_type
   type: 16

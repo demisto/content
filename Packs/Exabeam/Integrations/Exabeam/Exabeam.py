@@ -2114,16 +2114,13 @@ def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     incidents: list[dict] = []
     last_run: dict[str, Any] = demisto.getLastRun()
     demisto.debug(f"Last run before the fetch run: {last_run}")
-    type_fetch = args.get("fetch_type", DEFAULT_FETCH_TYPE)
+    fetch_type = args.get("fetch_type", DEFAULT_FETCH_TYPE)
 
-    if "Exabeam Notable User" in type_fetch:
-        incidents, last_run_notable_users = fetch_notable_users(client, args, last_run)
+    if "Exabeam Notable User" in fetch_type:
+        incidents, last_run = fetch_notable_users(client, args, last_run)
         demisto.debug(f'After fetch notable users, there are {len(incidents)} new incidents')
-        last_run['last_run_notable_users'] = last_run_notable_users
-    else:
-        last_run_notable_users = last_run.get('last_run_notable_users', '')
 
-    if "Exabeam Incident" in type_fetch:
+    if "Exabeam Incident" in fetch_type:
         exabeam_incidents, updated_last_run = fetch_exabeam_incidents(client, args, last_run)
         incidents.extend(exabeam_incidents)
         last_run.update(updated_last_run)
@@ -2209,20 +2206,20 @@ def fetch_exabeam_incidents(client: Client, args: dict[str, str], last_run: dict
     return incidents, last_run
 
 
-def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict[str, str]) -> tuple[list, str]:
+def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict) -> tuple[list, dict]:
     current_time = datetime.now(pytz.utc)
-    last_run = last_run_obj.get("last_run_notable_users", "")
-    demisto.debug(f"Last run notable users: {last_run}, before fetch")
+    last_run_notable_users: str = last_run_obj.get("last_run_notable_users", "")
+    demisto.debug(f"Last run notable users: {last_run_notable_users}, before fetch")
 
-    if last_run:
-        last_run_time = datetime.fromisoformat(last_run).astimezone(pytz.utc)
+    if last_run_notable_users:
+        last_run_time = datetime.fromisoformat(last_run_notable_users).astimezone(pytz.utc)
         difference = current_time - last_run_time
         difference_minutes = difference.total_seconds() / 60
 
         fetch_interval = arg_to_number(args.get("notable_users_fetch_interval")) or 60
         demisto.debug(f"Difference of {difference_minutes} minutes between the current time and the last run notable users")
         if difference_minutes <= fetch_interval:
-            return [], last_run
+            return [], last_run_obj
 
         else:
             time_period = "1 hours"
@@ -2239,8 +2236,9 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
 
     minimum_risks = arg_to_number(args.get("minimum_risk_score_to_fetch_users"))
 
-    existing_usernames: list[str] = get_integration_context().get("usernames", [])
-    demisto.debug(f"Existing {len(existing_usernames)} usernames in context")
+    existing_usernames: list[str] = last_run_obj.get("usernames", [])
+
+    demisto.debug(f"Existing {len(existing_usernames)} usernames in last run")
     new_risky_users = []
     new_usernames = []
     for user in users:
@@ -2254,11 +2252,10 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
 
     combined_usernames = existing_usernames + new_usernames
     excess_length = max(len(combined_usernames) - MAX_LENGTH_CONTEXT, 0)
-    usernames_to_context = existing_usernames[excess_length:] + new_usernames
-    demisto.debug(f"{excess_length} users deleted from the context to avoid exceeding the maximum")
-    context = {"usernames": usernames_to_context}
-    set_integration_context(context)
-    demisto.debug(f"After the added context contain {len(usernames_to_context)} users")
+    usernames_to_lest_run = existing_usernames[excess_length:] + new_usernames
+    demisto.debug(f"{excess_length} usernames deleted from the lest run to avoid exceeding the maximum")
+    last_run_obj["usernames"] = usernames_to_lest_run
+    demisto.debug(f"After the added lest run contain {len(usernames_to_lest_run)} usernames")
 
     incidents: list[dict] = []
     for user_data in new_risky_users:
@@ -2272,9 +2269,9 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
             }
         )
 
-    last_run = current_time.strftime(DATETIME_FORMAT_MILISECONDS)
-    demisto.debug(f"Last run notable users after the fetch run: {last_run}")
-    return incidents, last_run
+    last_run_obj["last_run_notable_users"] = current_time.strftime(DATETIME_FORMAT_MILISECONDS)
+    demisto.debug(f"Last run notable users after the fetch run: {last_run_notable_users}")
+    return incidents, last_run_obj
 
 
 def main():  # pragma: no cover

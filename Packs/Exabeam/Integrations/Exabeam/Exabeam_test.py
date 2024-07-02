@@ -530,7 +530,7 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
 
 
 @pytest.mark.parametrize(
-    "args, last_run_obj, context_data, expected_new_incidents_count",
+    "args, last_run_obj, expected_new_incidents_count",
     [
         (
             {
@@ -538,10 +538,12 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
                 "notable_users_first_fetch": "3 months",
                 "max_fetch_users": "50",
                 "minimum_risk_score_to_fetch_users": "90",
-                "type_fetch": "Exabeam Notable User"
+                "type_fetch": "Exabeam Notable User",
             },
-            {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
-            {"usernames": ["old_username_risky"]},
+            {
+                "last_run_notable_users": "2024-06-18T13:08:58.489698",
+                "usernames": ["old_username_risky"],
+            },
             1,
         ),
         (
@@ -550,27 +552,51 @@ def test_fetch_incidents_with_look_back(mocker, params, expected_incidents, expe
                 "notable_users_first_fetch": "3 months",
                 "max_fetch_users": "50",
                 "minimum_risk_score_to_fetch_users": "90",
-                "type_fetch": "Exabeam Notable User"
+                "type_fetch": "Exabeam Notable User",
             },
             {"last_run_notable_users": "2024-06-18T13:08:58.489698"},
-            {"usernames": []},
             2,
         ),
     ],
     ids=["with_old_username_risky", "without_old_username_risky"],
 )
-def test_notable_users_fetch_incdents(mocker, args, last_run_obj, context_data, expected_new_incidents_count):
+def test_notable_users_fetch_incdents(mocker, args, last_run_obj, expected_new_incidents_count):
     mocker.patch.object(Client, '_login', return_value=None)
     client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False, headers={})
     copy_res = copy.deepcopy(RES_USERS)  # for separation between the tests
     mocker.patch('Exabeam.get_notable_users', return_value=(None, None, copy_res))
 
-    mocker.patch('Exabeam.get_integration_context', return_value=context_data)
-    mocker.patch('Exabeam.set_integration_context', return_value=None)
-
     incidents, last_run = fetch_notable_users(client, args, last_run_obj)
 
     assert len(incidents) == expected_new_incidents_count
     assert incidents[0]['Name'] == 'new_username_risky'
-    actual_last_run = last_run.split('.')[0]  # Remove microseconds for comparison
+    actual_last_run = last_run['last_run_notable_users'].split('.')[0]  # Remove microseconds for comparison
     assert actual_last_run == datetime.now(pytz.utc).strftime('%Y-%m-%dT%H:%M:%S')
+
+
+@pytest.mark.parametrize(
+    "params, expected_functions_called",
+    [
+        (
+            {
+                "fetch_type": ["Exabeam Notable User", "Exabeam Incident"],
+            },
+            {"fetch_notable_users": 1, "fetch_exabeam_incidents": 1},
+        ),
+        (
+            {},
+            {"fetch_notable_users": 0, "fetch_exabeam_incidents": 1},
+        ),
+    ],
+    ids=["both_notable_users_and_incidents", "default_configuration"],
+)
+def test_fetch_incidents(mocker, params, expected_functions_called):
+    mocker.patch.object(Client, '_login', return_value=None)
+    client = Client(base_url='https://example.com', username='test_user', password='1234', verify=False, proxy=False, headers={})
+
+    fetch_notable_users = mocker.patch('Exabeam.fetch_notable_users', return_value=([], {}))
+    fetch_exabeam_incidents = mocker.patch('Exabeam.fetch_exabeam_incidents', return_value=([], {}))
+
+    fetch_incidents(client, params)
+    assert fetch_notable_users.call_count == expected_functions_called.get("fetch_notable_users")
+    assert fetch_exabeam_incidents.call_count == expected_functions_called.get("fetch_exabeam_incidents")
