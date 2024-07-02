@@ -567,7 +567,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.device_username
       description: Device username.
       type: String
-      - contextPath: CarbonBlackEEDR.Alert.workflow.changed_by
+    - contextPath: CarbonBlackEEDR.Alert.workflow.changed_by
       description: Alert workflow - changed by.
       type: String
     - contextPath: CarbonBlackEEDR.Alert.workflow.comment
