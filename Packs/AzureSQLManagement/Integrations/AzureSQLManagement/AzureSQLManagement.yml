@@ -33,15 +33,16 @@ configuration:
   - Authorization Code
   - Device Code
   - Azure Managed Identities
+  - Client Credentials
   type: 15
   section: Connect
-- display: Tenant ID (for authorization code mode)
+- display: Tenant ID
   name: tenant_id
   type: 0
   section: Connect
   required: false
-- display: Client Secret (for authorization code mode)
-  displaypassword: Client Secret (for authorization code mode)
+- display: Client Secret
+  displaypassword: Client Secret
   hiddenusername: true
   name: credentials
   type: 9
