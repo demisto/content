@@ -2,8 +2,9 @@ import unittest
 from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 from tempfile import mkdtemp
-import subprocess
 import zipfile
+import subprocess
+
 # Import the functions from the script
 from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'DownloadAndArchivePythonLibrary' with the actual script name
 
@@ -13,7 +14,8 @@ class TestInstallLibrary(unittest.TestCase):
     @patch('DownloadAndArchivePythonLibrary.os.walk')
     @patch('DownloadAndArchivePythonLibrary.mkdtemp')
     @patch('DownloadAndArchivePythonLibrary.open', new_callable=mock_open, read_data=b'test data')
-    def test_installLibrary(self, mock_open, mock_mkdtemp, mock_os_walk, mock_zipfile, mock_popen):
+    @patch('DownloadAndArchivePythonLibrary.fileResult')
+    def test_installLibrary(self, mock_fileResult, mock_open, mock_mkdtemp, mock_os_walk, mock_zipfile, mock_popen):
         # Prepare
         mock_dir_path = Path('/fake/dir')
         mock_mkdtemp.return_value = mock_dir_path
@@ -27,6 +29,15 @@ class TestInstallLibrary(unittest.TestCase):
         mock_zipfile.return_value.__enter__.return_value = mock_zipfile_instance
 
         mock_os_walk.return_value = [('/fake/dir', ('subdir',), ('file1.py', 'file2.py'))]
+
+        expected_result = {
+            'Type': 3,
+            'File': 'fake_library.zip',
+            'FileID': 'fake_library.zip',
+            'Contents': b'test data',
+            'ContentsFormat': 'text'
+        }
+        mock_fileResult.return_value = expected_result
 
         # Run
         result = installLibrary(mock_dir_path, 'fake_library')
@@ -48,13 +59,6 @@ class TestInstallLibrary(unittest.TestCase):
         mock_zipfile_instance.write.assert_any_call(Path('/fake/dir/file2.py'), arcname=expected_arcnames[1])
 
         # Ensure the correct result is returned
-        expected_result = {
-            'Type': 3,
-            'File': 'fake_library.zip',
-            'FileID': 'fake_library.zip',
-            'Contents': b'test data',
-            'ContentsFormat': 'text'
-        }
         self.assertEqual(result, expected_result)
 
     @patch('DownloadAndArchivePythonLibrary.installLibrary')
@@ -69,20 +73,20 @@ class TestInstallLibrary(unittest.TestCase):
         mock_dir_path = Path('/fake/dir')
         mock_mkdtemp.return_value = mock_dir_path
 
-        mock_result = {
+        expected_result = {
             'Type': 3,
             'File': 'fake_library.zip',
             'FileID': 'fake_library.zip',
             'Contents': b'test data',
             'ContentsFormat': 'text'
         }
-        mock_installLibrary.return_value = mock_result
+        mock_installLibrary.return_value = expected_result
 
         # Run
         main()
 
         # Check
-        mock_return_results.assert_called_once_with(mock_result)
+        mock_return_results.assert_called_once_with(expected_result)
         mock_return_error.assert_not_called()
 
     @patch('DownloadAndArchivePythonLibrary.installLibrary')
