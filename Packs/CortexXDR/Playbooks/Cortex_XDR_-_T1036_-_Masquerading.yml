@@ -1,0 +1,957 @@
+id: Cortex XDR - T1036 - Masquerading
+version: -1
+name: Cortex XDR - T1036 - Masquerading
+description: |-
+  This playbook handles masquerading alerts based on the MITRE T1036 technique.
+  An attacker might leverage Microsoft Windows' well-known image names to run malicious processes without being caught.
+
+  **Attacker's Goals:**
+
+  An attacker attempts to masquerade as standard Windows images by using a trusted name to execute malicious code.
+
+  **Investigative Actions:**
+
+  Enrich and Investigate the executed process image and endpoint and verify if it is malicious using:
+
+  * File Reputation
+  * NSRL DB
+  * CommandLine Analysis
+  * Related Alerts
+
+
+  **Response Actions**
+
+  When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment actions:
+
+  * Auto Process termination
+  * Auto file quarantine
+  * Manual containment
+
+  External resources:
+
+  [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
+
+  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Analytics-Alert-Reference-by-Alert-name/Possible-Microsoft-process-masquerading).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1ca099ff-a457-4e75-8e67-04868e2e2fd3
+    type: start
+    task:
+      id: 1ca099ff-a457-4e75-8e67-04868e2e2fd3
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "122"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 6ebfa9ee-5847-4b15-85a2-35c3fa773e4a
+    type: title
+    task:
+      id: 6ebfa9ee-5847-4b15-85a2-35c3fa773e4a
+      version: -1
+      name: Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "113"
+      - "116"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 1695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 7b6d0196-c748-4967-80bd-cfd0b0d67856
+    type: title
+    task:
+      id: 7b6d0196-c748-4967-80bd-cfd0b0d67856
+      version: -1
+      name: 'Findings '
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "37"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 2015
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 66d87a9c-5118-41e9-8b70-207cceee7d28
+    type: title
+    task:
+      id: 66d87a9c-5118-41e9-8b70-207cceee7d28
+      version: -1
+      name: Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "117"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: detectionsla
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: a62d9115-d542-4fb9-8d0e-5c0f0a30916c
+    type: condition
+    task:
+      id: a62d9115-d542-4fb9-8d0e-5c0f0a30916c
+      version: -1
+      name: Are there investigation findings?
+      description: Checks if there are findings from the Endpoint Investigation stage.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "Yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+          ignorecase: true
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CommandlineVerdict
+            iscontext: true
+          ignorecase: true
+        - operator: lessThanOrEqual
+          left:
+            value:
+              simple: NSRL_results.hashlookup:trust
+            iscontext: true
+          right:
+            value:
+              simple: "50"
+        - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Masquerading
+                - - operator: notContainsString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.action_pretty
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Blocked
+                    ignorecase: true
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 2145
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 558dd79b-8beb-4805-8b90-edb40eb4b7c7
+    type: title
+    task:
+      id: 558dd79b-8beb-4805-8b90-edb40eb4b7c7
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 2830
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: containmentsla
+      action: stop
+    - fieldname: incidentduration
+      action: stop
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "82":
+    id: "82"
+    taskid: fc92dc32-4630-4027-8b9e-8a6361240d98
+    type: title
+    task:
+      id: fc92dc32-4630-4027-8b9e-8a6361240d98
+      version: -1
+      name: Enrichment & Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "100"
+      - "133"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 1040
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "100":
+    id: "100"
+    taskid: 65fdd6db-b7da-4f6c-86e9-cfb6c880b494
+    type: playbook
+    task:
+      id: 65fdd6db-b7da-4f6c-86e9-cfb6c880b494
+      version: -1
+      name: Entity Enrichment - Generic v3
+      description: Enrich entities using one or more integrations.
+      playbookName: Entity Enrichment - Generic v3
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      Hostname:
+        complex:
+          root: inputs.EndpointID
+          transformers:
+          - operator: uniq
+      ResolveIP:
+        simple: "False"
+      SHA256:
+        complex:
+          root: inputs.FileSHA256
+      URLSSLVerification:
+        simple: "False"
+      UseReputationCommand:
+        simple: "True"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 970,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "113":
+    id: "113"
+    taskid: 36d80acb-6786-4305-8e4d-52c3a472a750
+    type: playbook
+    task:
+      id: 36d80acb-6786-4305-8e4d-52c3a472a750
+      version: -1
+      name: Command-Line Analysis
+      description: "This playbook takes a command line from the alert and performs the following actions:\n- Checks for base64 string and decodes if exists\n- Extracts and enriches indicators from the command line\n- Checks specific arguments for malicious usage \n\nAt the end of the playbook, it sets a possible verdict for the command line, based on the finding:\n1. Indicators found in the command line\n2. Found AMSI techniques\n3. Found suspicious parameters\n4. Usage of malicious tools\n5. Indication of network activity\n6. Indication of suspicious LOLBIN execution\n\nNote: To run this playbook with a list of command lines, set this playbook to run in a loop. To do so, navigate to 'Loop'  and check \"For Each Input\"."
+      playbookName: Command-Line Analysis
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      Commandline:
+        complex:
+          root: Process
+          accessor: CommandLine
+      StringSimilarityThreshold:
+        simple: "0.5"
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 990,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "116":
+    id: "116"
+    taskid: 22a45520-2020-4e2d-8a13-59fa2e61f46a
+    type: playbook
+    task:
+      id: 22a45520-2020-4e2d-8a13-59fa2e61f46a
+      version: -1
+      name: Cortex XDR - Endpoint Investigation
+      description: "This playbook is part of the 'Malware Investigation And Response' pack. For more information, refer to https://xsoar.pan.dev/docs/reference/packs/malware-investigation-and-response. This playbook handles all the endpoint investigation actions available with Cortex XSOAR, including the following tasks:\n * Pre-defined MITRE Tactics\n * Host fields (Host ID)\n * Attacker fields (Attacker IP, External host)\n * MITRE techniques\n * File hash (currently, the playbook supports only SHA256)  \n\n Note: The playbook inputs enable manipulating the execution flow. Read the input descriptions for details."
+      playbookName: Cortex XDR - Endpoint Investigation
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    scriptarguments:
+      FileSHA256:
+        complex:
+          root: inputs.FileSHA256
+          transformers:
+          - operator: uniq
+      HuntCnCTechniques:
+        simple: "False"
+      HuntCollectionTechniques:
+        simple: "False"
+      HuntDefenseEvasionTechniques:
+        simple: "False"
+      HuntDiscoveryTechniques:
+        simple: "False"
+      HuntExecutionTechniques:
+        simple: "True"
+      HuntImpactTechniques:
+        simple: "False"
+      HuntInitialAccessTechniques:
+        simple: "True"
+      HuntLateralMovementTechniques:
+        simple: "False"
+      HuntPersistenceTechniques:
+        simple: "True"
+      HuntPrivilegeEscalationTechniques:
+        simple: "True"
+      HuntReconnaissanceTechniques:
+        simple: "True"
+      RunAll:
+        simple: "False"
+      agentID:
+        complex:
+          root: inputs.EndpointID
+      timeRange:
+        simple: 2 hours ago
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1840
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "117":
+    id: "117"
+    taskid: d7248ae7-c0fa-45fb-85e5-4d0e48b5528a
+    type: condition
+    task:
+      id: d7248ae7-c0fa-45fb-85e5-4d0e48b5528a
+      version: -1
+      name: Auto Containment Enabled?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "41"
+      "yes":
+      - "136"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 2500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "122":
+    id: "122"
+    taskid: e24a0587-3cb6-4157-8d5c-22b771c4fc63
+    type: condition
+    task:
+      id: e24a0587-3cb6-4157-8d5c-22b771c4fc63
+      version: -1
+      name: Execution was Blocked?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "82"
+      "no":
+      - "123"
+    separatecontext: false
+    conditions:
+    - label: "no"
+      condition:
+      - - operator: notContainsString
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AlertID
+                      iscontext: true
+                    ignorecase: true
+                accessor: action
+            iscontext: true
+          right:
+            value:
+              simple: Blocked
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: PaloAltoNetworksXDR.Incident.alerts
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: inputs.AlertID
+                      iscontext: true
+                    ignorecase: true
+                accessor: actor_process_os_pid
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1180,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: incidentduration
+      action: start
+    - fieldname: detectionsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "123":
+    id: "123"
+    taskid: e34a609e-4e8c-477e-8541-ce0f1419412c
+    type: title
+    task:
+      id: e34a609e-4e8c-477e-8541-ce0f1419412c
+      version: -1
+      name: Early Containment
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "124"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 730
+        }
+      }
+    note: false
+    timertriggers:
+    - fieldname: containmentsla
+      action: start
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "124":
+    id: "124"
+    taskid: cd1b9e42-d9ee-4bfa-8965-9719fdf0248b
+    type: regular
+    task:
+      id: cd1b9e42-d9ee-4bfa-8965-9719fdf0248b
+      version: -1
+      name: Kill Suspicious Process
+      description: Initiates a new endpoint script execution action using the provided snippet code.
+      script: '|||xdr-snippet-code-script-execute'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "82"
+    scriptarguments:
+      endpoint_ids:
+        simple: ${inputs.EndpointID}
+      snippet_code:
+        simple: taskkill /F /PID ${PaloAltoNetworksXDR.Incident.alerts.actor_process_os_pid}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1540,
+          "y": 865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "128":
+    id: "128"
+    taskid: c72640de-c3fa-4b2d-83df-009c1bb512b1
+    type: regular
+    task:
+      id: c72640de-c3fa-4b2d-83df-009c1bb512b1
+      version: -1
+      name: Check if File Hash is in NSRL DB
+      description: Sends an HTTP request with advanced capabilities
+      scriptName: HttpV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "129"
+    scriptarguments:
+      ignore-outputs:
+        simple: "false"
+      method:
+        simple: GET
+      url:
+        complex:
+          root: inputs.FileSHA256
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: https://hashlookup.circl.lu/lookup/sha256/
+              suffix:
+                iscontext: true
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1330
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "129":
+    id: "129"
+    taskid: f857333a-c371-4cec-8878-d6d5f62307bb
+    type: regular
+    task:
+      id: f857333a-c371-4cec-8878-d6d5f62307bb
+      version: -1
+      name: Parse HTTP response
+      description: 'Parse a given JSON string "value" to a representative object. Example: ''{"a": "value"}'' => {"a": "value"}.'
+      scriptName: ParseJSON
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      extend-context:
+        simple: NSRL_results=.
+      value:
+        complex:
+          root: HttpRequest.Response
+          accessor: ParsedBody
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "133":
+    id: "133"
+    taskid: b9029ef4-a9b4-4a1c-8a7a-797b2d1851ed
+    type: title
+    task:
+      id: b9029ef4-a9b4-4a1c-8a7a-797b2d1851ed
+      version: -1
+      name: NSRL
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "128"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1400,
+          "y": 1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "136":
+    id: "136"
+    taskid: f110e78b-1db0-48cf-8f51-e833d3d4c1ce
+    type: playbook
+    task:
+      id: f110e78b-1db0-48cf-8f51-e833d3d4c1ce
+      version: -1
+      name: Cortex XDR - Quarantine File v2
+      description: "This playbook accepts \"file path\", \"file hash\" and \"endpoint id\" to quarantine a selected file and wait until the action is done. All 3 inputs are required to quarantine a single file. This playbook does not support the quarantine of multiple files.  \n"
+      playbookName: Cortex XDR - Quarantine File v2
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "41"
+    scriptarguments:
+      endpoint_id:
+        complex:
+          root: inputs.EndpointID
+      file_hash:
+        complex:
+          root: inputs.FileSHA256
+      file_path:
+        complex:
+          root: inputs.FilePath
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": 1190,
+          "y": 2680
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "117_136_yes": 0.37,
+      "37_41_#default#": 0.16
+    },
+    "paper": {
+      "dimensions": {
+        "height": 2505,
+        "width": 950,
+        "x": 970,
+        "y": 390
+      }
+    }
+  }
+inputs:
+- key: AutoContainment
+  value:
+    simple: "False"
+  required: false
+  description: Setting this input to True will quarantine the file automatically in case of a malicious file.
+  playbookInputQuery:
+- key: FileSHA256
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      filters:
+      - - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name
+            iscontext: true
+          right:
+            value:
+              simple: T1036
+          ignorecase: true
+      accessor: actor_process_image_sha256
+      transformers:
+      - operator: uniq
+  required: false
+  description: The file SHA256 to investigate.
+  playbookInputQuery:
+- key: FilePath
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+            iscontext: true
+          right:
+            value:
+              simple: inputs.AlertID
+            iscontext: true
+          ignorecase: true
+      accessor: actor_process_image_path
+      transformers:
+      - operator: uniq
+  required: false
+  description: The file path to investigate.
+  playbookInputQuery:
+- key: EndpointID
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+            iscontext: true
+          right:
+            value:
+              simple: inputs.AlertID
+            iscontext: true
+          ignorecase: true
+      accessor: endpoint_id
+      transformers:
+      - operator: uniq
+  required: false
+  description: The IP, hostname, or ID of the endpoint.
+  playbookInputQuery:
+- key: AlertID
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      filters:
+      - - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name
+            iscontext: true
+          right:
+            value:
+              simple: T1036
+          ignorecase: true
+      accessor: alert_id
+      transformers:
+      - operator: uniq
+  required: false
+  description: The ID of the alert.
+  playbookInputQuery:
+outputs: []
+tests:
+- Test Playbook - Cortex XDR - Endpoint Investigation
+- Test XDR Playbook execute script commands
+- Test XDR Playbook
+- Test Playbook - Cortex XDR - Retrieve File by sha256
+- Test Playbook - Cortex XDR - False Positive Incident Handling
+fromversion: 6.10.0
+marketplaces:
+- xsoar
