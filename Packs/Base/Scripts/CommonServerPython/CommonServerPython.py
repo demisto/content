@@ -45,7 +45,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 5 * (10 ** 6)  # 5 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -11630,13 +11630,32 @@ def split_data_to_chunks(data, target_chunk_size):
     if isinstance(data, str):
         data = data.split('\n')
     for data_part in data:
-        if chunk_size >= target_chunk_size:
+        if sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(data_part)))
+            if isinstance(data_part, str):
+                try:
+                    data_dict = json.loads(data_part)
+                    if data_dict.get('output'):
+                        demisto.debug("replacing output key")
+                        data_dict['output'] = ""
+                        data_dict['isTruncated'] = True
+                        data_part = json.dumps(data_dict)
+                    else:
+                        demisto.debug("skipping object...")
+                        continue
+                except Exception as e:
+                    demisto.debug("could not parse object: {e}".format(e=e))
+                    continue
+
+        if chunk_size + sys.getsizeof(data_part) > target_chunk_size:
+            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
+        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
 
 
@@ -11931,7 +11950,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})
