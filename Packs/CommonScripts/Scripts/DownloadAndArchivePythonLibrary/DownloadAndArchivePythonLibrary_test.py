@@ -2,20 +2,17 @@ import unittest
 from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
 from tempfile import mkdtemp
-import zipfile
-import os
-import subprocess
 
 # Import the functions from the script
 from DownloadAndArchivePythonLibrary import installLibrary, main  # Replace 'DownloadAndArchivePythonLibrary' with the actual script name
 
 class TestInstallLibrary(unittest.TestCase):
     @patch('DownloadAndArchivePythonLibrary.subprocess.Popen')
-    @patch('DownloadAndArchivePythonLibrary.Path.mkdir')
     @patch('DownloadAndArchivePythonLibrary.zipfile.ZipFile')
-    @patch('DownloadAndArchivePythonLibrary.open', new_callable=mock_open, read_data=b'test data')
+    @patch('DownloadAndArchivePythonLibrary.os.walk')
     @patch('DownloadAndArchivePythonLibrary.mkdtemp')
-    def test_installLibrary(self, mock_mkdtemp, mock_open, mock_zipfile, mock_mkdir, mock_popen):
+    @patch('DownloadAndArchivePythonLibrary.open', new_callable=mock_open, read_data=b'test data')
+    def test_installLibrary(self, mock_open, mock_mkdtemp, mock_os_walk, mock_zipfile, mock_popen):
         # Prepare
         mock_dir_path = Path('/fake/dir')
         mock_mkdtemp.return_value = mock_dir_path
@@ -27,6 +24,8 @@ class TestInstallLibrary(unittest.TestCase):
 
         mock_zipfile_instance = MagicMock()
         mock_zipfile.return_value.__enter__.return_value = mock_zipfile_instance
+
+        mock_os_walk.return_value = [('/fake/dir', ('subdir',), ('file1.py', 'file2.py'))]
 
         # Run
         result = installLibrary(mock_dir_path, 'fake_library')
@@ -42,11 +41,20 @@ class TestInstallLibrary(unittest.TestCase):
         # Ensure zipfile was created with the correct path and mode
         mock_zipfile.assert_called_once_with(mock_dir_path / 'fake_library.zip', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9)
 
-        # Ensure file was opened with the correct path and mode
-        mock_open.assert_called_once_with(mock_dir_path / 'fake_library.zip', 'rb')
+        # Ensure files were added to the zip archive
+        expected_arcnames = [Path('python') / 'file1.py', Path('python') / 'file2.py']
+        mock_zipfile_instance.write.assert_any_call(Path('/fake/dir/file1.py'), arcname=expected_arcnames[0])
+        mock_zipfile_instance.write.assert_any_call(Path('/fake/dir/file2.py'), arcname=expected_arcnames[1])
 
         # Ensure the correct result is returned
-        self.assertEqual(result, ('fake_library.zip', b'test data'))
+        expected_result = {
+            'Type': 3,
+            'File': 'fake_library.zip',
+            'FileID': 'fake_library.zip',
+            'Contents': b'test data',
+            'ContentsFormat': 'text'
+        }
+        self.assertEqual(result, expected_result)
 
     @patch('DownloadAndArchivePythonLibrary.installLibrary')
     @patch('DownloadAndArchivePythonLibrary.demisto.args')
@@ -60,7 +68,13 @@ class TestInstallLibrary(unittest.TestCase):
         mock_dir_path = Path('/fake/dir')
         mock_mkdtemp.return_value = mock_dir_path
 
-        mock_result = 'fake_result'
+        mock_result = {
+            'Type': 3,
+            'File': 'fake_library.zip',
+            'FileID': 'fake_library.zip',
+            'Contents': b'test data',
+            'ContentsFormat': 'text'
+        }
         mock_installLibrary.return_value = mock_result
 
         # Run
