@@ -1996,10 +1996,9 @@ script:
     - name: compress_output
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Specify whether the output should be compressed.
-      defaultValue: "false"
     - name: entity_type
       auto: PREDEFINED
       predefined:
@@ -2011,10 +2010,9 @@ script:
     - name: force_conversion_to_mime
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Specify whether to force conversion to MIME format.
-      defaultValue: "false"
     - name: password
       description: Password to encrypt the exported file.
     - name: reason_for_export
@@ -2072,19 +2070,17 @@ script:
     - name: include_messages_from_blocked_sender_address
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Include messages from blocked sender addresses.
-      defaultValue: "false"
     - name: message_id
       description: ID of the message.
     - name: my_items
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Include only items belonging to the user.
-      defaultValue: "false"
     - name: page
       description: Page number for pagination.
     - name: page_size
@@ -2102,10 +2098,9 @@ script:
     - name: reported
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Include only reported messages.
-      defaultValue: "false"
     - name: start_expires_date
       description: Start date for the message expiration.
     - name: start_received_date
@@ -2151,17 +2146,15 @@ script:
     - name: release_to_all
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Specify whether to release the message to all recipients.
-      defaultValue: "false"
     - name: allow_sender
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Specify whether to allow the sender.
-      defaultValue: "false"
     - name: entity_type
       auto: PREDEFINED
       predefined:
@@ -2173,17 +2166,15 @@ script:
     - name: force
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Specify whether to force the release.
-      defaultValue: "false"
     - name: report_false_positive
       auto: PREDEFINED
       predefined:
-      - "false"
-      - "true"
+      - 'false'
+      - 'true'
       description: Specify whether to report the message as a false positive.
-      defaultValue: "false"
     - name: action_type
       description: The type of action to take when releasing the message.
     outputs:
