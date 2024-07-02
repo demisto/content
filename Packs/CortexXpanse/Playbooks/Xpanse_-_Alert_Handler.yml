@@ -258,7 +258,7 @@ tasks:
         optionsarg: []
         placeholder: ""
         readonly: false
-        required: false
+        required: true
         tooltip: Specify a comma-separated list of tags you want to add to the asset(s) associated to the current Cortex XSOAR incident.
         type: shortText
       sender: Your SOC team
@@ -338,8 +338,8 @@ tasks:
             operator: replace
       tags:
         complex:
-          accessor: Answers}
-          root: ${Determine tags to add to asset
+          accessor: Answers
+          root: Determine tags to add to asset
           transformers:
           - operator: LastArrayElement
           - args:
