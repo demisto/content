@@ -8,6 +8,8 @@ import sys
 
 
 def run_script(args, files):
+    print(f'{args=}')
+    print(f'{files=}')
     results = []
     try:
         for file in files:
