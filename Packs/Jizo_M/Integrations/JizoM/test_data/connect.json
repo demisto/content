@@ -1,0 +1,8 @@
+{
+    "token": "some_fake_token",
+    "infos": {
+      "must_reset_password": false,
+      "status": "ACTIVATED",
+      "last_update_password_date": null
+    }
+  }
