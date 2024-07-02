@@ -1690,7 +1690,7 @@ function EXOReleaseQuarantineMessageCommand
     $report_false_positive = if ($kwargs.report_false_positive -eq "true") { $true } else { $false }
     $action_type = $kwargs.action_type
 
-    $raw_response = $client.EXOReleaseQuarantineMessage(
+    $result = $client.EXOReleaseQuarantineMessage(
         $user,
         $identities,
         $identity,
@@ -1702,8 +1702,11 @@ function EXOReleaseQuarantineMessageCommand
         $action_type
     )
 
-    $human_readable = TableToMarkdown $raw_response "Results of $command"
-    $entry_context = @{"$script:INTEGRATION_ENTRY_CONTEXT.ReleaseQuarantineMessage(obj.Guid === val.Guid)" = $raw_response }
+    $raw_response = @{}
+    $human_readable = $identities ? 
+    "The following messages have been sent for release from quarantine: $identities" : 
+    "The message with identity $identity has been sent for release from quarantine."
+    $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
 
