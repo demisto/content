@@ -586,7 +586,8 @@ class ExchangeOnlinePowershellV3Client
             $cmd_params = @{ }
             if ($user) {
                 $cmd_params.User = $user
-            } elseif ($release_to_all) {
+            } 
+            if ($release_to_all) {
                 $cmd_params.ReleaseToAll = $null
             }
             if ($identities) {
@@ -1606,9 +1607,9 @@ function EXOExportQuarantineMessageCommand
     )
     $identities = $kwargs.identities
     $identity = $kwargs.identity
-    $compress_output = $kwargs.compress_output
+    $compress_output = if ($kwargs.compress_output -eq "true") { $true } else { $false }
     $entity_type = $kwargs.entity_type
-    $force_conversion_to_mime = $kwargs.force_conversion_to_mime
+    $force_conversion_to_mime = if ($kwargs.force_conversion_to_mime -eq "true") { $true } else { $false }
     $password = $kwargs.password
     $reason_for_export = $kwargs.reason_for_export
     $recipient_address = $kwargs.recipient_address
@@ -1646,9 +1647,9 @@ function EXOGetQuarantineMessageCommand {
         Domain = $kwargs.domain
         EndExpiresDate = $kwargs.end_expires_date
         EndReceivedDate = $kwargs.end_received_date
-        IncludeMessagesFromBlockedSenderAddress = $kwargs.include_messages_from_blocked_sender_address
+        IncludeMessagesFromBlockedSenderAddress = if ($kwargs.include_messages_from_blocked_sender_address -eq "true") { $true } else { $false }
         MessageId = $kwargs.message_id
-        MyItems = $kwargs.my_items
+        MyItems = if ($kwargs.my_items -eq "true") { $true } else { $false }
         Page = $kwargs.page
         PageSize = $kwargs.page_size
         PolicyName = $kwargs.policy_name
@@ -1656,7 +1657,7 @@ function EXOGetQuarantineMessageCommand {
         QuarantineTypes = $kwargs.quarantine_types
         RecipientTag = $kwargs.recipient_tag
         ReleaseStatus = $kwargs.release_status
-        Reported = $kwargs.reported
+        Reported = if ($kwargs.reported -eq "true") { $true } else { $false }
         StartExpiresDate = $kwargs.start_expires_date
         StartReceivedDate = $kwargs.start_received_date
         Subject = $kwargs.subject
@@ -1682,11 +1683,11 @@ function EXOReleaseQuarantineMessageCommand
     $user = $kwargs.user
     $identities = $kwargs.identities
     $identity = $kwargs.identity
-    $release_to_all = $kwargs.release_to_all
-    $allow_sender = $kwargs.allow_sender
+    $release_to_all = if ($kwargs.release_to_all -eq "true") { $true } else { $false }
+    $allow_sender = if ($kwargs.allow_sender -eq "true") { $true } else { $false }
     $entity_type = $kwargs.entity_type
-    $force = $kwargs.force
-    $report_false_positive = $kwargs.report_false_positive
+    $force = if ($kwargs.force -eq "true") { $true } else { $false }
+    $report_false_positive = if ($kwargs.report_false_positive -eq "true") { $true } else { $false }
     $action_type = $kwargs.action_type
 
     $raw_response = $client.EXOReleaseQuarantineMessage(
