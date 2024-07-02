@@ -205,6 +205,11 @@ repos:
     -  --skip-markdown
     -  --skip-suffix
 
+  - id: validate-file-permission-changes
+    name: validate-file-permission-changes
+    language: system
+    entry: validate-file-permission-changes
+    files: ^Packs/
 
   - id: validate-conf-json
     name: validate-conf-json
