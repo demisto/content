@@ -4,7 +4,7 @@ This integration was integrated and tested with Azure Compute API Version: 2017-
 ## Authentication
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-- After authorizing the Demisto App or the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
+- After authorizing the Cortex XSOAR Application or the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
 - In order to assign a role to the application after consent was given:
   - Go to the Azure Portal UI. 
   - Go to Subscriptions, and then Access Control (IAM). 
@@ -21,24 +21,19 @@ For more details about the authentication used in this integration, see [Microso
 2. Search for Azure Compute v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Host URL (e.g. https://management.azure.com) |  | True |
-    | ID (received from the admin consent - see Detailed Instructions (?) |  | True |
-    | Token (received from the admin consent - see Detailed Instructions (?) section) |  | True |
-    | Key (received from the admin consent - see Detailed Instructions (?) |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-    | ID (received from the admin consent - see Detailed Instructions (?) |  | False |
-    | Token (received from the admin consent - see Detailed Instructions (?) section) |  | False |
-    | Key (received from the admin consent - see Detailed Instructions (?) |  | True |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Default Subscription ID |  | False |
-    | Default Subscription ID |  | False |
-    | Default Resource Group Name | This parameter can be overridden by the resource_group argument in any command. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use a self-deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
+    | **Parameter**                                | **Description**                                                                                          | **Required** |
+    |----------------------------------------------|----------------------------------------------------------------------------------------------------------|--------------|
+    | Host URL (e.g. https://management.azure.com) |                                                                                                          | True         |
+    | ID                                           |                                                                                                          | True         |
+    | Token                                        |                                                                                                          | True         |
+    | Key                                          |                                                                                                          | False        |
+    | Certificate Thumbprint                       | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False        |
+    | Private Key                                  | Used for certificate authentication. The private key of the registered certificate.                      | False        |
+    | Default Subscription ID                      |                                                                                                          | False        |
+    | Default Resource Group Name                  | This parameter can be overridden by the resource_group argument in any command.                          | False        |
+    | Use system proxy settings                    |                                                                                                          | False        |
+    | Trust any certificate (not secure)           |                                                                                                          | False        |
+    | Use a self-deployed Azure Application        | Select this checkbox if you are using a self-deployed Azure application.                                 | False        |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
