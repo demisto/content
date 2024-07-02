@@ -94,7 +94,7 @@ class Client(BaseClient):
         try:
             response = self._http_request('POST', suffix_url, json_data=body)
         except Exception as e:
-                raise e
+            raise e
         return response
 
     def devices_list_request(self, device_id: None | list = None, status: None | list = None, device_os: None | list = None,
@@ -545,7 +545,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
     """
     request_id = arg_to_number(args.get('request_id'))
     alert_id = args['alert_id']
-    
+
     demisto.debug(f'got {request_id=}, {alert_id=}')
 
     if not request_id:  # if this is the first time
@@ -557,13 +557,13 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
         closure_reason = args.get('closure_reason')
         comment = args.get('comment')
         status = args.get('status')
-        
+
         # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
         if status == 'DISMISSED' or status == 'dismissed':
             status = 'CLOSED'
         if status == "open":
             "OPEN"
-        
+
         if not determination and not status:
             raise DemistoException('Must specify at least one of \"determination\" or \"status\".')
 
@@ -605,9 +605,9 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
             response=None,
             continue_to_poll=True,
             args_for_next_run={"request_id": request_id,
-     
-                              **args})
-    
+
+                               **args})
+
     state_HR = response.get('job_parameters').get('job_parameters').get('request').get('status') if args.get('status') else None
     message = CommandResults(
         readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
@@ -1272,7 +1272,7 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
     # The new API version (v7) always returns one duplicate alert, except for the first run.
     if last_run:
-        fetch_limit = 1 + arg_to_number(fetch_limit) # type: ignore - we are sending 50 if user doesn't choose a limit.
+        fetch_limit = 1 + arg_to_number(fetch_limit)  # type: ignore - we are sending 50 if user doesn't choose a limit.
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
@@ -1336,7 +1336,7 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
     job_id = args.get('job_id')
     interval_in_seconds = arg_to_number(args.get('interval_in_seconds'))
     demisto.debug(f'in process_search_command_with_polling function, {job_id=}')
-    
+
     if not job_id:  # if this is the first time
         process_name = args.get('process_name', '')
         process_hash = args.get('process_hash', '')
@@ -1604,7 +1604,8 @@ def main():
             return_results(alert_list_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
-            return_results(alert_workflow_update_command(demisto.args(), client))  # args have to be sent before client because this is a polling function!
+            # args have to be sent before client because this is a polling function!
+            return_results(alert_workflow_update_command(demisto.args(), client))
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))
@@ -1700,7 +1701,8 @@ def main():
             demisto.debug('in main for search command')
             polling = argToBoolean(demisto.args().get('polling'))
             if polling:
-                return return_results(process_search_command_with_polling(demisto.args(), client))  # args have to be sent before client because this is a polling function!!
+                # args have to be sent before client because this is a polling function!!
+                return return_results(process_search_command_with_polling(demisto.args(), client))
             else:
                 return return_results(process_search_command_without_polling(client, demisto.args()))
 

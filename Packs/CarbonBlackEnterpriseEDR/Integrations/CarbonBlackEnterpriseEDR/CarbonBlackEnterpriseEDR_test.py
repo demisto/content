@@ -357,24 +357,26 @@ def test_alert_workflow_update_request_good_arguments(mocker):
     assert http_request.call_args.kwargs['json_data'] == {'time_range': {'start': '1', 'end': '2', 'range': '-2w'},
                                                           'criteria': {'id': ['1234']}, 'determination': 'NONE',
                                                           'closure_reason': 'bla2', 'status': 'OPEN', 'note': 'bla1'}
-    
-    
+
+
 alert_workflow_update_command_func_called_data = [
     ({'alert_id': '123', 'status': 'OPEN'},  # case first time polling (no request_id).
      'alert_workflow_update_request'  # func to be called.
      ),
-    ({'alert_id': '123', 'request_id': '12345'}, # case there is a request_id.
-    'alert_workflow_update_request_with_results'  # func to be called.
-    )]
+    ({'alert_id': '123', 'request_id': '12345'},  # case there is a request_id.
+     'alert_workflow_update_request_with_results'  # func to be called.
+     )]
+
+
 @pytest.mark.parametrize('args, func_to_be_called', alert_workflow_update_command_func_called_data)
 def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_called):
     """
     Given:
         - All arguments needed.
-    
+
     When:
         - Running 'cb-eedr-alert-workflow-update' command.
-    
+
     Then:
         - The right function is called regarding polling.
     """
@@ -382,13 +384,15 @@ def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_call
     execute_command = mocker.patch.object(client, func_to_be_called)
     alert_workflow_update_command(args, client)
     assert execute_command.called is True
-    
+
 
 alert_workflow_update_command_bad_argument_data = [
     ({'alert_id': '123'}),  # case no status and no determination.
-    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z'}), # case there is start but no end.
-    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z', 'end': '2018-01-01T11:00:00.157Z'}) # case end is before start
-    ]
+    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z'}),  # case there is start but no end.
+    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z', 'end': '2018-01-01T11:00:00.157Z'})  # case end is before start
+]
+
+
 @pytest.mark.parametrize('args', alert_workflow_update_command_bad_argument_data)
 def test_alert_workflow_update_command_bad_arguments(args):
     """
@@ -396,7 +400,7 @@ def test_alert_workflow_update_command_bad_arguments(args):
         - Bad arguments.
     When:
         - Running 'cb-eedr-alert-workflow-update' command.
-    
+
     Then:
         - The right exception is called.
     """
@@ -404,24 +408,26 @@ def test_alert_workflow_update_command_bad_arguments(args):
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException):
         alert_workflow_update_command(args, client)
-    
+
 
 process_search_command_func_called_data = [
     ({'process_name': 'bla1'},  # case first time polling (no job_id).
      'create_search_process_request'  # func to be called.
      ),
-    ({'process_name': 'bla2', 'job_id': '12345'}, # case there is a job_id.
-    'get_search_process_request'  # func to be called.
-    )]
+    ({'process_name': 'bla2', 'job_id': '12345'},  # case there is a job_id.
+     'get_search_process_request'  # func to be called.
+     )]
+
+
 @pytest.mark.parametrize('args, func_to_be_called', process_search_command_func_called_data)
 def test_alert_process_search_command_func_called(mocker, args, func_to_be_called):
     """
     Given:
         - All arguments needed.
-    
+
     When:
         - Running 'cb-eedr-alert-workflow-update' command.
-    
+
     Then:
         - The right function is called regarding polling.
     """
