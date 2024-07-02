@@ -404,7 +404,28 @@ def test_alert_workflow_update_command_bad_arguments(args):
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException):
         alert_workflow_update_command(args, client)
+    
 
+process_search_command_func_called_data = [
+    ({'process_name': 'bla1'},  # case first time polling (no job_id).
+     'create_search_process_request'  # func to be called.
+     ),
+    ({'process_name': 'bla2', 'job_id': '12345'}, # case there is a job_id.
+    'get_search_process_request'  # func to be called.
+    )]
+@pytest.mark.parametrize('args, func_to_be_called', process_search_command_func_called_data)
+def test_alert_process_search_command_func_called(mocker, args, func_to_be_called):
+    """
+    Given:
+        - All arguments needed.
     
+    When:
+        - Running 'cb-eedr-alert-workflow-update' command.
     
-    
+    Then:
+        - The right function is called regarding polling.
+    """
+    from CarbonBlackEnterpriseEDR import process_search_command_with_polling
+    execute_command = mocker.patch.object(client, func_to_be_called)
+    process_search_command_with_polling(args, client)
+    assert execute_command.called is True

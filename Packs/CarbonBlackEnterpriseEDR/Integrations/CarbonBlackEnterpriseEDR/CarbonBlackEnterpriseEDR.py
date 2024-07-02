@@ -533,8 +533,19 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
 
 @polling_function(name='cb-eedr-alert-workflow-update', interval=60, requires_polling_arg=False)
 def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
+    """
+       Updates the given alret's workflow. This is a polling function.
+
+    Args:
+        args (dict): Including alert_id and fields to update.
+        client (Client): The client.
+
+    Returns:
+        PollResult: If request status is COMPLETED will stop polling, otherwise will poll again.
+    """
     request_id = arg_to_number(args.get('request_id'))
     alert_id = args['alert_id']
+    
     demisto.debug(f'got {request_id=}, {alert_id=}')
 
     if not request_id:  # if this is the first time
@@ -544,16 +555,18 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
         start = args.get('start')
         end = args.get('end')
         closure_reason = args.get('closure_reason')
+        comment = args.get('comment')
         status = args.get('status')
-        if status == 'DISMISSED' or status=='dismissed':  # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
+        
+        # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
+        if status == 'DISMISSED' or status == 'dismissed':
             status = 'CLOSED'
         if status == "open":
             "OPEN"
-        comment = args.get('comment')
-
+        
         if not determination and not status:
             raise DemistoException('Must specify at least one of \"determination\" or \"status\".')
-        
+
         if start or end:
             if not start or not end:
                 raise DemistoException('Need to specify start and end timestamps')
@@ -577,7 +590,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
 
     demisto.debug('now calling the second endpoint')
     response = client.alert_workflow_update_request_with_results(
-        request_id)  # There for sure will be a request id once we get here
+        request_id)
     demisto.debug(f'{response=}')
 
     request_status = response['status']
@@ -1257,6 +1270,9 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
+    # The new API version (v7) always returns one duplicate alert, except for the first run.
+    if last_run:
+        fetch_limit = 1 + arg_to_number(fetch_limit) # type: ignore - we are sending 50 if user doesn't choose a limit.
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
@@ -1307,11 +1323,20 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     requires_polling_arg=False
 )
 def process_search_command_with_polling(args: dict, client: Client) -> PollResult:
+    """
+        Returns the process search results. This is a polling function.
+
+    Args:
+        args (dict): The input arguments from the user.
+        client (Client): The client.
+
+    Returns:
+        PollResult: If the job's status is COMPLETED will stop polling, otherwise will poll again.
+    """
     job_id = args.get('job_id')
     interval_in_seconds = arg_to_number(args.get('interval_in_seconds'))
-    #if interval_in_seconds and interval_in_seconds < 10:
-    #   interval_in_seconds = 10
     demisto.debug(f'in process_search_command_with_polling function, {job_id=}')
+    
     if not job_id:  # if this is the first time
         process_name = args.get('process_name', '')
         process_hash = args.get('process_hash', '')
@@ -1362,7 +1387,7 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
 
 def process_search_command_without_polling(client: Client, args: dict) -> CommandResults:
     """
-    Gets arguments for a process search task, and returns the task id and status.
+    Gets arguments for a process search task, and returns the task's id and status.
     """
     process_name = args.get('process_name', '')
     process_hash = args.get('process_hash', '')
@@ -1532,17 +1557,21 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     cb_custom_key = demisto.params().get('credentials_custom', {}).get('password') or demisto.params().get('custom_key')
+    demisto.debug('got custom_key')
     cb_custom_id = demisto.params().get('credentials_custom', {}).get('identifier') or demisto.params().get('custom_id')
+    demisto.debug('got custom_id')
     if not (cb_custom_key and cb_custom_id):
         raise DemistoException('Custom ID and Custom key must be provided.')
     cb_org_key = demisto.params().get('organization_key')
+    demisto.debug('got organization_key')
     token = f'{cb_custom_key}/{cb_custom_id}'
     # get the service API url
     base_url = demisto.params().get('url')
-
+    demisto.debug('got base_url')
     verify_certificate = not demisto.params().get('insecure', False)
+    demisto.debug('got insecure')
     proxy = demisto.params().get('proxy', False)
-
+    demisto.debug('got proxy')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -1551,6 +1580,7 @@ def main():
             use_proxy=proxy,
             token=token,
             cb_org_key=cb_org_key)
+        demisto.debug('created client')
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1559,17 +1589,22 @@ def main():
 
         elif demisto.command() == 'fetch-incidents':
             fetch_time = demisto.params().get('fetch_time', '3 days')
+            demisto.debug('got fetch_time')
             fetch_limit = demisto.params().get('fetch_limit', '50')
+            demisto.debug('got fetch_limit')
             # Set and define the fetch incidents command to run after activated via integration settings.
             incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())
+            demisto.debug('ran fetch_incidents')
             demisto.incidents(incidents)
+            demisto.debug('sended incidents')
             demisto.setLastRun(last_run)
+            demisto.debug('set last_run was executed')
 
         elif demisto.command() == 'cb-eedr-list-alerts':
             return_results(alert_list_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
-            return_results(alert_workflow_update_command(demisto.args(), client))
+            return_results(alert_workflow_update_command(demisto.args(), client))  # args have to be sent before client because this is a polling function!
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))
@@ -1665,7 +1700,7 @@ def main():
             demisto.debug('in main for search command')
             polling = argToBoolean(demisto.args().get('polling'))
             if polling:
-                return return_results(process_search_command_with_polling(demisto.args(), client))
+                return return_results(process_search_command_with_polling(demisto.args(), client))  # args have to be sent before client because this is a polling function!!
             else:
                 return return_results(process_search_command_without_polling(client, demisto.args()))
 
@@ -1698,7 +1733,6 @@ def main():
                 return_error(f'Failed to execute {demisto.command()} command. \nError: The {bad_field} arguments is '
                              f'invalid. Make sure that the arguments is correct.')
         except Exception:
-            pass
             return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
         return_error(f'Failed to execute {demisto.command()} command. Error: {err_msg}')
 

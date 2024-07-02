@@ -83,6 +83,8 @@ script:
       description: Workflow status to update.
       name: status
       predefined:
+      - IN_PROGRESS
+      - CLOSED
       - DISMISSED
       - OPEN
     - description: Value judgement of whether the alert(s) represent a true or false positive.
@@ -417,9 +419,9 @@ script:
       name: reputation
     - description: Alert type. Supports comma-separated values.
       name: alert_type
-    - description: Device name. Supports comma-separated values.
+    - description: Device name. Supports comma-separated values. Note, the slashes in the device name should be doubled.
       name: device_name
-    - description: Process name. Supports comma-separated values.
+    - description: Process name. Supports comma-separated values. Note, the slashes in the process name should be doubled.
       name: process_name
     - description: Field by which to sort the results. Can be "first_event_timestamp", or "last_event_timestamp".
       name: sort_field
@@ -564,6 +566,21 @@ script:
       type: String
     - contextPath: CarbonBlackEEDR.Alert.device_username
       description: Device username.
+      type: String
+      - contextPath: CarbonBlackEEDR.Alert.workflow.changed_by
+      description: Alert workflow - changed by.
+      type: String
+    - contextPath: CarbonBlackEEDR.Alert.workflow.comment
+      description: Alert workflow - comment.
+      type: String
+    - contextPath: CarbonBlackEEDR.Alert.workflow.last_update_time
+      description: Alert workflow - last updated time.
+      type: Date
+    - contextPath: CarbonBlackEEDR.Alert.workflow.remediation
+      description: Alert workflow - remediation.
+      type: String
+    - contextPath: CarbonBlackEEDR.Alert.workflow.status
+      description: Alert workflow - status.
       type: String
   - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
