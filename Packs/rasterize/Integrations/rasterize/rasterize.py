@@ -34,7 +34,7 @@ os.environ['no_proxy'] = 'localhost,127.0.0.1'
 os.environ['HOME'] = tempfile.gettempdir()
 
 CHROME_EXE = os.getenv('CHROME_EXE', '/opt/google/chrome/google-chrome')
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0" \
+USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0" \
              " Safari/537.36"
 CHROME_OPTIONS = ["--headless",
                   "--disable-gpu",
@@ -207,7 +207,7 @@ class PychromeEventHandler:
             demisto.debug(f'Frame (reload) started loading: {frameId}, clearing {self.request_id=}')
             self.request_id = None
             self.response_received = False
-            self.start_frame = None
+            # self.start_frame = None
         else:
             demisto.debug(f'Frame started loading: {frameId}, no request_id')
 
@@ -218,6 +218,12 @@ class PychromeEventHandler:
             self.request_id = requestId
         else:
             demisto.debug(f'PychromeEventHandler.network_data_received, Not using {requestId=}')
+
+    def page_frame_stopped_loading(self, frameId):
+        demisto.debug(f'PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}')
+        if self.start_frame == frameId:
+            demisto.debug('PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event')
+            self.tab_ready_event.set()
 
 # endregion
 
@@ -419,8 +425,10 @@ def setup_tab_event(browser, tab):
 
     tab.Network.enable()
     tab.Network.dataReceived = tab_event_handler.network_data_received
+    # tab.Network.responseReceived = tab_event_handler.network_response_received
 
     tab.Page.frameStartedLoading = tab_event_handler.page_frame_started_loading
+    tab.Page.frameStoppedLoading = tab_event_handler.page_frame_stopped_loading
 
     return tab_event_handler, tab_ready_event
 
@@ -441,7 +449,20 @@ def navigate_to_path(browser, tab, path, wait_time, navigation_timeout):  # prag
         else:
             tab.Page.navigate(url=path)
 
-        time.sleep(max(float(wait_time), 0.3))  # pylint: disable=E9003
+        demisto.debug(f'Waiting for tab_ready_event on {tab.id=}')
+        success_flag = tab_ready_event.wait(navigation_timeout)
+        demisto.debug(f'After waiting for tab_ready_event on {tab.id=}')
+
+        if not success_flag:
+            message = f'Timeout of {navigation_timeout} seconds reached while waiting for {path}'
+            demisto.error(message)
+            return_error(message)
+
+        if wait_time > 0:
+            demisto.info(f'Sleeping before capturing screenshot, {wait_time=}')
+        else:
+            demisto.debug(f'Not sleeping before capturing screenshot, {wait_time=}')
+        time.sleep(wait_time)  # pylint: disable=E9003
         demisto.debug(f"Navigated to {path=} on {tab.id=}")
 
         allTimeSamplingProfile = tab.Memory.getAllTimeSamplingProfile()
