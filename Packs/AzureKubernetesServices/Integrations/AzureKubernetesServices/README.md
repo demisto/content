@@ -32,10 +32,6 @@ Follow these steps for a self-deployed configuration:
 8. Run the `!azure-ks-generate-login-url` command in the War Room and follow the instruction.
 9.  Run the ***!azure-ks-auth-test*** command - a 'Success' message should be printed to the War Room.
 
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
-
 ### Authentication Using the Device Code Flow
 
 Follow these steps for a self-deployed configuration:
@@ -47,6 +43,10 @@ Follow these steps for a self-deployed configuration:
 5. Run the ***!azure-ks-auth-complete*** command.
 
 At end of the process you'll see a message that you've logged in successfully. 
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (ab217a43-e09b-4f80-ae93-482fc7a3d1a3).
 
 ## Client Credentials Flow Authentication
 
