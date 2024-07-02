@@ -205,7 +205,7 @@ def get_incidents_by_query(args: dict) -> list[dict]:
     """
     query = args.get("query")
     incident_types = argToList(args.get("incidentTypes"), transform=str.strip)
-    populate_fields = argToList(args.get("populateFields"), transform=str.strip)
+    populate_fields = argToList(args.get("populateFields").replace("|", ","), transform=str.strip)
     non_empty_fields = argToList(args.get("NonEmptyFields"), transform=str.strip)
     time_field = args.get("timeField") or DEFAULT_TIME_FIELD
     from_date = arg_to_datetime(args.get("fromDate"))
