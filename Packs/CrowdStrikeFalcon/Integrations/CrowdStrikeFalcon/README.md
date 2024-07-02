@@ -1,4 +1,4 @@
-The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
+The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 
 ## Configure CrowdStrike Falcon on Cortex XSOAR
 
@@ -138,10 +138,14 @@ Available parameters:
 Exmample: `cloud_provider=aws&region=eu-west-2`
 More information about the parameters can be found [here](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
 
-### 1. Search for a device
+## Commands
 
----
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
+### cs-falcon-search-device
+
+***
 Searches for a device that matches the query.
 
 #### Base Command
@@ -153,15 +157,15 @@ Searches for a device that matches the query.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | extended_data | Whether or not to get additional data about the device. Possible values are: Yes, No. | Optional | 
-| filter | The query to filter the device. | Optional | 
+| filter | The query by which to filter the device. | Optional | 
+| limit | The maximum records to return [1-5000]. Default is 50. | Optional | 
+| offset | The offset to start retrieving records from. | Optional | 
 | ids | A comma-separated list of device IDs to limit the results. | Optional | 
-| status | The status of the device. Possible values are: "Normal", "containment_pending", "contained", and "lift_containment_pending". Possible values are: normal, containment_pending, contained, lift_containment_pending. | Optional | 
-| hostname | The host name of the device. Possible values are: . | Optional | 
-| platform_name | The platform name of the device. Possible values are: Windows, Mac, and Linux. Possible values are: Windows, Mac, Linux. | Optional | 
+| status | The status of the device. Possible values are: normal, containment_pending, contained, lift_containment_pending. | Optional | 
+| hostname | The hostname of the device. Possible values are: . | Optional | 
+| platform_name | The platform name of the device. Possible values are: Windows, Mac, Linux. | Optional | 
 | site_name | The site name of the device. | Optional | 
-| limit | The maximum number of records to return. Default is 50. | Optional | 
-| offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional |
-| sort | The property to sort by (e.g. status.desc or hostname.asc). | Optional | 
+| sort | The property to sort by (e.g., status.desc or hostname.asc). | Optional | 
 
 #### Context Output
 
@@ -170,7 +174,7 @@ Searches for a device that matches the query.
 | CrowdStrike.Device.ID | String | The ID of the device. | 
 | CrowdStrike.Device.LocalIP | String | The local IP address of the device. | 
 | CrowdStrike.Device.ExternalIP | String | The external IP address of the device. | 
-| CrowdStrike.Device.Hostname | String | The host name of the device. | 
+| CrowdStrike.Device.Hostname | String | The hostname of the device. | 
 | CrowdStrike.Device.OS | String | The operating system of the device. | 
 | CrowdStrike.Device.MacAddress | String | The MAC address of the device. | 
 | CrowdStrike.Device.FirstSeen | String | The first time the device was seen. | 
@@ -252,9 +256,9 @@ Searches for a device that matches the query.
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | 8c-85-90-3d-ed-3e | 192.168.1.76 | 94.188.164.68 | 2017-12-28T22:38:11Z | 2019-03-28T02:36:41Z | contained |
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 154.132.82-test-co.in-addr.arpa | Mojave (10.14) | f0-18-98-74-8c-31 | 172.22.14.237 | 94.188.164.68 | 2017-12-10T11:01:20Z | 2019-03-17T10:03:17Z | contained |
 
-### 2. Get a behavior
+### cs-falcon-get-behavior
 
----
+***
 Searches for and fetches the behavior that matches the query.
 
 #### Base Command
@@ -265,20 +269,20 @@ Searches for and fetches the behavior that matches the query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| behavior_id | The ID of the behavior. | Required | 
+| behavior_id | The ID of the behavior. The ID of the behavior can be retrieved by running the cs-falcon-search-detection or cs-falcon-get-detections-for-incident command. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Behavior.FileName | String | The file name of the behavior. | 
+| CrowdStrike.Behavior.FileName | String | The filename of the behavior. | 
 | CrowdStrike.Behavior.Scenario | String | The scenario name of the behavior. | 
 | CrowdStrike.Behavior.MD5 | String | The MD5 hash of the IOC in the behavior. | 
 | CrowdStrike.Behavior.SHA256 | String | The SHA256 hash of the IOC in the behavior. | 
 | CrowdStrike.Behavior.IOCType | String | The type of the indicator of compromise. | 
-| CrowdStrike.Behavior.IOCValue | String | The value of the IOC. | 
+| CrowdStrike.Behavior.IOCValue | String | The value of the indicator of compromise. | 
 | CrowdStrike.Behavior.CommandLine | String | The command line executed in the behavior. | 
-| CrowdStrike.Behavior.UserName | String | The user name related to the behavior. | 
+| CrowdStrike.Behavior.UserName | String | The username related to the behavior. | 
 | CrowdStrike.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Behavior.ParentProcessID | String | The ID of the parent process. | 
 | CrowdStrike.Behavior.ProcessID | String | The process ID of the behavior. | 
@@ -332,13 +336,11 @@ Searches for and fetches the behavior that matches the query.
 >| 3206 |   spokeshave.jn |  /Library/spokeshave.jn/spokeshave.jn.app/Contents/MacOS/spokeshave.jn |   known\_malware   | sha256 |    a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | <user@u-MacBook-Pro-2.local> |   a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   197949010450449117|
 >|  3206   |xSf             |./xSf                                                                   |known\_malware   |sha256     |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1|   <root@u-MacBook-Pro-2.local>|          a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1   |197949016741905142|
 
- 
 
-### 3. Search for detections
+### cs-falcon-search-detection
 
----
-Search for details of specific detections, either using a filter query,
-or by providing the IDs of the detections.
+***
+Search for details of specific detections, either using a filter query, or by providing the IDs of the detections.
 
 #### Base Command
 
@@ -348,22 +350,22 @@ or by providing the IDs of the detections.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The IDs of the detections to search. If provided, will override other arguments. | Optional | 
-| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: <https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch>. | Optional | 
+| ids | A comma-separated list of IDs of the detections to search. If provided, will override other arguments. | Optional | 
+| filter | Filter detections using a query in Falcon Query Language (FQL).<br/>For example, filter="device.hostname:'CS-SE-TG-W7-01'"<br/>For a full list of valid filter options, see: https://falcon.crowdstrike.com/support/documentation/2/query-api-reference#detectionsearch. | Optional | 
 | extended_data | Whether to get additional data such as device and behaviors processed. Possible values are: Yes, No. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Detection.Behavior.FileName | String | The file name of the behavior. | 
+| CrowdStrike.Detection.Behavior.FileName | String | The filename of the behavior. | 
 | CrowdStrike.Detection.Behavior.Scenario | String | The scenario name of the behavior. | 
 | CrowdStrike.Detection.Behavior.MD5 | String | The MD5 hash of the IOC of the behavior. | 
 | CrowdStrike.Detection.Behavior.SHA256 | String | The SHA256 hash of the IOC of the behavior. | 
 | CrowdStrike.Detection.Behavior.IOCType | String | The type of the IOC. | 
 | CrowdStrike.Detection.Behavior.IOCValue | String | The value of the IOC. | 
 | CrowdStrike.Detection.Behavior.CommandLine | String | The command line executed in the behavior. | 
-| CrowdStrike.Detection.Behavior.UserName | String | The user name related to the behavior. | 
+| CrowdStrike.Detection.Behavior.UserName | String | The username related to the behavior. | 
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. | 
 | CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior. | 
@@ -373,7 +375,6 @@ or by providing the IDs of the detections.
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. | 
 | CrowdStrike.Detection.ID | String | The detection ID. | 
 | CrowdStrike.Detection.ProcessStartTime | Date | The start time of the process that generated the detection. | 
-
 
 
 #### Command Example
@@ -478,13 +479,11 @@ or by providing the IDs of the detections.
 >|ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1898376850347       |  false\_positive |  DESKTOP-S49VMIL            | 2019-03-21T20:32:55.654489974Z  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1  | 70|
 >|ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:1092318056279064902|   new             |  u-MacBook-Pro-2.local  | 2019-02-04T07:05:57.083205971Z  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1  | 30|
 
- 
 
-### 4. Resolve a detection
+### cs-falcon-resolve-detection
 
-* * * * *
-
-Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note: IDP detections are not supported.
+***
+Resolves and updates a detection using the provided arguments. At least one optional argument must be passed, otherwise no change will take place. Note that IDP detections are not supported.
 
 #### Base Command
 
@@ -499,19 +498,15 @@ Resolves and updates a detection using the provided arguments. At least one opti
 | assigned_to_uuid | A user ID, for example: 1234567891234567891. username and assigned_to_uuid are mutually exclusive. | Optional | 
 | comment | Optional comment to add to the detection. Comments are displayed with the detection in CrowdStrike Falcon and provide context or notes for other Falcon users. | Optional | 
 | show_in_ui | If true, displays the detection in the UI. Possible values are: true, false. | Optional | 
-| username | Username to assign the detections to. (This is usually the user’s email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive. | Optional | 
+| username | Username to assign the detections to. (This is usually the user's email address, but may vary based on your configuration). username and assigned_to_uuid are mutually exclusive. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+### cs-falcon-contain-host
 
-### 5. Contain a host
-
-* * * * *
-
-Contains containment for a specified host. When contained, a
-host can only communicate with the CrowdStrike cloud and any IPs
-specified in your containment policy.
+***
+Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
 
 #### Base Command
 
@@ -521,16 +516,14 @@ specified in your containment policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The host agent ID (AID) of the host to contain. Get an agent ID from a detection. | Required | 
+| ids | A comma-separated list of host agent IDs (AID) of the host to contain. Get an agent ID from a detection. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+### cs-falcon-lift-host-containment
 
-### 6. Lift the containment for a host
-
----
-
+***
 Lifts containment on the host, which returns its network communications to normal.
 
 #### Base Command
@@ -541,16 +534,14 @@ Lifts containment on the host, which returns its network communications to norma
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | The host agent ID (AID) of the host you want to contain. Get an agent ID from a detection. Can also be a comma separated list of IDs. | Required | 
+| ids | A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
+### cs-falcon-run-command
 
-
-### 7. cs-falcon-run-command
-
----
+***
 Sends commands to hosts.
 
 #### Base Command
@@ -562,12 +553,12 @@ Sends commands to hosts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | queue_offline | Any commands run against an offline-queued session will be queued up and executed when the host comes online. | Optional | 
-| host_ids | A comma-separated list of host agent IDs to run commands for. (Can be retrieved by running the 'cs-falcon-search-device' command.). | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands for. The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command. | Required | 
 | command_type | The type of command to run. | Required | 
 | full_command | The full command to run. | Required | 
-| scope | The scope to run the command for. Possible values are: "read", "write", and "admin". (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`.). Possible values are: read, write, admin. Default is read. | Optional | 
+| scope | The scope to run the command for. (NOTE: In order to run the CrowdStrike RTR `put` command, it is necessary to pass `scope=admin`). Possible values are: read, write, admin. Default is read. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. Default is 180. | Optional | 
-| target | The target to run the command for. Possible values are: "single" and "batch". Possible values are: batch, single. Default is batch. | Optional | 
+| target | The target to run the command for. Possible values are: batch, single. Default is batch. | Optional | 
 | batch_id | A batch ID to execute the command on. | Optional | 
 
 #### Context Output
@@ -621,10 +612,10 @@ Sends commands to hosts.
 >|---|---|---|---|---|---|
 >| ls | ls C:\ | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Directory listing for C:\ -<br/><br/>Name                                     Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     | batch_id |
 
-### 8. cs-falcon-upload-script
+### cs-falcon-upload-script
 
----
-Uploads a script to Falcon.
+***
+Uploads a script to Falcon CrowdStrike.
 
 #### Base Command
 
@@ -638,7 +629,6 @@ Uploads a script to Falcon.
 | permission_type | The permission type for the custom script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. Possible values are: private, group, public. Default is private. | Optional | 
 | content | The content of the PowerShell script. | Required | 
 
-
 #### Command Example
 
 `!cs-falcon-upload-script name=greatscript content="Write-Output 'Hello, World!'"`
@@ -647,10 +637,14 @@ Uploads a script to Falcon.
 
 The script was uploaded successfully.
 
-### 9. cs-falcon-upload-file
+#### Context Output
 
----
-Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.)
+There is no context output for this command.
+
+### cs-falcon-upload-file
+
+***
+Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command).
 
 #### Base Command
 
@@ -670,9 +664,12 @@ Uploads a file to the CrowdStrike cloud. (Can be used for the RTR 'put' command.
 
 The file was uploaded successfully.
 
-### 10. cs-falcon-delete-file
+#### Context Output
 
----
+There is no context output for this command.
+### cs-falcon-delete-file
+
+***
 Deletes a file based on the provided ID. Can delete only one file at a time.
 
 #### Base Command
@@ -683,8 +680,7 @@ Deletes a file based on the provided ID. Can delete only one file at a time.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The ID of the file to delete. (The ID of the file can be retrieved by running the 'cs-falcon-list-files' command). | Required | 
-
+| file_id | The ID of the file to delete. The ID of the file can be retrieved by running the 'cs-falcon-list-files' command. | Required | 
 
 #### Command Example
 
@@ -694,9 +690,13 @@ Deletes a file based on the provided ID. Can delete only one file at a time.
 
 File le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was deleted successfully.
 
-### 11. cs-falcon-get-file
+#### Context Output
 
----
+There is no context output for this command.
+
+### cs-falcon-get-file
+
+***
 Returns files based on the provided IDs. These files are used for the RTR 'put' command.
 
 #### Base Command
@@ -707,7 +707,7 @@ Returns files based on the provided IDs. These files are used for the RTR 'put' 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | A comma-separated list of file IDs to get. (The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command.). | Required | 
+| file_id | A comma-separated list of file IDs to get. The list of file IDs can be retrieved by running the 'cs-falcon-list-files' command. | Required | 
 
 #### Context Output
 
@@ -715,11 +715,11 @@ Returns files based on the provided IDs. These files are used for the RTR 'put' 
 | --- | --- | --- |
 | CrowdStrike.File.ID | String | The ID of the file. | 
 | CrowdStrike.File.CreatedBy | String | The email address of the user who created the file. | 
-| CrowdStrike.File.CreatedTime | Date | The date and time the file was created. | 
+| CrowdStrike.File.CreatedTime | Date | The datetime the file was created. | 
 | CrowdStrike.File.Description | String | The description of the file. | 
 | CrowdStrike.File.Type | String | The type of the file. For example, script. | 
 | CrowdStrike.File.ModifiedBy | String | The email address of the user who modified the file. | 
-| CrowdStrike.File.ModifiedTime | Date | The date and time the file was modified. | 
+| CrowdStrike.File.ModifiedTime | Date | The datetime the file was modified. | 
 | CrowdStrike.File.Name | String | The full name of the file. | 
 | CrowdStrike.File.Permission | String | The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. | 
 | CrowdStrike.File.SHA256 | String | The SHA-256 hash of the file. | 
@@ -761,10 +761,10 @@ Returns files based on the provided IDs. These files are used for the RTR 'put' 
 >|---|---|---|---|---|---|---|---|---|---|
 >| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
 
-### 12. cs-falcon-list-files
+### cs-falcon-list-files
 
----
-Returns a list of put-file ID's that are available for the user in the `put` command. Due to an API limitation, the maximum number of files returned is 100.
+***
+Returns a list of put-file IDs that are available for the user in the 'put' command. Due to an API limitation, the maximum number of files returned is 100.
 
 #### Base Command
 
@@ -776,11 +776,11 @@ Returns a list of put-file ID's that are available for the user in the `put` com
 | --- | --- | --- |
 | CrowdStrike.File.ID | String | The ID of the file. | 
 | CrowdStrike.File.CreatedBy | String | The email address of the user who created the file. | 
-| CrowdStrike.File.CreatedTime | Date | The date and time the file was created. | 
+| CrowdStrike.File.CreatedTime | Date | The datetime the file was created. | 
 | CrowdStrike.File.Description | String | The description of the file. | 
 | CrowdStrike.File.Type | String | The type of the file. For example, script. | 
 | CrowdStrike.File.ModifiedBy | String | The email address of the user who modified the file. | 
-| CrowdStrike.File.ModifiedTime | Date | The date and time the file was modified. | 
+| CrowdStrike.File.ModifiedTime | Date | The datetime the file was modified. | 
 | CrowdStrike.File.Name | String | The full name of the file. | 
 | CrowdStrike.File.Permission | String | The permission type of the file. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. | 
 | CrowdStrike.File.SHA256 | String | The SHA-256 hash of the file. | 
@@ -822,9 +822,9 @@ Returns a list of put-file ID's that are available for the user in the `put` com
 >|---|---|---|---|---|---|---|---|---|---|
 >| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | script |
 
-### 13. cs-falcon-get-script
+### cs-falcon-get-script
 
----
+***
 Returns custom scripts based on the provided ID. Used for the RTR 'runscript' command.
 
 #### Base Command
@@ -835,7 +835,7 @@ Returns custom scripts based on the provided ID. Used for the RTR 'runscript' co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| script_id | A comma-separated list of script IDs to return. (The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.). | Required | 
+| script_id | A comma-separated list of script IDs to return. The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command. | Required | 
 
 #### Context Output
 
@@ -843,10 +843,10 @@ Returns custom scripts based on the provided ID. Used for the RTR 'runscript' co
 | --- | --- | --- |
 | CrowdStrike.Script.ID | String | The ID of the script. | 
 | CrowdStrike.Script.CreatedBy | String | The email address of the user who created the script. | 
-| CrowdStrike.Script.CreatedTime | Date | The date and time the script was created. | 
+| CrowdStrike.Script.CreatedTime | Date | The datetime the script was created. | 
 | CrowdStrike.Script.Description | String | The description of the script. | 
 | CrowdStrike.Script.ModifiedBy | String | The email address of the user who modified the script. | 
-| CrowdStrike.Script.ModifiedTime | Date | The date and time the script was modified. | 
+| CrowdStrike.Script.ModifiedTime | Date | The datetime the script was modified. | 
 | CrowdStrike.Script.Name | String | The script name. | 
 | CrowdStrike.Script.Permission | String | Permission type of the script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. | 
 | CrowdStrike.Script.SHA256 | String | The SHA-256 hash of the script file. | 
@@ -891,9 +891,9 @@ Returns custom scripts based on the provided ID. Used for the RTR 'runscript' co
 >| <spongobob@demisto.com> | 2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
-### 14. cs-falcon-delete-script
+### cs-falcon-delete-script
 
----
+***
 Deletes a custom-script based on the provided ID. Can delete only one script at a time.
 
 #### Base Command
@@ -904,7 +904,7 @@ Deletes a custom-script based on the provided ID. Can delete only one script at 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| script_id | The script ID to delete. (Script IDs can be retrieved by running the 'cs-falcon-list-scripts' command.). | Required | 
+| script_id | The script ID to delete. The script IDs can be retrieved by running the 'cs-falcon-list-scripts' command. | Required | 
 
 #### Command Example
 
@@ -914,9 +914,12 @@ Deletes a custom-script based on the provided ID. Can delete only one script at 
 
 Script le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 was deleted successfully.
 
-### 15. cs-falcon-list-scripts
+#### Context Output
 
----
+There is no context output for this command.
+### cs-falcon-list-scripts
+
+***
 Returns a list of custom script IDs that are available for the user in the 'runscript' command.
 
 #### Base Command
@@ -929,10 +932,10 @@ Returns a list of custom script IDs that are available for the user in the 'runs
 | --- | --- | --- |
 | CrowdStrike.Script.ID | String | The ID of the script. | 
 | CrowdStrike.Script.CreatedBy | String | The email address of the user who created the script. | 
-| CrowdStrike.Script.CreatedTime | Date | The date and time the script was created. | 
+| CrowdStrike.Script.CreatedTime | Date | The datetime the script was created. | 
 | CrowdStrike.Script.Description | String | The description of the script. | 
 | CrowdStrike.Script.ModifiedBy | String | The email address of the user who modified the script. | 
-| CrowdStrike.Script.ModifiedTime | Date | The date and time the script was modified. | 
+| CrowdStrike.Script.ModifiedTime | Date | The datetime the script was modified. | 
 | CrowdStrike.Script.Name | String | The script name. | 
 | CrowdStrike.Script.Permission | String | Permission type of the script. Possible values are: "private", which is used only by the user who uploaded it, "group", which is used by all RTR Admins, and "public", which is used by all active-responders and RTR admins. | 
 | CrowdStrike.Script.SHA256 | String | The SHA-256 hash of the script file. | 
@@ -977,9 +980,9 @@ Returns a list of custom script IDs that are available for the user in the 'runs
 >| <spongobob@demisto.com> |  2019-10-17T13:41:48.487520845Z | Demisto | le10098bf0e311e989190662caec3daa_a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | <spongobob@demisto.com> | 2019-10-17T13:41:48.487521161Z | Demisto | private | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
-### 16. cs-falcon-run-script
+### cs-falcon-run-script
 
----
+***
 Runs a script on the agent host.
 
 #### Base Command
@@ -991,7 +994,7 @@ Runs a script on the agent host.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | script_name | The name of the script to run. | Optional | 
-| host_ids | A comma-separated list of host agent IDs to run commands. (The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command.). | Required | 
+| host_ids | A comma-separated list of host agent IDs to run commands. The list of host agent IDs can be retrieved by running the 'cs-falcon-search-device' command. | Required | 
 | raw | The PowerShell script code to run. | Optional | 
 | timeout | Timeout for how long to wait for the request in seconds. Maximum is 600 (10 minutes). Default is 30. | Optional | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
@@ -1036,7 +1039,7 @@ Runs a script on the agent host.
 >| runscript | runscript -Raw=Write-Output 'Hello, World! | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |  | Hello, World! |                                    Type         Size (bytes)    Size (MB)       Last Modified (UTC-5)     Created (UTC-5)          <br/>----                                     ----         ------------    ---------       ---------------------     ---------------          <br/>$Recycle.Bin                             &lt;Directory&gt;  --              --              11/27/2018 10:54:44 AM    9/15/2017 3:33:40 AM     <br/>ITAYDI                                   &lt;Directory&gt;  --              --              11/19/2018 1:31:42 PM     11/19/2018 1:31:42 PM     |
 
 
-### 17. cs-falcon-run-get-command
+### cs-falcon-run-get-command
 
 ***
 Batch executes 'get' command across hosts to retrieve files.
@@ -1050,9 +1053,9 @@ The running status you requested the `get` command can be checked with `cs-falco
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_ids | List of host agent IDs on which to run the RTR command. | Required | 
+| host_ids | A comma-separated list of host agent IDs on which to run the RTR command. | Required | 
 | file_path | Full path to the file that will be retrieved from each host in the batch. | Required | 
-| optional_hosts | List of a subset of hosts on which to run the command. | Optional | 
+| optional_hosts | A comma-separated list of a subset of hosts on which to run the command. | Optional | 
 | timeout | The number of seconds to wait for the request before it times out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | Optional | 
 | timeout_duration | The amount of time to wait for the request before it times out. In duration syntax. For example, 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes. | Optional | 
 
@@ -1103,7 +1106,7 @@ The running status you requested the `get` command can be checked with `cs-falco
 
 
 
-### 18. cs-falcon-status-get-command
+### cs-falcon-status-get-command
 
 ***
 Retrieves the status of the specified batch 'get' command.
@@ -1116,7 +1119,7 @@ Retrieves the status of the specified batch 'get' command.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| request_ids | The list of IDs of the command requested. | Required | 
+| request_ids | A comma-separated list of IDs of the command requested. | Required | 
 | timeout | The number of seconds to wait for the request before it times out. In ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | Optional | 
 | timeout_duration | The amount of time to wait for the request before it times out. In duration syntax. For example, 10s. Valid units are: ns, us, ms, s, m, h. Maximum value is 10 minutes. | Optional | 
 
@@ -1176,7 +1179,7 @@ Retrieves the status of the specified batch 'get' command.
 >| 2020-05-01T16:09:00Z |  | 185596 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 0 | b5c8f140-280b-43fd-8501-9900f837510b | 2020-05-01T16:09:00Z |
 
 
-### 19. cs-falcon-status-command
+### cs-falcon-status-command
 
 ***
 Gets the status of a command executed on a host.
@@ -1191,7 +1194,7 @@ Gets the status of a command executed on a host.
 | --- | --- | --- |
 | request_id | The ID of the command requested. | Required | 
 | sequence_id | The sequence ID in chunk requests. | Optional | 
-| scope | The scope to run the command for. Possible values are: "read", "write", or "admin". Possible values are: read, write, admin. Default is read. | Optional | 
+| scope | The scope to run the command for. Possible values are: read, write, admin. Default is read. | Optional | 
 
 #### Context Output
 
@@ -1237,7 +1240,7 @@ Gets the status of a command executed on a host.
 >| ls | true | Directory listing for C:\\ ...... | ae323961-5aa8-442e-8461-8d05c4541d7d |
 
 
-### 20. cs-falcon-get-extracted-file
+### cs-falcon-get-extracted-file
 
 ***
 Gets the RTR extracted file contents for the specified session and SHA256 hash.
@@ -1254,25 +1257,17 @@ Gets the RTR extracted file contents for the specified session and SHA256 hash.
 | sha256 | The SHA256 hash of the file. | Required | 
 | filename | The filename to use for the archive name and the file within the archive. | Optional | 
 
-#### Context Output
-
-There is no context output for this command.
-
 
 #### Command Example
 
 `!cs-falcon-get-extracted-file host_id="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1" sha256="a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"`
 
-#### Context Example
+#### Context Output
 
 There is no context output for this command.
 
-#### Human Readable Output
 
-There is no human readable for this command.
-
-
-### 21. cs-falcon-list-host-files
+### cs-falcon-list-host-files
 
 ***
 Gets a list of files for the specified RTR session on a host.
@@ -1353,8 +1348,7 @@ Gets a list of files for the specified RTR session on a host.
 >|---|---|---|---|---|---|---|---|---|
 >| 2020-05-01T17:57:42Z |  | 186811 | \\Device\\HarddiskVolume2\\Windows\\notepad.exe | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 0 |  |  | 2020-05-01T17:57:42Z |
 
-
-### 22. cs-falcon-refresh-session
+### cs-falcon-refresh-session
 
 ***
 Refresh a session timeout on a single host.
@@ -1369,63 +1363,39 @@ Refresh a session timeout on a single host.
 | --- | --- | --- |
 | host_id | The ID of the host to extend the session for. | Required | 
 
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CrowdStrike.Command.HostID | string | The ID of the host for which the command was running. | 
-| CrowdStrike.Command.TaskID | string | The ID of the command request which has been accepted. | 
-| CrowdStrike.Command.SessionID | string | The ID of the session of the host. | 
-| <span>CrowdStrike.File.ID</span> | string | The ID of the file. | 
-| CrowdStrike.File.CreatedAt | date | The creation date of the file. | 
-| CrowdStrike.File.DeletedAt | date | The deletion date of the file. | 
-| CrowdStrike.File.UpdatedAt | date | The last updated date of the file. | 
-| <span>CrowdStrike.File.Name</span> | string | The full file name. | 
-| CrowdStrike.File.SHA256 | string | The SHA\-256 hash of the file. | 
-| CrowdStrike.File.Size | number | The size of the file in bytes. | 
-| <span>File.Name</span> | string | The full file name. | 
-| File.Size | number | The size of the file in bytes. | 
-| File.SHA256 | string | The SHA\-256 hash of the file. | 
-
 
 #### Command Example
 
 `!cs-falcon-refresh-session host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1`
 
-#### Context Example
-
-There is no context output for this command.
-
 #### Human Readable Output
 
 CrowdStrike Session Refreshed: fdd6408f-6688-441b-8659-41bcad25441c
 
+#### Context Output
 
-### 23. cs-falcon-search-iocs
+There is no context output for this command.
+### cs-falcon-search-custom-iocs
 
 ***
-Deprecated. Use the cs-falcon-search-custom-iocs command instead.
-
+Returns a list of your uploaded IOCs that match the search criteria.
 
 #### Base Command
 
-`cs-falcon-search-iocs`
+`cs-falcon-search-custom-iocs`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| types | A comma-separated list of indicator types. Valid types are: "sha256", "sha1", "md5", "domain", "ipv4", "ipv6". | Optional | 
+| types | A comma-separated list of indicator types. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Optional | 
 | values | A comma-separated list of indicator values. | Optional | 
-| policies | A comma-separated list of indicator policies. | Optional | 
-| share_levels | The level at which the indicator will be shared. Only "red" share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers. | Optional | 
 | sources | A comma-separated list of IOC sources. | Optional | 
-| from_expiration_date | Start of date range in which to search (YYYY-MM-DD format). | Optional | 
-| to_expiration_date | End of date range in which to search (YYYY-MM-DD format). | Optional | 
-| limit | The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100. | Optional | 
-| sort | The order in which the results are returned. Possible values are: "type.asc", "type.desc", "value.asc", "value.desc", "policy.asc", "policy.desc", "share_level.asc", "share_level.desc", "expiration_timestamp.asc", and "expiration_timestamp.desc". | Optional | 
-| offset | The offset to begin the list from. For example, start from the 10th record and return the list. Default is 0. | Optional | 
-
+| expiration | The datetime the indicator will become inactive (ISO 8601 format, i.e., YYYY-MM-DDThh:mm:ssZ). | Optional | 
+| limit | The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 50. | Optional | 
+| sort | The order the results are returned in. Possible values are: type.asc, type.desc, value.asc, value.desc, policy.asc, policy.desc, share_level.asc, share_level.desc, expiration_timestamp.asc, expiration_timestamp.desc. | Optional | 
+| offset | The offset to begin the list from. For example, start from the 10th record and return the list. | Optional | 
+| next_page_token | A pagination token used with the limit parameter to manage pagination of results. Matching the 'after' parameter in the API. Use instead of offset. | Optional | 
 
 #### Context Output
 
@@ -1434,20 +1404,20 @@ Deprecated. Use the cs-falcon-search-custom-iocs command instead.
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
 | CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
-| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
 | CrowdStrike.IOC.Expiration | string | The datetime the indicator will expire. | 
 | CrowdStrike.IOC.Description | string | The description of the IOC. | 
 | CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-
+| CrowdStrike.NextPageToken | unknown | A pagination token used with the limit parameter to manage pagination of results. | 
 
 #### Command Example
 
-```!cs-falcon-search-iocs types="domain"```
+```!cs-falcon-search-custom-iocs types="domain"```
 
 #### Context Example
 
@@ -1478,22 +1448,22 @@ Deprecated. Use the cs-falcon-search-custom-iocs command instead.
 >|---|---|---|---|---|---|---|---|
 >| 2020-09-30T10:59:37Z | 2020-10-30T00:00:00Z | domain:value | 2020-09-30T10:59:37Z | none | red | domain | value |
 
-### 24. cs-falcon-get-ioc
+### cs-falcon-get-custom-ioc
 
 ***
 Gets the full definition of one or more indicators that you are watching.
 
 #### Base Command
 
-`cs-falcon-get-ioc`
+`cs-falcon-get-custom-ioc`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type to retrieve. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The string representation of the indicator. | Required | 
-
+| type | The IOC type to retrieve. Either ioc_id or ioc_type and value must be provided. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Optional | 
+| value | The string representation of the indicator. Either ioc_id or ioc_type and value must be provided. | Optional | 
+| ioc_id | The ID of the IOC to get. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command. Either ioc_id or ioc_type and value must be provided. | Optional | 
 
 #### Context Output
 
@@ -1502,9 +1472,9 @@ Gets the full definition of one or more indicators that you are watching.
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
 | CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
-| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
 | CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
 | CrowdStrike.IOC.Description | string | The description of the IOC. | 
 | CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
@@ -1515,7 +1485,7 @@ Gets the full definition of one or more indicators that you are watching.
 
 #### Command Example
 
-```!cs-falcon-get-ioc type="domain" value="test.domain.com"```
+```!cs-falcon-get-custom-ioc type="domain" value="test.domain.com"```
 
 #### Context Example
 
@@ -1547,27 +1517,31 @@ Gets the full definition of one or more indicators that you are watching.
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
 
 
-### 25. cs-falcon-upload-ioc
+### cs-falcon-upload-custom-ioc
 
 ***
 Uploads an indicator for CrowdStrike to monitor.
 
 #### Base Command
 
-`cs-falcon-upload-ioc`
+`cs-falcon-upload-custom-ioc`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ioc_type | The type of the indicator. Possible values are: "sha256", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The string representation of the indicator. | Required | 
-| policy | The policy to enact when the value is detected on a host. Possible values are: "detect" and "none". A value of "none" is equivalent to turning the indicator off. Default is "detect". | Optional | 
-| share_level | The level at which the indicator will be shared. Only "red" share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers. | Optional | 
-| expiration_days | The number of days for which the indicator should be valid. This only applies to domain, ipv4, and ipv6 types. Default is 30. | Optional | 
+| ioc_type | The type of the indicator. Possible values are: sha256, md5, domain, ipv4, ipv6. | Required | 
+| value | A comma-separated list of indicators.<br/>More than one value can be supplied to upload multiple IOCs of the same type but with different values. Note that the uploaded IOCs will have the same properties (as supplied in other arguments). | Required | 
+| action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity &gt; Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. Possible values are: no_action, allow, prevent_no_ui, prevent, detect. | Required | 
+| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux. | Required | 
+| severity | The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action. Possible values are: informational, low, medium, high, critical. | Optional | 
+| expiration | The datetime the indicator will become inactive (ISO 8601 format, i.e., YYYY-MM-DDThh:mm:ssZ). | Optional | 
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
-
+| applied_globally | Whether the indicator is applied globally. Either applied_globally or host_groups must be provided. Possible values are: true, false. | Optional | 
+| host_groups | A comma-separated list of host group IDs that the indicator applies to. The list of host group IDs can be retrieved by running the 'cs-falcon-list-host-groups' command. Either applied_globally or host_groups must be provided. | Optional | 
+| tags | A comma-separated list of tags to apply to the indicator. | Optional | 
+| file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional | 
 
 #### Context Output
 
@@ -1576,20 +1550,22 @@ Uploads an indicator for CrowdStrike to monitor.
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
 | CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
-| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
 | CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
 | CrowdStrike.IOC.Description | string | The description of the IOC. | 
 | CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
 | CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-
+| CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
+| CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
+| CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | 
 
 #### Command Example
 
-```!cs-falcon-upload-ioc ioc_type="domain" value="test.domain.com" policy="none" share_level="red" source="Demisto playbook" description="Test ioc"```
+```!cs-falcon-upload-custom-ioc ioc_type="domain" value="test.domain.com" policy="none" share_level="red" source="Demisto playbook" description="Test ioc"```
 
 #### Context Example
 
@@ -1620,28 +1596,27 @@ Uploads an indicator for CrowdStrike to monitor.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:26Z | none | red | Demisto playbook | domain | test.domain.com |
 
-
-### 26. cs-falcon-update-ioc
+### cs-falcon-update-custom-ioc
 
 ***
-Deprecated. Use the cs-falcon-update-custom-ioc command instead.
-
+Updates an indicator for CrowdStrike to monitor.
 
 #### Base Command
 
-`cs-falcon-update-ioc`
+`cs-falcon-update-custom-ioc`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ioc_type | The type of the indicator. Possible values are: "sha256", "md5", "sha1", "domain", "ipv4", and "ipv6". | Required | 
-| value | The string representation of the indicator. | Required | 
-| policy | The policy to enact when the value is detected on a host. Possible values are: "detect" and "none". A value of "none" is equivalent to turning the indicator off. Default is "detect". | Optional | 
-| share_level | The level at which the indicator will be shared. Only "red" share level (not shared) is supported, which indicates that the IOC is not shared with other Falcon Host customers. | Optional | 
-| expiration_days | The number of days for which the indicator should be valid. This only applies to domain, ipv4, and ipv6 types. Default is 30. | Optional | 
+| ioc_id | The ID of the IOC to update. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command. | Required | 
+| action | Action to take when a host observes the custom IOC. Possible values are: no_action - Save the indicator for future use, but take no action. No severity required. allow - Applies to hashes only. Allow the indicator and do not detect it. Severity does not apply and should not be provided. prevent_no_ui - Applies to hashes only. Block and detect the indicator, but hide it from Activity &gt; Detections. Has a default severity value. prevent - Applies to hashes only. Block the indicator and show it as a detection at the selected severity. detect - Enable detections for the indicator at the selected severity. Possible values are: no_action, allow, prevent_no_ui, prevent, detect. | Optional | 
+| platforms | A comma-separated list of the platforms that the indicator applies to. Possible values are: mac, windows, linux. | Optional | 
+| severity | The severity level to apply to this indicator. Required for the prevent and detect actions. Optional for no_action. Possible values are: informational, low, medium, high, critical. | Optional | 
+| expiration | The datetime the indicator will become inactive (ISO 8601 format, i.e., YYYY-MM-DDThh:mm:ssZ). | Optional | 
 | source | The source where this indicator originated. This can be used for tracking where this indicator was defined. Limited to 200 characters. | Optional | 
 | description | A meaningful description of the indicator. Limited to 200 characters. | Optional | 
+| file_name | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | Optional | 
 
 
 #### Context Output
@@ -1650,21 +1625,21 @@ Deprecated. Use the cs-falcon-update-custom-ioc command instead.
 | --- | --- | --- |
 | CrowdStrike.IOC.Type | string | The type of the IOC. | 
 | CrowdStrike.IOC.Value | string | The string representation of the indicator. | 
-| <span>CrowdStrike.IOC.ID</span> | string | The full ID of the indicator \(type:value\). | 
-| CrowdStrike.IOC.Policy | string | The policy of the indicator. | 
+| CrowdStrike.IOC.ID | string | The full ID of the indicator. | 
+| CrowdStrike.IOC.Severity | string | The severity level to apply to this indicator. | 
 | CrowdStrike.IOC.Source | string | The source of the IOC. | 
-| CrowdStrike.IOC.ShareLevel | string | The level at which the indicator will be shared. | 
+| CrowdStrike.IOC.Action | string | Action to take when a host observes the custom IOC. | 
 | CrowdStrike.IOC.Expiration | string | The datetime when the indicator will expire. | 
 | CrowdStrike.IOC.Description | string | The description of the IOC. | 
-| CrowdStrike.IOC.CreatedTime | string | The datetime the IOC was created. | 
+| CrowdStrike.IOC.CreatedTime | date | The datetime the IOC was created. | 
 | CrowdStrike.IOC.CreatedBy | string | The identity of the user/process who created the IOC. | 
-| CrowdStrike.IOC.ModifiedTime | string | The date and time the indicator was last modified. | 
+| CrowdStrike.IOC.ModifiedTime | date | The datetime the indicator was last modified. | 
 | CrowdStrike.IOC.ModifiedBy | string | The identity of the user/process who last updated the IOC. | 
-
+| CrowdStrike.IOC.Filename | string | Name of the file for file indicators. Applies to hashes only. A common filename, or a filename in your environment. Filenames can be helpful for identifying hashes or filtering IOCs. | 
 
 #### Command Example
 
-```!cs-falcon-update-ioc ioc_type="domain" value="test.domain.com" policy="detect" description="Benign domain IOC"```
+```!cs-falcon-update-custom-ioc  ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r" severity="high"```
 
 #### Context Example
 
@@ -1673,12 +1648,12 @@ Deprecated. Use the cs-falcon-update-custom-ioc command instead.
     "CrowdStrike": {
         "IOC": {
             "CreatedTime": "2020-10-02T13:55:26Z",
-            "Description": "Benign domain IOC",
+            "Description": "Test ioc",
             "Expiration": "2020-11-01T00:00:00Z",
-            "ID": "domain:test.domain.com",
-            "ModifiedTime": "2020-10-02T13:55:33Z",
-            "Policy": "detect",
-            "ShareLevel": "red",
+            "ID": "4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r",
+            "ModifiedTime": "2020-10-02T13:55:26Z",
+            "Action": "prevent",
+            "Severity": "high",
             "Source": "Demisto playbook",
             "Type": "domain",
             "Value": "test.domain.com"
@@ -1689,29 +1664,26 @@ Deprecated. Use the cs-falcon-update-custom-ioc command instead.
 
 #### Human Readable Output
 
->### Custom IOC was created successfully
+>### Custom IOC was updated successfully
 
->|CreatedTime|Description|Expiration|ID|ModifiedTime|Policy|ShareLevel|Source|Type|Value|
+>|CreatedTime|Description|Expiration|ID|ModifiedTime|Action|Severity|Source|Type|Value|
 >|---|---|---|---|---|---|---|---|---|---|
->| 2020-10-02T13:55:26Z | Benign domain IOC | 2020-11-01T00:00:00Z | domain:test.domain.com | 2020-10-02T13:55:33Z | detect | red | Demisto playbook | domain | test.domain.com |
+>| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
-
-### 27. cs-falcon-delete-ioc
+### cs-falcon-delete-custom-ioc
 
 ***
-Deprecated. Use the cs-falcon-delete-custom-ioc command instead.
-
+Deletes a monitored indicator.
 
 #### Base Command
 
-`cs-falcon-delete-ioc`
+`cs-falcon-delete-custom-ioc`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type to delete. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". | Required | 
-| value | The string representation of the indicator to delete. | Required | 
+| ioc_id | The ID of the IOC to delete. The ID of the IOC can be retrieved by running the 'cs-falcon-search-custom-iocs' command. | Required | 
 
 
 #### Context Output
@@ -1720,14 +1692,14 @@ There is no context output for this command.
 
 #### Command Example
 
-```!cs-falcon-delete-ioc type="domain" value="test.domain.com"```
+```!cs-falcon-delete-custom-ioc ioc_id="4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r"```
 
 
 #### Human Readable Output
 
->Custom IOC domain:test.domain.com was successfully deleted.
+>Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
 
-### 28. cs-falcon-device-count-ioc
+### cs-falcon-device-count-ioc
 
 ***
 The number of hosts that observed the provided IOC.
@@ -1740,7 +1712,7 @@ The number of hosts that observed the provided IOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required | 
+| type | The IOC type. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required | 
 | value | The string representation of the indicator. | Required | 
 
 #### Context Output
@@ -1776,7 +1748,7 @@ The number of hosts that observed the provided IOC.
 
 >Indicator of Compromise **domain:value** device count: **1**
 
-### 29. cs-falcon-processes-ran-on
+### cs-falcon-processes-ran-on
 
 ***
 Get processes associated with a given IOC.
@@ -1789,7 +1761,7 @@ Get processes associated with a given IOC.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | The IOC type. Possible values are: "sha256", "sha1", "md5", "domain", "ipv4", and "ipv6". Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required | 
+| type | The IOC type. Possible values are: sha256, sha1, md5, domain, ipv4, ipv6. | Required | 
 | value | The string representation of the indicator. | Required | 
 | device_id | The device ID to check against. | Required | 
 
@@ -1836,8 +1808,7 @@ Get processes associated with a given IOC.
 >|---|
 >| pid:pid:650164094720 |
 
-
-### 30. cs-falcon-process-details
+### cs-falcon-process-details
 
 ***
 Retrieves the details of a process, according to the process ID that is running or that previously ran.
@@ -1900,7 +1871,7 @@ Retrieves the details of a process, according to the process ID that is running 
 >| "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" | deviceId | \Device\HarddiskVolume1\Program Files (x86)\Google\Chrome\Application\chrome.exe | device_id:pid | pid | 2020-10-01T09:05:51Z | 132460167512852140 | 2020-10-02T06:43:45Z | 132460946259334768 |
 
 
-### 31. cs-falcon-device-ran-on
+### cs-falcon-device-ran-on
 
 ***
 Returns a list of device IDs an indicator ran on.
@@ -1947,7 +1918,7 @@ Returns a list of device IDs an indicator ran on.
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
-### 32. cs-falcon-list-detection-summaries
+### cs-falcon-list-detection-summaries
 
 ***
 Lists detection summaries.
@@ -1961,7 +1932,7 @@ Lists detection summaries.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | fetch_query | The query used to filter the results. | Optional | 
-| ids | A comma separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678, If you use this argument, fetch_query argument will be ignored. | Optional | 
+| ids | A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored. | Optional | 
 
 #### Context Output
 
@@ -1981,7 +1952,7 @@ Lists detection summaries.
 | CrowdStrike.Detections.device.config_id_build | String | The version of the sensor that the device is running. For example: 11406. | 
 | CrowdStrike.Detections.device.config_id_platform | String | The platform ID of the sensor that the device is running. | 
 | CrowdStrike.Detections.device.external_ip | String | The external IP address of the device. | 
-| CrowdStrike.Detections.device.hostname | String | The host name of the device. | 
+| CrowdStrike.Detections.device.hostname | String | The hostname of the device. | 
 | CrowdStrike.Detections.device.first_seen | Date | The datetime the host was first seen by CrowdStrike Falcon. | 
 | CrowdStrike.Detections.device.last_seen | Date | The datetime the host was last seen by CrowdStrike Falcon. | 
 | CrowdStrike.Detections.device.local_ip | String | The local IP address of the device. | 
@@ -1999,7 +1970,7 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.device_id | String | The ID of the device associated with the behavior. | 
 | CrowdStrike.Detections.behaviors.timestamp | Date | The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
 | CrowdStrike.Detections.behaviors.behavior_id | String | The ID of the behavior. | 
-| CrowdStrike.Detections.behaviors.filename | String | The file name of the triggering process. | 
+| CrowdStrike.Detections.behaviors.filename | String | The filename of the triggering process. | 
 | CrowdStrike.Detections.behaviors.alleged_filetype | String | The file extension of the behavior's filename. | 
 | CrowdStrike.Detections.behaviors.cmdline | String | The command line of the triggering process. | 
 | CrowdStrike.Detections.behaviors.scenario | String | The name of the scenario the behavior belongs to. | 
@@ -2017,7 +1988,7 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. | 
 | CrowdStrike.Detections.behaviors.triggering_process_graph_id | String | The ID of the process that triggered the behavior detection. | 
 | CrowdStrike.Detections.behaviors.sha256 | String | The SHA256 of the triggering process. | 
-| CrowdStrike.Detections.behaviors.md5 | String | The MD5 of the triggering process. | 
+| CrowdStrike.Detections.behaviors.md5 | String | The MD5 hash of the triggering process. | 
 | CrowdStrike.Detections.behaviors.parent_details.parent_sha256 | String | The SHA256 hash of the parent process. | 
 | CrowdStrike.Detections.behaviors.parent_details.parent_md5 | String | The MD5 hash of the parent process. | 
 | CrowdStrike.Detections.behaviors.parent_details.parent_cmdline | String | The command line of the parent process. | 
@@ -2183,7 +2154,7 @@ Lists detection summaries.
 >| ldt:ldt:ldt | 2020-07-06T08:10:55.538668036Z | new | Low |
 
 
-### 33. cs-falcon-list-incident-summaries
+### cs-falcon-list-incident-summaries
 
 ***
 Lists incident summaries.
@@ -2197,7 +2168,7 @@ Lists incident summaries.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | fetch_query | The query used to filter the results. | Optional | 
-| ids | A comma separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678, If you use this argument, fetch_query argument will be ignored. | Optional | 
+| ids | A comma-separated list of detection IDs. For example, ldt:1234:1234,ldt:5678:5678. If you use this argument, the fetch_query argument will be ignored. | Optional | 
 
 #### Context Output
 
@@ -2218,8 +2189,8 @@ Lists incident summaries.
 | CrowdStrike.Incidents.hosts.config_id_platform | String | The platform ID of the sensor that the device is running. | 
 | CrowdStrike.Incidents.hosts.external_ip | String | The external IP address of the host. | 
 | CrowdStrike.Incidents.hosts.hostname | String | The name of the host. | 
-| CrowdStrike.Incidents.hosts.first_seen | Date | The date and time the host was first seen by CrowdStrike Falcon. | 
-| CrowdStrike.Incidents.hosts.last_seen | Date | The date and time the host was last seen by CrowdStrike Falcon. | 
+| CrowdStrike.Incidents.hosts.first_seen | Date | The datetime the host was first seen by CrowdStrike Falcon. | 
+| CrowdStrike.Incidents.hosts.last_seen | Date | The datetime the host was last seen by CrowdStrike Falcon. | 
 | CrowdStrike.Incidents.hosts.local_ip | String | The device local IP address. | 
 | CrowdStrike.Incidents.hosts.mac_address | String | The device MAC address. | 
 | CrowdStrike.Incidents.hosts.major_version | String | The major version of the operating system. | 
@@ -2232,9 +2203,9 @@ Lists incident summaries.
 | CrowdStrike.Incidents.hosts.system_manufacturer | String | The system manufacturer of the device. | 
 | CrowdStrike.Incidents.hosts.system_product_name | String | The product name of the system. | 
 | CrowdStrike.Incidents.hosts.modified_timestamp | Date | The datetime a user modified the incident in ISO time format. For example: 2019-10-17T13:41:48.487520845Z. | 
-| CrowdStrike.Incidents.created | Date | The time that the incident was created. | 
-| CrowdStrike.Incidents.start | Date | The recorded time of the earliest incident. | 
-| CrowdStrike.Incidents.end | Date | The recorded time of the latest incident. | 
+| CrowdStrike.Incidents.created | Date | The datetime that the incident was created. | 
+| CrowdStrike.Incidents.start | Date | The recorded datetime of the earliest incident. | 
+| CrowdStrike.Incidents.end | Date | The recorded datetime of the latest incident. | 
 | CrowdStrike.Incidents.state | String | The state of the incident. | 
 | CrowdStrike.Incidents.status | Number | The status of the incident. | 
 | CrowdStrike.Incidents.name | String | The name of the incident. | 
@@ -2248,10 +2219,10 @@ Lists incident summaries.
 ```!cs-falcon-list-incident-summaries```
 
 
-### 34. Endpoint
+### endpoint
 
 ***
-Returns information about an endpoint, does not support regex.
+Returns information about an endpoint. Does not support regex.
 
 #### Base Command
 
@@ -2310,7 +2281,7 @@ Returns information about an endpoint, does not support regex.
 >|---|---|---|---|---|---|---|---|
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 1.1.1.1 | Windows | Windows Server 2019| Hostname | Online | 1-1-1-1 | CrowdStrike Falcon|\n"
 
-### 35. cs-falcon-create-host-group
+### cs-falcon-create-host-group
 
 ***
 Create a host group.
@@ -2324,7 +2295,7 @@ Create a host group.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the host. | Required | 
-| group_type | The group type of the group. Can be 'static' or 'dynamic'. Possible values are: static, dynamic. | Required | 
+| group_type | The group type of the group. Possible values are: static, dynamic. | Required | 
 | description | The description of the host. | Optional | 
 | assignment_rule | The assignment rule. | Optional | 
 
@@ -2374,7 +2345,7 @@ Create a host group.
 >|---|---|---|---|---|---|---|---|
 >| api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_description | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:02.060242909Z | test_name_1 |
 
-### 36. cs-falcon-update-host-group
+### cs-falcon-update-host-group
 
 ***
 Updates a host group.
@@ -2438,7 +2409,7 @@ Updates a host group.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### 37. cs-falcon-list-host-group-members
+### cs-falcon-list-host-group-members
 
 ***
 Gets the list of host group members.
@@ -2550,7 +2521,7 @@ Gets the list of host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 35.224.136.145 | 10.128.0.19 | falcon-crowdstrike-sensor-centos7 | CentOS 7.9 | 42-01-0a-80-00-13 | 2021-08-08T11:33:21Z | 2021-08-25T07:50:47Z | normal |
 
-### 38. cs-falcon-add-host-group-members
+### cs-falcon-add-host-group-members
 
 ***
 Add host group members.
@@ -2612,7 +2583,7 @@ Add host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:['falcon-crowdstrike-sensor-centos7',''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### 39. cs-falcon-remove-host-group-members
+### cs-falcon-remove-host-group-members
 
 ***
 Remove host group members.
@@ -2674,7 +2645,7 @@ Remove host group members.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-22T07:48:35.111070562Z | test_description_update | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-25T08:02:05.295663156Z | test_name_update_1 |
 
-### 40. cs-falcon-resolve-incident
+### cs-falcon-resolve-incident
 
 ***
 Resolve and update incidents using the specified settings.
@@ -2709,7 +2680,7 @@ There is no context output for this command.
 >inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
 >inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 changed successfully to Closed
 
-### 41. cs-falcon-list-host-groups
+### cs-falcon-list-host-groups
 
 ***
 List the available host groups.
@@ -3293,7 +3264,7 @@ List the available host groups.
 >|---|---|---|---|---|---|---|---|---|
 >| device_id:[''],hostname:[''] | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-26T10:02:50.175530821Z | description2 | static | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | api-client-id:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2021-08-26T10:02:52.026307768Z | test_16299721694081629972169408 |
 
-### 42. cs-falcon-delete-host-groups
+### cs-falcon-delete-host-groups
 
 ***
 Delete the requested host groups.
@@ -3324,7 +3295,7 @@ There is no context output for this command.
 >host group id a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 deleted successfully
 
 
-### 43. cs-falcon-search-custom-iocs
+### cs-falcon-search-custom-iocs
 
 ***
 Returns a list of your uploaded IOCs that match the search criteria.
@@ -3423,7 +3394,7 @@ Returns a list of your uploaded IOCs that match the search criteria.
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 1.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac |  |  | Cortex XSOAR |  |
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 4.1.8.9 | 2022-02-17T13:47:57Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | test | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:16:44.514398876Z | mac |  |  | Cortex XSOAR |  |
 
-### 44. cs-falcon-get-custom-ioc
+### cs-falcon-get-custom-ioc
 
 ***
 Gets the full definition of one or more indicators that you are watching.
@@ -3501,7 +3472,7 @@ Gets the full definition of one or more indicators that you are watching.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | no_action | informational | ipv4 | 7.5.9.8 | 2022-02-17T17:55:09Z | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z |  | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T14:25:22.968603813Z | linux |  |  | cortex xsoar | test,<br/>test1 |
 
-### 45. cs-falcon-upload-custom-ioc
+### cs-falcon-upload-custom-ioc
 
 ***
 Uploads an indicator for CrowdStrike to monitor.
@@ -3580,7 +3551,7 @@ Uploads an indicator for CrowdStrike to monitor.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
-### 46. cs-falcon-update-custom-ioc
+### cs-falcon-update-custom-ioc
 
 ***
 Updates an indicator for CrowdStrike to monitor.
@@ -3655,7 +3626,7 @@ Updates an indicator for CrowdStrike to monitor.
 >|---|---|---|---|---|---|---|---|---|---|
 >| 2020-10-02T13:55:26Z | Test ioc | 2020-11-01T00:00:00Z | 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r | 2020-10-02T13:55:26Z | prevent | high | Demisto playbook | domain | test.domain.com |
 
-### 47. cs-falcon-delete-custom-ioc
+### cs-falcon-delete-custom-ioc
 
 ***
 Deletes a monitored indicator.
@@ -3685,7 +3656,7 @@ There is no context output for this command.
 
 >Custom IOC 4f8c43311k1801ca4359fc07t319610482c2003mcde8934d5412b1781e841e9r was successfully deleted.
 
-### 48. cs-falcon-batch-upload-custom-ioc
+### cs-falcon-batch-upload-custom-ioc
 
 ***
 Uploads a batch of indicators.
@@ -3758,7 +3729,7 @@ Uploads a batch of indicators.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| no_action | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | test | 2022-02-17T13:47:57Z | "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | 2022-02-16T17:17:25.992164453Z | mac | informational | Cortex XSOAR | ipv4 | 1.1.8.9 |
 
-### 49. cs-falcon-rtr-kill-process
+### cs-falcon-rtr-kill-process
 
 ***
 Execute an active responder kill command on a single host.
@@ -3822,7 +3793,7 @@ Execute an active responder kill command on a single host.
 >Note: you don't see the following IDs in the results as the request was failed for them.
 > ID 123 failed as it was not found.
 
-### 50. cs-falcon-rtr-remove-file
+### cs-falcon-rtr-remove-file
 
 ***
 Batch executes an RTR active-responder remove file across the hosts mapped to the given batch ID.
@@ -3875,7 +3846,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 >|---|---|
 >| a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 | Success |
 
-### 51. cs-falcon-rtr-list-processes
+### cs-falcon-rtr-list-processes
 
 ***
 Executes an RTR active-responder ps command to get a list of active processes across the given host.
@@ -3936,7 +3907,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 >|---|
 >|TOO MUCH INFO TO DISPLAY|
 
-### 52. cs-falcon-rtr-list-network-stats
+### cs-falcon-rtr-list-network-stats
 
 ***
 Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
@@ -3997,7 +3968,7 @@ Executes an RTR active-responder netstat command to get a list of network status
 >|---|
 >|TOO MUCH INFO TO DISPLAY|
 
-### 53. cs-falcon-rtr-read-registry
+### cs-falcon-rtr-read-registry
 
 ***
 Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
@@ -4066,7 +4037,7 @@ HKEY_LOCAL_MACHINE,HKEY_USERS````
 >| reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_USERS | TOO MUCH INFO TO DISPLAY  |
 >| reg-a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1HKEY_LOCAL_MACHINE | TOO MUCH INFO TO DISPLAY  |
 
-### 54. cs-falcon-rtr-list-scheduled-tasks
+### cs-falcon-rtr-list-scheduled-tasks
 
 ***
 Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
@@ -4125,7 +4096,7 @@ There is no context output for this command.
 ---------------------------|---|
 >| TOO MUCH INFO TO DISPLAY  |
 
-### 55. cs-falcon-rtr-retrieve-file
+### cs-falcon-rtr-retrieve-file
 
 ***
 Gets the RTR extracted file contents for the specified file path.
@@ -4174,7 +4145,7 @@ Gets the RTR extracted file contents for the specified file path.
 
 > Waiting for the polling execution
 
-### 56. cs-falcon-get-detections-for-incident
+### cs-falcon-get-detections-for-incident
 
 ***
 Gets the detections for a specific incident.
@@ -4229,7 +4200,7 @@ Gets the detections for a specific incident.
 >| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
 
-### 17. cs-falcon-update-incident-comment
+### cs-falcon-update-incident-comment
 
 ---
 Updates CrowdStrike Incident with the comment.
@@ -4674,13 +4645,13 @@ Updates an ML exclusion. At least one argument is required in addition to the ID
 | CrowdStrike.MLExclusion.id | String | The ML exclusion ID. | 
 | CrowdStrike.MLExclusion.value | String | The ML exclusion value. | 
 | CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
-| CrowdStrike.MLExclusion.value_hash | String | An hash of the value field. | 
+| CrowdStrike.MLExclusion.value_hash | String | A hash of the value field. | 
 | CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
-| CrowdStrike.MLExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.MLExclusion.groups.id | String | Group ID that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.group_type | String | Group type that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.name | String | Group name that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.description | String | Group description that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.assignment_rule | String | Group assignment rule that the exclusion is associated with. | 
 | CrowdStrike.MLExclusion.groups.created_by | String | Indicate who created the group. | 
 | CrowdStrike.MLExclusion.groups.created_timestamp | Date | The date when the group was created. | 
 | CrowdStrike.MLExclusion.groups.modified_by | String | Indicate who last modified the group. | 
@@ -4893,14 +4864,14 @@ Create an IOA exclusion.
 | CrowdStrike.IOAExclusion.description | String | A description of the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
-| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
+| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for filename matching. | 
 | CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
 | CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
-| CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.IOAExclusion.groups.id | String | Group ID that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.group_type | String | Group type that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.name | String | Group name that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.description | String | Group description that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Group assignment rule that the exclusion is associated with. | 
 | CrowdStrike.IOAExclusion.groups.created_by | String | Indicate who created the group. | 
 | CrowdStrike.IOAExclusion.groups.created_timestamp | Date | The date when the group was created. | 
 | CrowdStrike.IOAExclusion.groups.modified_by | String | Indicate who last modified the group. | 
@@ -4994,14 +4965,14 @@ Updates an IOA exclusion. At least one argument is required in addition to the I
 | CrowdStrike.IOAExclusion.description | String | A description of the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_id | String | The identifier of the pattern associated with the IOA exclusion. | 
 | CrowdStrike.IOAExclusion.pattern_name | String | The name of the pattern associated with the IOA exclusion. | 
-| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for file name matching. | 
+| CrowdStrike.IOAExclusion.ifn_regex | String | A regular expression used for filename matching. | 
 | CrowdStrike.IOAExclusion.cl_regex | String | A regular expression used for command line matching. | 
 | CrowdStrike.IOAExclusion.detection_json | String | A JSON string that describes the detection logic for the IOA exclusion. | 
-| CrowdStrike.IOAExclusion.groups.id | String | Groups ID that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
-| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.IOAExclusion.groups.id | String | Group ID that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.group_type | String | Group type that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.name | String | Group name that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.description | String | Group description that the exclusion rule is associated with. | 
+| CrowdStrike.IOAExclusion.groups.assignment_rule | String | Group assignment rule that the exclusion is associated with. | 
 | CrowdStrike.IOAExclusion.groups.created_by | String | Indicate who created the group. | 
 | CrowdStrike.IOAExclusion.groups.created_timestamp | Date | The date when the group was created. | 
 | CrowdStrike.IOAExclusion.groups.modified_by | String | Indicate who last modified the group. | 
