@@ -1895,8 +1895,9 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
     incident_id = arg_to_number(args.get('incident_id'))
     endpoint = client.get_endpoints(endpoint_id_list=[endpoint_id])
     if len(endpoint) == 0:
+        demisto.debug(f'#### Endpoint {endpoint_id} was not found')
         raise ValueError(f'Error: Endpoint {endpoint_id} was not found')
-
+    demisto.debug(f'####{endpoint=}')
     endpoint = endpoint[0]
     endpoint_status = endpoint.get('endpoint_status')
     is_isolated = endpoint.get('is_isolated')
@@ -1924,7 +1925,9 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
             f'Error: Endpoint {endpoint_id} is pending isolation cancellation and therefore can not be isolated.'
         )
     try:
+        demisto.debug(f'#### Endpoint {endpoint_id} isolation request.')
         result = client.isolate_endpoint(endpoint_id=endpoint_id, incident_id=incident_id)
+        demisto.debug(f'{result=}')
 
         return CommandResults(
             readable_output=f'The isolation request has been submitted successfully on Endpoint {endpoint_id}.\n',
@@ -1933,6 +1936,7 @@ def isolate_endpoint_command(client: CoreClient, args) -> CommandResults:
             raw_response=result
         )
     except Exception as e:
+        demisto.debug(f'Error: {str(e)}')
         return catch_and_exit_gracefully(e)
 
 
