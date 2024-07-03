@@ -1250,7 +1250,7 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
             ],
             "malwares": [],
             "originatingIps": null,
-            "**Path**": null,
+            "path": null,
             "ports": [
                 {
                     "classification": "U",
