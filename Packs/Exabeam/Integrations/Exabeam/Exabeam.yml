@@ -1749,5 +1749,5 @@ script:
 tests:
 - Exabeam - Test
 fromversion: 5.0.0
-defaultclassifier: "Exabeam - classifier"
+defaultclassifier: "Exabeam Classifier"
 defaultmapperin: "Exabeam mapping"

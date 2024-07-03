@@ -1,12 +1,12 @@
 {
     "description": "",
     "feed": false,
-    "id": "Exabeam - classifier",
+    "id": "Exabeam Classifier",
     "keyTypeMap": {
         "Exabeam Incident": "Exabeam Incident",
         "Exabeam Notable User": "Exabeam Notable User"
     },
-    "name": "Exabeam - classifier",
+    "name": "Exabeam Classifier",
     "propagationLabels": [
         "all"
     ],
