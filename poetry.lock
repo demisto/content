@@ -806,7 +806,7 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.31.0"
+version = "1.31.1"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = "^3.8,<3.12"
@@ -885,7 +885,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "CIAC-3448-file-permissions-hook"
-resolved_reference = "c93738a17746d9a9f4c7648a0e0183a72bffae7f"
+resolved_reference = "3c46e3306c8a2d3fd444788944e45f996f5718d9"
 
 [[package]]
 name = "deprecated"
