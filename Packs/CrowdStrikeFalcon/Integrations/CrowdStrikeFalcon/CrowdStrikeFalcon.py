@@ -393,6 +393,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             timeout=int_timeout,
             ok_codes=valid_status_codes
         )
+        demisto.debug(f'In http_request after the first call to generic_http_request {res=} {res.status_code=} {res.json()=}')
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
@@ -425,6 +426,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                     timeout=int_timeout,
                     ok_codes=valid_status_codes
                 )
+                demisto.debug(f'In http_request after the second call to generic_http_request {res=} {res.status_code=} '
+                              f'{res.json()=}')
                 return res if no_json else res.json()
             elif safe:
                 return None
@@ -1288,8 +1291,10 @@ def get_token_request():
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
+    demisto.debug('In get_token_request')
     token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, safe=True,
                              get_token_flag=False)
+    demisto.debug(f'In get_token_request {token_res=}')
     if not token_res:
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
