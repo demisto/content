@@ -33,7 +33,7 @@ class AzureResourceGraphClient:
             params=self.default_params,
         )
 
-    def query_resources(self, query, paging_options, subscriptions: list, management_groups: list):
+    def query_resources(self, query, paging_options: dict[str, Any], subscriptions: list, management_groups: list):
         request_data = {"query": query, "options": paging_options}
 
         if subscriptions:
@@ -61,7 +61,7 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
 
     list_of_query_results = []
     total_records = 0
-    
+
     if page_number and not page_size:
         raise DemistoException("Please enter a value for \"page_size\" when using \"page\".")
     if page_size and not page_number:
@@ -77,7 +77,7 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
         total_records = response.get('totalRecords')
         list_of_query_results = response.get('data')
     elif page_number:
-        params = {'$top': page_size}
+        params = {'$top': page_size}  # type: ignore
         response = client.query_resources(query=query,
                                           paging_options=params,
                                           management_groups=management_groups,
@@ -91,7 +91,7 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
 
         while True:
             if skip_token:
-                params = {'$skipToken': skip_token}
+                params = {'$skipToken': skip_token}  # type: ignore
             else:
                 params = {}
 
