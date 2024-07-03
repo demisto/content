@@ -6,55 +6,33 @@ commonfields:
   id: Azure Resource Graph
   version: -1
 configuration:
-- display: Host URL (e.g., https://management.azure.com)
+- display: Server URL (e.g., https://management.azure.com)
   name: host
   defaultvalue: https://management.azure.com
   type: 0
   required: true  
   section: Connect  
-- display: ID (Client ID)
-  name: auth_id
-  type: 4
-  required: false  
-  section: Connect 
-  hidden: true
-- display: Token (Tenant ID)
-  name: tenant_id
-  type: 4
-  required: false  
-  section: Connect  
-  hidden: true
-- display: Key (Client Secret)
-  name: enc_key
-  type: 4
-  required: false  
-  section: Connect 
-  hidden: false
-- display: Certificate Thumbprint
-  name: certificate_thumbprint
-  type: 4
-  required: false
-  section: Connect  
-  hidden: false  
-  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-- display: ""
-  displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
+- displaypassword: ID / Client ID
   name: cred_auth_id
   type: 9
   required: false
   hiddenusername: true
-- display: ""
-  displaypassword: Token (received from the admin consent - see Detailed Instructions (?) section)
+  display: ""
+  section: connect
+- displaypassword: Token / Tenant ID
   name: cred_token
   type: 9
   required: false
   hiddenusername: true
-- display: ""
-  displaypassword: Key (received from the admin consent - see Detailed Instructions (?)
+  display: ""
+  section: connect
+- displaypassword: Key / Client Secret
   name: cred_enc_key
   type: 9
   required: false
   hiddenusername: true
+  display: ""
+  section: connect
 - display: ""
   displaypassword: Certificate Thumbprint
   name: cred_certificate_thumbprint
@@ -62,22 +40,13 @@ configuration:
   required: false
   hiddenusername: true
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+  section: connect
 - display: Private Key
   name: private_key
   type: 14
-  required: false
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
-- display: Default Subscription ID
-  name: subscription_id
-  type: 4
-  required: false
   hidden: true
-- display: ""
-  displaypassword: Default Subscription ID
-  name: cred_subscription_id
-  type: 9
-  required: false
-  hiddenusername: true
+  section: connect
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -103,10 +72,13 @@ script:
     arguments:
     - description: 'The maximum number of operations to return. NOTE: Do not use with "page" and "page_size".'
       name: limit
+      default: 50
     - description: The maximum number of operations to return for page.
       name: page_size
+      default: 50
     - description: The page number to return.
       name: page
+      default: 1
     outputs:
     - contextPath: AzureResourceGraph.Operations
       description: A list of available Azure Resource Graph operations permissions and descriptions.
@@ -116,17 +88,25 @@ script:
     arguments:
     - description: 'The maximum number of operations to return (Default is 50). NOTE: Do not use with "page" and "page_size".'
       name: limit
+      default: 50
     - description: The maximum number of operations to return for page.
       name: page_size
+      default: 50
     - description: The page number to return.
       name: page
+      default: 1
     - name: management_groups
       description: "Azure management groups against which to execute the query. Example: 'mg1, mg2'"
+      isArray: True 
     - name: subscriptions
       description: "Azure subscriptions against which to execute the query. Example: 'sub1, sub2'"
+      isArray: True 
     - name: query
       required: true
-      description: 'The query for the Azure Resource Graph to execute. The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/'
+      description: |-
+        The query for the Azure Resource Graph to execute.
+        For example: `resources | where (resourceGroup =~ ('demisto-sentinel2'))`. 
+        The query is based on Kusto Query Language (KQL). Reference: https://learn.microsoft.com/en-us/azure/data-explorer/kusto/query/
     outputs:
     - contextPath: AzureResourceGraph.Query
       description: Data returned from query.

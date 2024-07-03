@@ -39,6 +39,8 @@ class AzureResourceGraphClient:
         
         if subscriptions:
             request_data["subscriptions"] = subscriptions
+        elif not subscriptions:
+            request_data["subscriptions"] = self.subscription_id
         
         if management_groups:
             request_data["managementGroups"] = management_groups
@@ -55,16 +57,8 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     limit = arg_to_number(args.get('limit'))
     page_size = arg_to_number(args.get('page_size'))
     page_number = arg_to_number(args.get('page'))
-    management_groups = args.get('management_groups')
-    subscriptions = args.get('subscriptions')
-
-    if not isinstance(subscriptions, list):
-        subscriptions = subscriptions.split(',')
-        subscriptions = [sub_id.strip() for sub_id in subscriptions]
-
-    if not isinstance(management_groups, list):
-        management_groups = management_groups.split(',')
-        management_groups = [management_group_id.strip() for management_group_id in management_groups]
+    management_groups = argToList(args.get('management_groups'))
+    subscriptions = argToList(args.get('subscriptions'))
 
     query = args.get('query')
 
@@ -241,9 +235,6 @@ def main():
         'azure-rg-list-operations': list_operations_command
     }
 
-    commands_with_args_and_params: Dict[Any, Any] = {
-    }
-
     '''EXECUTION'''
     command = demisto.command()
     LOG(f'Command being called is {command}')
@@ -262,15 +253,10 @@ def main():
 
         if command == 'azure-rg-auth-reset':
             return_results(reset_auth())
-
         elif command in commands_without_args:
             return_results(commands_without_args[command](client))
-
         elif command in commands_with_args:
             return_results(commands_with_args[command](client, args))
-
-        elif command in commands_with_args_and_params:
-            return_results(commands_with_args_and_params[command](client, args, params))
         else:
             raise NotImplementedError(f'Command "{command}" is not implemented.')
     except Exception as e:
