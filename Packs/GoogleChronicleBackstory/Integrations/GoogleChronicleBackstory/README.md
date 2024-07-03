@@ -1,4 +1,5 @@
 ## Overview
+
 ---
 
 Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as Incidents. Use it to fetch a list of infected assets based on the indicator accessed. This integration also provides reputation and threat enrichment of indicators observed in the enterprise.
@@ -10,23 +11,27 @@ Use the Chronicle integration to retrieve Asset alerts or IOC Domain matches as 
 **Note:** The commands and fetch incidents mechanism will do up to 3 internal retries with a gap of 15, 30, and 60 seconds (exponentially) between the retries.
 
 #### Troubleshoot
+
 **Note:** If you are expecting a high volume of alerts from Chronicle, you can reduce the time required to fetch them by increasing the "How many incidents to fetch each time" parameter while decreasing the "Incidents Fetch Interval" parameter in the integration configuration.
 
 ##### Problem #1
+
 Duplication of rule detection incidents when fetched from Chronicle.
 
 ##### Solution #1
+
 - The incidents are re-fetched starting from first fetch time window when user resets the last run time stamp. 
 - To avoid duplication of incidents with duplicate detection ids and to drop them, XSOAR provides inbuilt features of Pre-process rules. 
 - This setting XSOAR platform end users have to set on their own as it's not part of the integration pack.
 - Pre-processing rules enable users to perform certain actions on incidents as they are ingested into XSOAR. 
 - Using these rules users can choose incoming events on which to perform actions for example drop all the incoming incidents, drop and update incoming incidents if certain conditions are met.
 - Please refer for information on Pre-Process rules:
-  https://xsoar.pan.dev/docs/incidents/incident-pre-processing#:~:text=Creating%20Rules&text=Navigate%20to%20Settings%20%3E%20Integrations%20%3E%20Pre,viewing%20the%20list%20of%20rules.
+  <https://xsoar.pan.dev/docs/incidents/incident-pre-processing#:~:text=Creating%20Rules&text=Navigate%20to%20Settings%20%3E%20Integrations%20%3E%20Pre,viewing%20the%20list%20of%20rules>.
 
 ## FAQ - Fetch Detections
 
 ##### Question #1
+
 If we have 3 rules added in the configuration (R1, R2, R3) and we are getting 429 or 500 errors in R2. Will my integration stop fetching the detections or will it fetch detections of rule R3?
 
 ###### Case #1: When HTTP 429 or 500 error resumes before 60 retry attempts:
@@ -40,71 +45,76 @@ If 429 or 500 error is recovered before 60 attempts, the system will fetch the d
 If 429 error does not recover for 60 attempts, the system will skip Rule R2 and then proceed ahead for rule R3 to fetch its detections by adding a log.
 
 ##### Question #2
+
 What if R1 is an invalid rule id? Would it be able to fetch R2 and R3 detections?
 
 - There will not be any retry attempts for invalid rule ids. The system will skip the invalid rule ids and move to the next rule id. So if R1 is invalid, the system will skip it without any retry attempts and move to R2.
 
 ##### Question #3
+
 What if R1 is deleted rule id? Would it be able to fetch R2 and R3 detections?
 
 - There will not be any retry attempts for deleted rule ids. The system will skip the deleted rule ids and move to the next rule id. So if R1 is deleted, the system will skip it without any retry attempts and move to R2.
 
 ## Configure Chronicle on Cortex XSOAR
+
 ---
 
-1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Chronicle.
-3. Click __Add instance__ to create and configure a new integration instance.
-    * __Name__: a textual name for the integration instance.
-    * __User's Service Account JSON__
-    * __Region__: Select the region based on the location of the chronicle backstory instance. If region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
-    * __Other Region__: Specify the region based on the location of the chronicle backstory instance. Only applicable if the "Other" option is selected in the Region dropdown.
-    * __Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.__
-    * __Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.__
-    * __Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
-    * __Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.__
-    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.__
-    * __Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.__
-    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
-    * __Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.__
-    * __Fetches incidents__
-    * __First fetch time__
-    * __How many incidents to fetch each time__
-    * __Chronicle Alert Type (Select the type of data to consider for fetch incidents)__
-    * __Time window (in minutes)__
-    * __Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts).__
-    * __Detections to fetch by Rule ID or Version ID__
-    * __Fetch all rules detections__
-    * __Filter detections by alert state__
-    * __List Basis__  
-    * __Trust any certificate (not secure)__
-    * __Use system proxy settings__
-4. Click __Test__ to validate the URLs, token, and connection.
+3. Click **Add instance** to create and configure a new integration instance.
+    - **Name**: a textual name for the integration instance.
+    - **User's Service Account JSON**
+    - **Region**: Select the region based on the location of the chronicle backstory instance. If region is not listed in the dropdown, choose the "Other" option and specify the region in the "Other Region" text field.
+    - **Other Region**: Specify the region based on the location of the chronicle backstory instance. Only applicable if the "Other" option is selected in the Region dropdown.
+    - **Provide comma(',') separated categories (e.g. APT-Activity, Phishing). Indicators belonging to these "categories" would be considered as "malicious" when executing reputation commands.**
+    - **Provide comma(',') separated categories (e.g. Unwanted, VirusTotal YARA Rule Match). Indicators belonging to these "categories" would be considered as "suspicious" when executing reputation commands.**
+    - **Specify the "severity" of indicator that should be considered as "malicious" irrespective of the category.  If you wish to consider all indicators with High severity as Malicious, set this parameter to 'High'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.**
+    - **Specify the "severity" of indicator that should be considered as "suspicious" irrespective of the category. If you wish to consider all indicators with Medium severity as Suspicious, set this parameter to 'Medium'. Allowed values are 'High', 'Medium' and 'Low'. This configuration is applicable to reputation commands only.**
+    - **Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "malicious". The value provided should be greater than the suspicious threshold. This configuration is applicable to reputation commands only.**
+    - **Specify the numeric value of "confidence score". If the indicator's confidence score is equal or above the configured threshold, it would be considered as "suspicious". The value provided should be smaller than the malicious threshold. This configuration is applicable to reputation commands only.**
+    - **Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "malicious". The confidence level configured should have higher precedence than the suspicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.**
+    - **Select the confidence score level. If the indicator's confidence score level is equal or above the configured level, it would be considered as "suspicious". The confidence level configured should have lesser precedence than the malicious level. This configuration is applicable to reputation commands only. Refer the "confidence score" level precedence UNKNOWN_SEVERITY < INFORMATIONAL < LOW < MEDIUM < HIGH.**
+    - **Fetches incidents**
+    - **First fetch time**
+    - **How many incidents to fetch each time**
+    - **Chronicle Alert Type (Select the type of data to consider for fetch incidents)**
+    - **Time window (in minutes)**
+    - **Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts).**
+    - **Detections to fetch by Rule ID or Version ID**
+    - **Fetch all rules detections**
+    - **Filter detections by alert state**
+    - **List Basis**  
+    - **Trust any certificate (not secure)**
+    - **Use system proxy settings**
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Fetched Incidents Data
+
 ---
 Fetch-incidents feature can pull events from Google Chronicle which can be converted into actionable incidents for further investigation. It is the function that Cortex XSOAR calls every minute to import new incidents and can be enabled by the "Fetches incidents" parameter in the integration configuration.
 
 #### Configuration Parameters for Fetch-incidents
- - First fetch time interval: **Default** 3 days
- - How many incidents to fetch each time: **Default** 100
- - Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts). **Only applicable for asset alerts**.
- - Chronicle Alert Type (Select the type of data to consider for fetch incidents):
-   - IOC Domain matches **Default**
-   - Assets with alerts
-   - Curated Rule Detection alerts
-   - Detection alerts
-   - User alerts
- - Time window (in minutes): **Not applicable for IOC Domain matches**
-    - 15 **Default**
-    - 30
-    - 45
-    - 60
- - Detections to fetch by Rule ID or Version ID **Only applicable for Detection alerts and Curated Rule Detection alerts**
- - Fetch all rules detections **Only applicable for Detection alerts**
- - Filter detections by alert state: **Only applicable for Detection alerts and Curated Rule Detection alerts**
-   - ALERTING
-   - NOT ALERTING
+
+- First fetch time interval: **Default** 3 days
+- How many incidents to fetch each time: **Default** 100
+- Select the severity of alerts to be filtered for Fetch Incidents. Available options are 'High', 'Medium', 'Low' and 'Unspecified' (If not selected, fetches all alerts). **Only applicable for asset alerts**.
+- Chronicle Alert Type (Select the type of data to consider for fetch incidents):
+  - IOC Domain matches **Default**
+  - Assets with alerts
+  - Curated Rule Detection alerts
+  - Detection alerts
+  - User alerts
+- Time window (in minutes): **Not applicable for IOC Domain matches**
+  - 15 **Default**
+  - 30
+  - 45
+  - 60
+- Detections to fetch by Rule ID or Version ID **Only applicable for Detection alerts and Curated Rule Detection alerts**
+- Fetch all rules detections **Only applicable for Detection alerts**
+- Filter detections by alert state: **Only applicable for Detection alerts and Curated Rule Detection alerts**
+  - ALERTING
+  - NOT ALERTING
  
 | **Name** | **Initial Value** |
 | --- | --- |
@@ -118,6 +128,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | Filter detections by alert state | Not selected |
 
 #### Incident field mapping - Asset Alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;AlertName&gt; for &lt;Asset&gt; |
@@ -126,6 +137,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | severity | Severity of Alert |
 
 #### Incident field mapping - IOC Domain matches
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | IOC Domain Match: &lt;Artifact&gt; |
@@ -133,6 +145,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | details | Single Raw JSON |
 
 #### Incident field mapping - Detection Alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;RuleName&gt; |
@@ -140,6 +153,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | details | Single Raw JSON |
 
 #### Incident field mapping - Curated Rule Detection alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;RuleName&gt; |
@@ -152,6 +166,7 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | Tags | tags |
 
 #### Incident field mapping - User Alerts
+
 | **Name** | **Initial Value** |
 | --- | --- |
 | name | &lt;AlertName&gt; for &lt;User&gt; |
@@ -159,9 +174,11 @@ Fetch-incidents feature can pull events from Google Chronicle which can be conve
 | details | Single Raw JSON |
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 1. gcb-list-iocs
 2. gcb-assets
 3. ip
@@ -193,12 +210,14 @@ After you successfully execute a command, a DBot message appears in the War Room
 29. gcb-udm-search
 
 ### 1. gcb-list-iocs
+
 ---
 Lists the IOC Domain matches within your enterprise for the specified time interval. The indicator of compromise (IOC) domain matches lists for which the domains that your security infrastructure has flagged as both suspicious and that have been seen recently within your enterprise.
 
 ##### Base Command
 
 `gcb-list-iocs`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -225,9 +244,11 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 
 ##### Command Example
+
 ```!gcb-list-iocs page_size=1 preset_time_range="Last 1 day"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Iocs": [
@@ -273,6 +294,7 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 ##### Human Readable Output
 
 >### IOC Domain Matches
+
 >|Artifact|Category|Source|Confidence|Severity|IOC ingest time|First seen|Last seen|
 >|---|---|---|---|---|---|---|---|
 >| anx.tb.ask.com | Spyware Reporting Server | ET Intelligence Rep List | Low | Medium | 7 days ago | a year ago | 3 hours ago |
@@ -280,12 +302,14 @@ Lists the IOC Domain matches within your enterprise for the specified time inter
 
 
 ### 2. gcb-assets
+
 ---
 Returns a list of the assets that accessed the input artifact (IP, domain, MD5, SHA1 and SHA256) during the specified time.
 
 ##### Base Command
 
 `gcb-assets`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -319,9 +343,11 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 
 
 ##### Command Example
+
 ```!gcb-assets artifact_value=bing.com preset_time_range="Last 1 day"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Asset": [
@@ -352,6 +378,7 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 ##### Human Readable Output
 
 >### Assets related to artifact - bing.com
+
 >|Host Name|Host IP|Host MAC|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|
 >| james-anderson-laptop | - | - | 2018-10-18T04:38:44Z | 2020-02-14T07:13:33Z |
@@ -361,12 +388,14 @@ Returns a list of the assets that accessed the input artifact (IP, domain, MD5, 
 
 
 ### 3. ip
+
 ---
 Checks the reputation of an IP address.
 
 ##### Base Command
 
 `ip`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -381,7 +410,7 @@ Checks the reputation of an IP address.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
+| DBotScore.Score | Number | The actual score. | 
 | IP.Address | String | The IP address of the artifact. | 
 | IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision. | 
 | IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. | 
@@ -397,9 +426,11 @@ Checks the reputation of an IP address.
 
 
 ##### Command Example
+
 ```!ip ip=23.20.239.12```
 
 ##### Context Example
+
 ```
 {
     "IP": {
@@ -454,7 +485,9 @@ Checks the reputation of an IP address.
 ##### Human Readable Output
 
 >IP: 23.20.239.12 found with Reputation: Unknown
+
 >### Reputation Parameters
+
 >|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|---|---|
 >| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
@@ -464,12 +497,14 @@ Checks the reputation of an IP address.
 
 
 ### 4. domain
+
 ---
 Checks the reputation of a domain.
 
 ##### Base Command
 
 `domain`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -484,7 +519,7 @@ Checks the reputation of a domain.
 | DBotScore.Indicator | String | The indicator that was tested. | 
 | DBotScore.Type | String | The indicator type. | 
 | DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The reputation score (0: Unknown, 1: Good, 2: Suspicious, 3: Bad) | 
+| DBotScore.Score | Number | The actual score. | 
 | Domain.Name | String | The domain name of the artifact. | 
 | Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. | 
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. | 
@@ -500,9 +535,11 @@ Checks the reputation of a domain.
 
 
 ##### Command Example
+
 ```!domain domain=bing.com```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Domain": {
@@ -540,7 +577,9 @@ Checks the reputation of a domain.
 ##### Human Readable Output
 
 >Domain: bing.com found with Reputation: Unknown
+
 >### Reputation Parameters
+
 >|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|---|---|
 >| bing.com | - | Observed serving executables | 67 | Low | 2013-08-06T00:00:00Z | 2020-01-14T00:00:00Z |
@@ -549,12 +588,14 @@ Checks the reputation of a domain.
 
 
 ### 5. gcb-ioc-details
+
 ---
 Accepts an artifact indicator and returns any threat intelligence associated with the artifact. The threat intelligence information is drawn from your enterprise security systems and from Chronicle's IoC partners (for example, the DHS threat feed).
 
 ##### Base Command
 
 `gcb-ioc-details`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -580,8 +621,11 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 
 
 ##### Command Example
+
 ```!gcb-ioc-details artifact_value=23.20.239.12```
+
 ##### Context Example
+
 ```
 {
     "IP": {
@@ -630,6 +674,7 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 ##### Human Readable Output
 
 >### IoC Details
+
 >|Domain|IP Address|Category|Confidence Score|Severity|First Accessed Time|Last Accessed Time|
 >|---|---|---|---|---|---|---|
 >| - | 23.20.239.12 | Known CnC for Mobile specific Family | 70 | High | 2018-12-05T00:00:00Z | 2019-04-10T00:00:00Z |
@@ -639,12 +684,14 @@ Accepts an artifact indicator and returns any threat intelligence associated wit
 
 
 ### 6. gcb-list-alerts
+
 ---
 List all the alerts tracked within your enterprise for the specified time range. Both the parsed alerts and their corresponding raw alert logs are returned.
 
 ##### Base Command
 
 `gcb-list-alerts`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -676,9 +723,11 @@ List all the alerts tracked within your enterprise for the specified time range.
 
 
 ##### Command Example
+
 ```!gcb-list-alerts page_size=1 preset_time_range="Last 1 day"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Alert": [
@@ -701,18 +750,21 @@ List all the alerts tracked within your enterprise for the specified time range.
 ##### Human Readable Output
 
 >### Security Alert(s)
+
 >|Alerts|Asset|Alert Names|First Seen|Last Seen|Severities|Sources|
 >|---|---|---|---|---|---|---|
 >| 1 | rosie-hayes-pc | Authentication failure [32038] | 6 hours ago | 6 hours ago | Medium | Internal Alert |
 
 
 ### 7. gcb-list-events
+
 ---
 List all of the events discovered within your enterprise on a particular device within the specified time range. If you receive the maximum number of events you specified using the page_size parameter (or 100, the default), there might still be more events within your Chronicle account. You can narrow the time range and issue the call again to ensure you have visibility into all possible events. This command returns more than 60 different types of events. Any event would have only specific output context set. Refer the UDM documentation to figure out the output properties specific to the event types.
 
 ##### Base Command
 
 `gcb-list-events`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1093,9 +1145,11 @@ List all of the events discovered within your enterprise on a particular device 
 
 
 ##### Command Example
+
 ```!gcb-list-events asset_identifier_type="Host Name" asset_identifier="ray-xxx-laptop" start_time="2020-01-01T00:00:00Z" page_size="1"```
 
 ##### Context Example
+
 ```
 {
     "GoogleChronicleBackstory.Events": [
@@ -1148,6 +1202,7 @@ List all of the events discovered within your enterprise on a particular device 
 ##### Human Readable Output
 
 >### Event(s) Details
+
 >|Event Timestamp|Event Type|Principal Asset Identifier|Target Asset Identifier|Queried Domain|
 >|---|---|---|---|---|
 >| 2020-01-01T23:59:38Z | NETWORK_DNS | ray-xxx-laptop | 8.8.8.8 | ninthdecimal.com |
@@ -1158,6 +1213,7 @@ List all of the events discovered within your enterprise on a particular device 
 
 
 ### 8. gcb-list-detections
+
 ---
 Return the detections for the specified version of a rule, the latest version of a rule, all versions of a rule, or all versions of all rules.
 
@@ -1165,6 +1221,7 @@ Return the detections for the specified version of a rule, the latest version of
 ##### Base Command
 
 `gcb-list-detections`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1568,9 +1625,11 @@ Return the detections for the specified version of a rule, the latest version of
 
 
 ##### Command Example
+
 ```!gcb-list-detections id=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71 page_size=2```
 
 ##### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -1819,6 +1878,7 @@ Return the detections for the specified version of a rule, the latest version of
 ##### Human Readable Output
 
 >### Detection(s) Details For Rule: [SampleRule](https://dummy-chronicle/ruleDetections?ruleId=ru_746bd6d6-6b84-4007-b74c-ec90c7306a71)
+
 >|Detection ID|Detection Type|Detection Time|Events|Alert State|
 >|---|---|---|---|---|
 >| [de_bea17243-d3b3-14bf-6b57-74e1a2422c68](https://dummy-chronicle/alert?alertId=de_bea17243-d3b3-14bf-6b57-74e1a2422c68) | RULE_DETECTION | 2020-12-24T04:00:00Z | **Event Timestamp:** 2020-12-24T03:00:02.559Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com<br/><br/>**Event Timestamp:** 2020-12-24T03:00:40.566Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** ray-xxx-laptop<br/>**Target Asset Identifier:** 10.0.XX.XX<br/>**Queried Domain:** is5-ssl.mzstatic.com | NOT_ALERTING |
@@ -1831,6 +1891,7 @@ Return the detections for the specified version of a rule, the latest version of
 
 
 ### 9. gcb-list-rules
+
 ---
 List the latest versions of all Rules.
 
@@ -1838,6 +1899,7 @@ List the latest versions of all Rules.
 ##### Base Command
 
 `gcb-list-rules`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1872,9 +1934,11 @@ List the latest versions of all Rules.
 
 
 ##### Command Example
+
 ```!gcb-list-rules page_size=2```
 
 ##### Context Example
+
 ```json
 
 {
@@ -1921,6 +1985,7 @@ List the latest versions of all Rules.
 ##### Human Readable Output
 
 >### Rule(s) Details
+
 >| Rule ID | Rule Name | Compilation State |
 >| --- | --- | --- |
 >| ru_42f02f52-544c-4b6e-933c-df17648d5831 | email_execution | SUCCEEDED |
@@ -1930,6 +1995,7 @@ List the latest versions of all Rules.
 
 
 ### 10. gcb-create-rule
+
 ---
 Creates a new rule. By default the live rule status will be set to disabled.
 
@@ -1937,6 +2003,7 @@ Creates a new rule. By default the live rule status will be set to disabled.
 #### Base Command
 
 `gcb-create-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1966,8 +2033,11 @@ Creates a new rule. By default the live rule status will be set to disabled.
 | GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
 
 #### Command Example
+
 ```!gcb-create-rule rule_text="rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -1991,12 +2061,14 @@ Creates a new rule. By default the live rule status will be set to disabled.
 #### Human Readable Output
 
 >### Rule Detail
+
 >|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
 >|---|---|---|---|---|---|---|---|
 >| ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6 | ru_b28005ec-e027-4300-9dcc-0c6ef5dda8e6@v_1655965296_217135000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-23T06:21:36.217135Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
 
 
 ### 11. gcb-get-rule
+
 ---
 Retrieves the rule details of specified Rule ID or Version ID.
 
@@ -2004,6 +2076,7 @@ Retrieves the rule details of specified Rule ID or Version ID.
 #### Base Command
 
 `gcb-get-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2033,8 +2106,11 @@ Retrieves the rule details of specified Rule ID or Version ID.
 | GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
 
 #### Command Example
+
 ```!gcb-get-rule id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2058,12 +2134,14 @@ Retrieves the rule details of specified Rule ID or Version ID.
 #### Human Readable Output
 
 >### Rule Details
+
 >|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
 >|---|---|---|---|---|---|---|---|
 >| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655904500_905647000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-22T13:28:20.905647Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
 
 
 ### 12. gcb-delete-rule
+
 ---
 Deletes the rule specified by Rule ID.
 
@@ -2071,6 +2149,7 @@ Deletes the rule specified by Rule ID.
 #### Base Command
 
 `gcb-delete-rule`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2086,8 +2165,11 @@ Deletes the rule specified by Rule ID.
 | GoogleChronicleBackstory.DeleteRule.actionStatus | String | Whether the rule is successfully deleted or not. | 
 
 #### Command Example
+
 ```!gcb-delete-rule rule_id=ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2102,12 +2184,14 @@ Deletes the rule specified by Rule ID.
 #### Human Readable Output
 
 >### Rule with ID ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b deleted successfully.
+
 >|Rule ID|Action Status|
 >|---|---|
 >| ru_1e0b123a-5ad8-47d1-94fb-0b874a526f9b | SUCCESS |
 
 
 ### 13. gcb-create-rule-version
+
 ---
 Creates a new version of an existing rule.
 
@@ -2115,6 +2199,7 @@ Creates a new version of an existing rule.
 #### Base Command
 
 `gcb-create-rule-version`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2145,8 +2230,11 @@ Creates a new version of an existing rule.
 | GoogleChronicleBackstory.Rules.metadata.updated | String | Time at which the rule is updated. | 
 
 #### Command Example
+
 ```!gcb-create-rule-version rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 rule_text="rule demoRuleCreatedFromAPI {meta: author = \"securityuser\" description = \"single event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition: $e}"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2170,12 +2258,14 @@ Creates a new version of an existing rule.
 #### Human Readable Output
 
 >### New Rule Version Details
+
 >|Rule ID|Version ID|Author|Rule Name|Description|Version Creation Time|Compilation Status|Rule Text|
 >|---|---|---|---|---|---|---|---|
 >| ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 | ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7@v_1655965335_343423000 | securityuser | demoRuleCreatedFromAPI | single event rule that should generate detections | 2022-06-23T06:22:15.343423Z | SUCCEEDED | rule demoRuleCreatedFromAPI {meta: author = "securityuser" description = "single event rule that should generate detections" events: $e.metadata.event_type = "NETWORK_DNS" condition: $e}<br/> |
 
 
 ### 14. gcb-change-rule-alerting-status
+
 ---
 Updates the alerting status for a rule specified by Rule ID.
 
@@ -2183,6 +2273,7 @@ Updates the alerting status for a rule specified by Rule ID.
 #### Base Command
 
 `gcb-change-rule-alerting-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2200,8 +2291,11 @@ Updates the alerting status for a rule specified by Rule ID.
 | GoogleChronicleBackstory.RuleAlertingChange.alertingStatus | String | New alerting status for the rule. | 
 
 #### Command Example
+
 ```!gcb-change-rule-alerting-status alerting_status=enable rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2217,6 +2311,7 @@ Updates the alerting status for a rule specified by Rule ID.
 #### Human Readable Output
 
 >### Alerting Status
+
 >Alerting status for the rule with ID ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 has been successfully enabled.
 > 
 >|Rule ID|Action Status|
@@ -2225,6 +2320,7 @@ Updates the alerting status for a rule specified by Rule ID.
 
 
 ### 15. gcb-change-live-rule-status
+
 ---
 Updates the live rule status for a rule specified by Rule ID.
 
@@ -2232,6 +2328,7 @@ Updates the live rule status for a rule specified by Rule ID.
 #### Base Command
 
 `gcb-change-live-rule-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2249,8 +2346,11 @@ Updates the live rule status for a rule specified by Rule ID.
 | GoogleChronicleBackstory.LiveRuleStatusChange.liveRuleStatus | String | New live rule status for the rule. | 
 
 #### Command Example
+
 ```!gcb-change-live-rule-status live_rule_status=enable rule_id=ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2266,6 +2366,7 @@ Updates the live rule status for a rule specified by Rule ID.
 #### Human Readable Output
 
 >### Live Rule Status
+
 >Live rule status for the rule with ID ru_99bfa421-2bf2-4440-9ac8-6b1acab170e7 has been successfully enabled.
 > 
 >|Rule ID|Action Status|
@@ -2274,6 +2375,7 @@ Updates the live rule status for a rule specified by Rule ID.
 
 
 ### 16. gcb-start-retrohunt
+
 ---
 Initiate a retrohunt for the specified rule.
 
@@ -2281,6 +2383,7 @@ Initiate a retrohunt for the specified rule.
 #### Base Command
 
 `gcb-start-retrohunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2303,8 +2406,11 @@ Initiate a retrohunt for the specified rule.
 | GoogleChronicleBackstory.RetroHunt.state | String | Current state of the retrohunt. It can be STATE_UNSPECIFIED, RUNNING, DONE, or CANCELLED. | 
 
 #### Command Example
+
 ```!gcb-start-retrohunt rule_id=ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 start_time="52 weeks"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2324,12 +2430,14 @@ Initiate a retrohunt for the specified rule.
 #### Human Readable Output
 
 >### Retrohunt Details
+
 >|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|State|
 >|---|---|---|---|---|---|---|
 >| oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2021-06-17T07:08:19.991404Z | 2022-06-16T06:58:19.994598Z | 2022-06-16T07:08:21.958022Z | RUNNING |
 
 
 ### 17. gcb-get-retrohunt
+
 ---
 Get retrohunt for a specific version of rule.
 
@@ -2337,6 +2445,7 @@ Get retrohunt for a specific version of rule.
 #### Base Command
 
 `gcb-get-retrohunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2360,8 +2469,11 @@ Get retrohunt for a specific version of rule.
 | GoogleChronicleBackstory.RetroHunt.progressPercentage | Number | Percentage progress towards retrohunt completion \(0.00 to 100.00\). |
 
 #### Command Example
+
 ```!gcb-get-retrohunt id=ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818 retrohunt_id=oh_cbb6b859-5c9d-4af9-8d74-1a58321078ad```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2383,12 +2495,14 @@ Get retrohunt for a specific version of rule.
 #### Human Readable Output
 
 >### Retrohunt Details
+
 >|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|Retrohunt End Time|State|Progress Percentage|
 >|---|---|---|---|---|---|---|---|---|
 >| oh_cbb6b859-5c9d-4af9-8d74-1a58321078ad | ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818 | ru_7ba19ccc-be0d-40d3-91dc-ab3c41251818@v_1655291303_302767000 | 2022-06-08T13:03:04.793333Z | 2022-06-15T13:03:06.834384Z | 2022-06-15T13:05:12.774180Z | 2022-06-15T13:05:46.894926Z | DONE | 100 |
 
 
 ### 18. gcb-list-retrohunts
+
 ---
 List retrohunts for a rule.
 
@@ -2396,6 +2510,7 @@ List retrohunts for a rule.
 #### Base Command
 
 `gcb-list-retrohunts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2422,8 +2537,11 @@ List retrohunts for a rule.
 | GoogleChronicleBackstory.RetroHunt.progressPercentage | Number | Percentage progress towards retrohunt completion \(0.00 to 100.00\). | 
 
 #### Command Example
+
 ```!gcb-list-retrohunts page_size=3```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2468,6 +2586,7 @@ List retrohunts for a rule.
 #### Human Readable Output
 
 >### Retrohunt Details
+
 >|Retrohunt ID|Rule ID|Version ID|Event Start Time|Event End Time|Retrohunt Start Time|Retrohunt End Time|State|Progress Percentage|
 >|---|---|---|---|---|---|---|---|---|
 >| oh_4c02f3a7-fe3c-49a0-82ba-ab255dd87723 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 | ru_4bec682c-305a-40a9-bbc6-81fa5487cb49@v_1655362604_042191000 | 2021-06-17T07:08:19.991404Z | 2022-06-16T06:58:19.994598Z | 2022-06-16T07:08:21.958022Z |  | RUNNING | 6.59 |
@@ -2478,6 +2597,7 @@ List retrohunts for a rule.
 
 
 ### 19. gcb-cancel-retrohunt
+
 ---
 Cancel a retrohunt for a specified rule.
 
@@ -2485,6 +2605,7 @@ Cancel a retrohunt for a specified rule.
 #### Base Command
 
 `gcb-cancel-retrohunt`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2502,8 +2623,11 @@ Cancel a retrohunt for a specified rule.
 | GoogleChronicleBackstory.RetroHunt.cancelled | Boolean | Whether the retrohunt is cancelled or not. | 
 
 #### Command Example
+
 ```!gcb-cancel-retrohunt id=ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 retrohunt_id=oh_5fd39b3d-5814-4ce3-ad4f-244aa943d020```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2519,6 +2643,7 @@ Cancel a retrohunt for a specified rule.
 #### Human Readable Output
 
 >### Cancelled Retrohunt
+
 >Retrohunt for the rule with ID ru_4bec682c-305a-40a9-bbc6-81fa5487cb49 has been successfully cancelled.
 >
 >|ID|Retrohunt ID|Action Status|
@@ -2527,6 +2652,7 @@ Cancel a retrohunt for a specified rule.
 
 
 ### 20. gcb-list-reference-list
+
 ---
 Retrieve all the reference lists.
 
@@ -2534,6 +2660,7 @@ Retrieve all the reference lists.
 #### Base Command
 
 `gcb-list-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2553,8 +2680,11 @@ Retrieve all the reference lists.
 | GoogleChronicleBackstory.ReferenceLists.lines | String | List of line items. | 
 
 #### Command Example
+
 ```!gcb-list-reference-list page_size=3```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2583,6 +2713,7 @@ Retrieve all the reference lists.
 #### Human Readable Output
 
 >### Reference List Details
+
 >|Name|Creation Time|Description|
 >|---|---|---|
 >| test_1 | 2022-06-14T06:06:35.787791Z | sample list |
@@ -2593,6 +2724,7 @@ Retrieve all the reference lists.
 
 
 ### 21. gcb-get-reference-list
+
 ---
 Returns the specified list.
 
@@ -2600,6 +2732,7 @@ Returns the specified list.
 #### Base Command
 
 `gcb-get-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2618,8 +2751,11 @@ Returns the specified list.
 | GoogleChronicleBackstory.ReferenceList.lines | String | List of line items. | 
 
 #### Command Example
+
 ```!gcb-get-reference-list name=test1```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2640,12 +2776,14 @@ Returns the specified list.
 #### Human Readable Output
 
 >### Reference List Details
+
 >|Name|Description|Creation Time|Content|
 >|---|---|---|---|
 >| test1 | update | 2022-06-10T08:59:34.885679Z | line_item_1,<br/>// comment,<br/>line_item_2 |
 
 
 ### 22. gcb-create-reference-list
+
 ---
 Create a new reference list.
 
@@ -2653,6 +2791,7 @@ Create a new reference list.
 #### Base Command
 
 `gcb-create-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2673,8 +2812,11 @@ Create a new reference list.
 | GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
 
 #### Command Example
+
 ```!gcb-create-reference-list description="List created for readme" lines=L1,L2,L3 name=XSOAR_GoogleChronicle_Backstory_README_List_```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2695,12 +2837,14 @@ Create a new reference list.
 #### Human Readable Output
 
 >### Reference List Details
+
 >|Name|Description|Creation Time|Content|
 >|---|---|---|---|
 >| XSOAR_GoogleChronicle_Backstory_README_List_ | List created for readme | 2022-06-16T07:45:37.285791Z | L1,<br/>L2,<br/>L3 |
 
 
 ### 23. gcb-update-reference-list
+
 ---
 Updates an existing reference list.
 
@@ -2708,6 +2852,7 @@ Updates an existing reference list.
 #### Base Command
 
 `gcb-update-reference-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -2728,8 +2873,11 @@ Updates an existing reference list.
 | GoogleChronicleBackstory.ReferenceList.createTime | Date | Time when the list was created. | 
 
 #### Command Example
+
 ```!gcb-update-reference-list lines=Line1,Line2,Line3 name=XSOAR_GoogleChronicle_Backstory_README_List```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2750,12 +2898,14 @@ Updates an existing reference list.
 #### Human Readable Output
 
 >### Updated Reference List Details
+
 >|Name|Description|Creation Time|Content|
 >|---|---|---|---|
 >| XSOAR_GoogleChronicle_Backstory_README_List | list created for readme | 2022-06-16T07:11:11.380991Z | Line1,<br/>Line2,<br/>Line3 |
 
 
 ### 24. gcb-test-rule-stream
+
 ---
 Test a rule over a specified time range. Return any errors and any detections up to the specified maximum.
 
@@ -2763,6 +2913,7 @@ Test a rule over a specified time range. Return any errors and any detections up
 #### Base Command
 
 `gcb-test-rule-stream`
+
 #### Input
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                           | **Required** |
@@ -2822,8 +2973,11 @@ Test a rule over a specified time range. Return any errors and any detections up
 | GoogleChronicleBackstory.StreamRules.list.detection.detectionTime | Date | The time period the detection was found in. | 
 
 #### Command example
+
 ```!gcb-test-rule-stream rule_text="rule demoRuleCreatedFromAPIVersion2 {meta:author = \"securityuser2\" description = \"double event rule that should generate detections\" events: $e.metadata.event_type = \"NETWORK_DNS\" condition:$e}" start_time="2022-11-24T00:00:00Z" end_time="2022-12-08T00:00:00Z" max_results=1```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -2935,6 +3089,7 @@ Test a rule over a specified time range. Return any errors and any detections up
 #### Human Readable Output
 
 >### Detection(s)
+
 >|Detection ID|Detection Type|Detection Time|Events|
 >|---|---|---|---|
 >| de_681b4417-27dc-ba3a-7db9-0388a7954c07 | RULE_DETECTION | 2022-11-24T06:56:59.165381Z | **Event Timestamp:** 2022-11-24T06:56:59.165381Z<br/>**Event Type:** NETWORK_DNS<br/>**Principal Asset Identifier:** activedir.stackedpads.local<br/>**Queried Domain:** 7121e16d-a937-41b2-b7a4-4f38cf48d65c._msdcs.stackedpads.local |
@@ -3003,8 +3158,11 @@ Lists all the aliases of a user in an enterprise for a specified user identifier
 | GoogleChronicleBackstory.UserAliases.user.aliases.relations.relationship | String | Relationship between entities in the relations. | 
 
 #### Command example
+
 ```!gcb-list-useraliases user_identifier_type="Product object ID" user_identifier="test_product_entity_id"```
+
 #### Context Example
+
 ```json
 {
   "GoogleChronicleBackstory.UserAliases(val.user.email == obj.user.email && val.user.username == obj.user.username && val.user.windows_sid == obj.user.windows_sid && val.user.employee_id == obj.user.employee_id && val.user.product_object_id == obj.user.product_object_id ) ": {
@@ -3082,6 +3240,7 @@ Lists all the aliases of a user in an enterprise for a specified user identifier
 #### Human Readable Output
 
 >### User Aliases:
+
 >|User ID|Product Object ID|Product Name|Vendor Name|Start Time|End Time|
 >|---|---|---|---|---|---|
 >| admin | test_product_entity_id | test_product_name | test_vendor_name | 2023-04-26T00:00:00Z | 2023-01-08T06:47:56.197021Z |
@@ -3139,8 +3298,11 @@ Lists all the aliases of an asset in an enterprise for the specified asset ident
 | GoogleChronicleBackstory.AssetAliases.asset.aliases.entity.asset.attribute.labels.value | String | The value of an attribute label associated with the asset. | 
 
 #### Command example
+
 ```!gcb-list-assetaliases asset_identifier_type="Host Name" asset_identifier="windows-endpoint"```
+
 #### Context Example
+
 ```json
 {
   "GoogleChronicleBackstory.AssetAliases(val.asset.asset_ip_address == obj.asset.asset_ip_address && val.asset.product_id == obj.asset.product_id && val.asset.mac == obj.asset.mac && val.asset.hostname == obj.asset.hostname)": {
@@ -3183,6 +3345,7 @@ Lists all the aliases of an asset in an enterprise for the specified asset ident
 #### Human Readable Output
 
 >### Asset Aliases:
+
 >|Asset ID|Host Name|Start Time|End Time|
 >|---|---|---|---|
 >|  | windows-endpoint | 2023-01-01T00:00:00Z | 2023-01-01T00:00:01Z |
@@ -3225,8 +3388,11 @@ List curated rules.
 | GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of Rules. Absent if this is the last page. |
 
 #### Command example
+
 ```!gcb-list-curatedrules page_size="2"```
+
 #### Context Example
+
 ```json
 {
   "GoogleChronicleBackstory": {
@@ -3275,6 +3441,7 @@ List curated rules.
 #### Human Readable Output
 
 >### Curated Rules:
+
 >|Rule ID|Rule Name|Severity|Rule Type|Rule Set|Description|
 >|---|---|---|---|---|---|
 >| ur_ttp_GCP__Global | GCE SSH Keys | Low | SINGLE_EVENT| 00000000-0000-0000-0000-000000000000 | Identifies the addition of project-wide SSH keys where there were previously none. |
@@ -3763,8 +3930,11 @@ Return the detections for the specified curated rule identifier.
 | GoogleChronicleBackstory.Token.nextPageToken | String | A page token that can be provided to the next call to view the next page of detections. Absent if this is the last page. | 
 
 #### Command example
+
 ```!gcb-list-curatedrule-detections page_size="2"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -4192,7 +4362,8 @@ Return the detections for the specified curated rule identifier.
 
 #### Human Readable Output
 
->### Curated Detection(s) Details For Rule: [GCP Secret Manager Mass Deletion](https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion
+>### Curated Detection(s) Details For Rule: [GCP Secret Manager Mass Deletion](<https://dummy-chronicle/ruleDetections?ruleId=ur_ttp_GCP__MassSecretDeletion>
+
 >|Detection ID|Description|Detection Type|Detection Time|Events|Alert State|Detection Severity|Detection Risk-Score|
 >|---|---|---|---|---|---|---|---|
 >| [de_50fd0957-0959-0000-d556-c6f8000016b1](https://dummy-chronicle/alert?alertId=de_50fd0957-0959-0000-d556-c6f8000016b1) | Identifies mass deletion of secrets in GCP Secret Manager. | GCTI_FINDING | 2023-06-14T17:28:00Z | **Event Timestamp:** 2023-06-14T17:27:39.239875241Z<br>**Event Type:** RESOURCE_DELETION<br>**Principal Asset Identifier:** 0.0.0.1 | ALERTING | LOW | 35 |
@@ -4647,8 +4818,11 @@ Lists the events for the specified UDM Search query.
 | GoogleChronicleBackstory.Events.securityResult.urlBackToProduct | String | URL to direct you to the source product console for this security event. | 
 
 #### Command example
+
 ```!gcb-udm-search query="ip=\"0.0.0.1\"" limit="2"```
+
 #### Context Example
+
 ```json
 {
     "GoogleChronicleBackstory": {
@@ -4836,6 +5010,7 @@ Lists the events for the specified UDM Search query.
 #### Human Readable Output
 
 >### Event(s) Details
+
 >|Event ID|Event Timestamp|Event Type|Security Results|Principal Asset Identifier|Target Asset Identifier|Product Name|Vendor Name|Queried Domain|
 >|---|---|---|---|---|---|---|---|---|
 >| 010000= | 2023-01-14T00:59:52.110Z | REGISTRY_MODIFICATION | **Severity:** INFORMATIONAL<br>**Summary:** Registry value set<br>**Rule Name:** technique_id=T0000,technique_name=Service Creation<br><br>**Actions:** ALLOW<br>**Rule Name:** EventID: 10 | active.stack.local | 0.0.0.1 | Microsoft-Windows-Sysmon | Microsoft |  |
