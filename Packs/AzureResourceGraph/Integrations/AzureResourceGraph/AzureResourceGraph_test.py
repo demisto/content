@@ -57,21 +57,21 @@ def test_client_api_calls(mocker, function_name, data_file_name, args, additiona
 
 
 @pytest.mark.parametrize("limit, page_size, page_number, expected_number_of_operations, expected_first_name",
-    [(1, None, None, 1, "Microsoft.ResourceGraph/operations/read"),
-    (3, 2, 2, 2, "Microsoft.ResourceGraph/resourcesHistory/read")])
+                         [(1, None, None, 1, "Microsoft.ResourceGraph/operations/read"),
+                          (3, 2, 2, 2, "Microsoft.ResourceGraph/resourcesHistory/read")])
 def test_successful_list_operations_command(mocker, limit, page_size, page_number,
-                                           expected_number_of_operations, expected_first_name):
+                                            expected_number_of_operations, expected_first_name):
     operations_data = util_load_json('test_data/test_list_operations_output.json')
     mocker.patch.object(client, 'list_operations', return_value=operations_data)
     args: dict = {"limit": limit, "page": page_number, "page_size": page_size}
     command_results = list_operations_command(client, args)
     assert command_results.outputs[0]["Name"] == expected_first_name
     assert len(command_results.outputs) == expected_number_of_operations
-    
+
 
 @pytest.mark.parametrize("limit, page_size, page_number, expected_error_message",
-    [(None, None, 2, "Please enter a value for \"page_size\" when using \"page\"."),
-    (None, 2, None, "Please enter a value for \"page\" when using \"page_size\".")])
+                         [(None, None, 2, "Please enter a value for \"page_size\" when using \"page\"."),
+                          (None, 2, None, "Please enter a value for \"page\" when using \"page_size\".")])
 def test_failure_list_operations_command(mocker, limit, page_size, page_number, expected_error_message):
     try:
         operations_data = util_load_json('test_data/test_list_operations_output.json')
@@ -95,7 +95,7 @@ def test_query_resources_command_output(mocker, query, data_file_name, expected_
     mocker.patch.object(client, 'query_resources', return_value=query_data)
     command_results = query_resources_command(client, args=args)
     assert command_results.outputs[0]["name"] == expected_output
-    
+
 
 @pytest.mark.parametrize(
     'query, data_file_name, extra_args, expected_length, expected_name', [

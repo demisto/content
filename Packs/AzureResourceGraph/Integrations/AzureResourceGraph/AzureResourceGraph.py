@@ -35,10 +35,10 @@ class AzureResourceGraphClient:
 
     def query_resources(self, query: str, paging_options: dict, subscriptions: list, management_groups: list):
         request_data = {"query": query, "options": paging_options}
-        
+
         if subscriptions:
             request_data["subscriptions"] = subscriptions
-        
+
         if management_groups:
             request_data["managementGroups"] = management_groups
 
@@ -61,7 +61,7 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
 
     list_of_query_results = []
     total_records = 0
-    
+
     if page_number and page_size:
         skip = (page_number - 1) * page_size + 1
         params = {'$skip': skip, '$top': page_size}
@@ -83,13 +83,13 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
         query_results = []
         skip_token = ""
         counter = 0
-        
+
         while True:
             if skip_token:
                 params = {'$skipToken': skip_token}
             else:
                 params = {}
-            
+
             response = client.query_resources(query=query,
                                               paging_options=params,
                                               management_groups=management_groups,
@@ -104,7 +104,7 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
                 skip_token = response.get('$skipToken')
             else:
                 break
-            
+
         total_records = response.get('totalRecords')
         list_of_query_results = query_results
 
@@ -131,7 +131,7 @@ def list_operations_command(client: AzureResourceGraphClient, args: dict[str, An
     response = client.list_operations()
     operations_list = response.get('value')
     md_output_notes = ""
-    
+
     if page and not page_size:
         raise DemistoException("Please enter a value for \"page_size\" when using \"page\".")
     if page_size and not page:
@@ -141,7 +141,7 @@ def list_operations_command(client: AzureResourceGraphClient, args: dict[str, An
             md_output_notes = "\"limit\" was ignored for paging parameters."
             demisto.debug("\"limit\" was ignored for paging parameters.")
         operations_list = pagination(operations_list, page_size, page)
-    
+
     if page_size:
         limit = page_size
 
@@ -175,7 +175,7 @@ def test_module(client: AzureResourceGraphClient):
         return_error(f"Test connection failed with message {e}")
 
 
-## Helper Methods
+# Helper Methods
 
 def pagination(response, page_size, page_number):
     """Method to generate a page (slice) of data.
@@ -188,24 +188,24 @@ def pagination(response, page_size, page_number):
     """
     if page_size > MAX_PAGE_SIZE:
         page_size = MAX_PAGE_SIZE
-    
+
     starting_index = (page_number - 1) * page_size
     ending_index = starting_index + page_size
     return response[starting_index:ending_index]
 
 
 def validate_connection_params(tenant: str = None,
-                               auth_and_token_url:str = None,
+                               auth_and_token_url: str = None,
                                is_self_deployed: bool = False,
                                enc_key: str = None,
                                certificate_thumbprint: str = None,
                                private_key: str = None) -> None:
     if not tenant or not auth_and_token_url:
         raise DemistoException('Token and ID must be provided.')
-    
+
     if not is_self_deployed and not enc_key:
         raise DemistoException('Key must be provided. For further information see '
-                   'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
+                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
@@ -227,7 +227,7 @@ def main():
 
     validate_connection_params(tenant, auth_and_token_url, self_deployed, enc_key,
                                certificate_thumbprint, private_key)
-    
+
     ok_codes = (200, 201, 202, 204)
 
     commands_without_args: Dict[Any, Any] = {
@@ -249,7 +249,7 @@ def main():
 
         client = AzureResourceGraphClient(
             base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME,
-            verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server, 
+            verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server,
             certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         if command == 'azure-rg-auth-reset':
             return_results(reset_auth())
