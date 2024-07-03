@@ -95,31 +95,13 @@
                 "netutils",
                 "auth-utils"
             ],
-            "docker_ref": "demisto/py3-native:8.6.0.88771"
+            "docker_ref": "demisto/py3-native:8.6.0.98251"
         }
     },
     "ignored_content_items":[
         {
-            "id":"Symantec MSS",
-            "reason":"issue: CIAC-9119 - [Symantec MSS] Module 'OpenSSL.crypto' has deprecated 'load_pkcs12' member",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
-            ]
-        },
-        {
             "id":"EWSO365",
             "reason":"Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
-            ]
-        },
-        {
-            "id":"FetchIndicatorsFromFile",
-            "reason":"issue: CIAC-5243 - ElementTree object (xml) in python3.9 has getiterator attribute while in python 3.10 this attribute does not exist - causing unit tests failures.",
             "ignored_native_images":[
                 "native:8.6",
                 "native:dev",
@@ -136,18 +118,9 @@
         },
         {
             "id":"Intezer v2",
-            "reason":"Issue: CIAC-7861",
+            "reason":"Issue: CIAC-10263",
             "ignored_native_images":[
                 "native:8.6",
-                "native:candidate"
-            ]
-        },
-        {
-            "id":"RegexExtractAll",
-            "reason":"Issue: CIAC-6005",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
                 "native:candidate"
             ]
         },
@@ -168,28 +141,10 @@
             ]
         },
         {
-            "id":"Ping",
-            "reason":"see CIAC-8493",
-            "ignored_native_images":[
-                "native:8.6",
-                "native:dev",
-                "native:candidate"
-            ]
-        },
-        {
             "id": "Github Feed",
             "reason": "update docker image",
             "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
-            ]
-        },
-        {
-            "id": "ZipFile",
-            "reason": "see CIAC-10361",
-            "ignored_native_images": [
-                "native:8.6",
-                "native:candidate"
+                "native:8.6"
             ]
         }
     ],
