@@ -45,7 +45,7 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 5 * (10 ** 6)  # 5 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)  # 4 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -11630,24 +11630,7 @@ def split_data_to_chunks(data, target_chunk_size):
     if isinstance(data, str):
         data = data.split('\n')
     for data_part in data:
-        if sys.getsizeof(data_part) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(data_part)))
-            if isinstance(data_part, str):
-                try:
-                    data_dict = json.loads(data_part)
-                    if data_dict.get('output'):
-                        demisto.debug("replacing output key")
-                        data_dict['output'] = ""
-                        data_dict['isTruncated'] = True
-                        data_part = json.dumps(data_dict)
-                    else:
-                        demisto.debug("skipping object...")
-                        continue
-                except Exception as e:
-                    demisto.debug("could not parse object: {e}".format(e=e))
-                    continue
-
-        if chunk_size + sys.getsizeof(data_part) > target_chunk_size:
+        if chunk_size >= target_chunk_size:
             demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []

@@ -177,7 +177,7 @@ ASSETS_FETCH_FROM = '90 days'
 VULNS_FETCH_FROM = '1 days'
 MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = '404'
-
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)    # 4 MB
 
 class Client(BaseClient):
 
@@ -1869,9 +1869,25 @@ def skip_fetch_assets(last_run):     # pragma: no cover
     return to_skip
 
 
-def util_load_json(file_path):
-    with open(file_path, encoding='utf-8') as f:
-        return json.loads(f.read())
+def parse_vulnerabilities(vulns):
+
+    demisto.debug("Parse the vulnerabilities...")
+    if not isinstance(vulns, list):
+        demisto.debug(f"result is of type: {type(vulns)}")
+        vulns = list(vulns)
+    for vuln in vulns:
+        if sys.getsizeof(vuln) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(vuln)))
+            if vuln.get('output'):
+                demisto.debug("replacing output key")
+                vuln['output'] = ""
+                vuln['isTruncated'] = True
+            else:
+                demisto.debug("skipping object...")
+                continue
+        else:
+            vuln['isTruncated'] = False
+    return vulns
 
 
 def main():  # pragma: no cover
@@ -1989,6 +2005,7 @@ def main():  # pragma: no cover
                 demisto.debug('sending assets to XSIAM.')
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product=f'{PRODUCT}_assets', data_type='assets')
             if vulnerabilities:
+                vulnerabilities = parse_vulnerabilities(vulnerabilities)
                 demisto.debug('sending vulnerabilities to XSIAM.')
                 send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product=f'{PRODUCT}_vulnerabilities')
 
