@@ -2247,6 +2247,9 @@ Lists incident summaries.
 | CrowdStrike.Incidents.tags | String | The tags of the incident. | 
 | CrowdStrike.Incidents.fine_score | Number | The incident score. | 
 
+#### Command Example
+
+```!cs-falcon-list-incident-summaries```
 
 ### endpoint
 
@@ -3403,7 +3406,7 @@ Execute an active responder kill command on a single host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The host ID you would like to kill the given process for. | Required | 
+| host_id | The host ID to kill the given process for. | Required | 
 | process_ids | A comma-separated list of process IDs to kill. | Required | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
@@ -3413,7 +3416,7 @@ Execute an active responder kill command on a single host.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CrowdStrike.Command.kill.ProcessID | String | The process ID that was killed. | 
-| CrowdStrike.Command.kill.Error | String | The error message raised if the command was failed. | 
+| CrowdStrike.Command.kill.Error | String | The error message raised if the command failed. | 
 | CrowdStrike.Command.kill.HostID | String | The host ID. | 
 
 #### Command example
@@ -3467,8 +3470,8 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_ids | A comma-separated list of the hosts IDs you would like to remove the file for. | Required | 
-| file_path | The path to a file or a directory you want to remove. | Required | 
+| host_ids | A comma-separated list of the hosts IDs to remove the file for. | Required | 
+| file_path | The path to a file or a directory to remove. | Required | 
 | os | The operating system of the hosts given. Since the remove command is different in each operating system, you can choose only one operating system. Possible values are: Windows, Linux, Mac. | Required | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
@@ -3520,7 +3523,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The host ID you want to get the processes list from. | Required | 
+| host_id | The host ID to get the processes list from. | Required | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
 
@@ -3528,7 +3531,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Command.ps.Filename | String | The the name of the result file to be returned. | 
+| CrowdStrike.Command.ps.Filename | String | The name of the result file to be returned. | 
 
 #### Command example
 
@@ -3581,7 +3584,7 @@ Executes an RTR active-responder netstat command to get a list of network status
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The host ID you want to get the network status and protocol statistics list from. | Required | 
+| host_id | The host ID to get the network status and protocol statistics list from. | Required | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
 
@@ -3589,7 +3592,7 @@ Executes an RTR active-responder netstat command to get a list of network status
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.Command.netstat.Filename | String | The the name of the result file to be returned. | 
+| CrowdStrike.Command.netstat.Filename | String | The name of the result file to be returned. | 
 
 #### Command example
 
@@ -3642,8 +3645,8 @@ Executes an RTR active-responder read registry keys command across the given hos
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_ids | A comma-separated list of the host IDs you want to get the registry keys from. | Required | 
-| registry_keys | A comma-separated list of the registry keys, sub keys or value to get. | Required | 
+| host_ids | A comma-separated list of the host IDs to get the registry keys from. | Required | 
+| registry_keys | A comma-separated list of the registry keys, sub-keys, or value to get. | Required | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
 
@@ -3711,7 +3714,7 @@ Executes an RTR active-responder netstat command to get a list of scheduled task
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_ids | A comma-separated list of the hosts IDs you want to get the list of scheduled tasks from. | Required | 
+| host_ids | A comma-separated list of the hosts IDs to get the list of scheduled tasks from. | Required | 
 | queue_offline | Whether the command will run against an offline-queued session and be queued for execution when the host comes online. | Optional | 
 | timeout | The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. | Optional | 
 
@@ -3770,9 +3773,9 @@ Gets the RTR extracted file contents for the specified file path.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_ids | A comma-separated list of the hosts IDs you want to get the file from. | Required | 
+| host_ids | A comma-separated list of the hosts IDs to get the file from. | Required | 
 | file_path | The file path of the required file to extract. | Required | 
-| filename | The file name to use for the archive name and the file within the archive. | Optional | 
+| filename | The filename to use for the archive name and the file within the archive. | Optional | 
 | interval_in_seconds | Interval between polling. Default is 60 seconds. Must be higher than 10. | Optional | 
 | hosts_and_requests_ids | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
 | SHA256 | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
@@ -3784,7 +3787,7 @@ Gets the RTR extracted file contents for the specified file path.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CrowdStrike.File.FileName | String | The file name. | 
+| CrowdStrike.File.FileName | String | The filename. | 
 | CrowdStrike.File.HostID | String | The host ID. | 
 | File.Size | Number | The size of the file. | 
 | File.SHA1 | String | The SHA1 hash of the file. | 
@@ -3993,7 +3996,7 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | CrowdStrike.Vulnerability.cve.actors | String | Adversaries associated with the vulnerability. | 
 | CrowdStrike.Vulnerability.cve.name | String | The vulnerability name. | 
 
-#### Command example
+#### Command Example
 
 ``` cs-falcon-spotlight-search-vulnerability filter=status:['open','closed'] cve_id=CVE-2021-2222 cve_severity='LOW,HIGH' display_host_info=false display_evaluation_logic_info=false display_remediation_info=false limit=1 ```
 
@@ -4089,7 +4092,7 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | CrowdStrike.VulnerabilityHost.suppression_info.is_suppressed | Boolean | Indicates if the vulnerability is suppressed by a suppression rule. | 
 | CrowdStrike.VulnerabilityHost.host_info.hostname | String | Name of the machine. | 
 | CrowdStrike.VulnerabilityHost.host_info.local_ip | String | Device's local IP address. | 
-| CrowdStrike.VulnerabilityHost.host_info.machine_domain | String | Active Directory domain name. | 
+| CrowdStrike.VulnerabilityHost.host_info.machine_domain | String | Active directory domain name. | 
 | CrowdStrike.VulnerabilityHost.host_info.os_version | String | Operating system version. | 
 | CrowdStrike.VulnerabilityHost.host_info.ou | String | Active directory organizational unit name. | 
 | CrowdStrike.VulnerabilityHost.host_info.site_name | String | Active directory site name. | 
