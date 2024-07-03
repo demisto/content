@@ -1,4 +1,8 @@
-Deprecated. No available replacement. Compares incidents in Palo Alto Networks Cortex XDR and Cortex XSOAR, and updates the incidents appropriately. When an incident is updated in Cortex XSOAR, the XDRSyncScript will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript will update the incident fields in Cortex XSOAR and rerun the current playbook. Do not use this playbook when enabling the incident mirroring feature added in XSOAR version 6.0.0.
+Deprecated. No available replacement. The playbook has been deprecated because the "xdr sync script" is no longer necessary due to the availability of the mirroring feature. This mirroring feature offers improved performance and we strongly recommended using this feature instead. 
+
+Note: This playbook no longer works after migrating from the on prem instance of Cortex XSOAR to the Cortex XSOAR cloud hosted version.
+
+Compares incidents in Palo Alto Networks Cortex XDR and Cortex XSOAR, and updates the incidents appropriately. When an incident is updated in Cortex XSOAR, the XDRSyncScript will update the incident in XDR. When an incident is updated in XDR, the XDRSyncScript will update the incident fields in Cortex XSOAR and rerun the current playbook. Do not use this playbook when enabling the incident mirroring feature added in XSOAR version 6.0.0.
 
 ## Dependencies
 
