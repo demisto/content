@@ -1308,8 +1308,8 @@ def main():  # pragma: no cover
     elif command == "zscaler-logout":
         return_results(logout_command())
     else:
-        login()
         try:
+            login()
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
@@ -1378,7 +1378,6 @@ def main():  # pragma: no cover
                 return_results(delete_ip_destination_groups(demisto.args()))
         except Exception as e:
             return_error(f"Failed to execute {command} command. Error: {str(e)}")
-            raise
         finally:
             try:
                 # activate changes only when required
@@ -1390,7 +1389,7 @@ def main():  # pragma: no cover
                 if demisto.params().get("auto_logout"):
                     logout()
             except Exception as err:
-                demisto.info("Zscaler error: " + str(err))
+                return_error("Zscaler error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins

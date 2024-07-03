@@ -343,6 +343,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     """
     Get all PR's that are currently open from the same author, filter the list and return reviewer if reviewer is part
     of the current contribution round
+    The check for reviewer is done with assignees because reviewers list after initial review is empty.
     Arguments:
     - other_prs_by_same_user - list of opened PR's
 
@@ -351,8 +352,9 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     """
     content_reviewers_set = set(content_reviewers)
     for pr in other_prs_by_same_user:
-        reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
-        existing_reviewer = content_reviewers_set.intersection(reviewer_names)
+        print(f'the requested assignees are : {pr.assignees}')
+        assignee_names = {assignee.login for assignee in pr.assignees}
+        existing_reviewer = content_reviewers_set.intersection(assignee_names)
         if existing_reviewer:
             return existing_reviewer.pop()
         else:
