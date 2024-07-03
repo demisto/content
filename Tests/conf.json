@@ -873,6 +873,7 @@
         {
             "integrations": "Whois",
             "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
+            "instance_names": "legacy_context_output",
             "fromversion": "6.5.0"
         },
         {
@@ -2514,6 +2515,7 @@
         {
             "integrations": "Whois",
             "playbookID": "whois_test",
+            "instance_names": "legacy_context_output",
             "fromversion": "5.0.0",
             "timeout": 2000
         },

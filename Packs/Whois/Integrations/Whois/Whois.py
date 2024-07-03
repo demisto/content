@@ -9050,7 +9050,7 @@ def whois_and_domain_comand(command: str, reliability: str) -> list[CommandResul
                 mapping=whois_exception_mapping,
                 caught_exception=type(e)
             )
-            
+
             output = {
                 outputPaths["domain"]: {
                     "Name": domain,
