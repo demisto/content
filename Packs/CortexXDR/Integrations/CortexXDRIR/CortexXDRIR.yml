@@ -38,14 +38,14 @@ configuration:
   - Both
 - display: Custom close-reason mapping (XSOAR -> XDR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to integration documentation for possible close-reasons - `XDR Incident Mirroring`.'
+  additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Cortex XDR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Cortex XDR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=Other,Duplicate=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
   name: custom_xsoar_to_xdr_close_reason_mapping
   defaultvalue: ''
   type: 0
   required: false
 - display: Custom close-reason mapping (XDR -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
   section: Collect
-  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to integration documentation for possible close-reasons - `XDR Incident Mirroring`.'
+  additionalinfo: 'Define how to close the mirrored incidents from Cortex XDR into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XDR close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Cortex XDR. Not following this format will result in closing the incident with a default close reason. Example: “Known Issue=Resolved, Duplicate Incident=Other". Refer to ../README.md for possible close-reasons - `XDR Incident Mirroring`.'
   name: custom_xdr_to_xsoar_close_reason_mapping
   defaultvalue: ''
   type: 0
@@ -640,6 +640,7 @@ script:
       name: unassign_user
       predefined:
       - 'true'
+      - 'false'
     - description: Add a comment to the incident.
       name: add_comment
     - auto: PREDEFINED
@@ -1828,7 +1829,7 @@ script:
     description: "Gets remote data from a remote incident. Note: This method will not update the current incident. It's here for debugging purposes."
     name: get-remote-data
   - arguments:
-    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
+    - description: "Date string representing the local date time in the ISO 8601 format (for example: 2019-10-23T10:00:00). The incident is only returned if it was modified after the last update time."
       name: lastUpdate
     description: 'Gets the list of incidents that were modified since the last update. Note: This method is here for debugging purposes. get-modified-remote-data is used as part of a Mirroring feature, which is available since version 6.1.'
     name: get-modified-remote-data
@@ -2273,7 +2274,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address
       description: Endpoint IP address.
       type: String
-    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_name
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoints_count
       description: Number of successfully retrieved files.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.failed_files
@@ -2410,7 +2411,7 @@ script:
       description: Endpoint IP address.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_name
-      description: Number of successfully retrieved files.
+      description: Name of successfully retrieved files.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.failed_files
       description: Number of files failed to be retrieved.
@@ -2851,7 +2852,7 @@ script:
       description: The normalized type of the service that emitted the log row.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_type_orig
-      description: The type of the service that omitted the log as provided by the cloud provider.
+      description: The type of the service that emitted the log as provided by the cloud provider.
       type: String
     - contextPath: PaloAltoNetworksXDR.OriginalAlert.event.resource_sub_type
       description: The sub-type respective to the resource_type field, normalized across all cloud providers.
@@ -3416,7 +3417,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.RiskyHost.score
       description: The score assigned to the host.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date_created
       description: Date when the incident was created.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description

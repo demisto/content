@@ -2016,7 +2016,7 @@ Builtin Roles with this permission includes: "Privileged Responder", "Viewer" an
 | PaloAltoNetworksXDR.ScriptResult.action_id | Number | ID of the action initiated. | 
 | PaloAltoNetworksXDR.ScriptResult.results.retrieved_files | Number | Number of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address | String | Endpoint IP address. | 
-| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Number of successfully retrieved files. | 
+| PaloAltoNetworksXDR.ScriptResult.results.endpoint_name | String | Name of successfully retrieved files. | 
 | PaloAltoNetworksXDR.ScriptResult.results.failed_files | Number | Number of files failed to retrieve. | 
 | PaloAltoNetworksXDR.ScriptResult.results.endpoint_status | String | Endpoint status. | 
 | PaloAltoNetworksXDR.ScriptResult.results.domain | String | Domain to which the endpoint belongs. | 
