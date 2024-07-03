@@ -1,4 +1,4 @@
-name: Protect Infrastructure Directories
+name: Protect Infrastructure Directories (Contributions)
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
       - synchronize
 
 jobs:
-  check_changes:
+  protect-non-packs:
     runs-on: ubuntu-latest
     if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
     steps:
