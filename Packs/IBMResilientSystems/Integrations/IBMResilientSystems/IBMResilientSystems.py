@@ -7,7 +7,9 @@ import time
 import urllib3
 
 import resilient
-from resilient.co3 import SimpleClient
+from resilient.co3 import SimpleClient, SimpleHTTPException
+from resilient.co3base import RetryHTTPException
+
 ''' IMPORTS '''
 logging.basicConfig()
 
@@ -27,6 +29,7 @@ if not demisto.params()['proxy']:
     del os.environ['https_proxy']
 
 ''' GLOBAL VARS '''
+STATUS_NOT_FOUND = 404
 DEMISTO_PARAMS = demisto.params()
 URL = DEMISTO_PARAMS['server'][:-1] if DEMISTO_PARAMS['server'].endswith('/') else DEMISTO_PARAMS['server']
 # Remove the http/s from the url (It's added automatically later)
@@ -1075,11 +1078,35 @@ def fetch_incidents(client):
     demisto.incidents(incidents)
 
 
-def list_scripts_command(client: SimpleClient, args: dict) -> CommandResults:
-    scripts = client.get('/scripts')
+def list_scripts_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+        Getting the list of scripts of an IBM SOAR organization (rs_client is organization specific)
+        or a specific script if `script_id` argument was provided.
+    """
+    human_readable = ''
+    try:
+        response = rs_client.get(f'/scripts/{args.get("script_id", "")}')
+        human_readable = str(response)
+    #     human_readable = "TODO"
+    except (SimpleHTTPException, RetryHTTPException) as e:
+        if e.response.status_code == STATUS_NOT_FOUND:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=e.response.text
+            )
+        else:
+            raise
+    return CommandResults(
+            outputs_prefix="Resilient.Script",
+            outputs=response,
+            readable_output=human_readable
+        )
 
-    return CommandResults(readable_output=str(scripts))
 
+def upload_incident_attachment_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+        Uploads a file from XSOAR to an IBM SOAR incident.
+    """
 
 def test_module():
     """Verify that the first_fetch parameter is according to the standards, if exists.
@@ -1087,6 +1114,7 @@ def test_module():
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
+    # TODO - test client connectivity as well
 
     if FETCH_TIME:
         try:
@@ -1171,7 +1199,8 @@ def main():
                                                  args['artifact-value'], args.get('artifact-description')))
         elif command == 'rs-list-scripts':
             return_results(list_scripts_command(client, args))
-
+        elif command == 'rs-upload-incident-attachment':
+            return_results(upload_incident_attachment_command(client, args))
     except Exception as e:
         LOG(str(e))
         LOG.print_log()

@@ -809,13 +809,24 @@ script:
 
   - name: rs-list-scripts
     description: Get list of available scripts.
-#    arguments: ...
-#    outputs: ...
+    arguments:
+    - name: script_id
+      description: Internal ID/name of the script.
+      required: false
+    outputs:
+    - contextPath: Resilient.Script
+      description: The ID of the artifact.
+      type: Dictionary
 
   - name: rs-upload-incident-attachment
     description: Upload an attachment for an incident.
-#    arguments: ...
-#    outputs: ...
+    arguments:
+      - name: incident_id
+        description: Incident id to update.
+        required: true
+      - name: entry_id
+        description: EntryID of the file to upload.
+        required: true
 
   - name: rs-delete-incidents
     description: Delete multiple incidents.

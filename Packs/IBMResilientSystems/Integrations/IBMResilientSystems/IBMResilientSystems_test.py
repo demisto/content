@@ -148,3 +148,11 @@ def test_add_incident_artifact(mocker):
 
     assert mock_result.call_args.args == expected_result
     assert '1234' in output.get('HumanReadable')
+
+
+@pytest.mark.parametrize('script_id, expected_command_output', )
+def test_list_scripts_command(mocker, script_id, expected_command_output):
+    """ TODO:
+        + 1-2 cases where a proper scriptId or none is provided
+        + case where wrong script id is provided
+        """
