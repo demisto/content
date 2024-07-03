@@ -193,9 +193,8 @@ def merge_entries(entry, per_class_entry):
     return entry
 
 
-def find_threshold(y_true_str, y_pred_str, customer_target_precision, target_recall, detailed_output=True):
-    y_true = convert_str_to_json(y_true_str, 'yTrue')
-    y_pred_all_classes = convert_str_to_json(y_pred_str, 'yPred')
+def find_threshold(y_true, y_pred, customer_target_precision, target_recall, detailed_output=True):
+
     labels = sorted(set(y_true + list(y_pred_all_classes[0].keys())))
     n_instances = len(y_true)
     y_true_per_class = {class_: np.zeros(n_instances) for class_ in labels}
@@ -325,18 +324,27 @@ def convert_str_to_json(str_json, var_name):
 
 
 def main():
-    y_pred_all_classes = demisto.args()["yPred"]
-    y_true = demisto.args()["yTrue"]
-    target_precision = calculate_and_validate_float_parameter("targetPrecision")
-    target_recall = calculate_and_validate_float_parameter("targetRecall")
-    detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
-    entries = find_threshold(y_true_str=y_true,
-                             y_pred_str=y_pred_all_classes,
-                             customer_target_precision=target_precision,
-                             target_recall=target_recall,
-                             detailed_output=detailed_output)
+    try:
+        y_pred_all_classes = demisto.args()["yPred"]
+        y_true = demisto.args()["yTrue"]
+        target_precision = calculate_and_validate_float_parameter("targetPrecision")
+        target_recall = calculate_and_validate_float_parameter("targetRecall")
+        detailed_output = 'detailedOutput' in demisto.args() and demisto.args()['detailedOutput'] == 'true'
+        y_true = convert_str_to_json(y_true, 'yTrue')
+        y_pred_all_classes = convert_str_to_json(y_pred_all_classes, 'yPred')
 
-    demisto.results(entries)
+        if not (y_true and y_pred_all_classes):
+            raise DemistoException('Either "yPred" or "yTrue" are empty.')
+        else:
+            entries = find_threshold(y_true=y_true,
+                                    y_pred=y_pred_all_classes,
+                                    customer_target_precision=target_precision,
+                                    target_recall=target_recall,
+                                    detailed_output=detailed_output)
+
+            demisto.results(entries)
+    except Exception as e:
+        return_error(f'Error in GetMLModelEvaluation:\n{e}')
 
 
 def calculate_and_validate_float_parameter(var_name):
