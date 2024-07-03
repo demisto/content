@@ -13,7 +13,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          depth: 100 # to speed up. changed-files will fetch more if necessary
+          fetch-depth: 100 # to speed up. changed-files will fetch more if necessary
 
       - name: Set up Python
         uses: actions/setup-python@v5
