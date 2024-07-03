@@ -34,4 +34,5 @@ jobs:
         run: |
           for file in ${FILES}; do
             echo "::error file=$file,line=1,endLine=1,title=Protected file modified::This file should not be changed in master.%0AIf you are sure it's necessary, ask for a force merge and explain the rationale."
+          done
           exit 1
