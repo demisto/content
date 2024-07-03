@@ -141,7 +141,19 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         response = self.call(request)
         if response.ok:
             demisto.debug('authenticated successfully')
-            self.access_token = response.json()['access_token']
+            demisto.debug(f"response text is: {response.text}")
+            demisto.debug(f"response content is: {response.content}")
+            demisto.debug(f"response is redirect: {response.is_redirect}")
+            try:
+                res_text = response.text
+                demisto.debug("from text to json")
+                res_dict = json.loads(res_text)
+                demisto.debug(f"got res_dict: {res_dict}")
+                self.access_token = res_dict.get('access_token')
+                # self.access_token = response.json()['access_token']
+            except Exception as e:
+                demisto.debug(f"failed with {e}")
+                return_error(f"failed to parse response, e is: {e}")
             self.request.headers['Authorization'] = f'Bearer {self.access_token}'
         else:
             demisto.debug(f'authentication failed: {response.json()}')
