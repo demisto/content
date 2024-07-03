@@ -12019,6 +12019,7 @@ def parse_json_string(json_string):
         demisto.error("Error decoding JSON: {error}".format(error=error))
         return {}
 
+
 def get_server_config():
     response = demisto.internalHttpRequest(method='GET', uri='/system/config')
     body = parse_json_string(response.get('body'))
