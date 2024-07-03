@@ -1154,6 +1154,6 @@ Under **Used for communication between Cortex XSOAR and customer resources**. Ch
 
 ### Fetch Issues
 
-If you encounter fetch issues and you have enriching enabled, it may have happened as a result of pressing the `Reset the "last run" timestamp` button.  
+If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
 Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
 See [here](#resetting-the-enriching-fetch-mechanism).
