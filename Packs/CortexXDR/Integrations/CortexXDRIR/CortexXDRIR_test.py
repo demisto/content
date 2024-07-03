@@ -1526,7 +1526,7 @@ def test_main(mocker):
 
 
 @freeze_time("1993-06-17 11:00:00 GMT")
-def test_core_http_request_xsiam_tenant(mocker):
+def test_core_http_request_xpanse_tenant(mocker):
     """
     Given:
         - Only the required params in the configuration.
@@ -1545,7 +1545,7 @@ def test_core_http_request_xsiam_tenant(mocker):
         timeout=120,
         params=False
     )
-    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=False)
     mocker.patch.object(demisto, "_apiCall", return_value=Exception("command '_apiCall' is not available via engine (85)"))
     mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"incidents": [{"incident": {"incident_id": "1"}}]}})
     res = client.get_incidents(incident_id_list=['1'])
