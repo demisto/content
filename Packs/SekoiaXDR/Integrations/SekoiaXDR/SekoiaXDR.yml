@@ -611,6 +611,7 @@ script:
       description: "Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter."
       isArray: true
     - name: job_uuid
+      description: The job UUID to retrieve query results.
       hidden: true
     outputs:
     - contextPath: SekoiaXDR.Events.Results
