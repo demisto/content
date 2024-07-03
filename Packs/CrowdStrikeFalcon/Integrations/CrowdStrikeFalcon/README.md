@@ -114,7 +114,7 @@ Available filter:
 - severity
 - severity_string
 
-Exmample: `cloud_provider: 'aws'+account_id: 'my_id'`
+Example: `cloud_provider: 'aws'+account_id: 'my_id'`
 
 ### IOA Incidents
 
@@ -133,7 +133,7 @@ Available parameters:
 - service
 - state
 
-Exmample: `cloud_provider=aws&region=eu-west-2`
+Example: `cloud_provider=aws&region=eu-west-2`
 More information about the parameters can be found [here](https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13).
 
 ## Commands
@@ -6500,4 +6500,4 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 
 ## Troubleshooting
 When encountering connectivity or authorization errors within Cortex XSOAR 8, 
-it necessary to include the IP corresponding to the relevant region into the CrowdStrike Falcon allow list.
+it is necessary to include the IP address corresponding to the relevant region in the CrowdStrike Falcon allow list.
