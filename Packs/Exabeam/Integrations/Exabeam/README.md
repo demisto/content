@@ -1374,3 +1374,20 @@ Returns incidents from Exabeam.
 
 #### Command Example
 ```!exabeam-list-incident priority=high```
+
+
+### Fetch
+
+#### Exabeam Incident
+
+- Description: Information about incidents collected from the Exabeam system.
+- Details: The incidents include details about events and actions identified in the Exabeam system, intended for monitoring and response.
+
+#### Exabeam Notable User
+
+- Description: Information about notable users collected from the Exabeam system.
+- Details: Notable users are identified by the Exabeam system based on suspicious or abnormal behavior, and the information includes details about their actions in the system.
+- Important: Duplicate notable users are never fetched unless the "Reset the 'last run' timestamp" button is pressed.
+
+#### Note
+The "Reset the 'last run' timestamp" button resets both the regular fetch and the Exabeam Notable User fetch.
