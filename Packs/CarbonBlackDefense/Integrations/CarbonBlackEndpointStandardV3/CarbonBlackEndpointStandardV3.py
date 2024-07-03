@@ -40,431 +40,278 @@ class Client(BaseClient):
         super().__init__(base_url, verify, proxies)
 
     def test_module_request(self) -> dict:
-        """ Tests connectivity with the application, for some API's.
+        """Tests connectivity with the application for some APIs.
 
-        :return: A list of alerts.
-        :rtype: ``Dict[str, any]``
+        :return: A dictionary containing the response.
+        :rtype: dict
         """
         suffix_url = f'api/alerts/v7/orgs/{self.organization_key}/alerts/_search'
         return self._http_request('POST', url_suffix=suffix_url, headers=self.headers, json_data={})
 
     def policy_test_module_request(self) -> dict:
-        """ Tests connectivity with the application, for Policy API.
+        """Tests connectivity with the application for the Policy API.
 
-        :return: A list of policies.
-        :rtype: ``Dict[str, any]``
+        :return: A dictionary containing the response.
+        :rtype: dict
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/summary'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
 
     def search_alerts_request(self, body: dict) -> dict:
-        """Searches for Carbon Black alerts
+        """Searches for alerts using the provided request body.
 
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        :type body: dict
+        :param body: The request body containing search criteria.
 
-        :type suffix_url_path: ``Optional[str]``
-        :param suffix_url_path: type of the alert to search for. Options are: 'all' or 'cbanalytics' or 'devicecontrol'
-
-        :type minimum_severity: ``Optional[int]``
-        :param minimum_severity: the minimum severity of the alert to search for.
-
-        :type create_time: ``Optional[Dict]``
-        :param create_time: A dict presented the the time the alert was created.
-            The syntax is {"start": "<dateTime>", "range": "<string>", "end": "<dateTime>" }.
-            For example: {"start": "2010-09-25T00:10:50.00", "end": "2015-01-20T10:40:00.00Z", "range": "-1d"}.
-            (s for seconds, m for minutes, h for hours, d for days, w for weeks, y for years).
-
-        :type policy_id: ``Optional[list]``
-        :param policy_id: The identifier for the policy associated with the device at the time of the alert.
-
-        :type device_username: ``Optional[list]``
-        :param device_username: The username of the logged on user during the alert.
-            If the user is not available then it may be populated with the device owner
-
-        :type device_id: ``Optional[list]``
-        :param device_id: The identifier assigned by Carbon Black Cloud to the device associated with the alert.
-
-        :type query: ``Optional[str]``
-        :param query: Query in lucene syntax and/or including value searches.
-
-        :type alert_category: ``Optional[list]``
-        :param alert_category: The category of the alert. Options are: 'THREAT' or 'MONITORED'
-
-        :type sort_field: ``Optional[str]``
-        :param sort_field: The field to sort by it
-
-        :type sort_order: ``Optional[str]``
-        :param sort_order: The sort order (ASC, DESC)
-
-        :type limit: ``Optional[int]``
-        :param limit: The number of results to return. default is 50.
-
-        :return: Dict containing a List with the found Carbon Black alerts as dicts
-        :rtype: ``Dict[str, Any]``
+        :return: A dictionary containing the search results.
+        :rtype: dict
         """
         suffix_url = f'api/alerts/v7/orgs/{self.organization_key}/alerts/_search'
-        demisto.debug(f"Fetch query: {suffix_url} wite the request bode: {body}")
+        demisto.debug(f"Fetch query: {suffix_url} with the request body: {body}")
         return self._http_request('POST', suffix_url, headers=self.headers, json_data=body)
 
     def get_alert_by_id(self, alert_id: str) -> dict:
+        """Retrieves an alert by its ID.
+
+        :type alert_id: str
+        :param alert_id: The ID of the alert.
+
+        :return: A dictionary containing the alert details.
+        :rtype: dict
+        """
         url_suffix = f'api/alerts/v7/orgs/{self.organization_key}/alerts/{alert_id}'
         return self._http_request(method='GET', url_suffix=url_suffix, headers=self.headers)
 
-    def get_alerts(self, body: dict):
+    def get_alerts(self, body: dict) -> dict:
+        """Retrieves alerts based on the provided request body.
+
+        :type body: dict
+        :param body: The request body containing search criteria.
+
+        :return: A dictionary containing the alerts.
+        :rtype: dict
+        """
         suffix_url = f'api/alerts/v7/orgs/{self.organization_key}/alerts/_search'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def get_policy_by_id(self, policy_id: str):
-        """Returns Carbon Black policy by ID.
+    def get_policy_by_id(self, policy_id: int) -> dict:
+        """Returns a Carbon Black policy by its ID.
 
-        :type policy_id: ``Optional[int]``
-        :param policy_id: The id of the policy.
+        :type policy_id: int
+        :param policy_id: The ID of the policy.
 
-        :return: dict containing the policy data'.
-        :rtype: ``dict``
+        :return: A dictionary containing the policy data.
+        :rtype: dict
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def get_policies_summary(self):
-        """Searches for Carbon Black policies using the 'integrationServices/v3/policy' API endpoint
+    def get_policies_summary(self) -> dict:
+        """Retrieves a summary of all policies.
 
-        :return: A dict containing all policies'.
-        :rtype: ``dict``
+        :return: A dictionary containing the policies summary.
+        :rtype: dict
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/summary'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def create_new_policy(self, body: dict):
+    def create_new_policy(self, body: dict) -> dict:
+        """Creates a new policy with the provided request body.
+
+        :type body: dict
+        :param body: The request body containing policy details.
+
+        :return: A dictionary containing the created policy data.
+        :rtype: dict
+        """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
-    def delete_policy(self, policy_id: int):
-        """Deletes Carbon Black policy by ID using the 'integrationServices/v3/policy/{policy_id}' API endpoint
+    def delete_policy(self, policy_id: int) -> None:
+        """Deletes a Carbon Black policy by its ID.
 
-        :type policy_id: ``Optional[int]``
-        :param policy_id: The id of the policy.
-
-        :return: A dict containing information about the success / failure of the deletion.
-        :rtype: ``dict``
+        :type policy_id: int
+        :param policy_id: The ID of the policy.
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
-        return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
+        self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
 
-    def update_policy(self, policy_id: int, body: dict):
+    def update_policy(self, policy_id: int, body: dict) -> dict:
+        """Updates a Carbon Black policy by its ID with the provided request body.
+
+        :type policy_id: int
+        :param policy_id: The ID of the policy.
+
+        :type body: dict
+        :param body: The request body containing policy update details.
+
+        :return: A dictionary containing the updated policy data.
+        :rtype: dict
+        """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
     def set_policy(self, policy_id: int, body: dict):
-        pass  # TODO
+        """Sets a policy with the provided request body.
 
-    def add_rule_to_policy(self, policy_id: int, body: dict):
-        """Adds a rule to a Carbon Black policy by ID using the 'integrationServices/v3/policy/{policy_id}/rule' API endpoint
+        :type policy_id: int
+        :param policy_id: The ID of the policy.
 
-        :type policy_id: ``Optional[int]``
-        :param policy_id: The id of the policy.
+        :type body: dict
+        :param body: The request body containing policy details.
+        """
+        # TODO
 
-        :type action: ``Optional[str]``
-        :param action: The rule action. Options are: 'true' or 'false'.
-        Options are: 'TERMINATE' or 'IGNORE' or 'TERMINATE_THREAD' or 'ALLOW' or 'DENY' or 'TERMINATE_PROCESS'
+    def add_rule_to_policy(self, policy_id: int, body: dict) -> dict:
+        """Adds a rule to a Carbon Black policy by its ID with the provided request body.
 
-        :type operation: ``Optional[str]``
-        :param operation: The rule operation.
-        Options are: 'MODIFY_SYSTEM_EXE' or 'PASSTHRU' or 'CRED' or 'RANSOM' or 'NETWORK_SERVER' or
-            'POL_INVOKE_NOT_TRUSTED' or 'IMPERSONATE' or 'MICROPHONE_CAMERA' or 'INVOKE_SYSAPP' or 'NETWORK_CLIENT' or
-            'BYPASS_REG' or 'BUFFER_OVERFLOW' or 'BYPASS_API' or 'USER_DOC' or 'CODE_INJECTION' or 'BYPASS_NET' or
-            'KEYBOARD' or 'BYPASS_ALL' or 'RUN' or 'INVOKE_CMD_INTERPRETER' or 'MODIFY_SYTEM_CONFIG' or 'ESCALATE' or
-            'BYPASS_FILE' or 'RUN_AS_ADMIN' or 'BYPASS_PROCESS' or 'NETWORK' or 'KERNEL_ACCESS' or 'NETWORK_PEER' or
-            'PACKED' or 'INVOKE_SCRIPT' or 'MEMORY_SCRAPE' or 'BYPASS_SELF_PROTECT' or 'TAMPER_API'
+        :type policy_id: int
+        :param policy_id: The ID of the policy.
 
-        :type required: ``Optional[bool]``
-        :param required: Is the rule required. Options are: 'true' or 'false'.
+        :type body: dict
+        :param body: The request body containing rule details.
 
-        :type type: ``Optional[dict]``
-        :param type: The application type. Options are: 'REPUTATION' or 'SIGNED_BY' or 'NAME_PATH'.
-
-        :type value: ``Optional[dict]``
-        :param value: The application value.
-
-        :return: A dict containing the new rule ID. and also information about the success / failure of the update.
-        :rtype: ``dict``
+        :return: A dictionary containing the added rule data.
+        :rtype: dict
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
-    def update_rule_in_policy(self, policy_id: int, rule_id: int, body: dict):
-        """Updates a rule in a Carbon Black policy by ID
-            using the 'integrationServices/v3/policy/{policy_id}/rule{rule_id}' API endpoint
+    def update_rule_in_policy(self, policy_id: int, rule_id: int, body: dict) -> dict:
+        """Updates a rule in a Carbon Black policy by its ID with the provided request body.
 
-        :type policy_id: ``Optional[int]``
-        :param policy_id: The id of the policy.
+        :type policy_id: int
+        :param policy_id: The ID of the policy.
 
-        :type action: ``Optional[str]``
-        :param action: The rule action. Options are: 'true' or 'false'.
-        Options are: 'TERMINATE' or 'IGNORE' or 'TERMINATE_THREAD' or 'ALLOW' or 'DENY' or 'TERMINATE_PROCESS'
+        :type rule_id: int
+        :param rule_id: The ID of the rule.
 
-        :type operation: ``Optional[str]``
-        :param operation: The rule operation.
-        Options are: 'MODIFY_SYSTEM_EXE' or 'PASSTHRU' or 'CRED' or 'RANSOM' or 'NETWORK_SERVER' or
-            'POL_INVOKE_NOT_TRUSTED' or 'IMPERSONATE' or 'MICROPHONE_CAMERA' or 'INVOKE_SYSAPP' or 'NETWORK_CLIENT' or
-            'BYPASS_REG' or 'BUFFER_OVERFLOW' or 'BYPASS_API' or 'USER_DOC' or 'CODE_INJECTION' or 'BYPASS_NET' or
-            'KEYBOARD' or 'BYPASS_ALL' or 'RUN' or 'INVOKE_CMD_INTERPRETER' or 'MODIFY_SYTEM_CONFIG' or 'ESCALATE' or
-            'BYPASS_FILE' or 'RUN_AS_ADMIN' or 'BYPASS_PROCESS' or 'NETWORK' or 'KERNEL_ACCESS' or 'NETWORK_PEER' or
-            'PACKED' or 'INVOKE_SCRIPT' or 'MEMORY_SCRAPE' or 'BYPASS_SELF_PROTECT' or 'TAMPER_API'
+        :type body: dict
+        :param body: The request body containing rule update details.
 
-        :type required: ``Optional[bool]``
-        :param required: Is the rule required. Options are: 'true' or 'false'.
-
-        :type rule_id: ``Optional[int]``
-        :param rule_id: Is the rule id.
-
-        :type type: ``Optional[dict]``
-        :param type: A JSON object containing the policy details.
-
-        :type value: ``Optional[dict]``
-        :param value: A JSON object containing the policy details.
-
-        :return: A dict containing information about the success / failure of the update.
-        :rtype: ``dict``
+        :return: A dictionary containing the updated rule data.
+        :rtype: dict
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules/{rule_id}'
         return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
-    def delete_rule_from_policy(self, policy_id: int, rule_id: int):
-        """Deletes a rule of Carbon Black policy by ID
-            using the 'integrationServices/v3/policy/{policy_id}/rule/{rule_id}' API endpoint
+    def delete_rule_from_policy(self, policy_id: int, rule_id: int) -> None:
+        """Deletes a rule from a Carbon Black policy by its ID.
 
-        :type policy_id: ``Optional[int]``
-        :param policy_id: The id of the policy.
+        :type policy_id: int
+        :param policy_id: The ID of the policy.
 
-        :type rule_id: ``Optional[int]``
-        :param rule_id: The id of the rule.
-
-        :return: A dict containing information about the success / failure of the deletion.
-        :rtype: ``dict``
+        :type rule_id: int
+        :param rule_id: The ID of the rule.
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}/rules/{rule_id}'
         return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers,
                                   return_empty_response=True)  # Carbon black api return 204 for a successfully request
 
-    def get_processes(self, body):
+    def get_processes(self, body: dict) -> dict:
+        """Retrieves processes based on the provided request body.
+
+        :type body: dict
+        :param body: The request body containing search criteria.
+
+        :return: A dictionary containing the processes job ID.
+        :rtype: dict
+        """
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
     def get_process_results(self, job_id: str, rows: int = 10) -> dict:
-        """Returns Carbon Black events by job_id
-            using the 'api/investigate/v2/orgs/{org_key}/processes/search_jobs/{job_id}/results' API endpoint
+        """Returns Carbon Black processes by job_id.
 
-        :type job_id: ``Optional[str]``
-        :param job_id: The id of the job.
+        :type job_id: str
+        :param job_id: The ID of the job.
 
-        :type rows: ``Optional[int]``
-        :param rows: The number of results to return. default is 10.
+        :type rows: int
+        :param rows: The number of results to return. Default is 10.
 
-        :return: dict containing the results data'.
-        :rtype: ``dict``
+        :return: A dictionary containing the results data.
+        :rtype: dict
         """
-        suffix_url = f"api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={rows}"
+        suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/processes/search_jobs/{job_id}/results?rows={rows}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
-    def get_observation_details(self, body):
-        """Returns Carbon Black events details by ID
-            using the 'api/investigate/v2/orgs/{org_key}/enriched_events/search_jobs/{job_id}/results' API endpoint
+    def get_observation_details(self, body: dict) -> dict:
+        """Retrieves observation details based on the provided request body.
 
-        :type event_ids: ``Optional[List[str]]``
-        :param event_ids: The id of the event.
+        :type body: dict
+        :param body: The request body containing search criteria.
 
-        :return: dict containing a job_id to using it in get_events_details_results.
-        :rtype: ``dict``
+        :return: A dictionary containing the observation details job ID..
+        :rtype: dict
         """
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def get_observation_details_results(self, job_id: str, rows: int = 10):
-        """Returns Carbon Black event details by job_id
-            using the 'api/investigate/v2/orgs/{org_key}/enriched_events/search_jobs/{job_id}/results' API endpoint
+    def get_observation_details_results(self, job_id: str, rows: int = 10) -> dict:
+        """Returns Carbon Black observation details by job_id.
 
-        :type job_id: ``Optional[str]``
-        :param job_id: The id of the job.
+        :type job_id: str
+        :param job_id: The ID of the job.
 
-        :return: dict containing the event data'.
-        :rtype: ``dict``
+        :type rows: int
+        :param rows: The number of results to return. Default is 10.
+
+        :return: A dictionary containing the observation details.
+        :rtype: dict
         """
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/detail_jobs/{job_id}/results?rows={rows}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     def get_observation(self, body: dict) -> dict:
-        """Searches for Carbon Black events
-            using the 'api/investigate/v2/orgs/{self.organization_key}/enriched_events/search_jobs' API endpoint
+        """Retrieves observations based on the provided request body.
 
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        :type body: dict
+        :param body: The request body containing search criteria.
 
-        :type alert_category: ``Optional[List[str]]``
-        :param alert_category: The Carbon Black Cloud classification for events tagged to an alert indicating.
-            Options are: 'threat' or 'observed'.
-
-        :type hash: ``Optional[List[str]]``
-        :param hash: Searchable. Aggregate set of MD5 and SHA-256 hashes associated with the process
-            (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash);
-            enables one-step search for any matches on the specified hashes
-
-        :type device_external_ip: ``Optional[List[str]]``
-        :param device_external_ip: The IP address of the endpoint according to the Carbon Black Cloud;
-            can differ from device_internal_ip due to network proxy or NAT;
-            either IPv4 (dotted decimal notation) or IPv6 (proprietary format documented below).
-
-        :type device_id: ``Optional[List[int]]``
-        :param device_id: The ID assigned to the endpoint by Carbon Black Cloud;
-            unique across all Carbon Black Cloud environments.
-
-        :type device_internal_ip ``Optional[List[str]]``
-        :param device_internal_ip: The IP address of the endpoint reported by the sensor;
-            either IPv4 (dotted decimal notation) or IPv6 (proprietary format, documented below).
-
-        :type device_name: ``Optional[List[str]]``
-        :param device_name: The Hostname of the endpoint recorded by the sensor when last initialized.
-
-        :type device_os: ``Optional[List[str]]``
-        :param device_os: The operating system of the endpoint.
-
-        :type event_type: ``Optional[List[str]]``
-        :param event_type: The type of enriched event observed. (Requires Endpoint Standard).
-
-        :type parent_name: ``Optional[List[str]]``
-        :param parent_name: The Filesystem path of the parent process binary.
-
-        :type parent_reputation: ``Optional[List[str]]``
-        :param parent_reputation: The Command line executed by the actor process.
-            Options are: 'ADAPTIVE_WHITE_LIST' or 'ADWARE' or 'COMMON_WHITE_LIST' or 'COMPANY_BLACK_LIST' or
-            'COMPANY_WHITE_LIST' or 'HEURISTIC' or 'IGNORE' or 'KNOWN_MALWARE' or 'LOCAL_WHITE' or 'NOT_LISTED' or 'PUP'
-            or 'RESOLVING' or 'SUSPECT_MALWARE' or 'TRUSTED_WHITE_LIST'
-
-        :type process_cmdline ``Optional[List[str]]``
-        :param process_cmdline: The Command line executed by the actor process.
-
-        :type process_guid: ``Optional[List[str]]``
-        :param process_guid: The Unique process identifier for the actor process.
-
-        :type process_name ``Optional[List[str]]``
-        :param process_name: The Filesystem path of the actor process binary.
-
-        :type process_pid: ``Optional[List[int]]``
-        :param process_pid: The Process identifier assigned by the operating system;
-            can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
-
-        :type process_reputation: ``Optional[List[str]]``
-        :param process_reputation: The Reputation of the actor process;
-            applied when event is processed by the Carbon Black Cloud.
-            Options are: 'ADAPTIVE_WHITE_LIST' or 'ADWARE' or 'COMMON_WHITE_LIST' or 'COMPANY_BLACK_LIST' or
-            'COMPANY_WHITE_LIST' or 'HEURISTIC' or 'IGNORE' or 'KNOWN_MALWARE' or 'LOCAL_WHITE' or 'NOT_LISTED' or 'PUP'
-            or 'RESOLVING' or 'SUSPECT_MALWARE' or 'TRUSTED_WHITE_LIST'
-
-        :type process_start_time: ``Optional[List[str]]``
-        :param process_start_time: The Sensor reported timestamp of when the process started;
-            not available for processes running before the sensor starts.
-
-        :type process_terminated: ``Optional[List[bool]]``
-        :param process_terminated: “True” indicates the process has terminated;
-            always “false” for enriched events (process termination not recorded).
-            Options are: 'true' or 'false'
-
-        :type process_username: ``Optional[List[str]]``
-        :param process_username: The User context in which the actor process was executed.
-            MacOS - all users for the PID for fork() and exec() transitions,
-            Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid().
-
-        :type sensor_action: ``Optional[List[str]]``
-        :param sensor_action: The action performed by the sensor on the process.
-            Options are: 'TERMINATE' or 'DENY' or 'SUSPEND'
-
-        :type query: ``Optional[str]``
-        :param query: The Query in lucene syntax and/or including value searches.
-            query or some of the other must be included.
-
-        :type rows: ``Optional[int]``
-        :param rows: The Number of rows to request, can be paginated. default is 10.
-
-        :type start: ``Optional[int]``
-        :param start: The first row to use for pagination. default is 0.
-
-        :type time_range: ``Optional[dict]``
-        :param time_range: The time window to restrict the search to match using device_timestamp as the reference.
-            Window will take priority over start and end if provided.
-            For example {"end": "2020-01-21T18:34:04Z", "start": "2020-01-18T18:34:04Z", "window": "-2w"},
-            (where y=year, w=week, d=day, h=hour, m=minute, s=second) start: ISO 8601 timestamp, end: ISO 8601 timestamp
-
-        :return: Dict containing a job_id to using it in get_events_results.
-        :rtype: ``Dict[str, str]``
+        :return: A dictionary containing the observations.
+        :rtype: dict
         """
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/search_jobs'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def get_observation_results(self, job_id: str, rows: int = 10):
-        """Returns Carbon Black events by job_id
-            using the 'api/investigate/v2/orgs/{org_key}/enriched_events/search_jobs/{job_id}/results' API endpoint
+    def get_observation_results(self, job_id: str, rows: int = 10) -> dict:
+        """Returns Carbon Black observation by job_id.
 
-        :type job_id: ``Optional[str]``
-        :param job_id: The id of the job.
+        :type job_id: str
+        :param job_id: The ID of the job.
 
-        :type rows: ``Optional[int]``
-        :param rows: The number of results to return. default is 10.
+        :type rows: int
+        :param rows: The number of results to return. Default is 10.
 
-        :return: dict containing the results data'.
-        :rtype: ``dict``
+        :return: A dictionary containing the results data.
+        :rtype: dict
         """
         suffix_url = f'api/investigate/v2/orgs/{self.organization_key}/observations/search_jobs/{job_id}/results?rows={rows}'
         return self._http_request(method='GET', url_suffix=suffix_url, headers=self.headers)
 
     def get_devices(self, body: dict) -> dict:
-        """Searches for Carbon Black devices
-            using the 'appservices/v6/orgs/{org_key}/devices/_search' API endpoint
+        """Retrieves devices based on the provided request body.
 
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        :type body: dict
+        :param body: The request body containing search criteria.
 
-        :type device_id: ``Optional[List[str]]``
-        :param device_id: The id of the device
-
-        :type status: ``Optional[List[str]]``
-        :param status: The status of the device.
-            Options are: 'PENDING' or 'REGISTERED' or 'DEREGISTERED' or 'BYPASS ,ACTIVE' or 'INACTIVE' or 'ERROR' or
-            'ALL' or 'BYPASS_ON' or 'LIVE' or 'SENSOR_PENDING_UPDATE'
-
-        :type device_os: ``Optional[List[str]]``
-        :param device_os: The Operating System.
-            Options are: 'WINDOWS' or 'MAC' or 'LINUX' or 'OTHER'.
-
-        :type last_contact_time: ``Optional[dict]``
-        :param last_contact_time:
-
-        :type target_priority: ``Optional[List[str]]``
-        :param target_priority: The id of the device
-
-        :type query: ``Optional[str]``
-        :param query: Query in lucene syntax.
-
-        :type rows: ``Optional[int]``
-        :param rows: The number of results to return. default is 20.
-
-        :return: Dict containing a List with the found Carbon Black devices as dicts
-        :rtype: ``Dict[str, Any]``
+        :return: A dictionary containing the devices.
+        :rtype: dict
         """
         suffix_url = f'/appservices/v6/orgs/{self.organization_key}/devices/_search'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
-    def execute_an_action_on_the_device(self, device_id: List[int], action_type: str, options: dict) -> str:
-        """execute actions on devices
-            using the 'appservices/v6/orgs/{org_key}/device_actions' API endpoint
+    def execute_an_action_on_the_device(self, device_id: List[int], action_type: str, options: dict):
+        """Executes actions on devices using the specified parameters.
 
-        All the parameters are passed directly to the API as HTTP POST parameters in the request
+        :type device_id: List[int]
+        :param device_id: The ID(s) of the device(s).
 
-        :type device_id: ``Optional[List[int]]``
-        :param device_id: The id of the device
-
-        :type action_type: ``Optional[str]``
+        :type action_type: str
         :param action_type: Action to perform on selected devices.
 
-        :type options: ``Optional[dict]``
-        :param options: A dict {"toggle": "ON/OFF"}
+        :type options: dict
+        :param options: A dictionary containing action options, e.g., {"toggle": "ON/OFF"}.
         """
         suffix_url = f'appservices/v6/orgs/{self.organization_key}/device_actions'
         body = assign_params(
@@ -722,7 +569,8 @@ def alerts_search_command(client: Client, args: dict):
 
 
 def get_policy_command(client: Client, args: dict):
-    res = client.get_policy_by_id(args['policyId'])
+    policy_id_int = arg_to_number(args['policyId'], required=True)
+    res = client.get_policy_by_id(policy_id_int)
 
     headers = ["id", "name", "priority_level", "is_system", "description"]
 
@@ -731,7 +579,7 @@ def get_policy_command(client: Client, args: dict):
         outputs_key_field='id',
         outputs=res,
         readable_output=tableToMarkdown('Carbon Black Defense Policy', res, headers=headers,
-                                        headerTransform=string_to_table_header),  # , removeNull=True),
+                                        headerTransform=string_to_table_header, removeNull=True),
         raw_response=res
     )
 
@@ -1144,88 +992,6 @@ def convert_to_demisto_severity(severity: int) -> int:
     }[severity]
 
 
-def convert_response_to_old_format(new_response):
-    old_response = {
-        "policyInfo": {
-            "id": new_response.get("id"),
-            "name": new_response.get("name"),
-            "description": new_response.get("description"),
-            "priorityLevel": new_response.get("priority_level"),
-            "systemPolicy": new_response.get("is_system"),
-            "latestRevision": None,  # Unused field in new format
-            "version": new_response.get("version"),
-            "vdiAutoDeregInactiveIntervalMs": new_response.get("auto_deregister_inactive_vdi_interval_ms"),
-            "knownBadHashAutoDeleteDelayMs": new_response.get("auto_delete_known_bad_hashes_delay"),
-            "policy": {
-                "id": None,  # Unused field in new format
-                "updateVersion": None,  # Unused field in new format
-                "maxRuleID": None,  # Unused field in new format
-                "sensorAutoUpdateEnabled": None,  # Unused field in new format
-                "pscReportingRules": None,  # Unused field in new format
-                "mobileSensorSettings": None,  # Unused field in new format
-                "phishingSetting": None,  # Unused field in new format
-                "sensorSettings": new_response.get("sensor_settings"),
-                "directoryActionRules": [
-                    {
-                        "actions": {
-                            "FILE_UPLOAD": rule.get("file_upload"),
-                            "PROTECTION": rule.get("protection")
-                        }
-                    } for rule in new_response.get("directory_action_rules", [])
-                ],
-                "rules": new_response.get("rules"),
-                "avSettings": {
-                    "apc": {
-                        "enabled": new_response.get("av_settings", {}).get("avira_protection_cloud", {}).get("enabled"),
-                        "maxFileSize": new_response.get("av_settings", {}).get("avira_protection_cloud", {}).get("max_file_size"),
-                        "riskLevel": new_response.get("av_settings", {}).get("avira_protection_cloud", {}).get("risk_level"),
-                        "maxExeDelay": new_response.get("av_settings", {}).get("avira_protection_cloud", {}).get("max_exe_delay")
-                    },
-                    "onAccessScan": {
-                        "enabled": new_response.get("av_settings", {}).get("on_access_scan", {}).get("enabled"),
-                        "mode": new_response.get("av_settings", {}).get("on_access_scan", {}).get("mode")
-                    },
-                    "onDemandScan": {
-                        "enabled": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("enabled"),
-                        "profile": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("profile"),
-                        "schedule": {
-                            "days": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("schedule", {}).get("days"),
-                            "startHour": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("schedule", {}).get("start_hour"),
-                            "rangeHours": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("schedule", {}).get("range_hours"),
-                            "recoveryScanIfMissed": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("schedule", {}).get("recovery_scan_if_missed")
-                        },
-                        "scanUsb": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("scan_usb"),
-                        "scanCdDvd": new_response.get("av_settings", {}).get("on_demand_scan", {}).get("scan_cd_dvd")
-                    },
-                    "signatureUpdate": {
-                        "enabled": new_response.get("av_settings", {}).get("signature_update", {}).get("enabled"),
-                        "schedule": {
-                            "fullIntervalHours": new_response.get("av_settings", {}).get("signature_update", {}).get("schedule", {}).get("full_interval_hours"),
-                            "initialRandomDelayHours": new_response.get("av_settings", {}).get("signature_update", {}).get("schedule", {}).get("initial_random_delay_hours"),
-                            "intervalHours": new_response.get("av_settings", {}).get("signature_update", {}).get("schedule", {}).get("interval_hours")
-                        }
-                    },
-                    "updateServers": {
-                        "serversOverride": new_response.get("av_settings", {}).get("update_servers", {}).get("servers_override"),
-                        "serversForOffSiteDevices": new_response.get("av_settings", {}).get("update_servers", {}).get("servers_for_offsite_devices"),
-                        "servers": [
-                            {
-                                "server": server.get("server"),
-                                "preferred": server.get("preferred")
-                            } for server in new_response.get("av_settings", {}).get("update_servers", {}).get("servers_for_onsite_devices", [])
-                        ]
-                    }
-                }
-            }
-        },
-        "threatSightMdrConfiguration": {
-            "policyModificationPermission": new_response.get("managed_detection_response_permissions", {}).get("policy_modification"),
-            "quarantinePermission": new_response.get("managed_detection_response_permissions", {}).get("quarantine")
-        }
-    }
-    return old_response
-
-
 def format_request_body(args: dict):
     body = assign_params(
         criteria=assign_params(  # one of the arguments (query or criteria) is required
@@ -1258,8 +1024,6 @@ def format_request_body(args: dict):
 
     if not body.get('criteria') and not body.get('query'):
         raise DemistoException("At least one criteria filter or query must be provided.")
-    # elif body.get('criteria') and body.get('query'):
-    #     raise DemistoException('')
 
     return body
 
