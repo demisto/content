@@ -33,7 +33,7 @@ GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
                        'Authorization Code': AUTHORIZATION_CODE,
                        'Client Credentials': CLIENT_CREDENTIALS}
 SCOPE_DEVICE_AUTH_FLOW = "499b84ac-1321-427f-aa17-267ca6975798/user_impersonation offline_access"
-SCOPE_CLIENT_CREDENTIALS_FLOW = '499b84ac-1321-427f-aa17-267ca6975798/.default'
+SCOPE = '499b84ac-1321-427f-aa17-267ca6975798/.default'
 
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'  # ISO8601 format with UTC, default in XSOAR
@@ -78,7 +78,7 @@ class Client:
             base_url=f'https://dev.azure.com/{organization}',
             verify=verify,
             proxy=proxy,
-            scope=SCOPE_CLIENT_CREDENTIALS_FLOW if 'Device Code' not in auth_type else SCOPE_DEVICE_AUTH_FLOW,
+            scope=SCOPE if 'Device Code' not in auth_type else SCOPE_DEVICE_AUTH_FLOW,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
