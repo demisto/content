@@ -2000,12 +2000,6 @@ script:
       - 'true'
       description: Specify whether the output should be compressed.
     - name: entity_type
-      auto: PREDEFINED
-      predefined:
-      - Message
-      - Phish
-      - Malware
-      - Spam
       description: The type of entity being exported.
     - name: force_conversion_to_mime
       auto: PREDEFINED
@@ -2040,12 +2034,6 @@ script:
     - name: identity
       description: The identity of a single message to retrieve.
     - name: entity_type
-      auto: PREDEFINED
-      predefined:
-      - Message
-      - Phish
-      - Malware
-      - Spam
       description: The type of entity being retrieved.
     - name: recipient_address
       description: Email address of the recipient.
@@ -2261,12 +2249,6 @@ script:
       - 'true'
       description: Specify whether to allow the sender.
     - name: entity_type
-      auto: PREDEFINED
-      predefined:
-      - Message
-      - Phish
-      - Malware
-      - Spam
       description: The type of entity being released.
     - name: force
       auto: PREDEFINED

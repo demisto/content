@@ -816,11 +816,11 @@ Retrieve quarantine messages.
         "Direction": "Outbound",
         "EntityType": "Email",
         "Expires": "2024-07-18T13:20:02.7166413+00:00",
-        "Identity": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\\xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "MessageId": "\u003cxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx@xxxxxx.xxxx.xxxx.xxxxx.xxx\u003e",
+        "Identity": "12345678-beef-dead-beef-0123456789ab\\c0ffee13-beef-dead-beef-0123456789ab",
+        "MessageId": "\u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com\u003e",
         "MoveToQuarantineAdminActionTakenBy": "",
         "MoveToQuarantineApprovalId": "",
-        "Organization": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "Organization": "c0ffee13-beef-dead-beef-0123456789ab",
         "OverrideReason": "None",
         "OverrideReasonIntValue": 0,
         "PermissionToAllowSender": true,
@@ -866,11 +866,11 @@ Retrieve quarantine messages.
         "Direction": "Inbound",
         "EntityType": "Email",
         "Expires": "2024-07-13T10:59:12.7581841+00:00",
-        "Identity": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\\xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
-        "MessageId": "\u003cxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx@mail.example.com\u003e",
+        "Identity": "12345678-beef-dead-beef-0123456789ac\\c0ffee13-beef-dead-beef-0123456789ac",
+        "MessageId": "\u003c12345678-beef-dead-beef-0123456789ac@123456.789a.bcde.example.com\u003e",
         "MoveToQuarantineAdminActionTakenBy": "",
         "MoveToQuarantineApprovalId": "",
-        "Organization": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx",
+        "Organization": "c0ffee13-beef-dead-beef-0123456789ac",
         "OverrideReason": "None",
         "OverrideReasonIntValue": 0,
         "PermissionToAllowSender": true,
@@ -896,7 +896,7 @@ Retrieve quarantine messages.
         "ReleaseStatus": "RELEASED",
         "Released": true,
         "ReleasedBy": [
-            "SystemMailbox{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}@example.com"
+            "SystemMailbox{deadbeef-dead-beef-dead-beefdeadbeef}@example.com"
         ],
         "ReleasedCount": 1,
         "ReleasedUser": [],
@@ -918,8 +918,8 @@ Retrieve quarantine messages.
 >### Results of ews-get-quarantinemessage
 >| ApprovalId | ApprovalUPN | CustomData | DeletedForRecipients | Direction | EntityType | Expires | Identity | MessageId | MoveToQuarantineAdminActionTakenBy | MoveToQuarantineApprovalId | Organization | OverrideReason | OverrideReasonIntValue | PermissionToAllowSender | PermissionToBlockSender | PermissionToDelete | PermissionToDownload | PermissionToPreview | PermissionToRelease | PermissionToRequestRelease | PermissionToViewHeader | PolicyName | PolicyType | QuarantineTypes | QuarantinedUser | ReceivedTime | RecipientAddress | RecipientCount | RecipientTag | ReleaseStatus | Released | ReleasedBy | ReleasedCount | ReleasedUser | Reported | SenderAddress | Size | SourceId | Subject | SystemReleased | TagName | TeamsConversationType | Type |
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->|  |  |  |  | Outbound | Email | 2024-07-18T13:20:02.7166413+00:00 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | \u003cxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx@xxxxxx.xxxx.xxxx.xxxxx.xxx\u003e |  |  | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | None | 0 | true | false | true | true | true | true | false | false | Default | HostedContentFilterPolicy | HighConfPhish | [] | 2024-07-02T13:20:02.7166413+00:00 | ["admin@example.com"] | 1 | [""] | NOTRELEASED | false | [] | 0 | [] | false | alerts@example.com | 31218 |  | Informational-severity alert: Tenant Allow/Block List entry is about to expire | false | AdminOnlyAccessPolicy |  | High Confidence Phish |
->|  |  |  |  | Inbound | Email | 2024-07-13T10:59:12.7581841+00:00 | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx\xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | \u003cxxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx@mail.example.com\u003e |  |  | xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx | None | 0 | true | false | true | true | true | true | false | false | testing_quarantine_release | HostedContentFilterPolicy | HighConfPhish | [] | 2024-06-28T10:59:12.7581841+00:00 | ["user@example.com"] | 1 | [""] | RELEASED | true | ["SystemMailbox{xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx}@example.com"] | 1 | [] | false | sender@example.com | 14781 |  | Check the inbox | false | testing_release |  | High Confidence Phish |
+>|  |  |  |  | Outbound | Email | 2024-07-18T13:20:02.7166413+00:00 | 12345678-beef-dead-beef-0123456789ab\c0ffee13-beef-dead-beef-0123456789ab | \u003c12345678-beef-dead-beef-0123456789ab@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ab | None | 0 | true | false | true | true | true | true | false | false | Default | HostedContentFilterPolicy | HighConfPhish | [] | 2024-07-02T13:20:02.7166413+00:00 | ["admin@example.com"] | 1 | [""] | NOTRELEASED | false | [] | 0 | [] | false | alerts@example.com | 31218 |  | Informational-severity alert: Tenant Allow/Block List entry is about to expire | false | AdminOnlyAccessPolicy |  | High Confidence Phish |
+>|  |  |  |  | Inbound | Email | 2024-07-13T10:59:12.7581841+00:00 | 12345678-beef-dead-beef-0123456789ac\\c0ffee13-beef-dead-beef-0123456789ac | \u003c12345678-beef-dead-beef-0123456789ac@123456.789a.bcde.example.com\u003e |  |  | c0ffee13-beef-dead-beef-0123456789ac | None | 0 | true | false | true | true | true | true | false | false | testing_quarantine_release | HostedContentFilterPolicy | HighConfPhish | [] | 2024-06-28T10:59:12.7581841+00:00 | ["user@example.com"] | 1 | [""] | RELEASED | true | ["SystemMailbox{deadbeef-dead-beef-dead-beefdeadbeef}@example.com"] | 1 | [] | false | sender@example.com | 14781 |  | Check the inbox | false | testing_release |  | High Confidence Phish |
 
 ### ews-release-quarantinemessage
 ***
