@@ -429,7 +429,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     outputs:
     - contextPath: SekoiaXDR.Alert.short_id
       description: Short ID of the alert.
@@ -598,7 +598,7 @@ script:
     arguments:
     - name: uuid
       required: true
-      description: UUID of the query executed previously with the "sekoia-xdr-query-events" command.
+      description: UUID from response of the query executed previously with the "sekoia-xdr-query-events" command.
     outputs:
     - contextPath: SekoiaXDR.Events.Results
       description: The outputs are different for each event, they will be output inside SekoiaXDR.Events.Results.
@@ -675,7 +675,6 @@ script:
       description:  "Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter."
       isArray: true
     - name: job_uuid
-      description: The job UUID to retrieve query results.
       hidden: true
     outputs:
     - contextPath: SekoiaXDR.Events.Results
@@ -702,7 +701,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     - name: comment
       required: true
       description: Content of the comment to be posted on the alert.
@@ -713,7 +712,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     outputs:
     - contextPath: SekoiaXDR.Comments.total
       description: The total number of items in the comments.
@@ -736,7 +735,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     outputs:
     - contextPath: SekoiaXDR.StatusTransitions.actions.name
       description: The name of the action.
@@ -748,7 +747,7 @@ script:
   - name: sekoia-xdr-get-cases-alert
     arguments:
     - name: alert_id
-      description: 'The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
       required: true
     - name: case_id
       description: 'The short_id of the case to retrieve. i.e: "CAQNurTJM8q2".'
@@ -1143,7 +1142,7 @@ script:
     arguments:
     - name: kill_chain_uuid
       required: true
-      description: UUID or short_id of the kill chain.
+      description: UUID or short_id of the kill chain the UUID should appear with "sekoia-xdr-list-alerts".
     outputs:
     - contextPath: SekoiaXDR.KillChain.stix_name
       description: The name of the STIX object.
