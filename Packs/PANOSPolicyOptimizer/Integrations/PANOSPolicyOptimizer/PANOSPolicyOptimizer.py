@@ -1,6 +1,7 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import hashlib
 
-from CommonServerPython import *
 
 CSRF_PARSING_CHARS = 14
 
@@ -326,6 +327,7 @@ def get_unused_rules_by_position(client: Client, position: str, exclude: bool, r
     """
     Get unused rules from panorama based on user defined arguments.
     """
+
     raw_response = client.policy_optimizer_get_rules(
         timeframe=timeframe, usage=usage, exclude=exclude, position=position, rule_type=rule_type,
         page_size=page_size, limit=limit, page=page,
@@ -348,6 +350,7 @@ def get_policy_optimizer_statistics_command(client: Client, args: dict) -> Comma
     outputs_stats = {}
     # panorama instance has multiple positions, firewall instance has only main position
     position = define_position(version=client.version, args=args, is_panorama=client.is_cms_selected)
+    client.machine = args.get('device_group') or client.machine
 
     raw_response = client.get_policy_optimizer_statistics(position)
     stats = raw_response['result']
@@ -378,6 +381,7 @@ def policy_optimizer_no_apps_command(client: Client, args: dict) -> CommandResul
     """
     # panorama instance has multiple positions, firewall instance has only main position
     position = define_position(version=client.version, args=args, is_panorama=client.is_cms_selected)
+    client.machine = args.get('device_group') or client.machine
 
     raw_response = client.policy_optimizer_no_apps(position=position)
     stats = raw_response['result']
@@ -415,6 +419,7 @@ def policy_optimizer_get_unused_apps_command(client: Client, args: dict) -> Comm
     """
     # panorama instance has multiple positions, firewall instance has only main position
     position = define_position(version=client.version, args=args, is_panorama=client.is_cms_selected)
+    client.machine = args.get('device_group') or client.machine
 
     raw_response = client.policy_optimizer_get_unused_apps(position=position)
     stats = raw_response['result']
@@ -446,6 +451,8 @@ def policy_optimizer_get_rules_command(client: Client, args: dict) -> CommandRes
     page_size: int = arg_to_number(args.get('page_size')) or 200
     limit: int = arg_to_number(args.get('limit')) or 200
     page: int | None = arg_to_number(args.get('page'))
+
+    client.machine = args.get('device_group') or client.machine
 
     if page_size > 200:
         raise ValueError('The maximum page size is 200.')
@@ -499,6 +506,7 @@ def policy_optimizer_app_and_usage_command(client: Client, args: dict) -> Comman
     Gets the Policy Optimizer Statistics as seen from the User Interface
     """
     rule_uuid = str(args.get('rule_uuid'))
+    client.machine = args.get('device_group') or client.machine
 
     raw_response = client.policy_optimizer_app_and_usage(rule_uuid)
 
@@ -527,6 +535,9 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
     Gets the Dynamic Address group.
     """
     dag = str(args.get('dag'))
+
+    client.machine = args.get('device_group') or client.machine
+
     raw_response = client.policy_optimizer_get_dag(dag)
     result = raw_response['result']
     if '@status' in result and result['@status'] == 'error':
