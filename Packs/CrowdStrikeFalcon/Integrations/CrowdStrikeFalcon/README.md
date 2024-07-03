@@ -76,7 +76,7 @@ To set up the mirroring:
 5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in CrowdStrike Falcon.
 6. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
 
-Newly fetched XSOAR incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
+Newly fetched Cortex XSOAR incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Notes**
 
