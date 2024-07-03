@@ -241,7 +241,7 @@ script:
   runonce: false
   script: '-'
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.99474
+  dockerimage: demisto/python3:3.10.14.99865
   type: python
 tests:
 - Pwned v2 test
