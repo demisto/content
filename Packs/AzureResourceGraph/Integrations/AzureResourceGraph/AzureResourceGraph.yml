@@ -18,21 +18,21 @@ configuration:
   required: false
   hiddenusername: true
   display: ""
-  section: connect
+  section: Connect
 - displaypassword: Token / Tenant ID
   name: cred_token
   type: 9
   required: false
   hiddenusername: true
   display: ""
-  section: connect
+  section: Connect
 - displaypassword: Key / Client Secret
   name: cred_enc_key
   type: 9
   required: false
   hiddenusername: true
   display: ""
-  section: connect
+  section: Connect
 - display: ""
   displaypassword: Certificate Thumbprint
   name: cred_certificate_thumbprint
@@ -40,13 +40,13 @@ configuration:
   required: false
   hiddenusername: true
   additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
-  section: connect
+  section: Connect
 - display: Private Key
   name: private_key
   type: 14
   additionalinfo: Used for certificate authentication. The private key of the registered certificate.
   hidden: true
-  section: connect
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
