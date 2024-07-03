@@ -39,7 +39,9 @@ def get_azure_access_token_mock() -> dict:
 @pytest.mark.parametrize(
     "function_name, data_file_name, args, additional_args", [
         ("list_operations", "test_list_operations_output", None, None),
-        ("query_resources", "test_resources_query_output", {"query": "dummy"}, {"paging_options": "dummy"})
+        ("query_resources", "test_resources_query_output", {"query": "dummy"}, {"paging_options": "dummy",
+                                                                                "subscriptions": "dummy",
+                                                                                "management_groups": "dummy"})
     ]
 )
 def test_client_api_calls(mocker, function_name, data_file_name, args, additional_args):
@@ -49,7 +51,7 @@ def test_client_api_calls(mocker, function_name, data_file_name, args, additiona
     if args and not additional_args:
         result = getattr(client, function_name)(args)
     elif args and additional_args:
-        result = getattr(client, function_name)(args, additional_args)
+        result = getattr(client, function_name)(args, **additional_args)
     else:
         result = getattr(client, function_name)()
     assert result == data
