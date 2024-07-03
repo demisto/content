@@ -1,4 +1,4 @@
-name: Protect files
+name:  Protect Infrastructure Files
 
 on:
   pull_request:
