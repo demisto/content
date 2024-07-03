@@ -565,7 +565,7 @@ def define_position(version: str, args: dict, is_panorama: bool) -> str:
     This function defines the rule's position in the query. For Panorama instances from versions 10.2.0 and above
     it uses the `position` argument;
     for Firewall instances, it always uses 'main' position.
-    Currently, it's fixed for versions 10.2.0 and above, as those are the accessible versions.
+    Currently, it's fixed for versions 10.1.10 and above, as those are the accessible versions.
     Args:
         version: PAN-OS version
         args: Demisto arguments
@@ -583,7 +583,7 @@ def is_cms_selected(version: str, is_panorama: bool) -> bool:
     """"
     in panorama the 'isCmsSelected' parameter should be True, in firewall it is False.
     this should be probably fixed in all versions,
-    but for now we'll just fix it for version 10.2.0 and above since that's the version we have access to.
+    but for now we'll just fix it for version 10.1.10 and above since that's the version we have access to.
     Args:
         version (str): PAN-OS version
         is_panorama (bool): True if the instance is Panorama, False if the instance is a firewall
