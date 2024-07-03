@@ -1528,10 +1528,16 @@ def test_main(mocker):
 @freeze_time("1993-06-17 11:00:00 GMT")
 def test_core_http_request_xpanse_tenant(mocker):
     """
+    Unit test to verify behavior in Xpanse tenants on the Xsiam platform with XSOAR Marketplace.
+
+    This test ensures that when working with Xpanse tenants on the Xsiam platform integrated with the
+    XSOAR Marketplace, the http_request function from CommonServerPython is used instead of _apiCall,
+    as required in Xsiam tenants (CIAC-10878).
+
     Given:
         - Only the required params in the configuration.
     When:
-        - Running a test_module to test the http_request function in CoreIRApiModule.
+        - Running a get_incidents to test the http_request function in CoreIRApiModule.
     Then:
         - Should fail since command '_apiCall' is not available via engine.
     """
