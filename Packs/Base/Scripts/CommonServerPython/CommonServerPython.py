@@ -8275,8 +8275,7 @@ def get_demisto_version_as_str():
     """
     try:
         ver_obj = get_demisto_version()
-        return '{}-{}'.format(ver_obj.get('version', 'Unknown'),
-                              ver_obj.get("buildNumber", 'Unknown'))
+        return f'{ver_obj.get("version", "Unknown")}-{ver_obj.get("buildNumber", "Unknown")}-{ver_obj.get("platform", "Unknown")}-{ver_obj.get("engine", "False")}'
     except AttributeError:
         return "Unknown"
 
@@ -8398,12 +8397,12 @@ def is_xpanse():
     """
     return is_xsiam() and demisto.demistoVersion().get("platform") == "x2"
 
-def is_xsiam_using_engine():
-    """Determines whether or not the xsiam platform is using engine.
+def is_using_engine():
+    """Determines whether or not the platform is using engine.
     :return: True iff the platform is using engine.
     :rtype: ``bool``
     """
-    return is_xsiam and demisto.demistoVersion().get("engine")
+    return demisto.demistoVersion().get("engine")
 
 
 class DemistoHandler(logging.Handler):
