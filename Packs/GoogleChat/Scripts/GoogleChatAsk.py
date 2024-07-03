@@ -2,7 +2,6 @@ import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
 import dateparser
-import traceback
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
@@ -15,7 +14,7 @@ def parse_option_text(option):
         text = option
         style = None
     return text, style
-    
+
 def create_adaptive_card(message, user_options, response_type):
     select_buttons = []
     for _i, option in enumerate(user_options):
@@ -32,18 +31,18 @@ def create_adaptive_card(message, user_options, response_type):
     "card": {
         "header": {
             "title": "Feedback request",
-            "subtitle": "message"
+            "subtitle": message
         },
         "sections": [
             {
-                "header": "optionsForUser",
+                "header": "Choose one option:",
                 "collapsible": "false",
                 "uncollapsibleWidgetsCount": 1,
                 "widgets": [
                     {
                         "selectionInput": {
-                            "name": "size",
-                            "label": "Size",
+                            "name": "a",
+                            "label": "a",
                             "type": 'RADIO_BUTTON' if response_type == 'button' else 'DROPDOWN'
                         }
                     },
@@ -90,17 +89,17 @@ def main():
     #     'ignoreAddURL': 'true',
     # }
     args = {}
-    
+
     user_options = [option1, option2]
     if additional_options:
         user_options += additional_options
-    adaptive_card = create_adaptive_card(demisto.args()['message'], user_options, response_type)
+    adaptive_card = create_adaptive_card(message, user_options, response_type)
     args = {
         'entitlement': formatted_entitlement,
         'expiry': expiry,
         'adaptive_card': adaptive_card,
         'default_reply': option1,
-        'message': message
+        'message': 'no_message'
     }
     user = demisto_args.get('user')
     space_id = demisto_args.get('space_id')

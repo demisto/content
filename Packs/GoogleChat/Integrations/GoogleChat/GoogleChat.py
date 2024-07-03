@@ -1,5 +1,4 @@
 from traceback import format_exc
-from secrets import compare_digest
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -22,7 +21,6 @@ OBJECTS_TO_KEYS = {
 OPTION_1 = ''
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name='Authorization')
-CLIENT = None
 
 ''' CLIENT CLASS '''
 
@@ -97,6 +95,17 @@ class GoogleChatClient(BaseClient):
         except DemistoException as e:
             raise e
 
+    def send_chat_reply_request(self, url_suffix, params, body):
+        demisto.debug("inside send_chat_reply_request")
+        try:
+            headers = {
+                'Authorization': f'Bearer {self._space_token}',
+                'Content-Type': 'application/json; charset=UTF-8'
+            }
+            self._http_request('PATCH', url_suffix=url_suffix, params=params, json_data=body, headers=headers)
+        except DemistoException:
+            raise DemistoException(f"Could not send a chat-reply to the user with {body.get('text')}")
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -144,7 +153,8 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
     expiry = args.get('expiry')
     default_reply = args.get('default_reply')
 
-    result = client.send_notification_request(message_body, message_to, space_id, thread_id, adaptive_card)
+    result = client.send_notification_request(message_body if not 'no_message' else '',
+                                              message_to, space_id, thread_id, adaptive_card)
     message_id = result.get('name')
     if result.get('name') and entitlement and expiry and default_reply:
         save_entitlement(entitlement, message_id, space_id, expiry, message_to, thread_id, default_reply)
@@ -240,7 +250,7 @@ def run_long_running(port):
                 '()': UserAgentFormatter,
                 'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
             }
-            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config)
+            uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, log_level="info")
         except Exception as e:
             demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
@@ -249,6 +259,7 @@ def run_long_running(port):
             #     os.unlink(certificate_path)
             # if private_key_path:
             #     os.unlink(private_key_path)
+            demisto.debug(f'Checking server status, loop iteration complete. Server should be up on port {port}')
             time.sleep(5)
 
 
@@ -301,6 +312,7 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id, s
         If the message contains entitlement, return a reply.
     """
     integration_context = get_integration_context()
+    demisto.debug(f"{integration_context=}")
     messages = integration_context.get('messages', [])
     reply = ''
     if not messages or not message_id:
@@ -310,56 +322,43 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id, s
     if message_filter:
         message = message_filter[0]
         entitlement = message.get('entitlement')
+        demisto.debug(f"{entitlement=}")
         reply = message.get('reply', f'Thank you {user_name} for your response {action_selected}.')
+        demisto.debug(f"{reply=}")
         guid, incident_id, task_id = extract_entitlement(entitlement)
         demisto.handleEntitlementForUser(incident_id, guid, user_name, action_selected, task_id)
         message['remove'] = True
         set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
+        demisto.debug(f"{get_integration_context()=}")
     return reply
 
 
-# async def googleChat_send_notification_async(client, url_suffix, json_data_all):
-#     CLIENT.send_notification_request(url_suffix, json_data_all)
+async def googleChat_send_chat_reply_async(url_suffix, params, body):
+    CLIENT.send_chat_reply_request(url_suffix, params, body)
 
 
-# async def process_entitlement_reply(
-#     entitlement_reply: str,
-#     account_id: str,
-#     robot_jid: str,
-#     to_jid: str | None = None,
-#     user_name: str | None = None,
-#     action_text: str | None = None,
-# ):
-#     """
-#     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
-#     :param entitlement_reply: str: The text to update the asking question with.
-#     :param user_name: str: name of the user who answered the entitlement
-#     :param action_text: str: The text attached to the button, used for string replacement.
-#     :param toJid: str: The Jid of where the question exists.
-#     :param accountId: str: Zoom account ID
-#     :param robotJid: str: Zoom BOT JID
-#     :return: None
-#     """
-#     if '{user}' in entitlement_reply:
-#         entitlement_reply = entitlement_reply.replace('{user}', str(user_name))
-#     if '{response}' in entitlement_reply and action_text:
-#         entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
+async def process_entitlement_reply(entitlement_reply, message_hierarchy, user_name, action_selected):
+    """
+    Triggered when an entitlement reply is found, this function will update the original message with the reply message.
+    :param entitlement_reply: str: The text to update the asking question with.
+    :param message_id: str: The message_id to reply to.
+    :param user_name: str: name of the user who answered the entitlement
+    :param action_selected: str: The text attached to the button, used for string replacement.
+    :return: None
+    """
+    # if '{user}' in entitlement_reply:
+    #     entitlement_reply = entitlement_reply.replace('{user}', str(user_name))
+    # if '{response}' in entitlement_reply and action_text:
+    #     entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
 
-#     url_suffix = '/im/chat/messages'
-#     content_json = {
-#         "content": {
-#             "body": [
-#                 {
-#                     "type": "message",
-#                     "text": entitlement_reply
-#                 }
-#             ]
-#         },
-#         "to_jid": to_jid,
-#         "robot_jid": robot_jid,
-#         "account_id": account_id
-#     }
-#     await google_chat_send_notification_async(CLIENT, url_suffix, content_json)
+    url_suffix = f"{message_hierarchy}"
+    params = {
+        "updateMask": "*"
+    }
+    body = {
+        "text": entitlement_reply
+    }
+    await googleChat_send_chat_reply_async(url_suffix, params, body)
 
 
 @app.on_event("startup")
@@ -367,6 +366,7 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id, s
 async def check_for_expired_messages():
     """Send the default response if the message expiry time has expired.
     """
+    demisto.debug("inside check_for_expired_messages")
     integration_context = get_integration_context()
     messages = integration_context.get('messages')
     if messages:
@@ -397,31 +397,40 @@ async def handle_googleChat_response(request: Request, credentials: HTTPBasicCre
     """
     request = await request.json()
     demisto.debug(f"{request=}")
-    credentials_param = demisto.params().get('credentials')
+    demisto.debug(f"{credentials=}")
+    demisto.debug(f"{token=}")
+    demisto.debug(f"{demisto.params().get('space_token', {}).get('password')=}")
+
     # auth_failed = False
     # v_token = demisto.params().get('verification_token', {}).get('password')
     # if not str(token).startswith('Basic') and v_token:
     #     if token != v_token:
     #         auth_failed = True
 
-    if credentials and credentials_param and (username := credentials_param.get('identifier')):
-        password = credentials_param.get('password', '')
-        if not compare_digest(credentials.username, username) or not compare_digest(credentials.password, password):
-            auth_failed = True
-    if auth_failed:
-        demisto.debug('Authorization failed')
-        return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
+    # if credentials and credentials_param and (username := credentials_param.get('identifier')):
+    #     password = credentials_param.get('password', '')
+    #     if not compare_digest(credentials.username, username) or not compare_digest(credentials.password, password):
+    #         auth_failed = True
+    # if auth_failed:
+    #     demisto.debug('Authorization failed')
+    #     return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
     event_type = request['type']
     try:
         if event_type == "CARD_CLICKED":
-            message_id = request.get('message', {}).get('name').split('messages/', -1)[1]
-            space_id = request.get('space', {}).get('name').split('spaces/')[1]
+            message_id = request.get('message', {}).get('name')
+            demisto.debug(f"{message_id=}")
+            space_id = request.get('space', {}).get('name')
+            demisto.debug(f"{space_id=}")
             action_selected = request.get('action', {}).get('actionMethodName')
+            demisto.debug(f"{action_selected=}")
             user_name = request.get('user', {}).get('displayName')
+            demisto.debug(f"{user_name=}")
             demisto.debug(f'Got the a response with the following details {message_id=}, {space_id=}, {action_selected=}')
             entitlement_reply = await check_and_handle_entitlement(user_name, action_selected, message_id, space_id)
+            demisto.debug(f"{entitlement_reply=}")
             if entitlement_reply:
-                # await process_entitlement_reply(entitlement_reply, account_id, robot_jid, to_jid, user_name, action)
+                demisto.debug("before process_entitlement_reply")
+                await process_entitlement_reply(entitlement_reply, message_id, user_name, action_selected)
                 demisto.updateModuleHealth("")
             demisto.debug(f"Action {action_selected} was clicked on message id {message_id}")
         else:
