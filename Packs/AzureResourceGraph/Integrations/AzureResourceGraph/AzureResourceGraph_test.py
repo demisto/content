@@ -7,8 +7,7 @@ from AzureResourceGraph import AzureResourceGraphClient, list_operations_command
 
 client = AzureResourceGraphClient(base_url="url", tenant_id="tenant", auth_id="auth_id", enc_key="enc_key",
                                   app_name="APP_NAME", verify="verify", proxy="proxy", self_deployed="self_deployed",
-                                  ok_codes=(1, 2), server="server", subscription_id="subscription_id",
-                                  certificate_thumbprint='', private_key='')
+                                  ok_codes=(1, 2), server="server", certificate_thumbprint='', private_key='')
 
 
 ''' HELPER FUNCTIONS '''
@@ -149,7 +148,6 @@ def test_test_module_command(mocker) -> None:
         'private_key': 'test-key',
         'self_deployed': True,
         'enc_key': 'test',
-        'subscription_id': 'test'
     }
 
     # operations_data = util_load_json('./test_data/test_list_operations_output.json')
