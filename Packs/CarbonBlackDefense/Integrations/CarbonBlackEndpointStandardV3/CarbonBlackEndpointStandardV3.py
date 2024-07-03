@@ -624,13 +624,46 @@ def create_policy_command(client: Client, args: dict):
 
 
 def delete_policy_command(client: Client, args: dict):
+    """Deletes a policy based on the provided policy ID.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments provided for the deletion.
+
+    Arguments:
+        policyId (str): The ID of the policy to be deleted.
+
+    :return: CommandResults indicating successful deletion.
+    :rtype: CommandResults
+    """
     policy_id_int = arg_to_number(args['policyId'], required=True)
 
     client.delete_policy(policy_id_int)
-    return CommandResults(readable_output=f"Policy with ID {policy_id_int} was was deleted successfully")
+    return CommandResults(readable_output=f"Policy with ID {policy_id_int} was deleted successfully")
 
 
 def add_rule_to_policy_command(client: Client, args: dict):
+    """Adds a rule to a policy based on the provided arguments.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments provided for adding the rule.
+
+    Arguments:
+        policyId (str): The ID of the policy to which the rule will be added.
+        action (str): The action for the rule.
+        operation (str): The operation for the rule.
+        required (str): Whether the rule is required or not.
+        type (str): The type of the application for the rule.
+        value (str): The value of the application for the rule.
+
+    :return: CommandResults containing the new rule details.
+    :rtype: CommandResults
+    """
     policy_id_int = arg_to_number(args['policyId'], required=True)
 
     body = assign_params(
@@ -655,6 +688,26 @@ def add_rule_to_policy_command(client: Client, args: dict):
 
 
 def update_rule_in_policy_command(client: Client, args: dict):
+    """Updates a rule in a policy based on the provided arguments.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments provided for updating the rule.
+
+    Arguments:
+        policyId (str): The ID of the policy containing the rule.
+        id (str): The ID of the rule to be updated.
+        action (str): The action for the rule.
+        operation (str): The operation for the rule.
+        required (str): Whether the rule is required or not.
+        type (str): The type of the application for the rule.
+        value (str): The value of the application for the rule.
+
+    :return: CommandResults containing the updated rule details.
+    :rtype: CommandResults
+    """
     policy_id_int = arg_to_number(args['policyId'], required=True)
     rule_id_int = arg_to_number(args['id'], required=True)
 
@@ -674,12 +727,27 @@ def update_rule_in_policy_command(client: Client, args: dict):
         outputs_prefix='CarbonBlackDefense.Rule',
         outputs_key_field='id',
         outputs=res,
-        readable_output=tableToMarkdown('New rule', res),
+        readable_output=tableToMarkdown('Updated rule', res),
         raw_response=res
     )
 
 
 def delete_rule_from_policy_command(client: Client, args: dict):
+    """Deletes a rule from a policy based on the provided policy and rule IDs.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments provided for deleting the rule.
+
+    Arguments:
+        policyId (str): The ID of the policy from which the rule will be deleted.
+        ruleId (str): The ID of the rule to be deleted.
+
+    :return: CommandResults indicating successful deletion of the rule.
+    :rtype: CommandResults
+    """
     policy_id_int = arg_to_number(args['policyId'], required=True)
     rule_id_int = arg_to_number(args['ruleId'], required=True)
 
@@ -696,6 +764,46 @@ def delete_rule_from_policy_command(client: Client, args: dict):
     requires_polling_arg=False
 )
 def find_processes_command(args: dict, client: Client):
+    """Finds processes based on the provided arguments using polling function.
+
+    :type args: dict
+    :param args: The arguments provided for finding processes.
+
+    Arguments:
+        interval_in_seconds (int, optional): The interval in seconds for polling.
+        timeout (int, optional): The timeout duration for polling.
+        rows (int, optional): The number of rows to fetch.
+        job_id (str, optional): The job ID for the polling mechanism.
+        alert_category (list, optional): List of alert categories to filter by.
+        hash (list, optional): List of hashes to filter by.
+        device_external_ip (list, optional): List of device external IPs to filter by.
+        device_id (list, optional): List of device IDs to filter by.
+        device_internal_ip (list, optional): List of device internal IPs to filter by.
+        device_name (list, optional): List of device names to filter by.
+        device_os (list, optional): List of device OS to filter by.
+        device_timestamp (list, optional): List of device timestamps to filter by.
+        event_type (list, optional): List of event types to filter by.
+        parent_name (list, optional): List of parent names to filter by.
+        parent_reputation (list, optional): List of parent reputations to filter by.
+        process_cmdline (list, optional): List of process command lines to filter by.
+        process_guid (list, optional): List of process GUIDs to filter by.
+        process_name (list, optional): List of process names to filter by.
+        process_pid (list, optional): List of process PIDs to filter by.
+        process_reputation (list, optional): List of process reputations to filter by.
+        process_start_time (list, optional): List of process start times to filter by.
+        process_terminated (list, optional): List of process terminated statuses to filter by.
+        process_username (list, optional): List of process usernames to filter by.
+        sensor_action (list, optional): List of sensor actions to filter by.
+        query (str, optional): Query string for filtering.
+        start (int, optional): Starting point for fetching rows.
+        time_range (dict, optional): Time range for filtering.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :return: PollResult containing the process search results.
+    :rtype: PollResult
+    """
     rows = arg_to_number(args.get("rows", 10))
 
     if 'job_id' not in args:  # first polling iteration
@@ -744,6 +852,29 @@ def find_processes_command(args: dict, client: Client):
     requires_polling_arg=False
 )
 def find_observation_details_command(args: dict, client: Client):
+    """Finds observation details based on the provided arguments using polling function.
+
+    :type args: dict
+    :param args: The arguments provided for finding observation details.
+
+    Arguments:
+        interval_in_seconds (int, optional): The interval in seconds for polling.
+        timeout (int, optional): The timeout duration for polling.
+        rows (int, optional): The number of rows to fetch.
+        job_id (str, optional): The job ID for the polling mechanism.
+        alert_id (str, optional): The alert ID associated with the observations.
+        event_ids (list, optional): The event IDs for the observations.
+        process_hash (str, optional): The process hash for the observations.
+        device_id (int, optional): The device ID associated with the observations.
+        count_unique_devices (bool, optional): Whether to count unique devices.
+        max_rows (int, optional): The maximum number of rows to fetch.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :return: PollResult containing the observation details results.
+    :rtype: PollResult
+    """
     rows = arg_to_number(args.get("rows", 10))
 
     if 'job_id' not in args:  # first polling iteration
@@ -800,6 +931,46 @@ def find_observation_details_command(args: dict, client: Client):
     requires_polling_arg=False
 )
 def find_observation_command(args: dict, client: Client):
+    """Finds observations based on the provided arguments using polling function.
+
+    :type args: dict
+    :param args: The arguments provided for finding observations.
+
+    Arguments:
+        interval_in_seconds (int, optional): The interval in seconds for polling.
+        timeout (int, optional): The timeout duration for polling.
+        rows (int, optional): The number of rows to fetch.
+        job_id (str, optional): The job ID for the polling mechanism.
+        alert_category (list, optional): List of alert categories to filter by.
+        hash (list, optional): List of hashes to filter by.
+        device_external_ip (list, optional): List of device external IPs to filter by.
+        device_id (list, optional): List of device IDs to filter by.
+        device_internal_ip (list, optional): List of device internal IPs to filter by.
+        device_name (list, optional): List of device names to filter by.
+        device_os (list, optional): List of device OS to filter by.
+        device_timestamp (list, optional): List of device timestamps to filter by.
+        event_type (list, optional): List of event types to filter by.
+        parent_name (list, optional): List of parent names to filter by.
+        parent_reputation (list, optional): List of parent reputations to filter by.
+        process_cmdline (list, optional): List of process command lines to filter by.
+        process_guid (list, optional): List of process GUIDs to filter by.
+        process_name (list, optional): List of process names to filter by.
+        process_pid (list, optional): List of process PIDs to filter by.
+        process_reputation (list, optional): List of process reputations to filter by.
+        process_start_time (list, optional): List of process start times to filter by.
+        process_terminated (list, optional): List of process terminated statuses to filter by.
+        process_username (list, optional): List of process usernames to filter by.
+        sensor_action (list, optional): List of sensor actions to filter by.
+        query (str, optional): Query string for filtering.
+        start (int, optional): Starting point for fetching rows.
+        time_range (dict, optional): Time range for filtering.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :return: PollResult containing the observation search results.
+    :rtype: PollResult
+    """
     rows = arg_to_number(args.get("rows", 10))
 
     if 'job_id' not in args:  # first polling iteration
@@ -841,6 +1012,19 @@ def find_observation_command(args: dict, client: Client):
 
 
 def device_search_command(client: Client, args: dict):
+    """Searches for devices based on the provided arguments.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments provided for the search.
+
+    :raises ValueError: If only one of start_time or end_time is set.
+
+    :return: CommandResults containing the search results.
+    :rtype: CommandResults
+    """
     start_time, end_time = args.get("start_time"), args.get("end_time")
 
     if (not start_time and end_time) or (start_time and not end_time):
@@ -863,8 +1047,6 @@ def device_search_command(client: Client, args: dict):
     result = client.get_devices(body)
 
     devices = result.get('results', [])
-    if not devices:
-        return 'No devices were found.'
 
     headers = ['id', 'name', 'os', 'policy_name', 'quarantined', 'status', 'target_priority',
                'last_internal_ip_address', 'last_external_ip_address', 'last_contact_time', 'last_location']
@@ -880,6 +1062,17 @@ def device_search_command(client: Client, args: dict):
 
 
 def device_quarantine_command(client: Client, args: dict):
+    """Quarantines the specified devices.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs.
+
+    :return: CommandResults indicating successful quarantine.
+    :rtype: CommandResults
+    """
     device_id = argToList(args['device_id'])
 
     client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "ON"})
@@ -888,6 +1081,17 @@ def device_quarantine_command(client: Client, args: dict):
 
 
 def device_unquarantine_command(client: Client, args: dict):
+    """Unquarantines the specified devices.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs.
+
+    :return: CommandResults indicating successful unquarantine.
+    :rtype: CommandResults
+    """
     device_id = argToList(args['device_id'])
 
     client.execute_an_action_on_the_device(device_id, 'QUARANTINE', {"toggle": "OFF"})
@@ -896,6 +1100,17 @@ def device_unquarantine_command(client: Client, args: dict):
 
 
 def device_background_scan_command(client: Client, args: dict):
+    """Starts a background scan on the specified devices.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs.
+
+    :return: CommandResults indicating successful start of the background scan.
+    :rtype: CommandResults
+    """
     device_id = argToList(args['device_id'])
 
     client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "ON"})
@@ -904,6 +1119,17 @@ def device_background_scan_command(client: Client, args: dict):
 
 
 def device_background_scan_stop_command(client: Client, args: dict):
+    """Stops a background scan on the specified devices.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs.
+
+    :return: CommandResults indicating successful stop of the background scan.
+    :rtype: CommandResults
+    """
     device_id = argToList(args['device_id'])
 
     client.execute_an_action_on_the_device(device_id, 'BACKGROUND_SCAN', {"toggle": "OFF"})
@@ -912,6 +1138,17 @@ def device_background_scan_stop_command(client: Client, args: dict):
 
 
 def device_bypass_command(client: Client, args: dict):
+    """Bypasses the specified devices.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs.
+
+    :return: CommandResults indicating successful bypass.
+    :rtype: CommandResults
+    """
     device_id = argToList(args['device_id'])
 
     client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "ON"})
@@ -920,6 +1157,17 @@ def device_bypass_command(client: Client, args: dict):
 
 
 def device_unbypass_command(client: Client, args: dict):
+    """Unbypasses the specified devices.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs.
+
+    :return: CommandResults indicating successful unbypass.
+    :rtype: CommandResults
+    """
     device_id = argToList(args['device_id'])
 
     client.execute_an_action_on_the_device(device_id, 'BYPASS', {"toggle": "OFF"})
@@ -928,8 +1176,19 @@ def device_unbypass_command(client: Client, args: dict):
 
 
 def device_policy_update_command(client: Client, args: dict):
+    """Updates the policy on the specified devices.
+
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs and the policy ID.
+
+    :return: CommandResults indicating successful policy update.
+    :rtype: CommandResults
+    """
     device_id = argToList(args['device_id'])
-    policy_id = args.get('policy_id')
+    policy_id = args['policy_id']
 
     client.execute_an_action_on_the_device(device_id, 'UPDATE_POLICY', {"policy_id": policy_id})
 
@@ -937,14 +1196,22 @@ def device_policy_update_command(client: Client, args: dict):
 
 
 def device_update_sensor_version_command(client: Client, args: dict):
-    device_id = argToList(args['device_id'])
-    sensor_version = args.get('sensor_version')
+    """Updates the sensor version on the specified devices.
 
-    if not sensor_version:
-        return "The sensor_version argument is required."
+    :type client: Client
+    :param client: The client instance to interact with the API.
+
+    :type args: dict
+    :param args: The arguments containing device IDs and the sensor version.
+
+    :return: CommandResults indicating successful sensor version update.
+    :rtype: CommandResults
+    """
+    device_id = argToList(args['device_id'])
+    sensor_version = args['sensor_version']
+
     sensor_version = json.loads(sensor_version)
-    client.execute_an_action_on_the_device(device_id, 'UPDATE_SENSOR_VERSION',
-                                           {"sensor_version": sensor_version})
+    client.execute_an_action_on_the_device(device_id, 'UPDATE_SENSOR_VERSION', {"sensor_version": sensor_version})
 
     return CommandResults(readable_output=f"Version update to {sensor_version} was successful")
 
@@ -993,6 +1260,42 @@ def convert_to_demisto_severity(severity: int) -> int:
 
 
 def format_request_body(args: dict):
+    """Formats the request body for API calls based on provided arguments.
+
+    :type args: dict
+    :param args: The arguments provided for formatting the request body.
+
+    Arguments:
+        alert_category (list, optional): List of alert categories to filter by.
+        hash (list, optional): List of hashes to filter by.
+        device_external_ip (list, optional): List of device external IPs to filter by.
+        device_id (list, optional): List of device IDs to filter by.
+        device_internal_ip (list, optional): List of device internal IPs to filter by.
+        device_name (list, optional): List of device names to filter by.
+        device_os (list, optional): List of device OS to filter by.
+        device_timestamp (list, optional): List of device timestamps to filter by.
+        event_type (list, optional): List of event types to filter by.
+        parent_name (list, optional): List of parent names to filter by.
+        parent_reputation (list, optional): List of parent reputations to filter by.
+        process_cmdline (list, optional): List of process command lines to filter by.
+        process_guid (list, optional): List of process GUIDs to filter by.
+        process_name (list, optional): List of process names to filter by.
+        process_pid (list, optional): List of process PIDs to filter by.
+        process_reputation (list, optional): List of process reputations to filter by.
+        process_start_time (list, optional): List of process start times to filter by.
+        process_terminated (list, optional): List of process terminated statuses to filter by.
+        process_username (list, optional): List of process usernames to filter by.
+        sensor_action (list, optional): List of sensor actions to filter by.
+        query (str, optional): Query string for filtering.
+        rows (int, optional): Number of rows to fetch.
+        start (int, optional): Starting point for fetching rows.
+        time_range (dict, optional): Time range for filtering.
+
+    :return: Formatted request body.
+    :rtype: dict
+
+    :raises DemistoException: If neither criteria nor query is provided.
+    """
     body = assign_params(
         criteria=assign_params(  # one of the arguments (query or criteria) is required
             alert_category=argToList(args.get('alert_category')),
@@ -1002,7 +1305,7 @@ def format_request_body(args: dict):
             device_internal_ip=argToList(args.get('device_internal_ip')),
             device_name=argToList(args.get('device_name')),
             device_os=argToList(args.get('device_os')),
-            device_timestamp=argToList(args.get('device_timestamp')),
+            backend_timestamp=argToList(args.get('device_timestamp')),
             event_type=argToList(args.get('event_type')),
             parent_name=argToList(args.get('parent_name')),
             parent_reputation=argToList(args.get('parent_reputation')),
@@ -1029,6 +1332,25 @@ def format_request_body(args: dict):
 
 
 def validate_observation_details_request_body(request_body: dict):
+    """Validates the request body for getting observation details.
+
+    Ensures that the provided arguments in the request body follow the specified rules:
+    - If 'alert_id' is provided, no other fields should be present.
+    - If 'observation_ids' is provided, no other fields should be present.
+    - If 'process_hash' is provided, it can be alone, with 'device_id', or with 'count_unique_devices', but not both.
+
+    :type request_body: dict
+    :param request_body: The request body dictionary to validate.
+
+    Arguments in request_body:
+        alert_id (str, optional): The alert ID associated with the observations.
+        observation_ids (list, optional): The event IDs for the observations.
+        process_hash (str, optional): The process hash for the observations.
+        device_id (int, optional): The device ID associated with the observations.
+        count_unique_devices (bool, optional): Whether to count unique devices.
+
+    :raises ValueError: If the request body does not meet the validation rules.
+    """
     alert_id = request_body.get('alert_id')
     observation_ids = request_body.get('observation_ids')
     process_hash = request_body.get('process_hash')
