@@ -57,28 +57,26 @@ In order to use the CrowdStrike Falcon integration, your API client must be prov
 - Identity Protection Timeline - Read
 - Identity Protection Assessment - Read
 
-### Incident Mirroring
- 
-You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon incidents or detections (available from Cortex XSOAR version 6.0.0).
+## Incident Mirroring
 
-To setup the mirroring follow these instructions:
+You can enable incident mirroring between Cortex XSOAR incidents and CrowdStrike Falcon corresponding events (available from Cortex XSOAR version 6.0.0).
+To set up the mirroring:
+1. Enable *Fetching incidents* in your instance configuration.
+2. In the *Fetch types* integration parameter, select what types to mirror.
+3. Optional: You can go to one of the *fetch query* parameters and select the query to fetch the events from CrowdStrike Falcon.
+4. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for **CrowdStrike Falcon** and select your integration instance.
-3. Enable **Fetches incidents**.
-4. In the *Fetch types* integration parameter, select what to mirror - incidents or detections or both.
-5. Optional: You can go to the *Incidents fetch query* or *Detections fetch query* parameter and select the query to fetch the incidents or detections from CrowdStrike Falcon.
-6. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in CrowdStrike Falcon incidents (`state`, `status`, `tactics`, `techniques`, `objectives`, `tags`, `hosts.hostname`, `incident_id`)
-      or detections (`status`, `severity`, `behaviors.tactic`, `behaviors.scenario`, `behaviors.objective`, `behaviors.technique`, `device.hostname`, `detection_id`, `behaviors.display_name`) 
-      will be reflected in XSOAR incidents.
-    - Outgoing - Any changes in XSOAR incidents will be reflected in CrowdStrike Falcon incidents (`tags`, `status`) or detections (`status`).
-    - Incoming And Outgoing - Changes in XSOAR incidents and CrowdStrike Falcon incidents or detections will be reflected in both directions.
-    - None - Turns off incident mirroring.
-7. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding incident or detection is closed in CrowdStrike Falcon.
-8. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
+    | **Option** | **Description** |
+    | --- | --- |
+    | None | Turns off incident mirroring. |
+    | Incoming | Any changes in CrowdStrike Falcon events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
+    | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in CrowdStrike Falcon events (outgoing mirrored fields). |
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and CrowdStrike Falcon events will be reflected in both directions. |
 
-Newly fetched incidents or detections will be mirrored in the chosen direction.  However, this selection does not affect existing incidents.
+5. Optional: Check the *Close Mirrored XSOAR Incident* integration parameter to close the Cortex XSOAR incident when the corresponding event is closed in CrowdStrike Falcon.
+6. Optional: Check the *Close Mirrored CrowdStrike Falcon Incident or Detection* integration parameter to close the CrowdStrike Falcon incident or detection when the corresponding Cortex XSOAR incident is closed.
+
+Newly fetched XSOAR incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
 **Important Notes**
 
@@ -3355,7 +3353,7 @@ Uploads a batch of indicators.
 | CrowdStrike.IOC.Tags | Unknown | The tags of the IOC. | 
 | CrowdStrike.IOC.Platforms | Unknown | The platforms of the IOC. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-batch-upload-custom-ioc multiple_indicators_json=`[{"description": "test", "expiration": "2022-02-17T13:47:57Z", "type": "ipv4", "severity": "Informational", "value": "1.1.8.9", "action": "no_action", "platforms": ["mac"], "source": "Cortex XSOAR", "applied_globally": true}]` ```
 
@@ -3419,7 +3417,7 @@ Execute an active responder kill command on a single host.
 | CrowdStrike.Command.kill.Error | String | The error message raised if the command failed. | 
 | CrowdStrike.Command.kill.HostID | String | The host ID. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-rtr-kill-process host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 process_ids=5260,123```
 
@@ -3483,7 +3481,7 @@ Batch executes an RTR active-responder remove file across the hosts mapped to th
 | CrowdStrike.Command.rm.HostID | String | The host ID. | 
 | CrowdStrike.Command.rm.Error | String | The error message raised if the command failed. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-rtr-remove-file file_path="c:\\testfolder" host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 os=Windows```
 
@@ -3533,7 +3531,7 @@ Executes an RTR active-responder ps command to get a list of active processes ac
 | --- | --- | --- |
 | CrowdStrike.Command.ps.Filename | String | The name of the result file to be returned. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-rtr-list-processes host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
@@ -3594,7 +3592,7 @@ Executes an RTR active-responder netstat command to get a list of network status
 | --- | --- | --- |
 | CrowdStrike.Command.netstat.Filename | String | The name of the result file to be returned. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-rtr-list-network-stats host_id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
@@ -3654,7 +3652,7 @@ Executes an RTR active-responder read registry keys command across the given hos
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-rtr-read-registry host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 registry_keys=`
 HKEY_LOCAL_MACHINE,HKEY_USERS````
@@ -3722,7 +3720,7 @@ Executes an RTR active-responder netstat command to get a list of scheduled task
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-rtr-list-scheduled-tasks host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
@@ -3801,7 +3799,7 @@ Gets the RTR extracted file contents for the specified file path.
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The extension of the file. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-rtr-retrieve-file file_path=`C:\Windows\System32\Windows.Media.FaceAnalysis.dll` host_ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1,a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1```
 
@@ -3832,7 +3830,7 @@ Gets the detections for a specific incident.
 | CrowdStrike.IncidentDetection.behavior_id | String | The behavior ID connected to the incident. | 
 | CrowdStrike.IncidentDetection.detection_ids | String | A list of detection IDs connected to the incident. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-get-detections-for-incident incident_id=`inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1````
 
@@ -3863,30 +3861,67 @@ Gets the detections for a specific incident.
 >| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162597577534-10305-6712576 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38658614774 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 >| ind:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:162589633341-10303-6705920 | ldt:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:38655034604 | inc:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1:a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 |
 
+### get-mapping-fields
 
-### cs-falcon-update-incident-comment
-
----
-Updates CrowdStrike Incident with the comment.
+***
+Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
 
 #### Base Command
 
-`cs-falcon-update-incident-comment`
+`get-mapping-fields`
+
+#### Context Output
+
+There is no context output for this command.
+### get-remote-data
+
+***
+Gets remote data from a remote incident or detection. This method does not update the current incident or detection, and should be used for debugging purposes only.
+
+#### Base Command
+
+`get-remote-data`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ids | A comma-separated list of incident IDs. | Required | 
-| comment | A comment added to the CrowdStrike incident. | Required | 
+| id | The remote incident or detection ID. | Required | 
+| lastUpdate | The UTC timestamp in seconds of the last update. The incident or detection is only updated if it was modified after the last update time. Default is 0. | Optional | 
 
 #### Context Output
 
-#### Command Example
+There is no context output for this command.
+### get-modified-remote-data
 
-`cs-falcon-update-incident-comment ids=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 comment="Some comment"`
+***
+Gets the list of incidents and detections that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
 
+#### Base Command
 
+`get-modified-remote-data`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| lastUpdate | Date string representing the local time in UTC timestamp in seconds. The incident or detection is only returned if it was modified after the last update time. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### update-remote-system
+
+***
+Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
+
+#### Base Command
+
+`update-remote-system`
+
+#### Context Output
+
+There is no context output for this command.
 # Spotlight
 
 ### Using Spotlight APIs
@@ -4059,6 +4094,41 @@ Retrieve vulnerability details according to the selected filter. Each request re
 | --- | --- | --- | --- | --- | --- |  --- |
 | CVE-2021-2222 | LOW | 5.5 | 2021-05-10T17:08:00Z | 3.6 | 0 | vendor |
 
+### cve
+
+***
+Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
+
+#### Base Command
+
+`cve`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve_id | Deprecated. Use cve instead. | Optional | 
+| cve | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | String | The indicator value. | 
+| DBotScore.Type | String | The indicator type. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+
+#### Command Example
+
+``` cve cve_id=CVE-2021-2222 ```
+
+#### Human Readable Output
+
+| ID | Severity | Published Date | Base Score |
+| --- | --- | --- | --- |
+| CVE-2021-2222 | HIGH | 2021-09-16T15:12:42Z | 1 |
+
 ### cs-falcon-spotlight-list-host-by-vulnerability
 
 ***
@@ -4105,7 +4175,7 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | CrowdStrike.VulnerabilityHost.host_info.product_type_desc | String | Type of host a sensor is running on. | 
 | CrowdStrike.VulnerabilityHost.cve.id | String | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database \(NVD\). | 
 
-#### Command example
+#### Command Example
 
 ``` cs-falcon-spotlight-list-host-by-vulnerability cve_ids=CVE-2021-2222 ```
 
@@ -4167,32 +4237,6 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
  
-### cve
-
-***
-Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with the CrowdStrike Spotlight license.
-
-#### Base Command
-
-`cve`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| cve_id | Deprecated. Use cve instead. | Optional | 
-| cve | Unique identifier for a vulnerability as cataloged in the National Vulnerability Database (NVD). This filter supports multiple values and negation. | Optional | 
-
-#### Command example
-
-``` cve cve_id=CVE-2021-2222 ```
-
-#### Human Readable Output
-
-| ID | Severity | Published Date | Base Score |
-| --- | --- | --- | --- |
-| CVE-2021-2222 | HIGH | 2021-09-16T15:12:42Z | 1 |
-
 ### cs-falcon-create-ml-exclusion
 
 ***
@@ -4220,11 +4264,11 @@ Create an ML exclusion.
 | CrowdStrike.MLExclusion.regexp_value | String | A regular expression for matching the excluded value. | 
 | CrowdStrike.MLExclusion.value_hash | String | An hash of the value field. | 
 | CrowdStrike.MLExclusion.excluded_from | String | What the exclusion applies to \(e.g., a specific ML model\). | 
-| CrowdStrike.MLExclusion.groups.id | String | Group's ID that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.group_type | String | Groups type that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.name | String | Groups name that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.description | String | Groups description that the exclusion rule is associated with. | 
-| CrowdStrike.MLExclusion.groups.assignment_rule | String | Groups assignment rule that the exclusion is associated with. | 
+| CrowdStrike.MLExclusion.groups.id | String | Group ID that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.group_type | String | Group type that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.name | String | Group name that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.description | String | Group description that the exclusion rule is associated with. | 
+| CrowdStrike.MLExclusion.groups.assignment_rule | String | Group assignment rule that the exclusion is associated with. | 
 | CrowdStrike.MLExclusion.groups.created_by | String | Indicate who created the group. | 
 | CrowdStrike.MLExclusion.groups.created_timestamp | Date | The date when the group was created. | 
 | CrowdStrike.MLExclusion.groups.modified_by | String | Indicate who last modified the group. | 
@@ -4235,7 +4279,7 @@ Create an ML exclusion.
 | CrowdStrike.MLExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.MLExclusion.created_by | String | Indicate who created the rule. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-create-ml-exclusion value=/demo-test excluded_from=blocking groups=999999```
 
@@ -4287,7 +4331,7 @@ Create an ML exclusion.
 ### cs-falcon-update-ml-exclusion
 
 ***
-Updates an ML exclusion. At least one argument is required in addition to the ID argument.
+Updates an ML exclusion. At least one argument is required in addition to the id argument.
 
 #### Base Command
 
@@ -4326,7 +4370,7 @@ Updates an ML exclusion. At least one argument is required in addition to the ID
 | CrowdStrike.MLExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.MLExclusion.created_by | String | Indicate who created the rule. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-update-ml-exclusion id=a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1 comment=demo-comment```
 
@@ -4395,7 +4439,7 @@ Delete the ML exclusions by ID.
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-delete-ml-exclusion ids=123456```
 
@@ -4447,7 +4491,7 @@ Get a list of ML exclusions by specifying their IDs, value, or a specific filter
 | CrowdStrike.MLExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.MLExclusion.created_by | String | Indicate who created the rule. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-search-ml-exclusion limit=1```
 
@@ -4546,7 +4590,7 @@ Create an IOA exclusion.
 | CrowdStrike.IOAExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.IOAExclusion.created_by | String | Indicate who created the rule. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-create-ioa-exclusion exclusion_name=demo-test pattern_id=101010 cl_regex=.* ifn_regex="c:\\\\windows\\\\system32\\\\test.exe" groups=999999```
 
@@ -4599,7 +4643,7 @@ Create an IOA exclusion.
 ### cs-falcon-update-ioa-exclusion
 
 ***
-Updates an IOA exclusion. At least one argument is required in addition to the ID argument.
+Updates an IOA exclusion. At least one argument is required in addition to the id argument.
 
 #### Base Command
 
@@ -4614,7 +4658,7 @@ Updates an IOA exclusion. At least one argument is required in addition to the I
 | pattern_id | ID of the exclusion pattern to update. | Optional | 
 | pattern_name | Name of the exclusion pattern. | Optional | 
 | cl_regex | Command line regular expression. | Optional | 
-| ifn_regex | Image file name regular expression. | Optional | 
+| ifn_regex | Image filename regular expression. | Optional | 
 | comment | Comment describing why the exclusions was created. | Optional | 
 | description | Exclusion description. | Optional | 
 | detection_json | JSON formatted detection template. | Optional | 
@@ -4647,7 +4691,7 @@ Updates an IOA exclusion. At least one argument is required in addition to the I
 | CrowdStrike.IOAExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.IOAExclusion.created_by | String | Indicate who created the rule. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-update-ioa-exclusion id=123456 description=demo-description```
 
@@ -4716,7 +4760,7 @@ Delete the IOA exclusions by ID.
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-delete-ioa-exclusion ids=123456```
 
@@ -4771,7 +4815,7 @@ Get a list of IOA exclusions by specifying their IDs or a filter.
 | CrowdStrike.IOAExclusion.created_on | Date | The date when the exclusion rule was created. | 
 | CrowdStrike.IOAExclusion.created_by | String | Indicate who created the rule. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-search-ioa-exclusion limit=1```
 
@@ -4850,7 +4894,7 @@ Get quarantine file metadata by specified IDs or filter.
 | CrowdStrike.QuarantinedFile.date_updated | Date | The date the quarantined file was last updated. | 
 | CrowdStrike.QuarantinedFile.date_created | Date | The date the quarantined file was created. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-list-quarantined-file limit=1```
 
@@ -4920,7 +4964,7 @@ Apply action to quarantined files by file IDs or filter.
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-apply-quarantine-file-action filename=nc.exe action=delete comment=demo-comment```
 
@@ -4997,7 +5041,7 @@ Retrieve ODS scan details.
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. | 
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-ods-query-scan  initiated_from=some_admin_name severity=high scan_started_on=2023-02-27T09:51:33.91608286Z```
 
@@ -5206,7 +5250,7 @@ Retrieve ODS scheduled scan details.
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
 | CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-ods-query-scheduled-scan ids=123456789```
 
@@ -5346,7 +5390,7 @@ Retrieve ODS scan host details.
 | CrowdStrike.ODSScanHost.completed_on | Date | The date and time when the scan completed. | 
 | CrowdStrike.ODSScanHost.last_updated | Date | The date and time when the scan event was last updated. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-ods-query-scan-host filter="scan_id:[\"123456789\",\"987654321\"]"```
 
@@ -5439,7 +5483,7 @@ Retrieve ODS malicious file details.
 | CrowdStrike.ODSMaliciousFile.quarantined | Boolean | Indicates whether the file was quarantined. | 
 | CrowdStrike.ODSMaliciousFile.last_updated | Date | The date and time when the detection event was last updated. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-ods-query-malicious-files```
 
@@ -5520,7 +5564,7 @@ Create an ODS scan and wait for the results.
 | CrowdStrike.ODSScan.created_by | String | The ID of the user who created the scan job. | 
 | CrowdStrike.ODSScan.last_updated | Date | The timestamp when the scan job was last updated. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-ods-create-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b scan_inclusions=* cpu_priority=Highest max_duration=1 pause_duration=1```
 
@@ -5654,9 +5698,9 @@ Create an ODS scheduled scan.
 | CrowdStrike.ODSScheduledScan.metadata.host_id | String | Scan host IDs. | 
 | CrowdStrike.ODSScheduledScan.metadata.last_updated | Date | The date and time when the detection event was last updated. | 
 | CrowdStrike.ODSScheduledScan.sensor_ml_level_prevention | Number | The machine learning prevention level for the sensor. | 
-| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. |
+| CrowdStrike.ODSScheduledScan.cloud_ml_level_prevention | Number | The machine learning prevention level for the cloud. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-ods-create-scheduled-scan host_groups=7471ba0636b34cbb8c65fae7979a6a9b schedule_interval=daily schedule_start_timestamp=tomorrow cpu_priority=Highest scan_inclusions=*```
 
@@ -5774,7 +5818,7 @@ Delete ODS scheduled scans.
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-ods-delete-scheduled-scan  ids=9acf0c069d3d4a5b82badb170966e77c```
 
@@ -5829,6 +5873,11 @@ List identity entities.
 | CrowdStrike.IDPEntity.SecondaryDisplayName | String | The identity entity secondary display name. | 
 | CrowdStrike.IDPEntity.EmailAddresses | String | The identity entity email address. | 
 
+### cs-falcon-cspm-list-policy-details
+
+***
+Given a CSV list of policy IDs, returns detailed policy information.
+
 #### Base Command
 
 `cs-falcon-cspm-list-policy-details`
@@ -5862,7 +5911,7 @@ List identity entities.
 | CrowdStrike.CSPMPolicy.default_severity | String | The default severity. | 
 | CrowdStrike.CSPMPolicy.cis_benchmark_ids | Array | The CIS benchmark IDs. | 
 | CrowdStrike.CSPMPolicy.nist_benchmark_ids | Array | The NIST benchmark IDs. | 
-| CrowdStrike.CSPMPolicy.pci_benchmark_ids | Array | The pci benchmark IDs. | 
+| CrowdStrike.CSPMPolicy.pci_benchmark_ids | Array | The PCI benchmark IDs. | 
 | CrowdStrike.CSPMPolicy.policy_type | String | The policy type. | 
 | CrowdStrike.CSPMPolicy.tactic_url | String | The tactic URL. | 
 | CrowdStrike.CSPMPolicy.technique_url | String | The technique URL. | 
@@ -5873,11 +5922,11 @@ List identity entities.
 | CrowdStrike.CSPMPolicy.attack_types | Array | The attack types. | 
 | CrowdStrike.CSPMPolicy.asset_type_id | Integer | The asset type ID. | 
 | CrowdStrike.CSPMPolicy.cloud_asset_type | String | The cloud asset type. | 
-| CrowdStrike.CSPMPolicy.is_remediable | Boolean | Whether the policy is remediable or not.. | 
+| CrowdStrike.CSPMPolicy.is_remediable | Boolean | Whether the policy is remediable or not. | 
 | CrowdStrike.CSPMPolicy.is_enabled | Boolean | Whether the policy is enabled or not. | 
 | CrowdStrike.CSPMPolicy.account_scope | String | The account scope. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-cspm-list-policy-details policy_ids=1,2```
 
@@ -6058,7 +6107,7 @@ Returns information about current policy settings.
 | CrowdStrike.CSPMPolicySetting.nist_benchmark.recommendation_number | String | The NIST benchmark recommendation number. | 
 | CrowdStrike.CSPMPolicySetting.attack_types | Array | The attack types. | 
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-cspm-list-service-policy-settings limit=2```
 
@@ -6212,7 +6261,7 @@ Returns information about current policy settings.
 ### cs-falcon-cspm-update-policy_settings
 
 ***
-Updates a policy setting - can be used to override policy severity or to disable a policy entirely.
+Updates a policy setting. Can be used to override policy severity or to disable a policy entirely.
 
 #### Base Command
 
@@ -6223,9 +6272,9 @@ Updates a policy setting - can be used to override policy severity or to disable
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | Policy ID to be updated. | Required | 
-| account_id | Cloud Account ID to impact. | Optional | 
+| account_id | Cloud account ID to impact. | Optional | 
 | enabled | Flag indicating if this policy is enabled. Possible values are: false, true. Default is true. | Optional | 
-| regions | List of regions where this policy is enforced. | Optional | 
+| regions | A comma-separated list of regions where this policy is enforced. | Optional | 
 | severity | Policy severity value. Possible values are: critical, high, medium, informational. | Optional | 
 | tag_excluded | Tag exclusion flag. Possible values are: false, true. | Optional | 
 
@@ -6233,7 +6282,7 @@ Updates a policy setting - can be used to override policy severity or to disable
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-cspm-update-policy_settings policy_id=1 enabled=true regions="eu-central-1,eu-central-2" severity=high tag_excluded=false```
 
@@ -6268,7 +6317,7 @@ Perform actions on identity detection alerts.
 
 There is no context output for this command.
 
-#### Command example
+#### Command Example
 
 ```!cs-falcon-resolve-identity-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
 
@@ -6276,6 +6325,40 @@ There is no context output for this command.
 
 >IDP Detection(s) id_1, id_2 were successfully updated
 
+### cs-falcon-resolve-mobile-detection
+
+***
+Perform actions on mobile detection alerts.
+
+#### Base Command
+
+`cs-falcon-resolve-mobile-detection`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| ids | A comma-separated list of IDs of the alerts to update. | Required | 
+| assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
+| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
+| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
+| add_tag | Add a tag to the specified detections. | Optional | 
+| remove_tag | Remove a tag from the specified detections. | Optional | 
+| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
+| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
+| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+
+```!cs-falcon-resolve-mobile-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
+
+#### Human Readable Output
+
+>Mobile Detection(s) id_1, id_2 were successfully updated
 ### cs-falcon-list-users
 
 ***
@@ -6412,41 +6495,6 @@ Get IOA Rules.
 | CrowdStrike.IOARules.ruletype_id | String | The IOA rule's rule type ID. | 
 | CrowdStrike.IOARules.ruletype_name | String | The IOA rule's rule type name. | 
 | CrowdStrike.IOARules.version_ids | String | The IOA rule's version ID. | 
-
-### cs-falcon-resolve-mobile-detection
-
-***
-Perform actions on mobile detection alerts.
-
-#### Base Command
-
-`cs-falcon-resolve-mobile-detection`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| ids | A comma-separated list of IDs of the alerts to update. | Required | 
-| assign_to_name | Assign the specified detections to a user based on their username. | Optional | 
-| assign_to_uuid | Assign the specified detections to a user based on their UUID. | Optional | 
-| append_comment | Appends a new comment to any existing comments for the specified detections. | Optional | 
-| add_tag | Add a tag to the specified detections. | Optional | 
-| remove_tag | Remove a tag from the specified detections. | Optional | 
-| update_status | Update the status of the alert to the specified value. Possible values are: new, in_progress, closed, reopened. | Optional | 
-| unassign | Whether to unassign any assigned users to the specified detections. Possible values are: false, true. | Optional | 
-| show_in_ui | If true, displays the detection in the UI. Possible values are: false, true. | Optional | 
-
-#### Context Output
-
-There is no context output for this command.
-
-#### Command example
-
-```!cs-falcon-resolve-mobile-detection ids="id_1,id_2" add_tag="Demo tag" append_comment="Demo comment" assign_to_name="morganf" show_in_ui=true update_status=in_progress```
-
-#### Human Readable Output
-
->Mobile Detection(s) id_1, id_2 were successfully updated
 
 ### Troubleshooting
 When encountering connectivity or authorization errors within Cortex XSOAR 8, 
