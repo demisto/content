@@ -326,7 +326,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client, params: dict) -> str:
-    """Tests API connectivity and authentication'
+    """Tests API connectivity and authentication.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -335,27 +335,32 @@ def test_module(client: Client, params: dict) -> str:
     :type client: ``Client``
     :param client: client to use
 
-    :type params: ``Dict``
-    :param params: parameters that initialized by creating the instance
+    :type params: ``dict``
+    :param params: Parameters that initialized by creating the instance. Contains:
+        - isFetch (bool, optional): Indicates if fetching incidents is enabled.
+        - api_key (str, optional): The custom API key for general API.
+        - api_secret_key (str, optional): The custom API secret key for general API.
+        - organization_key (str, optional): The organization key for general API.
+        - policy_api_key (str, optional): The API key for policy API.
+        - policy_api_secret_key (str, optional): The API secret key for policy API.
 
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
-    """
 
-    """There is 2 sets of api_key&api_secret_key 1 for all API's and 1 for the policy API.
-    check which set of keys to test (organization_key is not needed for the policy pair of keys).
-    at least one of the 2 sets is required.
-    Fetch uses the general api_key."""
+    There is 2 sets of api_key&api_secret_key 1 for all API's and 1 for the policy API.
+    check which set of keys to test. at least one of the 2 sets is required.
+    Fetch uses the general api_key.
+    """
 
     is_fetch = params.get('isFetch')
 
     # if is_fetch = true and custom API key's is no provided
     if is_fetch and not (client.api_key and client.api_secret_key and client.organization_key):
         return 'To fetch incidents you must fill the following parameters: ' \
-               'Custom API key, Custom API secret key and Organization key'
+               'Custom API key, Custom API secret key and Organization key.'
 
     message = "Missing parameters Error: At least one complete set of API keys " \
-              "(Custom API keys or Api/Live-Response API keys) is required"
+              "(Custom API keys or Api/Live-Response API keys) is required."
 
     # if all of the custom API key's is provided
     if client.api_key and client.api_secret_key and client.organization_key:
@@ -380,7 +385,7 @@ def test_module(client: Client, params: dict) -> str:
             message = 'ok'
         except Exception as e:
             if 'authenticated' in str(e) or 'Forbidden' in str(e):
-                return 'Authorization Error: make sure Custom API Key is correctly set'
+                return 'Authorization Error: make sure Custom API Key is correctly set.'
             else:
                 raise e
     # if one or more of the custom API keys are provided
@@ -395,12 +400,12 @@ def test_module(client: Client, params: dict) -> str:
             message = 'ok'
         except Exception as e:
             if 'Authentication' in str(e) or 'authenticated' in str(e):
-                return 'Authorization Error: make sure API Key is correctly set'
+                return 'Authorization Error: make sure API Key is correctly set.'
             else:
                 raise e
     # if only one of the api/live-response API keys are provided
     elif client.policy_api_key or client.policy_api_secret_key:
-        return 'Missing API parameters. Please fill all the relevant parameters: API key, API secret key'
+        return 'Missing API parameters. Please fill all the relevant parameters: API key, API secret key.'
 
     return message
 
@@ -416,31 +421,23 @@ def fetch_incidents(client: Client, params: dict):
     the first time.
 
     :type client: ``Client``
-    :param client: client to use
+    :param client: The client to use for API requests.
 
-    :type fetch_time: ``Optional[str]``
-    :param fetch_time:
-        If last_run is None (first time we are fetching), it contains
-        the timestamp in milliseconds on when to start fetching incidents
+    :type params: ``dict``
+    :param params: Parameters initialized by creating the instance. Contains:
+        - first_fetch (str, optional): The timestamp in milliseconds on when to start fetching incidents.
+        - max_fetch (int, optional): Maximum incidents per fetch.
+        - min_severity (int, optional): The minimum severity of alerts to fetch.
+        - policy_id (str, optional): The policy ID to filter alerts.
+        - device_username (str, optional): The username of the device to filter alerts.
+        - device_id (str, optional): The device ID to filter alerts.
+        - type (str, optional): The type of alerts to fetch.
+        - query (str, optional): A query string to filter alerts.
 
-    :type fetch_limit: ``int``
-    :param fetch_limit: Maximum incidents per fetch.
-
-    :type last_run: ``Optional[Dict[str, int]]``
-    :param last_run:
-        A dict with a key containing the latest incident created time we got
-        from last fetch.
-
-    :type filters: ``Optional[dict]``
-    :param filters: Some filters to filter alerts by device_id or query etc..
-
-    :return:
-        A tuple containing two elements:
-            next_run (``Dict[str, int]``): Contains the timestamp that will be
-                    used in ``last_run`` on the next fetch.
-            incidents (``List[dict]``): List of incidents that will be created in XSOAR
-
-    :rtype: ``Tuple[List[dict], Dict[str, int]]``
+    :return: A tuple containing two elements:
+        next_run (``dict``): Contains the timestamp that will be used in ``last_run`` on the next fetch.
+        incidents (``list``): List of incidents that will be created in XSOAR.
+    :rtype: ``tuple``
     """
     fetch_time = params.get('first_fetch', '7 days')
     fetch_limit = int(params.get('max_fetch', 50))
@@ -449,7 +446,7 @@ def fetch_incidents(client: Client, params: dict):
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
-        last_fetched_alert_create_time = arg_to_datetime(fetch_time).strftime('%Y-%m-%dT%H:%M:%S.000Z')
+        last_fetched_alert_create_time = arg_to_datetime(fetch_time).strftime('%Y-%m-%dT%H:%M:%S.000Z')  # type: ignore
     else:
         fetch_limit += 1  # We skip the first alert
     alert_create_date = last_fetched_alert_create_time
@@ -512,6 +509,18 @@ def fetch_incidents(client: Client, params: dict):
 
 
 def get_alert_details_command(client: Client, args: dict):
+    """Gets details of a specific alert.
+
+    :type client: ``Client``
+    :param client: The client to use for API requests.
+
+    :type args: ``dict``
+    :param args: Command arguments. Contains:
+        - alertId (str): The ID of the alert to retrieve details for.
+
+    :return: CommandResults with the alert details.
+    :rtype: ``CommandResults``
+    """
     res = client.get_alert_by_id(args['alertId'])
 
     headers = ['id', 'device_id', 'device_name', 'device_username', 'ioc_hit', 'reason', 'type',
@@ -530,14 +539,36 @@ def get_alert_details_command(client: Client, args: dict):
 
 
 def alerts_search_command(client: Client, args: dict):
+    """Searches for alerts based on given criteria.
+
+    :type client: ``Client``
+    :param client: The client to use for API requests.
+
+    :type args: ``dict``
+    :param args: Command arguments. Contains:
+        - device_id (str, optional): The device ID to filter alerts.
+        - first_event_time (str, optional): The first event timestamp to filter alerts.
+        - policy_id (str, optional): The policy ID to filter alerts.
+        - process_sha256 (str, optional): The process SHA256 hash to filter alerts.
+        - reputation (str, optional): The process reputation to filter alerts.
+        - tags (str, optional): Tags to filter alerts.
+        - device_username (str, optional): The device username to filter alerts.
+        - type (str, optional): The type of alerts to filter.
+        - query (str, optional): A query string to filter alerts.
+        - rows (int, optional): The number of rows to return.
+        - start (int, optional): The starting index of the results.
+
+    :return: CommandResults with the search results.
+    :rtype: ``CommandResults``
+    """
     first_event_time = args.get('first_event_time')
     first_event_time_json = json.loads(first_event_time) if first_event_time else None
 
     body = assign_params(
         criteria=assign_params(
-            device_policy_id=argToList(args.get('device_id')),
+            device_id=argToList(args.get('device_id')),
             first_event_timestamp=first_event_time_json,
-            policy_id=argToList(args.get('policy_id')),
+            device_policy_id=argToList(args.get('policy_id')),
             process_sha256=argToList(args.get('process_sha256')),
             process_reputation=argToList(args.get('reputation')),
             tags=argToList(args.get('tags')),
@@ -569,8 +600,20 @@ def alerts_search_command(client: Client, args: dict):
 
 
 def get_policy_command(client: Client, args: dict):
+    """Gets details of a specific policy.
+
+    :type client: ``Client``
+    :param client: The client to use for API requests.
+
+    :type args: ``dict``
+    :param args: Command arguments. Contains:
+        - policyId (int): The ID of the policy to retrieve details for.
+
+    :return: CommandResults with the policy details.
+    :rtype: ``CommandResults``
+    """
     policy_id_int = arg_to_number(args['policyId'], required=True)
-    res = client.get_policy_by_id(policy_id_int)
+    res = client.get_policy_by_id(policy_id_int)  # type: ignore[arg-type]
 
     headers = ["id", "name", "priority_level", "is_system", "description"]
 
@@ -585,6 +628,14 @@ def get_policy_command(client: Client, args: dict):
 
 
 def get_policies_summary_command(client: Client):
+    """Gets a summary of all policies.
+
+    :type client: ``Client``
+    :param client: The client to use for API requests.
+
+    :return: CommandResults with the policies summary.
+    :rtype: ``CommandResults``
+    """
     res = client.get_policies_summary()
 
     headers = ['id', 'name', 'priority_level', 'is_system']
@@ -623,6 +674,14 @@ def create_policy_command(client: Client, args: dict):
     )
 
 
+def update_policy_command(client: Client, args: dict):
+    pass  # TODO
+
+
+def set_policy_command(client: Client, args: dict):
+    pass  # TODO
+
+
 def delete_policy_command(client: Client, args: dict):
     """Deletes a policy based on the provided policy ID.
 
@@ -640,7 +699,7 @@ def delete_policy_command(client: Client, args: dict):
     """
     policy_id_int = arg_to_number(args['policyId'], required=True)
 
-    client.delete_policy(policy_id_int)
+    client.delete_policy(policy_id_int)  # type: ignore[arg-type]
     return CommandResults(readable_output=f"Policy with ID {policy_id_int} was deleted successfully")
 
 
@@ -676,7 +735,7 @@ def add_rule_to_policy_command(client: Client, args: dict):
         )
     )
 
-    res = client.add_rule_to_policy(policy_id_int, body)
+    res = client.add_rule_to_policy(policy_id_int, body)  # type: ignore[arg-type]
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Rule',
@@ -721,7 +780,7 @@ def update_rule_in_policy_command(client: Client, args: dict):
             value=args['value']
         )
     )
-    res = client.update_rule_in_policy(policy_id_int, rule_id_int, body)
+    res = client.update_rule_in_policy(policy_id_int, rule_id_int, body)  # type: ignore[arg-type]
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Rule',
@@ -751,15 +810,15 @@ def delete_rule_from_policy_command(client: Client, args: dict):
     policy_id_int = arg_to_number(args['policyId'], required=True)
     rule_id_int = arg_to_number(args['ruleId'], required=True)
 
-    client.delete_rule_from_policy(policy_id_int, rule_id_int)
+    client.delete_rule_from_policy(policy_id_int, rule_id_int)  # type: ignore[arg-type]
 
     return CommandResults(readable_output="The rule was successfully deleted from policy")
 
 
 @polling_function(
     name='cbd-find-processes',
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),
-    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
+    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
     poll_message='search jobs in process',
     requires_polling_arg=False
 )
@@ -817,7 +876,7 @@ def find_processes_command(args: dict, client: Client):
         )
 
     job_id = args['job_id']
-    res = client.get_process_results(job_id=job_id, rows=rows)
+    res = client.get_process_results(job_id=job_id, rows=rows)  # type: ignore[arg-type]
 
     if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
         readable_output = tableToMarkdown(
@@ -846,8 +905,8 @@ def find_processes_command(args: dict, client: Client):
 
 @polling_function(
     name='cbd-find-observation-details',
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),
-    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
+    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
     poll_message='search jobs in process',
     requires_polling_arg=False
 )
@@ -896,7 +955,7 @@ def find_observation_details_command(args: dict, client: Client):
         )
 
     job_id = args['job_id']
-    res = client.get_observation_details_results(job_id=job_id, rows=rows)
+    res = client.get_observation_details_results(job_id=job_id, rows=rows)  # type: ignore[arg-type]
 
     if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
         readable_output = tableToMarkdown(
@@ -925,8 +984,8 @@ def find_observation_details_command(args: dict, client: Client):
 
 @polling_function(
     name='cbd-find-observation',
-    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),
-    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),
+    interval=arg_to_number(demisto.args().get("interval_in_seconds", INTERVAL_FOR_POLLING_DEFAULT)),  # type: ignore
+    timeout=arg_to_number(demisto.args().get("timeout", TIMEOUT_FOR_POLLING_DEFAULT)),  # type: ignore
     poll_message='search jobs in process',
     requires_polling_arg=False
 )
@@ -984,7 +1043,7 @@ def find_observation_command(args: dict, client: Client):
         )
 
     job_id = args['job_id']
-    res = client.get_observation_results(job_id=job_id, rows=rows)
+    res = client.get_observation_results(job_id=job_id, rows=rows)  # type: ignore[arg-type]
 
     if res.get('contacted') == res.get('completed'):  # contacted == completed means done processing
         readable_output = tableToMarkdown(

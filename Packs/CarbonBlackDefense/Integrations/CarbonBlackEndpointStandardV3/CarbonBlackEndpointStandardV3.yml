@@ -20,7 +20,7 @@ configuration:
   display: Organization Key
   type: 0
   required: false
-  additionalinfo: The organization unique key. This is required for all use cases (and for fetching incidents) except the policy use cases.
+  additionalinfo: The organization unique key. This is required for all use cases (and for fetching incidents).
 - name: incidentType
   display: Incident type
   type: 13
@@ -716,3 +716,4 @@ script:
 tests:
 - carbonBlackEndpointStandardTestPlaybook
 fromversion: 6.10.0
+defaultmapperin: "Carbon Black Endpoint Standard-mapper"
