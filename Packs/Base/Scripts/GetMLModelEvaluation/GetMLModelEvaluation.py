@@ -193,7 +193,7 @@ def merge_entries(entry, per_class_entry):
     return entry
 
 
-def find_threshold(y_true, y_pred, customer_target_precision, target_recall, detailed_output=True):
+def find_threshold(y_true, y_pred_all_classes, customer_target_precision, target_recall, detailed_output=True):
 
     labels = sorted(set(y_true + list(y_pred_all_classes[0].keys())))
     n_instances = len(y_true)
@@ -335,14 +335,14 @@ def main():
 
         if not (y_true and y_pred_all_classes):
             raise DemistoException('Either "yPred" or "yTrue" are empty.')
-        else:
-            entries = find_threshold(y_true=y_true,
-                                    y_pred=y_pred_all_classes,
-                                    customer_target_precision=target_precision,
-                                    target_recall=target_recall,
-                                    detailed_output=detailed_output)
 
-            demisto.results(entries)
+        entries = find_threshold(y_true=y_true,
+                                y_pred_all_classes=y_pred_all_classes,
+                                customer_target_precision=target_precision,
+                                target_recall=target_recall,
+                                detailed_output=detailed_output)
+
+        demisto.results(entries)
     except Exception as e:
         return_error(f'Error in GetMLModelEvaluation:\n{e}')
 
