@@ -1,4 +1,4 @@
-name: Protect .gitlab-ci
+name: Protect files
 
 on:
   pull_request:
@@ -24,10 +24,12 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v44 # disable-secrets-detection
         with:
-          files: .gitlab/ci/.gitlab-ci.yml
+          files: |
+            .gitlab/ci/.gitlab-ci.yml
 
       - name: Prevent changing .gitlab-ci.yml
         if: steps.changed-files.outputs.any_changed == 'true'
         run: |
-          echo "::error file=.gitlab/ci/.gitlab-ci.yml,line=1,endLine=1,title=Protected file modified::This file should not be changed.%0AIf the change is intended to be merged, ask for a force merge and explain the reason."
+          for file in ${{ steps.changed-files.outputs.all_changed_files }}; do
+            echo "::error file=$file,line=1,endLine=1,title=Protected file modified::This file should not be changed in master.%0AIf you are sure it's necessary, ask for a force merge and explain the rationale."
           exit 1
