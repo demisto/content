@@ -886,7 +886,7 @@ def test_test_module(capfd, custom_mapping, direction, should_raise_error):
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
 
-    client = Client(
+    Client(
         base_url=base_url,
         proxy=proxy,
         verify=verify_cert,
@@ -1038,7 +1038,7 @@ def test_filter_and_save_unseen_incident_limit_test():
         {
             "id": "2",
             "creation_time": 1577836800001
-        }]
+    }]
     assert filter_and_save_unseen_incident(incident, 1, 1) == [{"id": "1", "creation_time": 1577836800000}]
 
 
@@ -1441,11 +1441,11 @@ def test_update_alerts_in_xdr_request_called_with():
         mock_http_request.assert_called_once_with(method='POST',
                                                   url_suffix='/alerts/update_alerts',
                                                   json_data={'request_data':
-                                                                 {'alert_id_list': '1,2,3',
-                                                                  'update_data':
-                                                                      {'severity': 'High', 'status': 'resolved',
-                                                                       'comment': 'i am a test'}
-                                                                  }
+                                                             {'alert_id_list': '1,2,3',
+                                                              'update_data':
+                                                              {'severity': 'High', 'status': 'resolved',
+                                                               'comment': 'i am a test'}
+                                                              }
                                                              },
                                                   headers={
                                                       'x-xdr-timestamp': 123,
@@ -1473,7 +1473,7 @@ def test_update_alerts_in_xdr_request_invalid_response():
     client = Client(
         base_url=f'{XDR_URL}/public_api/v1', verify=False, timeout=120, proxy=False, params={'close_alerts_in_xdr': True})
     with patch.object(client, '_http_request') as mock_http_request, patch("CortexXDRIR.get_headers") as get_headers_mock, \
-        pytest.raises(DemistoException) as e:
+            pytest.raises(DemistoException) as e:
         mock_http_request.return_value = {
             "replys": {
                 "alerts_ids": alerts_ids
