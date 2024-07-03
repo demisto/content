@@ -1595,9 +1595,9 @@ def stringUnEscape(st):
 class IntegrationLogger(object):
     """
       a logger for python integrations:
-      use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
-      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
+      use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+      use `LOG.print_log(verbose=True/False)` to display all records in War-Room (if verbose) and server log.
+      use `add_replace_strs` to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -1801,8 +1801,8 @@ class IntegrationLogger(object):
 
 """
 a logger for python integrations:
-use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-use LOG.print_log() to display all records in War-Room and server log.
+use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+use `LOG.print_log()` to display all records in War-Room and server log.
 """
 LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
@@ -8266,7 +8266,7 @@ get_demisto_version = GetDemistoVersion()
 
 
 def get_demisto_version_as_str():
-    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    """Get the Demisto Server version as a string `<version>-<build>`. If unknown will return: 'Unknown'.
     Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
     use: is_demisto_version_ge.
 
