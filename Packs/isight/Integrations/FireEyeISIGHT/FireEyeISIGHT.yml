@@ -77,11 +77,11 @@ script:
       description: A comma separated list of IPs to search by.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested.
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: IP.Address
@@ -104,11 +104,11 @@ script:
       description: A comma separated list of domains to search by.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested.
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: Domain.Name
@@ -129,11 +129,11 @@ script:
       description: A comma separated list of md5 or sha1 to search by.
     outputs:
     - contextPath: DBotScore.Indicator
-      description: The indicator we tested.
+      description: The indicator that was tested.
     - contextPath: DBotScore.Type
-      description: The type of the indicator.
+      description: The indicator type.
     - contextPath: DBotScore.Vendor
-      description: Vendor used to calculate the score.
+      description: The vendor used to calculate the score.
     - contextPath: DBotScore.Score
       description: The actual score.
     - contextPath: Report.ID
