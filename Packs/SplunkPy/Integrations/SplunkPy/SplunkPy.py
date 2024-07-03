@@ -1051,6 +1051,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
 
     return searches
 
+
 def get_drilldown_searches(notable_data):
     """ Extract the drilldown_searches from the notable_data.
     It can be a list of objects, a single object or a simple string that contains the query.
@@ -1064,7 +1065,7 @@ def get_drilldown_searches(notable_data):
     # from this version, if a user set a drilldown search, we get a list of drilldown search objects (under
     # the 'drilldown_searches' key) and submit a splunk enrichment for each one of them.
     # To maintain backwards compatibility we keep using the 'drilldown_search' key as well.
-    
+
     if drilldown_search := notable_data.get("drilldown_search"):
         # The drilldown_searches are in 'old' format a simple string query.
         return [drilldown_search]
@@ -1076,7 +1077,7 @@ def get_drilldown_searches(notable_data):
             # The drilldown_searches are a dict of search data stored as json string.
             return parse_drilldown_searches([drilldown_search])
     return []
-        
+
 
 def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_events) -> list[tuple[str, str, client.Job]]:
     """ Performs a drilldown enrichment.

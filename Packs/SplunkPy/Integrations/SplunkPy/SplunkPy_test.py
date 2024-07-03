@@ -2654,32 +2654,34 @@ def test_single_drilldown_searches(mocker):
     Then:  - validate there is no errors in the process.
 
     """
-    
+
     drilldown_searches = json.dumps(
         {
             "name": "test drilldown",
             "search": "| from datamodel: test",
-            "earliest":1719218100,
-            "latest":1719823500
+            "earliest": 1719218100,
+            "latest": 1719823500
         }
     )
     mocker.patch.object(demisto, 'error')
     mocker.patch.object(splunk, 'build_drilldown_search', return_value=None)
-    
+
     splunk.drilldown_enrichment(
         service=None,
         notable_data={'drilldown_searches': drilldown_searches, 'event_id': 'test_id'},
         num_enrichment_events=1)
-    
+
     assert demisto.error.call_count == 0, 'Something was wrong in the drilldown_enrichment process'
+
 
 @pytest.mark.parametrize(
     'drilldown_data, expected',
-    [({'drilldown_search': 'test'},['test']),
-     ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1':'test_1'}]),
-     ({'drilldown_searches': ['{"search_1":"test_1"}','{"search_2":"test_2"}']},[{'search_1':'test_1'},{'search_2':'test_2'}])
-    ]
-    )
+    [({'drilldown_search': 'test'}, ['test']),
+     ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': ['{"search_1":"test_1"}', '{"search_2":"test_2"}']},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}])
+     ]
+)
 def test_get_drilldown_searches(drilldown_data, expected):
     """
     Given:  -
@@ -2689,5 +2691,5 @@ def test_get_drilldown_searches(drilldown_data, expected):
     When:   - call to get_drilldown_searches.
     Then:   - validate the result are as expectedץ
     """
-    
+
     assert splunk.get_drilldown_searches(drilldown_data) == expected
