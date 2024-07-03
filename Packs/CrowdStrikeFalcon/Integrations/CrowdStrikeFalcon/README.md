@@ -1041,7 +1041,7 @@ Runs a script on the agent host.
 
 ***
 Batch executes 'get' command across hosts to retrieve files.
-The running status you requested the `get` command can be checked with `cs-falcon-status-get-command`.
+The running status you requested in the get command can be checked with cs-falcon-status-get-command.
 
 #### Base Command
 
