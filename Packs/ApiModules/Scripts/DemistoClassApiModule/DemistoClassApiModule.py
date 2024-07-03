@@ -1,9 +1,5 @@
 import demistomock as demisto  # noqa: F401
 
-# Only the following integrations and scripts are using the Demisto class wrapper
-DEMISTO_WRAPPER_INTEGRATIONS = ['Cortex XDR - IR', 'QRadar v3', 'SlackV3', 'ServiceNow v2']
-DEMISTO_WRAPPER_SCRIPTS = ['UnzipFile', 'DBotFindSimilarIncidents', 'ParseCSV']
-
 
 try:
     class DemistoWrapper(Demisto):  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
@@ -22,9 +18,9 @@ try:
                 self.debug("[fetch-incidents] Creating {} incidents".format(len(incidents)))
             super(DemistoIntegration, self).incidents(incidents)
 
-    if demisto.callingContext.get('context', {}).get('IntegrationBrand', '') in DEMISTO_WRAPPER_INTEGRATIONS:
+    if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
         demisto.__class__ = DemistoIntegration
-    elif demisto.callingContext.get('context', {}).get('ScriptName', '') in DEMISTO_WRAPPER_SCRIPTS:
+    elif demisto.callingContext.get('context', {}).get('ScriptName'):
         demisto.__class__ = DemistoScript
 
 except NameError:
