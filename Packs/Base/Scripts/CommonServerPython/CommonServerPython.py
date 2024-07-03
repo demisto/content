@@ -12015,7 +12015,7 @@ def parse_json_string(json_string):
     try:
         data = json.loads(json_string)
         return data
-    except json.JSONDecodeError as error:
+    except json.JSONDecodeError as error: # type: ignore[attr-defined]
         demisto.error("Error decoding JSON: {error}".format(error=error))
         return {}
 
