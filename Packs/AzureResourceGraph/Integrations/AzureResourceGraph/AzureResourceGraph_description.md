@@ -3,21 +3,14 @@ Azure Resource Graph is an Azure service designed to extend Azure Resource Manag
 Full documentation for this integration is available in the [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-resource-graph).
 
 
-## Authorize Cortex XSOAR for Azure Resource Graph - Self-Deployed Configuration
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, go to the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
----
+There are two application authentication methods available.
+Follow your prefered method's guide on how to use the admin consnt flow in order to recieve your authentication information:
 
-In the self-deployed mode, you can authenticate by using Client Credentials flow
+* [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
+* [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
+
+For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
 
-### Client Credentials Flow
 
----
-Follow these steps for client-credentials configuration.
-
-1. In the instance configuration under **Advanced Settings**, select the **Use a self-deployed Azure application** checkbox.
-2. Enter your Client ID in the **ID / Client ID** parameter. 
-3. Enter your Client Secret in the **Key / Client Secret** parameter.
-4. Enter your Tenant ID in the **Tenant ID** parameter.
-5. Click **Test** to validate the URLs, token, and connection.
