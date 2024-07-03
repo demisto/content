@@ -2657,7 +2657,7 @@ def test_single_drilldown_searches(mocker):
     
     drilldown_searches = json.dumps(
         {
-            "name": "test drilldown", 
+            "name": "test drilldown",
             "search": "| from datamodel: test",
             "earliest":1719218100,
             "latest":1719823500
@@ -2673,10 +2673,12 @@ def test_single_drilldown_searches(mocker):
     
     assert demisto.error.call_count == 0, 'Something was wrong in the drilldown_enrichment process'
 
-@pytest.mark.parametrize('drilldown_data, expected',
-                         [({'drilldown_search': 'test'},['test']),
-                         ({'drilldown_searches': ['{"search_1":"test_1"}','{"search_2":"test_2"}']},[{'search_1':'test_1'},{'search_2':'test_2'}]),
-                         ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1':'test_1'}])])
+@pytest.mark.parametrize(
+    'drilldown_data, expected',
+    [({'drilldown_search': 'test'},['test']),
+    ({'drilldown_searches': ['{"search_1":"test_1"}','{"search_2":"test_2"}']},[{'search_1':'test_1'},{'search_2':'test_2'}]),
+    ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1':'test_1'}])]
+    )
 def test_get_drilldown_searches(drilldown_data, expected):
     """
     Given:  - drildown search in various formats.
