@@ -75,8 +75,6 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      address:
-        simple: ${ServerURL.Host}
       facility: {}
       level: {}
       message:
