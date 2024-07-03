@@ -33,7 +33,7 @@ select = [
     "DO100", "DO101", "DO102", "DO103", "DO104", "DO105", "DO106",
     "DS100",
     "SC100", "SC105", "SC106", "SC109",
-    "RM101", "RN103", "RM104", "RM105", "RM109", "RM113", "RM114",
+    "RM101", "RM104", "RM105", "RM109", "RM113", "RM114",
     "CL100",
     "GF100", "GF101", "GF102",
     "IF100", "IF101", "IF102", "IF103", "IF104", "IF105", "IF106", "IF116",
@@ -42,9 +42,11 @@ select = [
     "DA100", "DA101",
     "IT100", "IT101", "IT102", "IT103",
     "MR100",
+    "RN103",
+    "LO107"
 ]
-warning = ["DS107", "LO107"]
 
+warning = ["DS107"]
 
 [path_based_validations]
 select = [
@@ -66,8 +68,9 @@ select = [
     "RP101",
     "IT102", "IT103",
     "MR100",
+    "LO107"
 ]
-warning = ["IN101", "LO107"]
+warning = []
 
 
 [Custom_Categories]

@@ -1,5 +1,5 @@
 [file:Lastline_v2.yml]
-ignore=BA108,BA109,IN124
+ignore=BA108,BA109
 
 [file:Lastline_v2_image.png]
 ignore=IM111
