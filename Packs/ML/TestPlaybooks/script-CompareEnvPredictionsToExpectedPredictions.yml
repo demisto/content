@@ -31,7 +31,6 @@ outputs:
 scripttarget: 0
 subtype: python3
 pswd: ""
-runonce: false
 dockerimage: devdemisto/ml:1.0.0.100486
 runas: DBotWeakRole
 fromversion: 5.5.0

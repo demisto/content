@@ -60,7 +60,6 @@ subtype: python3
 timeout: 60µs
 type: python
 dockerimage: devdemisto/ml:1.0.0.100486
-runonce: true
 tests:
 - DbotPredictOufOfTheBoxTestV2
 - VerifyOOBV2Predictions-Test
