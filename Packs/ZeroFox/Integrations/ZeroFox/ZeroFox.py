@@ -43,7 +43,7 @@ class ZFClient(BaseClient):
         self.auth_token = ""
 
     def raw_api_request(
-        self,
+            self,
         method: str,
         url_suffix: str = "/",
         full_url: str | None = None,
@@ -523,13 +523,13 @@ class ZFClient(BaseClient):
         )
         return response_content
 
-    def get_compromised_credentials(self, alert_id: int) -> str:
+    def get_compromised_credentials(self, alert_id: str) -> str:
         """
         :param alert_id: The ID of the alert.
         :return: HTTP request content.
         """
         url_suffix = f"/alerts/{alert_id}/breach_csv/"
-        response_content = self.raw_api_request(
+        response_content: Response = self.raw_api_request(
             "GET",
             prefix="2.0",
             ok_codes=(200, 404),
@@ -1814,14 +1814,12 @@ def get_compromised_credentials_command(
     client: ZFClient,
     args: dict[str, Any]
 ) -> CommandResults:
-    alert_id = args.get("alert_id", "")
+    alert_id = args["alert_id"]
     credentials = client.get_compromised_credentials(alert_id)
     if credentials:
         return fileResult(f"breach_{alert_id}.csv", credentials)
     return CommandResults(
         readable_output=f"No compromised credentials were found for {alert_id=}",
-        outputs={},
-        outputs_prefix="File"
     )
 
 
