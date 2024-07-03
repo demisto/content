@@ -23,9 +23,11 @@ If you are using the integration to rasterize un-trusted URLs or HTML content, s
 **Configuration Notes:**
 * Return Errors: If this checkbox is not selected, a warning will be returned instead of an error.
 * Chrome options: A comma-separated list of Chrome options to add or remove for rasterization. Use for advanced troubleshooting. If a value contains a comma (for example, when setting the user agent value), escape it with the backslash (**\\**) character. To remove a default option that is used, put the option in square brackets. For example, to add the option *--disable-auto-reload* and remove the option *--disable-dev-shm-usage*, set the following value:
-```
---disable-auto-reload,[--disable-dev-shm-usage]
-```
+    ```
+    --disable-auto-reload,[--disable-dev-shm-usage]
+    ```
+
+    To set a language for the browser, add the *--accept-lang* argument followed by the desired language code in IETF BCP 47 format. For example, `--accept-lang=de-DE`.
 * Rasterize Mode: It is possible to rasterize either via Chrome WebDriver or Chrome Headless CLI. WebDriver supports more options than Headless CLI. Such as support for the `offline` option in the `rasterize-emails` command. There are some urls that do not rasterize well with WebDriver and may succeed with Headless CLI. Thus, it is recommended to use the `WebDriver - Preferred` mode, which will use WebDriver as a start and fallback to Headless CLI if it fails.
 * Use system proxy settings: Select this checkbox to use the system's proxy settings. **Important**: this integration does not support proxies which require authentication.
 
