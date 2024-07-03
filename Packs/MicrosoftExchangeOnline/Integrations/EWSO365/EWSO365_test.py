@@ -1,7 +1,7 @@
-import base64
 import json
 import unittest
 from unittest.mock import MagicMock, patch
+import uuid
 
 import pytest
 from EWSO365 import (
@@ -18,11 +18,15 @@ from EWSO365 import (
     get_expanded_group,
     get_item_as_eml,
     get_searchable_mailboxes,
-    handle_attached_email_with_incorrect_id,
+    handle_attached_email_with_incorrect_message_id,
     handle_html,
+    handle_incorrect_message_id,
     handle_transient_files,
     parse_incident_from_item,
     parse_item_as_dict,
+    cast_mime_item_to_message,
+    decode_email_data,
+    get_attachment_name
 )
 from exchangelib import EWSDate, EWSDateTime, EWSTimeZone
 from exchangelib.attachments import AttachmentId, ItemAttachment
@@ -49,6 +53,8 @@ class TestNormalCommands:
 
     class MockClient:
         class MockAccount:
+            DEFAULT_FOLDER_TRAVERSAL_DEPTH = 3
+
             def __init__(self):
                 self.root = self
                 self.walk_res = []
@@ -98,7 +104,7 @@ class TestNormalCommands:
         def get_folder_by_path(self, path, account=None, is_public=False):
             return ""
 
-    def test_ews_find_folders(self):
+    def test_ews_find_folders(self, mocker):
         """
         This test checks the following normal_command:
             * ews-find-folders
@@ -114,7 +120,6 @@ class TestNormalCommands:
             - the expected result will be the same as the entry context
         """
         command_name = "ews-find-folders"
-
         raw_response = RAW_RESPONSES[command_name]
         expected = COMMAND_OUTPUTS[command_name]
         client = self.MockClient()
@@ -264,10 +269,12 @@ def test_last_run(mocker, current_last_run, messages, expected_last_run):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in messages)
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.max_fetch = 1
@@ -305,10 +312,12 @@ def test_fetch_and_mark_as_read(mocker):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
         return MockObject()
+
     from EWSO365 import RECEIVED_FILTER
     client = TestNormalCommands.MockClient()
     client.get_folder_by_path = mock_get_folder_by_path
@@ -403,8 +412,8 @@ def test_handle_transient_files(transient_files, transient_files_contents, trans
 HTML_PACKAGE = [
     ('<html><body>some text</body></html>', ('<html><body>some text</body></html>', [])),
     ('<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>',
-     ('<html><body>some text <img src="cid:image0@abcd1234.abcd1234"></body></html>',
-      [{'data': base64.b64decode('abcd'), 'name': 'image0', 'cid': 'image0@abcd1234.abcd1234'}]
+     ('<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>',
+      [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}],
       )
      )
 ]
@@ -422,8 +431,8 @@ def test_handle_html(mocker, html_input, expected_output):
         - Clean the HTML string and add the relevant references to image files
 
     """
-    import EWSO365 as ewso365
-    mocker.patch.object(ewso365, 'random_word_generator', return_value='abcd1234')
+    mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
+    # mocker.patch.object(demisto, 'uniqueFile', return_value='12345678')
     assert handle_html(html_input) == expected_output
 
 
@@ -462,6 +471,7 @@ def test_fetch_last_emails(mocker, since_datetime, filter_arg, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -512,6 +522,7 @@ def test_fetch_last_emails_max_fetch(max_fetch, expected_result):
             class MockQuerySet:
                 def __iter__(self):
                     return (t for t in [Message(), Message(), Message(), Message(), Message()])
+
             return MockQuerySet()
 
     def mock_get_folder_by_path(path, account=None, is_public=False):
@@ -570,7 +581,7 @@ def test_parse_incident_from_item(mocker, mime_content, expected_data, expected_
     assert incident["rawJSON"]
     raw_json = json.loads(incident["rawJSON"])
     assert raw_json['attachments'][0]['attachmentSHA256'] == expected_attachmentSHA256
-    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
 
 
 def test_parse_incident_from_item_with_attachments():
@@ -664,7 +675,7 @@ def test_parse_incident_from_item_with_eml_attachment_header_integrity(mocker):
     mock_file_result = mocker.patch('EWSO365.fileResult')
     parse_incident_from_item(message)
     # assert the fileResult is created with the expected results
-    mock_file_result.assert_called_once_with("demisto_untitled_attachment.eml", expected_data)
+    mock_file_result.assert_called_once_with("None-imageName:demisto_untitled_attachment.eml", expected_data)
 
 
 @pytest.mark.parametrize('params, expected_result', [
@@ -767,7 +778,6 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
               b'X-Who-header: whovALUE\r\n' \
               b'DATE: 2023-12-16T12:04:45\r\n' \
               b'\r\nHello'
-
     # headers set in the Item
     item_headers = [
         # these header keys may have different casing than what exists in the raw content
@@ -797,13 +807,36 @@ def test_get_item_as_eml(subject, expected_file_name, mocker):
             return "Account"
 
         def get_item_from_mailbox(self, account, item_id):
-
             return Item(mime_content=content, headers=item_headers, subject=subject)
+
     mock_file_result = mocker.patch('EWSO365.fileResult')
 
     get_item_as_eml(MockEWSClient(), "item", "account@test.com")
 
     mock_file_result.assert_called_once_with(expected_file_name, expected_data)
+
+
+@pytest.mark.parametrize('message_content', ('Holá', 'À bientôt!', '今日は!'))
+def test_decode_email_data(message_content):
+    """
+    Given a message containing characters in:
+        a. Spanish
+        b. French
+        c. Japanese
+
+    When: decoding the content
+
+    Then make sure the content and characters are decoded correctly.
+    """
+    class MockMimeItem:
+        mime_content: str = ''
+
+        def __init__(self, message: str):
+            self.mime_content = message
+
+    mime_item = cast_mime_item_to_message(MockMimeItem(message_content))
+    result = decode_email_data(mime_item)
+    assert result == f'\r\n{message_content}'
 
 
 class TestEmailModule(unittest.TestCase):
@@ -837,7 +870,39 @@ class TestEmailModule(unittest.TestCase):
             name="file.txt", content="data", is_inline=True, content_id="12345"
         )
         mock_message.assert_called_once()
-        assert isinstance(result, MagicMock)
+        assert isinstance(result[0], MagicMock)
+
+    @patch('EWSO365.FileAttachment')
+    @patch('EWSO365.HTMLBody')
+    @patch('EWSO365.Body')
+    @patch('EWSO365.Message')
+    def test_create_message_with_html_body_inline_image(self, mock_message, mock_body, mock_html_body, mock_file_attachment):
+        """
+        Test create_message function with an HTML body.
+        """
+        import EWSO365
+        # Setup
+        to = ["recipient@example.com"]
+        subject = "Test Subject"
+        html_body = '<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUA"/></p>'
+        original_html_body = '<p><img src="cid:image0@11111111_11111111"/></p>'
+        attachments = [{"name": "file.txt", "data": "data", "cid": "12345"}]
+
+        mock_message.return_value = MagicMock()
+        mock_html_body.return_value = MagicMock()
+        mock_file_attachment.return_value = MagicMock()
+        with patch.object(EWSO365.demisto, 'uniqueFile', return_value="1234567"), \
+                patch.object(EWSO365.demisto, 'getFilePath', return_value={"path": "", "name": ""}), \
+                patch.object(uuid, 'uuid4', return_value="111111111"):  # noqa: F821
+            # Call the function
+            result = create_message(
+                to, subject, html_body=html_body, attachments=attachments
+            )
+
+            # Assertions
+            mock_html_body.assert_called_once_with(original_html_body)
+            mock_message.assert_called_once()
+            assert isinstance(result[0], MagicMock)
 
 
 @pytest.mark.parametrize("headers, expected_formatted_headers", [
@@ -864,4 +929,40 @@ def test_handle_attached_email_with_incorrect_id(mocker, headers, expected_forma
     email_policy = SMTP
     attached_email = email.message_from_bytes(mime_content, policy=email_policy)
     attached_email._headers = headers
-    assert handle_attached_email_with_incorrect_id(attached_email)._headers == expected_formatted_headers
+    assert handle_attached_email_with_incorrect_message_id(attached_email)._headers == expected_formatted_headers
+
+
+@pytest.mark.parametrize("message_id, expected_message_id_output", [
+    pytest.param('<message_id>', '<message_id>', id="valid message_id 1"),
+    pytest.param('<mess<[age_id>', '<mess<[age_id>', id="valid message_id 2"),
+    pytest.param('<>]message_id>', '<>]message_id>', id="valid message_id 3"),
+    pytest.param('<[message_id]>', '<message_id>', id="invalid message_id"),
+    pytest.param('\r\n\t<message_id>', '\r\n\t<message_id>', id="valid message_id with escape chars"),
+    pytest.param('\r\n\t<[message_id]>', '\r\n\t<message_id>', id="invalid message_id with escape chars"),
+])
+def test_handle_incorrect_message_id(message_id, expected_message_id_output):
+    """
+    Given:
+        - case 1: valid Message-ID header value in attached email object
+        - case 1: invalid Message-ID header value in attached email object
+        - case 3: a Message-ID header value format which is not tested in the context of handle_attached_email_with_incorrect_id
+    When:
+        - fetching email which have an attached email with Message-ID header
+    Then:
+        - case 1: verify the header in the correct format
+        - case 2: correct the invalid Message-ID header value
+        - case 3: return the header value without without further handling
+
+    """
+    assert handle_incorrect_message_id(message_id) == expected_message_id_output
+
+
+@pytest.mark.parametrize("attachment_name, content_id, attachment_id, expected_result", [
+    pytest.param('image1.png', "", '123', "123-imageName:image1.png"),
+    pytest.param('image1.png', '123', '456', "123-imageName:image1.png"),
+    pytest.param('image1.png', None, '456', "456-imageName:image1.png"),
+
+])
+def test_get_attachment_name(attachment_name, content_id, attachment_id, expected_result):
+    assert get_attachment_name(attachment_name=attachment_name, content_id=content_id,
+                               attachment_id=attachment_id) == expected_result

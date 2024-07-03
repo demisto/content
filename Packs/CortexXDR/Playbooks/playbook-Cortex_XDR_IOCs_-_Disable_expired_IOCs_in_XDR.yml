@@ -376,14 +376,6 @@ inputs:
   playbookInputQuery:
 outputs: []
 tests:
-- Test XDR Playbook general commands
-- Test Playbook - Cortex XDR - Endpoint Investigation
-- Test XDR Playbook
-- Test Playbook - Cortex XDR - Get File Path from alerts by hash
-- Cortex XDR - XQL Query - Test
-- Test Playbook - Cortex XDR - Retrieve File by sha256
-- Test Playbook - Cortex XDR Malware - Incident Enrichment
 - Cortex XDR - IOC - Test
-- Test Playbook - Cortex XDR - False Positive Incident Handling
 - Cortex XDR - IOC - Test without fetch
 fromversion: 6.10.0

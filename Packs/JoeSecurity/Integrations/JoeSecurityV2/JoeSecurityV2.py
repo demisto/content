@@ -22,8 +22,11 @@ class Client(jbxapi.JoeSandbox):
         self.reliability = reliability
         self.create_relationships = create_relationships
         self.on_premise = on_premise
-        if proxy:
-            proxies = handle_proxy()
+        if not proxy:
+            demisto.debug("Removing proxy environment variables.")
+        else:
+            demisto.debug("Handling proxy.")
+        proxies = handle_proxy()
         super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxies)
 
     def analysis_info_list(self, web_ids: List[str]) -> List[Dict[str, Any]]:
@@ -457,7 +460,7 @@ def build_submission_params(args: Dict[str, Any], on_premise: bool) -> Dict[str,
          Returns:
              result: (Dict[str, Any]): The submission parameters.
      """
-    params = {'comments': args.get('comment', None), 'systems': argToList(args.get('systems')),
+    params = {'comments': args.get('comments', None), 'systems': argToList(args.get('systems')),
               'tags': argToList(args.get('tags')), 'internet-access': argToBoolean(args.get('internet_access', True)),
               'archive-no-unpack': argToBoolean(args.get('archive_no_unpack', False)),
               'ssl-inspection': argToBoolean(args.get('ssl_inspection', False)),
@@ -504,9 +507,12 @@ def file_submission(client: Client, args: Dict[str, Any], params: Dict[str, Any]
              result: (PollResult): The parsed PollResult object.
      """
     file_path = demisto.getFilePath(file)
+    name = file_path['name']
+    demisto.debug(f"Trying to upload file {name=} from entry= {file_path['path']}")
+
     with open(file_path['path'], 'rb') as f:
-        s = (args.get('file_name'), f) if args.get('file_name') else f
-        res = client.submit_sample(sample=s, params=params, cookbook=args.get('cookbook'))
+        file_to_send = (args.get('file_name') or name, f)
+        res = client.submit_sample(sample=file_to_send, params=params, cookbook=args.get('cookbook'))
         exe_metrics.success += 1
         partial_res = CommandResults(
             readable_output=f'Waiting for submission "{res.get("submission_id")}" to finish...')
@@ -593,6 +599,7 @@ def test_module(client: Client) -> str:     # pragma: no cover
     :rtype: ``str``
     """
     try:
+        demisto.debug(f"sending request with url: {client.apiurl + '/v2/server/online'}")
         client.server_online()
     except Exception as e:
         if isinstance(e, jbxapi.ApiError):
@@ -604,7 +611,7 @@ def test_module(client: Client) -> str:     # pragma: no cover
                 case 'ServerOfflineError' | 'InternalServerError':
                     return "Server error, please verify the Server URL or check if the server is offline"
         else:
-            return "Server error, please verify the server url or check if the server is online"
+            return f"Server error, please verify the server url or check if the server is online, exact error: {e}"
     return 'ok'
 
 
@@ -895,6 +902,12 @@ def main() -> None:  # pragma: no cover
     """
     api_key = demisto.get(demisto.params(), 'credentials.password')
     base_url = demisto.params().get('url')
+
+    demisto.debug(f"base url before handling it: {base_url}")
+    if 'api' not in base_url:
+        base_url = urljoin(base_url, 'api/')
+    demisto.debug(f"base url after handling it: {base_url}")
+
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     reliability = demisto.params().get('Reliability', DBotScoreReliability.C)

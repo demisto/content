@@ -35,7 +35,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: Tanium endpoint security and systems management, filters out [current results unavailable] when returning question results
+description: Tanium endpoint security and systems management, filters out [current results unavailable] when returning question results.
 display: Tanium v2
 name: Tanium v2
 script:
@@ -88,13 +88,13 @@ script:
       description: The most recent time and date when this object was modified.
       type: String
     - contextPath: TaniumPackage.ModUser.Domain
-      description: The domain of the user who most recently modified this object
+      description: The domain of the user who most recently modified this object.
       type: String
     - contextPath: TaniumPackage.ModUser.Id
-      description: The ID of the user who most recently modified this object
+      description: The ID of the user who most recently modified this object.
       type: Number
     - contextPath: TaniumPackage.ModUser.Name
-      description: The name of the user who most recently modified this object
+      description: The name of the user who most recently modified this object.
       type: String
     - contextPath: TaniumPackage.ModificationTime
       description: The most recent time and date when this object was modified.
@@ -233,7 +233,7 @@ script:
       description: A description for the sensor.
       type: String
     - contextPath: TaniumSensor.Hash
-      description: The hash id of the sensor
+      description: The hash id of the sensor.
       type: String
     - contextPath: TaniumSensor.ID
       description: The unique ID of the sensor object.
@@ -448,10 +448,10 @@ script:
       description: The domain of the user who most recently modified this object.
       type: String
     - contextPath: TaniumPackage.ModUser.Id
-      description: The ID of the user who most recently modified this object
+      description: The ID of the user who most recently modified this object.
       type: Number
     - contextPath: TaniumPackage.ModUser.Name
-      description: The name of the user who most recently modified this object
+      description: The name of the user who most recently modified this object.
       type: String
     - contextPath: TaniumPackage.ModificationTime
       description: The most recent time and date when this object was modified.
@@ -540,7 +540,7 @@ script:
       description: The number of seconds before the question expires. Default is 600.
       type: Number
     - contextPath: Tanium.Question.ForceComputerIdFlag
-      description: Whether to force the question to be a counting question if only one selection is present. Default is not to force. If the question object is an instance of a saved question, this field is derived from the saved question
+      description: Whether to force the question to be a counting question if only one selection is present. Default is not to force. If the question object is an instance of a saved question, this field is derived from the saved question.
       type: Boolean
     - contextPath: Tanium.Question.IsExpired
       description: Whether the question has expired.
@@ -1257,7 +1257,7 @@ script:
       isArray: true
       name: id
       required: true
-    description: Get device actions result
+    description: Get device actions result.
     name: tn-get-action-result
     outputs:
     - contextPath: Tanium.ActionResult.now
@@ -1353,7 +1353,7 @@ script:
     - contextPath: Tanium.ActionResult.ID
       description: The action results ID.
       type: String
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.10.14.99474
   script: ''
   subtype: python3
   type: python

@@ -13,12 +13,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Block File - Generic v2
-* Block Email - Generic v2
 * Block Domain - Generic v2
-* Block Account - Generic v2
-* Block IP - Generic v3
 * Block URL - Generic v2
+* Block Email - Generic v2
+* Block IP - Generic v3
+* Block File - Generic v2
+* Block Account - Generic v2
 
 ### Integrations
 
@@ -59,7 +59,7 @@ This playbook does not use any integrations.
 | Tag | Insert a tag name with which indicators will get tagged. This tag can be used later in the External Dynamic Lists integration by using the tag for filtering IPs in the indicator query. | Blocked Indicator In Systems | Optional |
 | DAG | This input determines whether Palo Alto Networks Panorama or Firewall Dynamic Address Groups are used.<br/>Specify the Dynamic Address Group tag name for IPs list handling. |  | Optional |
 | UserVerification | Possible values: True/False.  Default: True.<br/>Whether to provide user verification for blocking those IPs. <br/><br/>False - No prompt will be displayed to the user.<br/>True - The server will ask the user for blocking verification and will display the blocking list. | True | Optional |
-| InternalRange | A list of internal IP ranges to check IP addresses against. The list should be provided in CIDR notation, separated by commas. An example of a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). If a list is not provided, will use the default list provided in the IsIPInRanges script \(the known IPv4 private address ranges\). |  | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
 | SiteName | Signal Sciences WAF - Enter the site name for the integration to be applied. The site name can be found in your instance console. |  | Optional |
 | AkamaiNetworkListID | Akamai's WAF network list ID, which is mandatory to be mentioned for the integration. The chosen IPs will be added to this ID. |  | Optional |
 | CiscoFWSource | Cisco ASA \(firewall\) value for the rule's source object in the created blocking rule. Can be the value of an IPv4, an address block, or the name of a network object. |  | Optional |

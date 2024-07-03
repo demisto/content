@@ -2262,10 +2262,10 @@ def test_generate_login_url(mocker):
     mocked_params = {
         'REDIRECT_URI': redirect_uri,
         'AUTH_TYPE': 'Authorization Code',
-        'TENANT_ID': tenant_id,
         'BOT_ID': client_id
     }
     mocker.patch.dict(MicrosoftTeams.__dict__, MicrosoftTeams.__dict__ | mocked_params)
+    mocker.patch.object(MicrosoftTeams, "get_integration_context", return_value={'tenant_id': 'tenant_id'})
     mocker.patch.object(MicrosoftTeams, 'return_results')
     mocker.patch.object(MicrosoftTeams, 'support_multithreading')
     mocker.patch.object(demisto, 'command', return_value='microsoft-teams-generate-login-url')

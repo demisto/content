@@ -1,0 +1,35 @@
+{
+    "outputs": {
+        "fail": {},
+        "success": {
+            "data": [
+                {
+                    "value": "HTTP",
+                    "type": "Dummy Protocol",
+                    "rawJSON": {
+                        "value": "HTTP",
+                        "dataType": "Protocol",
+                        "insightTime": "2024-01-07T15:45:21.180Z"
+                    },
+                    "fields": {
+                        "description": "Dummy Insight - Block outbound non-SSL protocols",
+                        "protocol": "HTTP",
+                        "Dummyseverity": "Medium",
+                        "Dummyseverityscore": "10",
+                        "Dummyisbehavioral": true,
+                        "Dummyattackids": [
+                            "1028",
+                            "1052",
+                            "1047",
+                            "1051"
+                        ],
+                        "tags": [
+                            "DummyInsightId: 3"
+                        ]
+                    },
+                    "score": 2
+                }
+            ]
+        }
+    }
+}

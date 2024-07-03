@@ -297,7 +297,9 @@ class DataminrPulseClient(BaseClient):
         :return: A dictionary of alerts.
         :rtype: ``Optional[Dict]``
         """
-        params = {'num': num, 'alertversion': ALERT_VERSION, 'from': _from, 'to': to, 'query': query}
+        params = {'num': num, 'alertversion': ALERT_VERSION, 'from': _from, 'to': to, 'query': query,
+                  'application': 'palo_alto_cortex_xsoar', 'application_version': get_demisto_version_as_str(),
+                  'integration_version': get_pack_version('')}
         remove_nulls_from_dictionary(params)
         if watchlist_ids:
             params['lists'] = ','.join(map(str, watchlist_ids))  # type: ignore

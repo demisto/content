@@ -716,10 +716,16 @@ Please note that when performing the *Delete* action, items which are deleted wi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_name | The name of the compliance search. | Required |
-| action | Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview". | Optional |
-| purge_type | Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete". | Optional |
-
+| search_name | The name of the compliance search. | Required | 
+| action | Search action to perform. Possible values are: Preview, Purge, Export. Default is Preview. | Optional | 
+| purge_type | Purge type. Possible values are: SoftDelete, HardDelete. Default is SoftDelete. | Optional | 
+| share_point_archive_format | Specifies how to export SharePoint and OneDrive search results. Possible values are: IndividualMessage, PerUserZip, SingleZip. IndividualMessage: Export the files uncompressed. This is the default value. PerUserZip: One ZIP file for each user. Each ZIP file contains the exported files for the user. SingleZip: One ZIP file for all users. The ZIP file contains all exported files from all users. This output setting is available only in PowerShell. To specify the format for Exchange search results, use the exchange_archive_format parameter.  | Optional | 
+| format | The Format parameter specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files. Possible values are: FxStream, Mime, Msg. | Optional | 
+| include_sharepoint_document_versions | Specifies whether to export previous versions of the document when you use the Export action. Possible values are: true, false. | Optional | 
+| notify_email | Specifies the email address target for the search results when you use the Export action. | Optional | 
+| notify_email_cc | Specifies the cc email address target for the search results when you use the Export action. | Optional | 
+| scenario | Specifies the scenario type when you use the Export action. Possible values are: AnalyzeWithZoom, General, GenerateReportsOnly, Inventory, RetentionReports, TriagePreview. | Optional | 
+| scope | Specifies the items to include when the action is Export. Possible values are: IndexedItemsOnly, UnindexedItemsOnly, BothIndexedAndUnindexedItems. | Optional | 
 
 #### Context Output
 
@@ -1364,3 +1370,29 @@ There is no context output for this command.
 * Due to a Microsoft limitation, you can perform a search and purge operation on a maximum of 50,000 mailboxes. To work around this limitation, configure multiple instances of the integration each with different permission filtering so that the number of mailboxes in each instance does not exceed 50,000.
 * A maximum of 10 items per mailbox can be removed at one time, due to a Microsoft [limitiation](https://docs.microsoft.com/en-us/microsoft-365/compliance/search-for-and-delete-messages-in-your-organization?view=o365-worldwide#before-you-begin).
 * For more Microsoft known limitations see [Limits for eDiscovery search](https://docs.microsoft.com/en-us/microsoft-365/compliance/limits-for-content-search?view=o365-worldwide).
+### o365-sc-case-hold-policy-set
+
+***
+Update inputs for case hold policies.
+
+#### Base Command
+
+`o365-sc-case-hold-policy-set`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| identity | Identity of the policy to update. | Required | 
+| add_exchange_locations | Exchange locations to add to the policy. | Optional | 
+| add_sharepoint_locations | Sharepoint locations to add to the policy. | Optional | 
+| add_public_locations | Public locations to add to the policy. | Optional | 
+| remove_exchange_locations | Exchange locations to remove from the policy. | Optional | 
+| remove_sharepoint_locations | Sharepoint locations to remove from the policy. | Optional | 
+| remove_public_locations | Public locations to remove from the policy. | Optional | 
+| comment | Add a comment to existing policy. | Optional | 
+| enabled | Enable or disable the policy. Possible values are: true, false. Default is true. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.

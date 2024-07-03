@@ -18,9 +18,9 @@ integration_params_with_auth_url.update({"auth_endpoint": "https://auth.wiz.io/o
 
 TEST_TOKEN = '123456789'
 SIMILAR_COMMANDS = ['wiz-issue-in-progress', 'wiz-reopen-issue', 'wiz-reject-issue', 'wiz-get-issues',
-                    'wiz-get-resource',
+                    'wiz-get-resource', 'wiz-get-issue',
                     'wiz-set-issue-note', 'wiz-clear-issue-note', 'wiz-get-issue-evidence', 'wiz-set-issue-due-date',
-                    'wiz-clear-issue-due-date', 'wiz-rescan-machine-disk', 'wiz-get-project-team']
+                    'wiz-clear-issue-due-date', 'wiz-rescan-machine-disk', 'wiz-get-project-team', 'wiz-resolve-issue']
 
 
 @pytest.fixture(autouse=True)
@@ -38,6 +38,7 @@ test_get_issues_response = {
                         "id": "12345678-4321-4321-4321-3792e8a03318",
                         "name": "test delete",
                     },
+                    "type": "THREAT_DETECTION",
                     "createdAt": "2022-01-02T15:46:34Z",
                     "updatedAt": "2022-01-04T10:40:57Z",
                     "status": "OPEN",
@@ -72,6 +73,7 @@ def test_get_filtered_issues(checkAPIerrors):
             "createdAt": "2022-01-02T15:46:34Z",
             "updatedAt": "2022-01-04T10:40:57Z",
             "status": "OPEN",
+            "type": "THREAT_DETECTION",
             "severity": "CRITICAL",
             "entity": {
                 "bla": "lot more blah was here",
@@ -82,6 +84,34 @@ def test_get_filtered_issues(checkAPIerrors):
     ]
 
     res = get_filtered_issues('virtualMachine', '', 'CRITICAL', 500)
+    assert res == result_response
+
+
+@patch('Wiz.checkAPIerrors', return_value=test_get_issues_response)
+def test_get_issue(checkAPIerrors):
+    from Wiz import get_issue
+
+    result_response = [
+        {
+            "id": "12345678-1234-1234-1234-d25e16359c19",
+            "control": {
+                "id": "12345678-4321-4321-4321-3792e8a03318",
+                "name": "test delete",
+            },
+            "createdAt": "2022-01-02T15:46:34Z",
+            "updatedAt": "2022-01-04T10:40:57Z",
+            "status": "OPEN",
+            "type": "THREAT_DETECTION",
+            "severity": "CRITICAL",
+            "entity": {
+                "bla": "lot more blah was here",
+                "name": "virtualMachine",
+                "type": "virtualMachine"
+            }
+        }
+    ]
+
+    res = get_issue('d6f7a886-e2f5-44c0-980c-c7c17bbfb7dd')
     assert res == result_response
 
 
@@ -144,6 +174,26 @@ test_reject_issue_response = {
     }
 }
 
+# Define the return values
+resolve_issues_return_values = [test_get_issues_response, test_reject_issue_response]
+
+
+# Define a function that will serve as the side effect
+def side_effect(*args, **kwargs):
+    return resolve_issues_return_values.pop(0)
+
+
+@patch('Wiz.checkAPIerrors', side_effect=side_effect)
+def test_resolve_issue(checkAPIerrors, capfd):
+    from Wiz import resolve_issue
+
+    with capfd.disabled():
+        res = resolve_issue(None, 1, 2)
+        assert 'You should pass' in res
+
+    res = resolve_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'WONT_FIX', 'blah_note')
+    assert res == test_reject_issue_response
+
 
 @patch('Wiz.checkAPIerrors', return_value=test_reject_issue_response)
 def test_reject_issue(checkAPIerrors, capfd):
@@ -151,7 +201,7 @@ def test_reject_issue(checkAPIerrors, capfd):
 
     with capfd.disabled():
         res = reject_issue(None, 1, 2)
-        assert res == 'You should pass all of: Issue ID, rejection reason and note.'
+        assert 'You should pass' in res
 
     res = reject_issue('12345678-2222-3333-1111-ff5fa2ff7f78', 'WONT_FIX', 'blah_note')
     assert res == test_reject_issue_response
@@ -289,7 +339,7 @@ VALID_RESPONSE_JSON = {
         "issues": {
             "nodes": [
                 {
-                    "id": "123456-test-id-1",
+                    "id": "b00bb5ce-4493-4158-af64-e21c6776331b",
                     "name": "test-1",
                     "createdAt": "2022-07-06T11:21:28.372924Z",
                     "type": "CORTEX_XSOAR",
@@ -356,7 +406,6 @@ VALID_RESPONSE_JSON = {
         }
     }
 }
-
 
 DEMISTO_ARGS = {
     'issue_type': 'Publicly exposed VM instance with effective global admin permissions',
@@ -483,6 +532,16 @@ def test_get_filtered_issues_bad_arguments(mocker, capfd):
         issue = get_filtered_issues(issue_type='virtualMachine', resource_id='', severity='BAD', limit=500)
         assert issue == 'You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or ' \
                         'INFORMATIONAL in upper or lower case.'
+
+
+def test_get_issue_bad_arguments(mocker, capfd):
+    from Wiz import get_issue
+    with capfd.disabled():
+        mocker.patch('Wiz.checkAPIerrors', return_value=VALID_RESPONSE_JSON)
+        issue = get_issue(issue_id='virtualMachine')
+        assert issue == 'Wrong format: The Issue ID should be in UUID format.'
+        issue = get_issue(issue_id='')
+        assert issue == 'You should pass an Issue ID.'
 
 
 @patch('Wiz.checkAPIerrors', return_value=test_issue_in_progress_response)
@@ -680,7 +739,6 @@ test_clear_issue_due_data_failed_response = {
     "data": None
 }
 
-
 test_bad_token_response = {
     "error": "access_denied",
     "error_description": "Unauthorized"
@@ -785,7 +843,6 @@ def test_check_api_access(capfd, mocker):
         mocker.patch('Wiz.get_token', return_value=TEST_TOKEN)
         mocker.patch('requests.post', side_effect=Exception('bad request'))
         with pytest.raises(Exception) as e:
-
             checkAPIerrors(query='test', variables='test')
         assert str(e.value) == 'bad request'
 

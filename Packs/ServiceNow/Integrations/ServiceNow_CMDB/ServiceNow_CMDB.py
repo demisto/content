@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 '''IMPORTS'''
 import urllib3
-from typing import Any, Dict, Tuple, List
+from typing import Any
 from _collections import defaultdict
 import ast
 from operator import itemgetter
@@ -31,6 +31,7 @@ class Client:
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
+
     def __init__(self, credentials: dict, use_oauth: bool = False, client_id: str = '', client_secret: str = '',
                  url: str = '', verify: bool = False, proxy: bool = False):
         """
@@ -80,7 +81,7 @@ class Client:
 ''' HELPER FUNCTIONS '''
 
 
-def create_request_data(data_fields: List, args: dict) -> dict:
+def create_request_data(data_fields: list, args: dict) -> dict:
     """
     This function converts the input given by the user when creating a new record to a data dict that should be passed
     in the http request.
@@ -188,7 +189,7 @@ def create_human_readable(title: str, result: dict, fields: str) -> str:
 ''' COMMAND FUNCTIONS '''
 
 
-def records_list_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def records_list_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Query a CMDB table using the class name to receive all records in the class.
 
@@ -225,7 +226,7 @@ def records_list_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     return human_readable, context, response
 
 
-def get_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def get_record_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Query attributes and relationship information for a specific record.
 
@@ -274,7 +275,7 @@ def get_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     return human_readable, context, response
 
 
-def create_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def create_record_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Create a record with associated relations.
 
@@ -315,7 +316,7 @@ def create_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     return human_readable, context, response
 
 
-def update_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def update_record_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Update a record with attributes given by the user.
 
@@ -356,7 +357,7 @@ def update_record_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     return human_readable, context, response
 
 
-def add_relation_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def add_relation_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Add new relations to an existing record.
 
@@ -397,7 +398,7 @@ def add_relation_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
     return human_readable, context, response
 
 
-def delete_relation_command(client: Client, args: dict) -> Tuple[str, dict, Any]:
+def delete_relation_command(client: Client, args: dict) -> tuple[str, dict, Any]:
     """
     Delete relations for an existing record.
 
@@ -462,7 +463,7 @@ def test_module(client: Client) -> str:
     return 'ok'
 
 
-def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def oauth_test_module(client: Client, *_) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """
     Test the instance configurations when using OAuth authorization.
     """
@@ -478,7 +479,7 @@ def oauth_test_module(client: Client, *_) -> Tuple[str, Dict[Any, Any], Dict[Any
     return hr, {}, {}
 
 
-def login_command(client: Client, args: Dict[str, Any]) -> Tuple[str, Dict[Any, Any], Dict[Any, Any]]:
+def login_command(client: Client, args: dict[str, Any]) -> tuple[str, dict[Any, Any], dict[Any, Any]]:
     """
     Login the user using OAuth authorization
     Args:

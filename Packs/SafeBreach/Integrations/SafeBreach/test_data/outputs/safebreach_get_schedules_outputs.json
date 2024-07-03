@@ -1,0 +1,23 @@
+{
+    "outputs": {
+        "success_no_deleted_details": {
+            "data": [
+                {
+                    "id": 3,
+                    "isEnabled": true,
+                    "name": null,
+                    "accountId": 1234567890,
+                    "cronString": "0 9 * * 5",
+                    "runDate": null,
+                    "cronTimezone": "Asia/Kolkata",
+                    "planId": 123,
+                    "description": null,
+                    "deletedAt": null,
+                    "createdAt": "2023-09-15T02:48:14.222Z",
+                    "updatedAt": "2023-09-15T02:48:14.222Z",
+                    "matrixId": 123
+                }
+            ]
+        }
+    }
+}

@@ -398,7 +398,8 @@ class Client(BaseClient):
         return self._http_request(
             'GET',
             f'files/{file_hash}/behaviours',
-            params={'limit': limit}
+            params={'limit': limit},
+            ok_codes=(404, 429, 200)
         )
 
     def passive_dns_data(self, id: dict, limit: int) -> dict:
@@ -2284,10 +2285,12 @@ def get_comments_by_id_command(client: Client, args: dict) -> CommandResults:
 
 # endregion
 
-def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
+def file_sandbox_report_command(client: Client, args: dict) -> List[CommandResults]:
     """
     1 API Call
     """
+    execution_metrics = ExecutionMetrics()
+    results: List[CommandResults] = []
     file_hash = args['file']
     limit = arg_to_number(
         args['limit'],
@@ -2297,26 +2300,42 @@ def file_sandbox_report_command(client: Client, args: dict) -> CommandResults:
     assert isinstance(limit, int)  # mypy fix
     raise_if_hash_not_valid(file_hash)
     raw_response = client.file_sandbox_report(file_hash, limit)
-    data = raw_response['data']
-    return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport',
-        'id',
-        readable_output=tableToMarkdown(
-            f'Sandbox Reports for file hash: {file_hash}',
-            [
-                {
-                    'id': item['id'],
-                    **item['attributes'],
-                    'link': item['links']['self']
-                } for item in data
-            ],
-            headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link'],
-            removeNull=True,
-            headerTransform=underscoreToCamelCase
-        ),
-        outputs=data,
-        raw_response=raw_response
-    )
+    if 'data' in raw_response:
+        data = raw_response['data']
+        execution_metrics.quota_error += 1
+        results.append(
+            CommandResults(
+                f'{INTEGRATION_ENTRY_CONTEXT}.SandboxReport',
+                'id',
+                readable_output=tableToMarkdown(
+                    f'Sandbox Reports for file hash: {file_hash}',
+                    [
+                        {
+                            'id': item['id'],
+                            **item['attributes'],
+                            'link': item['links']['self']
+                        } for item in data
+                    ],
+                    headers=['analysis_date', 'last_modification_date', 'sandbox_name', 'link'],
+                    removeNull=True,
+                    headerTransform=underscoreToCamelCase
+                ),
+                outputs=data,
+                raw_response=raw_response
+            )
+        )
+    elif raw_response.get('error', {}).get('code') == 'NotFoundError':
+        results.append(build_unknown_file_output(client, file_hash))
+    else:
+        execution_metrics.quota_error += 1
+        results.append(build_quota_exceeded_file_output(client, file_hash))
+
+    if execution_metrics.is_supported():
+        _metric_results = execution_metrics.metrics
+        metric_results = cast(CommandResults, _metric_results)
+        results.append(metric_results)
+
+    return results
 
 
 def passive_dns_data(client: Client, args: dict) -> CommandResults:

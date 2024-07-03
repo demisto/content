@@ -5,7 +5,7 @@ Checks an object for an empty value and returns a pre-set default value.
 
 | **Name** | **Description** |
 | --- | --- |
-| Script Type | python3 |
+| Script Type | javascript |
 | Tags | transformer, general, entirelist |
 | Cortex XSOAR Version | 5.0.0 |
 

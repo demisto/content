@@ -2,9 +2,10 @@ commonfields:
   id: EclecticIQ Platform v2
   version: -1
 name: EclecticIQ Platform v2
-display: EclecticIQ Platform v2
+display: EclecticIQ Platform v2 (Deprecated)
+deprecated: true
 category: Data Enrichment & Threat Intelligence
-description: Threat Intelligence Platform that connects and interprets intelligence data from open sources, commercial suppliers and industry partnerships.
+description: Deprecated. Use EclecticIQ Intelligence Center v3 instead.
 configuration:
 - display: Server URL (e.g. https://ic-playground.eclecticiq.com/api/v1)
   name: url
@@ -31,7 +32,7 @@ script:
     arguments:
     - name: type
       required: true
-      description: 'Type of the value to lookup observables from.'
+      description: 'Type of the value to lookup observables from '
       auto: PREDEFINED
       predefined:
       - ipv4
@@ -47,43 +48,43 @@ script:
     - name: value
       required: true
       default: true
-      description: Value to search the related observables from EclecticIQ Intelligence Center Platform.
+      description: Value to search the related observables from EclecticIQ Intelligence Center Platform
       type: textArea
     outputs:
     - contextPath: EclecticIQ.Observables.type
-      description: EclecticIQ  Observables type.
+      description: EclecticIQ  Observables type
       type: string
     - contextPath: EclecticIQ.Entity.confidence
-      description: EclecticIQ Entity confidence.
+      description: EclecticIQ Entity confidence
       type: string
     - contextPath: EclecticIQ.Entity.observables
-      description: EclecticIQ Entity related observables.
+      description: EclecticIQ Entity related observables
       type: string
     - contextPath: EclecticIQ.Entity.threat_start_time
-      description: EclecticIQ Threat start time.
+      description: EclecticIQ Threat start time
       type: date
     - contextPath: EclecticIQ.Entity.title
-      description: EclecticIQ Entity Title.
+      description: EclecticIQ Entity Title
       type: string
-    description: Lookup observables from EclecticIQ Intelligence Center Platform.
+    description: Lookup observables from EclecticIQ Intelligence Center Platform
   - name: EclecticIQ_create_sighting
     arguments:
     - name: value
       required: true
-      description: 'value for the sighting.'
+      description: ' value for the sighting'
       type: textArea
     - name: description
       required: true
-      description: description about the sighting.
+      description: description about the sighting
       type: textArea
     - name: title
       required: true
-      description: 'Title for the sighting.'
+      description: ' Title for the sighting'
       type: textArea
     - name: tags
       required: true
       default: true
-      description: 'Tag for the sighting.'
+      description: ' Tag for the sighting'
       type: textArea
     - name: type
       required: true
@@ -98,7 +99,7 @@ script:
       - hash-sha256
       - hash-sha1
       - hash-sha512
-      description: type for the sighting.
+      description: type for the sighting
       type: textArea
     - name: confidence_level
       required: true
@@ -108,30 +109,30 @@ script:
       - medium
       - high
       - unknown
-      description: severity level of the sighting.
+      description: severity level of the sighting
       type: textArea
     outputs:
     - contextPath: Sighting.Data.data.type
-      description: Sighting type.
+      description: Sighting type
       type: string
     - contextPath: Sighting.Data.data.tags
-      description: Sighting Tags.
+      description: Sighting Tags
       type: string
     - contextPath: Sighting.Data.data.title
-      description: Sighting Title.
+      description: Sighting Title
       type: string
     - contextPath: Sighting.Data.data.description
-      description: Sighting Description.
+      description: Sighting Description
       type: string
     - contextPath: Sighting.Data.data.timestamp
-      description: Sighting timestamp.
+      description: Sighting timestamp
       type: string
-    description: 'create sighting in the EclecticIQ Intelligence Center Platform.'
+    description: 'create sighting in the EclecticIQ Intelligence Center Platform '
   - name: EclecticIQ_create_observable
     arguments:
     - name: type
       required: true
-      description: Type of the observable.
+      description: Type of the observable
       auto: PREDEFINED
       predefined:
       - ipv4
@@ -147,7 +148,7 @@ script:
     - name: value
       required: true
       default: true
-      description: value of the type of observable.
+      description: value of the type of observable
     - name: maliciousness
       required: true
       auto: PREDEFINED
@@ -157,20 +158,20 @@ script:
       - low
       - medium
       - high
-      description: severity level of the type.
+      description: severity level of the type
     outputs:
     - contextPath: Observables.Data.data.type
-      description: Observable Type.
+      description: Observable Type
       type: string
     - contextPath: Observables.Data.data.value
-      description: Observable Value.
+      description: Observable Value
       type: string
     - contextPath: Observables.Data.data.maliciousness
-      description: Observable maliciousness.
+      description: Observable maliciousness
       type: string
-    description: 'create observable in the EclecticIQ Intelligence Center Platform.'
+    description: 'create observable in the EclecticIQ Intelligence Center Platform '
   runonce: true
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.13.72123
 tests:
 - No test - instance issues
 fromversion: 6.5.0

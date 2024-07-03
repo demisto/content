@@ -99,6 +99,15 @@ configuration:
   type: 13
   section: Connect
   required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -266,7 +275,7 @@ script:
     - name: roleSessionDuration
       description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
     description: Deletes the messages in a queue specified by the QueueURL parameter.
-  dockerimage: demisto/boto3py3:1.0.0.87582
+  dockerimage: demisto/boto3py3:1.0.0.100468
   isfetch: true
 tests:
 - AWS - SQS Test Playbook

@@ -1,0 +1,160 @@
+{
+    "entries": [
+        {
+            "values": {
+                "Support Group ID": "APX990000000029",
+                "Submitter": "Remedy Application Service",
+                "Submit Date": "2023-04-27T20:05:08.000+0000",
+                "Assigned To": null,
+                "Last Modified By": "Demo",
+                "Last Modified Date": "2023-04-28T01:14:00.000+0000",
+                "Status": "Enabled",
+                "Short Description": ".",
+                "Notifier Listening": "Not Listening",
+                "Assignee Groups": "1000000042;1000000043;",
+                "instanceId": "AGGADGJBG3LAPX99SZPOQRSZPOVUT0",
+                "Record ID": "AGGADGJBG3LAPX99SZPOQRSZPOVUT0",
+                "Vendor Assignee Groups": null,
+                "Vendor Assignee Groups_parent": null,
+                "Assignee Groups_parent": "",
+                "z1G InitComplete": null,
+                "z1G_DefaultCompany": null,
+                "z1G_UnrestrictedAccessMember": null,
+                "z1G_Global_HNS": null,
+                "Permission_Group_Enabled": "Yes",
+                "DataTags": "BWFData",
+                "z1D_schemaID": null,
+                "z1D_DefaultCompanyAction": null,
+                "z1D_DefaultCompanyInteger": null,
+                "z1D_SupportGroupRole": null,
+                "z1D_Char04": null,
+                "DisableGroupNotification": "No",
+                "GroupNotificationEmail": null,
+                "Notification_Locale": "en_US",
+                "z1D_ConfirmGroup": null,
+                "Parent Group": null,
+                "Confidential Support Group": "No",
+                "Company_SortOrder": 100,
+                "Description": null,
+                "Company": "Apex Global",
+                "Support Organization": "Facilities Support",
+                "Support Group Name": "Apex Global - Facilities",
+                "z1D Char01": null,
+                "z1D Char02": null,
+                "z1D Action": null,
+                "z1D Integer01": null,
+                "z1D Lastcount": null,
+                "z1D Role": null,
+                "Assigned Support Company": null,
+                "z1D Date01": null,
+                "Shifts Flag": "No",
+                "Business Workdays Tag": null,
+                "Business Holidays Tag": null,
+                "Support Group Role": "Line of Business",
+                "Uses SLA": "Yes",
+                "Uses OLA": "Yes",
+                "On Call Group Flag": "No",
+                "z1D Permission Group ID": null,
+                "z1D Permission Group List": null,
+                "z1D Association Action01": null,
+                "Vendor Group": "No",
+                "Navigation Menu01": "Apex Global",
+                "Navigation Menu02": null,
+                "Navigation Menu03": null,
+                "z1D_Display_Locale": null,
+                "z1D Association Action01_locale": null
+            },
+            "_links": {
+                "self": [
+                    {
+                        "href": "https://isvpartners-dev-restapi.onbmc.com/api/arsys/v1/entry/CTM:Support%20Group/APX990000000029"
+                    }
+                ]
+            }
+        },
+        {
+            "values": {
+                "Support Group ID": "SGP000000000110",
+                "Submitter": "activationuser",
+                "Submit Date": "2023-05-10T17:34:37.000+0000",
+                "Assigned To": null,
+                "Last Modified By": "Remedy Application Service",
+                "Last Modified Date": "2023-05-10T17:34:37.000+0000",
+                "Status": "Enabled",
+                "Short Description": ".",
+                "Notifier Listening": "Not Listening",
+                "Assignee Groups": "1000000001;",
+                "instanceId": "AGGCWH5RDMNSBARU64APRU64APAVH7",
+                "Record ID": "AGGCWH5RDMNSBARU64APRU64APAVH7",
+                "Vendor Assignee Groups": null,
+                "Vendor Assignee Groups_parent": null,
+                "Assignee Groups_parent": "",
+                "z1G InitComplete": null,
+                "z1G_DefaultCompany": null,
+                "z1G_UnrestrictedAccessMember": null,
+                "z1G_Global_HNS": null,
+                "Permission_Group_Enabled": "Yes",
+                "DataTags": null,
+                "z1D_schemaID": null,
+                "z1D_DefaultCompanyAction": null,
+                "z1D_DefaultCompanyInteger": null,
+                "z1D_SupportGroupRole": null,
+                "z1D_Char04": null,
+                "DisableGroupNotification": "No",
+                "GroupNotificationEmail": null,
+                "Notification_Locale": null,
+                "z1D_ConfirmGroup": null,
+                "Parent Group": null,
+                "Confidential Support Group": "No",
+                "Company_SortOrder": 100,
+                "Description": null,
+                "Company": "Calbro Services",
+                "Support Organization": "Application Support",
+                "Support Group Name": "Application Development / Deployment",
+                "z1D Char01": null,
+                "z1D Char02": null,
+                "z1D Action": null,
+                "z1D Integer01": null,
+                "z1D Lastcount": null,
+                "z1D Role": null,
+                "Assigned Support Company": null,
+                "z1D Date01": null,
+                "Shifts Flag": "No",
+                "Business Workdays Tag": null,
+                "Business Holidays Tag": null,
+                "Support Group Role": "Tier 1",
+                "Uses SLA": "Yes",
+                "Uses OLA": "Yes",
+                "On Call Group Flag": "No",
+                "z1D Permission Group ID": null,
+                "z1D Permission Group List": null,
+                "z1D Association Action01": null,
+                "Vendor Group": "No",
+                "Navigation Menu01": "Calbro Services",
+                "Navigation Menu02": null,
+                "Navigation Menu03": null,
+                "z1D_Display_Locale": null,
+                "z1D Association Action01_locale": null
+            },
+            "_links": {
+                "self": [
+                    {
+                        "href": "https://isvpartners-dev-restapi.onbmc.com/api/arsys/v1/entry/CTM:Support%20Group/SGP000000000110"
+                    }
+                ]
+            }
+        }
+    ],
+    "_links": {
+        "next": [
+            {
+                "href": "https://isvpartners-dev-restapi.onbmc.com/api/arsys/v1/entry/CTM:Support%20Group?offset=2&limit=2"
+            }
+        ],
+        "self": [
+            {
+                "href": "https://isvpartners-dev-restapi.onbmc.com/api/arsys/v1/entry/CTM:Support%20Group?limit=2"
+            }
+        ]
+    }
+}

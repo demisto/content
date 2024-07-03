@@ -22,17 +22,17 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* SolarStorm Activity Behavior Hunting playbook
-* CVE Enrichment - Generic v2
-* Palo Alto Networks - Hunting And Threat Detection
-* Office 365 and Azure Configuration Analysis
-* Search Endpoint by CVE - Generic
 * Search Endpoints By Hash - Generic V2
+* Panorama Query Logs
+* Search Endpoint by CVE - Generic
+* CVE Enrichment - Generic v2
+* SolarStorm Activity Behavior Hunting playbook
+* Palo Alto Networks - Hunting And Threat Detection
+* Block Indicators - Generic v3
 * Office 365 and Azure Hunting
 * Isolate Endpoint - Generic V2
-* Panorama Query Logs
-* Block Indicators - Generic v3
 * Block IP - Generic v3
+* Office 365 and Azure Configuration Analysis
 
 ### Integrations
 
@@ -40,20 +40,20 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* CreateIndicatorsFromSTIX
-* http
 * UnEscapeIPs
-* UnEscapeURLs
 * FileCreateAndUploadV2
 * SearchIncidentsV2
+* UnEscapeURLs
+* http
+* CreateIndicatorsFromSTIX
 
 ### Commands
 
-* appendIndicatorField
 * createNewIndicator
+* extractIndicators
 * closeInvestigation
 * expanse-get-issues
-* extractIndicators
+* appendIndicatorField
 
 ## Playbook Inputs
 
@@ -74,6 +74,8 @@ This playbook does not use any integrations.
 | Mialboxes_Retrieve_Limit | The maximum number of results to retrieve. Default is 10. | 10 | Optional |
 | AutoBlockIndicators | The input setting indicates whether to Automatically Block Indicators related to the SolarStrom Attack Default: True | True | Optional |
 | UserVerification | The input indicates whether the user should verify the indicators before continuing with the playbook Default: Fasle | False | Optional |
+| InternalRange | A list of internal IP ranges to check IP addresses against. The comma-separated list should be provided in CIDR notation. For example, a list of ranges would be: "172.16.0.0/12,10.0.0.0/8,192.168.0.0/16" \(without quotes\). | lists.PrivateIPs | Optional |
+| None | Generic group for outputs |  | Optional |
 
 ## Playbook Outputs
 

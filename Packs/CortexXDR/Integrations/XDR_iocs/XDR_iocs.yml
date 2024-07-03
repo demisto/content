@@ -135,10 +135,15 @@ configuration:
   defaultvalue: 'sourceoriginalseverity'
   required: false
 - defaultvalue: 'comments'
-  additionalinfo: The Cortex XSOAR field where comments are stored. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary). Specifying a different field name assumes the field has a list of strings to be used as comments, or a comma-separated string.
-  display: XSOAR Comment Field
+  additionalinfo: 'The Cortex XSOAR field where comments are stored and being export to XDR. Default is `comments`. Expecting a Cortex XSOAR IOC format of a comment (nested dictionary).'
+  display: XSOAR Comment Field Exporting To XDR
   name: xsoar_comments_field
-  type: 0
+  options:
+  - indicator_link
+  - comments
+  type: 16
+  section: Collect
+  advanced: true
   required: false
 - defaultvalue: 'false'
   additionalinfo: Whether to consider the value at `xsoar_comments_field` as CSV. Requires specifying a xsoar_comments_field value different than the default `comments`.
@@ -215,7 +220,7 @@ script:
       required: true
     description: Disables IOCs in the XDR server.
     name: xdr-iocs-disable
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.13.89009
   feed: true
   runonce: false
   script: '-'

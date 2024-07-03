@@ -18,6 +18,18 @@ value = 3
 
 Output is "5"
 
+map_from = "0,0.5,1,2,3,4"
+map_to = "Unknown,Informational,Low,Medium,High,Critical"
+value = 3
+
+Output is "High"
+
+map_from = "Unknown,Informational,Low,Medium,High,Critical"
+map_to = "0,0.5,1,2,3,4"
+value = Informational
+
+Output is "0.5"
+
 ## Script Data
 
 ---

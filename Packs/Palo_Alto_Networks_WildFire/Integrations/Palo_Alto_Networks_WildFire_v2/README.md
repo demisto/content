@@ -14,6 +14,8 @@ Use the Palo Alto Networks Wildfire integration to automatically identify unknow
 5. Get sample file from WildFire.
 6. Get verdict regarding multiple hashes (up to 500) using the wildfire-get-verdicts command.
 
+## Supported File Types
+For a list of the supported file types, see [here](https://docs.paloaltonetworks.com/advanced-wildfire/administration/advanced-wildfire-overview/advanced-wildfire-file-type-support/advanced-wildfire-file-type-support-complete#idbfe44505-f816-40db-8b28-4047bb834a8c).
 ## Configure WildFire v2 on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.

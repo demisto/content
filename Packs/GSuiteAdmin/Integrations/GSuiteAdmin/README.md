@@ -86,7 +86,7 @@ Takes an action that affects a mobile device. For example, remotely wiping a dev
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's G Suite account. | Required | 
+| customer_id | The unique ID of the customer's G Suite account. | Optional | 
 | resource_id | The unique ID used to identify the mobile device. | Required | 
 | action | The action to be performed on the device.<br/><br/>Available Options:<br/>admin_account_wipe - Remotely wipes only G Suite data from the device.<br/><br/>admin_remote_wipe - Remotely wipes all data on the device.<br/><br/>approve - Approves the device.<br/><br/>block - Blocks access to G Suite data on the device.<br/><br/>cancel_remote_wipe_then_activate - Cancels a remote wipe of the device and then reactivates it.<br/><br/>cancel_remote_wipe_then_block - Cancels a remote wipe of the device and then blocks it. | Required | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
@@ -121,7 +121,7 @@ Removes a mobile device. Note that this does not break the device's sync, it sim
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's G Suite account. | Required | 
+| customer_id | The unique ID of the customer's G Suite account. | Optional | 
 | resource_id | The unique ID used to identify the mobile device. | Required | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 
@@ -382,7 +382,7 @@ Retrieves a paginated list of all role assignments.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | role_id | Immutable ID of a role. If included, it returns only role assignments containing this role ID. | Optional | 
 | user_key | The user's primary email address, alias email address, or unique user ID. If included in the request, returns role assignments only for this user. | Optional | 
 | page_token | Token to specify the next page in the list. | Optional | 
@@ -462,7 +462,7 @@ Creates a role assignment.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | role_id | The ID of the role to be assigned to the user. | Required | 
 | assigned_to | The unique ID of the user this role is assigned to. | Required | 
 | scope_type | The scope in which this role is assigned. | Required | 
@@ -524,7 +524,7 @@ Creates a new role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | role_name | Name of the role. | Required | 
 | role_privileges | The set of privileges that are granted to this role. Comma-separated list of privilege names and service ids of the form "PrivilegeName1:ServiceId1,PrivilegeName2:ServiceId2". | Required | 
 | role_description | A short description of the role. | Optional | 
@@ -770,7 +770,7 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | schema_name | The schema's name. | Required | 
 | schema_display_name | Display name for the schema. | Required | 
 | field_raw_json | Raw JSON containing fields of the schema. Acceptable values for<br/>fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable<br/>values for readAccessType are ADMINS_AND_SELF- Only administrators and<br/>the associated user can see values, and ALL_DOMAIN_USERS- Any user in<br/>your domain can see values.<br/>E.g.<br/>{<br/>  "fields": [<br/>    {<br/>      "fieldType": string,<br/>      "fieldName": string,<br/>      "displayName": string,<br/>      "multiValued": boolean,<br/>      "readAccessType": string,<br/>      "indexed": boolean,<br/>      "numericIndexingSpec": {<br/>        "minValue": double,<br/>        "maxValue": double<br/>      }<br/>    }<br/>  ]<br/>}<br/> | Optional | 
@@ -857,7 +857,7 @@ Note: field_raw_json has higher precedence when both field_raw_json and field_js
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
-| customer_id | Immutable ID of the G Suite account. | Required | 
+| customer_id | Immutable ID of the G Suite account. | Optional | 
 | schema_name | The schema's name. | Optional | 
 | schema_id | Immutable ID of the schema. | Optional | 
 | schema_display_name | Display name for the schema. | Optional | 
@@ -1539,7 +1539,7 @@ Retrieves a paginated list that includes company-owned mobile devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Optional | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 | projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, model, type, and status). Default is FULL. Possible values are: BASIC, FULL. | Optional | 
 | query | Search string using the format given at https://developers.google.com/admin-sdk/directory/v1/search-operators. | Optional | 
@@ -1729,7 +1729,7 @@ Retrieves a paginated list of company-owned ChromeOS devices.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Optional | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 | projection | Whether to show all metadata fields, or only the basic metadata fields (e.g., deviceId, serialNumber, status, and user). Possible values are: BASIC, FULL. | Optional | 
 | query | Search string in the format given at https://developers.google.com/admin-sdk/directory/v1/list-query-operators. | Optional | 
@@ -1856,7 +1856,7 @@ Executes an action that affects a ChromeOS Device. This includes de-provisioning
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| customer_id | The unique ID of the customer's Google Workspace Admin account. | Required | 
+| customer_id | The unique ID of the customer's Google Workspace Admin account. | Optional | 
 | admin_email | Email ID of the G Suite domain admin acts on behalf of an end-user. | Optional | 
 | resource_id | The unique ID of the device. | Required | 
 | action | The action to be performed on the ChromeOS device. Possible values are: deprovision, disable, reenable, pre_provisioned_disable, pre_provisioned_reenable. | Required | 
@@ -1871,3 +1871,635 @@ There is no context output for this command.
 
 #### Human Readable Output
 > ChromeOS device with resource id - RESOURCE_ID updated.
+
+
+### gsuite-user-reset-password
+
+***
+Retreive a group's details given a group key.
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.user`
+
+#### Base Command
+
+`gsuite-user-reset-password`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| user_key | One of the following: user email address, alias email address, or the unique user ID. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.User.id | String | The unique ID for the user. | 
+| GSuite.User.primaryEmail | String | The user's primary email address. | 
+| GSuite.User.firstName | String | The user's first name. | 
+| GSuite.User.lastName | String | The user's last name. | 
+| GSuite.User.customerId | String | The unique ID for the customer's G Suite account. | 
+| GSuite.User.gender | String | The user's gender. | 
+| GSuite.User.suspended | Boolean | Indicates if the user is suspended. | 
+| GSuite.User.notesValue | String | Content of the notes. | 
+| GSuite.User.notesContentType | String | Content type of the notes. | 
+| GSuite.User.isAdmin | Boolean | Indicates a user with super administrator privileges. | 
+| GSuite.User.creationTime | Date | The time the user's account was created. | 
+| GSuite.User.phones.value | String | A human-readable phone number. It may be in any telephone number format. | 
+| GSuite.User.phones.type | String | The type of phone number. | 
+| GSuite.User.phones.primary | Boolean | Indicates if this is the user's primary phone number. | 
+| GSuite.User.phones.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.addresses.type | String | The address type. | 
+| GSuite.User.addresses.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.addresses.sourceIsStructured | Boolean | Indicates if the user-supplied address was formatted. Formatted addresses are not currently supported. | 
+| GSuite.User.addresses.formatted | String | A full and unstructured postal address. This is not synced with the structured address fields. | 
+| GSuite.User.addresses.poBox | String | The post office box, if present. | 
+| GSuite.User.addresses.locality | String | The town or city of the address. | 
+| GSuite.User.addresses.countryCode | String | The country code. Uses the ISO 3166-1 standard. | 
+| GSuite.User.addresses.country | String | Country. | 
+| GSuite.User.addresses.postalCode | String | The ZIP or postal code. | 
+| GSuite.User.addresses.region | String | The abbreviated province or state. | 
+| GSuite.User.addresses.streetAddress | String | The street address. | 
+| GSuite.User.addresses.extendedAddress | String | For extended addresses, such as an address that includes a sub-region. | 
+| GSuite.User.addresses.primary | Boolean | If this is the user's primary address. | 
+| GSuite.User.emails.address | String | The user's secondary email. | 
+| GSuite.User.emails.type | String | The secondary email type. | 
+| GSuite.User.emails.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.emails.primary | Boolean | Indicates if this is the user's primary email. Only one entry can be marked as primary. | 
+| GSuite.User.ipWhitelisted | Boolean | If true, the user's IP address is added to allow the list. | 
+| GSuite.User.recoveryEmail | String | Recovery email of the user. | 
+| GSuite.User.isDelegatedAdmin | Boolean | Indicates if the user is a delegated administrator. | 
+| GSuite.User.recoveryPhone | String | Recovery phone of the user. | 
+| GSuite.User.orgUnitPath | String | The full path of the parent organization associated with the user. If the parent organization is the top-level, it is represented as a forward slash \(/\). | 
+| GSuite.User.isMailboxSetup | Boolean | Indicates if the user's Google mailbox is created. | 
+| GSuite.User.kind | Boolean | The type of the API resource. | 
+| GSuite.User.etag | Boolean | ETag of the resource. | 
+| GSuite.User.hashFunction | String | Stores the hash format of the password property. | 
+| GSuite.User.archived | Boolean | Indicates if the user is archived. | 
+| GSuite.User.fullName | String | The user's full name formed by concatenating the first and last name values. | 
+| GSuite.User.lastLoginTime | Date | The last time the user logged into the user's account. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example, 2010-04-05T17:30:04\+01:00. | 
+| GSuite.User.deletionTime | Date | The time the user's account was deleted. The value is in ISO 8601 date and time format. The time is the complete date plus hours, minutes, and seconds in the form YYYY-MM-DDThh:mm:ssTZD. For example 2010-04-05T17:30:04\+01:00. | 
+| GSuite.User.agreedToTerms | Boolean | This property is true if the user has completed an initial login and accepted the Terms of Service agreement. | 
+| GSuite.User.suspensionReason | String | The reason a user account is suspended either by the administrator or by Google at the time of suspension. The property is returned only if the suspended property is true. | 
+| GSuite.User.changePasswordAtNextLogin | Boolean | Indicates if the user is forced to change their password at next login. This setting doesn't apply when the user signs in via a third-party identity provider. | 
+| GSuite.User.ims.type | Boolean | Type of the user's Instant Messenger \(IM\) account. | 
+| GSuite.User.ims.customType | String | If the IM type is custom, this property holds the custom type string. | 
+| GSuite.User.ims.protocol | String | An IM protocol identifies the IM network. The value can be a custom network or the standard network. | 
+| GSuite.User.ims.customProtocol | String | If the protocol value is custom_protocol, this property holds the custom protocol's string. | 
+| GSuite.User.ims.im | String | The user's IM network ID. | 
+| GSuite.User.ims.primary | Boolean | If this is the user's primary IM. Only one entry in the IM list can have a value of true. | 
+| GSuite.User.externalIds.value | String | The value of the external ID. | 
+| GSuite.User.externalIds.type | String | The type of the external ID. | 
+| GSuite.User.externalIds.customType | String | If the external ID type is custom, this property holds the custom type. | 
+| GSuite.User.relations.value | String | The name of the person the user is related to. | 
+| GSuite.User.relations.type | String | The type of relationship. | 
+| GSuite.User.relations.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.organizations.name | String | The name of the organization. | 
+| GSuite.User.organizations.title | String | The user's title within the organization, for example 'member' or 'engineer'. | 
+| GSuite.User.organizations.primary | Boolean | Indicates if this is the user's primary organization. A user may only have one primary organization. | 
+| GSuite.User.organizations.type | String | The type of organization. | 
+| GSuite.User.organizations.customType | String | If the value of type is custom, this property contains the custom type. | 
+| GSuite.User.organizations.department | String | Specifies the department within the organization, such as 'sales' or 'engineering'. | 
+| GSuite.User.organizations.symbol | String | Text string symbol of the organization. For example, the text symbol for Google is GOOG. | 
+| GSuite.User.organizations.location | String | The physical location of the organization. This does not need to be a fully qualified address. | 
+| GSuite.User.organizations.description | String | The description of the organization. | 
+| GSuite.User.organizations.domain | String | The domain the organization belongs to. | 
+| GSuite.User.organizations.costCenter | String | The cost center of the user's organization. | 
+| GSuite.User.organizations.fullTimeEquivalent | String | The full-time equivalent millipercent within the organization \(100000 = 100%\). | 
+| GSuite.User.languages.languageCode | String | Language Code. Should be used for storing Google III LanguageCode string representation for language. Illegal values cause SchemaException. | 
+| GSuite.User.languages.customLanguage | String | Other language. A user can provide their own language name if there is no corresponding Google III language code. If this is set, LanguageCode can't be set. | 
+| GSuite.User.posixAccounts.username | String | The username of the account. | 
+| GSuite.User.posixAccounts.uid | Number | The POSIX compliant user ID. | 
+| GSuite.User.posixAccounts.gid | Number | The default group ID. | 
+| GSuite.User.posixAccounts.homeDirectory | String | The path to the home directory for this account. | 
+| GSuite.User.posixAccounts.shell | String | The path to the login shell for this account. | 
+| GSuite.User.posixAccounts.gecos | String | The GECOS \(user information\) for this account. | 
+| GSuite.User.posixAccounts.systemId | String | System identifier for which account Username or UID applies to. | 
+| GSuite.User.posixAccounts.primary | Boolean | If this is the user's primary account within the SystemId. | 
+| GSuite.User.posixAccounts.accountId | String | A POSIX account field identifier. | 
+| GSuite.User.posixAccounts.operatingSystemType | String | The operating system type for this account. | 
+| GSuite.User.sshPublicKeys.key | String | An SSH public key. | 
+| GSuite.User.sshPublicKeys.expirationTimeUsec | String | An expiration time in microseconds since epoch. | 
+| GSuite.User.sshPublicKeys.fingerprint | String | A SHA-256 fingerprint of the SSH public key. | 
+| GSuite.User.aliases | Unknown | List of the user's alias email addresses. | 
+| GSuite.User.nonEditableAliases | Unknown | List of the user's non-editable alias email addresses. These are typically outside the account's primary domain or sub-domain. | 
+| GSuite.User.websites.value | String | The URL of the website. | 
+| GSuite.User.websites.primary | Boolean | If this is the user's primary website or not. | 
+| GSuite.User.websites.type | String | The type or purpose of the website. For example, a website could be labeled as home or blog. Alternatively, an entry can have a custom type. | 
+| GSuite.User.websites.customType | String | The custom type. Only used if the type is custom. | 
+| GSuite.User.locations.type | String | The location type. | 
+| GSuite.User.locations.customType | String | If the location type is custom, this property contains the custom value. | 
+| GSuite.User.locations.area | String | Textual location. This is most useful for display purposes to concisely describe the location. For example, "Mountain View, CA", "Near Seattle". | 
+| GSuite.User.locations.buildingId | String | Building identifier. | 
+| GSuite.User.locations.floorName | String | Floor name/number. | 
+| GSuite.User.locations.floorSection | String | Floor section. More specific location within the floor. For example, if a floor is divided into sections "A", "B", and "C", this field would identify one of those values. | 
+| GSuite.User.locations.deskCode | String | Most specific textual code of individual desk location. | 
+| GSuite.User.keywords.type | String | Each entry can have a type which indicates the standard type of that entry. For example, keyword could be of type occupation or outlook. In addition to the standard type, an entry can have a custom type and can give it any name. Such types should have the CUSTOM value as type and also have a customType value. | 
+| GSuite.User.keywords.customType | String | Custom Type. | 
+| GSuite.User.keywords.value | String | Keyword. | 
+| GSuite.User.isEnrolledIn2Sv | Boolean | Is enrolled in 2-step verification. | 
+| GSuite.User.isEnforcedIn2Sv | Boolean | Is 2-step verification enforced. | 
+| GSuite.User.includeInGlobalAddressList | Boolean | Indicates if the user's profile is visible in the G Suite global address list when the contact sharing feature is enabled for the domain. | 
+| GSuite.User.thumbnailPhotoUrl | String | Photo URL of the user. | 
+| GSuite.User.thumbnailPhotoEtag | String | ETag of the user's photo. | 
+| GSuite.User.customSchemas | Unknown | Custom fields of the user. | 
+
+#### Command Example
+```gsuite-user-reset-password user_key=nikolic@demistodev.com```
+
+#### Context Example
+```json
+{
+    "GSuite": {
+        "User": {
+            "firstName": "Nemanja",
+            "fullName": "Nemanja Nikolic",
+            "lastName": "Nikolic",
+            "kind": "admin#directory#user",
+            "id": "104065793340555884068",
+            "etag": "BvGfkzKoKVD0NM7VdXdzkXDD-nHLkyMjheL_9Z5X0H0/oMJEIb2O8LE-zfPM0TV_9m3WkMA",
+            "primaryEmail":
+            "nikolic@demistodev.com",
+            "isAdmin": "False",
+            "isDelegatedAdmin": "False",
+            "lastLoginTime": "1970-01-01T00:00:00.000Z",
+            "creationTime": "2024-02-11T13:44:14.000Z",
+            "agreedToTerms": "False",
+            "suspended": "False",
+            "archived": "False",
+            "changePasswordAtNextLogin": "true",
+            "ipWhitelisted": "False",
+            "emails": [
+                {
+                "address": "nikolic@demistodev.com",
+                "primary": "True"
+                },
+                {
+                "address": "nikolic@demistodev.com.test-google-a.com"
+                }
+            ],
+            "nonEditableAliases": ["nikolic@demistodev.com.test-google-a.com"],
+            "customerId": "C02f0zfqw",
+            "orgUnitPath": "/",
+            "isMailboxSetup": "True",
+            "includeInGlobalAddressList": "True",
+            "thumbnailPhotoUrl": "//lh3.googleusercontent.com/a/ACg8ocJ85an5w7nMMFnC78mUqjuy2jhUHv2cSn7_-DeK0X93=mo",
+            "thumbnailPhotoEtag": "BvGfkzKoKVD0NM7VdXdzkXDD-nHLkyMjheL_9Z5X0H0/iIfdCQy7n1Lau3YZCJL6xXPk3WE"
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Updated User Details
+>|Id|Customer Id|Primary Email|Change Password At Next Login|
+>|---|---|---|---|
+>| 104065793340555884068 | C02f0zfqw | nikolic@demistodev.com | true |
+
+
+
+### gsuite-chromebrowserdevice-move-ou
+
+***
+To move Chrome browser devices assigned to an account from one organization unit to another, use the following POST request and include the access token obtained by following the "Authorization" section.
+
+#### Base Command
+
+`gsuite-chromebrowserdevice-move-ou`
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.chromebrowsers`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique identifier of the customer's Google account. | Optional | 
+| resource_ids | A comma-separated list of unique device IDs of Chrome browser devices to move. A maximum of 600 browsers may be moved per request. | Required | 
+| org_unit_path | Destination organization unit to move devices to. Full path of the organizational unit or its ID prefixed with 'id:'. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gsuite-chromebrowserdevice-move-ou customer_id="test" resource_ids="11111" org_unit_path="/testing"```
+
+#### Human Readable Output
+> Chrome browser devices have been moved to the new organization unit ORGANIZATIONAL_UNIT_PATH.
+
+### gsuite-chromebrowserdevice-list
+
+***
+Retrieve all Chrome browser devices for an account or a specific Chrome browser device.
+
+#### Base Command
+
+`gsuite-chromebrowserdevice-list`
+
+##### Required Permissions
+`https://www.googleapis.com/auth/admin.directory.device.chromebrowsers`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | The unique identifier of the customer's Google account. | Optional | 
+| device_id | The unique ID of the device. | Optional | 
+| order_by | Field by which to order. Possible values are: id, last_sync, machine_name, extension_count, policy_count, os_version, last_signed_in_user, annotated_user, annotated_location, annotated_asset_id, notes, browser_version_channel, org_unit, enrollment_date, save_browsing_clickthrough, platform_major_version, last_activity, browser_version_sortable, os_version_sortable. | Optional | 
+| org_unit_path | The full path of the organizational unit or its unique ID. | Optional | 
+| projection | Restrict information returned to a set of selected fields. "BASIC" - Includes only the basic metadata fields (i.e., the ones found in the columns of the admin console browser list as enumerated above). "FULL" - Includes all metadata fields (as enumerated above). Possible values are: BASIC, FULL. | Optional | 
+| query | Search string using the list page query language (Filter Query Language) | Optional | 
+| sort_order | Whether to return results in ascending or descending order. Must be used with the orderBy parameter. Possible values are: ASCENDING, DESCENDING. | Optional | 
+| page_size | The maximum number of policy schemas to return. Default and maximum are 100. | Optional | 
+| page_token | Page token. | Optional | 
+| limit | Limit of number of devices. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.ChromeBrowserDevices.nextPageToken | String | The token of the next page. |
+| GSuite.ChromeBrowserDevices.browserObjects.deviceId | String | The unique Device ID for the device. | 
+| GSuite.ChromeBrowserDevices.browserObjects.kind | String | The type of device. | 
+| GSuite.ChromeBrowserDevices.browserObjects.osPlatform | String | Device operating system platform. | 
+| GSuite.ChromeBrowserDevices.browserObjects.osVersion | String | Device operating system version. | 
+| GSuite.ChromeBrowserDevices.browserObjects.machineName | String | Device machine name. | 
+| GSuite.ChromeBrowserDevices.browserObjects.lastRegistrationTime | String | Device last registration time. | 
+| GSuite.ChromeBrowserDevices.browserObjects.lastActivityTime | String | Device last activity time. | 
+| GSuite.ChromeBrowserDevices.browserObjects.osPlatformVersion | String | Device operating system platform version. | 
+| GSuite.ChromeBrowserDevices.browserObjects.serialNumber | String | Device serial number. | 
+| GSuite.ChromeBrowserDevices.browserObjects.virtualDeviceId | String | Device virtual ID. | 
+| GSuite.ChromeBrowserDevices.browserObjects.orgUnitPath | String | Device organizational unit path. | 
+| GSuite.ChromeBrowserDevices.browserObjects.deviceIdentifiersHistory | String | Device identifier history. |
+
+#### Command Example
+```!gsuite-chromebrowserdevice-list customer_id=test```
+
+#### Context Example
+```json
+{
+    "GSuite": {
+        "ChromeBrowserDevices": [
+            {
+                "deviceId": "test", 
+                "kind": "admin#directory#browserdevice", 
+                "osPlatform": "Windows", 
+                "osVersion": "10.0.19045.4046", 
+                "machineName": "WIN10-test", 
+                "lastRegistrationTime": "2024-02-20T21:16:00.902Z", 
+                "lastActivityTime": "2024-02-20T21:16:00.902Z", 
+                "osPlatformVersion": "Windows 10", 
+                "serialNumber": "test 00 00 00", 
+                "virtualDeviceId": "11111-aca1116-1111-1111-6823faec8350", 
+                "orgUnitPath": "/testing", 
+                "deviceIdentifiersHistory": {}
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Chrome Browser Device List
+>|Device Id|Os Platform|Os Version|Machine Name|Serial Number|Org Unit Path|
+>|---|---|---|---|---|---|
+>| test | Windows | 10.0.19045.4046 | WIN10-test | test 00 00 00 | /testing |
+
+
+### gsuite-policy-modify
+
+***
+Modifies multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
+
+#### Base Command
+
+`gsuite-policy-modify`
+
+##### Required Permissions
+`https://www.googleapis.com/auth/chrome.management.policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request. | Optional | 
+| target_type | In case of Group use “POST…groups:batchModify”. In case of OrgUnit use “POST…orgunits:batchModify”. Possible values are: Group, OrgUnit. | Required | 
+| policy_raw_json | String as JSON representation of the ModifyGroupPolicyRequest<br/>{<br/>    "requests": [<br/>        {<br/>            "policyTargetKey": {<br/>                "targetResource": "orgunits/03ph8a2z1kjba6k",<br/>                "additionalTargetKeys": {<br/>                    "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"<br/>                }<br/>            },<br/>            "policyValue": {<br/>                "policySchema": "chrome.users.apps.InstallType",<br/>                "value": {<br/>                    "appInstallType": "BLOCKED"<br/>                }<br/>            },<br/>            "updateMask": "appInstallType"<br/>        }<br/>   ]<br/>}. | Optional | 
+| policy_field_json_entry_id | Entry ID of the file that contains JSON representation of the ModifyGroupPolicyRequest. | Optional | 
+| target_resource | The target resource on which this policy is applied. The following resources are supported:<br/><br/>Organizational Unit ("orgunits/{orgunit_id}")<br/>Group ("groups/{groupId}"). | Optional | 
+| additional_target_keys | Map containing the additional target key name and value pairs used to further identify the target of the policy.<br/><br/>A string containing a list of "key": "value" pairs. Example: ""name": "wrench", "mass": "1.3kg", "count": "3"". | Optional | 
+| policy_schema | The fully qualified name of the policy schema that is being inherited. | Optional | 
+| policy_value | The value of the policy that is compatible with the schema that it is associated with Struct format. | Optional | 
+| update_mask | Policy fields to update. Only fields in this mask will be updated; other fields in policyValue will be ignored (even if they have values). If a field is in this list it must have a value in 'policyValue'.<br/>This is a comma-separated list of fully qualified names of fields. Example: "user.displayName,photo".<br/>Field mask format. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gsuite-policy-modify customer_id=test target_type=Group target_resource=1111111111 policy_schema_filter=chrome.users.apps.InstallType additional_target_keys="\"app_id\":\"chrome:1111111aaaaaaaaa\"" policy_schema=chrome.users.apps.InstallType policy_value=BLOCKED update_mask=appInstallType```
+
+#### Human Readable Output
+> Policy has been modified for the customer CUSTOMER_ID.
+
+### gsuite-policy-schemas-list
+
+***
+Gets a list of policy schemas that match a specified filter value for a given customer.
+
+#### Base Command
+
+`gsuite-policy-schemas-list`
+
+##### Required Permissions
+`https://www.googleapis.com/auth/chrome.management.policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Optional | 
+| schema_name | The policy schema resource name to query. Required when asking for a specific policy. | Optional | 
+| filter | The schema filter is used to find a particular schema based on fields like its resource name, description and additionalTargetKeyNames. | Optional | 
+| page_size | The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000. | Optional | 
+| page_token | Page token. | Optional | 
+| limit | Limit of policies returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.PolicySchema.nextPageToken | String | The token of the next page. | 
+| GSuite.PolicySchema.policySchemaObjects | String | Policy name. |
+| GSuite.PolicySchema.policySchemaObjects.name | String | Policy name. |
+| GSuite.PolicySchema.policySchemaObjects.policyDescription | String | Policy description. | 
+| GSuite.PolicySchema.policySchemaObjects.definition | Array | Policy definition. | 
+| GSuite.PolicySchema.policySchemaObjects.definition.enumType | Array | Policy definition ENUM type. | 
+| GSuite.PolicySchema.policySchemaObjects.definition.messageType | Array | Policy definition message type.|
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions | Array | Policy file description. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.description | String | Policy file description. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.field | String | Policy file description field. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.fieldConstraints | Array | Policy file description field constraints. |
+| GSuite.PolicySchema.policySchemaObjects.fieldDescriptions.knownValueDescriptions | List | Policy file description known value description. |
+| GSuite.PolicySchema.policySchemaObjects.notices | List | Policy notice. |
+| GSuite.PolicySchema.policySchemaObjects.notices.acknowledgementRequired | Boolean | Policy notice is acknowledgement required. | 
+| GSuite.PolicySchema.policySchemaObjects.notices.field | String | Policy notice field. | 
+| GSuite.PolicySchema.policySchemaObjects.notices.noticeMessage | String | Policy notice message. | 
+| GSuite.PolicySchema.policySchemaObjects.notices.noticeValue | String | Policy notice value. | 
+| GSuite.PolicySchema.policySchemaObjects.supportUri | String | Policy support URI. | 
+| GSuite.PolicySchema.policySchemaObjects.schemaName | String | Policy schema name. | 
+| GSuite.PolicySchema.policySchemaObjects.validTargetResources | List | Policy valid target resources. | 
+| GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle | Array | Policy API lifecycle. | 
+| GSuite.PolicySchema.policySchemaObjects.policyApiLifecycle.policyApiLifecycleStage | String | Policy API lifecycle stage. | 
+| GSuite.PolicySchema.policySchemaObjects.categoryTitle | String | Policy category title. | 
+| GSuite.PolicySchema.policySchemaObjects.supportedPlatforms | String | Policy supported platforms. | 
+
+#### Command Example
+```!gsuite-policy-schemas-list customer_id=test limit=2```
+
+#### Context Example
+```json
+{
+    "GSuite": {
+        "PolicySchema": [
+        {
+            "name": "customers/test/policySchemas/chrome.devices.test.appsconfig.AutoLaunchApp",
+            "policyDescription": "Allows setting of the auto-launch app.",
+            "definition": {
+                "messageType": [
+                    {
+                        "name": "AutoLaunchApp",
+                        "field": [
+                            {
+                                "name": "appId",
+                                "number": "1",
+                                "label": "LABEL_OPTIONAL",
+                                "type": "TYPE_STRING"
+                            }
+                        ]
+                    }
+                ],
+                "enumType": [
+                    {
+                        "name": "Rotation",
+                        "value": [
+                            {
+                                "name": "ROTATE_0",
+                                "number": "0"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "fieldDescriptions": [
+                {
+                    "field": "appId",
+                    "description": "Id of the app prefixed with one of either \"chrome:\" or \"web:\", depending on the app type. For Chrome apps, the app id can be found on the Chrome Web Store, example: \"chrome:aapbdbdomjkkjkaonfhkkikfgjllcleb\". For Web apps, the app id is simply the URL, example: \"web:https://translate.google.com\".",
+                    "name": "Id of the app prefixed with one of either \"chrome:\" or \"web:\", depending on the app type. For Chrome apps, the app id can be found on the Chrome Web Store, example: \"chrome:aapbdbdomjkkjkaonfhkkikfgjllcleb\". For Web apps, the app id is simply the URL, example: \"web:https://translate.google.com\".",
+                    "fieldConstraints": {}
+                }
+            ],
+            "notices": [
+                {
+                    "field": "enableSystemLogUpload",
+                    "noticeValue": "true",
+                    "noticeMessage": "In order to enable System Log Upload functionality, you must first inform the users of managed kiosk devices that their activity may be monitored and data may be inadvertently captured and shared. Without notification to your users, you are in violation of the terms of your agreement with Google.",
+                    "acknowledgementRequired": "True"
+                }
+            ],
+            "schemaName": "chrome.devices.test.appsconfig.AutoLaunchApp",
+            "validTargetResources": [
+                "ORG_UNIT"
+            ],
+            "policyApiLifecycle": {
+                "policyApiLifecycleStage": "API_CURRENT"
+            },
+            "categoryTitle": "Kiosk apps config"
+        },
+        {
+            "name": "customers/test/policySchemas/chrome.users.appsconfig.AndroidAppsEnabled",
+            "policyDescription": "Android apps on Chrome devices.",
+            "definition": {
+                "messageType": [
+                    {
+                        "name": "AndroidAppsEnabled",
+                        "field": [
+                            {
+                                "name": "arcEnabled",
+                                "number": "1",
+                                "label": "LABEL_OPTIONAL",
+                                "type": "TYPE_BOOL"
+                            }
+                        ]
+                    }
+                ]
+            },
+            "fieldDescriptions": [
+                {
+                    "field": "arcEnabled",
+                    "description": "Whether to allow or disallow to install Android apps for managed ChromeOS users.",
+                    "knownValueDescriptions": [
+                        {
+                            "value": "true",
+                            "description": "Allow users to install Android apps on ChromeOS devices."
+                        }
+                    ],
+                    "defaultValue": "True",
+                    "name": "Whether to allow or disallow to install Android apps for managed ChromeOS users.",
+                    "fieldConstraints": {}
+                }
+            ],
+            "notices": [
+                {
+                    "field": "arcEnabled",
+                    "noticeValue": "true",
+                    "noticeMessage": "Before you set this to true you must accept the Managed Google Play Agreement by going to https://play.google.com/work/termsofservice with a super administrator account."
+                },
+            ],
+            "supportUri": "https://support.google.com/chrome/a/answer/9039146?hl=en#androidapps",
+            "schemaName": "chrome.users.appsconfig.AndroidAppsEnabled",
+            "validTargetResources": [
+                "ORG_UNIT"
+            ],
+            "policyApiLifecycle": {
+                "policyApiLifecycleStage": "API_CURRENT"
+            },
+            "categoryTitle": "Additional app settings",
+            "supportedPlatforms": [
+                "CHROME_OS"
+            ]
+        }
+    ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Policy Schemas List
+>|Name|Policy Description|Schema Name|
+>|---|---|---|
+>| customers/test/policySchemas/chrome.devices.test.appsconfig.AutoLaunchApp | Allows setting of the auto-launch app. | chrome.devices.test.appsconfig.AutoLaunchApp |
+>| customers/test/policySchemas/chrome.users.appsconfig.AndroidAppsEnabled | Android apps on Chrome devices. | chrome.devices.test.appsconfig.AutoLaunchApp |
+
+
+### gsuite-policy-resolve
+
+***
+Gets the resolved policy values for a list of policies that match a search query.
+
+#### Base Command
+
+`gsuite-policy-resolve`
+
+##### Required Permissions
+`https://www.googleapis.com/auth/chrome.management.policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Optional | 
+| policy_schema_filter | Specify a schema name to view a particular schema, for example: chrome.users.ShowLogoutButton. See https://developers.google.com/chrome/policy/guides/policy-schemas for details on schema namespaces. | Required | 
+| target_type | Type of target. Possible values are: Group, OrgUnit. | Required | 
+| target_resource | The target resource on which this policy is applied. The following resources are supported: Organizational Unit ("orgunits/{orgunit_id}") or Group ("groups/{groupId}"). | Required | 
+| additional_target_keys | Map (key: string, value: string) containing the additional target key name and value pairs used to further identify the target of the policy. | Optional | 
+| page_size | The maximum number of policy schemas to return. Defaults to 100 and has a maximum of 1000. | Optional | 
+| page_token | Page token. | Optional | 
+| limit | Limit of policies returned. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GSuite.Policy.nextPageToken | String | The token of the next page. | 
+| GSuite.Policy.policyObject.targetKey.targetResource | String | Policy target key target resource. | 
+| GSuite.Policy.policyObject.targetKey.additionalTargetKeys | String | Policy target key additional target keys. | 
+| GSuite.Policy.policyObject.value.policySchema | String | Policy schema value. | 
+| GSuite.Policy.policyObject.value.value | String | Policy value. | 
+| GSuite.Policy.policyObject.sourceKey.targetResource | String | Policy source key target resource. | 
+| GSuite.Policy.policyObject.addedSourceKey.targetResource | String | Policy added source key target resource. | 
+
+
+#### Command Example
+```!gsuite-policy-resolve customer_id=test policy_schema_filter=chrome.users.apps.InstallType target_resource=1111111 target_type=OrgUnit```
+
+#### Context Example
+```json
+{
+    "GSuite": {
+        "Policy": [
+            {
+                "targetKey": 
+                {
+                    "targetResource": "orgunits/1111111", 
+                    "additionalTargetKeys": 
+                    {
+                        "app_id": "chrome:aaaaaaaaaaaa"
+                    }
+                }, 
+                "value": 
+                {
+                    "policySchema": "chrome.users.apps.InstallType", 
+                    "value": 
+                    {
+                        "appInstallType": "BLOCKED"
+                    }
+                }, 
+                "sourceKey": 
+                {
+                    "targetResource": "orgunits/1111111"
+                }, 
+                "addedSourceKey": 
+                {
+                    "targetResource": "orgunits/1111111"
+                }
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Resolved Policies
+>|Target Resource|Additional Target Keys|Policy Schema|
+>|---|---|---|
+>| orgunits/1111111 | app_id: chrome:aaaaaaaaaaaa | chrome.users.apps.InstallType |
+
+### gsuite-policy-groups-delete
+
+***
+Delete multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
+
+#### Base Command
+
+`gsuite-policy-groups-delete`
+
+##### Required Permissions
+`https://www.googleapis.com/auth/chrome.management.policy`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| customer_id | ID of the Google Workspace account or literal "my_customer" for the customer associated with the request. | Optional | 
+| policy_raw_json | String as JSON representation of the DeleteGroupPolicyRequest<br/>{<br/>  "policyTargetKey": {<br/>    object (PolicyTargetKey)<br/>  },<br/>  "policySchema": string<br/>}. | Optional | 
+| policy_field_json_entry_id | Entry Id of the file that contains JSON representation of the DeleteGroupPolicyRequest<br/>{<br/>  "policyTargetKey": {<br/>    object (PolicyTargetKey)<br/>  },<br/>  "policySchema": string<br/>}. | Required | 
+| target_resource | The target resource on which this policy is applied. The following resources are supported:<br/><br/>Organizational Unit ("orgunits/{orgunit_id}")<br/>Group ("groups/{groupId}"). | Optional | 
+| additional_target_keys | Map containing the additional target key name and value pairs used to further identify the target of the policy.<br/><br/>An object containing a list of "key": value pairs. Example: { "name": "wrench", "mass": "1.3kg", "count": "3" }. | Optional | 
+| policy_schema | The fully qualified name of the policy schema that is being inherited. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command Example
+```!gsuite-policy-groups-delete customer_id=test target_type=Group target_resource=1111 policy_schema=chrome.users.apps.InstallType additional_target_keys=""\"app_id\":\"chrome:111111\""```
+
+#### Human Readable Output
+> Policy has been deleted for the customer CUSTOMER_ID.

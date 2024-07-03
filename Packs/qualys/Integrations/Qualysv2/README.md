@@ -1,4 +1,4 @@
-Qualys Vulnerability Management lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
+Qualys VMDR lets you create, run, fetch and manage reports, launch and manage vulnerability and compliance scans, and manage the host assets you want to scan for vulnerabilities and compliance.
 This integration was integrated and tested with version 2.0 of QualysVulnerabilityManagement
 
 ## Changes compared to V1
@@ -53,21 +53,26 @@ This integration was integrated and tested with version 2.0 of QualysVulnerabili
 11. New playbook - qualys-report-launch-compliance-policy-and-fetch.yml
 
 
-## Configure Qualys v2 on Cortex XSOAR
+## Configure Qualys VMDR on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Qualys v2.
+2. Search for Qualys VMDR.
 3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Username | True |
-    | Password | True |
+    | **Parameter**                      | **Required** |
+    |------------------------------------| --- |
+    | Server URL                         | True |
+    | Username                           | True |
+    | Password                           | True |
     | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+    | Use system proxy settings          | False |
+    | First fetch time                   | True |
+    | Fetch event Limit                  | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
+## Notes:
+- ***Fetch assets and vulnerabilities*** command fetches assets and vulnerabilities from the last 90 days only.
 
 ## Asset Tag Commands
 There are several API endpoints on the Qualys API that can be used in the QualysV2 integration configuration as the `SERVER URL` parameter.
@@ -22063,3 +22068,45 @@ There is no context output for this command.
 #### Human Readable Output
 
 >Successfully purged 1 record
+
+
+### qualys-get-events
+***
+Manual command to fetch events from Qualys and display them.
+
+
+#### Base Command
+
+`qualys-get-events`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Default is false. | Required | 
+| limit | Date to return results from.                                                                    | Optional | 
+| since_datetime | Date to return results from.                                                                    | Optional | 
+| offset | Offset which events to return.                                                                  | Optional | 
+
+
+#### Context Output
+
+There is no context output for this command.
+
+### qualys-get-assets
+***
+Manual command to fetch assets from Qualys and display them.
+
+
+#### Base Command
+
+`qualys-get-assets`
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| should_push_assets | If true, the command will create assets, otherwise it will only display the amount of available assets. Default is false. | Required |
+
+
+#### Context Output
+
+There is no context output for this command.

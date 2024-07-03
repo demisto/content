@@ -4,7 +4,7 @@ import json
 
 
 def get_fetch_data():
-    with open('test_data/action_results.json', 'r') as f:
+    with open('test_data/action_results.json') as f:
         return json.loads(f.read())
 
 
@@ -325,7 +325,7 @@ data_test_parse_action_parameters = [
 ]
 
 
-@ pytest.mark.parametrize('parameters, accepted_result', data_test_parse_action_parameters)
+@pytest.mark.parametrize('parameters, accepted_result', data_test_parse_action_parameters)
 def test_parse_action_parameters(parameters, accepted_result):
     """Tests parse_action_parameters function
     Given

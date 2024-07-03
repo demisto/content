@@ -1,0 +1,19 @@
+{
+    "count": 1,
+    "next": null,
+    "previous": null,
+    "num_pages": 1,
+    "attachments": [
+        {
+            "id": 109185,
+            "name": "upload_file.txt",
+            "attachment_type": {
+                "id": 1,
+                "name": "evidence",
+                "display_name": "Evidence",
+                "created_at": "2022-10-24T17:25:38Z",
+                "supports_file": true
+            }
+        }
+    ]
+}

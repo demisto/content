@@ -78,6 +78,14 @@ def set_instance(instance: dict, accounts: str) -> dict:
     return internal_request('put', '/settings/integration', instance)
 
 
+def remove_excluded_accounts(account_ids: list, accounts_to_exclude: str | None) -> list[str]:
+    return (
+        list(set(account_ids) - set(argToList(accounts_to_exclude)))
+        if accounts_to_exclude
+        else account_ids
+    )
+
+
 def update_ec2_instance(account_ids: list[str], ec2_instance_name: str) -> str:
     '''Update an AWS - EC2 instance with AWS Organization accounts.
 
@@ -100,6 +108,8 @@ def update_ec2_instance(account_ids: list[str], ec2_instance_name: str) -> str:
         return f'Successfully updated ***{ec2_instance_name}*** with accounts:'
     except StopIteration:
         raise DemistoException(f'AWS - EC2 instance {ec2_instance_name!r} was not found or is not an AWS - EC2 instance.')
+    except (TypeError, KeyError) as e:
+        raise DemistoException(f'Please make sure a "Core REST API" instance is enabled.\nError: {e}')
     except Exception as e:
         raise DemistoException(f'Unexpected error while configuring AWS - EC2 instance with accounts {accounts_as_str!r}:\n{e}')
 
@@ -108,6 +118,7 @@ def main():
     try:
         args: dict = demisto.args()
         account_ids, readable_output = get_account_ids(args.get('org_instance_name'))
+        account_ids = remove_excluded_accounts(account_ids, args.get('exclude_accounts'))
         result = update_ec2_instance(account_ids, args['ec2_instance_name'])
         return_results(CommandResults(readable_output=f'## {result}  \n---  \n{readable_output}'))
     except Exception as e:

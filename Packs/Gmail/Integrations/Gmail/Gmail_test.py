@@ -1,5 +1,5 @@
+import uuid
 from freezegun import freeze_time
-
 import demistomock as demisto
 import pytest
 from test_data import input_data
@@ -703,6 +703,42 @@ def test_fetch_incidents(mocker, return_value_get_last_run, expected_result):
     assert incidents == expected_result
 
 
+def test_last_run_after_fetch_incidents(mocker):
+    """
+    Tests the result of last_run obj after fetch_incidents.
+        Given:
+             - lastRun object.
+        When:
+            - executing fetch_incidents function.
+        Then:
+            - verify the gmt_time in setLastRun is the newest message + 1 sec.
+    """
+    import Gmail
+    from Gmail import fetch_incidents
+
+    messages_gen = (message for message in [input_data.third_message, input_data.fourth_message])
+
+    def mocked_get_message():
+        return next(messages_gen)
+
+    mocked_messages = {'messages': [
+        {'id': '1845fa4c3a5618cd', 'threadId': '1845fa4c3a5618cd'},
+        {'id': '1845fa4c2d5dfbb1', 'threadId': '1845fa4c2d5dfbb1'}
+    ]
+    }
+
+    mocked_get_service = mocker.patch.object(Gmail, 'get_service')
+    mocked_get_service().users().messages().list().execute.return_value = mocked_messages
+    mocked_get_service().users().messages().get().execute.side_effect = mocked_get_message
+    mocker.patch.object(demisto, 'setLastRun')
+    mocker.patch.object(demisto, 'params', return_value={'queryUserKey': '111', 'query': '', 'fetch_limit': '1'})
+    mocker.patch.object(demisto, 'getLastRun', return_value={'gmt_time': '2017-10-24T14:13:20Z'})
+
+    fetch_incidents()
+
+    assert demisto.setLastRun.call_args[0][0]['gmt_time'] == '2022-11-10T03:45:45Z'
+
+
 EMAIL_NO_INTERNALDATE = input_data.email_without_date
 EXPECTED_OCCURRED_NO_INTERNALDATE = datetime.datetime(2020, 12, 21, 20, 11, 57, tzinfo=datetime.timezone.utc)
 EMAIL_INTERNALDATE_EARLY = input_data.email_with_early_internalDate
@@ -883,3 +919,90 @@ def test_filter_by_fields(
     from Gmail import filter_by_fields
 
     assert filter_by_fields(full_mail, filter_fields) == expected_result
+
+
+def test_handle_html_image_with_new_line(mocker):
+    """
+    Given:
+        - html body of a message with an attached base64 image.
+    When:
+        - run handle_html function.
+    Then:
+        - Ensure attachments list contains correct data, name and cid fields.
+    """
+    import Gmail
+    mocker.patch.object(demisto, "uniqueFile", return_value="1234567")
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "", "name": ""})
+    mocker.patch.object(uuid, "uuid4", return_value="111111111")
+    htmlBody = """
+<html>
+    <body>
+        <img\n\t\t\t\t\t  src="data:image/png;base64,Aa=="/>
+    </body>
+</html>"""
+
+    expected_attachments = [{'maintype': 'image',
+                             'subtype': 'png',
+                             'data': b'\x01',
+                             'name': 'image0.png',
+                             'cid': 'image0.png@11111111_11111111',
+                             'ID': 'image0.png@11111111_11111111'}]
+    expected_cleanBody = """\n<html>\n    <body>\n        <img\n\t\t\t\t\t  src="cid:image0.png@11111111_11111111"/>\n    </body>\n</html>"""  # noqa: E501
+
+    cleanBody, attachments = Gmail.handle_html(htmlBody)
+
+    assert expected_cleanBody == cleanBody
+    assert expected_attachments == attachments
+
+
+part_test1 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '<5678>'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test2 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': '5678'},
+                {'name': 'Content-Disposition', 'value': 'inline'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+part_test3 = [{
+    'filename': 'image-1.png',
+    'headers': [{
+                'name': 'Content-ID', 'value': 'None'},
+                {'name': 'Content-Disposition', 'value': 'attachment'}],
+    'body': {
+        'attachmentId': '1234'},
+    'mimeType': ''
+}]
+
+
+@pytest.mark.parametrize(
+    "part, expected_result",
+    [
+        (part_test1, ('', '', [{'ID': '1234', 'Name': '5678-imageName:image-1.png'}])),
+        (part_test2, ('', '', [{'ID': '1234', 'Name': '5678-imageName:image-1.png'}])),
+        (part_test3, ('', '', [{'ID': '1234', 'Name': '1234-imageName:image-1.png'}])),
+    ],
+)
+def test_parse_mail_parts(part, expected_result):
+    """
+        Given:
+            - Part of message from gmail API response.
+        When:
+            - run parse_mail_parts function.
+        Then:
+            - Ensure attachment's name was correctly constructed and parsing was correctly done.
+    """
+    from Gmail import parse_mail_parts
+    result = parse_mail_parts(part)
+    assert result == expected_result

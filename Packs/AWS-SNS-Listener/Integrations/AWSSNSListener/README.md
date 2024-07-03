@@ -9,8 +9,8 @@ This integration was integrated and tested with version January 2024 of AWS-SNS-
 
     | **Parameter** | **Description** | **Required** |
     | --- | --- | --- |
-    | Long running instance |  | False |
-    | Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. \(For Cortex XSOAR 8 and Cortex XSIAM\) If you do not enter a Listen Port, an unused port for AWS SNS Listener will automatically be generated when the instance is saved. However, if using an engine, you must enter a Listen Port. | False |
+    | Long running instance |  Integration is long running by default| |
+    | Listen Port | Runs the service on this port from within Cortex XSOAR. Requires a unique port for each long-running integration instance. Do not use the same port for multiple instances. Note: If you click the test button more than once, a failure may occur mistakenly indicating that the port is already in use. | False |
     | Username | Uses basic authentication for accessing the list. If empty, no authentication is enforced. \(For Cortex XSOAR 8 and Cortex XSIAM\) Optional for engines, otherwise mandatory. | False |
     | Password |  | False |
     | Endpoint | Set the endpoint of your listener. example: /snsv2 | False |
@@ -20,6 +20,7 @@ This integration was integrated and tested with version January 2024 of AWS-SNS-
     | Use system proxy settings |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 

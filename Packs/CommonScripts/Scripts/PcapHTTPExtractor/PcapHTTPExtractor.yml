@@ -1,8 +1,8 @@
 args:
-- description: get file entry from file name
+- description: get file entry from file name.
   name: pcapFileName
 - default: true
-  description: File entry from the WarRoom
+  description: File entry from the WarRoom.
   name: entryID
 - defaultValue: '50'
   description: Limit the output of the capture file output's flows (starts from 0).
@@ -11,7 +11,7 @@ args:
   description: Index of where to output flows (starts from 0).
   name: start
 - defaultValue: '512'
-  description: "Limit the HttpFileData field (in bytes)\t\t"
+  description: "Limit the HttpFileData field (in bytes)."
   name: limitData
 - description: The allowed content types to display, separated with comma, uses startswith to find a match (ie text,image will display text\html, and image\png).
   name: allowedContentTypes
@@ -35,28 +35,28 @@ outputs:
   description: Http version used in the response.
   type: String
 - contextPath: PcapHttpFlows.HttpResponseCode
-  description: Http response code from the server
+  description: Http response code from the server.
   type: String
 - contextPath: PcapHttpFlows.HttpDate
-  description: Http date returned from the sever
+  description: Http date returned from the sever.
   type: String
 - contextPath: PcapHttpFlows.HttpRequestMethod
   description: Http request method used.
   type: String
 - contextPath: PcapHttpFlows.HttpRequestUri
-  description: Http request URI (path)
+  description: Http request URI (path).
   type: String
 - contextPath: PcapHttpFlows.HttpFileData
-  description: Http content of the response
+  description: Http content of the response.
   type: String
 - contextPath: PcapHttpFlows.HttpServer
-  description: The server signature in the response
+  description: The server signature in the response.
   type: String
 - contextPath: PcapHttpFlows.HttpUserAgent
-  description: Http user agent sent in the request
+  description: Http user agent sent in the request.
   type: String
 - contextPath: PcapHttpFlows.HttpAccept
-  description: Http request accept type
+  description: Http request accept type.
   type: String
 - contextPath: PcapHttpFlows.MetaSniffTimeStamp
   description: Time the packet was sniffed (unixtime).
@@ -67,7 +67,7 @@ tags:
 - http
 timeout: '0'
 type: python
-dockerimage: demisto/pcap-http-extractor:1.0.0.85826
+dockerimage: demisto/pcap-http-extractor:1.0.0.93351
 tests:
 - PcapHTTPExtractor-Test
 subtype: python3

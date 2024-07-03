@@ -99,14 +99,14 @@ def error_msg():
 def main():
     try:
         args = demisto.args()
-        # __Error handeling when there is an empty secret or question id__
+        # __Error handling when there is an empty secret or question id__
 
         question_id = args.get("question_ID")
         secret = args.get("secret", "").lower()
         if not secret or not question_id:
             raise DemistoException('Please specify Secret and Question ID to proceed with the challenge')
 
-        # __Validate Quesion number 03__
+        # __Validate Question number 03__
         match question_id:
             case "03":
 

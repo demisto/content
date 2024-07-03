@@ -57,4 +57,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1078 - Valid Accounts](../doc_files/MITRE_ATT&CK_CoA_-_T1078_-_Valid_Accounts.png)
+![MITRE ATT&CK CoA - T1078 - Valid Accounts](../doc_files/MITRE_ATTandCK_CoA_-_T1078_-_Valid_Accounts.png)

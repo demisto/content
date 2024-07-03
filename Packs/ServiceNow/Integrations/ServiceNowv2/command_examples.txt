@@ -24,3 +24,4 @@
 !servicenow-get-tasks-for-co id="1234"
 !servicenow-create-co-from-template template=1234
 !servicenow-generic-api-call method=GET path="/table/table_name"
+!servicenow-delete-file file_sys_id=1234

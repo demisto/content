@@ -5,14 +5,12 @@ from AWSApiModule import *  # noqa: E402
 from collections.abc import Callable
 from concurrent.futures import ThreadPoolExecutor
 
-
 """CONSTANTS"""
 
 PARAMS = demisto.params()
 MAX_WORKERS = arg_to_number(PARAMS.get('max_workers'))
 ROLE_NAME: str = PARAMS.get('access_role_name', '')
 IS_ARN_PROVIDED = bool(demisto.getArg('roleArn'))
-
 
 """HELPER FUNCTIONS"""
 
@@ -84,7 +82,6 @@ def parse_date(dt):
 
 
 def build_client(args: dict):
-
     aws_default_region = PARAMS.get('defaultRegion')
     aws_role_arn = PARAMS.get('roleArn')
     aws_role_session_name = PARAMS.get('roleSessionName')
@@ -133,6 +130,7 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
     roleSessionDuration for accessing each account before calling the function
     and adds the account details to the result.
     """
+
     def account_runner(args: dict) -> list[CommandResults]:
 
         role_name = ROLE_NAME.removeprefix('role/')
@@ -160,9 +158,11 @@ def run_on_all_accounts(func: Callable[[dict], CommandResults]):
                     entry_type=EntryType.ERROR,
                     content_format=EntryFormat.MARKDOWN,
                 )
+
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             results = executor.map(run_command, accounts)
         return list(results)
+
     return account_runner if (ROLE_NAME and not IS_ARN_PROVIDED) else func
 
 
@@ -181,6 +181,7 @@ def test_module() -> str:
         def test_account(args: dict) -> CommandResults:
             build_client(args)
             return CommandResults()
+
         fails = [
             result.readable_output
             for result in run_on_all_accounts(test_account)({})  # type: ignore
@@ -3012,6 +3013,61 @@ def get_ipam_discovered_public_addresses_command(args: dict) -> CommandResults:
     return command_results
 
 
+@run_on_all_accounts
+def create_vpc_endpoint_command(args: dict) -> CommandResults:
+    """
+    aws-ec2-aws-ec2-create-vpc-endpoint: Creates a VPC endpoint.
+
+    Args:
+        args (dict): all command arguments, usually passed from ``demisto.args()``.
+
+    Returns:
+        CommandResults: A ``CommandResults`` object that is then passed to ``return_results``.
+    """
+    output_headers = ['VpcEndpointId', 'State', 'ServiceName', 'VpcId', 'VpcEndpointType']
+    client = build_client(args)
+
+    kwargs = {}
+    kwargs.update({'VpcId': args.get('vpcId'),
+                   'ServiceName': args.get('serviceName')})
+    if (endpoint_type := args.get('endpointType')) is not None:
+        kwargs.update({'VpcEndpointType': endpoint_type})
+    if (subnet_ids := args.get('subnetIds')) is not None:
+        kwargs.update({'SubnetIds': argToList(subnet_ids)})
+    if (security_group_ids := args.get('securityGroupIds')) is not None:
+        kwargs.update({'SecurityGroupIds': argToList(security_group_ids)})
+    if (dry_run := args.get('dryRun')) is not None:
+        kwargs.update({'DryRun': argToBoolean(dry_run)})
+    if (vpc_endpoint_type := args.get('vpcEndpointType')) is not None:
+        kwargs.update({'VpcEndpointType': vpc_endpoint_type})
+    if (policy_document := args.get('policyDocument')) is not None:
+        kwargs.update({'PolicyDocument': policy_document})
+    if (route_table_ids := args.get('routeTableIds')) is not None:
+        kwargs.update({'RouteTableIds': argToList(route_table_ids)})
+    if (client_token := args.get('clientToken')) is not None:
+        kwargs.update({'ClientToken': client_token})
+    if (private_dns_enabled := args.get('privateDnsEnabled')) is not None:
+        kwargs.update({'PrivateDnsEnabled': argToBoolean(private_dns_enabled)})
+    if (tag_specifications := args.get('tagSpecifications')) is not None:
+        kwargs.update({'TagSpecifications': {'Tags': json.loads(tag_specifications)}})
+
+    response = client.create_vpc_endpoint(**kwargs).get('VpcEndpoint')
+    response["CreationTimestamp"] = datetime_to_string(response.get('CreationTimestamp'))  # Parse timestamp to string
+
+    outputs = {key: response[key] for key in output_headers if key in response}
+
+    human_readable = tableToMarkdown('VPC Endpoint', outputs, headerTransform=pascalToSpace, removeNull=True)
+
+    command_results = CommandResults(
+        outputs_prefix="AWS.EC2.Vpcs.VpcEndpoint",
+        outputs_key_field="VpcEndpointId",
+        outputs=remove_empty_elements(response),
+        raw_response=response,
+        readable_output=human_readable,
+    )
+    return command_results
+
+
 def main():
     try:
 
@@ -3019,6 +3075,10 @@ def main():
         args = demisto.args()
 
         demisto.debug(f'Command being called is {command}')
+
+        if (ROLE_NAME and not IS_ARN_PROVIDED):
+            support_multithreading()
+            demisto.debug('using multiple accounts')
 
         match command:
             case 'test-module':
@@ -3245,6 +3305,9 @@ def main():
 
             case 'aws-ec2-get-ipam-discovered-public-addresses':
                 return_results(get_ipam_discovered_public_addresses_command(args))
+
+            case 'aws-ec2-create-vpc-endpoint':
+                return_results(create_vpc_endpoint_command(args))
 
     except Exception as e:
         LOG(e)

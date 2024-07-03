@@ -1,12 +1,13 @@
 import json
-import io
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import entryTypes
-from typing import List, Dict, Any
+from typing import Any
+import pytest
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -24,9 +25,10 @@ BLOCKS_URL = "https://app.slack.com/block-kit-builder/T0DAYMVCM#%7B%22blocks%22:
              "%22text%22:%7B%22type%22:%22plain_text%22,%22emoji%22:true,%22text%22:%22Approve%22%7D," \
              "%22style%22:%22primary%22,%22value%22:%22click_me_123%22%7D,%7B%22type%22:%22button%22," \
              "%22text%22:%7B%22type%22:%22plain_text%22,%22emoji%22:true,%22text%22:%22Deny%22%7D," \
-             "%22style%22:%22danger%22,%22value%22:%22click_me_123%22%7D%5D%7D,%7B%22type%22:%22input%22," \
-             "%22element%22:%7B%22type%22:%22plain_text_input%22,%22action_id%22:%22plain_text_input-action%22%7D," \
-             "%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Label%22,%22emoji%22:true%7D%7D%5D%7D "
+             "%22style%22:%22danger%22,%22value%22:%22click_me_123%22,%22url%22:%22https://google.com/#/Details/incident.id%22%" \
+             "7D%5D%7D,%7B%22type%22:%22input%22,%22element%22:%7B%22type%22:%22plain_text_input%22,%22action_id%22:%" \
+             "22plain_text_input-action%22%7D,%22label%22:%7B%22type%22:%22plain_text%22,%22text%22:%22Label%22," \
+             "%22emoji%22:true%7D%7D%5D%7D "
 
 
 def test_block_carrier_with_url(mocker):
@@ -36,9 +38,10 @@ def test_block_carrier_with_url(mocker):
     """
     from SlackBlockBuilder import BlockCarrier
 
-    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
+        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     block_carrier = BlockCarrier(url=BLOCKS_URL)
@@ -57,11 +60,12 @@ def test_block_carrier_with_list_name(mocker):
     blocks_dict = util_load_json('test_data/blocks.json')
     mock_list = util_load_json('test_data/list.json')
 
-    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'getList':
             return [{"Contents": json.dumps(mock_list)}]
         elif command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
+        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
 
@@ -89,14 +93,17 @@ def test_block_builder_command_list(mocker):
 
     mock_list = util_load_json('test_data/list.json')
 
-    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'getList':
             return [{"Contents": json.dumps(mock_list)}]
         elif command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
         elif command == 'send-notification':
             return [{'Type': entryTypes['note'], 'HumanReadable': 'Message sent to Slack successfully.\nThread ID is: '
-                                                                  '1660645689.649679'}]
+                                                                  '1660645689.649679',
+                     'Contents': {'ts': 'ts', 'channel': 'channel',
+                                  'message': {'text': 'text', 'bot_id': 'bot_id', 'username': 'username', 'app_id': 'app_id'}}}]
+        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     COMMAND_ARGS["list_name"] = "SomeList"
@@ -116,14 +123,17 @@ def test_block_builder_command_url(mocker):
 
     mock_list = util_load_json('test_data/list.json')
 
-    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'getList':
             return [{"Contents": json.dumps(mock_list)}]
         elif command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
         elif command == 'send-notification':
             return [{'Type': entryTypes['note'], 'HumanReadable': 'Message sent to Slack successfully.\nThread ID is: '
-                                                                  '1660645689.649679'}]
+                                                                  '1660645689.649679',
+                     'Contents': {'ts': 'ts', 'channel': 'channel',
+                                  'message': {'text': 'text', 'bot_id': 'bot_id', 'username': 'username', 'app_id': 'app_id'}}}]
+        return None
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     COMMAND_ARGS["blocks_url"] = BLOCKS_URL
@@ -131,6 +141,34 @@ def test_block_builder_command_url(mocker):
 
     response = slack_block_builder_command(COMMAND_ARGS)
     assert response.readable_output == 'Message sent to Slack successfully.\nThread ID is: 1660645689.649679'
+
+
+def test_block_builder_command_url_return_fail(mocker):
+    """
+    Given: A URL which contains a valid URI encoded Slack Block JSON.
+    When: Executing the block builder command using the url argument.
+    Then: Assert that the readable output from the command indicates that the message was successfully sent.
+    """
+    from SlackBlockBuilder import slack_block_builder_command
+
+    mock_list = util_load_json('test_data/list.json')
+
+    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if command == 'getList':
+            return [{"Contents": json.dumps(mock_list)}]
+        elif command == 'addEntitlement':
+            return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
+        elif command == 'send-notification':
+            return [{'Type': 4, 'HumanReadable': None,
+                     'Contents': "Could not find any destination to send to."}]
+        return []
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    COMMAND_ARGS["blocks_url"] = BLOCKS_URL
+    mocker.patch.object(demisto, 'args', return_value=COMMAND_ARGS)
+
+    with pytest.raises(DemistoException, match="Could not find any destination to send to."):
+        slack_block_builder_command(COMMAND_ARGS)
 
 
 def test_image_id_bug_XSUP_31982(mocker):
@@ -152,9 +190,10 @@ def test_image_id_bug_XSUP_31982(mocker):
                     "%22accessory%22:%7B%22type%22:%22image%22,%22image_url%22:%22https://i.imgur.com/xCvzudW.png%22,"
                     "%22alt_text%22:%22user%22%7D%7D%5D%7D")
 
-    def executeCommand(command: str, args: Dict[str, Any]) -> List[Dict[str, Any]]:
+    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
         if command == 'addEntitlement':
             return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
+        return None
 
     def contains_action_id_image0(data):
         for item in data:

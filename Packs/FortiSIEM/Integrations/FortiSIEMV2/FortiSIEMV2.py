@@ -1386,7 +1386,7 @@ def format_outputs_time_attributes_to_iso(outputs: List[dict]) -> List[dict]:
     for entity in outputs:
         for key, value in entity.items():
             if any(time_key in key for time_key in time_keys) and value:
-                entity[key] = FormatIso8601(datetime.fromtimestamp(int(value) / 1000))
+                entity[key] = FormatIso8601(datetime.fromtimestamp(int(float(value)) / 1000))
 
     return outputs
 

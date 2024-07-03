@@ -59,6 +59,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
 - display: Raw Query
   name: raw_query
   type: 12
@@ -381,13 +382,14 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: demisto/elasticsearch:1.0.0.85878
+  dockerimage: demisto/elasticsearch:1.0.0.87483
   isfetch: true
   runonce: false
   script: '-'
   subtype: python3
   type: python
   ismappable: true
+autoUpdateDockerImage: false
 fromversion: 5.0.0
 defaultmapperin: Elasticsearch - Incoming Mapper
 tests:
