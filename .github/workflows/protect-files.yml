@@ -7,7 +7,7 @@ on:
       - synchronize
 
 jobs:
-  check_changes:
+  protect-infra-files:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
