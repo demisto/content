@@ -4,8 +4,8 @@
 ### Generate an API Key and API Key ID
 1. In your Cortex XDR platform, go to **Settings** > **Configurations** > **Integrations** >**API key** page..
 2. Click the **+New Key** button in the top right corner.
-3. Generate a key of type **Advanced**.
-4. Copy and paste the key.
+3. Generate a key of *Security Level* type **Advanced**, and a *Role* according your Permissions.
+4. Copy and paste the key from Generated key.
 5. From the ID column, copy the Key ID.
 
 ### URL
