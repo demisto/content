@@ -691,10 +691,10 @@ recipient_address | Email address to send the exported message to. | Optional |
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-EWS.ExportQuarantineMessage.BodyEncoding | String | Encoding used for the body of the message. |
-EWS.ExportQuarantineMessage.Eml | String | The email message in Base64 encoding. |
-EWS.ExportQuarantineMessage.Identity | String | Unique identifier for the retrieved message. |
-EWS.ExportQuarantineMessage.Organization | Boolean | Identifier for the organization associated with the message. |
+| EWS.ExportQuarantineMessage.BodyEncoding | String | Encoding used for the body of the message. |
+| EWS.ExportQuarantineMessage.Eml | String | The email message in Base64 encoding. |
+| EWS.ExportQuarantineMessage.Identity | String | Unique identifier for the retrieved message. |
+| EWS.ExportQuarantineMessage.Organization | Boolean | Identifier for the organization associated with the message. |
 
 
 #### Command Example
