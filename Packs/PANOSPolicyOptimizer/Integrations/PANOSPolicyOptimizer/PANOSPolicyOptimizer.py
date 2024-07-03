@@ -562,7 +562,7 @@ def define_position(version: str, args: dict, is_panorama: bool) -> str:
     Returns:
         The position of the rule in the query (pre, post or main)
     """
-    if LooseVersion(version) >= LooseVersion('10.1.0') and is_panorama:
+    if LooseVersion(version) >= LooseVersion('10.1.10') and is_panorama:
         return args.get('position', 'pre')
     else:
         return 'main'
@@ -580,7 +580,7 @@ def is_cms_selected(version: str, is_panorama: bool) -> bool:
     Returns:
         bool: True or False
     """
-    return is_panorama if LooseVersion(version) >= LooseVersion('10.1.0') else False
+    return is_panorama if LooseVersion(version) >= LooseVersion('10.1.10') else False
 
 
 def main():  # pragma: no cover
