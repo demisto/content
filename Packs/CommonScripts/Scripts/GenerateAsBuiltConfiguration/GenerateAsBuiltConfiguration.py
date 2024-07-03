@@ -17,7 +17,7 @@ configuration = None
 autodata = False
 
 
-def create_context(data, args):
+def create_context(data: dict, args: list) -> dict:
     """
     This function accepts the raw data and creates new dict based on the values
     in args.
@@ -40,7 +40,7 @@ def create_context(data, args):
     return filtered_data
 
 
-def merge_data(instance, configuration):
+def merge_data(instance: list, configuration: list) -> None:
     """
     This function accepts the integration instance and configuration data and populated the required fields into instance data
 
@@ -61,7 +61,7 @@ def merge_data(instance, configuration):
                 break
 
 
-def separate_classfier_mapper(data):
+def separate_classfier_mapper(data: list) -> tuple:
     """
     This function accepts the raw data and filters out classifer and mappers from it.
 
@@ -89,7 +89,7 @@ def separate_classfier_mapper(data):
     return classifier_list, incoming_mapper_list, outgoing_mapper_list
 
 
-def post_api_request(url, body):
+def post_api_request(url: str, body: dict) -> dict:
     """Post API request.
 
     Args:
@@ -113,7 +113,7 @@ def post_api_request(url, body):
         return_error(f'API Request failed, failed to {raw_res}')
 
 
-def get_api_request(url):
+def get_api_request(url: str) -> list:
     """Get API request.
 
     Args:
@@ -276,7 +276,7 @@ def get_all_playbooks():
     return r
 
 
-def get_layouts():
+def get_layouts() -> list:
     """Return the data for the custom Layouts.
 
     Returns:
@@ -288,7 +288,7 @@ def get_layouts():
     return filtered_data
 
 
-def get_incident_types():
+def get_incident_types() -> list:
     """Return the data for the incident types.
 
     Returns:
@@ -300,7 +300,7 @@ def get_incident_types():
     return filtered_data
 
 
-def get_incident_fields():
+def get_incident_fields() -> list:
     """Return the data for the custom incident fields.
 
     Returns:
@@ -313,7 +313,7 @@ def get_incident_fields():
     return filtered_data
 
 
-def get_classifier_mapper():
+def get_classifier_mapper() -> tuple:
     """Return the data for the custom classifers, incoming mapper and outgoing mapper.
 
     Returns:
@@ -330,7 +330,7 @@ def get_classifier_mapper():
         return_error("No classifier and mapper data found.")
 
 
-def get_playbooks():
+def get_playbooks() -> list:
     """Return the data for the custom Playbooks
 
     Returns:
@@ -342,7 +342,7 @@ def get_playbooks():
     return filtered_data
 
 
-def get_automations():
+def get_automations() -> list:
     """Return the data for the custom automation
 
     Returns:
@@ -354,7 +354,7 @@ def get_automations():
     return filtered_data
 
 
-def get_integrations():
+def get_integrations() -> tuple:
     """
     This function provides the filtered integration data and the filtered instance data for that particular integration.
 
@@ -398,7 +398,7 @@ def get_integrations():
     return instance_data, command_data
 
 
-def get_playbook_data(playbook_name):
+def get_playbook_data(playbook_name: str) -> dict:
     """
     This function accepts the playbook name and and provides the data for that specific playbook.
 
@@ -413,7 +413,7 @@ def get_playbook_data(playbook_name):
             return dict(data_item)
 
 
-def get_playbook_dependencies(playbook):
+def get_playbook_dependencies(playbook: dict) -> dict:
     """
     This function accepts the playbook and provides the subplaybook, integrations and automations for that particular playbook.
 
@@ -454,7 +454,7 @@ def get_playbook_dependencies(playbook):
     return dependencies
 
 
-def get_playbook_automation(playbook, filter_auto):
+def get_playbook_automation(playbook: dict, filter_auto: set) -> dict:
     """
     This function accepts the playbook data and fetches the automation linked to that particular playbook.
 
@@ -479,7 +479,7 @@ def get_playbook_automation(playbook, filter_auto):
     return pb_automation
 
 
-def get_playbook_subplaybook(playbook, filter_play):
+def get_playbook_subplaybook(playbook: dict, filter_play: set) -> None:
     """
     This function accepts the playbook data and fetches the subplaybooks for that particular playbook.
 
@@ -636,7 +636,7 @@ def get_instance_layout_fields(integration_instance, instance_incident_types, la
     return layout_data, fields_data
 
 
-def get_playbook_integration(playbook, filter_int):
+def get_playbook_integration(playbook: dict, filter_int: list) -> None:
     """
     This function accepts the playbook data and fetches the integration for that particular playbook.
 
@@ -733,7 +733,7 @@ def get_custom_automations():
     return r
 
 
-def sub_data(playbook):
+def sub_data(playbook: dict) -> tuple:
     """
     This function accepts the playbook data and fetches the subplaybooks, automations and integrations for that playbook.
 
@@ -773,7 +773,7 @@ def sub_data(playbook):
     return test_d, task_name, int_data
 
 
-def create_config_file(pb_name, ignore_playbook):
+def create_config_file(pb_name: str, ignore_playbook: list) -> dict:
     """
     This function accepts the playbook names and the name of the playbooks to be ignored to avoid the data repetition, as they
     are already covered in the subplaybooks, and then create complete configuration data for those playbooks and subplaybooks
@@ -815,7 +815,7 @@ def create_config_file(pb_name, ignore_playbook):
         return dict(playbook)
 
 
-def create_as_built(playbook_names, ignore_playbook):
+def create_as_built(playbook_names: list, ignore_playbook: list) -> list:
     """
     This function accepts the playbook names and the names of the playbook to be ignored and then append all the data for those
     palybook that are not to be ignored, in a list.
