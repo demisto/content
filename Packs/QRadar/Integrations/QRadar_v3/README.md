@@ -3740,7 +3740,12 @@ Retrieves a list of event collectors.
 
 
 # Troubleshooting
-<details> <summary><h3 style={{display: 'inline'}}>Instance Configuration</h3></summary> TEST </details>
+<details> <summary><h3 style={{display: 'inline'}}>Instance Configuration</h3></summary> 
+
+To enable the execution of commands using QRadar on CLOUD, it is essential to add the XSOAR IPs to the QRadar whitelist. You can locate the XSOAR IP by referring to this [link](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Enable-Access-to-Cortex-XSOAR) under the **"Used for communication between Cortex XSOAR and customer resources"** section, depending on your tenant region.
+
+</details>
+
 <details> <summary><h3 style={{display: 'inline'}}> Fetch command</h3> </summary>
 
 When *Fetch with events* is configured, the integration will fetch the offense events from `QRadar`.
@@ -3752,7 +3757,11 @@ EVENTS_SEARCH_TRIES=<amount of tries for events search> (default 3),EVENTS_SEARC
 It is recommended to enable [mirroring](#mirroring-events), as it should fetch previously missed events when the offense is updated.
 Alternatively, the [retrieve events command](#qradar-search-retrieve-events) can be used to retrieve the `events` immediately.
 If the command takes too long to finish executing, try setting the `interval_in_seconds` to a lower value (down to a minimum of 10 seconds).
-
 </details>
 
-<details> <summary><h3 style={{display: 'inline'}}> General </h3> </summary> Test</details>
+<details> <summary><h3 style={{display: 'inline'}}> General </h3> </summary> 
+
+If you encounter a 403 Forbidden error while attempting to execute API calls, start by verifying your QRadar permissions and ensuring that you have the appropriate access based on [those permissions](#Permissions).
+If the issue persists, access your QRadar instance with the same user you are using on XSOAR and navigate to the Interactive API for Developers page (instructions [here](https://www.ibm.com/docs/en/qradar-on-cloud?topic=api-accessing-interactive-documentation-page)). Try running the request from there, using the relevant endpoint with the intended arguments. If you still receive a 403 error, please contact your QRadar support.
+
+</details>
