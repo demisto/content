@@ -1133,7 +1133,11 @@ The default port is 8088.
 
 ## Troubleshooting
 
+### HTTP Errors
+
 In case you encounter HTTP errors (e.g., IncompleteRead), we recommend using Python requests handler.
+
+### Connectivity Issues
 
 If you encounter connectivity issues while using **Splunk Cloud** within Cortex XSOAR8 or Cortex XSIAM you may receive the following error:
 
@@ -1146,4 +1150,10 @@ If you encounter connectivity issues while using **Splunk Cloud** within Cortex 
 To resolve this issue, add the IP addresses of Cortex XSOAR8 or Cortex XSIAM to the Splunk Cloud whitelist.
 You can find the relevant IP addresses at:
 [Cortex XSOAR Administrator Guide](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Administrator-Guide/Enable-Access-to-Cortex-XSOAR) 
-under **Used for communication between Cortex XSOAR and customer resources**. Choose the IP address corresponding to your Cortex XSOAR region.
+Under **Used for communication between Cortex XSOAR and customer resources**. Choose the IP address corresponding to your Cortex XSOAR region.
+
+### Fetch Issues
+
+If you encounter fetch issues and you have enriching enabled, the issue may be the result of pressing the `Reset the "last run" timestamp` button.  
+Note that the way to reset the mechanism is to run the `splunk-reset-enriching-fetch-mechanism` command.  
+See [here](#resetting-the-enriching-fetch-mechanism).
