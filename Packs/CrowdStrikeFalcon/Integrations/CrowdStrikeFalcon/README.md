@@ -6498,6 +6498,6 @@ Retrieve vulnerability details for a specific ID and host. Supported with the Cr
 | --- | --- | --- | --- |  --- | --- |  --- | --- |  --- | --- |
 | CVE-20212-2222 |  host | 1 | Server | ip |  |  | site | 5.5 |  |
 
-### Troubleshooting
+## Troubleshooting
 When encountering connectivity or authorization errors within Cortex XSOAR 8, 
 it necessary to include the IP corresponding to the relevant region into the CrowdStrike Falcon allow list.
