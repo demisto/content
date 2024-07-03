@@ -4,7 +4,7 @@ variables:
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: $INFRA_BRANCH
-    project: "${CI_PROJECT_NAMESPACE}/infra" # TEST AGAIN
+    project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
   image: ${DOCKER_IO}/devdemisto/gitlab-content-ci:1.0.0.64455
