@@ -20,7 +20,7 @@ For more details about the authentication used in this integration, see [Microso
   - Go to **Subscriptions**, and then **Access Control (IAM)**. 
   - Click "Add role assignment". 
   - Create a new role or select a role that includes permissions for the queries you plan to run.
-  - Select the Azure Compute application. By default, Azure AD applications aren't displayed in the available options. To find your application, search for the name and select it.
+  - Select the Azure Resource Graph application. By default, Azure Applications aren't displayed in the available options. To find your application, search for the name and select it.
 
 
 ### Client Credentials Flow
@@ -46,9 +46,6 @@ Follow these steps for [client-credentials configuration](https://xsoar.pan.dev/
     | Token / Tenant ID |  | False |
     | ID / Client ID | Received from the authorization process or from the self-deployed configuration process. | False |
     | Key / Client Secret |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Use a self-deployed Azure application | Check when authenticating using the Client Credentials flow. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
