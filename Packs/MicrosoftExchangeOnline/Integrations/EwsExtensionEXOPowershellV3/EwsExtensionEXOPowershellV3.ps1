@@ -525,7 +525,11 @@ class ExchangeOnlinePowershellV3Client
         finally {
             $this.DisconnectSession()
         }
-        return $results
+        if ($null -eq $results) {
+            return @{}
+        } else {
+            return $results
+        }
         <#
             .DESCRIPTION
             Use the Export-QuarantineMessage cmdlet to export messages from quarantine in your organization.
@@ -565,7 +569,11 @@ class ExchangeOnlinePowershellV3Client
         finally {
             $this.DisconnectSession()
         }
-        return $results
+        if ($null -eq $results) {
+            return @{}
+        } else {
+            return $results
+        }
     }
 
 
