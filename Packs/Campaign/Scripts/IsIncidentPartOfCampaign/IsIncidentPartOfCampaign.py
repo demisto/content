@@ -22,7 +22,10 @@ def get_campaign_ids_by_incidents(incidents_ids_set: set) -> list:
         },
     }
     incidents = get_incidents_by_query(search_args)
-    campaign_ids = [incident.get('partofcampaign') for incident in incidents]
+    campaign_ids = [
+        i.get("partofcampaign") for i in incidents
+        if i.get("partofcampaign") != "None"
+    ]
     demisto.debug(f"Found campaign incident ids: {campaign_ids}")
 
     return campaign_ids
