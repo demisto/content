@@ -1030,12 +1030,9 @@ def demistoVersion():
 
     """
     return {
-        "buildNumber": "1044727",
-        "engine": True,
-        "platform": "x2",
-        "version": "8.6.0"
+        'version': '5.5.0',
+        'buildNumber': '12345'
     }
-    
 
 
 def integrationInstance():

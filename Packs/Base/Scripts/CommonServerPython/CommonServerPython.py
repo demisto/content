@@ -8275,7 +8275,8 @@ def get_demisto_version_as_str():
     """
     try:
         ver_obj = get_demisto_version()
-        return f'{ver_obj.get("version", "Unknown")}-{ver_obj.get("buildNumber", "Unknown")}-{ver_obj.get("platform", "Unknown")}-{ver_obj.get("engine", "False")}'
+        return '{}-{}'.format(ver_obj.get('version', 'Unknown'),
+                              ver_obj.get("buildNumber", 'Unknown'))
     except AttributeError:
         return "Unknown"
 
