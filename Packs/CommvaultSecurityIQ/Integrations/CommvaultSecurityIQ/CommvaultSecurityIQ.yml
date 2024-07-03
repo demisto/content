@@ -85,8 +85,8 @@ configuration:
   section: Connect
   displaypassword: Private Key
   required: false
-description: Commvault Security IQ provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
-display: Commvault Security IQ
+description: Commvault Cloud provides pre-built integrations, automation workflows, and playbooks to streamline operations, enhance threat intelligence integration, and gain actionable insights through advanced reporting and analytics.
+display: Commvault Cloud
 name: CommvaultSecurityIQ
 script:
   commands:
