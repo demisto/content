@@ -148,11 +148,29 @@ class Client(BaseClient):
 
         raise DemistoException(err_msg)
 
-    def search_events(self, limit: int, start: int = None, start_time: str = None) -> List[Dict]:
-        return self.http_request(urlsuffix=URL_SUFFIX['EVENTS'])
+    def search_events(self, limit: int, start_index: int = None, start_date: str = None) -> Dict:
+        return super()._http_request(
+            method='GET',
+            urlsuffix=URL_SUFFIX['EVENTS'],
+            params={'limit': limit, 'start': start_index, 'startDate': start_date}
+        )
 
 
 ''' HELPER FUNCTIONS '''
+
+
+def add_time_to_events(events: List[Dict] | None):
+    """
+    Adds the _time key to the events.
+    Args:
+        events: List[Dict] - list of events to add the _time key to.
+    Returns:
+        list: The events with the _time key.
+    """
+    if events:
+        for event in events:
+            create_time = arg_to_datetime(arg=event.get('creationDate'))
+            event['_time'] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def get_error_message(errors):
@@ -1345,12 +1363,12 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
     last_index = last_run.get('last_index')
 
     if last_index:
-        start = last_index + 1
-        events = client.search_events(start=start, limit=limit)
+        start_index = last_index + 1
+        events = client.search_events(start_index=start_index, limit=limit).get('results')
 
     else:
-        start_time = str(round((time.time() - 60) * 1000))
-        events = client.search_events(start_time=start_time, limit=limit)
+        start_date = str(round((time.time() - 60) * 1000))
+        events = client.search_events(start_date=start_date, limit=limit).get('results')
 
     last_index += len(events)
     demisto.debug(f'Fetched event with id: {last_index}.')
@@ -1361,8 +1379,23 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
     return next_run, events
 
 
-def confluence_cloud_get_events():
-    pass
+def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
+    limit = args.get('limit', 50)
+    start_index = args.get('start')
+    start_date = args.get('start_date')
+    if start_index and start_date:
+        raise ValueError('Please provide either start_index or start_date, not both.')
+    if not start_index and not start_date:
+        events = client.search_events(limit=limit, start_index=0).get('results')
+        return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
+
+    if start_index:
+        events = client.search_events(limit=limit, start_index=start_index).get('results')
+        return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
+
+    if start_date:
+        events = client.search_events(limit=limit, start_date=start_date).get('results')
+        return events, CommandResults(readable_output=tableToMarkdown('Events', events, removeNull=True))
 
 
 ''' MAIN FUNCTION '''
@@ -1417,7 +1450,7 @@ def main() -> None:
         args = demisto.args()
         strip_args(args)
         remove_nulls_from_dictionary(args)
-
+        max_events_per_fetch = params.get('max_events_per_fetch', 10000)
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
@@ -1426,11 +1459,14 @@ def main() -> None:
 
         elif command == 'fetch-events':
             last_run = demisto.getLastRun()
-            next_run, events = fetch_events()
+            next_run, events = fetch_events(client, last_run, max_events_per_fetch)
+            add_time_to_events(events)
+            send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.setLastRun(next_run)
 
         elif command == 'confluence-cloud-get-events':
             should_push_events = argToBoolean(args.get('should_push_events'))
-            events, results = confluence_cloud_get_events()
+            events, results = get_events(client, args)
             return_results(results)
             if should_push_events:
                 send_events_to_xsiam(

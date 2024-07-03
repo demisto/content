@@ -1,8 +1,10 @@
 import io
 
 import pytest
+from pytest_mock import MockerFixture
+
 from CommonServerPython import *
-from AtlassianConfluenceCloud import Client, URL_SUFFIX, MESSAGES
+from AtlassianConfluenceCloud import Client, URL_SUFFIX, MESSAGES, fetch_events, get_events
 from test_data import input_data
 
 BASE_URL = "https://dummy.atlassian.com"
@@ -975,3 +977,37 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
     assert response.outputs_key_field == "id"
     assert response.outputs == expected_context_output
     assert response.readable_output == expected_readable_output
+
+
+def test_fetch_events_with_last_index(mocker: MockerFixture):
+    last_run = {'last_index': 10}
+    limit = 5
+
+    expected_start_index = last_run['last_index'] + 1
+
+    client.search_events.return_value = {'results': expected_events}
+
+    next_run, events = fetch_events(client, last_run, limit)
+
+    assert next_run == {'last_index': expected_start_index + len(expected_events)}
+    assert events == expected_events
+
+    client.search_events.assert_called_once_with(start_index=expected_start_index, limit=limit)
+
+
+def test_fetch_events_without_last_index():
+    client = MagicMock()
+    last_run = {}
+    limit = 5
+
+    expected_start_date = str(round((time.time() - 60) * 1000))
+    expected_events = [{'id': 1}, {'id': 2}]
+
+    client.search_events.return_value = {'results': expected_events}
+
+    next_run, events = fetch_events(client, last_run, limit)
+
+    assert next_run == {'last_index': len(expected_events)}
+    assert events == expected_events
+
+    client.search_events.assert_called_once_with(start_date=expected_start_date, limit=limit)
