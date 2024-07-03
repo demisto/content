@@ -1,7 +1,7 @@
 category: Cloud Services
-sectionorder:  
-- Connect  
-- Collect  
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: Azure Resource Graph
   version: -1
@@ -10,8 +10,8 @@ configuration:
   name: host
   defaultvalue: https://management.azure.com
   type: 0
-  required: true  
-  section: Connect  
+  required: true
+  section: Connect
 - displaypassword: ID / Client ID
   name: cred_auth_id
   type: 9
@@ -72,13 +72,13 @@ script:
     arguments:
     - description: 'The maximum number of operations to return. NOTE: Do not use with "page" and "page_size".'
       name: limit
-      default: 50
+      defaultValue: 50
     - description: The maximum number of operations to return for page.
       name: page_size
-      default: 50
+      defaultValue: 50
     - description: The page number to return.
       name: page
-      default: 1
+      defaultValue: 1
     outputs:
     - contextPath: AzureResourceGraph.Operations
       description: A list of available Azure Resource Graph operations permissions and descriptions.
@@ -88,19 +88,19 @@ script:
     arguments:
     - description: 'The maximum number of operations to return (Default is 50). NOTE: Do not use with "page" and "page_size".'
       name: limit
-      default: 50
+      defaultValue: 50
     - description: The maximum number of operations to return for page.
       name: page_size
-      default: 50
+      defaultValue: 50
     - description: The page number to return.
       name: page
-      default: 1
+      defaultValue: 1
     - name: management_groups
-      description: "Azure management groups against which to execute the query. Example: 'mg1, mg2'"
-      isArray: True 
+      description: "Azure management groups against which to execute the query. Example: 'mg1, mg2'."
+      isArray: true
     - name: subscriptions
-      description: "Azure subscriptions against which to execute the query. Example: 'sub1, sub2'"
-      isArray: True 
+      description: "Azure subscriptions against which to execute the query. Example: 'sub1, sub2'."
+      isArray: true
     - name: query
       required: true
       description: |-
@@ -112,7 +112,7 @@ script:
       description: Data returned from query.
       type: String
     description: 'Executes a given Azure Resource Graph Query. (Ex: query="Resources | project name, type | limit 5 | order by name asc").'
-  dockerimage: demisto/crypto:1.0.0.84658
+  dockerimage: demisto/crypto:1.0.0.100307
   runonce: false
   script: ''
   subtype: python3
