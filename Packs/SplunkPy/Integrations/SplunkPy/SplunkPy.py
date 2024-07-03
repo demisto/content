@@ -1156,7 +1156,7 @@ def drilldown_enrichment(service: client.Service, notable_data, num_enrichment_e
                 )
                 jobs_and_queries.append((None, None, None))
     else:
-        demisto.debug(f"drill-down was not configured for notable {notable_data[EVENT_ID]}")
+        demisto.debug(f"drill-down was not properly configured for notable {notable_data[EVENT_ID]}")
         jobs_and_queries.append((None, None, None))
 
     return jobs_and_queries

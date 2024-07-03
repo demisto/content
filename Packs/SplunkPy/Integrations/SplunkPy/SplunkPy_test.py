@@ -1560,7 +1560,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
 
 
 @pytest.mark.parametrize('notable_data, debug_log_message', [
-    ({'event_id': 'test_id'}, 'drill-down was not configured for notable test_id'),
+    ({'event_id': 'test_id'}, 'drill-down was not properly configured for notable test_id'),
 
     ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
       'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
@@ -1579,7 +1579,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
           "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
                   "$user|s$\",\"earliest\":,\"latest\":}"],
       '_raw': "src=\'test_src\', user='test_user'"},
-     'Failed getting the drilldown timeframe for notable test_id'),
+     'drill-down was not properly configured for notable test_id'),
 
     ({'event_id': 'test_id',
       'drilldown_searches':
@@ -1587,7 +1587,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
               "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
               "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
                   "$user|s$\",\"earliest\":,\"latest\":}"], '_raw': ""},
-     "Couldn't build search query for notable test_id with the following drilldown search"),
+     "drill-down was not properly configured for notable test_id"),
 ], ids=[
     "A notable data without drilldown enrichment data",
     "A notable data with a single drilldown enrichment without search timeframe data",
@@ -2676,12 +2676,16 @@ def test_single_drilldown_searches(mocker):
 @pytest.mark.parametrize(
     'drilldown_data, expected',
     [({'drilldown_search': 'test'},['test']),
-    ({'drilldown_searches': ['{"search_1":"test_1"}','{"search_2":"test_2"}']},[{'search_1':'test_1'},{'search_2':'test_2'}]),
-    ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1':'test_1'}])]
+     ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1':'test_1'}]),
+     ({'drilldown_searches': ['{"search_1":"test_1"}','{"search_2":"test_2"}']},[{'search_1':'test_1'},{'search_2':'test_2'}])
+    ]
     )
 def test_get_drilldown_searches(drilldown_data, expected):
     """
-    Given:  - drildown search in various formats.
+    Given:  -
+        1. A notable data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
+        4. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        5. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
     When:   - call to get_drilldown_searches.
     Then:   - validate the result are as expectedץ
     """
