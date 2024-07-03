@@ -5,7 +5,7 @@ ignore=BA101
 ignore=RM104,RM106
 
 [file:McAfee_Advanced_Threat_Defense.yml]
-ignore=BA108,BA109,IN124
+ignore=BA108,BA109
 
 [file:McAfee_Advanced_Threat_Defense_image.png]
 ignore=IM111
