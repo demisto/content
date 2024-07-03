@@ -562,7 +562,7 @@ def policy_optimizer_get_dag_command(client: Client, args: dict) -> CommandResul
 
 def define_position(version: str, args: dict, is_panorama: bool) -> str:
     """
-    This function defines the rule's position in the query. For Panorama instances from versions 10.2.0 and above
+    This function defines the rule's position in the query. For Panorama instances from versions 10.1.10 and above
     it uses the `position` argument;
     for Firewall instances, it always uses 'main' position.
     Currently, it's fixed for versions 10.1.10 and above, as those are the accessible versions.
