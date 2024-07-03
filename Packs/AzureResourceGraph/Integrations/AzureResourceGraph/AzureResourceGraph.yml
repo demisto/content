@@ -72,13 +72,10 @@ script:
     arguments:
     - description: 'The maximum number of operations to return. NOTE: Do not use with "page" and "page_size".'
       name: limit
-      defaultValue: 50
     - description: The maximum number of operations to return for page.
       name: page_size
-      defaultValue: 50
     - description: The page number to return.
       name: page
-      defaultValue: 1
     outputs:
     - contextPath: AzureResourceGraph.Operations
       description: A list of available Azure Resource Graph operations permissions and descriptions.
@@ -88,13 +85,10 @@ script:
     arguments:
     - description: 'The maximum number of operations to return (Default is 50). NOTE: Do not use with "page" and "page_size".'
       name: limit
-      defaultValue: 50
     - description: The maximum number of operations to return for page.
       name: page_size
-      defaultValue: 50
     - description: The page number to return.
       name: page
-      defaultValue: 1
     - name: management_groups
       description: "Azure management groups against which to execute the query. Example: 'mg1, mg2'."
       isArray: true
