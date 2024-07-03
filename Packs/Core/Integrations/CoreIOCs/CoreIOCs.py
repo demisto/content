@@ -54,7 +54,6 @@ class Client(CoreClient):
         self._base_url: str = urljoin(url, '/public_api/v1/indicators/')
         self._verify_cert: bool = not params.get('insecure', False)
         self._params = params
-        self.using_base_client_http_request = False
         handle_proxy()
 
     def http_request(self, url_suffix: str, requests_kwargs=None) -> dict:

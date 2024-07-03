@@ -8390,6 +8390,21 @@ def is_xsiam():
     """
     return demisto.demistoVersion().get("platform") == "x2"
 
+def is_xpanse():
+    """Determines whether or not the platform is Xpanse.
+
+    :return: True iff the platform is Xpanse.
+    :rtype: ``bool``
+    """
+    return is_xsiam() and demisto.demistoVersion().get("platform") == "x2"
+
+def is_xsiam_using_engine():
+    """Determines whether or not the xsiam platform is using engine.
+    :return: True iff the platform is using engine.
+    :rtype: ``bool``
+    """
+    return is_xsiam and demisto.demistoVersion().get("engine")
+
 
 class DemistoHandler(logging.Handler):
     """
