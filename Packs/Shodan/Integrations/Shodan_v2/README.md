@@ -14,10 +14,14 @@ A search engine used for searching Internet-connected devices.
     | Use system proxy settings | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### search
+
 ***
 Searches Shodan using facets to get summary information on properties.
 
@@ -25,6 +29,7 @@ Searches Shodan using facets to get summary information on properties.
 #### Base Command
 
 `search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -56,9 +61,11 @@ Searches Shodan using facets to get summary information on properties.
 
 
 #### Command Example
+
 ```!search query="country:HK org:RLL-HK -port:80 -port:443 -port:21 -port:25 has_ssl:false" using-brand=Shodan_v2```
 
 #### Context Example
+
 ```json
 {
     "Shodan": [
@@ -144,6 +151,7 @@ Searches Shodan using facets to get summary information on properties.
 
 
 ### ip
+
 ***
 Returns all services that have been found on the IP address of the searched host.
 
@@ -151,6 +159,7 @@ Returns all services that have been found on the IP address of the searched host
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -181,15 +190,17 @@ Returns all services that have been found on the IP address of the searched host
 | Shodan.IP.Port | Number | The port number on which the service is operating. |
 | Shodan.IP.Address | String | The IP address of the host as a string. |
 | Shodan.IP.Vulnerabilities | Unknown | A list of Vulnerabilities. |
-| DBotScore.Indicator | String | The indicator value. |
-| DBotScore.Score | Number | The indicator score according to the vendor. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor name. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 #### Command Example
+
 ```!ip ip="8.8.8.8" using-brand="Shodan_v2"```
 
 #### Context Example
+
 ```json
 {
     "IP": {
@@ -246,6 +257,7 @@ Returns all services that have been found on the IP address of the searched host
 
 
 ### shodan-search-count
+
 ***
 Returns the total number of results that match only the specified query or facet settings. This command does not return host results. This command does not consume query credits.
 
@@ -253,6 +265,7 @@ Returns the total number of results that match only the specified query or facet
 #### Base Command
 
 `shodan-search-count`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -268,9 +281,11 @@ Returns the total number of results that match only the specified query or facet
 
 
 #### Command Example
+
 ```!shodan-search-count query="country:HK product:Apache"```
 
 #### Context Example
+
 ```json
 {
     "Shodan": {
@@ -286,6 +301,7 @@ Returns the total number of results that match only the specified query or facet
 >498645 results for query "country:HK product:Apache"
 
 ### shodan-scan-ip
+
 ***
 Requests Shodan to crawl a network.
 
@@ -293,6 +309,7 @@ Requests Shodan to crawl a network.
 #### Base Command
 
 `shodan-scan-ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -309,9 +326,11 @@ Requests Shodan to crawl a network.
 
 
 #### Command Example
+
 ```!shodan-scan-ip ips=8.8.8.8```
 
 #### Context Example
+
 ```json
 {
     "Shodan": {
@@ -332,6 +351,7 @@ Requests Shodan to crawl a network.
 
 
 ### shodan-scan-internet
+
 ***
 Requests for Shodan to perform a scan on the specified port and protocol.
 
@@ -339,6 +359,7 @@ Requests for Shodan to perform a scan on the specified port and protocol.
 #### Base Command
 
 `shodan-scan-internet`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -355,6 +376,7 @@ Requests for Shodan to perform a scan on the specified port and protocol.
 
 
 #### Command Example
+
 ``` ```
 
 #### Human Readable Output
@@ -362,6 +384,7 @@ Requests for Shodan to perform a scan on the specified port and protocol.
 
 
 ### shodan-scan-status
+
 ***
 Checks the progress of a previously submitted scan request on the specified port and protocol.
 
@@ -369,6 +392,7 @@ Checks the progress of a previously submitted scan request on the specified port
 #### Base Command
 
 `shodan-scan-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -385,9 +409,11 @@ Checks the progress of a previously submitted scan request on the specified port
 
 
 #### Command Example
+
 ```!shodan-scan-status scanID=7rbp1CAtx91BMwcg```
 
 #### Context Example
+
 ```json
 {
     "Shodan": {
@@ -408,6 +434,7 @@ Checks the progress of a previously submitted scan request on the specified port
 
 
 ### shodan-create-network-alert
+
 ***
 Creates a network alert for a defined IP address or netblock used for subscribing to changes or events that are discovered within the netblock's range.
 
@@ -415,6 +442,7 @@ Creates a network alert for a defined IP address or netblock used for subscribin
 #### Base Command
 
 `shodan-create-network-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -433,9 +461,11 @@ Creates a network alert for a defined IP address or netblock used for subscribin
 
 
 #### Command Example
+
 ```!shodan-create-network-alert alertName="test_alert" ip="1.1.1.1"```
 
 #### Context Example
+
 ```json
 {
     "Shodan": {
@@ -456,6 +486,7 @@ Creates a network alert for a defined IP address or netblock used for subscribin
 
 
 ### shodan-network-get-alert-by-id
+
 ***
 Gets the details of a network alert.
 
@@ -463,6 +494,7 @@ Gets the details of a network alert.
 #### Base Command
 
 `shodan-network-get-alert-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -479,9 +511,11 @@ Gets the details of a network alert.
 
 
 #### Command Example
+
 ```!shodan-network-get-alert-by-id alertID="0EKRH38BBQEHTQ3E"```
 
 #### Context Example
+
 ```json
 {
     "Shodan": {
@@ -502,6 +536,7 @@ Gets the details of a network alert.
 
 
 ### shodan-network-get-alerts
+
 ***
 Gets a list of all created network alerts.
 
@@ -509,6 +544,7 @@ Gets a list of all created network alerts.
 #### Base Command
 
 `shodan-network-get-alerts`
+
 #### Input
 
 There are no input arguments for this command.
@@ -522,9 +558,11 @@ There are no input arguments for this command.
 
 
 #### Command Example
+
 ```!shodan-network-get-alerts```
 
 #### Context Example
+
 ```json
 {
     "Shodan": [
@@ -565,6 +603,7 @@ There are no input arguments for this command.
 
 
 ### shodan-network-delete-alert
+
 ***
 Removes the specified network alert.
 
@@ -572,6 +611,7 @@ Removes the specified network alert.
 #### Base Command
 
 `shodan-network-delete-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -584,6 +624,7 @@ Removes the specified network alert.
 There is no context output for this command.
 
 #### Command Example
+
 ```!shodan-network-delete-alert alertID="0EKRH38BBQEHTQ3E"```
 
 #### Human Readable Output
@@ -591,6 +632,7 @@ There is no context output for this command.
 >Deleted alert 0EKRH38BBQEHTQ3E
 
 ### shodan-network-alert-set-trigger
+
 ***
 Enables receiving notifications for network alerts that are set off by the specified triggers.
 
@@ -598,6 +640,7 @@ Enables receiving notifications for network alerts that are set off by the speci
 #### Base Command
 
 `shodan-network-alert-set-trigger`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -611,6 +654,7 @@ Enables receiving notifications for network alerts that are set off by the speci
 There is no context output for this command.
 
 #### Command Example
+
 ```!shodan-network-alert-set-trigger alertID="0EKRH38BBQEHTQ3E" Trigger=any```
 
 #### Human Readable Output
@@ -618,6 +662,7 @@ There is no context output for this command.
 >Set trigger "any" for alert 0EKRH38BBQEHTQ3E
 
 ### shodan-network-alert-remove-trigger
+
 ***
 Disables receiving notifications for network alerts that are set off by the specified triggers.
 
@@ -625,6 +670,7 @@ Disables receiving notifications for network alerts that are set off by the spec
 #### Base Command
 
 `shodan-network-alert-remove-trigger`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -638,6 +684,7 @@ Disables receiving notifications for network alerts that are set off by the spec
 There is no context output for this command.
 
 #### Command Example
+
 ```!shodan-network-alert-remove-trigger alertID="0EKRH38BBQEHTQ3E" Trigger="any"```
 
 #### Human Readable Output
@@ -645,6 +692,7 @@ There is no context output for this command.
 >Deleted trigger "any" for alert 0EKRH38BBQEHTQ3E
 
 ### shodan-network-alert-whitelist-service
+
 ***
 Ignores the specified services for network alerts that are set off by the specified triggers.
 
@@ -652,6 +700,7 @@ Ignores the specified services for network alerts that are set off by the specif
 #### Base Command
 
 `shodan-network-alert-whitelist-service`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -666,6 +715,7 @@ Ignores the specified services for network alerts that are set off by the specif
 There is no context output for this command.
 
 #### Command Example
+
 ```!shodan-network-alert-whitelist-service alertID="0EKRH38BBQEHTQ3E" trigger="any" service="1.1.1.1:80"```
 
 #### Human Readable Output
@@ -673,6 +723,7 @@ There is no context output for this command.
 >Whitelisted service "1.1.1.1:80" for trigger any in alert 0EKRH38BBQEHTQ3E
 
 ### shodan-network-alert-remove-service-from-whitelist
+
 ***
 Resumes receiving notifications for network alerts that are set off by the specified triggers.
 
@@ -680,6 +731,7 @@ Resumes receiving notifications for network alerts that are set off by the speci
 #### Base Command
 
 `shodan-network-alert-remove-service-from-whitelist`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -694,6 +746,7 @@ Resumes receiving notifications for network alerts that are set off by the speci
 There is no context output for this command.
 
 #### Command Example
+
 ```!shodan-network-alert-remove-service-from-whitelist alertID="0EKRH38BBQEHTQ3E" trigger="any" service="1.1.1.1:80"```
 
 #### Human Readable Output
