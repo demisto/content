@@ -4058,7 +4058,7 @@ def test_xsoar_to_xdr_flexible_close_reason_mapping(capfd, mocker, custom_mappin
 @pytest.mark.parametrize('data, expected_result',
                          [('{"reply": {"container": ["1.1.1.1"]}}', {"reply": {"container": ["1.1.1.1"]}}),
                           (b'XXXXXXX', b'XXXXXXX')])
-def test_http_request_xpanse(mocker, data, expected_result):
+def test_http_request_demisto_call(mocker, data, expected_result):
     """
     Given:
         - An XSIAM machine with a build version that supports demisto._apiCall() with RBAC validations.
@@ -4073,7 +4073,7 @@ def test_http_request_xpanse(mocker, data, expected_result):
     client = CoreClient(
         base_url=f'{Core_URL}/public_api/v1', headers={},
     )
-    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=False)
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
     mocker.patch.object(demisto, "_apiCall", return_value={'name': '/api/webapp/public_api/v1/distributions/get_versions/',
                                                            'status': 200,
                                                            'data': data})
