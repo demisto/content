@@ -14,7 +14,7 @@ class AzureResourceGraphClient:
       """
 
     def __init__(self, tenant_id, auth_id, enc_key, app_name, base_url, verify, proxy, self_deployed, ok_codes, server,
-                 subscription_id, certificate_thumbprint, private_key):
+                 certificate_thumbprint, private_key):
 
         self.ms_client = MicrosoftClient(
             tenant_id=tenant_id, auth_id=auth_id, enc_key=enc_key, app_name=app_name, base_url=base_url, verify=verify,
@@ -24,7 +24,6 @@ class AzureResourceGraphClient:
         )
 
         self.server = server
-        self.subscription_id = subscription_id
         self.default_params = {"api-version": API_VERSION}
 
     def list_operations(self):
@@ -39,8 +38,6 @@ class AzureResourceGraphClient:
         
         if subscriptions:
             request_data["subscriptions"] = subscriptions
-        elif not subscriptions:
-            request_data["subscriptions"] = self.subscription_id
         
         if management_groups:
             request_data["managementGroups"] = management_groups
@@ -57,8 +54,8 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     limit = arg_to_number(args.get('limit'))
     page_size = arg_to_number(args.get('page_size'))
     page_number = arg_to_number(args.get('page'))
-    management_groups = argToList(args.get('management_groups'))
-    subscriptions = argToList(args.get('subscriptions'))
+    management_groups = argToList(args.get('management_groups', None))
+    subscriptions = argToList(args.get('subscriptions', None))
 
     query = args.get('query')
 
@@ -68,12 +65,18 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
     if page_number and page_size:
         skip = (page_number - 1) * page_size + 1
         params = {'$skip': skip, '$top': page_size}
-        response = client.query_resources(query=query, paging_options=params)
+        response = client.query_resources(query=query,
+                                          paging_options=params,
+                                          management_groups=management_groups,
+                                          subscriptions=subscriptions)
         total_records = response.get('totalRecords')
         list_of_query_results = response.get('data')
     elif page_number:
         params = {'$top': page_size}
-        response = client.query_resources(query=query, paging_options=params)
+        response = client.query_resources(query=query,
+                                          paging_options=params,
+                                          management_groups=management_groups,
+                                          subscriptions=subscriptions)
         total_records = response.get('totalRecords')
         list_of_query_results = response.get('data')
     else:
@@ -106,7 +109,7 @@ def query_resources_command(client: AzureResourceGraphClient, args: dict[str, An
         list_of_query_results = query_results
 
     if limit:
-        list_of_query_results = query_results[:limit]
+        list_of_query_results = list_of_query_results[:limit]
 
     title = f"Results of query:\n```{query}```\n\n Total Number of Possible Records:{total_records} \n"
     human_readable = tableToMarkdown(title, list_of_query_results, removeNull=True)
@@ -191,7 +194,12 @@ def pagination(response, page_size, page_number):
     return response[starting_index:ending_index]
 
 
-def validate_connection_params(tenant: str = None, auth_and_token_url:str = None, is_self_deployed: bool = False, enc_key: str = None, certificate_thumbprint: str = None, private_key: str = None, subscription_id: str = None) -> None:
+def validate_connection_params(tenant: str = None,
+                               auth_and_token_url:str = None,
+                               is_self_deployed: bool = False,
+                               enc_key: str = None,
+                               certificate_thumbprint: str = None,
+                               private_key: str = None) -> None:
     if not tenant or not auth_and_token_url:
         raise DemistoException('Token and ID must be provided.')
     
@@ -201,8 +209,6 @@ def validate_connection_params(tenant: str = None, auth_and_token_url:str = None
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
-    if not subscription_id:
-       raise DemistoException('A subscription ID must be provided.')
 
 
 def main():
@@ -216,13 +222,11 @@ def main():
         'password') or params.get('certificate_thumbprint')
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
-    subscription_id = args.get('subscription_id') or params.get(
-        'cred_subscription_id', {}).get('password') or params.get('subscription_id')
     proxy: bool = params.get('proxy', False)
     self_deployed: bool = params.get('self_deployed', False)
 
     validate_connection_params(tenant, auth_and_token_url, self_deployed, enc_key,
-                               certificate_thumbprint, private_key, subscription_id)
+                               certificate_thumbprint, private_key)
     
     ok_codes = (200, 201, 202, 204)
 
@@ -241,16 +245,12 @@ def main():
 
     try:
         # Initial setup
-        if not subscription_id:
-            return_error('A subscription ID must be provided.')
         base_url = f"{server}/providers/Microsoft.ResourceGraph"
 
         client = AzureResourceGraphClient(
             base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME,
-            verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server,
-            subscription_id=subscription_id, certificate_thumbprint=certificate_thumbprint,
-            private_key=private_key)
-
+            verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server, 
+            certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         if command == 'azure-rg-auth-reset':
             return_results(reset_auth())
         elif command in commands_without_args:
