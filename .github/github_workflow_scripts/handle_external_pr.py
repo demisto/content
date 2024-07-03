@@ -2,6 +2,7 @@
 import json
 import os
 from pathlib import Path
+import sys
 import urllib3
 from blessings import Terminal
 from github import Github
@@ -19,9 +20,8 @@ from utils import (
     get_env_var,
     timestamped_print,
     Checkout,
-    load_json,
     get_content_reviewers,
-    CONTENT_ROLES_PATH,
+    get_content_roles,
     get_support_level
 )
 from demisto_sdk.commands.common.tools import get_pack_name
@@ -343,6 +343,7 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     """
     Get all PR's that are currently open from the same author, filter the list and return reviewer if reviewer is part
     of the current contribution round
+    The check for reviewer is done with assignees because reviewers list after initial review is empty.
     Arguments:
     - other_prs_by_same_user - list of opened PR's
 
@@ -351,8 +352,9 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     """
     content_reviewers_set = set(content_reviewers)
     for pr in other_prs_by_same_user:
-        reviewer_names = {reviewer.login for reviewer in pr.requested_reviewers}
-        existing_reviewer = content_reviewers_set.intersection(reviewer_names)
+        print(f'the requested assignees are : {pr.assignees}')
+        assignee_names = {assignee.login for assignee in pr.assignees}
+        existing_reviewer = content_reviewers_set.intersection(assignee_names)
         if existing_reviewer:
             return existing_reviewer.pop()
         else:
@@ -463,7 +465,12 @@ def main():
 
     # Parse PR reviewers from JSON and assign them
     # Exit if JSON doesn't exist or not parsable
-    content_roles = load_json(CONTENT_ROLES_PATH)
+    content_roles = get_content_roles()
+
+    if not content_roles:
+        print("Unable to retrieve the content roles. Exiting...")
+        sys.exit(1)
+
     content_reviewers, security_reviewer, tim_reviewer = get_content_reviewers(content_roles)
 
     print(f"Content Reviewers: {','.join(content_reviewers)}")

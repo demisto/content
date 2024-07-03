@@ -1523,3 +1523,30 @@ def test_main(mocker):
     mock_client = mocker.patch('CortexXDRIR.Client', autospec=True)
     mock_client.test_module.return_value = 'ok'
     main()
+
+
+@freeze_time("1993-06-17 11:00:00 GMT")
+def test_core_http_request_xsiam_tenant(mocker):
+    """
+    Given:
+        - Only the required params in the configuration.
+    When:
+        - Running a test_module to test the http_request function in CoreIRApiModule.
+    Then:
+        - Should fail since command '_apiCall' is not available via engine.
+    """
+    from CortexXDRIR import Client
+    from CommonServerPython import BaseClient
+    base_url = urljoin("dummy_url", '/public_api/v1')
+    client = Client(
+        base_url=base_url,
+        proxy=False,
+        verify=False,
+        timeout=120,
+        params=False
+    )
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch.object(demisto, "_apiCall", return_value=Exception("command '_apiCall' is not available via engine (85)"))
+    mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"incidents": [{"incident": {"incident_id": "1"}}]}})
+    res = client.get_incidents(incident_id_list=['1'])
+    assert res == [{'incident': {'incident_id': '1'}}]
