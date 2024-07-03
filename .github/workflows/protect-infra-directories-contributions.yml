@@ -1,4 +1,4 @@
-name: Protect Infrastructure Directories
+name: Protect Infrastructure Directories (Contribution)
 
 on:
   pull_request:
