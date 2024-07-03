@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import logging
+import psutil
 import base64
 import os
 import pychrome
@@ -15,7 +16,6 @@ import websocket
 from concurrent.futures import ThreadPoolExecutor
 from enum import Enum
 from threading import Event
-
 from io import BytesIO
 from PIL import Image, ImageDraw
 from pdf2image import convert_from_path
@@ -47,8 +47,6 @@ CHROME_OPTIONS = ["--headless",
                   "--disable-dev-shm-usage",
                   f'--user-agent="{USER_AGENT}"',
                   ]
-
-CHROME_PROCESS = None
 
 WITH_ERRORS = demisto.params().get('with_error', True)
 
@@ -98,7 +96,7 @@ DEFAULT_WIDTH, DEFAULT_HEIGHT = 600, 800
 LOCAL_CHROME_HOST = "127.0.0.1"
 
 CHROME_LOG_FILE_PATH = "/var/chrome_headless.log"
-PORT_FILE_PATH = '/var/port.txt'
+CHROME_INSTANCES_FILE_PATH = '/var/chrome_instances.tsv'
 RASTERIZATIONS_COUNTER_FILE_PATH = '/var/rasterizations_counter.txt'
 
 
@@ -251,17 +249,16 @@ def count_running_chromes(port):
         return 0
 
 
-def is_chrome_running_locally(port):
-
+def get_chrome_browser(port: str) -> pychrome.Browser | None:
     browser_url = f"http://{LOCAL_CHROME_HOST}:{port}"
     for i in range(DEFAULT_RETRIES_COUNT):
         try:
-            demisto.debug(f"Trying to connect to {browser_url=}, iteration {i+1}/{DEFAULT_RETRIES_COUNT}")
+            demisto.debug(f"Trying to connect to {browser_url=}, iteration {i + 1}/{DEFAULT_RETRIES_COUNT}")
             browser = pychrome.Browser(url=browser_url)
 
             # Use list_tab to ping the browser and make sure it's available
             tabs_count = len(browser.list_tab())
-            demisto.debug(f"is_chrome_running_locally, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
+            demisto.debug(f"get_chrome_browser, {port=}, {tabs_count=}, {MAX_CHROME_TABS_COUNT=}")
             # if tabs_count < MAX_CHROME_TABS_COUNT:
             demisto.debug(f"Connected to Chrome on port {port} with {tabs_count} tabs")
             return browser
@@ -269,10 +266,10 @@ def is_chrome_running_locally(port):
             exp_str = str(exp)
             connection_refused = 'connection refused'
             if connection_refused in exp_str:
-                demisto.debug(f"Failed to connect to Chrome on prot {port} on iteration {i+1}. {connection_refused}")
+                demisto.debug(f"Failed to connect to Chrome on port {port} on iteration {i + 1}. {connection_refused}")
             else:
                 demisto.debug(
-                    f"Failed to connect to Chrome on port {port} on iteration {i+1}. ConnectionError, {exp_str=}, {exp=}")
+                    f"Failed to connect to Chrome on port {port} on iteration {i + 1}. ConnectionError, {exp_str=}, {exp=}")
 
         # Mild backoff
         time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS + i * 2)  # pylint: disable=E9003
@@ -280,21 +277,26 @@ def is_chrome_running_locally(port):
     return None
 
 
-def read_info_file(filename):
+def read_file(filename):
     try:
         with open(filename) as file:
             ret_value = file.read()
             demisto.info(f"File '{filename}' contents: {ret_value}.")
             return ret_value
     except FileNotFoundError:
+        demisto.info(f"File '{filename}' does not exist")
         return None
 
 
-def write_info_file(filename, contents):
+def write_file(filename, contents, overwrite=False):
     demisto.info(f"Saving File '{filename}' with {contents}.")
-    with open(filename, 'w') as file:
-        file.write(f"{contents}")
-        demisto.info(f"File '{filename}' saved successfully with {contents}.")
+    mode = 'w' if overwrite else 'a'
+    try:
+        with open(filename, mode, encoding='utf-8') as file:
+            file.write(("\n" if not overwrite else "") + contents)
+            demisto.info(f"File '{filename}' saved successfully with {contents}.")
+    except Exception as e:
+        demisto.info(f"An error occurred while writing to the file '{filename}': {e}")
 
 
 def opt_name(opt):
@@ -330,8 +332,7 @@ def get_chrome_options(default_options, user_options):
     return options
 
 
-def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""):
-    global CHROME_PROCESS
+def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binary=CHROME_EXE, user_options=""):
     try:
         logfile = open(CHROME_LOG_FILE_PATH, 'ab')
 
@@ -346,17 +347,15 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
         demisto.debug(f'Chrome started on port {chrome_port}, pid: {process.pid},returncode: {process.returncode}')
 
         if process:
-            CHROME_PROCESS = process
             demisto.debug(f'New Chrome session active on Port {chrome_port}')
             # Allow Chrome to initialize
             time.sleep(DEFAULT_RETRY_WAIT_IN_SECONDS)  # pylint: disable=E9003
-            browser = is_chrome_running_locally(chrome_port)
+            browser = get_chrome_browser(chrome_port)
             if browser:
-                write_info_file(PORT_FILE_PATH, chrome_port)
+                new_row = f"{chrome_port}\t{instance_id}\t{chrome_options}"
+                write_file(CHROME_INSTANCES_FILE_PATH, new_row)
             else:
                 process.kill()
-                write_info_file(PORT_FILE_PATH, '')
-                CHROME_PROCESS = None
                 return None, None
             return browser, chrome_port
         else:
@@ -368,55 +367,190 @@ def start_chrome_headless(chrome_port, chrome_binary=CHROME_EXE, user_options=""
     return None, None
 
 
-def terminate_chrome(browser):
-    global CHROME_PROCESS
-    demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
+def terminate_chrome(chrome_port: str = '', killall: bool = False) -> None:
+    """
+    Terminates Chrome processes based on the specified criteria.
 
-    threading.excepthook = excepthook_recv_loop
+    This function provides two modes of operation:
+    1. If `chrome_port` is specified, it will terminate the Chrome process
+       associated with the given port, and `killall` is automatically set to False.
+    2. If `chrome_port` is not specified and `killall` is set to True, it will
+       terminate all running Chrome processes to ensure efficiency by clearing the cache.
 
-    if CHROME_PROCESS:
-        demisto.debug(f'terminate_chrome, {CHROME_PROCESS=}')
-        CHROME_PROCESS.kill()
-        CHROME_PROCESS = None
+    Args:
+        chrome_port (str, optional): The port number of the Chrome process to terminate.
+                                     Default is an empty string.
+        killall (bool, optional): Flag to terminate all running Chrome processes.
+                                  Default is False.
+
+    Returns:
+        None
+    """
+    # get all the processes running on the machine
+    processes = subprocess.check_output(['ps', 'auxww'], stderr=subprocess.STDOUT, text=True).splitlines()
+    # identifiers the relevant chrome processes
+    chrome_renderer_identifiers = ["--type=renderer"]
+    chrome_identifiers = ["chrome", "headless", f"--remote-debugging-port={chrome_port}"]
+    # filter by the identifiers the relevant processes and get it as list
+    process_in_list = [process for process in processes
+                       if all(identifier in process for identifier in chrome_identifiers)
+                       and not any(identifier in process for identifier in chrome_renderer_identifiers)]
+
+    if killall:
+        # fetch the pids of the processes
+        pids = [int(process.split()[1]) for process in process_in_list]
+    else:
+        # fetch the pid of the process. the list contain just one process with the given chrome_port
+        process_string_representation = process_in_list[0]
+        pids = [int(process_string_representation.split()[1])]
+
+    for pid in pids:
+        # for each pid, get the process by it PID and terminate it
+        process = psutil.Process(pid)
+        if process:
+            try:
+                demisto.debug(f'terminate_chrome, {process=}')
+                process.kill()
+            except Exception as e:
+                demisto.info(f"Exception when trying to kill chrome with {pid=}, {e}")
 
     demisto.debug('terminate_chrome, Finish')
 
 
-def ensure_chrome_running():  # pragma: no cover
+def chrome_manager() -> tuple[Any | None, str | None]:
+    """
+    Manages Chrome instances based on user-specified chrome options and integration instance ID.
 
-    # Check if we have a file with the port.
-    # If we have a file - Try to use it.
-    # If there's no file, or we cannot use it - Find a free port
-    browser = None
-    chrome_port = read_info_file(PORT_FILE_PATH)
-    if chrome_port:
-        browser = is_chrome_running_locally(chrome_port)
-        if browser:
-            return browser, chrome_port
-        else:
-            write_info_file(PORT_FILE_PATH, '')
+    This function performs the following steps:
+    1. Retrieves the instance ID of the integration and the Chrome options set by the user.
+    2. Checks if the instance ID has been used previously.
+        - If the instance ID is new, generates a new Chrome instance with the specified Chrome options.
+        - If the instance ID has been used:
+            - If the current Chrome options differ from the saved options for this instance ID,
+              it terminates the existing Chrome instance and generates a new one with the new options.
+            - If the current Chrome options match the saved options for this instance ID,
+              it reuses the existing Chrome instance.
 
+    Returns:
+        tuple[Any | None, int | None]: A tuple containing:
+            - The Browser or None if an error occurred.
+            - The chrome port or None if an error occurred.
+    """
+    # If instance_id or chrome_options are not set, assign 'None' to these variables.
+    # This way, when fetching the content from the file, if there was no instance_id or chrome_options before,
+    # it can compare between the fetched 'None' string and the 'None' that assigned.
+    instance_id = demisto.callingContext.get('context', {}).get('IntegrationInstanceID', 'None') or 'None'
+    chrome_options = demisto.params().get('chrome_options') or 'None'
+    chrome_instances_contents = read_file(CHROME_INSTANCES_FILE_PATH)
+    instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options = \
+        get_chrome_instances_contents_dictionaries(chrome_instances_contents)
+
+    if not chrome_instances_contents or instance_id not in instances_id:
+        return generate_new_chrome_instance(instance_id, chrome_options)
+
+    elif chrome_options != instance_id_to_chrome_options.get(instance_id):
+        chrome_port = instance_id_to_port.get(instance_id, '')
+        delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents, instance_id, chrome_port)
+        terminate_chrome(chrome_port=chrome_port)
+        return generate_new_chrome_instance(instance_id, chrome_options)
+
+    chrome_port = instance_id_to_port.get(instance_id, '')
+    browser = get_chrome_browser(chrome_port)
+    return browser, chrome_port
+
+
+def get_chrome_instances_contents_dictionaries(chrome_instances_contents: str) -> tuple[
+        Dict[str, str], Dict[str, str], List[str], List[str]]:
+    """
+    Parses the chrome instances content to extract and return two dictionaries and two lists.
+
+    Args:
+        chrome_instances_contents: The file content to be parsed.
+
+    Returns:
+        tuple: A tuple containing:
+            - instance_id_to_chrome_options (dict): A dictionary mapping instance ID to Chrome options.
+            - instance_id_to_port (dict): A dictionary mapping instance ID to port.
+            - instances_id (list): A list of instances ID extracted from instance_id_to_port keys.
+            - chromes_options (list): A list of Chrome options extracted from instance_id_to_chrome_options values.
+
+    The purpose of this method is to transform the file content into dictionaries and lists
+    for easier access and manipulation of the data.
+    """
+    instance_id_to_chrome_options = {}
+    instance_id_to_port = {}
+
+    if chrome_instances_contents:
+        splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
+        for line in splitted_chrome_instances_contents:
+            port, instance_id, chrome_options = line.strip().split('\t')
+            instance_id_to_chrome_options[instance_id] = chrome_options
+            instance_id_to_port[instance_id] = port
+
+    instances_id = list(instance_id_to_port.keys())
+    chromes_options = list(instance_id_to_chrome_options.values())
+    if instances_id and not chromes_options:
+        chromes_options.append('None')
+    return instance_id_to_chrome_options, instance_id_to_port, instances_id, chromes_options
+
+
+def generate_new_chrome_instance(instance_id: str, chrome_options: str) -> tuple[Any | None, str | None]:
+    chrome_port = generate_chrome_port()
+    return start_chrome_headless(chrome_port, instance_id, chrome_options)
+
+
+def generate_chrome_port() -> str | None:
     first_chrome_port = FIRST_CHROME_PORT
     ports_list = list(range(first_chrome_port, first_chrome_port + MAX_CHROMES_COUNT))
     random.shuffle(ports_list)
     demisto.debug(f"Searching for Chrome on these ports: {ports_list}")
-
     for chrome_port in ports_list:
         len_running_chromes = count_running_chromes(chrome_port)
-        demisto.debug(f"Found {len_running_chromes=} on port {chrome_port} has ")
+        demisto.debug(f"Found {len_running_chromes=} on port {chrome_port}")
 
         if len_running_chromes == 0:
             # There's no Chrome listening on that port, Start a new Chrome there
-            demisto.debug(f"No Chrome found on port {chrome_port}")
-            demisto.debug(f'Initializing a new Chrome session on port {chrome_port}')
-            browser, chrome_port = start_chrome_headless(str(chrome_port))
-            if browser:
-                return browser, chrome_port
+            demisto.debug(f"No Chrome found on port {chrome_port}, using it.")
+            return str(chrome_port)
 
         # There's already a Chrome listening on that port, Don't use it
 
     demisto.error(f'Max retries ({MAX_CHROMES_COUNT}) reached, could not connect to Chrome')
-    return None, None
+    return None
+
+
+def delete_row_with_old_chrome_configurations_from_chrome_instances_file(chrome_instances_contents: str, instance_id: str,
+                                                                         chrome_port: str) -> None:
+    """
+    Removes a specific row from the given content based on the instance ID and port,
+    and updates the file with the new content.
+
+    Args:
+        chrome_instances_contents (str): The file content to be searched and modified.
+        instance_id (str): The instance ID to search for in the content.
+        chrome_port (str): The port to search for in the content.
+
+    Returns:
+        None
+
+    This function searches for a row in the content that includes the specified instance ID and port.
+    Once the row is found, it is deleted from the content. The updated content is then written
+    back to the file using the write_file function.
+    """
+    index_to_delete = -1
+
+    splitted_chrome_instances_contents = chrome_instances_contents.strip().splitlines()
+    for index, line in enumerate(splitted_chrome_instances_contents):
+        port_from_chrome_instances_file, instance_id_from_chrome_instances_file, chrome_options_from_chrome_instances_file = \
+            line.strip().split('\t')
+        if port_from_chrome_instances_file == chrome_port and instance_id_from_chrome_instances_file == instance_id:
+            index_to_delete = index
+            break
+
+    if index_to_delete >= 0:
+        del splitted_chrome_instances_contents[index_to_delete]
+        chrome_instances_contents = '\n'.join(splitted_chrome_instances_contents)
+        write_file(CHROME_INSTANCES_FILE_PATH, chrome_instances_contents, overwrite=True)
 
 
 def setup_tab_event(browser, tab):
@@ -649,7 +783,7 @@ def perform_rasterize(path: str | list[str],
     :param height: window height
     """
     demisto.debug(f"rasterize, {path=}, {rasterize_type=}")
-    browser, chrome_port = ensure_chrome_running()
+    browser, chrome_port = chrome_manager()
     if browser:
         support_multithreading()
         with ThreadPoolExecutor(max_workers=MAX_CHROME_TABS_COUNT) as executor:
@@ -676,7 +810,7 @@ def perform_rasterize(path: str | list[str],
             demisto.info(
                 f"Finished {len(rasterization_threads)} rasterize operations, active tabs len: {len(browser.list_tab())}")
 
-            previous_rasterizations_counter_from_file = read_info_file(RASTERIZATIONS_COUNTER_FILE_PATH)
+            previous_rasterizations_counter_from_file = read_file(RASTERIZATIONS_COUNTER_FILE_PATH)
             if previous_rasterizations_counter_from_file:
                 total_rasterizations_count = int(previous_rasterizations_counter_from_file) + len(rasterization_threads)
             else:
@@ -685,11 +819,12 @@ def perform_rasterize(path: str | list[str],
                           f" {MAX_RASTERIZATIONS_COUNT=}, {len(browser.list_tab())=}")
             if total_rasterizations_count > MAX_RASTERIZATIONS_COUNT:
                 demisto.info(f"Terminating Chrome after {total_rasterizations_count} rasterizations")
-                terminate_chrome(browser)
+                terminate_chrome(killall=True)
+                write_file(CHROME_INSTANCES_FILE_PATH, "", overwrite=True)
                 demisto.info(f"Terminated Chrome after {total_rasterizations_count} rasterizations")
-                write_info_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0")
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, "0", overwrite=True)
             else:
-                write_info_file(RASTERIZATIONS_COUNTER_FILE_PATH, total_rasterizations_count)
+                write_file(RASTERIZATIONS_COUNTER_FILE_PATH, str(total_rasterizations_count), overwrite=True)
 
             # Get the results
             for current_thread in rasterization_threads:
@@ -912,6 +1047,7 @@ def rasterize_command():  # pragma: no cover
             res.append(current_res)
 
             demisto.results(res)
+
 
 # endregion
 
