@@ -2100,16 +2100,6 @@ def list_incidents(client: Client, args: dict[str, str]):
     return human_readable, entry_context, raw_response
 
 
-def reset_notable_users_cached(client: Client, args: dict[str, str]):
-    demisto.debug("Running command reset-notable-users-cached")
-    context = get_integration_context()
-    context['usernames'] = []
-    set_integration_context(context)
-    message = "Cached of notable users cleared successfully."
-    outputs: dict = {}
-    return message, outputs
-
-
 def fetch_incidents(client: Client, args: dict[str, str]) -> tuple[list, dict]:
     incidents: list[dict] = []
     last_run: dict[str, Any] = demisto.getLastRun()
@@ -2328,7 +2318,6 @@ def main():  # pragma: no cover
         'exabeam-get-notable-session-details': get_notable_session_details,
         'exabeam-get-sequence-eventtypes': get_notable_sequence_event_types,
         'exabeam-list-incident': list_incidents,
-        'exabeam-reset-notable-users-cached': reset_notable_users_cached,
     }
     client = None
     try:
