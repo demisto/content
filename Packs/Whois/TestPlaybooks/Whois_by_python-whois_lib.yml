@@ -531,7 +531,7 @@ tasks:
             value:
               simple: Domain.Registrant.State_province
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isNotExists
           left:
             value:
               simple: Domain.Raw
@@ -1190,7 +1190,7 @@ tasks:
             value:
               simple: Domain.Registrant.State_province
             iscontext: true
-      - - operator: isNotEmpty
+      - - operator: isNotExists
           left:
             value:
               simple: Domain.Raw
