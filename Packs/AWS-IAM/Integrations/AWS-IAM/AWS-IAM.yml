@@ -1545,7 +1545,7 @@ script:
     - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
       description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
       type: string
-  dockerimage: demisto/boto3py3:1.0.0.91694
+  dockerimage: demisto/boto3py3:1.0.0.100468
   runonce: false
   script: '-'
   subtype: python3
