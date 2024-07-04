@@ -621,11 +621,11 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
             outputs_prefix='CarbonBlackEEDR.Alert',
             readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
                                             {'changed_by': changed_by,
-                                            'last_update_time': response['last_update_time'],
-                                            'determination': args.get('determination'),
-                                            'comment': args.get('comment'),
-                                            'closure reason': args.get('closure_reason'),
-                                            'state': status_HR}, removeNull=True))
+                                             'last_update_time': response['last_update_time'],
+                                             'determination': args.get('determination'),
+                                             'comment': args.get('comment'),
+                                             'closure reason': args.get('closure_reason'),
+                                             'state': status_HR}, removeNull=True))
         demisto.debug('returning PollResult with continue_to_poll=False')
         return PollResult(
             response=message,
@@ -1391,10 +1391,10 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
         headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
         human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
         message = CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
-                                            outputs=output,
-                                            outputs_key_field='job_id',
-                                            raw_response=response,
-                                            readable_output=human_readable)
+                                outputs=output,
+                                outputs_key_field='job_id',
+                                raw_response=response,
+                                readable_output=human_readable)
         return PollResult(
             response=message,
             continue_to_poll=False)

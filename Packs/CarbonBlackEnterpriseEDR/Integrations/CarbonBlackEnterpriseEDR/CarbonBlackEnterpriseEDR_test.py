@@ -362,14 +362,14 @@ def test_alert_workflow_update_request_good_arguments(mocker):
 alert_workflow_update_command_func_called_data = [
     ({'alert_id': '123', 'status': 'OPEN'},  # case first time polling (no request_id).
      'alert_workflow_update_request',  # func to be called.
-     {'request_id': '123456789'}  #  response
+     {'request_id': '123456789'}  # response
      ),
     ({'alert_id': '123', 'request_id': '12345'},  # case there is a request_id.
      'alert_workflow_update_get_request',  # func to be called.
      {'status': 'COMPLETED',
       'job_parameters': {'job_parameters': {'request': {'status': 'OPEN'}, 'userWorkflowDto': {'changed_by': 'bla'}}},
-      'last_update_time': 'now',})
-    ]
+      'last_update_time': 'now'})
+]
 @pytest.mark.parametrize('args, func_to_be_called, response', alert_workflow_update_command_func_called_data)
 def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_called, response):
     """
