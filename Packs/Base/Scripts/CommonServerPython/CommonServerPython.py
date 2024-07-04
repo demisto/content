@@ -8391,6 +8391,14 @@ def is_xsiam():
     return demisto.demistoVersion().get("platform") == "x2"
 
 
+def is_using_engine():
+    """Determines whether or not the platform is using engine.
+    :return: True iff the platform is using engine.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("engine")
+
+
 class DemistoHandler(logging.Handler):
     """
         Handler to route logging messages to an IntegrationLogger or demisto.debug if not supplied
