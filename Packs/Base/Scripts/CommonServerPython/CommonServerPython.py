@@ -200,7 +200,6 @@ logging.raiseExceptions = False
 try:
     import requests
     from requests.adapters import HTTPAdapter
-    from requests.models import RequestEncodingMixin
     from urllib3.util import Retry
     from typing import Optional, Dict, List, Any, Union, Set, cast
 
@@ -1596,9 +1595,9 @@ def stringUnEscape(st):
 class IntegrationLogger(object):
     """
       a logger for python integrations:
-      use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
-      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
+      use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+      use `LOG.print_log(verbose=True/False)` to display all records in War-Room (if verbose) and server log.
+      use `add_replace_strs` to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -1802,8 +1801,8 @@ class IntegrationLogger(object):
 
 """
 a logger for python integrations:
-use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-use LOG.print_log() to display all records in War-Room and server log.
+use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+use `LOG.print_log()` to display all records in War-Room and server log.
 """
 LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
@@ -8267,7 +8266,7 @@ get_demisto_version = GetDemistoVersion()
 
 
 def get_demisto_version_as_str():
-    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    """Get the Demisto Server version as a string `<version>-<build>`. If unknown will return: 'Unknown'.
     Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
     use: is_demisto_version_ge.
 
@@ -8390,6 +8389,14 @@ def is_xsiam():
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "x2"
+
+
+def is_using_engine():
+    """Determines whether or not the platform is using engine.
+    :return: True iff the platform is using engine.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("engine")
 
 
 class DemistoHandler(logging.Handler):
@@ -9301,7 +9308,7 @@ if 'requests' in sys.modules:
 
 def generic_http_request(method,
                          server_url,
-                         timeout=10,
+                         timeout=60,
                          verify=True,
                          proxy=False,
                          client_headers=None,
@@ -9403,12 +9410,6 @@ def generic_http_request(method,
                         auth=auth,
                         timeout=timeout
                         )
-
-    if files:
-        """
-        To prevent timeout errors when sending large files, it is necessary to load the files into memory by reading them using the command f.read().
-        """
-        RequestEncodingMixin._encode_files(files=files, data={})
 
     return client._http_request(method=method, url_suffix=url_suffix, data=data, ok_codes=ok_codes, error_handler=error_handler,
                                 headers=headers, files=files, params=params, retries=retries, resp_type=resp_type,
