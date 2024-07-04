@@ -754,6 +754,8 @@ def test_get_attachments_without_attachment_id(mocker, client):
 
     """
     from MicrosoftGraphListener import get_attachment_command
+    file_attachments_result = {'2': 'f1145f66-90fe-4604-a7ea-faac8c33684e-imageName:image2.png',
+                               '3': 'exampleID3-imageName:image3.png'}
     output_prefix = 'MSGraphMail(val.ID && val.ID == obj.ID)'
     with open('test_data/mail_with_attachments.txt') as mail_json:
         test_args = {}
@@ -763,9 +765,12 @@ def test_get_attachments_without_attachment_id(mocker, client):
         assert isinstance(res, List)
         assert len(res) == len(raw_response)
         for i, attachment in enumerate(res):
-            output = attachment.to_context().get('EntryContext', {})
-            assert output.get(output_prefix).get('ID') == f'exampleID{i}'
-            assert output.get(output_prefix).get('Subject') == f'Test it{i}'
+            if isinstance(attachment, CommandResults):
+                output = attachment.to_context().get('EntryContext', {})
+                assert output.get(output_prefix).get('ID') == f'exampleID{i}'
+                assert output.get(output_prefix).get('Subject') == f'Test it{i}'
+            else:
+                assert attachment['File'] == file_attachments_result.get(str(i))
 
 
 @pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
@@ -1210,13 +1215,14 @@ def test_special_chars_in_attachment_name(mocker):
     mocker.patch.object(client, 'http_request', return_value={'value': [{
         '@odata.type': '#microsoft.graph.fileAttachment',
         'name': attachment_file_name,
+        'id': '123',
         'contentBytes': 'contentBytes'}]})
     mocker.patch.object(demisto, 'uniqueFile')
     mocker.patch("builtins.open", mock_open())
 
     res = client._get_email_attachments('message_id')
 
-    assert res[0].get('name') == attachment_file_name
+    assert res[0].get('name') == f'123-imageName:{attachment_file_name}'
 
 
 @pytest.mark.parametrize('attachment_file_name', ['1.png', 'file_example_JPG_100kB.jpg', 'sdsdagdsga.png'])
@@ -1230,13 +1236,14 @@ def test_regular_chars_in_attachment_name(mocker, attachment_file_name):
     mocker.patch.object(client, 'http_request', return_value={'value': [{
         '@odata.type': '#microsoft.graph.fileAttachment',
         'name': attachment_file_name,
+        'id': '1234',
         'contentBytes': 'contentBytes'}]})
     mocker.patch.object(demisto, 'uniqueFile')
     mocker.patch("builtins.open", mock_open())
 
     res = client._get_email_attachments('message_id')
 
-    assert res[0].get('name') == attachment_file_name
+    assert res[0].get('name') == f'1234-imageName:{attachment_file_name}'
 
 
 @pytest.mark.parametrize('str_to_check, expected_result', [('slabiky, ale liší se podle významu', False),
@@ -1291,6 +1298,6 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    f'response_type=code&scope=offline_access%20{Scopes.graph}' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri}'
     res = MicrosoftGraphListener.return_results.call_args[0][0].readable_output
     assert expected_url in res
