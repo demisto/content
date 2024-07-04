@@ -628,7 +628,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
             continue_to_poll=False)
     
     else:  # Status is failed
-        raise DemistoException('Failed to update the alerts workflow')
+        raise DemistoException(f"Failed to update the alerts workflow. Request's Status: {request_status}")
 
 
 def list_devices_command(client: Client, args: dict) -> CommandResults | str:

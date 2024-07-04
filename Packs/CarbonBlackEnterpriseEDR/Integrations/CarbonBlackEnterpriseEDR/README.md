@@ -78,7 +78,7 @@ RBAC Permissions Required - org.alerts.dismiss: EXECUTE
 | comment | Comment to include with the operation. | Optional | 
 | closure_reason | The closure reason | Optional |
 | determination | Value judgement of whether the alert(s) represent a true or false positive. | Optional |
-| end | The upper bound of the time range Requires start and must be a timestamp after start. | Optional |
+| end | The upper bound of the time range. Requires start and must be a timestamp after start. | Optional |  
 | start | The lower bound of the time range. Requires end and must be a timestamp before end. | Optional |
 | time_range | Relative time range for the request. Should not be provided if using 'start' and 'end' arguments. | Optional |
 
@@ -1756,8 +1756,8 @@ RBAC Permissions Required - org.search.events: CREATE
 | CarbonBlackEEDR.SearchProcess.results.org_id | String | The globally unique organization key. This will most likely be the PSC organization ID \+ PSC environment ID or some other unique token used across environments. | 
 | CarbonBlackEEDR.SearchProcess.results.parent_guid | String | The process GUID of the parent process. | 
 | CarbonBlackEEDR.SearchProcess.results.parent_pid | Number | The PID of the parent process. | 
-| CarbonBlackEEDR.SearchProcess.results.process_guid | String | Unique ID of the solr document. Appears as process_guid \+ server-side timestamp in epoch ms \(1/1/1970 based\). | 
-| CarbonBlackEEDR.SearchProcess.results.process_hash | String | The MD5 and SHA-256 hashes of the process’s main module in a multi-valued field. | 
+| CarbonBlackEEDR.SearchProcess.results.process_guid | String | Unique ID of the Solr document. Appears as process_guid \+ server-side timestamp in epoch ms \(1/1/1970 based\). | 
+| CarbonBlackEEDR.SearchProcess.results.process_hash | String | The MD5 and SHA256 hashes of the process’s main module in a multi-valued field. | 
 | CarbonBlackEEDR.SearchProcess.results.process_name | String | The tokenized file path of the process’s main module. | 
 | CarbonBlackEEDR.SearchProcess.results.process_pid | Number | The PID of a process. Can be multi-valued in case of exec/fork on Linux/OSX. | 
 | CarbonBlackEEDR.SearchProcess.results.process_username | String | User names related to the process. | 
@@ -2845,7 +2845,7 @@ Returns a list of alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | minimum_severity | Alert minimum severity (In range of 1-10). | Optional | 
-| device_os_version | Device OS version. Supports comma-separated values. | Optional | 
+| device_os_version | A comma-separated list of device operating system versions.  | Optional | 
 | policy_id | The policy ID. Supports comma-separated values. | Optional | 
 | alert_tag | Alert tags. Supports comma-separated values. | Optional | 
 | alert_id | Alert ID. Supports comma-separated values. | Optional | 
@@ -2877,13 +2877,13 @@ Returns a list of alerts.
 | CarbonBlackEEDR.Alert.report_id | String | Report ID. | 
 | CarbonBlackEEDR.Alert.watchlists.id | String | Watchlist ID. | 
 | CarbonBlackEEDR.Alert.watchlists.name | String | Watchlist name. | 
-| CarbonBlackEEDR.Alert.device_os_version | String | Device OS version. | 
+| CarbonBlackEEDR.Alert.device_os_version | String | Device operating system version. | 
 | CarbonBlackEEDR.Alert.threat_cause_threat_category | String | Threat cause threat category. | 
 | CarbonBlackEEDR.Alert.policy_id | String | Policy ID. | 
 | CarbonBlackEEDR.Alert.threat_indicators.process_name | String | Threat indicator - process name. | 
 | CarbonBlackEEDR.Alert.threat_indicators.sha256 | String | Indicator SHA256 hash. | 
 | CarbonBlackEEDR.Alert.threat_cause_actor_sha256 | String | Threat cause actor SHA256. | 
-| CarbonBlackEEDR.Alert.device_os | String | Device OS. | 
+| CarbonBlackEEDR.Alert.device_os | String | Device operating system. | 
 | CarbonBlackEEDR.Alert.document_guid | String | Document GUID. | 
 | CarbonBlackEEDR.Alert.create_time | Date | Alert create time. | 
 | CarbonBlackEEDR.Alert.threat_cause_actor_name | String | Threat cause actor name. | 

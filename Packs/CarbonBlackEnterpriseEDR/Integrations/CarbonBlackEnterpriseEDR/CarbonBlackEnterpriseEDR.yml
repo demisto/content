@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Carbon Black Enterprise EDR Dev
+  id: Carbon Black Enterprise EDR
   version: -1
 configuration:
 - display: Server URL (e.g. https://defense.conferdeploy.net)
@@ -71,8 +71,8 @@ configuration:
   required: false
   type: 19
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter).
-display: Carbon Black Enterprise EDR Dev
-name: Carbon Black Enterprise EDR Dev
+display: Carbon Black Enterprise EDR
+name: Carbon Black Enterprise EDR
 script:
   commands:
   - arguments:
@@ -100,7 +100,7 @@ script:
     - name: start
       description: The lower bound of the time range. Requires end and must be a timestamp before end.
     - name: end
-      description: The upper bound of the time range Requires start and must be a timestamp after start.
+      description: The upper bound of the time range. Requires start and must be a timestamp after start.
     - name: closure_reason
       description: The closure reason.
       auto: PREDEFINED
@@ -112,7 +112,7 @@ script:
       - OTHER
     - description: Comment to include with the operation.
       name: comment
-    - description: Request id to retrieve.
+    - description: Request ID to retrieve.
       name: request_id
       hidden: true
     description: Updates the workflow of a single alert.
@@ -419,9 +419,9 @@ script:
       name: reputation
     - description: Alert type. Supports comma-separated values.
       name: alert_type
-    - description: Device name. Supports comma-separated values. Examples- "C:\\Users\\exmaple_user\\Example" or  "/home/example_user/Example".
+    - description: A comma-separated list of device names. Examples- "C:\\Users\\example_user\\Example" or  "/home/example_user/Example".
       name: device_name
-    - description: Process name. Supports comma-separated values. Examples- "C:\\Users\\exmaple_user\\Example" or  "/home/example_user/Example".
+    - description: A comma-separated list of process names. Examples- "C:\\Users\\example_user\\Example" or  "/home/example_user/Example".
       name: process_name
     - description: Field by which to sort the results.
       name: sort_field
@@ -580,7 +580,7 @@ script:
       description: Alert workflow - remediation.
       type: String
     - contextPath: CarbonBlackEEDR.Alert.workflow.status
-      description: Alert workflow - status.
+      description: Alert workflow status.
       type: String
   - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
@@ -1136,17 +1136,17 @@ script:
       name: end_time
     - description: Index of first records to fetch. Default is 0.
       name: start
-    - description: job_id to retrieve.
+    - description: Job ID to retrieve.
       name: job_id
       hidden: true
-    - description: whether to run polling command.
+    - description: whether to run the command with polling.
       name: polling
       defaultValue: true
       auto: PREDEFINED
       predefined:
       - true
       - false
-    - description: the time in seconds to wait between polling.
+    - description: The time in seconds to wait between polling.
       name: interval_in_seconds
       defaultValue: '60'
     - description: The timeout duration in seconds for polling retries.
