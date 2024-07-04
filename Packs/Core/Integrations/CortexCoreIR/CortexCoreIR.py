@@ -139,6 +139,34 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
     )
 
 
+def terminate_process_command(client: Client, args) -> CommandResults:
+    request_data: Dict[str, Any] = {
+        "agent_id": args.get('agent_id'),
+        "instance_id": args.get('instance_id'),
+        "process_name": args.get('process_name'),
+        "incident_id": args.get('incident_id')
+    }
+    url_suffix = "public_api/v1/endpoints/terminate_process/"
+    response = client._http_request(url_suffix=url_suffix, method='POST', json_data=request_data)
+    return CommandResults(
+        raw_response=response,
+    )
+
+
+def terminate_causality_command(client: Client, args) -> CommandResults:
+    request_data: Dict[str, Any] = {
+        "agent_id": args.get('agent_id'),
+        "causality_id": args.get('causality_id'),
+        "process_name": args.get('process_name'),
+        "incident_id": args.get('incident_id')
+    }
+    url_suffix = "public_api/v1/endpoints/terminate_process/"
+    response = client._http_request(url_suffix=url_suffix, method='POST', json_data=request_data)
+    return CommandResults(
+        raw_response=response,
+    )
+    
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -467,6 +495,12 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
+        
+        elif command == 'core-terminate-process':
+            return_outputs(terminate_process_command(client, args))
+        
+        elif command == 'core-causality-process':
+            return_outputs(terminate_causality_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
