@@ -1,4 +1,4 @@
-name: Protect Infrastructure Directories (Contributions)
+name: Protect Infrastructure Files
 
 on:
   pull_request:
@@ -7,22 +7,28 @@ on:
       - synchronize
 
 jobs:
-  protect-non-packs:
+  protect-infrastructure-files:
     runs-on: ubuntu-latest
-    if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          depth: 100 # changed-files will fetch more if needed
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.x"
 
       - name: Get changed files
         id: changed-files
-        uses: tj-actions/changed-files@v41  # disable-secrets-detection
+        uses: tj-actions/changed-files@v44 # disable-secrets-detection
+
+      - name: install typer
+        run: pip install typer
 
       - name: Check for changes in protected directories
-        run: |
-              python .github/github_workflow_scripts/check_protected_directories.py ${{ steps.changed-files.outputs.all_changed_files }}
+        env:
+          # typer uses the IS_CONTRIBUTION variable
+          IS_CONTRIBUTION: ${{startsWith(github.head_ref, 'contrib') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, 'contrib'))}}
+        run: python .github/github_workflow_scripts/check_protected_directories.py ${{ steps.changed-files.outputs.all_changed_files }}
