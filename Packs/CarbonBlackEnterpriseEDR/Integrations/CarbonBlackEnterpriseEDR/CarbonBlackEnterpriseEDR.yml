@@ -94,7 +94,7 @@ script:
       - TRUE_POSITIVE
       - FALSE_POSITIVE
       - NONE
-    - description: Relative time range for the request.
+    - description: Relative time range for the request. Should not be provided if using `start` and `end` arguments.
       name: time_range
       defaultValue: -2w
     - name: start
@@ -130,8 +130,8 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.LastUpdateTime
       description: Last time the alert was updated.
       type: Date
-    - contextPath: CarbonBlackEEDR.Alert.State
-      description: The alert state.
+    - contextPath: CarbonBlackEEDR.Alert.Status
+      description: The alert's status.
       type: String
     polling: true
   - arguments:
@@ -419,11 +419,11 @@ script:
       name: reputation
     - description: Alert type. Supports comma-separated values.
       name: alert_type
-    - description: Device name. Supports comma-separated values. Note, the slashes in the device name should be doubled.
+    - description: Device name. Supports comma-separated values. Examples- "C:\\Users\\exmaple_user\\Example" or  "/home/example_user/Example".
       name: device_name
-    - description: Process name. Supports comma-separated values. Note, the slashes in the process name should be doubled.
+    - description: Process name. Supports comma-separated values. Examples- "C:\\Users\\exmaple_user\\Example" or  "/home/example_user/Example".
       name: process_name
-    - description: Field by which to sort the results. Can be "first_event_timestamp", or "last_event_timestamp".
+    - description: Field by which to sort the results.
       name: sort_field
       auto: PREDEFINED
       defaultValue: first_event_timestamp
@@ -1139,7 +1139,7 @@ script:
     - description: job_id to retrieve.
       name: job_id
       hidden: true
-    - description: wether to run polling command.
+    - description: whether to run polling command.
       name: polling
       defaultValue: true
       auto: PREDEFINED
@@ -1149,10 +1149,10 @@ script:
     - description: the time in seconds to wait between polling.
       name: interval_in_seconds
       defaultValue: '60'
-    - description: the time in seconds in which the command will stop retrying polling.
+    - description: The timeout duration in seconds for polling retries.
       name: time_out
       defaultValue: 600
-    description: Creates a process search job.
+    description: Creates a process search job and returns results if 'polling' argument is True.
     name: cb-eedr-process-search
     outputs:
     - contextPath: CarbonBlackEEDR.SearchProcess.job_id

@@ -1,6 +1,5 @@
-id: 090ef659-ac74-405e-8788-16de56a500c0
-version: 3
-vcShouldKeepItemLegacyProdMachine: false
+id: Carbon Black Enterprise EDR process search with polling test
+version: -1
 name: Carbon Black Enterprise EDR process search with polling test
 starttaskid: "0"
 tasks:
@@ -112,3 +111,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+fromversion: 6.10.0
+description: "Test playbook for testing 'cb-eedr-process-search' command with polling: true"

@@ -1,6 +1,5 @@
-id: ea95eaca-0d13-418b-8bbc-4d4f062d475e
-version: 6
-vcShouldKeepItemLegacyProdMachine: false
+id: Carbon Black Enterprise EDR alert-workflow-update Test
+version: -1
 name: Carbon Black Enterprise EDR alert-workflow-update Test
 starttaskid: "0"
 tasks:
@@ -85,6 +84,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -119,19 +119,19 @@ inputs:
     simple: "2d8edf70-45dc-729a-a5f9-e1303667ac8d\t"
   required: true
   description: The alert id
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: status
   value:
     simple: OPEN
   required: false
   description: ""
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: comment
   value:
     simple: status has changed
   required: false
   description: comment to add to alert
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - alert_id
@@ -145,4 +145,5 @@ outputSections:
   description: Generic group for outputs
 outputs: []
 quiet: true
-dirtyInputs: true
+fromversion: 6.10.0
+description: Test playbook for 'alert-workflow-update' command.

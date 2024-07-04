@@ -604,7 +604,6 @@ tasks:
       '#none#':
       - "20"
     scriptarguments:
-      alert_category: {}
       alert_id: {}
       alert_tag: {}
       alert_type: {}
@@ -616,7 +615,6 @@ tasks:
       device_os_version: {}
       device_username: {}
       end_time: {}
-      group_results: {}
       limit:
         simple: "5"
       minimum_severity: {}
@@ -626,10 +624,9 @@ tasks:
       process_sha256: {}
       reputation: {}
       sort_field:
-        simple: first_event_time
+        simple: first_event_timestamp
       sort_order: {}
       start_time: {}
-      workflow: {}
     separatecontext: false
     view: |-
       {

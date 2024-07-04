@@ -72,7 +72,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def alert_workflow_update_request_with_results(self, request_id: str) -> dict:
+    def alert_workflow_update_get_request(self, request_id: str) -> dict:
         suffix_url = f'jobs/v1/orgs/{self.cb_org_key}/jobs/{request_id}'
         response = self._http_request('GET', suffix_url)
         return response
@@ -549,7 +549,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
     demisto.debug(f'got {request_id=}, {alert_id=}')
 
     if not request_id:  # if this is the first time
-        demisto.debug('trying to get all relevant args for first run')
+        demisto.debug('Getting all relevant args for first run')
         determination = args.get('determination')
         time_range = args.get('time_range')
         start = args.get('start')
@@ -559,7 +559,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
         status = args.get('status')
 
         # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
-        if status == 'DISMISSED' or status == 'dismissed':
+        if str(status).lower() == 'dismissed':
             status = 'CLOSED'
         if status == "open":
             "OPEN"
@@ -588,15 +588,15 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
 
     request_id = args['request_id']
 
-    demisto.debug('now calling the second endpoint')
-    response = client.alert_workflow_update_request_with_results(
+    demisto.debug('Calling the second endpoint')
+    response = client.alert_workflow_update_get_request(
         request_id)
     demisto.debug(f'{response=}')
 
     request_status = response['status']
     demisto.debug(f'{request_status=}')
 
-    if request_status != 'COMPLETED':
+    if request_status == 'CREATED':
         message = CommandResults(
             readable_output="Checking again in 60 seconds...")
         demisto.debug('returning PollResult with continue_to_poll=True')
@@ -608,19 +608,27 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
 
                                **args})
 
-    state_HR = response.get('job_parameters').get('job_parameters').get('request').get('status') if args.get('status') else None
-    message = CommandResults(
-        readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
-                                        {'changed_by': response['job_parameters']['job_parameters']['userWorkflowDto']['changed_by'],
-                                         'last_update_time': response['last_update_time'],
-                                         'determination': args.get('determination'),
-                                         'comment': args.get('comment'),
-                                         'closure reason': args.get('closure_reason'),
-                                         'status': state_HR}, removeNull=True))
-    demisto.debug('returning PollResult with continue_to_poll=False')
-    return PollResult(
-        response=message,
-        continue_to_poll=False)
+    elif request_status == 'COMPLETED':
+        changed_by = response['job_parameters']['job_parameters']['userWorkflowDto']['changed_by']
+        status_HR = response.get('job_parameters').get('job_parameters').get('request').get('status') if args.get('status') else None
+        message = CommandResults(
+            outputs={'AlertID': alert_id, 'ChangedBy': changed_by, 'Comment': args.get('comment'),
+                     'LastUpdateTime': response['last_update_time'], 'Status': status_HR},
+            outputs_prefix='CarbonBlackEEDR.Alert',
+            readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
+                                            {'changed_by': changed_by,
+                                            'last_update_time': response['last_update_time'],
+                                            'determination': args.get('determination'),
+                                            'comment': args.get('comment'),
+                                            'closure reason': args.get('closure_reason'),
+                                            'status': status_HR}, removeNull=True))
+        demisto.debug('returning PollResult with continue_to_poll=False')
+        return PollResult(
+            response=message,
+            continue_to_poll=False)
+    
+    else:  # Status is failed
+        raise DemistoException('Failed to update the alerts workflow')
 
 
 def list_devices_command(client: Client, args: dict) -> CommandResults | str:
@@ -1270,7 +1278,7 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
-    # The new API version (v7) always returns one duplicate alert, except for the first run.
+    # The new API version (v7) always returns the previous last alert along with the new alerts.
     if last_run:
         fetch_limit = 1 + arg_to_number(fetch_limit)  # type: ignore - we are sending 50 if user doesn't choose a limit.
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
@@ -1296,7 +1304,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     for alert in alerts:
         alert_id = alert.get('id')
         if alert_id == last_fetched_alert_id:
-            demisto.debug('got an alert we already fetched, skipping it')
+            demisto.debug(f'got previously fetched alert {alert_id}, skipping it')
             continue
 
         alert_create_date = alert.get('backend_timestamp')
@@ -1359,8 +1367,11 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
 
     # this is not the first time, there is a job_id
     response = client.get_search_process_request(job_id=args['job_id'])
-    status = 'Completed' if response.get('contacted') == response.get('completed') else 'In Progress'
-    if status != 'Completed':
+    if response.get('contacted'):
+        status = 'Completed' if response.get('contacted') == response.get('completed') else 'In Progress'
+    else:
+        status = None
+    if status == 'In Progress':
         message = CommandResults(
             readable_output=f"Checking again in {interval_in_seconds} seconds...")
         return PollResult(
@@ -1370,19 +1381,22 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
             args_for_next_run={"job_id": job_id,
                                **args})
 
-    # status is Completed
-    output = {'status': status, 'job_id': job_id, 'results': response.get('results')}
-    title = "Completed Search Results:"
-    headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
-    human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
-    message = CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
+    elif status == 'Completed':
+        output = {'status': status, 'job_id': job_id, 'results': response.get('results')}
+        title = "Completed Search Results:"
+        headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
+        human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
+        message = CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
                                             outputs=output,
                                             outputs_key_field='job_id',
                                             raw_response=response,
                                             readable_output=human_readable)
-    return PollResult(
-        response=message,
-        continue_to_poll=False)
+        return PollResult(
+            response=message,
+            continue_to_poll=False)
+        
+    else:
+        raise DemistoException('Failed to run process search')
 
 
 def process_search_command_without_polling(client: Client, args: dict) -> CommandResults:
@@ -1557,21 +1571,15 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     cb_custom_key = demisto.params().get('credentials_custom', {}).get('password') or demisto.params().get('custom_key')
-    demisto.debug('got custom_key')
     cb_custom_id = demisto.params().get('credentials_custom', {}).get('identifier') or demisto.params().get('custom_id')
-    demisto.debug('got custom_id')
     if not (cb_custom_key and cb_custom_id):
         raise DemistoException('Custom ID and Custom key must be provided.')
     cb_org_key = demisto.params().get('organization_key')
-    demisto.debug('got organization_key')
     token = f'{cb_custom_key}/{cb_custom_id}'
     # get the service API url
     base_url = demisto.params().get('url')
-    demisto.debug('got base_url')
     verify_certificate = not demisto.params().get('insecure', False)
-    demisto.debug('got insecure')
     proxy = demisto.params().get('proxy', False)
-    demisto.debug('got proxy')
     LOG(f'Command being called is {demisto.command()}')
     try:
         client = Client(
@@ -1580,7 +1588,6 @@ def main():
             use_proxy=proxy,
             token=token,
             cb_org_key=cb_org_key)
-        demisto.debug('created client')
 
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
@@ -1589,16 +1596,11 @@ def main():
 
         elif demisto.command() == 'fetch-incidents':
             fetch_time = demisto.params().get('fetch_time', '3 days')
-            demisto.debug('got fetch_time')
             fetch_limit = demisto.params().get('fetch_limit', '50')
-            demisto.debug('got fetch_limit')
             # Set and define the fetch incidents command to run after activated via integration settings.
             incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())
-            demisto.debug('ran fetch_incidents')
             demisto.incidents(incidents)
-            demisto.debug('sended incidents')
             demisto.setLastRun(last_run)
-            demisto.debug('set last_run was executed')
 
         elif demisto.command() == 'cb-eedr-list-alerts':
             return_results(alert_list_command(client, demisto.args()))
@@ -1698,7 +1700,6 @@ def main():
             return_results(get_file_path_command(client, demisto.args()))
 
         elif demisto.command() == 'cb-eedr-process-search':
-            demisto.debug('in main for search command')
             polling = argToBoolean(demisto.args().get('polling'))
             if polling:
                 # args have to be sent before client because this is a polling function!!
