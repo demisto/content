@@ -2,4 +2,4 @@
 ignore=RM106
 
 [file:MicrosoftGraphGroups.yml]
-ignore=DS107,IN124
+ignore=DS107

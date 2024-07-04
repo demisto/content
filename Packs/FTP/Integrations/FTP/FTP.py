@@ -14,7 +14,7 @@ def main():
 
     if demisto.command() == "test-module":
         try:
-            with FTP() as ftp:
+            with FTP() as ftp:  # noqa: S321
                 ftp.connect(host=HOST,port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 ftp.voidcmd('NOOP')
@@ -27,7 +27,7 @@ def main():
         path = demisto.args().get('path')
         list_path = path if path else '~/'
         try:
-            with FTP() as ftp:
+            with FTP() as ftp:  # noqa: S321
                 ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 outputs = CommandResults(
@@ -48,7 +48,7 @@ def main():
         target = demisto.args().get('target')
 
         try:
-            with FTP() as ftp:
+            with FTP() as ftp:  # noqa: S321
                 ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 fileObject = demisto.getFilePath(entry_id)
@@ -65,7 +65,7 @@ def main():
         file_name = demisto.args().get('file_name')
 
         try:
-            with FTP() as ftp:
+            with FTP() as ftp:  # noqa: S321
                 ftp.connect(host=HOST, port=int(PORT))
                 ftp.login(user=USER, passwd=PASSWD)
                 with open(f'/tmp/{file_name}', 'wb') as file:
@@ -79,8 +79,6 @@ def main():
 
         except Exception as excp:
             return_error(f"Error occurred - Error: {str(excp)}")
-
-
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
