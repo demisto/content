@@ -1451,6 +1451,7 @@ def main() -> None:
         strip_args(args)
         remove_nulls_from_dictionary(args)
         max_events_per_fetch = params.get('max_events_per_fetch', 10000)
+
         if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))

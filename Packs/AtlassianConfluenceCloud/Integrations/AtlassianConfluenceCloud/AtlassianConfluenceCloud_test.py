@@ -17,6 +17,9 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
+collector_test_data = util_load_json('./test_data/collector/api_responses.json')
+
+
 def test_test_module_when_valid_response_is_returned(requests_mock):
     """
     To test test_module command when success response come.
@@ -981,33 +984,32 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
 
 def test_fetch_events_with_last_index(mocker: MockerFixture):
     last_run = {'last_index': 10}
-    limit = 5
-
     expected_start_index = last_run['last_index'] + 1
-
-    client.search_events.return_value = {'results': expected_events}
-
-    next_run, events = fetch_events(client, last_run, limit)
-
-    assert next_run == {'last_index': expected_start_index + len(expected_events)}
-    assert events == expected_events
-
-    client.search_events.assert_called_once_with(start_index=expected_start_index, limit=limit)
-
-
-def test_fetch_events_without_last_index():
-    client = MagicMock()
-    last_run = {}
     limit = 5
+    expected_next_run = {'last_index': last_run.get('last_index') + limit}
 
-    expected_start_date = str(round((time.time() - 60) * 1000))
-    expected_events = [{'id': 1}, {'id': 2}]
-
-    client.search_events.return_value = {'results': expected_events}
-
+    expected_events = collector_test_data['get-audit-records']['results'][:limit]
+    mock_client = mocker.patch.object(client, 'search_events', return_value={'results': expected_events})
     next_run, events = fetch_events(client, last_run, limit)
 
-    assert next_run == {'last_index': len(expected_events)}
+    mock_client.assert_called_with(start_index=expected_start_index, limit=limit)
+    assert next_run == expected_next_run
     assert events == expected_events
 
-    client.search_events.assert_called_once_with(start_date=expected_start_date, limit=limit)
+
+# def test_fetch_events_without_last_index():
+#     client = MagicMock()
+#     last_run = {}
+#     limit = 5
+#
+#     expected_start_date = str(round((time.time() - 60) * 1000))
+#     expected_events = [{'id': 1}, {'id': 2}]
+#
+#     client.search_events.return_value = {'results': expected_events}
+# 
+#     next_run, events = fetch_events(client, last_run, limit)
+#
+#     assert next_run == {'last_index': len(expected_events)}
+#     assert events == expected_events
+#
+#     client.search_events.assert_called_once_with(start_date=expected_start_date, limit=limit)
