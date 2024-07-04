@@ -11,8 +11,6 @@ import uuid
 
 from MicrosoftApiModule import *  # noqa: E402
 
-from Packs.Base.Scripts.CommonServerPython.CommonServerPython import GetRemoteDataResponse
-
 # Disable insecure warnings
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
