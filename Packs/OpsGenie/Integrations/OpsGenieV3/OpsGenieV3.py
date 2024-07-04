@@ -751,7 +751,7 @@ def get_on_call(client: Client, args: Dict[str, Any]) -> CommandResults:
     }
     if date:
         on_call_args['date'] = date.isoformat()
-        demisto.debug("get on call with date: date")
+        demisto.debug(f"get on call with date: {date}")
     result = client.get_on_call(on_call_args)
     command_result = CommandResults(
         outputs_prefix="OpsGenie.Schedule.OnCall",
