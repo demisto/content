@@ -577,7 +577,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
         response = client.alert_workflow_update_request(
             alert_id, status, comment, determination, time_range, start, end, closure_reason)
 
-        demisto.debug(f'{response=}')
+        demisto.debug(f'Recieved response: type= {type(response)}, len= {len(response)}')
 
         return PollResult(
             partial_result=CommandResults(readable_output="running polling"),
