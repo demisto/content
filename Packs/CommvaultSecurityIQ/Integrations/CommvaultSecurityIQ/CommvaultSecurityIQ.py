@@ -1,5 +1,3 @@
-register_module_line('CommvaultSecurityIQ', 'start', __line__())
-### pack version: 1.0.0
 import json
 import os
 import re
@@ -24,6 +22,10 @@ from gevent.server import StreamServer
 from pydantic import BaseModel  # pylint: disable=no-name-in-module
 from uvicorn.logging import AccessFormatter
 from urllib.parse import urlparse
+
+import demistomock as demisto
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -81,10 +83,10 @@ class GenericWebhookAccessFormatter(AccessFormatter):
 
 @app.post("/")
 async def handle_post(
-        incident: dict,
-        request: Request,
-        credentials: HTTPBasicCredentials = Depends(basic_auth),
-        token: APIKey = Depends(token_auth),
+    incident: dict,
+    request: Request,
+    credentials: HTTPBasicCredentials = Depends(basic_auth),
+    token: APIKey = Depends(token_auth),
 ):
     del credentials, token
     global client
@@ -114,8 +116,8 @@ def handle_post_helper(client, incident, request):
         hostname = (
             ""
             if (request is None)  # type: ignore
-               or (request.client is None)
-               or (request.client.host is None)  # type: ignore
+            or (request.client is None)
+            or (request.client.host is None)  # type: ignore
             else request.client.host  # type: ignore
         )
         incident_body = {
@@ -188,7 +190,7 @@ def if_zero_set_none(value: str | None | int) -> str | None | int:
 
 
 def extract_from_regex(
-        message: str, default_value: str | None, *regex_string_args: str
+    message: str, default_value: str | None, *regex_string_args: str
 ) -> str | None:
     """
     From the message, extract the strings matching the given patterns
@@ -381,7 +383,7 @@ class Client(BaseClient):
             self.headers
         """
         if (
-                not hasattr(self, "qsdk_token") or self.qsdk_token is None
+            not hasattr(self, "qsdk_token") or self.qsdk_token is None
         ):  # for logging in, before self.access_token is set
             return {
                 "Content-Type": "application/json",
@@ -394,13 +396,13 @@ class Client(BaseClient):
         }
 
     def http_request(
-            self,
-            method: str,
-            endpoint: str,
-            params: dict | None = None,
-            json_data: dict[str, Any] | None = None,
-            ignore_empty_response: bool = False,
-            headers: dict | None = None,
+        self,
+        method: str,
+        endpoint: str,
+        params: dict | None = None,
+        json_data: dict[str, Any] | None = None,
+        ignore_empty_response: bool = False,
+        headers: dict | None = None,
     ) -> dict:
         """
         Function to make http calls
@@ -444,8 +446,8 @@ class Client(BaseClient):
             current_epoch = int(datetime.now().timestamp())
             token_expiry_from_last_generation = int(
                 (
-                        self.access_token_last_generation
-                        + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
+                    self.access_token_last_generation
+                    + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
                 )
             )
             if current_epoch > token_expiry_from_last_generation:
@@ -464,7 +466,7 @@ class Client(BaseClient):
         self.qsdk_token = auth_token
         current_epoch = int(datetime.now().timestamp())
         token_expiry_epoch = (
-                current_epoch + self.access_token_expiry_in_days * 24 * 60 * 60
+            current_epoch + self.access_token_expiry_in_days * 24 * 60 * 60
         )
         token_name = f"soar-crt{current_epoch}-exp{token_expiry_epoch}"
         request_body = {
@@ -497,10 +499,10 @@ class Client(BaseClient):
         return True
 
     def prepare_globals_and_create_server(
-            self,
-            port: int,
-            certificate_path: str | None,
-            private_key_path: str | None,
+        self,
+        port: int,
+        certificate_path: str | None,
+        private_key_path: str | None,
     ) -> StreamServer:
         """
         Prepares global environments of LOG_FORMAT and creates the server to listen
@@ -575,11 +577,11 @@ class Client(BaseClient):
             self.create_incident(extracted_message, dts, incident_type, False)
 
     def create_incident(
-            self,
-            extracted_message: Union[list, dict[str, Any]],
-            date_obj: datetime,
-            incident_type: str,
-            is_fetch: bool,
+        self,
+        extracted_message: Union[list, dict[str, Any]],
+        date_obj: datetime,
+        incident_type: str,
+        is_fetch: bool,
     ) -> None:
         """
         Function to start create incidents
@@ -655,7 +657,7 @@ class Client(BaseClient):
         return severity
 
     def fetch_file_details(
-            self, job_id: Union[int, str] | None, subclient_id: Union[int, str]
+        self, job_id: Union[int, str] | None, subclient_id: Union[int, str]
     ) -> tuple[list, list]:
         """
         Function to fetch the scanned folders list during the backup job
@@ -778,9 +780,9 @@ class Client(BaseClient):
         )
         subclient_id = (
             job_details.get("jobs", [{}])[0]
-                .get("jobSummary", {})
-                .get("subclient", {})
-                .get("subclientId")
+            .get("jobSummary", {})
+            .get("subclient", {})
+            .get("subclientId")
         )
         files_list, scanned_folder_list = self.fetch_file_details(job_id, subclient_id)
         details = {
@@ -863,7 +865,7 @@ class Client(BaseClient):
         # self.validate_session_or_generate_token(self.current_api_token)
         response = self.http_request("GET", "/Job/" + str(job_id), None)
         if ("totalRecordsWithoutPaging" in response) and (
-                int(response["totalRecordsWithoutPaging"]) > 0
+            int(response["totalRecordsWithoutPaging"]) > 0
         ):
             out = response
         return out
@@ -931,7 +933,7 @@ class Client(BaseClient):
         response_json = response.json()
         if "error" in response_json:
             if "was not found in this key vault" in response_json.get("error", {}).get(
-                    "message", ""
+                "message", ""
             ):
                 secret = None
         else:
@@ -1099,32 +1101,32 @@ class Client(BaseClient):
         :return: True/False
         """
         if (
-                (self.keyvault_url is not None and len(self.keyvault_url) != 0)
-                or (
+            (self.keyvault_url is not None and len(self.keyvault_url) != 0)
+            or (
                 self.keyvault_client_id is not None
                 and len(self.keyvault_client_id) != 0
-        )
-                or (
+            )
+            or (
                 self.keyvault_client_secret is not None
                 and len(self.keyvault_client_secret) != 0
-        )
-                or (
+            )
+            or (
                 self.keyvault_tenant_id is not None
                 and len(self.keyvault_tenant_id) != 0
-        )
+            )
         ):
             if (
-                    (self.keyvault_url is None or len(self.keyvault_url) == 0)
-                    or (
+                (self.keyvault_url is None or len(self.keyvault_url) == 0)
+                or (
                     self.keyvault_client_id is None or len(self.keyvault_client_id) == 0
-            )
-                    or (
+                )
+                or (
                     self.keyvault_client_secret is None
                     or len(self.keyvault_client_secret) == 0
-            )
-                    or (
+                )
+                or (
                     self.keyvault_tenant_id is None or len(self.keyvault_tenant_id) == 0
-            )
+                )
             ):
                 return False
             else:
@@ -1161,13 +1163,16 @@ class Client(BaseClient):
         if response is not None:
             # print(response)
             if "recoveryGroups" in response:
-                groups = response['recoveryGroups']
+                groups = response["recoveryGroups"]
                 for group in groups:
                     current_group_name = group["name"].lower()
                     if current_group_name == recovery_group_name.lower():
                         recovery_group_id = group["id"]
                         demisto.info(
-                            'Found recovery group {} with id [{}]'.format(recovery_group_name, recovery_group_id))
+                            "Found recovery group {} with id [{}]".format(
+                                recovery_group_name, recovery_group_id
+                            )
+                        )
         return recovery_group_id
 
     def add_recovery_group(self, target_id, recovery_group_name):
@@ -1187,26 +1192,24 @@ class Client(BaseClient):
         if recovery_group_id is None:
             data = {
                 "name": recovery_group_name,
-                "target": {
-                    "id": target_id
-                },
+                "target": {"id": target_id},
                 "recoveryPointDetails": {
                     "recoveryPoint": 0,
-                    "recoveryPointCategory": "AUTOMATIC"
-                }
+                    "recoveryPointCategory": "AUTOMATIC",
+                },
             }
-            body = json.dumps(data, indent=4)
-            # print(body)
             response = self.http_request("POST", "/recoverygroup", json_data=data)
             # print(response)
             if response is not None:
                 if "recoveryGroup" in response:
-                    recovery_group_id = response['recoveryGroup']['id']
+                    recovery_group_id = response["recoveryGroup"]["id"]
         else:
-            demisto.info('Recovery group exists with id [{}]'.format(recovery_group_id))
+            demisto.info("Recovery group exists with id [{}]".format(recovery_group_id))
         return recovery_group_id
 
-    def add_vm_to_recovery(self, target_id, recovery_group_id, vm_info, recovery_point_timestamp):
+    def add_vm_to_recovery(
+        self, target_id, recovery_group_id, vm_info, recovery_point_timestamp
+    ):
         """
         This function adds a virtual machine to a recovery group with the specified recovery point timestamp.
 
@@ -1223,45 +1226,44 @@ class Client(BaseClient):
         data = {
             "entities": [
                 {
-                    "backupSet": {
-                        "id": vm_info["backupSetId"]
-                    },
+                    "backupSet": {"id": vm_info["backupSetId"]},
                     "virtualMachine": {
                         "GUID": vm_info["vmGuid"],
-                        "name": vm_info["vmName"]
+                        "name": vm_info["vmName"],
                     },
-                    "target": {
-                        "id": target_id
-                    },
-                    "recoveryGroup": {
-                        "id": recovery_group_id
-                    },
-                    "vmGroup": {
-                        "id": vm_info["vmGroupId"]
-                    },
-                    "client": {
-                        "id": vm_info["hypervisorId"]
-                    },
+                    "target": {"id": target_id},
+                    "recoveryGroup": {"id": recovery_group_id},
+                    "vmGroup": {"id": vm_info["vmGroupId"]},
+                    "client": {"id": vm_info["hypervisorId"]},
                     "recoveryPointDetails": {
                         "entityRecoveryPoint": recovery_point_timestamp,
                         "inheritedFrom": "RECOVERY_GROUP",
-                        "entityRecoveryPointCategory": "POINT_IN_TIME"
+                        "entityRecoveryPointCategory": "POINT_IN_TIME",
                     },
-                    "workload": 8
+                    "workload": 8,
                 }
             ]
         }
 
         # body = json.dumps(data, indent=4)
-        response = self.http_request("POST", "/recoverygroup/{}/entity".format(recovery_group_id), json_data=data)
+        response = self.http_request(
+            "POST", "/recoverygroup/{}/entity".format(recovery_group_id), json_data=data
+        )
         if response is not None:
             if response["errorCode"] == 0:
-                demisto.info('Added the entity VM [{}] to recovery group'.format(vm_info["vmName"]))
+                demisto.info(
+                    "Added the entity VM [{}] to recovery group".format(
+                        vm_info["vmName"]
+                    )
+                )
             else:
-                demisto.info('Error code [{}] : Failed to add entity due to [{}]'.format(response["errorCode"],
-                                                                                         response["errorMessage"]))
+                demisto.info(
+                    "Error code [{}] : Failed to add entity due to [{}]".format(
+                        response["errorCode"], response["errorMessage"]
+                    )
+                )
         else:
-            demisto.error('Status code [{}]'.format(response.status_code))
+            demisto.error("Status code [{}]".format(response.status_code))
             return False
         return True
 
@@ -1284,13 +1286,13 @@ class Client(BaseClient):
                 for vm in vms:
                     current_vm_name = vm["name"].lower()
                     if current_vm_name == vm_name.lower():
-                        demisto.info('Found VM [{}] '.format(current_vm_name))
-                        vm_info['vmName'] = current_vm_name
-                        vm_info['vmGroupId'] = vm['vmGroup']['id']
-                        vm_info['hypervisorId'] = vm['hypervisor']['id']
-                        vm_info['vmGuid'] = vm["UUID"]
-                        if 'backupset' in vm:
-                            vm_info['backupSetId'] = vm['backupset']['backupSetId']
+                        demisto.info("Found VM [{}] ".format(current_vm_name))
+                        vm_info["vmName"] = current_vm_name
+                        vm_info["vmGroupId"] = vm["vmGroup"]["id"]
+                        vm_info["hypervisorId"] = vm["hypervisor"]["id"]
+                        vm_info["vmGuid"] = vm["UUID"]
+                        if "backupset" in vm:
+                            vm_info["backupSetId"] = vm["backupset"]["backupSetId"]
         return vm_info
 
     def get_point_in_time_timestamp(self, input_date):
@@ -1308,62 +1310,42 @@ class Client(BaseClient):
             dt = datetime.strptime(input_date, "%d:%m:%Y %H:%M:%S")
             dt = dt.replace(tzinfo=None)
             epoch_time = int(dt.timestamp())
-        except Exception as e:
-            print('Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss')
+        except Exception:
+            demisto.error("Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss")
         return epoch_time
-
-    def set_global_recovery_time(self, point_in_time_ts):
-        """
-        This function sets the global recovery point to the specified timestamp.
-
-        Args:
-            point_in_time_ts (int): The timestamp for the desired global recovery point.
-
-        Returns:
-            bool: True if the global recovery point was successfully set, False otherwise.
-        """
-        data = {
-            "globalSettings": [
-                {
-                    "name": "cleanRecoveryPoint",
-                    "category": "CommServDB.GxGlobalParam",
-                    "type": "Integer",
-                    "newValue": point_in_time_ts
-                }
-            ]
-        }
-        response = self.http_request("PUT", '/v4/globalsettings', json_data=data)
-        if response is not None:
-            if response['errorCode'] == 0:
-                return True
-        return False
 
     def add_vm_to_recovery_group(self, vm_name, inpute_date):
         point_in_time_ts = self.get_point_in_time_timestamp(inpute_date)
-        print("Point in time reference {}".format(point_in_time_ts))
-        recovery_group_name = 'APIRecoveryGroup'
+        demisto.error("Point in time reference {}".format(point_in_time_ts))
+        recovery_group_name = "APIRecoveryGroup"
         target_id = self.list_recovery_target()
-        print("Target Id {}".format(target_id))
+        demisto.debug("Target Id {}".format(target_id))
         if target_id is not None:
             vm_info = self.fetch_vm_details(vm_name)
-            print("Found VM with details {}".format(vm_info))
+            demisto.debug("Found VM with details {}".format(vm_info))
             if len(vm_info) > 0:
-                recovery_group_id = self.add_recovery_group(target_id, recovery_group_name)
+                recovery_group_id = self.add_recovery_group(
+                    target_id, recovery_group_name
+                )
                 if recovery_group_id is not None:
-                    if self.add_vm_to_recovery(target_id, recovery_group_id, vm_info, point_in_time_ts):
+                    if self.add_vm_to_recovery(
+                        target_id, recovery_group_id, vm_info, point_in_time_ts
+                    ):
                         return True
                     else:
-                        raise Exception('Add VM [{}] to recovery group failed.'.format(vm_name))
+                        raise Exception(
+                            "Add VM [{}] to recovery group failed.".format(vm_name)
+                        )
                 else:
-                    raise Exception('Recovery group is not available.')
+                    raise Exception("Recovery group is not available.")
             else:
-                raise Exception('VM information is not available.')
+                raise Exception("VM information is not available.")
         else:
-            raise Exception('Recovery target is not available.')
+            raise Exception("Recovery target is not available.")
         return False
 
     def run_uvicorn_server(
-            self, port: int, certificate_path: str | None, private_key_path: str | None
+        self, port: int, certificate_path: str | None, private_key_path: str | None
     ) -> None:
         """
         Start uvicorn server
@@ -1399,7 +1381,7 @@ class Client(BaseClient):
 
 
 def fetch_incidents(
-        client, last_run, first_fetch_time
+    client, last_run, first_fetch_time
 ) -> tuple[dict, Union[list, None]]:
     max_fetch = demisto.params().get("max_fetch")
 
@@ -1547,7 +1529,7 @@ def add_vm_to_cleanroom(client, vm_name, clean_recovery_point_date):
     if client.add_vm_to_recovery_group(vm_name, clean_recovery_point_date):
         resp = "Successfully added entity to clean room."
     else:
-        raise DemistoException('Could not add entity to clean room')
+        raise DemistoException("Could not add entity to clean room")
     return CommandResults(
         outputs_prefix="CommvaultSecurityIQ.AddEntityToCleanroom",
         outputs_key_field="AddEntityToCleanroom",
@@ -1558,8 +1540,8 @@ def add_vm_to_cleanroom(client, vm_name, clean_recovery_point_date):
 def get_params(params):
     return (
         params.get("first_fetch", "1 day").strip(),
-        params.get('creds_certificate', {}).get('identifier'),
-        params.get('creds_certificate', {}).get('password', ''),
+        params.get("creds_certificate", {}).get("identifier"),
+        params.get("creds_certificate", {}).get("password", ""),
         params.get("CVWebserviceUrl", ""),
         params.get("incidentType", "Commvault Suspicious File Activity"),
         params.get("CommvaultAPIToken", {}).get("password"),
@@ -1569,7 +1551,7 @@ def get_params(params):
 
 
 def validate_inputs(
-        portno, client, is_valid_cv_token, is_fetch, is_long_running, forwarding_rule_type
+    portno, client, is_valid_cv_token, is_fetch, is_long_running, forwarding_rule_type
 ):
     try:
         is_valid_cv_token = True
@@ -1582,21 +1564,19 @@ def validate_inputs(
                 f"Port [{portno}] is in use, please specify another port"
             )
         if not is_valid_cv_token:
-            raise DemistoException(
-                "Invalid Commvault API token/service URL."
-            )
+            raise DemistoException("Invalid Commvault API token/service URL.")
         if not is_fetch and not is_long_running:
             raise DemistoException(
                 "Please enable fetch incidents/use forwarding rules."
             )
         else:
             if (
-                    forwarding_rule_type
-                    in (
+                forwarding_rule_type
+                in (
                     Constants.source_syslog,
                     Constants.source_webhook,
-            )
-                    and is_fetch
+                )
+                and is_fetch
             ):
                 raise DemistoException(
                     "Fetch incidents can not be used with forwarding rule."
@@ -1637,7 +1617,7 @@ def main() -> None:
     # Azure Key Vault Parameters
     client.set_props(params)
     # is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
-    client.qsdk_token = 'QSDK {}'.format(cv_api_token)
+    client.qsdk_token = "QSDK {}".format(cv_api_token)
     forwarding_rule_type: str | None = params.get("forwardingRule")
     port: int = 0
     try:
@@ -1677,8 +1657,8 @@ def main() -> None:
                 demisto.incidents([])
             else:
                 seconds_since_epoch = (
-                        date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
-                        // 1000
+                    date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+                    // 1000
                 )
                 client.create_incident(
                     out,
@@ -1728,7 +1708,7 @@ def main() -> None:
             return_results(get_secret_from_key_vault(client))
         elif command == "commvault-security-get-copy-files-list-to-war-room":
             return_results(copy_files_to_war_room())
-        elif command == "commvault-cleanroom-add-vm-to-recovery-group":
+        elif command == "commvault-security-set-cleanroom-add-vm-to-recovery-group":
             vm_name = demisto.args().get("vm_name")
             clean_recovery_point_time = demisto.args().get("clean_recovery_point")
             return_results(add_vm_to_cleanroom(client, vm_name, clean_recovery_point_time))
@@ -1745,5 +1725,3 @@ def main() -> None:
 """ ENTRY POINT """
 if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
-
-register_module_line('CommvaultSecurityIQ', 'end', __line__())

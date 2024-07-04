@@ -139,7 +139,24 @@ script:
     - contextPath: CommvaultSecurityIQ.DisableUser
       description: Response indicating whether successfully disabled user or not.
       type: string
-  dockerimage: demisto/commvault:1.0.0.90788
+  - deprecated: false
+    description: Add VM to Cleanroom
+    execution: false
+    name: commvault-security-set-cleanroom-add-vm-to-recovery-group
+    arguments:
+    - name: vm_name
+      description: VM name.
+      required: true
+      type: textArea
+    - name: clean_recovery_point
+      description: Recovery point timestamp to which we add the VM.
+      required: true
+      type: textArea
+    outputs:
+    - contextPath: CommvaultSecurityIQ.AddEntityToCleanroom
+      description: Response indicating whether successfully added the VM to the recovery point or not.
+      type: string
+  dockerimage: demisto/commvault:1.0.0.100302
   feed: false
   isfetch: true
   longRunning: true
@@ -148,6 +165,6 @@ script:
   script: '-'
   subtype: python3
   type: python
-fromversion: 6.8.0
+fromversion: 6.9.0
 tests:
 - No tests (auto formatted)
