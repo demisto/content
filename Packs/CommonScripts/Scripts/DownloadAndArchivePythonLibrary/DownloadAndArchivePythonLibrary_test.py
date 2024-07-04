@@ -1,12 +1,12 @@
 import unittest
 from unittest.mock import patch, MagicMock, mock_open
 from pathlib import Path
-from tempfile import mkdtemp
 import zipfile
 import subprocess
 
 # Import the functions from the script
 from DownloadAndArchivePythonLibrary import installLibrary, main
+
 
 class TestInstallLibrary(unittest.TestCase):
     @patch('DownloadAndArchivePythonLibrary.subprocess.Popen')
@@ -51,7 +51,8 @@ class TestInstallLibrary(unittest.TestCase):
         )
 
         # Ensure zipfile was created with the correct path and mode
-        mock_zipfile.assert_called_once_with(mock_dir_path / 'fake_library.zip', 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9)
+        mock_zipfile.assert_called_once_with(mock_dir_path / 'fake_library.zip', 'w',
+                                             compression=zipfile.ZIP_DEFLATED, compresslevel=9)
 
         # Ensure files were added to the zip archive
         expected_arcnames = [Path('python') / 'file1.py', Path('python') / 'file2.py']
@@ -59,7 +60,7 @@ class TestInstallLibrary(unittest.TestCase):
         mock_zipfile_instance.write.assert_any_call(Path('/fake/dir/file2.py'), arcname=expected_arcnames[1])
 
         # Ensure the correct result is returned
-        self.assertEqual(result, expected_result)
+        assert result == expected_result
 
     @patch('DownloadAndArchivePythonLibrary.installLibrary')
     @patch('DownloadAndArchivePythonLibrary.demisto.args')
@@ -109,6 +110,7 @@ class TestInstallLibrary(unittest.TestCase):
         # Check
         mock_return_error.assert_called_once_with('An error occurred: Test Exception')
         mock_return_results.assert_not_called()
+
 
 if __name__ == '__main__':
     unittest.main()
