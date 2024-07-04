@@ -17,16 +17,14 @@ script: >+
   incident1_template = {
       'type': 'Simulation',
       'name': 'Tag1',
-      'dbotprediction': 'ham',
-      'dbotpredictionprobability': 1.0
+      'additionaldata': ['ham', 1.0]
   }
 
 
   incident2_template = {
       'type': 'Simulation',
       'name': 'Tag2',
-      'dbotprediction': 'spam',
-      'dbotpredictionprobability': 1.0,
+      'additionaldata': ['spam', 1.0]
   }
 
 
@@ -54,8 +52,8 @@ script: >+
           'EmailBodyKey': 'details',
           'EmailTagKey': 'name',
           'IncidentsQuery': 'type:Simulation',
-          'EmailPredictionKey': 'dbotprediction',
-          'EmailPredictionProbabilityKey': 'dbotpredictionprobability'
+          'EmailPredictionKey': 'additionaldata.[0]',
+          'EmailPredictionProbabilityKey': 'additionaldata.[1]'
       }
   })
 
