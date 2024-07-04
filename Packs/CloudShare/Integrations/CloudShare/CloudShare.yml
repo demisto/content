@@ -184,7 +184,7 @@ script:
     - contextPath: CloudShare.Projects.isActive
       description: Is active
       type: boolean
-    description: "Retrieves a specified project\u2019s details"
+    description: "Retrieves a specified project's details"
   - name: cloudshare-get-project-policies
     arguments:
     - name: projectId
@@ -216,7 +216,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: " If set to true \u2013 get the default snapshot for every blueprint. The returned JSON will contain a property \u2018CreateFromVersions\u2019, which is an array of one element \u2013 the default snapshot. If unspecified, default is false (don\u2019t return the default snapshot)."
+      description: " If set to true - get the default snapshot for every blueprint. The returned JSON will contain a property 'CreateFromVersions', which is an array of one element - the default snapshot. If unspecified, default is false (don't return the default snapshot)."
       defaultValue: 'false'
     outputs:
     - contextPath: CloudShare.Projects.Blueprints.id
@@ -895,7 +895,7 @@ script:
     arguments:
     - name: PolicyId
       required: true
-      description: "The ID of the policy to apply to the class. The policy will control the runtime and storage time of each student\u2019s environment and what will happen to the environment when it is inactive."
+      description: "The ID of the policy to apply to the class. The policy will control the runtime and storage time of each student's environment and what will happen to the environment when it is inactive."
     - name: BlueprintId
       required: true
       description: The ID of the blueprint to base the class on. Students who attend the class will be served environments based on this blueprint.
@@ -1228,7 +1228,7 @@ script:
       predefined:
       - 'false'
       - 'true'
-      description: "Whether to return the details of the VMs in each student\u2019s environment as well as other details."
+      description: "Whether to return the details of the VMs in each student's environment as well as other details."
       defaultValue: 'false'
     outputs:
     - contextPath: CloudShare.Students.status
@@ -1301,7 +1301,7 @@ script:
     - contextPath: CloudShare.Students.VMs.name
       description: Name
       type: string
-    description: "Retrieves information about a student in a class, including the student\u2019s environment and VMs"
+    description: "Retrieves information about a student in a class, including the student's environment and VMs"
   - name: cloudshare-delete-student
     arguments:
     - name: classId
@@ -1318,13 +1318,13 @@ script:
       description: The ID of the class.
     - name: email
       required: true
-      description: "The student\u2019s email address"
+      description: "The student's email address"
     - name: firstName
       required: true
-      description: "The student\u2019s first name"
+      description: "The student's first name"
     - name: lastName
       required: true
-      description: "The student\u2019s last name"
+      description: "The student's last name"
     outputs:
     - contextPath: CloudShare.Students.id
       description: ID
@@ -1339,12 +1339,12 @@ script:
       required: true
       description: The ID of the student.
     - name: email
-      description: "The student\u2019s email address. This can be changed as long as the student did not yet log in."
+      description: "The student's email address. This can be changed as long as the student did not yet log in."
     - name: firstName
-      description: "The student\u2019s first name."
+      description: "The student's first name."
     - name: lastName
-      description: "The student\u2019s last name."
-    description: "Modifies a student\u2019s registration details"
+      description: "The student's last name."
+    description: "Modifies a student's registration details"
   - name: cloudshare-get-regions
     arguments: []
     outputs:
@@ -1669,7 +1669,7 @@ script:
       description: Specifies the start of the time range, where {starttime_value} is the start of the time range in the format ISO 8601. For example, "2017-01-01"
     - name: endtime
       required: true
-      description: "Specifies the end of the time range, where {endtime_value} is the end of the time range in the format ISO 8601. For example, \u201C2017-02-01\u201C."
+      description: "Specifies the end of the time range, where {endtime_value} is the end of the time range in the format ISO 8601. For example, '2017-02-01'."
     - name: skip
       description: 'Optional. Specifies to skip the first {skip_value} records, where {skip_value} is an integer (default: 0). Can be used iteratively in conjunction with take to view distinct sets of environment records.'
     - name: take
@@ -1701,40 +1701,40 @@ script:
     arguments:
     - name: envId
       required: true
-      description: "Specifies the environment, where {envId} is the environment\u2019s ID."
+      description: "Specifies the environment, where {envId} is the environment's ID."
     description: Extends the lifetime of an environment
   - name: cloudshare-postpone-env-suspend
     arguments:
     - name: envId
       required: true
-      description: "Specifies the environment, where {envId} is the environment\u2019s ID."
-    description: "Postpones an environment\u2019s suspended state  Request Path"
+      description: "Specifies the environment, where {envId} is the environment's ID."
+    description: "Postpones an environment's suspended state  Request Path"
   - name: cloudshare-resume-env
     arguments:
     - name: envId
       required: true
-      description: "Specifies the environment, where {envId} is the environment\u2019s ID."
+      description: "Specifies the environment, where {envId} is the environment's ID."
     description: Resumes an environment that was previously suspended, returning it to active running state
   - name: cloudshare-revert-env
     arguments:
     - name: envId
       required: true
-      description: "Specifies the environment, where {envId} is the environment\u2019s ID."
+      description: "Specifies the environment, where {envId} is the environment's ID."
     - name: snapshotId
       required: true
-      description: "Specifies the snapshot to which to revert the environment, where {snapshotId} is the snapshot\u2019s ID."
+      description: "Specifies the snapshot to which to revert the environment, where {snapshotId} is the snapshot's ID."
     description: Reverts an environment to a specified snapshot
   - name: cloudshare-suspend-env
     arguments:
     - name: envId
       required: true
-      description: "Specifies the environment, where {envId} is the environment\u2019s ID."
+      description: "Specifies the environment, where {envId} is the environment's ID."
     description: Suspends an environment
   - name: cloudshare-get-env
     arguments:
     - name: envID
       required: true
-      description: "The environment\u2019s ID."
+      description: "The environment's ID."
     - name: permission
       auto: PREDEFINED
       predefined:
@@ -1770,7 +1770,7 @@ script:
     - contextPath: CloudShare.Environments.teamId
       description: Team ID
       type: string
-    description: "Retrieves properties of an environment and enables verification of the requesting user\u2019s permissions to the environment"
+    description: "Retrieves properties of an environment and enables verification of the requesting user's permissions to the environment"
   - name: cloudshare-delete-env
     arguments:
     - name: envID
@@ -2026,7 +2026,7 @@ script:
     - contextPath: CloudShare.VM.Modify.conflicts
       description: Conflicts
       type: string
-    description: "Adjusts a VM\u2019s CPU count, disk size, and RAM"
+    description: "Adjusts a VM's CPU count, disk size, and RAM"
   - name: cloudshare-reboot-vm
     arguments:
     - name: VmID
@@ -2078,7 +2078,7 @@ script:
     - contextPath: CloudShare.Folders.projectFolders.usagePercentage
       description: Usage percentage
       type: string
-    description: "Retrieves the user\u2019s cloud folder and the user\u2019s projects\u2019 project folder(s)"
+    description: "Retrieves the user's cloud folder and the user's projects' project folder(s)"
   - name: cloudshare-get-env-cloud-folders
     arguments:
     - name: EnvId
@@ -2100,7 +2100,7 @@ script:
     - contextPath: CloudShare.EnvFolders.token
       description: Token
       type: string
-    description: "Shows the cloud folder on all of the environment\u2019s machines"
+    description: "Shows the cloud folder on all of the environment's machines"
   - name: cloudshare-generate-cloud-folder-password
     arguments: []
     outputs:
@@ -2110,13 +2110,13 @@ script:
     - contextPath: CloudShare.FoldersPassword.newFtpUri
       description: New FTP URI
       type: string
-    description: "Generates a new FTP password for accessing the user\u2019s cloud folders."
+    description: "Generates a new FTP password for accessing the user's cloud folders."
   - name: cloudshare-unmount-env-folders
     arguments:
     - name: EnvId
       required: true
       description: The ID of the environment.
-    description: "Hides the cloud folder on all of the environment\u2019s machines"
+    description: "Hides the cloud folder on all of the environment's machines"
   - name: cloudshare-get-templates
     arguments:
     - name: templateType
@@ -2404,7 +2404,7 @@ script:
       type: number
     - contextPath: CloudShare.Snapshots.regions
       description: Regions
-    description: "Retrieves all snapshots contained in a specified environment\u2019s blueprint. A blueprint can contain up to five snapshots, with newer snapshots displacing the oldest snapshots in the blueprint."
+    description: "Retrieves all snapshots contained in a specified environment's blueprint. A blueprint can contain up to five snapshots, with newer snapshots displacing the oldest snapshots in the blueprint."
   - name: cloudshare-mark-default-snapshot
     arguments:
     - name: snapshotID
@@ -2446,10 +2446,10 @@ script:
   - name: cloudshare-invite-user-poc
     arguments:
     - name: policyId
-      description: "The ID of the environment policy to assign to the environment created for the end user as part of the POC. The policy will govern the life cycle of the end user\u2019s environment."
+      description: "The ID of the environment policy to assign to the environment created for the end user as part of the POC. The policy will govern the life cycle of the end user's environment."
     - name: blueprintId
       required: true
-      description: "The ID of the blueprint based on which the end user\u2019s environment will be created (this is the POC\u2019s blueprint)."
+      description: "The ID of the blueprint based on which the end user's environment will be created (this is the POC's blueprint)."
     - name: OwningProjectMemberId
       required: true
       description: The ID of the project member user to whom the end user will be assigned
@@ -2461,15 +2461,15 @@ script:
       description: The number of days to keep the invitation valid for
     - name: email
       required: true
-      description: "The recipient\u2019s email. The invitation will be sent to the specified email."
+      description: "The recipient's email. The invitation will be sent to the specified email."
     - name: firstName
       required: true
-      description: "The recipient\u2019s first name"
+      description: "The recipient's first name"
     - name: LastName
       required: true
-      description: "The recipient\u2019s last name"
+      description: "The recipient's last name"
     - name: regionId
-      description: "The region in which to create the POC\u2019s environment."
+      description: "The region in which to create the POC's environment."
     - name: InviteeCanSetEmail
       auto: PREDEFINED
       predefined:
