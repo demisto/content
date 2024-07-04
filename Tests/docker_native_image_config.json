@@ -118,7 +118,7 @@
         },
         {
             "id":"Intezer v2",
-            "reason":"Issue: CIAC-7861",
+            "reason":"Issue: CIAC-10263",
             "ignored_native_images":[
                 "native:8.6",
                 "native:candidate"
