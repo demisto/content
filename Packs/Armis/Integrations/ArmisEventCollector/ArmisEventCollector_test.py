@@ -548,7 +548,7 @@ class TestFetchFlow:
         7
     )
 
-    @ pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events,\
+    @pytest.mark.parametrize('max_fetch, devices_max_fetch, last_run, fetch_start_time, event_types_to_fetch, response, events,\
         next_run, next', [case_first_fetch, case_second_fetch, case_second_fetch_with_duplicates,
                           case_no_new_event_from_fetch, case_all_events_from_fetch_have_the_same_time
                           ])
