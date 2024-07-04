@@ -3,13 +3,13 @@ args:
   name: old
 - description: The new value of the changed field
   name: new
-comment: |-
-  Stops the "Time To Assignment" timer once an owner is assigned to the Incident
-  Starts the "Remediation SLA' timer once an owner is assigned to the Incident
+comment: 'Stops the "Time To Assignment" timer once an owner is assigned to the Incident
+
+  Starts the "Remediation SLA'' timer once an owner is assigned to the Incident'
 commonfields:
   id: TimersOnOwnerChange
   version: -1
-dockerimage: demisto/python3:3.10.12.63474
+dockerimage: demisto/python3:3.10.14.100715
 enabled: true
 name: TimersOnOwnerChange
 runas: DBotWeakRole
