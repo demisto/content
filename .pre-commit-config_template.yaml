@@ -83,7 +83,7 @@ repos:
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
-    docker_image:nightly: native:candidate
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
@@ -107,7 +107,7 @@ repos:
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
-    docker_image:nightly: native:candidate
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
@@ -151,7 +151,7 @@ repos:
   - id: pytest-network-in-docker
     name: pytest-network-in-docker
     description: Run pytest with network enabled on the code in content packs
-    docker_image:nightly: native:candidate
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
