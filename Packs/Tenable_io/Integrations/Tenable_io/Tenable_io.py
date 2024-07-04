@@ -258,7 +258,6 @@ class Client(BaseClient):
         Returns: The UUID of the vulnerabilities export job.
 
         """
-        argToList(demisto.params().get('severity'))
         payload: dict[str, Any] = {
             "filters":
                 {
@@ -266,8 +265,6 @@ class Client(BaseClient):
                 },
             "num_assets": num_assets
         }
-        # if severity:
-        #     payload["filters"]["severity"] = severity
         demisto.debug(f"my payload is: {payload}")
         res = self._http_request(method='POST', url_suffix='/vulns/export', headers=self._headers, json_data=payload)
         return res.get('export_uuid', '')
@@ -1908,7 +1905,6 @@ def main():  # pragma: no cover
     # Events Params
     max_fetch = arg_to_number(params.get('max_fetch')) or 1000
     first_fetch: datetime = arg_to_datetime(params.get('first_fetch', '3 days'))  # type: ignore
-    argToList(params.get('severity'))
 
     demisto.debug(f'Command being called is {command}')
     try:

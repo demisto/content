@@ -84,20 +84,6 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- display: Severity
-  additionalinfo: The severity of the vulnerabilities to include in the export.
-  name: severity
-  options:
-  - info
-  - low
-  - medium
-  - high
-  - critical
-  type: 16
-  required: false
-  section: Collect
-  hidden:
-    - xsoar
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
 display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io
