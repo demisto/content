@@ -76,5 +76,5 @@ To configure a Microsoft integration that uses this authorization flow with a se
 
 ### Testing authentication and connectivity
 
-If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure SQL Management service run the ***!azure-devops-auth-test*** command. 
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure SQL Management service run the ***!azure-sql-auth-test*** command. 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
