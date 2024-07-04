@@ -885,7 +885,7 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk"
 reference = "CIAC-3448-file-permissions-hook"
-resolved_reference = "7a8f68767c78f3b4844b3b4ff790a9e4f6da3769"
+resolved_reference = "9ddd9d992abceb24f4bbb05c56dcdd08b8b468b4"
 
 [[package]]
 name = "deprecated"
