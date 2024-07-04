@@ -130,7 +130,7 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.LastUpdateTime
       description: Last time the alert was updated.
       type: Date
-    - contextPath: CarbonBlackEEDR.Alert.Status
+    - contextPath: CarbonBlackEEDR.Alert.State
       description: The alert's status.
       type: String
     polling: true

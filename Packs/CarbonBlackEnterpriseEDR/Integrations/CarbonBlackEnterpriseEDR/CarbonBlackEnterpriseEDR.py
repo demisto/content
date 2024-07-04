@@ -625,7 +625,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
                                             'determination': args.get('determination'),
                                             'comment': args.get('comment'),
                                             'closure reason': args.get('closure_reason'),
-                                            'status': status_HR}, removeNull=True))
+                                            'state': status_HR}, removeNull=True))
         demisto.debug('returning PollResult with continue_to_poll=False')
         return PollResult(
             response=message,
