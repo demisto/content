@@ -199,24 +199,22 @@ class Client:
         integration_context = get_integration_context()
         valid_until = integration_context.get("valid_until", 0)
         current_time = get_current_time_in_seconds()
-        if current_time >= valid_until - 10:
-            if self.keeper_params.session_token:
-                # First helper
-                encrypted_device_token = LoginV3API.get_device_id(self.keeper_params)
-                resp = self.save_device_tokens(
-                    encrypted_device_token=encrypted_device_token,
-                )
-                encrypted_login_token: bytes = resp.encryptedLoginToken  # type: ignore
+        if self.keeper_params.session_token and current_time >= valid_until - 10:
+            demisto.info("Refreshing session token")
+            # First helper
+            encrypted_device_token = LoginV3API.get_device_id(self.keeper_params)
+            resp = self.save_device_tokens(
+                encrypted_device_token=encrypted_device_token,
+            )
+            encrypted_login_token: bytes = resp.encryptedLoginToken  # type: ignore
 
-                self.validate_device_registration(
-                    encrypted_device_token=encrypted_device_token,
-                    encrypted_login_token=encrypted_login_token,
-                )
-                self.save_session_token()
-            else:
-                raise DemistoException(
-                    "No session token was configured, please complete the authorization process as shown in the documentation"
-                )
+            self.validate_device_registration(
+                encrypted_device_token=encrypted_device_token,
+                encrypted_login_token=encrypted_login_token,
+            )
+            self.save_session_token()
+        else:
+            demisto.info("No need to refresh session token")
 
     def save_device_tokens(self, encrypted_device_token: bytes) -> APIRequest_pb2.LoginResponse:
         """Save the devices' tokens when starting to verify the device registration.
@@ -259,9 +257,9 @@ class Client:
         resp = self.save_device_tokens(
             encrypted_device_token=encryptedDeviceToken,
         )
-
         if resp.loginState == APIRequest_pb2.DEVICE_APPROVAL_REQUIRED:  # type: ignore # client goes to “standard device approval”.
             device_approval.send_push(
+                self.keeper_params,
                 DeviceApprovalChannel.Email,
                 encryptedDeviceToken,
                 resp.encryptedLoginToken,  # type: ignore
@@ -293,6 +291,7 @@ class Client:
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
             if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # type: ignore
+                print("dene")
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
             else:
                 raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")  # type: ignore
