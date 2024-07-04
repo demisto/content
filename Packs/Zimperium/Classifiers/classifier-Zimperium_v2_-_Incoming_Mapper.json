@@ -23,6 +23,9 @@
                 },
                 "OS Version": {
                     "simple": "device.os.version"
+                },
+                "Zimperium Bundle ID": {
+                    "simple": "zappInstance.bundleId"
                 }
             }
         }
