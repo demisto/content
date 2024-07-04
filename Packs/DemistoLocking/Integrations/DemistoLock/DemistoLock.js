@@ -68,7 +68,6 @@ switch (command) {
             // if no lock found, try to acquire a new lock
             if (!lock.guid) {
                 attemptToAcquireLock(guid, lockInfo, version)
-                wait(1)
                 lock_candidate = getLock();
             }
 
@@ -89,7 +88,7 @@ switch (command) {
                     Type: entryTypes.note,
                     Contents: 'Lock was not acquired, Polling.',
                     PollingCommand: 'demisto-lock-get',
-                    NextRun: '30',
+                    NextRun: '20',
                     PollingArgs: { name: lockName, info: args.info, timeout: args.timeout, guid: guid, timeout_err_msg: timeout_err_msg },
                     Timeout: String(lockTimeout)
                 }
