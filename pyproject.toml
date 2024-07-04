@@ -15,7 +15,7 @@ python = "^3.8,<3.11"
 defusedxml = "^0.7.1"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", branch = "ds-xsoar-lint-gha" }
+demisto-sdk = { git = "https://github.com/demisto/demisto-sdk.git", rev = "921e41cdb2ed4c9c0805ccbaed88748c42e43c4a" }
 
 requests = "^2.22.0"
 pre-commit = "^3.5.0"

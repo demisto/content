@@ -809,11 +809,8 @@ name = "demisto-sdk"
 version = "1.31.1"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
-python-versions = ">=3.8,<3.12"
-files = [
-    {file = "demisto_sdk-1.31.1-py3-none-any.whl", hash = "sha256:5e5ea52da60f4d453f60e54fb3b98e91045287e872b4784ac059af74dc663ab8"},
-    {file = "demisto_sdk-1.31.1.tar.gz", hash = "sha256:2494a368517611b2185f1f21a566ca7faa5ea7fcfeb55e1c3758a848475ebcdf"},
-]
+python-versions = "^3.8,<3.12"
+files = []
 develop = false
 
 [package.dependencies]
@@ -887,8 +884,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "ds-xsoar-lint-gha"
-resolved_reference = "515d70635ab5c932e5171307c7323b21e1a8a726"
+reference = "921e41cdb2ed4c9c0805ccbaed88748c42e43c4a"
+resolved_reference = "921e41cdb2ed4c9c0805ccbaed88748c42e43c4a"
 
 [[package]]
 name = "deprecated"
@@ -5309,4 +5306,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "db4fa4b0cbcf94225ed33ea47cbe764a0ea63bbcd0b0568f40d81d8ed01ddfc7"
+content-hash = "a46501cfaac03f3de53baba1996bad651db9c6839513e363a2ad37331efcd21f"
