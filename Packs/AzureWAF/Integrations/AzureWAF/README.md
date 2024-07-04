@@ -47,10 +47,6 @@ At end of the process, you will see a message that you logged in successfully.
 #### Cortex XSOAR Azure app
 In order to use the Cortex XSOAR Azure application, use the default application ID (cf22fd73-29f1-4245-8e16-533704926d20) and fill in your subscription ID and default resource group name. 
 
-#### Cortex XSOAR Azure App
-
-In order to use the Cortex XSOAR Azure application, use the default application ID (8f9010bb-4efe-4cfa-a197-98a2694b7e0c).
-
 You only need to fill in your subscription ID and resource group name. You can find your resource group and 
 subscription ID in the Azure Portal. For a more detailed explanation, visit [this page](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#azure-integrations-params).
 
@@ -67,7 +63,7 @@ To configure a Microsoft integration that uses this authorization flow with a se
    6. Save the instance.
 
 ### Testing authentication and connectivity
-If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the AzureWAF service run the ***!azure-devops-auth-test*** command. 
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the AzureWAF service run the ***!azure-waf-auth-test*** command. 
 
 ## Configure AzureWAF on Cortex XSOAR
 
