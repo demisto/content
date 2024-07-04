@@ -15,7 +15,9 @@ urllib3.disable_warnings()
 RISK_FINDINGS = []
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 GET_RISK_FINDINGS_ENDPINT = '/v1/risk-findings'
+GET_ASSET_LISTS = "/v1/assets"
 GET_ASSET_DETAILS = "/v1/assets/id?id="
+GET_ASSET_FILES = "/v1/classification/asset-files/id?id="
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 INCIDENT_STATUS = {
     'OPEN': 1,
@@ -74,10 +76,25 @@ class Client(BaseClient):
             params=params
         )
 
+    def get_asset_files(self, params: dict[str, Any], body: dict[str, Any]):
+        return self._http_request(
+            method='POST',
+            url_suffix=f"{GET_ASSET_FILES}",
+            params=params,
+            body=body
+        )
+
     def get_asset_details(self, asset_id: str):
         return self._http_request(
             method='GET',
             url_suffix=f"{GET_ASSET_DETAILS}{asset_id}"
+        )
+
+    def get_asset_lists(self, params: dict[str, Any]):
+        return self._http_request(
+            method='GET',
+            url_suffix=GET_ASSET_LISTS,
+            params=params
         )
 
     def get_data_types(self):
@@ -148,7 +165,7 @@ def test_module(client: Client) -> str:
 
 
 def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    page: int = 0
+    page = 0
     params = {
         "ruleName.in": args.get('ruleNameIn'),
         "ruleName.equals": args.get('ruleNameEqual'),
@@ -171,31 +188,25 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
     # Remove None values from params
     params = {k: v for k, v in params.items() if v is not None}
 
-    # Initialize list to store all findings
     all_findings: List[dict] = []
 
-    while True:
+    for _ in range(5):  # Limiting to 5 pages to avoid infinite loop
         # Fetch data from client
         response = client.fetch_risk_findings(params)
 
-        if isinstance(response, list):
-            findings = response
-        else:
-            findings = response.get('findings', [])
+        findings = response.get('findings', []) if isinstance(response, dict) else response
 
         if not findings:
             break  # No more findings to fetch
 
-        # Append findings to the list
         all_findings.extend(findings)
 
         # Increment page number for the next iteration
         page += 1
         params['page'] = page
 
-    parsed_findings = []
-    for finding in all_findings:
-        parsed_finding = {
+    parsed_findings = [
+        {
             'ID': finding.get('id', ''),
             'Rule Name': finding.get('ruleName', ''),
             'Severity': finding.get('severity', ''),
@@ -208,12 +219,111 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
             'First Discovered': finding.get('firstDiscovered', ''),
             'Compliance Standards': finding.get('complianceStandards', {})
         }
-        parsed_findings.append(parsed_finding)
+        for finding in all_findings
+    ]
 
     return CommandResults(
         outputs_prefix='DSPM.RiskFindings',
         outputs_key_field='id',
-        outputs=all_findings
+        outputs=parsed_findings
+    )
+
+
+def get_risk_finding_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    risk_id = args.get('id')
+    if not risk_id:
+        raise ValueError('id argument is required')
+
+    # Fetch data from client using the get_risk_information method
+    response = client.get_risk_information(risk_id)
+
+    if not response:
+        raise ValueError(f'No finding found with id {risk_id}')
+
+    finding = response if isinstance(response, dict) else response[0]
+
+    parsed_finding = {
+        'ID': finding.get('id', ''),
+        'Rule Name': finding.get('ruleName', ''),
+        'Severity': finding.get('severity', ''),
+        'Asset Name': finding.get('asset', {}).get('name', ''),
+        'Asset ID': finding.get('asset', {}).get('assetId', ''),
+        'Status': finding.get('status', ''),
+        'Project ID': finding.get('projectId', ''),
+        'Cloud Provider': finding.get('cloudProvider', ''),
+        'Cloud Environment': finding.get('cloudEnvironment', ''),
+        'First Discovered': finding.get('firstDiscovered', ''),
+        'Compliance Standards': finding.get('complianceStandards', {})
+    }
+
+    return CommandResults(
+        outputs_prefix='DSPM.RiskFinding',
+        outputs_key_field='id',
+        outputs=parsed_finding
+    )
+
+
+def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
+    page = 0
+    params = {
+        "region.in": args.get('regionIn'),
+        "region.equals": args.get('regionEqual'),
+        "cloudProvider.in": args.get('cloudProviderIn'),
+        "cloudProvider.equals": args.get('cloudProviderEqual'),
+        "serviceType.in": args.get('serviceTypeIn'),
+        "serviceType.equals": args.get('serviceTypeEqual'),
+        "digTagKey.contains": args.get('digTagKeyContains'),
+        "digTagValue.contains": args.get('digTagValueContains'),
+        "lifecycle.in": args.get('lifecycleIn'),
+        "lifecycle.equals": args.get('lifecycleEqual'),
+        "sort": args.get('sort'),
+        "page": page,
+        "size": args.get('size', 20)
+    }
+    # Remove None values from params
+    params = {k: v for k, v in params.items() if v is not None}
+
+    all_assets: List[dict] = []
+
+    for _ in range(5):  # Limiting to 5 pages to avoid infinite loop
+        # Fetch data from client
+        response = client.get_asset_lists(params)
+
+        assets = response.get('assets', []) if isinstance(response, dict) else response
+
+        if not assets:
+            break  # No more assets to fetch
+
+        all_assets.extend(assets)
+
+        # Increment page number for the next iteration
+        page += 1
+        params['page'] = page
+
+    parsed_assets = [
+        {
+            'ID': asset.get('id', ''),
+            'Project ID': asset.get('projectId', ''),
+            'Project Name': asset.get('projectName', ''),
+            'Name': asset.get('name', ''),
+            'Cloud Provider': asset.get('cloudProvider', ''),
+            'Cloud Environment': asset.get('cloudEnvironment', ''),
+            'Service Type': asset.get('serviceType', ''),
+            'Lifecycle': asset.get('lifecycle', ''),
+            'Open Risks Count': asset.get('openRisksCount', 0),
+            'Open Alerts Count': asset.get('openAlertsCount', 0),
+            'Encrypted': asset.get('encrypted', False),
+            'Open To World': asset.get('openToWorld', False),
+            'Tags': asset.get('tags', {}),
+            'Asset Dig Tags': asset.get('assetDigTags', [])
+        }
+        for asset in all_assets
+    ]
+
+    return CommandResults(
+        outputs_prefix='DSPM.Assets',
+        outputs_key_field='id',
+        outputs=parsed_assets
     )
 
 
@@ -227,27 +337,110 @@ def get_asset_details_command(client: Client, args: dict[str, Any]) -> CommandRe
     demisto.debug(asset_details)
     return CommandResults(
         outputs_prefix='DSPM.AssetDetails',
-        outputs_key_field='asset.id',
+        outputs_key_field='id',
         outputs=asset_details
     )
 
 
-def get_data_types_command(client: Client) -> CommandResults:
-    dataTypes = client.get_data_types()
+def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResults:
+    asset_id = args.get('id', None)
+    types = args.get('types', [])
+    params = {
+        "id": asset_id,
+        "page": args.get('page', 1),
+        "size": args.get('size', 20)
+    }
 
-    # Log the dataTypes structure for debugging
-    demisto.debug(f"dataTypes: {dataTypes}")
+    if not asset_id:
+        raise ValueError("Asset ID not specified")
 
-    formatted_data = [{"No": idx + 1, "Key": item} for idx, item in enumerate(dataTypes)]
+    request_body = {
+        "type": {
+            "in": types
+        }
+    }
 
-    headers = ["No", "Key"]
-    human_readable = tableToMarkdown("Data Types", formatted_data, headers=headers)
+    response = client.get_asset_files(params, request_body)
+
+    files = response.get('files', [])
+    files_count = response.get('filesCount', 0)
+
+    return CommandResults(
+        outputs_prefix='DSPM.AssetFiles',
+        outputs_key_field='filename',
+        outputs={
+            'files': files,
+            'filesCount': files_count
+        }
+    )
+
+
+def get_data_types_command(client):
+    """Command to fetch data types."""
+    data_types = client.get_data_types()
+    data_types_formatted = [{'No': index + 1, 'Key': dt} for index, dt in enumerate(data_types)]
+
+    if data_types_formatted:
+        readable_output = (
+            "### Data Types\n"
+            "| No | Key  |\n"
+            "|----|------|\n"
+        )
+        for item in data_types_formatted:
+            readable_output += f"| {item['No']}  | {item['Key']} |\n"
+    else:
+        readable_output = (
+            "### Data Types\n"
+            "| No | Key |\n"
+            "|----|-----|\n"
+            "**No entries.**\n"
+        )
 
     return CommandResults(
         outputs_prefix='DSPM.DataTypes',
         outputs_key_field='Key',
-        outputs=formatted_data,
-        readable_output=human_readable
+        outputs=data_types_formatted,
+        readable_output=readable_output
+    )
+
+
+def get_data_type_findings_command(client):
+    """Command to fetch data types and format them for the XSOAR command results."""
+    data_type_findings = client.get_data_type_findings()
+
+    if not data_type_findings:  # Check if the list is empty
+        readable_output = (
+            "### Data Types\n"
+            "| No | Key |\n"
+            "|----|-----|\n"
+            "**No entries.**\n"
+        )
+        return CommandResults(
+            outputs_prefix='DSPM.DataTypesFindings',
+            outputs_key_field='Key',
+            outputs=[],
+            readable_output=readable_output
+        )
+
+    if isinstance(data_type_findings[0], str):  # Handle case where the data is a list of strings
+        data_type_findings_formatted = [{'No': index + 1, 'Key': dt} for index, dt in enumerate(data_type_findings)]
+    else:  # Handle case where the data is a list of dictionaries
+        data_type_findings_formatted = [{'No': index + 1, 'Key': dt['dataTypeName']}
+                                        for index, dt in enumerate(data_type_findings)]
+
+    readable_output = (
+        "### Data Types\n"
+        "| No | Key  |\n"
+        "|----|------|\n"
+    )
+    for item in data_type_findings_formatted:
+        readable_output += f"| {item['No']}  | {item['Key']} |\n"
+
+    return CommandResults(
+        outputs_prefix='DSPM.DataTypesFindings',
+        outputs_key_field='Key',
+        outputs=data_type_findings_formatted,
+        readable_output=readable_output
     )
 
 
@@ -255,15 +448,18 @@ def update_risk_finding_status_command(client, args):
     finding_id = args.get('findingId')
     status = args.get('status')
 
-    if status not in INCIDENT_STATUS.keys():
-        raise ValueError(f"Invalid status. Choose from: {', '.join(INCIDENT_STATUS.keys())}")
+    # Validate status
+    if status not in INCIDENT_STATUS:
+        raise ValueError(f"Invalid status. Choose from: {', '.join(INCIDENT_STATUS)}")
 
-    response = client.update_risk_status(finding_id, status)
-
-    if response.status_code != 200:
-        return_error(f"Failed to update risk finding status: {response.text}")
-
-    return_results(f"Risk finding {finding_id} updated to status {status}")
+    try:
+        response = client.update_risk_status(finding_id, status)
+        if response.get('status') == status:
+            return_results(f'Risk finding {finding_id} updated to status {status}')
+        else:
+            raise Exception(f"Unexpected response: {response}")
+    except Exception as e:
+        return_error(f"Failed to update risk finding {finding_id} to status {status}. Error: {str(e)}")
 
 
 ''' FETCH INCIDENTS FUNCTION'''
@@ -349,7 +545,7 @@ def fetch_incidents(client: Client, mirror_direction):
                     }
                 )
                 incidents.append(incident)
-            processed_ids.append(finding_id)
+            processed_ids.append(finding_id)  # type: ignore
 
     demisto.debug(f"Number of incidents created: {len(incidents)}")
     demisto.debug(f"Incident details: {incidents}")
@@ -690,16 +886,24 @@ def main() -> None:
             return_results(get_integration_config_command())
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents(client, mirror_direction)
-        elif demisto.command() == 'dspm-get_risk_findings':
+        elif demisto.command() == 'dspm-get-risk-findings':
             page_size: int = int(demisto.args().get('size', 50))
             if page_size <= 0:
                 raise ValueError("items_per_page should be a positive non-zero value.")
             return_results(get_risk_findings_command(client, demisto.args()))
-        elif demisto.command() == 'dspm-get_asset_details':
+        elif demisto.command() == 'dspm-get-risk-finding-by-id':
+            return_results(get_risk_finding_by_id_command(client, demisto.args()))
+        elif demisto.command() == 'dspm-get-list-of-assets':
+            return_results(get_list_of_assets(client, demisto.args()))
+        elif demisto.command() == 'dspm-get-asset-details':
             return_results(get_asset_details_command(client, demisto.args()))
+        elif demisto.command() == 'dspm-get-asset-files-by-id':
+            return_results(get_asset_files_by_id(client, demisto.args()))
         elif demisto.command() == 'dspm-get-data-types':
             return_results(get_data_types_command(client))
-        elif demisto.command() == 'dspm-update_risk_finding_status':
+        elif demisto.command() == 'dspm-get-data-types-findings':
+            return_results(get_data_type_findings_command(client))
+        elif demisto.command() == 'dspm-update-risk-finding-status':
             return_results(update_risk_finding_status_command(client, demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
             modified_incidents = get_modified_remote_data_command(client, demisto.args())

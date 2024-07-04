@@ -1,91 +1,480 @@
 import json
 import pytest
-import demistomock as demisto  # noqa: F401
-from datetime import datetime  # noqa: F401
-from unittest.mock import patch, MagicMock  # noqa: F401
+from unittest.mock import MagicMock
 from CommonServerPython import *  # noqa: F401
-
 from DSPM import (
-    Client,
+    get_list_of_assets,
+    get_asset_files_by_id,
     test_module,
-    get_risk_findings_command
+    get_risk_findings_command,
+    get_asset_details_command,
+    update_risk_finding_status_command,
+    get_data_types_command,
+    get_data_type_findings_command,
 )
 
 
 def util_load_json(path):
+    """Helper function to load JSON data from a file."""
     with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
-# Helper function to mock http request
+# Helper function to mock HTTP request
 def mock_http_request(method, url_suffix, params=None, headers=None, data=None, json_data=None):
     if url_suffix == '/v1/risk-findings':
         return util_load_json('test_data/risk-findings-response.json')
     elif url_suffix.startswith('/v1/assets/id?id='):
         return {'id': 'asset1', 'name': 'Test Asset'}
-    elif 'status' in url_suffix:
+    elif url_suffix.startswith('/v1/risk-findings/') and '/status' in url_suffix:
         return {'status': 'updated'}
     return {}
 
 
 @pytest.fixture
-def client() -> Client:
-    return Client(
-        base_url='https://example.com',
-        api_key='api_key',
-        verify=True,
-        proxy=False
-    )
+def client():
+    """Mock Client class."""
+    client = MagicMock()
+    client.fetch_risk_findings = MagicMock(return_value=util_load_json('test_data/risk-findings-response.json'))
+    client.get_asset_details = MagicMock(return_value={'id': 'asset1', 'name': 'Test Asset'})
+    client.update_risk_status = MagicMock(return_value=MagicMock(status_code=200, text='Update successful'))
+    client.get_data_types = MagicMock(return_value=["Type1", "Type2", "Type3"])
+    client.get_data_type_findings = MagicMock(return_value=[
+        {"dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION"},
+        {"dataTypeName": "PII"},
+        {"dataTypeName": "CREDIT_CARD"},
+        {"dataTypeName": "SSN"}
+    ])
+    return client
 
 
-def test_test_module(client: Client, mocker):
+def test_test_module(client, mocker):
     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
     result = test_module(client)
     assert result == 'ok'
 
 
-def test_get_risk_findings_command(client: Client, mocker):
-    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
+def test_get_risk_findings_command(client):
     args = {}
     result = get_risk_findings_command(client, args)
+
     assert isinstance(result, CommandResults)
-    assert result.outputs[0]['id'] == '7e9a3891-8970-4c08-961a-03f49e239d68'
+    assert 'DSPM.RiskFindings' in result.outputs_prefix
+    assert len(result.outputs) > 0  # type: ignore
+
+    # Check the structure of one finding
+    finding = result.outputs[0]  # type: ignore
+    assert 'ID' in finding
+    assert 'Rule Name' in finding
+    assert 'Severity' in finding
+    assert 'Asset Name' in finding
+    assert 'Asset ID' in finding
+    assert 'Status' in finding
+    assert 'Project ID' in finding
+    assert 'Cloud Provider' in finding
+    assert 'Cloud Environment' in finding
+    assert 'First Discovered' in finding
+    assert 'Compliance Standards' in finding
 
 
-# def test_get_asset_details_command(client, mocker):
-#     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
-#     args = {'asset_id': 'asset1'}
-#     result = get_asset_details_command(client, args)
-#     assert isinstance(result, CommandResults)
-#     assert result.outputs['asset']['name'] == 'Test Asset'
+def test_get_asset_details_command(client, mocker):
+    mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
+    args = {'asset_id': 'asset1'}
+    result = get_asset_details_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs['name'] == 'Test Asset'  # type: ignore
 
 
-# def test_update_risk_finding_status_command(client, mocker):
-#     mocker.patch.object(client, '_http_request', side_effect=mock_http_request)
-#     args = {'findingId': '1', 'status': 'OPEN'}
-#     with patch('demistomock.return_results') as mock_return_results:
-#         update_risk_finding_status_command(client, args)
-#         mock_return_results.assert_called_once_with('Risk finding 1 updated to status OPEN')
+def test_update_risk_finding_status_command_invalid_status(client):
+    args = {'findingId': '1', 'status': 'INVALID_STATUS'}
+
+    with pytest.raises(ValueError, match="Invalid status. Choose from: OPEN, INVESTIGATING, HANDLED, CLOSED"):
+        update_risk_finding_status_command(client, args)
 
 
-# # TODO: REMOVE the following dummy unit test function
-# def test_baseintegration_dummy():
-#     """Tests helloworld-say-hello command function.
+def test_get_data_types_command(client):
+    result = get_data_types_command(client)
 
-#     Checks the output of the command function with the expected output.
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.DataTypes'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [{"No": 1, "Key": "Type1"}, {"No": 2, "Key": "Type2"}, {"No": 3, "Key": "Type3"}]
 
-#     No mock is needed here because the say_hello_command does not call
-#     any external API.
-#     """
-#     from BaseIntegration import Client, baseintegration_dummy_command
+    expected_human_readable = (
+        "### Data Types\n"
+        "| No | Key  |\n"
+        "|----|------|\n"
+        "| 1  | Type1 |\n"
+        "| 2  | Type2 |\n"
+        "| 3  | Type3 |\n"
+    )
+    assert result.readable_output == expected_human_readable
 
-#     client = Client(base_url='some_mock_url', verify=False)
-#     args = {
-#         'dummy': 'this is a dummy response'
-#     }
-#     response = baseintegration_dummy_command(client, args)
 
-#     mock_response = util_load_json('test_data/baseintegration-dummy.json')
+def test_get_data_types_command_empty(client):
+    client.get_data_types = MagicMock(return_value=[])  # Empty data types
+    result = get_data_types_command(client)
 
-#     assert response.outputs == mock_response
-# # TODO: ADD HERE unit tests for every command
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.DataTypes'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == []
+
+    expected_human_readable = (
+        "### Data Types\n"
+        "| No | Key |\n"
+        "|----|-----|\n"
+        "**No entries.**\n"
+    )
+    assert result.readable_output == expected_human_readable
+
+
+def test_get_data_types_command_single_type(client):
+    client.get_data_types = MagicMock(return_value=["Type1"])  # Single data type
+    result = get_data_types_command(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.DataTypes'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [{"No": 1, "Key": "Type1"}]
+
+    expected_human_readable = (
+        "### Data Types\n"
+        "| No | Key  |\n"
+        "|----|------|\n"
+        "| 1  | Type1 |\n"
+    )
+    assert result.readable_output == expected_human_readable
+
+
+sample_data_multiple = [
+    {"dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION"},
+    {"dataTypeName": "PII"},
+    {"dataTypeName": "CREDIT_CARD"},
+    {"dataTypeName": "SSN"}
+]
+
+sample_data_multiple_strings = [
+    "AADHAAR_INDIVIDUAL_IDENTIFICATION",
+    "PII",
+    "CREDIT_CARD",
+    "SSN"
+]
+
+sample_data_single = [
+    {"dataTypeName": "AADHAAR_INDIVIDUAL_IDENTIFICATION"}
+]
+
+sample_data_single_string = [
+    "AADHAAR_INDIVIDUAL_IDENTIFICATION"
+]
+
+
+def test_get_data_type_findings_command(client):
+    client.get_data_type_findings = MagicMock(return_value=sample_data_multiple)  # Mocked data types
+
+    result = get_data_type_findings_command(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.DataTypesFindings'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [
+        {"No": 1, "Key": "AADHAAR_INDIVIDUAL_IDENTIFICATION"},
+        {"No": 2, "Key": "PII"},
+        {"No": 3, "Key": "CREDIT_CARD"},
+        {"No": 4, "Key": "SSN"}
+    ]
+
+    expected_human_readable = (
+        "### Data Types\n"
+        "| No | Key  |\n"
+        "|----|------|\n"
+        "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
+        "| 2  | PII |\n"
+        "| 3  | CREDIT_CARD |\n"
+        "| 4  | SSN |\n"
+    )
+    assert result.readable_output == expected_human_readable
+
+
+def test_get_data_type_findings_command_multiple_strings(client):
+    client.get_data_type_findings = MagicMock(return_value=sample_data_multiple_strings)  # Mocked data types as strings
+
+    result = get_data_type_findings_command(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.DataTypesFindings'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [
+        {"No": 1, "Key": "AADHAAR_INDIVIDUAL_IDENTIFICATION"},
+        {"No": 2, "Key": "PII"},
+        {"No": 3, "Key": "CREDIT_CARD"},
+        {"No": 4, "Key": "SSN"}
+    ]
+
+    expected_human_readable = (
+        "### Data Types\n"
+        "| No | Key  |\n"
+        "|----|------|\n"
+        "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
+        "| 2  | PII |\n"
+        "| 3  | CREDIT_CARD |\n"
+        "| 4  | SSN |\n"
+    )
+    assert result.readable_output == expected_human_readable
+
+
+def test_get_data_type_findings_command_single_type(client):
+    client.get_data_type_findings = MagicMock(return_value=sample_data_single)  # Single data type
+
+    result = get_data_type_findings_command(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.DataTypesFindings'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [{"No": 1, "Key": "AADHAAR_INDIVIDUAL_IDENTIFICATION"}]
+
+    expected_human_readable = (
+        "### Data Types\n"
+        "| No | Key  |\n"
+        "|----|------|\n"
+        "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
+    )
+    assert result.readable_output == expected_human_readable
+
+
+def test_get_data_type_findings_command_single_string(client):
+    client.get_data_type_findings = MagicMock(return_value=sample_data_single_string)  # Single data type as string
+
+    result = get_data_type_findings_command(client)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.DataTypesFindings'
+    assert result.outputs_key_field == 'Key'
+    assert result.outputs == [{"No": 1, "Key": "AADHAAR_INDIVIDUAL_IDENTIFICATION"}]
+
+    expected_human_readable = (
+        "### Data Types\n"
+        "| No | Key  |\n"
+        "|----|------|\n"
+        "| 1  | AADHAAR_INDIVIDUAL_IDENTIFICATION |\n"
+    )
+    assert result.readable_output == expected_human_readable
+
+
+def test_get_asset_files_by_id(client, mocker):
+    # Mock response data
+    mock_response = {
+        "files": [
+            {"filename": "file1.txt", "size": 1234},
+            {"filename": "file2.txt", "size": 5678}
+        ],
+        "filesCount": 2
+    }
+
+    # Mock the client method
+    client.get_asset_files = MagicMock(return_value=mock_response)
+
+    # Define the arguments for the command
+    args = {
+        'id': 'asset1',
+        'types': ['type1', 'type2'],
+        'page': 1,
+        'size': 20
+    }
+
+    # Call the function
+    result = get_asset_files_by_id(client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.AssetFiles'
+    assert result.outputs_key_field == 'filename'
+    assert result.outputs == {
+        'files': [
+            {"filename": "file1.txt", "size": 1234},
+            {"filename": "file2.txt", "size": 5678}
+        ],
+        'filesCount': 2
+    }
+
+
+# Test case for get_list_of_assets with empty response
+def test_get_list_of_assets_empty_response(client, mocker):
+    # Mock response data
+    mock_response = {
+        "assets": []
+    }
+
+    # Mock the client method
+    client.get_asset_lists = MagicMock(return_value=mock_response)
+
+    # Define the arguments for the command
+    args = {
+        'regionIn': 'us-east',
+        'cloudProviderIn': 'AWS',
+        'serviceTypeEqual': 'UNMANAGED_AWS_RDS',
+        'digTagKeyContains': 'env',
+        'lifecycleIn': 'RUNNING',
+        'sort': 'name',
+        'size': 10
+    }
+
+    # Call the function
+    result = get_list_of_assets(client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.Assets'
+    assert result.outputs_key_field == 'id'
+    assert result.outputs == []
+
+
+mock_assets_page_1 = [
+    {
+        "id": "asset1",
+        "projectId": "project1",
+        "projectName": "Project One",
+        "name": "Asset One",
+        "cloudProvider": "GCP",
+        "cloudEnvironment": "TESTING",
+        "serviceType": "UNMANAGED_GCP_MS_SQL",
+        "lifecycle": "RUNNING",
+        "openRisksCount": 5,
+        "openAlertsCount": 3,
+        "encrypted": True,
+        "openToWorld": False,
+        "tags": {"example_tag_key": "example_tag_value"},
+        "assetDigTags": [
+            {"digTagId": 1, "key": "tag1", "value": "value1"},
+            {"digTagId": 2, "key": "tag2", "value": "value2"}
+        ]
+    }
+]
+
+mock_assets_page_2 = [
+    {
+        "id": "asset2",
+        "projectId": "project2",
+        "projectName": "Project Two",
+        "name": "Asset Two",
+        "cloudProvider": "AWS",
+        "cloudEnvironment": "PRODUCTION",
+        "serviceType": "UNMANAGED_AWS_AEROSPIKE",
+        "lifecycle": "DELETED",
+        "openRisksCount": 2,
+        "openAlertsCount": 1,
+        "encrypted": False,
+        "openToWorld": True,
+        "tags": {"another_tag_key": "another_tag_value"},
+        "assetDigTags": [
+            {"digTagId": 3, "key": "tag3", "value": "value3"},
+            {"digTagId": 4, "key": "tag4", "value": "value4"}
+        ]
+    }
+]
+
+
+@pytest.mark.parametrize("mock_responses, expected_outputs", [
+    (
+        [  # Single page response
+            {"assets": mock_assets_page_1},
+            {"assets": []}  # No more assets
+        ],
+        [
+            {
+                'ID': 'asset1',
+                'Project ID': 'project1',
+                'Project Name': 'Project One',
+                'Name': 'Asset One',
+                'Cloud Provider': 'GCP',
+                'Cloud Environment': 'TESTING',
+                'Service Type': 'UNMANAGED_GCP_MS_SQL',
+                'Lifecycle': 'RUNNING',
+                'Open Risks Count': 5,
+                'Open Alerts Count': 3,
+                'Encrypted': True,
+                'Open To World': False,
+                'Tags': {"example_tag_key": "example_tag_value"},
+                'Asset Dig Tags': [
+                    {"digTagId": 1, "key": "tag1", "value": "value1"},
+                    {"digTagId": 2, "key": "tag2", "value": "value2"}
+                ]
+            }
+        ]
+    ),
+    (
+        [  # Pagination response
+            {"assets": mock_assets_page_1},
+            {"assets": mock_assets_page_2},
+            {"assets": []}  # No more assets
+        ],
+        [
+            {
+                'ID': 'asset1',
+                'Project ID': 'project1',
+                'Project Name': 'Project One',
+                'Name': 'Asset One',
+                'Cloud Provider': 'GCP',
+                'Cloud Environment': 'TESTING',
+                'Service Type': 'UNMANAGED_GCP_MS_SQL',
+                'Lifecycle': 'RUNNING',
+                'Open Risks Count': 5,
+                'Open Alerts Count': 3,
+                'Encrypted': True,
+                'Open To World': False,
+                'Tags': {"example_tag_key": "example_tag_value"},
+                'Asset Dig Tags': [
+                    {"digTagId": 1, "key": "tag1", "value": "value1"},
+                    {"digTagId": 2, "key": "tag2", "value": "value2"}
+                ]
+            },
+            {
+                'ID': 'asset2',
+                'Project ID': 'project2',
+                'Project Name': 'Project Two',
+                'Name': 'Asset Two',
+                'Cloud Provider': 'AWS',
+                'Cloud Environment': 'PRODUCTION',
+                'Service Type': 'UNMANAGED_AWS_AEROSPIKE',
+                'Lifecycle': 'DELETED',
+                'Open Risks Count': 2,
+                'Open Alerts Count': 1,
+                'Encrypted': False,
+                'Open To World': True,
+                'Tags': {"another_tag_key": "another_tag_value"},
+                'Asset Dig Tags': [
+                    {"digTagId": 3, "key": "tag3", "value": "value3"},
+                    {"digTagId": 4, "key": "tag4", "value": "value4"}
+                ]
+            }
+        ]
+    )
+])
+def test_get_list_of_assets(mocker, mock_responses, expected_outputs):
+    # Mock the client method to return different pages
+    client = MagicMock()
+    client.get_asset_lists.side_effect = mock_responses
+
+    # Define the arguments for the command
+    args = {}
+
+    # Call the function
+    result = get_list_of_assets(client, args)
+
+    # Assertions
+    assert isinstance(result, CommandResults)
+    assert result.outputs_prefix == 'DSPM.Assets'
+    assert result.outputs_key_field == 'id'
+    assert result.outputs == expected_outputs
+
+
+def test_get_asset_details(mocker):
+    client = MagicMock()
+    client.get_asset_details.return_value = {"asset": {"id": "asset1", "name": "Asset One"}}
+
+    args = {"asset_id": "asset1"}  # Ensure the argument is correct
+    result = get_asset_details_command(client, args)
+
+    assert result.outputs == {"asset": {"id": "asset1", "name": "Asset One"}}  # Access 'outputs' attribute

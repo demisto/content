@@ -171,20 +171,47 @@ script:
       required: false
       secret: false
     description: Retrieves risk findings matching the input criteria.
-    name: dspm-get_risk_findings
+    name: dspm-get-risk-findings
     outputs:
     - contextPath: DSPM.RiskFindings
       description: List of risk findings matching the input criteria.
+      type: String
+  - arguments:
+    - description: ID of the risk to retrieve details for.
+      name: finding_id
+      required: true
+    description: Retrieves risk details for the provided risk ID.
+    name: dspm-get-risk-finding-by-id
+    outputs:
+    - contextPath: DSPM.RiskFinding
+      description: Details of the risk finding for the provided ID.
+      type: String
+  - arguments: []
+    description: for retrieve list of assets for company.
+    name: dspm-get-list-of-assets
+    outputs:
+    - contextPath: DSPM.Assets
+      description: List of assets for company.
       type: String
   - arguments:
     - description: ID of the asset to retrieve details for.
       name: asset_id
       required: true
     description: Retrieves asset details for the provided asset ID.
-    name: dspm-get_asset_details
+    name: dspm-get-asset-details
     outputs:
     - contextPath: DSPM.AssetDetails
       description: Details of the asset for the provided ID.
+      type: String
+  - arguments:
+    - description: ID of the asset to retrieve details for.
+      name: asset_id
+      required: true
+    description: Retrieves asset file details for the provided asset ID.
+    name: dspm-get-asset-files-by-id
+    outputs:
+    - contextPath: DSPM.AssetFiles
+      description: File Details of the asset for the provided ID.
       type: String
   - arguments: []
     description: for retrieve list of data types for company.
@@ -192,6 +219,13 @@ script:
     outputs:
     - contextPath: DSPM.DataTypes
       description: List of data types for company.
+      type: String
+  - arguments: []
+    description: for retrieve list of data type findings for company.
+    name: dspm-get-data-types-findings
+    outputs:
+    - contextPath: DSPM.DataTypeFindings
+      description: List of data type findings for company.
       type: String
   - arguments: []
     description: Pushes local changes to the remote system.
@@ -229,7 +263,7 @@ script:
       name: status
       required: true
     description: Updates the status of a risk finding.
-    name: dspm-update_risk_finding_status
+    name: dspm-update-risk-finding-status
     outputs:
       - contextPath: DSPM.RiskFinding
         description: The updated risk finding.
