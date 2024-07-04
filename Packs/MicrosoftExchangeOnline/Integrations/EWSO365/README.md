@@ -1,13 +1,17 @@
-# Introduction
+# EWS O365
+
+## Introduction
 
 Exchange Web Services (EWS) provides the functionality to enable client applications to communicate with the Exchange server. EWS provides access to much of the same data that is made available through Microsoft Office Outlook.
 
 The EWS O365 integration implants EWS leading services. The integration allows getting information on emails and activities in a target mailbox, and some active operations on the mailbox such as deleting emails and attachments or moving emails from folder to folder.
 
-# Supported Versions and license needed
+## Supported Versions and license needed
+
 **?**
  
-# Use cases
+## Use cases
+
 The EWS integration can be used for the following use cases.
 
 * Monitor a specific email account and create incidents from incoming emails to the defined folder.  
@@ -27,36 +31,38 @@ The EWS integration can be used for the following use cases.
     First, make sure you obtain the email item ID. The item ID can be obtained with one of the integration’s search commands.  
     Use the `ews-delete-items`<span> command </span>to delete one or more items from the target mailbox in a single action.  
     A less common use case is to remove emails that were marked as malicious from a user’s mailbox.  
-    You can delete the items permanently (hard delete), or delete the items (soft delete), so they can be recovered by running the `ews-recover-messages` command.
+    You can delete the items permanently (hard delete) or delete the items (soft delete), so they can be recovered by running the `ews-recover-messages` command.
 
-# Architecture
+## Architecture
+
 This integration is based on the `exchangelib` python module. For more information about the module check the [documentation](https://ecederstrand.github.io/exchangelib/).
 
-# Special Notes/Disclaimers
+## Special Notes/Disclaimers
 
 No known disclaimers.
 
-# Known Limitations
+## Known Limitations
 
 No known limitations.
 
-# System Integration Setup (Device side steps)
+## System Integration Setup (Device side steps)
 
 There are two application authentication methods available.
-Follow your prefered method's guide on how to use the admin consnt flow in order to recieve your authentication information:
+Follow your preferred method's guide on how to use the admin consent flow in order to receive your authentication information:
 
 * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
 * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-# Permissions
+## Permissions
+
 **full_access_as_app** - To set this permission follow [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
 You can't manage the **Office 365 Exchange Online** app permissions via the Azure portal.
 
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
-# Configure Integration on XSOAR (Parameters)
+## Configure Integration on XSOAR (Parameters)
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for EWS O365.
@@ -82,50 +88,51 @@ To limit the application's permissions to only specific mailboxes, follow the [M
     | Use system proxy settings |  | False |
     | Run as a separate process (protects against memory depletion) |  | False |
     | Use a self deployed Azure Application | Select this checkbox if you are using a self-deployed Azure application. | False |
-    | ID / Application ID (Deprecated) | Use the "ID" parameter instead. | False |
-    | Token / Tenant ID (Deprecated) | Use the "Token" parameter instead. | False |
-    | Key / Application Secret (Deprecated) | Use the "Key" parameter instead. | False |
     | Incidents Fetch Interval |  | False |
     | What time field should we filter incidents by? | Default is to filter by received-time, which works well if the folder is an "Inbox". But for a folder emails are dragged into for attention, if we filter by received-time, out-of-order processing of emails means some are ignored. Filtering by modified-time works better for such a scenario. This works best if any modifications \(such as tagging\) happens before moving the email into the folder, such that the move into the folder is the last modification, and triggers Cortex XSOAR to fetch it as an incident. | False |
 
 5. Click **Test** to validate the URLs, token, and connection.
 
-# fetch-incidents
+## Fetch Incidents
 
-## Description
+### Description
+
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email, Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files.
 
 To use Fetch incidents, configure a new instance and select the `Fetches incidents` option in the instance settings.
 
 IMPORTANT: 
 ``First fetch timestamp`` field is used to determine how much time back to fetch incidents from. The default value is the previous 10 minutes, Meaning: If this is the first time emails are fetched from the destination folder, all emails from 10 minutes prior to the instance configuration and up to the current time will be fetched.
-When set to get a long period of time, the `Timeout`` field might need to be set to a higher value.
+When set to get a long period of time, the `Timeout` field might need to be set to a higher value.
 
 Pay special attention to the following fields in the instance settings:
 
 `Email Address` – mailbox to fetch incidents from.  
 `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
 
-## Permissions
+### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
-## Limitations
+### Limitations
+
 If Exchange is configured with an international flavor `Inbox` will be named according to the configured language.
 
-# Commands
+## Commands
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-get-attachment</h3></summary>
 
 ### Description
+
 Retrieves the actual attachments from an email message. To get all attachments for a message, only specify the item-id argument.
 
 ### Permissions
 
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
@@ -161,6 +168,7 @@ No known limitations.
 |EWS.Items.ItemAttachments.isRead|String|The read status of the attachment.|
 
 ### Examples
+
 ```
 !ews-get-attachment item-id=BBFDShfdafFSDF3FADR3434DFASDFADAFDADFADFCJebinpkUAAAfxuiVAAA= target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -216,12 +224,15 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-delete-attachment</h3></summary>
 
 ### Description
+
 Deletes the attachments of an item (email message).
 
 ### Permissions
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
@@ -233,6 +244,7 @@ No known limitations.
 |attachment-ids|A CSV list (or array) of attachment IDs to delete. If empty, all attachments will be deleted from the message.|Optional|
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.FileAttachments.attachmentId|string|The ID of the deleted attachment, in case of file attachment.|
@@ -241,6 +253,7 @@ No known limitations.
 |EWS.Items.ItemAttachments.action|string|The deletion action in case of other attachment (for example, "email"). This is a constant value: 'deleted'.|
 
 ### Examples
+
 ```
 !ews-delete-attachment item-id=AAMkADQ0NmwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUQZfBJjfaljfAFDVSDinpkUAAAfxxd9AAA= target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -273,18 +286,23 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-get-searchable-mailboxes</h3></summary>
 
 ### Description
+
 Get a list of searchable mailboxes.
 
 ### Permissions
+
 Requires eDiscovery permissions to the Exchange Server. For more information see the [Microsoft documentation](https://technet.microsoft.com/en-us/library/dd298059(v=exchg.160).aspx).
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 There are no input arguments for this command.
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Mailboxes.mailbox|string|Addresses of the searchable mailboxes.|
@@ -331,15 +349,19 @@ There are no input arguments for this command.
 <summary><h3 style={{display: 'inline'}}>ews-move-item</h3></summary>
 
 ### Description
+
 Move an item to a different folder in the mailbox.
 
 ### Permissions
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |item-id|The ID of the item to move.|Required|
@@ -349,6 +371,7 @@ No known limitations.
 
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.newItemID|string|The item ID after the move.|
@@ -357,6 +380,7 @@ No known limitations.
 |EWS.Items.action|string|The action taken. The value will be "moved".|
 
 ### Examples
+
 ```
 !ews-move-item item-id=VDAFNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU34cSCSSSfBJebinpkUAAAAAAEMAACyyVyFtlsUQZfBJebinpkUAAAfxuiRAAA= target-folder-path=Moving target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -368,6 +392,7 @@ No known limitations.
 >|moved|VDAFNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU34cSCSSSfBJebinpkUAAAAAAEMAACyyVyFtlsUQZfBJebinpkUAAAfxuiRAAA||AAVAAAVN2NkLThmZjdmNTZjNTMxFFFFJTJPMPXU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAAa2bUBAACyyVfafainpkUAAAfxxd+AAA=|
 
 #### Context Example
+
 ```
     {
         "EWS": {
@@ -388,13 +413,19 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-delete-items</h3></summary>
 
 ### Description
+
 Delete an item from a mailbox
+
 ### Permissions
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |item-ids|The item IDs to delete.|Required|
@@ -402,6 +433,7 @@ No known limitations.
 |target-mailbox|The mailbox on which to run the command.|Optional|
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.itemId|string|The deleted item ID.|
@@ -441,13 +473,19 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-search-mailbox</h3></summary>
 
 ### Description
+
 Searches for items in the specified mailbox. Specific permissions are needed for this operation to search in a target mailbox other than the default.
+
 ### Permissions
-Impersonation rights required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |query|The search query string. For more information about the query syntax, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/ee693615.aspx).|Optional|
@@ -458,6 +496,7 @@ No known limitations.
 |message-id|The message ID of the email. This will be ignored if a query argument is provided.|Optional|
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.itemId|string|The email item ID.|
@@ -480,6 +519,7 @@ No known limitations.
 |EWS.Items.isRead|String|The read status of the email.|
 
 ### Examples
+
 ```
 !ews-search-mailbox query="subject:"Get Attachment Email" target-mailbox=test@demistodev.onmicrosoft.com limit=1
 ```
@@ -552,21 +592,26 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-get-contacts</h3></summary>
 
 ### Description
+
 Retrieves contacts for a specified mailbox.
 
 ### Permissions
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |target-mailbox|The mailbox for which to retrieve the contacts.|Optional|
 |limit|Maximum number of results to return.|Optional|
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |Account.Email.EwsContacts.displayName|Unknown|The contact name.|
@@ -576,6 +621,7 @@ No known limitations.
 |Account.Email.EwsContacts.phoneNumbers.phoneNumber|Unknown|Email addresses of the contact.|
 
 ### Examples
+
 ```
 !ews-get-contacts limit="1"
 ```
@@ -627,21 +673,26 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-get-out-of-office</h3></summary>
 
 ### Description
+
 Retrieves the out-of-office status for a specified mailbox.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |target-mailbox|The mailbox for which to get the out-of-office status.|Required|
 
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |Account.Email.OutOfOffice.state|Unknown|Out-of-office state. The result can be: "Enabled", "Scheduled", or "Disabled".|
@@ -654,6 +705,7 @@ No known limitations.
 
 
 ### Examples
+
 ```
 !ews-get-out-of-office target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -691,12 +743,15 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-recover-messages</h3></summary>
 
 ### Description
+
 Recovers messages that were soft-deleted.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
@@ -709,6 +764,7 @@ No known limitations.
 |is-public|Whether the target folder is a Public Folder.|Optional|
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.itemId|Unknown|The item ID of the recovered item.|
@@ -716,6 +772,7 @@ No known limitations.
 |EWS.Items.action|Unknown|The action taken on the item. The value will be 'recovered'.|
 
 ### Examples
+
 ```
 !ews-recover-messages message-ids=<DFVDFmvsCSCS.com> target-folder-path=Moving target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -749,15 +806,19 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-create-folder</h3></summary>
 
 ### Description
+
 Creates a new folder in a specified mailbox.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |new-folder-name|The name of the new folder.|Required|
@@ -765,15 +826,18 @@ No known limitations.
 |target-mailbox|The mailbox in which to create the folder.|Optional|
 
 ### Outputs
+
 There is no context output for this command.
 
 
 ### Examples
+
 ```
 !ews-create-folder folder-path=Inbox new-folder-name="Created Folder" target-mailbox=test@demistodev.onmicrosoft.com
 ```
 
 #### Human Readable Output
+>
 > Folder Inbox\Created Folder created successfully
 
 
@@ -783,15 +847,19 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-mark-item-as-junk</h3></summary>
 
 ### Description
+
 Marks an item as junk. This is commonly used to block an email address. For more information, see the [Microsoft documentation](https://msdn.microsoft.com/en-us/library/office/dn481311(v=exchg.150).aspx).
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |item-id|The item ID to mark as junk.|Required|
@@ -799,11 +867,13 @@ No known limitations.
 |target-mailbox|If empty, will use the default mailbox. If you specify a different mailbox, you might need impersonation rights to the mailbox.|Optional|
 
 ### Outputs
+
 ```
 There is no context output for this command.
 ```
 
 ### Examples
+
 ```
 !ews-mark-item-as-junk item-id=AAMkcSQ0NmFkOhmZjdmNTZjNTMxNwBGAAAAAAA4kxh+ed3JTJPMPXU3wX3aBwCyyVyFtlsUcsBJebinpkUAAAAAAEMASFDkUAAAfxuiSAAA= move-items=yes target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -835,21 +905,26 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-find-folders</h3></summary>
 
 ### Description
+
 Retrieves information for the folders of the specified mailbox. Only folders with read permissions will be returned. Your visual folders on the mailbox, such as "Inbox", are under the folder "Top of Information Store".
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |target-mailbox|The mailbox on which to apply the command.|Optional|
 |is-public|Whether to find Public Folders.|Optional|
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Folders.name|string|Folder name.|
@@ -861,6 +936,7 @@ No known limitations.
 
 
 ### Examples
+
 ```
 !ews-find-folders target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -936,15 +1012,19 @@ root
 <summary><h3 style={{display: 'inline'}}>ews-get-items-from-folder</h3></summary>
 
 ### Description
+
 Retrieves items from a specified folder in a mailbox. The items are ordered by the item created time, most recent is first.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |folder-path|The folder path from which to get the items.|Required|
@@ -955,6 +1035,7 @@ No known limitations.
 
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.itemId|string|The item ID of the email.|
@@ -1050,15 +1131,19 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-get-items</h3></summary>
 
 ### Description
+
 Retrieves items by item ID.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |item-ids|A CSV list of item IDs.|Required|
@@ -1066,6 +1151,7 @@ No known limitations.
 
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.itemId|string|The email item ID.|
@@ -1097,11 +1183,13 @@ No known limitations.
 |Email.HeadersMap|String|The headers of the email.|
 
 ### Examples
+
 ```
 !ews-get-items item-ids=AAMkADQ0NmFkODFkLWQ4MDEtNDFDFZjNTMxNwBGAAAAAAA4kxhFFAfxw+jAAA= target-mailbox=test@demistodev.onmicrosoft.com
 ```
 
 #### Human Readable Output
+
 ```
 Identical outputs to `ews-get-items-from-folder` command.
 ```
@@ -1113,15 +1201,19 @@ Identical outputs to `ews-get-items-from-folder` command.
 <summary><h3 style={{display: 'inline'}}>ews-move-item-between-mailboxes</h3></summary>
 
 ### Description
+
 Moves an item from one mailbox to a different mailbox.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 |**Argument Name**|**Description**|**Required**|
 |--- |--- |--- |
 |item-id|The item ID to move.|Required|
@@ -1131,6 +1223,7 @@ No known limitations.
 |is-public|Whether the destination folder is a Public Folder. Default is "False".|Optional|
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Items.movedToMailbox|string|The mailbox to which the item was moved.|
@@ -1138,6 +1231,7 @@ No known limitations.
 |EWS.Items.action|string|The action taken on the item. The value will be "moved".|
 
 ### Examples
+
 ```
 !ews-move-item-between-mailboxes item-id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NFSFSyNzBkNABGAAAAAACYCKjWAjq/zTrN6vWSzK4OWAAK2ISFSA= destination-folder-path=Moving destination-mailbox=test@demistodev.onmicrosoft.com source-mailbox=test2@demistodev.onmicrosoft.com
 ```
@@ -1167,12 +1261,15 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-get-folder</h3></summary>
 
 ### Description
+
 Retrieves a single folder.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
@@ -1185,6 +1282,7 @@ No known limitations.
 |
 
 ### Outputs
+
 |**Path**|**Type**|**Description**|
 |--- |--- |--- |
 |EWS.Folders.id|string|Folder ID.|
@@ -1195,6 +1293,7 @@ No known limitations.
 |EWS.Folders.unreadCount|number|Number of unread emails in the folder.|
 
 ### Examples
+
 ```
 !ews-get-folder folder-path=demistoEmail target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -1230,12 +1329,15 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>ews-expand-group</h3></summary>
 
 ### Description
+
 Expands a distribution list to display all members. By default, expands only the first layer of the distribution list. If recursive-expansion is "True", the command expands nested distribution lists and returns all members.
 
 ### Permissions
-Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights required. In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
@@ -1246,9 +1348,11 @@ No known limitations.
 |recursive-expansion|Whether to enable recursive expansion. Default is "False".|Optional|
 
 ### Outputs
+
 There is no context output for this command.
 
 ### Examples
+
 ```
 !ews-expand-group email-address="TestPublic" recursive-expansion="False"
 ```
@@ -1283,12 +1387,15 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-mark-items-as-read</h3></summary>
 
 ### Description
+
 Marks items as read or unread.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
@@ -1309,6 +1416,7 @@ No known limitations.
 
 
 ### Examples
+
 ```
 !ews-mark-items-as-read item-ids=AAMkADQ0NFSffU3wX3aBwCyyVyFtlsUQZfBJebinpkUAAABjKMnpkUAAAfxw+jAAA= operation=read target-mailbox=test@demistodev.onmicrosoft.com
 ```
@@ -1340,16 +1448,20 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>send-mail</h3></summary>
 
 ### Description
+
 Sends an email.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 
 ### Limitations
+
 When sending the email to an Outlook account, Outlook UI fails to display custom headers. This does not happens when sending to Gmail account.
 
 ### Inputs
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | to | Email addresses for the 'To' field. Supports comma-separated values | Optional | 
@@ -1373,6 +1485,7 @@ When sending the email to an Outlook account, Outlook UI fails to display custom
 
 
 ### Outputs
+
 There is no context output for this command.
 
 
@@ -1392,21 +1505,26 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-get-items-as-eml</h3></summary>
 
 ### Description
+
 Retrieves items by item ID and uploads its content as an EML file.
 
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | item-id | The item ID of item to upload as and EML file. | Required | 
 | target-mailbox | The mailbox in which this email was found. If empty, the default mailbox is used. Otherwise the user might require impersonation rights to this mailbox. | Optional | 
 
 ### Outputs
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | File.Size | String | The size of the file. | 
@@ -1422,6 +1540,7 @@ No known limitations.
 | File.Extension | String | The extension of the file. | 
 
 ### Examples
+>
 > ``
 
 </details>
@@ -1430,15 +1549,20 @@ No known limitations.
 <summary><h3 style={{display: 'inline'}}>reply-mail</h3></summary>
 
 ### Description
+
 Reply to an email
+
 ### Permissions
-Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the ApplicationImpersonation role.
+
+Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | inReplyTo | ID of the item to reply to. | Required | 
@@ -1454,10 +1578,12 @@ No known limitations.
 
 
 ### Outputs
+
 There is no context output for this command.
 
 
 ### Examples
+
 ```!reply-mail item_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGFeAAA= body=hello subject=hi to="avishai@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
@@ -1475,23 +1601,29 @@ There is no context output for this command.
 <summary><h3 style={{display: 'inline'}}>ews-auth-reset</h3></summary>
 
 ### Description
+
 Rerun the authentication process.
 
 ### Permissions
-No additinal Permissions needed.
+
+No additional Permissions needed.
 
 ### Limitations
+
 No known limitations.
 
 ### Inputs
+
 There is no input for this command.
 
 
 ### Outputs
+
 There is no context output for this command.
 
 
 ### Examples
+
 ```!reply-mail item_id=AAMkAGY3OTQyMzMzLWYxNjktNDE0My05NmZhLWQ5MGY1YjIyNzBkNABGAAAAAACYCKjWAnXBTrnhgWJCcLX7BwDrxRwRjq/zTrN6vWSzK4OWAAAAAAEMAADrxRwRjq/zTrN6vWSzK4OWAAPYQGFeAAA= body=hello subject=hi to="avishai@demistodev.onmicrosoft.com"```
 
 #### Human Readable Output
@@ -1507,7 +1639,7 @@ There is no context output for this command.
 </details>
 
 
-# Troubleshooting
+## Troubleshooting
 
 <details><summary><h3 style={{display: 'inline'}}>Instance Configuration </h3></summary> No troubleshooting found. </details>
 
