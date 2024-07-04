@@ -27,13 +27,12 @@ args:
   - dot
   - http
   - colon
-  description: URL defang can be configured to merely defang . or https or :// or
-    all.
+  description: URL defang can be configured to merely defang . or https or :// or all.
   isArray: true
   defaultValue: dot, http, colon
 outputs:
 - contextPath: Defang.output
-  description: The defanged output
+  description: The defanged output.
   type: string
 comment: Defangs IP, Mail and URL address to prevent them from being recognized.
 commonfields:
