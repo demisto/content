@@ -258,7 +258,6 @@ class DSHttpRequestHandler(ABC):
         """
         Create the default basic auth and 'searchlight-account-id' headers required for each request
         """
-        LOG("DSHttpRequestHandler---> build header")
         headers = {}
         auth = str(self.access_key) + ':' \
                + str(self.secret_key)
@@ -294,7 +293,6 @@ class DSApiRequestHandler(DSHttpRequestHandler):
             self.session.proxies = proxies
 
     def get(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
-        LOG("DSApiRequestHandler request ---> ")
         response = self.session.get(
             self.base_url + url, headers=headers, params=params, data=data, **kwargs)
         return self.rate_limit_response(response)
@@ -315,7 +313,6 @@ class SearchLightRequestHandler(HttpRequestHandler):
 
     def __init__(self, base_url, account_id, access_key, secret_key, proxies=None, **kwargs):
         super().__init__(base_url, account_id, access_key, secret_key, **kwargs)
-        LOG("inside SearchLightRequestHandler------")
         self.headers['Accept'] = 'application/json'
         self.session = requests.Session()
         self.session.headers.update(self.headers)
@@ -822,8 +819,8 @@ class SearchLightTriagePoller(object):
         comment_map = get_comments_map(triage_item_comments)
         for triage_item in triage_items:
             event = event_map[triage_item[ID]]
-            if not should_ingest_closed and event[STATE] in NON_INGESTIBLE_TRIAGE_ITEM_STATES:
-                LOG("skipping triage item")
+            if not should_ingest_closed and triage_item[STATE] in NON_INGESTIBLE_TRIAGE_ITEM_STATES:
+                LOG(f"skipping triage item as its in closed state triage id: {triage_item[ID]}")
                 continue
             # Overriding the state and risk level as event data is source of truth
             triage_item[RISK_LEVEL] = event[RISK_LEVEL]
@@ -896,11 +893,19 @@ class SearchLightTriagePoller(object):
 
         events = get_triage_item_events(self.request_handler, event_num_after=event_num_start, limit=limit,
                                         event_created_after=event_created_after, risk_types=risk_types_filter)
+        # Only ingesting events with create action event
+        if events:
+            events = [event for event in events if event[EVENT_ACTION].lower() == EVENT_ACTION_CREATE]
+
         risk_level_filter = []
 
         if not RISK_LEVEL_ALL in risk_level and len(risk_level) > 0:
             risk_level_filter = risk_level
 
+        if events:
+            max_event_num = max([e['event-num'] for e in events])
+        else:
+            max_event_num = int(event_num_start) + int(limit)
         # filtering events by risk level
         if risk_level_filter:
             events = [event for event in events if event[RISK_LEVEL] in risk_level_filter]
@@ -908,9 +913,7 @@ class SearchLightTriagePoller(object):
         if not events:
             LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit: {}, risk_level: {}, alert_risk_types: {}".format(
                 event_num_start, event_created_after, limit, risk_level, alert_risk_types))
-            return PollResult(event_num_start, [])
-
-        max_event_num = max([e['event-num'] for e in events])
+            return PollResult(max_event_num, [])
 
         triage_item_ids = [e[TRIAGE_ITEM_ID] for e in events]
         triage_items = get_triage_items(self.request_handler, triage_item_ids)
@@ -1185,7 +1188,6 @@ def main():
             verify=verify_certificate,
             auth=(secretKey, accessKey),
         )
-        LOG("client initialized ----- test client")
         search_light_request_handler = SearchLightRequestHandler(base_url,
                                                                  account,
                                                                  accessKey,
@@ -1198,7 +1200,7 @@ def main():
             elif not fetchLimit.isdigit():
                 demisto.results('fetch limit must be number')
             result = test_module(searchLightClient)
-            demisto.results(result)
+            return_results(result)
         elif demisto.command() == 'fetch-incidents':
             last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
             search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
@@ -1225,7 +1227,7 @@ def main():
                 demisto.incidents([])
                 demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
         elif demisto.command() == 'ds-search':
-            demisto.results(search_find(digital_shadows_request_handler, demisto.args()))
+            return_results(search_find(digital_shadows_request_handler, demisto.args()))
         else:
             raise NotImplementedError(f'{demisto.command()} command is not implemented.')
     # Log exceptions

@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS MENTION_BY_A_THREAT_ACTOR",
 	"itemVersion": "",
-	"layout": "DigitalShadowsIncidentLayout V2",
+	"layout": "Reliaquest GreyMatter DRP Incident Layout",
 	"locked": false,
 	"name": "DS MENTION_BY_A_THREAT_ACTOR",
 	"onChangeRepAlg": 0,

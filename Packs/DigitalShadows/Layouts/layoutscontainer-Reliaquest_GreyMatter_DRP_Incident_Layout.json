@@ -65,9 +65,9 @@
 							},
 							{
 								"endCol": 2,
-								"fieldId": "severity",
+								"fieldId": "dsseverity",
 								"height": 22,
-								"id": "incident-severity-field",
+								"id": "d1637090-3832-11ef-9bcc-956729a96a52",
 								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -76,17 +76,8 @@
 								"endCol": 2,
 								"fieldId": "comment",
 								"height": 22,
-								"id": "15735fe0-02df-11ef-80c4-9f2c84b74abe",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "comment",
-								"height": 22,
 								"id": "b9ac0d70-0229-11ef-8949-d74a6b9d3a1a",
-								"index": 4,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -95,7 +86,7 @@
 								"fieldId": "sourcebrand",
 								"height": 22,
 								"id": "incident-sourceBrand-field",
-								"index": 5,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -104,16 +95,7 @@
 								"fieldId": "sourceinstance",
 								"height": 22,
 								"id": "incident-sourceInstance-field",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "comment",
-								"height": 22,
-								"id": "b83bb490-0229-11ef-8949-d74a6b9d3a1a",
-								"index": 7,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -122,12 +104,13 @@
 								"fieldId": "playbookid",
 								"height": 22,
 								"id": "incident-playbookId-field",
-								"index": 8,
+								"index": 5,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Case Details",
 						"static": false,
@@ -139,6 +122,7 @@
 						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Notes",
 						"static": false,
@@ -152,6 +136,7 @@
 						"h": 2,
 						"i": "caseinfoid-6aabad20-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Work Plan",
 						"static": false,
@@ -166,6 +151,7 @@
 						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Linked Incidents",
 						"static": false,
@@ -179,6 +165,7 @@
 						"h": 2,
 						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Child Incidents",
 						"static": false,
@@ -192,6 +179,7 @@
 						"h": 2,
 						"i": "caseinfoid-4a31afa0-98ba-11e9-a519-93a53c759fe0",
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Evidence",
 						"static": false,
@@ -206,6 +194,7 @@
 						"hideName": false,
 						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Team Members",
 						"static": false,
@@ -219,6 +208,7 @@
 						"h": 2,
 						"i": "caseinfoid-7ce69dd0-a07f-11e9-936c-5395a1acf11e",
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Indicators",
 						"query": "",
@@ -281,6 +271,7 @@
 							}
 						],
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Timeline Information",
 						"static": false,
@@ -323,6 +314,7 @@
 							}
 						],
 						"maxW": 3,
+						"minH": 1,
 						"moved": false,
 						"name": "Closing Information",
 						"static": false,
@@ -445,6 +437,78 @@
 								"height": 22,
 								"id": "6354ae70-0e3e-11ef-9ab2-5b374698464c",
 								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentid",
+								"height": 22,
+								"id": "4daf0f00-3906-11ef-ad16-7f919eefcb2c",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentdescription",
+								"height": 22,
+								"id": "c61007d0-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentmitigation",
+								"height": 44,
+								"id": "d35a9680-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentraiseddate",
+								"height": 22,
+								"id": "da143cb0-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 15,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentupdateddate",
+								"height": 22,
+								"id": "dd8e6f50-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsmitremapping",
+								"height": 22,
+								"id": "e1a8d990-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 17,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsriskfactors",
+								"height": 44,
+								"id": "e89a7fb0-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 18,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsimpactdescription",
+								"height": 44,
+								"id": "f624fd90-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 19,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -591,6 +655,10 @@
 					},
 					{
 						"fieldId": "incident_attachment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sendtoreliaquestgreymatter",
 						"isVisible": true
 					}
 				],
@@ -1736,13 +1804,13 @@
 	},
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "DigitalShadowsIncidentLayout V2",
+	"id": "Reliaquest GreyMatter DRP Incident Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",
 	"locked": false,
 	"mobile": null,
-	"name": "DigitalShadowsIncidentLayout V2",
+	"name": "Reliaquest GreyMatter DRP Incident Layout",
 	"packID": "",
 	"packName": "",
 	"quickView": {
@@ -1784,6 +1852,10 @@
 					},
 					{
 						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sendtoreliaquestgreymatter",
 						"isVisible": true
 					}
 				],

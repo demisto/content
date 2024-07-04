@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS IMPERSONATING-EMPLOYEE-PROFILE",
 	"itemVersion": "",
-	"layout": "DigitalShadowsIncidentLayout V2",
+	"layout": "Reliaquest GreyMatter DRP Incident Layout",
 	"locked": false,
 	"name": "DS IMPERSONATING-EMPLOYEE-PROFILE",
 	"onChangeRepAlg": 0,

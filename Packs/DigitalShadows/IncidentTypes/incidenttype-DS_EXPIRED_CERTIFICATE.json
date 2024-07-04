@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS EXPIRED_CERTIFICATE",
 	"itemVersion": "",
-	"layout": "DigitalShadowsIncidentLayout V2",
+	"layout": "Reliaquest GreyMatter DRP Incident Layout",
 	"locked": false,
 	"name": "DS EXPIRED_CERTIFICATE",
 	"onChangeRepAlg": 0,

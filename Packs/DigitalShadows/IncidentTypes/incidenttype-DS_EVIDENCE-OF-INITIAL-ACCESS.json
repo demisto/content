@@ -18,7 +18,7 @@
 	"hoursR": 0,
 	"id": "DS EVIDENCE-OF-INITIAL-ACCESS",
 	"itemVersion": "",
-	"layout": "DigitalShadowsIncidentLayout V2",
+	"layout": "Reliaquest GreyMatter DRP Incident Layout",
 	"locked": false,
 	"name": "DS EVIDENCE-OF-INITIAL-ACCESS",
 	"onChangeRepAlg": 0,
