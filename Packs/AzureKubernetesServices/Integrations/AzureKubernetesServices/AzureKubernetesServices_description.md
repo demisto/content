@@ -71,5 +71,5 @@ To configure a Microsoft integration that uses this authorization flow with a se
    6. Save the instance.
 
 ### Testing authentication and connectivity
-If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure Kubernetes Services service run the ***!azure-devops-auth-test*** command. 
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure Kubernetes Services service run the ***!azure-ks-auth-test*** command. 
 If you are using Client Credentials Flow, click **Test** when you are configuring the instance.
