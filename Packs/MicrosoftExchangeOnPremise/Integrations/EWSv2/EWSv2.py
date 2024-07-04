@@ -18,8 +18,7 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
                                 ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed,
-                                ErrorCannotOpenFileAttachment)
+                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
 from exchangelib.items import Contact, Item, Message
 
 from exchangelib.protocol import BaseProtocol, Protocol, FaultTolerance
@@ -40,7 +39,6 @@ from requests.exceptions import ConnectionError
 from exchangelib.version import VERSIONS as EXC_VERSIONS
 
 
-
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
 
 # overriding this function to remove minor version test and remove error throw.
@@ -58,7 +56,6 @@ def our_fullname(self):  # pragma: no cover
 
 
 Version.fullname = our_fullname
-
 
 
 class exchangelibInsecureSSLAdapter(SSLAdapter):
@@ -201,7 +198,6 @@ PASSWORD = ''
 config = None
 
 credentials = None
-
 
 
 # NOTE: Same method used in EWSMailSender
@@ -383,7 +379,6 @@ def get_account(account_email, access_type=ACCESS_TYPE, time_zone=None):  # prag
 log_stream = None
 
 log_handler = None
-
 
 
 def start_logging():
@@ -1155,7 +1150,8 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                     label_attachment_id_type = None
                     if isinstance(attachment, FileAttachment):
                         try:
-                            demisto.info(f'attachment info {attachment.content_id=} {attachment.attachment_id.id=} {attachment.name=}')
+                            demisto.info(
+                                f'attachment info {attachment.content_id=} {attachment.attachment_id.id=} {attachment.name=}')
                         except Exception as e:
                             demisto.info(f'could not print attachment info {e}')
                         try:
