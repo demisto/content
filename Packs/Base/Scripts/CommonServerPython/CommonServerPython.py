@@ -12022,12 +12022,13 @@ def is_time_sensitive():
 def parse_json_string(json_string):
     """
     Parse a JSON string into a Python dictionary.
-
-    :type json_string: ``str``
-    :param json_string: The JSON string to be parsed.
-
-    :rtype: ``dict``
-    :return: A Python dictionary representing the parsed JSON data.
+    Args:
+        json_string (str): The JSON string to be parsed.
+    Returns:
+        dict: A Python dictionary representing the parsed JSON data.
+            If the input JSON string is invalid, an empty dictionary is returned.
+    Raises:
+        demisto.error: If the input JSON string cannot be decoded.
     """
     try:
         data = json.loads(json_string)
@@ -12040,9 +12041,8 @@ def parse_json_string(json_string):
 def get_server_config():
     """
     Retrieves XSOAR server configuration.
-
-    :rtype: ``dict``
-    :return: The XSOAR server configuration.
+    Returns:
+        dict: The server configuration.
     """
     response = demisto.internalHttpRequest(method='GET', uri='/system/config')
     body = parse_json_string(response.get('body'))
