@@ -1,2 +1,6 @@
+[known_words]
+BMC
+ITSM
+
 [file:classifier-BMC_ITSM_Outgoing_Mapper.json]
 ignore=MP106
