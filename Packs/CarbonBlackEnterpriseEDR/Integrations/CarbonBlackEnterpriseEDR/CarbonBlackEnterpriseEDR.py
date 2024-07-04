@@ -546,7 +546,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
     request_id = arg_to_number(args.get('request_id'))
     alert_id = args['alert_id']
 
-    demisto.debug(f'got {request_id=}, {alert_id=}')
+    demisto.debug(f'Polling is running - got {request_id=}, {alert_id=}')
 
     if not request_id:  # if this is the first time
         demisto.debug('Getting all relevant args for first run')
