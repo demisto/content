@@ -163,6 +163,7 @@ def get_incident_by_query(query):
 
     query_from_date = str(parse_date_range(query_time)[0])
     query += f' modified:>="{query_from_date}"'
+    demisto.info(f"[test]: attempting to get all incidents with {query=}")
     res = demisto.executeCommand("getIncidents",
                                  {"query": query, "populateFields": "id,status,type,emailsubject"})[0]
 
@@ -314,7 +315,10 @@ def get_email_related_incident_id(email_related_incident_code, email_original_su
 
     for incident in incidents_details:
         email_subject = incident.get('emailsubject', '')
+        demisto.info(f"[test]: {email_subject=}")
+        demisto.info(f"[test]: {email_original_subject=}")
         if email_subject and email_original_subject in email_subject:
+            demisto.info("[test]: found existing incident.")
             return str(incident.get('id'))
         else:
             # If 'emailsubject' doesn't match, check 'EmailThreads' context entries
