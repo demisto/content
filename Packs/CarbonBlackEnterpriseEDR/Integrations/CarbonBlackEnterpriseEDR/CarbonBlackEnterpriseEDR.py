@@ -240,8 +240,9 @@ class Client(BaseClient):
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}/alert'
         self._http_request('DELETE', suffix_url, resp_type='content')
 
-    def create_watchlist_request(self, watchlist_name: None | str = None, description: None | str = None, tags_enabled: None | bool = None,
-                                 alerts_enabled: None | bool = None, report_ids: None | list = None, classifier: None | dict = None) -> dict:
+    def create_watchlist_request(self, watchlist_name: None | str = None, description: None | str = None,
+                                 tags_enabled: None | bool = None, alerts_enabled: None | bool = None,
+                                 report_ids: None | list = None, classifier: None | dict = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists'
         body = assign_params(
             name=watchlist_name,
@@ -254,8 +255,9 @@ class Client(BaseClient):
 
         return self._http_request('POST', suffix_url, json_data=body)
 
-    def update_watchlist_request(self, watchlist_id: None | str = None, watchlist_name: None | str = None, description: None | str = None,
-                                 tags_enabled: None | bool = None, alerts_enabled: None | bool = None, report_ids: None | list = None,
+    def update_watchlist_request(self, watchlist_id: None | str = None, watchlist_name: None | str = None,
+                                 description: None | str = None, tags_enabled: None | bool = None,
+                                 alerts_enabled: None | bool = None, report_ids: None | list = None,
                                  classifier: None | dict = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/watchlists/{watchlist_id}'
         body = assign_params(
@@ -288,7 +290,8 @@ class Client(BaseClient):
 
         return self._http_request('GET', suffix_url)
 
-    def create_report_request(self, title: None | str = None, description: None | str = None, tags: None | list = None, severity: None | int = None,
+    def create_report_request(self, title: None | str = None, description: None | str = None, tags: None | list = None,
+                              severity: None | int = None,
                               iocs: None | dict = None, timestamp: None | int = None) -> dict:
         suffix_url = f'/threathunter/watchlistmgr/v3/orgs/{self.cb_org_key}/reports'
 
@@ -610,7 +613,8 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
 
     elif request_status == 'COMPLETED':
         changed_by = response['job_parameters']['job_parameters']['userWorkflowDto']['changed_by']
-        status_HR = response.get('job_parameters').get('job_parameters').get('request').get('status') if args.get('status') else None
+        status_HR = response.get('job_parameters').get('job_parameters').get('request').get('status') if args.get('status')\
+            else None
         message = CommandResults(
             outputs={'AlertID': alert_id, 'ChangedBy': changed_by, 'Comment': args.get('comment'),
                      'LastUpdateTime': response['last_update_time'], 'Status': status_HR},
