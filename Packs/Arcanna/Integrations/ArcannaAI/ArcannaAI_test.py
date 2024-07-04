@@ -118,7 +118,7 @@ def test_arcanna_get_event_status_command(mocker):
         "timeout": 60
     }
     mocker.patch.object(demisto, 'args', return_value=command_args)
-    command_result = get_event_status(client, 1201, command_args)
+    command_result = get_event_status(command_args, client, 1201)
     assert command_result.raw_response['status'] == "OK"
     assert command_result.raw_response['result'] == "escalate_alert"
 
