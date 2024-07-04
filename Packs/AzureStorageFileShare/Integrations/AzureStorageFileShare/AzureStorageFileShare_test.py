@@ -307,8 +307,8 @@ def test_create_file_command(requests_mock, mocker):
     directory_path = "xsoar/path"
     file_name = "test_file.txt"
 
-    command_arguments = dict(share_name=share_name, file_entry_id=file_entry_id,
-                             directory_path=directory_path, file_name=file_name)
+    command_arguments = {"share_name": share_name, "file_entry_id": file_entry_id,
+                         "directory_path": directory_path, "file_name": file_name}
     url = f'{BASE_URL}{share_name}/{directory_path}/{file_name}{SAS_TOKEN}'
 
     requests_mock.put(url, text='', status_code=201)

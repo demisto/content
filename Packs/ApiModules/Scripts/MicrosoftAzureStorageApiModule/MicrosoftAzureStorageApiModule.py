@@ -128,6 +128,7 @@ class MicrosoftStorageClient(BaseClient):
             err = f'{str(e)}'
 
         return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+        return None
 
     def params_dict_to_query_string(self, params: dict = None, prefix: str = "") -> str:
         """
