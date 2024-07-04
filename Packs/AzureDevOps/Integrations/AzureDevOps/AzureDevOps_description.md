@@ -16,7 +16,7 @@ To add the registration, refer to the following [Microsoft article](https://lear
    b. Search for your app under 'all applications'.
    c. Click **API permissions** > **Add permission**.
    d. Search for the specific Microsoft API and select the specific permission of type Delegated.
-   e. Click **Grant admin consent for Demisto**.
+   e. Click **Grant admin consent**.
 1. In your registered app - Get the Application (client) ID. 
    a. In the Azure Portal, navigate to **App registrations** > your registered application > **Overview**.
    b. Copy and save the Application (client) ID.
