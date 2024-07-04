@@ -322,19 +322,19 @@ def test_search_alerts_request(mocker):
     assert http_request.call_args.kwargs['json_data']['start'] == 1
 
 
-def test_alert_workflow_update_request_with_results(mocker):
+def test_alert_workflow_update_get_request(mocker):
     """
     Given:
         - A request_id
 
     When:
-        - Calling alert_workflow_update_request_with_results function
+        - Calling alert_workflow_update_get_request function
 
     Then:
         - The http request is called with the request_id.
     """
     http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
-    CLIENT.alert_workflow_update_request_with_results('1234')
+    CLIENT.alert_workflow_update_get_request('1234')
     assert '1234' in http_request.call_args[0][1]
 
 
@@ -361,15 +361,17 @@ def test_alert_workflow_update_request_good_arguments(mocker):
 
 alert_workflow_update_command_func_called_data = [
     ({'alert_id': '123', 'status': 'OPEN'},  # case first time polling (no request_id).
-     'alert_workflow_update_request'  # func to be called.
+     'alert_workflow_update_request',  # func to be called.
+     {'request_id': '123456789'}  #  response
      ),
     ({'alert_id': '123', 'request_id': '12345'},  # case there is a request_id.
-     'alert_workflow_update_request_with_results'  # func to be called.
-     )]
-
-
-@pytest.mark.parametrize('args, func_to_be_called', alert_workflow_update_command_func_called_data)
-def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_called):
+     'alert_workflow_update_get_request',  # func to be called.
+     {'status': 'COMPLETED',
+      'job_parameters': {'job_parameters': {'request': {'status': 'OPEN'}, 'userWorkflowDto': {'changed_by': 'bla'}}},
+      'last_update_time': 'now',})
+    ]
+@pytest.mark.parametrize('args, func_to_be_called, response', alert_workflow_update_command_func_called_data)
+def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_called, response):
     """
     Given:
         - All arguments needed.
@@ -381,7 +383,7 @@ def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_call
         - The right function is called regarding polling.
     """
     from CarbonBlackEnterpriseEDR import alert_workflow_update_command
-    execute_command = mocker.patch.object(CLIENT, func_to_be_called)
+    execute_command = mocker.patch.object(CLIENT, func_to_be_called, return_value=response)
     alert_workflow_update_command(args, CLIENT)
     assert execute_command.called is True
 
