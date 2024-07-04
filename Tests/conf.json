@@ -158,8 +158,9 @@
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
-            "timeout": 400,
-            "integrations": "Cortex XDR - IR"
+            "timeout": 1200,
+            "integrations": "Cortex XDR - IR",
+            "memory_threshold": 120
         },
         {
             "integrations": [
