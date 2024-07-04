@@ -124,6 +124,7 @@ class Client(BaseClient):
         :return: A dictionary containing the created policy data.
         :rtype: dict
         """
+        body['org_key'] = self.organization_key
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
@@ -148,8 +149,9 @@ class Client(BaseClient):
         :return: A dictionary containing the updated policy data.
         :rtype: dict
         """
+        body['org_key'] = self.organization_key
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
-        return self._http_request(method='POST', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
+        return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
     def set_policy(self, policy_id: int, body: dict):
         """Sets a policy with the provided request body.
@@ -160,7 +162,9 @@ class Client(BaseClient):
         :type body: dict
         :param body: The request body containing policy details.
         """
-        # TODO
+        body['org_key'] = self.organization_key
+        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
+        return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
 
     def add_rule_to_policy(self, policy_id: int, body: dict) -> dict:
         """Adds a rule to a Carbon Black policy by its ID with the provided request body.
@@ -298,7 +302,7 @@ class Client(BaseClient):
         :return: A dictionary containing the devices.
         :rtype: dict
         """
-        suffix_url = f'/appservices/v6/orgs/{self.organization_key}/devices/_search'
+        suffix_url = f'appservices/v6/orgs/{self.organization_key}/devices/_search'
         return self._http_request(method='POST', url_suffix=suffix_url, headers=self.headers, json_data=body)
 
     def execute_an_action_on_the_device(self, device_id: List[int], action_type: str, options: dict):
@@ -650,17 +654,28 @@ def get_policies_summary_command(client: Client):
 
 
 def create_policy_command(client: Client, args: dict):
-    body = json.loads(args['policy'])
+    """Creates a new policy.
 
-    # If the policy is in the old format, transform it
-    # if 'policyInfo' in policy_json:
-    #     policy_json = transform_policy_to_new_format(policy_json['policyInfo'])
+    :type client: ``Client``
+    :param client: The client to use for API requests.
+    :type args: ``dict``
+    :param args: The arguments for the command. Includes policy details.
 
-    body["name"] = args['name']
-    body["description"] = args['description']
-    body["priority_level"] = args['priorityLevel']
+    :return: CommandResults with the created policy details.
+    :rtype: ``CommandResults``
+    """
+    policy = json.loads(args['policy'])
 
-    res = client.create_new_policy(body)
+    policy["name"] = args['name']
+    policy["description"] = args['description']
+    policy["priority_level"] = args['priorityLevel']
+
+    # If the policy is in the old format, transform it.
+    # Sensor settings are required. sensor_settings in the new format.
+    if 'sensorSettings' in policy:
+        policy = translate_policy_to_new_format(policy)
+
+    res = client.create_new_policy(policy)
 
     headers = ["id", "description", "name", "priority_level", "is_system"]
 
@@ -668,18 +683,85 @@ def create_policy_command(client: Client, args: dict):
         outputs_prefix='CarbonBlackDefense.Policy',
         outputs_key_field='id',
         outputs=res,
-        readable_output=tableToMarkdown('Carbon Black Defense Policy created successfully', res, headers=headers,
+        readable_output=tableToMarkdown('Policy created successfully', res, headers=headers,
                                         headerTransform=string_to_table_header, removeNull=True),
         raw_response=res
     )
 
 
 def update_policy_command(client: Client, args: dict):
-    pass  # TODO
+    """Updates an existing policy.
+
+    :type client: ``Client``
+    :param client: The client to use for API requests.
+    :type args: ``dict``
+    :param args: The arguments for the command. Includes policy details and ID.
+
+    :return: CommandResults with the updated policy details.
+    :rtype: ``CommandResults``
+    """
+    policy_id = arg_to_number(args['id'], required=True)
+
+    policy = json.loads(args['policy'])
+
+    policy["name"] = args['name']
+    policy["description"] = args['description']
+    policy["priority_level"] = args['priorityLevel']
+    policy["id"] = policy_id
+
+    # If the policy is in the old format, transform it.
+    # Sensor settings are required. sensor_settings in the new format.
+    if 'sensorSettings' in policy:
+        policy = translate_policy_to_new_format(policy)
+
+    res = client.update_policy(policy_id, policy)  # type: ignore[arg-type]
+
+    headers = ["id", "description", "name", "priority_level", "is_system"]
+
+    return CommandResults(
+        outputs_prefix='CarbonBlackDefense.Policy',
+        outputs_key_field='id',
+        outputs=res,
+        readable_output=tableToMarkdown(f'Policy with ID: {policy_id} updated successfully', res, headers=headers,
+                                        headerTransform=string_to_table_header, removeNull=True),
+        raw_response=res
+    )
 
 
 def set_policy_command(client: Client, args: dict):
-    pass  # TODO
+    """Sets a policy by its ID.
+
+    :type client: ``Client``
+    :param client: The client to use for API requests.
+    :type args: ``dict``
+    :param args: The arguments for the command. Includes policy ID and key-value pairs.
+
+    :return: CommandResults with the set policy details.
+    :rtype: ``CommandResults``
+    """
+    policy_id = arg_to_number(args['policy'], required=True)
+
+    body = json.loads(args['keyValue'])
+
+    body["id"] = policy_id
+
+    # If the policy is in the old format, transform it.
+    # Sensor settings are required. sensor_settings in the new format.
+    if 'sensorSettings' in body:
+        body = translate_policy_to_new_format(body)
+
+    res = client.set_policy(policy_id, body)  # type: ignore[arg-type]
+
+    headers = ["id", "description", "name", "priority_level", "is_system"]
+
+    return CommandResults(
+        outputs_prefix='CarbonBlackDefense.Policy',
+        outputs_key_field='id',
+        outputs=res,
+        readable_output=tableToMarkdown(f'Policy with ID: {policy_id} set successfully', res, headers=headers,
+                                        headerTransform=string_to_table_header, removeNull=True),
+        raw_response=res
+    )
 
 
 def delete_policy_command(client: Client, args: dict):
@@ -1433,6 +1515,134 @@ def validate_observation_details_request_body(request_body: dict):
         raise ValueError("Invalid request body: 'alert_id', 'observation_ids', or 'process_hash' must be specified.")
 
 
+def translate_policy_to_new_format(old_policy: dict) -> dict:
+    """Translate the policy JSON object from the old format to the new format.
+
+    :type old_policy: dict
+    :param old_policy: The policy JSON object in the old format.
+
+    :return: The policy JSON object in the new format.
+    :rtype: dict
+    """
+    new_policy = assign_params(
+        values_to_ignore=(None, '', {}, ()),
+
+        id=old_policy.get("id"),
+        name=old_policy.get("name"),
+        description=old_policy.get("description"),
+        priority_level=old_policy.get("priority_level"),
+        is_system=old_policy.get("systemPolicy"),
+        # version=old_policy.get("version"),
+        auto_deregister_inactive_vdi_interval_ms=old_policy.get(
+            "vdiAutoDeregInactiveIntervalMs"
+        ),
+        auto_delete_known_bad_hashes_delay=old_policy.get(
+            "knownBadHashAutoDeleteDelayMs"
+        ),
+        sensor_settings=old_policy.get("sensorSettings", []),
+        directory_action_rules=[
+            {
+                "path": rule.get("path"),
+                "file_upload": rule["actions"].get("FILE_UPLOAD"),
+                "protection": rule["actions"].get("PROTECTION"),
+            }
+            for rule in old_policy.get("directoryActionRules", [])
+        ],
+        rules=old_policy.get("rules", []),
+        av_settings=assign_params(
+            avira_protection_cloud=assign_params(
+                max_file_size=old_policy.get("avSettings", {})
+                .get("apc", {})
+                .get("maxFileSize"),
+                risk_level=old_policy.get("avSettings", {})
+                .get("apc", {})
+                .get("riskLevel"),
+                max_exe_delay=old_policy.get("avSettings", {})
+                .get("apc", {})
+                .get("maxExeDelay"),
+            ),
+            on_access_scan=assign_params(
+                enabled=old_policy.get("avSettings", {})
+                .get("features", [{}])[0]
+                .get("enabled"),
+                mode=old_policy.get("avSettings", {})
+                .get("onAccessScan", {})
+                .get("profile"),
+            ),
+            on_demand_scan=assign_params(
+                enabled=old_policy.get("avSettings", {})
+                .get("features", [{}])[0]
+                .get("enabled"),
+                scan_usb=old_policy.get("avSettings", {})
+                .get("onDemandScan", {})
+                .get("scanUsb"),
+                scan_cd_dvd=old_policy.get("avSettings", {})
+                .get("onDemandScan", {})
+                .get("scanCdDvd"),
+                schedule=assign_params(
+                    recovery_scan_if_missed=old_policy.get("avSettings", {})
+                    .get("onDemandScan", {})
+                    .get("schedule", {})
+                    .get("recoveryScanIfMissed"),
+                    range_hours=old_policy.get("avSettings", {})
+                    .get("onDemandScan", {})
+                    .get("schedule", {})
+                    .get("rangeHours"),
+                    start_hour=old_policy.get("avSettings", {})
+                    .get("onDemandScan", {})
+                    .get("schedule", {})
+                    .get("startHour"),
+                ),
+            ),
+            signature_update=assign_params(
+                enabled=old_policy.get("avSettings", {})
+                .get("features", [{}])[0]
+                .get("enabled"),
+                schedule=assign_params(
+                    full_interval_hours=old_policy.get("avSettings", {})
+                    .get("signatureUpdate", {})
+                    .get("schedule", {})
+                    .get("fullIntervalHours"),
+                    initial_random_delay_hours=old_policy.get("avSettings", {})
+                    .get("signatureUpdate", {})
+                    .get("schedule", {})
+                    .get("initialRandomDelayHours"),
+                    interval_hours=old_policy.get("avSettings", {})
+                    .get("signatureUpdate", {})
+                    .get("schedule", {})
+                    .get("intervalHours"),
+                ),
+            ),
+            update_servers=assign_params(
+                servers_override=old_policy.get("avSettings", {})
+                .get("updateServers", {})
+                .get("serversOverride"),
+                servers_for_onsite_devices=[
+                    assign_params(
+                        server=server.get("server"), preferred=server.get("flags")
+                    )
+                    for server in old_policy.get("avSettings", {})
+                    .get("updateServers", {})
+                    .get("servers", [])
+                ],
+                servers_for_offsite_devices=old_policy.get("avSettings", {})
+                .get("updateServers", {})
+                .get("serversForOffSiteDevices"),
+            ),
+        ),
+        managed_detection_response_permissions=assign_params(
+            policy_modification=old_policy.get("threatSightMdrConfiguration", {}).get(
+                "policyModificationPermission"
+            ),
+            quarantine=old_policy.get("threatSightMdrConfiguration", {}).get(
+                "quarantinePermission"
+            ),
+        ),
+    )
+
+    return new_policy
+
+
 ''' MAIN FUNCTION '''
 
 
@@ -1480,6 +1690,10 @@ def main() -> None:
             results = get_policies_summary_command(client=client)
         elif command == 'cbd-create-policy':
             results = create_policy_command(client=client, args=args)
+        elif command == 'cbd-update-policy':
+            results = update_policy_command(client=client, args=args)
+        elif command == 'cbd-set-policy':
+            results = set_policy_command(client=client, args=args)
         elif command == 'cbd-delete-policy':
             results = delete_policy_command(client=client, args=args)
         elif command == 'cbd-add-rule-to-policy':

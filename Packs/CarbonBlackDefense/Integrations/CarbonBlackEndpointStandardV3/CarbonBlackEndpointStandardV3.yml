@@ -198,6 +198,45 @@ script:
       description: The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object.
       required: true
     description: Creates a new policy on the CB Defense backend.
+  - name: cbd-update-policy
+    arguments:
+    - name: description
+      description: A description of the policy. Can be multiple lines.
+      required: true
+    - name: name
+      description: A unique one-line name for the policy.
+      required: true
+    - name: priorityLevel
+      description: 'The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW".'
+      auto: PREDEFINED
+      predefined:
+      - MISSION_CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      required: true
+    - name: id
+      description: The policy ID to update.
+      required: true
+    - name: policy
+      description: The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object.
+      required: true
+    description: Update an existing policy on the CB Defense backend.
+  - name: cbd-set-policy
+    arguments:
+    - name: policy
+      description: The policy ID to set.
+      required: true
+    - name: keyValue
+      description: The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object.
+      required: true
+    description: Set existing policy's fields on the CB Defense backend.
+  - name: cbd-delete-policy
+    arguments:
+    - name: policyId
+      description: The policy ID to delete.
+      required: true
+    description: Delete policy from the CB Defense backend.
   - name: cbd-add-rule-to-policy
     arguments:
     - name: action
