@@ -171,13 +171,14 @@ VENDOR = 'tenable'
 PRODUCT = 'io'
 CHUNK_SIZE = 5000
 ASSETS_NUMBER = 100
-MAX_CHUNKS_PER_FETCH = 10
-MAX_VULNS_CHUNKS_PER_FETCH = 15
+MAX_CHUNKS_PER_FETCH = 8
+MAX_VULNS_CHUNKS_PER_FETCH = 8
 ASSETS_FETCH_FROM = '90 days'
-VULNS_FETCH_FROM = '1 days'
+VULNS_FETCH_FROM = '3 days'
 MIN_ASSETS_INTERVAL = 60
 NOT_FOUND_ERROR = '404'
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)    # 4 MB
+
 
 class Client(BaseClient):
 
@@ -1837,7 +1838,7 @@ def fetch_vulnerabilities(client: Client, assets_last_run: dict):     # pragma: 
             assets_last_run.update({'nextTrigger': '30', "type": FETCH_COMMAND.get('assets')})
         # set params for next run
         if status == 'FINISHED':
-            assets, assets_last_run = handle_vulns_chunks(client, assets_last_run)
+            vulnerabilities, assets_last_run = handle_vulns_chunks(client, assets_last_run)
         elif status in ['CANCELLED', 'ERROR']:
             export_uuid = client.get_vuln_export_uuid(num_assets=ASSETS_NUMBER,
                                                       last_found=get_timestamp(arg_to_datetime(VULNS_FETCH_FROM)))
@@ -1876,8 +1877,9 @@ def parse_vulnerabilities(vulns):
         demisto.debug(f"result is of type: {type(vulns)}")
         vulns = list(vulns)
     for vuln in vulns:
-        if sys.getsizeof(vuln) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
-            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(vuln)))
+        vuln_str = json.dumps(vuln)
+        if sys.getsizeof(vuln_str) > XSIAM_EVENT_CHUNK_SIZE_LIMIT:
+            demisto.debug("found object with size: {size}".format(size=sys.getsizeof(sys.getsizeof(vuln_str))))
             if vuln.get('output'):
                 demisto.debug("replacing output key")
                 vuln['output'] = ""
