@@ -2,6 +2,8 @@ import json
 import os
 import pytest
 from unittest.mock import patch
+from CommonServerPython import *
+
 """MOCK PARAMETERS """
 CREDENTIALS = "credentials"
 ACCOUNT_ID = "account_id"
@@ -1480,3 +1482,37 @@ def test_ticket_list_work_order_command(
     assert result.outputs_prefix == "BmcITSM.Ticket"
     assert len(outputs) == expected_outputs_len
     assert outputs[0]["DisplayID"] == expected_name
+
+
+def test_fetch_command(
+    mocker
+):
+    """
+    Given:
+     - List tickets.
+    When:
+     - fetch_incidents command called.
+    Then:
+     - Ensure that the *last_create_time* in *last_run_result* is the last between all incidents.
+    """
+    import BmcITSM
+    mock_response = load_mock_response("list_tickets_not_sorted.json")
+    mocker.patch.object(demisto, 'getLastRun', return_value={"SRM:Request": {"last_create_time":'2021-06-29T14:38:36.000+0000'}})
+    mocker.patch.object(BmcITSM, "fetch_relevant_tickets_by_ticket_type", return_value=mock_response)
+    incidents_result, last_run_result = BmcITSM.fetch_incidents(mock_client,
+                                     max_fetch=2,
+                                     first_fetch="2022-06-29T14:38:36.000+0000",
+                                     last_run={"SRM:Request": {"last_create_time":'2021-06-29T14:38:36.000+0000'}},
+                                     ticket_type_filter=["SRM:Request"],
+                                     status_filter=[],
+                                     impact_filter=[],
+                                     urgency_filter=[],
+                                     custom_query=("'Submit Date' <= \"1657032797\" AND 'Submit Date'"
+                                                   ">\"1657032797\" AND 'Urgency' = \"4-Low\""),
+                                     mirror_direction="both",
+                                     )
+    max_last_time_result = max(
+        [BmcITSM.date_to_epoch_for_fetch(arg_to_datetime(ticket.get("occured")))
+         for ticket in incidents_result]
+    )
+    assert last_run_result["SRM:Request"]["last_create_time"] == max_last_time_result

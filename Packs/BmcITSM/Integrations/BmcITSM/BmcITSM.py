@@ -3261,7 +3261,7 @@ def fetch_incidents(
 
     last_run = init_last_run(first_fetch_epoch) if first_fetch_epoch else last_run
     current_time = date_to_epoch_for_fetch(arg_to_datetime("now"))
-    demisto.debug(f'#### fetch_incidents {last_run=}')
+
     relevant_tickets, ticket_type_to_last_epoch = fetch_relevant_tickets(
         client,
         ticket_type_filter,
@@ -3273,12 +3273,9 @@ def fetch_incidents(
         urgency_filter,
         custom_query,
     )
-    demisto.debug(f'#### fetch_incidents {ticket_type_to_last_epoch=}')
-    demisto.debug(f'#### fetch_incidents {relevant_tickets=}')
 
     incidents = []
     for incident in relevant_tickets:
-        demisto.debug(f'###### fetch_incidents {incident=}')
         incident["mirror_direction"] = mirror_direction
         incident["mirror_instance"] = demisto.integrationInstance()
         incidents.append({
@@ -3288,8 +3285,6 @@ def fetch_incidents(
         })
     if incidents:
         last_run = update_last_run(last_run, ticket_type_to_last_epoch)
-    demisto.debug(f'#### fetch_incidents {last_run=} | {incidents=}')
-    
     return incidents, last_run
 
 
@@ -3328,7 +3323,6 @@ def fetch_relevant_tickets(
     ticket_type_to_last_epoch = {}
     tickets_capacity = max_fetch
     for ticket_type in ticket_types:
-        demisto.debug(f'#### fetch_relevant_tickets {ticket_type=}: ')
         fetched_tickets = fetch_relevant_tickets_by_ticket_type(
             client,
             ticket_type,
@@ -3340,20 +3334,18 @@ def fetch_relevant_tickets(
             urgency_filter,
             custom_query,
         )
-        demisto.debug(f'#### fetch_relevant_tickets {ticket_type=} {fetched_tickets=}')
+
         tickets_amount = min(tickets_capacity, len(fetched_tickets))
         total_tickets += fetched_tickets[:tickets_amount]
         tickets_capacity -= tickets_amount
 
         if fetched_tickets:
-            last_ticket_create_time = max([date_to_epoch_for_fetch(arg_to_datetime(ticket.get("CreateDate")))
-                                           for ticket in total_tickets])
+            last_ticket_create_time = total_tickets[-1].get("CreateDate")
             ticket_type_to_last_epoch[ticket_type] = date_to_epoch_for_fetch(
                 arg_to_datetime(last_ticket_create_time))
         if tickets_capacity <= 0:  # no more tickets to retrieve in the current fetch
             break
-    demisto.debug(f'#### fetch_relevant_tickets {ticket_type_to_last_epoch=}')
-    demisto.debug(f'#### fetch_relevant_tickets {total_tickets=}')
+
     return total_tickets, ticket_type_to_last_epoch
 
 
@@ -3418,7 +3410,6 @@ def update_last_run(last_run: Dict[str, Any], ticket_type_to_last_epoch: Dict[st
     Returns:
         _type_: _description_
     """
-    demisto.debug(f'#### update_last_run {last_run=} | {ticket_type_to_last_epoch=}')
     for ticket_type, last_epoch in ticket_type_to_last_epoch.items():
         last_run[ticket_type]["last_create_time"] = last_epoch
     return last_run
