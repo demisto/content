@@ -6,7 +6,6 @@ import uuid
 import dateparser  # type: ignore
 import exchangelib
 
-from CommonServerPython import *
 from io import StringIO
 from exchangelib import (BASIC, DELEGATE, DIGEST, IMPERSONATION, NTLM, Account,
                          Build, Configuration, Credentials, EWSDateTime,
@@ -19,23 +18,35 @@ from exchangelib.errors import (AutoDiscoverFailed, ErrorFolderNotFound,
                                 ErrorMailboxMoveInProgress,
                                 ErrorMailboxStoreUnavailable,
                                 ErrorNameResolutionNoResults, RateLimitError,
-                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed)
+                                ResponseMessageError, TransportError, ErrorMimeContentConversionFailed,
+                                ErrorCannotOpenFileAttachment)
 from exchangelib.items import Contact, Item, Message
+
 from exchangelib.protocol import BaseProtocol, Protocol, FaultTolerance
+
 from exchangelib.services import EWSService
+
 from exchangelib.services.common import EWSAccountService
+
 from exchangelib.util import add_xml_child, create_element
+
 from exchangelib.version import (EXCHANGE_2007, EXCHANGE_2010,
                                  EXCHANGE_2010_SP2, EXCHANGE_2013, EXCHANGE_2013_SP1,
                                  EXCHANGE_2016, EXCHANGE_2019)
 from future import utils as future_utils
+
 from requests.exceptions import ConnectionError
+
 from exchangelib.version import VERSIONS as EXC_VERSIONS
 
 
+
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
+
 # overriding this function to remove minor version test and remove error throw.
+
 # opened bug for exchanglib here https://github.com/ecederstrand/exchangelib/issues/1210
+
 def our_fullname(self):  # pragma: no cover
     for build, api_version, full_name in EXC_VERSIONS:
         # removed 'or self.build.minor_version != build.minor_version'
@@ -47,6 +58,7 @@ def our_fullname(self):  # pragma: no cover
 
 
 Version.fullname = our_fullname
+
 
 
 class exchangelibInsecureSSLAdapter(SSLAdapter):
@@ -63,11 +75,15 @@ class exchangelibInsecureSSLAdapter(SSLAdapter):
 
 
 # Ignore warnings print to stdout
+
 warnings.filterwarnings("ignore")
+
 
 MNS, TNS = exchangelib.util.MNS, exchangelib.util.TNS
 
+
 # consts
+
 VERSIONS = {
     '2007': EXCHANGE_2007,
     '2010': EXCHANGE_2010,
@@ -78,24 +94,40 @@ VERSIONS = {
     '2019': EXCHANGE_2019
 }
 
+
 ATTACHMENT_ID = "attachmentId"
+
 ATTACHMENT_ORIGINAL_ITEM_ID = 'originalItemId'
+
 NEW_ITEM_ID = 'newItemId'
+
 MESSAGE_ID = "messageId"
+
 ITEM_ID = "itemId"
+
 ACTION = "action"
+
 MAILBOX = "mailbox"
+
 MAILBOX_ID = "mailboxId"
+
 FOLDER_ID = "id"
 
+
 MOVED_TO_MAILBOX = "movedToMailbox"
+
 MOVED_TO_FOLDER = "movedToFolder"
 
+
 FILE_ATTACHMENT_TYPE = 'FileAttachment'
+
 ITEM_ATTACHMENT_TYPE = 'ItemAttachment'
+
 ATTACHMENT_TYPE = 'attachmentType'
 
+
 TOIS_PATH = '/root/Top of Information Store/'
+
 
 ENTRY_CONTEXT = "EntryContext"
 CONTEXT_UPDATE_EWS_ITEM = "EWS.Items(val.{0} == obj.{0} || (val.{1} && obj.{1} && val.{1} == obj.{1}))".format(ITEM_ID,
@@ -105,45 +137,77 @@ CONTEXT_UPDATE_ITEM_ATTACHMENT = ".ItemAttachments(val.{0} == obj.{0})".format(A
 CONTEXT_UPDATE_FILE_ATTACHMENT = ".FileAttachments(val.{0} == obj.{0})".format(ATTACHMENT_ID)
 CONTEXT_UPDATE_FOLDER = "EWS.Folders(val.{0} == obj.{0})".format(FOLDER_ID)
 
+
 LAST_RUN_TIME = "lastRunTime"
+
 LAST_RUN_IDS = "ids"
+
 LAST_RUN_FOLDER = "folderName"
+
 ERROR_COUNTER = "errorCounter"
+
 
 ITEMS_RESULTS_HEADERS = ['sender', 'subject', 'hasAttachments', 'datetimeReceived', 'receivedBy', 'author',
                          'toRecipients', 'textBody', ]
 
 # Load integratoin params from demisto
+
 NON_SECURE = demisto.params().get('insecure', True)
+
 AUTH_METHOD_STR = demisto.params().get('authType', '')
+
 AUTH_METHOD_STR = AUTH_METHOD_STR.lower() if AUTH_METHOD_STR else ''
+
 VERSION_STR = demisto.params().get('defaultServerVersion', '')
+
 MANUAL_USERNAME = demisto.params().get('domainAndUserman', '')
+
 FOLDER_NAME = demisto.params().get('folder', 'Inbox')
+
 IS_PUBLIC_FOLDER = demisto.params().get('isPublicFolder', False)
+
 ACCESS_TYPE = IMPERSONATION if demisto.params().get('impersonation', False) else DELEGATE
+
 FETCH_ALL_HISTORY = demisto.params().get('fetchAllHistory', False)
+
 IS_TEST_MODULE = False
+
 BaseProtocol.TIMEOUT = int(demisto.params().get('requestTimeout', 120))
+
 AUTO_DISCOVERY = False
+
 SERVER_BUILD = ""
+
 MARK_AS_READ = demisto.params().get('markAsRead', False)
+
 MAX_FETCH = min(50, int(demisto.params().get('maxFetch', 50)))
+
 FETCH_TIME = demisto.params().get('fetch_time') or '10 minutes'
+
 
 LAST_RUN_IDS_QUEUE_SIZE = 500
 
+
 # initialized in main()
+
 EWS_SERVER = ''
+
 USERNAME = ''
+
 ACCOUNT_EMAIL = ''
+
 PASSWORD = ''
+
 config = None
+
 credentials = None
 
 
+
 # NOTE: Same method used in EWSMailSender
+
 # If you are modifying this probably also need to modify in the other file
+
 def exchangelib_cleanup():  # pragma: no cover
     try:
         exchangelib.close_connections()
@@ -152,6 +216,7 @@ def exchangelib_cleanup():  # pragma: no cover
 
 
 # Prep Functions
+
 def get_auth_method(auth_method):  # pragma: no cover
     auth_method = auth_method.lower()
     if auth_method == 'ntlm':
@@ -314,8 +379,11 @@ def get_account(account_email, access_type=ACCESS_TYPE, time_zone=None):  # prag
 
 
 # LOGGING
+
 log_stream = None
+
 log_handler = None
+
 
 
 def start_logging():
@@ -332,6 +400,7 @@ def start_logging():
 
 
 # Exchange 2010 Fixes
+
 def fix_2010():  # pragma: no cover
     version = SERVER_BUILD if SERVER_BUILD else get_build(VERSION_STR)
     if version <= EXCHANGE_2010_SP2:
@@ -1086,6 +1155,11 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                     label_attachment_id_type = None
                     if isinstance(attachment, FileAttachment):
                         try:
+                            demisto.info(f'attachment info {attachment.content_id=} {attachment.attachment_id.id=} {attachment.name=}')
+                        except Exception as e:
+                            demisto.info(f'could not print attachment info {e}')
+                        try:
+                            demisto.debug('checking if attachment has content')
                             if attachment.content:
                                 # file attachment
                                 label_attachment_type = 'attachments'
@@ -1109,10 +1183,15 @@ def parse_incident_from_item(item, is_fetch):  # pragma: no cover
                                                                 content_id=attachment.content_id,
                                                                 attachment_id=attachment.attachment_id.id),
                                 })
+                                demisto.debug('finished getting attachment')
                         except TypeError as e:
                             if str(e) != "must be string or buffer, not None":
                                 raise
                             continue
+                        except ResponseMessageError as e:
+                            demisto.info(f'an error was found while parsing attachments {e}')
+                            continue
+
                     else:
                         # other item attachment
                         label_attachment_type = 'attachmentItems'
