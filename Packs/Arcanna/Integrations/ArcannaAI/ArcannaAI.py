@@ -237,7 +237,7 @@ def post_event(client: Client, default_job_id: int, args: Dict[str, Any]) -> Com
 
 @polling_function(name='arcanna-get-event-status', timeout=arg_to_number(demisto.args().get('timeout', 120)),
                   interval=arg_to_number(demisto.args().get('interval', 15)))
-def get_event_status(args: Dict[str, Any], client: Client, default_job_id) -> CommandResults | PollResult:
+def get_event_status(client: Client, default_job_id, args: Dict[str, Any]) -> CommandResults | PollResult:
     job_id = args.get("job_id", default_job_id)
     event_id = str(args.get("event_id"))
     result = client.get_event_status(job_id, event_id)
@@ -344,7 +344,7 @@ def main() -> None:
             result_decision_set = get_decision_set(client, default_job_id, demisto.args())
             return_results(result_decision_set)
         elif demisto.command() == "arcanna-get-event-status":
-            result_get_event = get_event_status(demisto.args(), client, default_job_id)
+            result_get_event = get_event_status(client, default_job_id, demisto.args())
             return_results(result_get_event)
         elif demisto.command() == "arcanna-send-event-feedback":
             result_send_feedback = send_event_feedback(client, default_job_id, demisto.args())
