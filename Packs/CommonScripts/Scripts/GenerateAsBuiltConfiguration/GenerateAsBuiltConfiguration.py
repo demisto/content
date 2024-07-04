@@ -17,7 +17,7 @@ configuration = None
 autodata = False
 
 
-def create_context(data: dict, args: list) -> dict:
+def create_context(data: dict | list[dict], args: list) -> dict:
     """
     This function accepts the raw data and creates new dict based on the values
     in args.
@@ -138,7 +138,7 @@ def get_api_request(url: str) -> list:
         return_error(f'API Request failed, no response from API call to {url}')
 
 
-def get_all_incidents(days=60, size=1000):
+def get_all_incidents(days: int = 60, size: int = 1000) -> dict:
     """Get all incidents from API request.
 
     Args:
@@ -171,7 +171,7 @@ def get_all_incidents(days=60, size=1000):
     return r.get("data")
 
 
-def get_open_incidents(days=7, size=1000):
+def get_open_incidents(days: int = 7, size: int = 1000) -> dict:
     """Get open incidents from API.
 
     Args:
@@ -199,11 +199,10 @@ def get_open_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request("/incidents/search", body)
-    return r
+    return post_api_request("/incidents/search", body)
 
 
-def get_closed_incidents(days=7, size=1000):
+def get_closed_incidents(days: int = 7, size: int = 1000) -> dict:
     """Get closed incidents from API.
 
     Args:
@@ -231,11 +230,10 @@ def get_closed_incidents(days=7, size=1000):
             }
         }
     }
-    r = post_api_request("/incidents/search", body)
-    return r
+    return post_api_request("/incidents/search", body)
 
 
-def get_enabled_integrations(max_request_size: int):
+def get_enabled_integrations(max_request_size: int) -> list:
     """Retrieve all the running instances.
 
     Args:
@@ -253,27 +251,26 @@ def get_enabled_integrations(max_request_size: int):
     return enabled_instances
 
 
-def get_custom_playbooks():
+def get_custom_playbooks() -> list[str]:
     """Return all the custom playbooks installed in XSOAR
 
     Returns:
         TableData: TableData object with the custom playbooks.
     """
-    resp = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks")
-    pb_names = [pb["name"] for pb in resp]
-    return pb_names
+    res = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks")
+    return [pb["name"] for pb in res]
 
 
-def get_all_playbooks():
+def get_all_playbooks() -> dict:
     """Return all the playbooks installed in XSOAR
 
     Returns:
         TableData: TableData object with the all playbooks.
     """
-    r = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks")
-    for pb in r:
+    res = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks")
+    for pb in res:
         pb["TotalTasks"] = len(pb.get("tasks", []))
-    return r
+    return res
 
 
 def get_layouts() -> list:
@@ -503,7 +500,7 @@ def get_playbook_subplaybook(playbook: dict, filter_play: set) -> None:
     return pb_subplaybook
 
 
-def get_instance_classifier_incident_type(integration_instance, incident_types, classifiers):
+def get_instance_classifier_incident_type(integration_instance: dict, incident_types: list, classifiers: list) -> tuple[dict, dict]:
     """
     This function accepts the integration instance, incident types and classifers and then establishes the mapping for the
     classifier and incident type data for an interation instance and returns data only for those classifers and incident types.
@@ -545,7 +542,7 @@ def get_instance_classifier_incident_type(integration_instance, incident_types, 
     return classifier_data, incident_type_data
 
 
-def get_instance_incoming_mapper(integration_instance, mappers):
+def get_instance_incoming_mapper(integration_instance: dict, mappers: list) -> dict | None:
     """
     This function accepts the integration instance data and incomig mapper data, then establishes the mapping for the
     incoming mapper for an interation instance and returns data only for those incoming mappers.
@@ -568,7 +565,7 @@ def get_instance_incoming_mapper(integration_instance, mappers):
     return in_mapper
 
 
-def get_instance_outgoing_mapper(integration_instance, mappers):
+def get_instance_outgoing_mapper(integration_instance: dict, mappers: list) -> dict:
     """
     This function accepts the integration instance data and outgoing mapper data, then establishes the mapping for the
     outgoing mapper for an interation instance and returns data only for those outgoing mappers.
@@ -591,7 +588,9 @@ def get_instance_outgoing_mapper(integration_instance, mappers):
     return out_mapper
 
 
-def get_instance_layout_fields(integration_instance, instance_incident_types, layouts, incident_fields):
+def get_instance_layout_fields(
+    integration_instance: dict, instance_incident_types: dict, layouts: list, incident_fields: list
+) -> tuple[dict | None, dict | None]:
     """
     This function accepts the integration instance,  incident types for that particular instance, layouts and incident fields,
     then establishes the mapping for the layouts and the incident fields for an interation instance and returns data only for
@@ -722,15 +721,13 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> None:
     return pb_integration
 
 
-def get_custom_automations():
+def get_custom_automations() -> list:
     """Return all the custom automations installed in XSOAR
 
     Returns:
         SingleFieldData: SingleFieldData object representing custom automations
     """
-
-    r = post_api_request("/automation/search", {"query": "system:F AND hidden:F"}).get("scripts")
-    return r
+    return post_api_request("/automation/search", {"query": "system:F AND hidden:F"}).get("scripts")
 
 
 def sub_data(playbook: dict) -> tuple:
@@ -835,7 +832,7 @@ def create_as_built(playbook_names: list, ignore_playbook: list) -> list:
     return configuration_data
 
 
-def main():  # pragma: no cover
+def main() -> None:  # pragma: no cover
     """
     This function creates a json file file for the complete configuration data.
     """
@@ -851,7 +848,7 @@ def main():  # pragma: no cover
         automations = get_automations()
         integrations, configuration = get_integrations()
 
-        """Given a playbook is passed, we generate a use case document, instead of the platform as build."""
+        # Given a playbook is passed, we generate a use case document, instead of the platform as build.
         if args.get("playbook"):
             pb_names = argToList(args.get("playbook"))
             asbuilt = json.dumps(create_as_built(pb_names, ignore_playbook), indent=4)
@@ -871,7 +868,7 @@ def main():  # pragma: no cover
         else:
             return_error("No playbooks found. Please ensure that playbooks are present to generate the configuration file.")
     except Exception as ex:
-        return_error(f'Failed to execute Script. Error: {str(ex)}')
+        return_error(f'Failed to execute Script. Error: {ex}')
 
 
 if __name__ in ('__builtin__', 'builtins'):
