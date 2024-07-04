@@ -181,6 +181,8 @@ def fetch_events(
             events, new_tracker = get_events(client, tracker)
         except Exception as e:
             if "Invalid tracker" in str(e):
+                demisto.debug("The tracker is invalid,"
+                              " catching the error and continuing with the same tracker for the next time.")
                 events, new_tracker = [], tracker
 
         # It means there are no more events to retrieve when there are fewer than 500 events
