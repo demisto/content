@@ -1,18 +1,16 @@
 id: ede87603-5081-4c93-8ad4-7bdcfe23ecc2
-version: 20
+version: 3
 vcShouldKeepItemLegacyProdMachine: false
-rolename:
-- Read-Only
 name: DSPM Risk Finding Initial Response
 description: A playbook to handle new DSPM Risk Finding incidents
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 76060e4f-3fd7-45e0-82ec-b3a517b60210
+    taskid: 9e957980-95c4-4d8f-8093-155ee2bddfaa
     type: start
     task:
-      id: 76060e4f-3fd7-45e0-82ec-b3a517b60210
+      id: 9e957980-95c4-4d8f-8093-155ee2bddfaa
       version: -1
       name: ""
       iscommand: false
@@ -38,12 +36,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 7824caea-a261-4c2b-82b2-7ddc3ac54c07
+    taskid: 455ae2c9-69f3-413d-8887-a857e45e63aa
     type: regular
     task:
-      id: 7824caea-a261-4c2b-82b2-7ddc3ac54c07
+      id: 455ae2c9-69f3-413d-8887-a857e45e63aa
       version: -1
-      name: DSPM_fetch_incident_details
+      name: fetch incident details
       scriptName: DSPM_fetch_incident_details
       type: regular
       iscommand: false
@@ -74,17 +72,20 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b9b10790-29d7-4063-8313-aafb1c2f76fd
+    taskid: 8761ba87-8477-4702-8d2a-c3d8960b6caf
     type: regular
     task:
-      id: b9b10790-29d7-4063-8313-aafb1c2f76fd
+      id: 8761ba87-8477-4702-8d2a-c3d8960b6caf
       version: -1
       name: closeInvestigation
-      description: Close the current incident
+      description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
+    scriptarguments:
+      closeNotes:
+        simple: Slack notification was sent.
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -103,13 +104,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: d3fb6d2f-5525-4afa-84de-5e5114305b05
+    taskid: a17e0d3c-e875-4cae-84bc-1ba93206ee5a
     type: regular
     task:
-      id: d3fb6d2f-5525-4afa-84de-5e5114305b05
+      id: a17e0d3c-e875-4cae-84bc-1ba93206ee5a
       version: -1
-      name: DSPM_send_slack_notification
-      scriptName: DSPM_send_slack_notificatio
+      name: Send risk to slack app
+      scriptName: DSPM_send_risk_to_slack_app
       type: regular
       iscommand: false
       brand: ""
@@ -145,12 +146,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 4fb93376-0cff-421e-81ff-64fac96df148
+    taskid: 1f6c9779-8d53-4ef5-802a-b4a4e8020c50
     type: regular
     task:
-      id: 4fb93376-0cff-421e-81ff-64fac96df148
+      id: 1f6c9779-8d53-4ef5-802a-b4a4e8020c50
       version: -1
-      name: DSPM_fetch_list_of_projects
+      name: Fetch list of projects
       scriptName: DSPM_fetch_list_of_jira_project
       type: regular
       iscommand: false
