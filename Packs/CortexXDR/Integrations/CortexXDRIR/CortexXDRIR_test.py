@@ -1526,12 +1526,18 @@ def test_main(mocker):
 
 
 @freeze_time("1993-06-17 11:00:00 GMT")
-def test_core_http_request_xsiam_tenant(mocker):
+def test_core_http_request_xpanse_tenant(mocker):
     """
+    Unit test to verify behavior in Xpanse tenants on the Xsiam platform with XSOAR Marketplace.
+
+    This test ensures that when working with Xpanse tenants on the Xsiam platform integrated with the
+    XSOAR Marketplace, the http_request function from CommonServerPython is used instead of _apiCall,
+    as required in Xsiam tenants (CIAC-10878).
+
     Given:
         - Only the required params in the configuration.
     When:
-        - Running a test_module to test the http_request function in CoreIRApiModule.
+        - Running a get_incidents to test the http_request function in CoreIRApiModule.
     Then:
         - Should fail since command '_apiCall' is not available via engine.
     """
@@ -1545,7 +1551,7 @@ def test_core_http_request_xsiam_tenant(mocker):
         timeout=120,
         params=False
     )
-    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=True)
+    mocker.patch("CoreIRApiModule.FORWARD_USER_RUN_RBAC", new=False)
     mocker.patch.object(demisto, "_apiCall", return_value=Exception("command '_apiCall' is not available via engine (85)"))
     mocker.patch.object(BaseClient, "_http_request", return_value={'reply': {"incidents": [{"incident": {"incident_id": "1"}}]}})
     res = client.get_incidents(incident_id_list=['1'])

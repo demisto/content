@@ -586,6 +586,7 @@ def test_module(client: Client) -> None:
         raise exception
 
     return_results('ok')
+    return None
 
 
 def main() -> None:

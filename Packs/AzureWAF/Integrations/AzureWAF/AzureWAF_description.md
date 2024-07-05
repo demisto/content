@@ -1,3 +1,10 @@
+In order to connect to the AzureWAF using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
+
+- *Authorization Code Flow* (Recommended).
+- *Device Code Flow*.
+- *Azure Managed Identities*
+- *Client Credentials Flow*.
+  
 # Self-Deployed Application
 To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
 
@@ -19,9 +26,7 @@ Follow these steps for a User-Authentication configuration:
 7. Save the instance.
 8. Run the `!azure-waf-generate-login-url` command in the War Room and follow the instruction.
 9. Run the ***!azure-waf-auth-test*** command - a 'Success' message should be printed to the War Room.
-
-#### Cortex XSOAR Azure app
-In order to use the Cortex XSOAR Azure application, use the default application ID (cf22fd73-29f1-4245-8e16-533704926d20) and fill in your subscription ID and default resource group name. 
+ 
 
 ### Authentication Using the Device Code Flow
 Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow)
@@ -34,6 +39,9 @@ In order to connect to Azure Web Application Firewall using either the Cortex XS
 4. Follow the instructions that appear.
 5. Run the ***!azure-waf-auth-complete*** command.
 At end of the process, you will see a message that you logged in successfully.
+
+#### Cortex XSOAR Azure app
+In order to use the Cortex XSOAR Azure application, use the default application ID (cf22fd73-29f1-4245-8e16-533704926d20) and fill in your subscription ID and default resource group name.
 
 # Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
@@ -48,3 +56,19 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. In the **Authentication Type** drop-down list, select **Azure Managed Identities**.
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
+
+## Client Credentials Flow Authentication
+
+Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
+*Note:* In the *Select members* section, assign the application you created earlier.
+To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
+   1. In the **Authentication Type** field, select the **Client Credentials** option.
+   2. In the **Application ID** field, enter your Client/Application ID.
+   3. In the **Tenant ID** field, enter your Tenant ID .
+   4. In the **Client Secret** field, enter your Client Secret.
+   5. Click **Test** to validate the URLs, token, and connection
+   6. Save the instance.
+
+### Testing authentication and connectivity
+If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the Azure AzureWAF service run the ***!azure-waf-auth-test*** command.
+If you are using Client Credentials Flow, click **Test** when you are configuring the instance.

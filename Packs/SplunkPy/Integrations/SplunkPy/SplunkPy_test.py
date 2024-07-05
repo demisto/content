@@ -1560,7 +1560,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
 
 
 @pytest.mark.parametrize('notable_data, debug_log_message', [
-    ({'event_id': 'test_id'}, 'drill-down was not configured for notable test_id'),
+    ({'event_id': 'test_id'}, 'drill-down was not properly configured for notable test_id'),
 
     ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
       'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
@@ -1575,18 +1575,18 @@ def test_drilldown_enrichment(notable_data, expected_result):
     ({'event_id': 'test_id',
       'drilldown_searches': [
           "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentica"
-          "tion\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
+          "tion\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
           "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
-                  "$user|s$\",\"earliest\":,\"latest\":}"],
+                  "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"],
       '_raw': "src=\'test_src\', user='test_user'"},
      'Failed getting the drilldown timeframe for notable test_id'),
 
     ({'event_id': 'test_id',
       'drilldown_searches':
           ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentic"
-              "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
+              "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
               "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
-                  "$user|s$\",\"earliest\":,\"latest\":}"], '_raw': ""},
+                  "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"], '_raw': ""},
      "Couldn't build search query for notable test_id with the following drilldown search"),
 ], ids=[
     "A notable data without drilldown enrichment data",
@@ -2645,3 +2645,51 @@ def test_handle_message(item: dict | results.Message, expected: bool):
     Tests that passing a results.Message object returns True
     """
     assert splunk.handle_message(item) is expected
+
+
+def test_single_drilldown_searches(mocker):
+    """
+    Given: - notable with single string represent dict, in the drilldown_searches key.
+    When:  - call to drilldown_enrichment.
+    Then:  - validate there is no errors in the process.
+
+    """
+
+    drilldown_searches = json.dumps(
+        {
+            "name": "test drilldown",
+            "search": "| from datamodel: test",
+            "earliest": 1719218100,
+            "latest": 1719823500
+        }
+    )
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(splunk, 'build_drilldown_search', return_value=None)
+
+    splunk.drilldown_enrichment(
+        service=None,
+        notable_data={'drilldown_searches': drilldown_searches, 'event_id': 'test_id'},
+        num_enrichment_events=1)
+
+    assert demisto.error.call_count == 0, 'Something was wrong in the drilldown_enrichment process'
+
+
+@pytest.mark.parametrize(
+    'drilldown_data, expected',
+    [({'drilldown_search': 'test'}, ['test']),
+     ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': ['{"search_1":"test_1"}', '{"search_2":"test_2"}']},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}])
+     ]
+)
+def test_get_drilldown_searches(drilldown_data, expected):
+    """
+    Given:  -
+        1. A notable data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
+        4. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        5. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+    When:   - call to get_drilldown_searches.
+    Then:   - validate the result are as expectedץ
+    """
+
+    assert splunk.get_drilldown_searches(drilldown_data) == expected
