@@ -94,7 +94,8 @@ def test_update_risk_finding_status_command_invalid_status(client):
 
 
 def test_get_data_types_command(client):
-    result = get_data_types_command(client)
+    args = {}
+    result = get_data_types_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypes'
@@ -114,7 +115,8 @@ def test_get_data_types_command(client):
 
 def test_get_data_types_command_empty(client):
     client.get_data_types = MagicMock(return_value=[])  # Empty data types
-    result = get_data_types_command(client)
+    args = {}
+    result = get_data_types_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypes'
@@ -132,7 +134,8 @@ def test_get_data_types_command_empty(client):
 
 def test_get_data_types_command_single_type(client):
     client.get_data_types = MagicMock(return_value=["Type1"])  # Single data type
-    result = get_data_types_command(client)
+    args = {}
+    result = get_data_types_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypes'
@@ -173,8 +176,8 @@ sample_data_single_string = [
 
 def test_get_data_type_findings_command(client):
     client.get_data_type_findings = MagicMock(return_value=sample_data_multiple)  # Mocked data types
-
-    result = get_data_type_findings_command(client)
+    args = {}
+    result = get_data_type_findings_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypesFindings'
@@ -200,8 +203,8 @@ def test_get_data_type_findings_command(client):
 
 def test_get_data_type_findings_command_multiple_strings(client):
     client.get_data_type_findings = MagicMock(return_value=sample_data_multiple_strings)  # Mocked data types as strings
-
-    result = get_data_type_findings_command(client)
+    args = {}
+    result = get_data_type_findings_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypesFindings'
@@ -227,8 +230,8 @@ def test_get_data_type_findings_command_multiple_strings(client):
 
 def test_get_data_type_findings_command_single_type(client):
     client.get_data_type_findings = MagicMock(return_value=sample_data_single)  # Single data type
-
-    result = get_data_type_findings_command(client)
+    args = {}
+    result = get_data_type_findings_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypesFindings'
@@ -246,8 +249,8 @@ def test_get_data_type_findings_command_single_type(client):
 
 def test_get_data_type_findings_command_single_string(client):
     client.get_data_type_findings = MagicMock(return_value=sample_data_single_string)  # Single data type as string
-
-    result = get_data_type_findings_command(client)
+    args = {}
+    result = get_data_type_findings_command(client, args)
 
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == 'DSPM.DataTypesFindings'
