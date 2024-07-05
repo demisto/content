@@ -772,19 +772,53 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 | Ignite.IP.author | String | The author of the document. | 
 | Ignite.IP.author_id | String | The ID of the author of the document. | 
 | Ignite.IP.date | Date | The date associated with the document. | 
+| Ignite.IP.container_id | String | Unique identifier of the container. | 
+| Ignite.IP.container_title | String | Title of the container. | 
+| Ignite.IP.enrichments.bins | Number | Number of bins associated with the document. | 
+| Ignite.IP.enrichments.bitcoin_addresses | String | Bitcoin addresses associated with the document. | 
+| Ignite.IP.enrichments.cve_ids | String | CVE IDs associated with the document. | 
+| Ignite.IP.enrichments.email_addresses | String | Email addresses associated with the document. | 
+| Ignite.IP.enrichments.ethereum_addresses | String | Ethereum addresses associated with the document. | 
 | Ignite.IP.enrichments.ip_addresses | String | IP addresses associated with the document. | 
+| Ignite.IP.enrichments.location.country_code | String | Country code of the location associated with the document. | 
+| Ignite.IP.enrichments.location.name | String | Name of the location associated with the document. | 
+| Ignite.IP.enrichments.location.lat | Number | Latitude of the location associated with the document. | 
+| Ignite.IP.enrichments.location.long | Number | Longitude of the location associated with the document. | 
+| Ignite.IP.enrichments.monero_addresses | String | Monero addresses associated with the document. | 
+| Ignite.IP.enrichments.social_media_handles | String | Social media handles associated with the document. | 
+| Ignite.IP.enrichments.social_media_sites | String | Social media sites associated with the document. | 
+| Ignite.IP.enrichments.translation.language | String | Language of the translation associated with the document. | 
+| Ignite.IP.enrichments.translation.message | String | Translation message associated with the document. | 
 | Ignite.IP.enrichments.url_domains | String | URL domains associated with the document. | 
 | Ignite.IP.first_observed_at | Date | The first observed date of the document. | 
 | Ignite.IP.last_observed_at | Date | The last observed date of the document. | 
+| Ignite.IP.media.id | String | Unique identifier of the media. | 
+| Ignite.IP.media.file_name | String | File name of the media. | 
+| Ignite.IP.media.mime_type | String | MIME type of the media. | 
+| Ignite.IP.media.phash | String | Perceptual hash of the media. | 
+| Ignite.IP.media.safe_search | String | Safe search value of the media. | 
+| Ignite.IP.media.size | Number | Size of the media. | 
+| Ignite.IP.media.sort_date | Date | Date used for sorting the media. | 
+| Ignite.IP.media.storage_uri | String | Storage URI of the media. | 
+| Ignite.IP.media.type | String | Type of the media. | 
 | Ignite.IP.message | String | Message associated with the document. | 
 | Ignite.IP.message_id | String | ID of the message associated with the document. | 
 | Ignite.IP.native_id | String | Native ID of the document. | 
+| Ignite.IP.message_hash | String | Hash of the message associated with the document. | 
+| Ignite.IP.parent_container_title | String | Title of the parent container. | 
+| Ignite.IP.section | String | Section of the document. | 
+| Ignite.IP.section_id | String | ID of the section. | 
 | Ignite.IP.site | String | The site associated with the document. | 
 | Ignite.IP.site_actor_handle | String | Actor handle of the site associated with the document. | 
+| Ignite.IP.site_actor_alias | String | Actor alias of the site associated with the document. | 
+| Ignite.IP.site_actor_url | String | Actor URL of the site associated with the document. | 
+| Ignite.IP.site_actor_username | String | Actor username of the site associated with the document. | 
 | Ignite.IP.site_source_uri | String | Source URI of the site associated with the document. | 
 | Ignite.IP.site_title | String | Title of the site associated with the document. | 
 | Ignite.IP.sort_date | Date | Date used for sorting the document. | 
+| Ignite.IP.source_uri | String | Source URI of the document. | 
 | Ignite.IP.title | String | Title of the document. | 
+| Ignite.IP.title_id | String | ID of the title. | 
 | Ignite.IP.type | String | Type of the document. | 
 
 #### Command example

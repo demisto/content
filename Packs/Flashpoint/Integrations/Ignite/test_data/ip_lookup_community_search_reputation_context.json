@@ -54,6 +54,37 @@
             "sort_date": "2024-06-09T23:15:57Z",
             "title": "Update-AUPackages Report",
             "type": "paste"
+        },
+        {
+            "id": "0000000000000000000002",
+            "author": "actor",
+            "author_id": "00000000000000000000000000000002",
+            "date": "2024-07-01T23:47:06Z",
+            "enrichments": {
+                "bins": [
+                    510510
+                ],
+                "ip_addresses": [
+                    "0.0.0.2",
+                    "<x-fp-highlight>0.0.1.0</x-fp-highlight>"
+                ],
+                "translation": {
+                    "language": "english",
+                    "message": "Message"
+                }
+            },
+            "first_observed_at": "2024-07-01T14:00:31Z",
+            "last_observed_at": "2024-07-01T14:00:31Z",
+            "message": "Message",
+            "message_id": "0000001",
+            "native_id": "0000001",
+            "site": "dummy",
+            "site_actor_handle": "anonymous",
+            "site_source_uri": "dummy.com",
+            "site_title": "dummy",
+            "sort_date": "2024-07-01T13:55:25Z",
+            "title": "n/a",
+            "type": "paste"
         }
     ]
 }

@@ -1447,6 +1447,7 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                 relationship = create_relationships_list_for_community_search(client, indicator, ip)
                 filter_enrichments = deepcopy(indicator.get('enrichments', {}))
                 filter_enrichments.pop('translation', None)
+                filter_enrichments.pop('bins', None)
                 hr_indicator = {
                     'Author': indicator.get('author', EMPTY_DATA),
                     'Date (UTC)': arg_to_datetime(indicator.get('date')).strftime(READABLE_DATE_FORMAT),  # type: ignore

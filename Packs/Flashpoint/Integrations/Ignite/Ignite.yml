@@ -665,8 +665,56 @@ script:
     - contextPath: Ignite.IP.date
       description: The date associated with the document.
       type: Date
+    - contextPath: Ignite.IP.container_id
+      description: Unique identifier of the container.
+      type: String
+    - contextPath: Ignite.IP.container_title
+      description: Title of the container.
+      type: String
+    - contextPath: Ignite.IP.enrichments.bins
+      description: Number of bins associated with the document.
+      type: Number
+    - contextPath: Ignite.IP.enrichments.bitcoin_addresses
+      description: Bitcoin addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.cve_ids
+      description: CVE IDs associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.email_addresses
+      description: Email addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.ethereum_addresses
+      description: Ethereum addresses associated with the document.
+      type: String
     - contextPath: Ignite.IP.enrichments.ip_addresses
       description: IP addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.location.country_code
+      description: Country code of the location associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.location.name
+      description: Name of the location associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.location.lat
+      description: Latitude of the location associated with the document.
+      type: Number
+    - contextPath: Ignite.IP.enrichments.location.long
+      description: Longitude of the location associated with the document.
+      type: Number
+    - contextPath: Ignite.IP.enrichments.monero_addresses
+      description: Monero addresses associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.social_media_handles
+      description: Social media handles associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.social_media_sites
+      description: Social media sites associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.translation.language
+      description: Language of the translation associated with the document.
+      type: String
+    - contextPath: Ignite.IP.enrichments.translation.message
+      description: Translation message associated with the document.
       type: String
     - contextPath: Ignite.IP.enrichments.url_domains
       description: URL domains associated with the document.
@@ -677,6 +725,33 @@ script:
     - contextPath: Ignite.IP.last_observed_at
       description: The last observed date of the document.
       type: Date
+    - contextPath: Ignite.IP.media.id
+      description: Unique identifier of the media.
+      type: String
+    - contextPath: Ignite.IP.media.file_name
+      description: File name of the media.
+      type: String
+    - contextPath: Ignite.IP.media.mime_type
+      description: MIME type of the media.
+      type: String
+    - contextPath: Ignite.IP.media.phash
+      description: Perceptual hash of the media.
+      type: String
+    - contextPath: Ignite.IP.media.safe_search
+      description: Safe search value of the media.
+      type: String
+    - contextPath: Ignite.IP.media.size
+      description: Size of the media.
+      type: Number
+    - contextPath: Ignite.IP.media.sort_date
+      description: Date used for sorting the media.
+      type: Date
+    - contextPath: Ignite.IP.media.storage_uri
+      description: Storage URI of the media.
+      type: String
+    - contextPath: Ignite.IP.media.type
+      description: Type of the media.
+      type: String
     - contextPath: Ignite.IP.message
       description: Message associated with the document.
       type: String
@@ -686,11 +761,31 @@ script:
     - contextPath: Ignite.IP.native_id
       description: Native ID of the document.
       type: String
+    - contextPath: Ignite.IP.message_hash
+      description: Hash of the message associated with the document.
+      type: String
+    - contextPath: Ignite.IP.parent_container_title
+      description: Title of the parent container.
+      type: String
+    - contextPath: Ignite.IP.section
+      description: Section of the document.
+      type: String
+    - contextPath: Ignite.IP.section_id
+      description: ID of the section.
+      type: String
     - contextPath: Ignite.IP.site
       description: The site associated with the document.
       type: String
     - contextPath: Ignite.IP.site_actor_handle
       description: Actor handle of the site associated with the document.
+    - contextPath: Ignite.IP.site_actor_alias
+      description: Actor alias of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_actor_url
+      description: Actor URL of the site associated with the document.
+      type: String
+    - contextPath: Ignite.IP.site_actor_username
+      description: Actor username of the site associated with the document.
       type: String
     - contextPath: Ignite.IP.site_source_uri
       description: Source URI of the site associated with the document.
@@ -701,8 +796,14 @@ script:
     - contextPath: Ignite.IP.sort_date
       description: Date used for sorting the document.
       type: Date
+    - contextPath: Ignite.IP.source_uri
+      description: Source URI of the document.
+      type: String
     - contextPath: Ignite.IP.title
       description: Title of the document.
+      type: String
+    - contextPath: Ignite.IP.title_id
+      description: ID of the title.
       type: String
     - contextPath: Ignite.IP.type
       description: Type of the document.
