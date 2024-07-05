@@ -1,8 +1,8 @@
 commonfields:
   id: 3950c5bc-cbc4-4a60-81cc-4867ad9acdab
-  version: 39
+  version: 18
 vcShouldKeepItemLegacyProdMachine: false
-name: DSPM_send_slack_notificatio
+name: DSPM_send_risk_to_slack_app
 script: |+
   from typing import Dict, Any
   import traceback
@@ -10,11 +10,17 @@ script: |+
 
   ''' STANDALONE FUNCTION '''
 
+  # Define the set of rule names
+  REMEDIATION_LIST = {
+      "Sensitive asset open to world",
+      # Add other rule names here
+  }
 
   def send_data_slack_command(args):
       # Extract relevant fields from the incident
       incident = args.get("incident_object")
       projects_list = args.get("projects_list")
+      allowRemediation = incident.get('ruleName') in REMEDIATION_LIST
 
       result = demisto.executeCommand("dspm-get-integration-cofig", {})
       integration_conf = result[0].get("Contents",{}).get("integration_conf",{})
@@ -39,18 +45,20 @@ script: |+
           "username": "manas@metronlabs.com",
           "risk_type": incident.get("ruleName"),
           "project_keys": projects_list,
+          "playbookId":"da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417",
           "xsoar_credentials": {
               "api_key": integration_conf.get('xsoarApiKey'),
               "xsoar_url": integration_conf.get('xsoarServerUrl'),
-          }
+          },
 
+          "allowRemediation":allowRemediation
       }
 
       # Convert to JSON
       incident_json = json.dumps(incident_data)
       print(incident_json)
       # Define the endpoint URL and headers for the POST request
-      url = 'https://5ceb-202-164-137-91.ngrok-free.app/dspm_receiver'
+      url = 'https://284b-111-92-112-186.ngrok-free.app/dspm_receiver'
       headers = {
           'Content-Type': 'application/json'
       }
@@ -61,7 +69,7 @@ script: |+
       if response.status_code == 200:
           demisto.results("Incident data sent successfully.")
       else:
-          demisto.results(f"Failed to send incident data. Status code: {response.status_code}, Response: {response.text}")
+          raise Exception(f"Failed to send incident data. Status code: {response.status_code}, Response: {response.text}")
 
 
   ''' MAIN FUNCTION '''

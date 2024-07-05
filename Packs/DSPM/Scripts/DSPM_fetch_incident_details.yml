@@ -1,6 +1,6 @@
 commonfields:
   id: ea589919-2c6d-4575-8ea0-9345cc1675e5
-  version: 40
+  version: 2
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM_fetch_incident_details
 script: |+

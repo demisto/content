@@ -1,6 +1,6 @@
 commonfields:
   id: bd8ff7bf-775a-4856-82fa-c226c406e27a
-  version: 53
+  version: 2
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM_fetch_list_of_jira_project
 script: |+
