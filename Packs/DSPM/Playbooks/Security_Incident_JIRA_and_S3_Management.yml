@@ -1,5 +1,5 @@
 id: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-version: 57
+version: 59
 vcShouldKeepItemLegacyProdMachine: false
 name: Security Incident JIRA and S3 Management
 description: This playbook automates incident response actions by creating a JIRA
@@ -92,10 +92,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: c35d1124-d9ce-4629-86a6-616667566215
+    taskid: 97098272-1ddb-4def-86b9-c0f782b6e545
     type: regular
     task:
-      id: c35d1124-d9ce-4629-86a6-616667566215
+      id: 97098272-1ddb-4def-86b9-c0f782b6e545
       version: -1
       name: Update Slack Incident with JIRA details
       description: commands.local.cmd.set.incident
@@ -320,13 +320,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 66825e37-981e-4fe9-82b6-4ca0c74d5fe8
+    taskid: 5da77512-23d9-4978-86ef-eb46289c9805
     type: regular
     task:
-      id: 66825e37-981e-4fe9-82b6-4ca0c74d5fe8
+      id: 5da77512-23d9-4978-86ef-eb46289c9805
       version: -1
-      name: get-jira-accountId
-      scriptName: get-jira-accountId
+      name: Get Assignee ID from email
+      scriptName: DSPM-Get-Jira-accountId
       type: regular
       iscommand: false
       brand: ""
@@ -354,10 +354,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: ee7cbc85-6935-49fc-8736-53962be9ae90
+    taskid: e8d72795-1d13-4580-8837-c8e2bc4fd760
     type: regular
     task:
-      id: ee7cbc85-6935-49fc-8736-53962be9ae90
+      id: e8d72795-1d13-4580-8837-c8e2bc4fd760
       version: -1
       name: aws-s3-get-public-access-block
       description: Retrieves the PublicAccessBlock configuration for an Amazon S3
@@ -371,7 +371,7 @@ tasks:
       - "18"
     scriptarguments:
       bucket:
-        simple: ${incident.assetId}
+        simple: dig-security-integration
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -390,10 +390,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 943a2f42-76c5-4ebf-86be-ee1ee80e3e7b
+    taskid: ab5be25b-dadc-4545-8715-1da8edd33705
     type: regular
     task:
-      id: 943a2f42-76c5-4ebf-86be-ee1ee80e3e7b
+      id: ab5be25b-dadc-4545-8715-1da8edd33705
       version: -1
       name: Update Slack Incident with AWS details
       description: commands.local.cmd.set.incident
@@ -406,7 +406,8 @@ tasks:
       - "6"
     scriptarguments:
       details:
-        simple: 'Bucket RestrictPublicBuckets : ${AWS.S3.Buckets.PublicAccessBlockConfiguration.RestrictPublicBuckets}'
+        simple: Change the S3 PublicAccessBlock settings to block public access control
+          lists (ACLs) for ${incident.assetId} bucket Bucket.
     separatecontext: false
     continueonerrortype: ""
     view: |-
