@@ -2,7 +2,6 @@
 
 """ IMPORTS """
 
-import traceback  # noqa E402
 from typing import Any, Dict, Tuple  # noqa E402
 
 import urllib3  # noqa E402
@@ -26,7 +25,8 @@ DEFAULT_SORT_ORDER = 'asc'
 DEFAULT_INDICATOR_TYPE = 'Flashpoint Indicator'
 FILE_TYPES = ['sha1', 'sha256', 'sha512', 'md5', 'ssdeep']
 TIMEOUT = 60
-STATUS_LIST_TO_RETRY = (429, slice(500, 600))
+STATUS_LIST_TO_RETRY = (429, *(
+    status_code for status_code in requests.status_codes._codes if status_code >= 500))  # type: ignore
 OK_CODES = (200, 201)
 TOTAL_RETRIES = 4
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
@@ -63,7 +63,7 @@ FLASHPOINT_FEED_MAPPING = {
     "flashpointfeedeventinformation": {"path": "Event.info", "type": "str"},
     "flashpointfeedeventuuid": {"path": "Event.uuid", "type": "str"},
     "flashpointfeedindicatortype": {"path": "type", "type": "str"},
-    "flashpointfeedmalwaredescription": {"path": "malware_description", "type": "str"},
+    "flashpointfeedhtmlmalwaredescription": {"path": "malware_description", "type": "str"},
     "flashpointfeedreport": {"path": "Event.report", "type": "url"},
     "flashpointfeedtimestamp": {"path": "timestamp", "type": "date"}
 }
@@ -544,7 +544,7 @@ def flashpoint_ignite_get_indicators_command(client: Client, params: dict, args:
 '''Main Function'''
 
 
-def main(test_mode: bool = False):
+def main():
     """Parse params and runs command functions."""
     params = remove_space_from_args(demisto.params())
     remove_nulls_from_dictionary(params)
@@ -590,9 +590,6 @@ def main(test_mode: bool = False):
 
     # Log exceptions and return errors
     except Exception as e:
-        if test_mode:
-            raise e
-        demisto.error(traceback.format_exc())  # Print the traceback
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 

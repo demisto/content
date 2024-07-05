@@ -7,10 +7,11 @@ import sys
 import pytest
 from requests.exceptions import HTTPError
 
+import IgniteFeed
 from CommonServerPython import DemistoException
-from IgniteFeed import HTTP_ERRORS, MAX_FETCH, MAX_INDICATORS, MESSAGES, \
-    URL_SUFFIX, Client, demisto, fetch_indicators_command, \
-    flashpoint_ignite_get_indicators_command, main
+from IgniteFeed import (HTTP_ERRORS, MAX_FETCH, MAX_INDICATORS, MESSAGES,
+                        URL_SUFFIX, Client, demisto, fetch_indicators_command,
+                        flashpoint_ignite_get_indicators_command, main)
 from IgniteFeed import test_module as main_test_module
 
 """ CONSTANTS """
@@ -119,11 +120,11 @@ def test_test_module_when_invalid_params_provided(params, err_msg, mocker, capfd
     mocker.patch.object(demisto, 'command', return_value='test-module')
     mocker.patch.object(sys, 'exit', return_value=None)
 
-    with pytest.raises(DemistoException) as err:
-        capfd.close()
-        main(test_mode=True)
+    return_error = mocker.patch.object(IgniteFeed, "return_error")
+    capfd.close()
+    main()
 
-    assert str(err.value) == str(err_msg)
+    assert err_msg in return_error.call_args[0][0]
 
 
 @pytest.mark.parametrize("status_code", [
