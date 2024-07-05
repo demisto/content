@@ -2,8 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa
 
-MINUTES_BEFORE_TOKEN_EXPIRED = 2
-
 VENDOR = 'Bitwarden'
 PRODUCT = 'Password Manager'
 
@@ -12,6 +10,7 @@ DEFAULT_FIRST_FETCH = '3 days'
 DEFAULT_STARTTIME = 10
 DEFAULT_ENDTIME = 10
 DEFAULT_LIMIT = 10
+MINUTES_BEFORE_TOKEN_EXPIRED = 2
 
 AUTHENTICATION_FULL_URL = 'https://identity.bitwarden.com/connect/token'
 
@@ -90,11 +89,12 @@ class Client(BaseClient):
         return res.get('data')
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, first_fetch_time: int) -> str:
     demisto.log("in test module")
     try:
-        response = client.get_events()
-        demisto.log(f"{response=}")
+        retrieve_events, last_run = fetch_events(client, max_fetch=1, last_run={}, start_time=first_fetch_time,
+                                                 end_time=convert_to_timestamp(datetime.now()))
+        demisto.log(f"{retrieve_events=}")
     except DemistoException as e:
         raise e
 
@@ -111,14 +111,6 @@ def convert_to_timestamp(date: datetime | None) -> int:
     return 0
 
 
-def add_time_field(events: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    """Adds time field to the events"""
-    for event in events:
-        event['_time'] = event['date']
-        # event['_time'] = timestamp_to_datestring(event['date'])
-    return events
-
-
 def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> List[Dict[str, Any]]:
     """Filters events by ascending pbid and max_fetch"""
     for index, event in enumerate(events):
@@ -128,16 +120,16 @@ def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch
 
 
 def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any], start_time: int, end_time: int):
-    start_time = demisto.getLastRun() if demisto.getLastRun() else start_time
-    retrieve_events = client.get_events(start_time, end_time)
-    retrieve_events = filter_events(retrieve_events, int(last_run.get('last_fetch_pid', 0)), max_fetch)
+    fetching_start_time = demisto.getLastRun() if demisto.getLastRun() else start_time
+    retrieve_events = client.get_events(fetching_start_time, end_time)
+    retrieve_events = filter_events(retrieve_events, int(last_run.get('last_fetch_itemId', 0)), max_fetch)
     if retrieve_events:
         # extracting last fetch time and last fetched events.
-        last_fetch_time = retrieve_events[-1].get('time')
-        last_fetched_pbid = retrieve_events[-1].get('pbid')
-        demisto.debug(f'Setting last run to pbid: {last_fetched_pbid} time:{timestamp_to_datestring(last_fetch_time)}')
+        last_fetch_time = retrieve_events[-1].get('date')
+        last_fetched_itemId = retrieve_events[-1].get('itemId')
+        demisto.debug(f'Setting last run to itemId: {last_fetched_itemId} time:{timestamp_to_datestring(last_fetch_time)}')
         last_run = {'last_fetch_time': retrieve_events[-1].get('date'),
-                    'last_fetch_pid': last_fetched_pbid}
+                    'last_fetch_itemId': last_fetched_itemId}
     return retrieve_events, last_run
 
 
@@ -181,16 +173,12 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
         args = demisto.args()
         if command == 'test-module':
-            # return_results(test_module(client))
-            last_run = demisto.getLastRun()
-            events, new_last_run = get_events_command(client=client, args={})
-            if events:
-                add_time_field(events)
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-                if new_last_run:
-                    demisto.setLastRun(new_last_run)
+            return_results(test_module(client, first_fetch_time_timestamp))
         elif command == 'bitwarden-get-events':  # rename with bitwarden
-            return_results(get_events_command(client, args))
+            events, results = get_events_command(client=client, args={})
+            return_results(results)
+            if argToBoolean(args.get("should_push_events")):
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
         elif demisto.command() == 'fetch-events':
             last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client=client,
@@ -199,7 +187,6 @@ def main() -> None:  # pragma: no cover
                                                 end_time=int(datetime.now().timestamp()),
                                                 last_run=last_run)
             if events:
-                add_time_field(events)
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
                 if new_last_run:
                     demisto.setLastRun(new_last_run)
