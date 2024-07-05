@@ -3,7 +3,7 @@ from CommonServerPython import *
 import json
 
 # import requests
-from typing import Any
+from typing import Any, Tuple
 from datetime import datetime
 
 # Disable Secure Warnings
@@ -153,9 +153,10 @@ class Client(BaseClient):
         else:
             raise DemistoException(response.text, response.status_code, response.reason)
 
+    
     def get_alert_list(
-        self, limit: int, start_time: str, last_id: int = 0
-    ) -> list[dict]:
+        self, limit: int, start_time: str, last_id: int = 0, first_fetched_id: list=[]
+    ) :
         """Call jizo_query_records endpoint and select specific fields
         of response to return in alerts
 
@@ -169,41 +170,50 @@ class Client(BaseClient):
         """
 
         context_data = self.get_query_records(
-            args={"datetime_from": start_time, "limit": limit}
+            args={"datetime_from": start_time}
         )
-        # Types of alerts are the keys of the json response
-        alert_types = list(context_data.keys())
-
         alerts: list[dict] = []
-        index_type = 0
-        count = 0
-        # Get alert details
-        alert_data = context_data[alert_types[index_type]]["data"]
-
-        for i in range(limit):
-            # Check if the specified alert type does not contain alerts,
-            # Or if the final item was reached
-            # In that case, increment index_type to check the content of the next alert type
-            while i - count == len(alert_data) and index_type < len(alert_types) - 1:
-                index_type += 1
-                count += len(alert_data)
-                alert_data = context_data[alert_types[index_type]]["data"]
-
-            if bool(alert_data):
-                severity = alert_data[i - count].get("severity", "4")
-                category = alert_data[i - count].get("alert_category", "")
+        # Get alerts details
+        alert_data = context_data["alerts_flows"]["data"]
+        if last_id==0: # means no previous alerts were fetched
+            # Save first fetched alert id to check later
+            # for other coming alerts
+            first_fetched_id.append(alert_data[0]["idx"])
+        # means the last element in alert_data list was reached in previous fetch
+        if bool(first_fetched_id) and first_fetched_id[-1]==-1 and alert_data[0]["idx"] not in first_fetched_id:
+            last_id=0
+            first_fetched_id.append(alert_data[0]["idx"])
+        elif first_fetched_id[-1]==-1:
+            # In case no new alerts have came, exit with empty list 
+            # of alerts to fetch
+            return alerts, first_fetched_id
+        # Get index of next alert to fetch
+        if last_id==0:
+            next_index_to_fetch=0
+        else:
+            next_index_to_fetch=next((index for (index, d) in enumerate(alert_data) if d["idx"] == last_id-1), 0)
+            
+        if bool(alert_data):
+            for i in range(limit):
+                # The final element in alert_data list is reached or an we reached an incident that was already fetched 
+                if next_index_to_fetch+i == len(alert_data): 
+                    first_fetched_id.append(-1)
+                    break
+                  
+                severity = alert_data[next_index_to_fetch + i].get("severity", "4")
+                category = alert_data[next_index_to_fetch + i].get("alert_category", "")
                 # Fill in the alert item
                 item = ITEM_TEMP.format(
-                    id=last_id + i + 1,
-                    alert_type=alert_types[index_type],
+                    id=alert_data[next_index_to_fetch + i]["idx"],
+                    alert_type="alert flow",
                     category=category,
                     severity=severity,
-                    date=formatting_date(alert_data[i - count]["date"]["date"]),
+                    date=formatting_date(alert_data[next_index_to_fetch]["date"]["date"]),
                 )
                 dict_item = json.loads("{" + item + "}")
                 alerts.append(dict_item)
 
-        return alerts
+        return alerts, first_fetched_id
 
 
 """ HELPER FUNCTIONS """
@@ -387,18 +397,19 @@ def fetch_incidents(
     # Get the last fetch time, if exists
     last_fetch = last_run.get("last_fetch", None)
     last_ids: list[int] = last_run.get("last_ids", []) or []
-
+    first_fetched_ids: list[int] = last_run.get("first_fetched_ids", []) or []
+    
     if last_fetch is None:
         last_fetch = first_fetch_time
 
     assert last_fetch
 
     incidents: list[dict[str, Any]] = []
-    last_id = max(last_ids) if last_ids else 0
+    last_id = min(last_ids) if last_ids else 0
     demisto.debug(f"Running API query with {last_fetch=}")
 
-    alerts = client.get_alert_list(
-        limit=max_results, start_time=first_fetch_time, last_id=last_id
+    alerts, first_fetched_ids  = client.get_alert_list(
+        limit=max_results, start_time=first_fetch_time, last_id=last_id, first_fetched_id=first_fetched_ids
     )
 
     last_fetched_time = alerts[-1]["date"] if alerts else last_fetch
