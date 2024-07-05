@@ -396,6 +396,10 @@
           "complex": null,
           "simple": "last_updated_time"
         },
+        "External Last Updated Time": {
+            "complex": null,
+            "simple": "last_updated_time"
+        },
         "Link To Offense": {
           "complex": null,
           "simple": "LinkToOffense"
@@ -752,6 +756,10 @@
           "complex": null,
           "simple": "start_time"
         },
+        "External Start Time": {
+            "complex": null,
+            "simple": "start_time"
+          },
         "Status - Offense": {
           "complex": null,
           "simple": "status"
