@@ -108,5 +108,5 @@ type: python
 dockerimage: devdemisto/ml:1.0.0.100938
 runas: DBotWeakRole
 tests:
-- No tests (auto formatted)
+- DBotFindSimilarIncidents-test
 fromversion: 5.0.0

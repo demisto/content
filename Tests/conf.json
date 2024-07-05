@@ -3673,7 +3673,7 @@
             "is_mockable": false
         },
         {
-            "playbookID": "GetIndicatorsByQuery - Test"
+            "playbookID": "DBotFindSimilarIncidents-test"
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
