@@ -8,6 +8,7 @@ Supported alert categories:
 - First SSO Access
 - Cloud IAM User Access Investigation
 - Identity Analytics
+- Malicious Pod.
 
 ## Dependencies
 
@@ -15,18 +16,19 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* GenericPolling
+* Cortex XDR - Port Scan - Adjusted
+* Malicious Pod Response - Agent
 * Cortex XDR - Possible External RDP Brute-Force
 * Cortex XDR - XCloud Cryptojacking
-* Cortex XDR - Port Scan - Adjusted
-* Cortex XDR - First SSO Access
 * Cortex XDR - XCloud Token Theft Response
+* Cortex XDR - First SSO Access
 * Cortex XDR Remote PsExec with LOLBIN command execution alert
+* GenericPolling
 * Cortex XDR - Cloud IAM User Access Investigation
-* Cortex XDR - Large Upload
 * Cortex XDR - Cloud Data Exfiltration Response
-* Cortex XDR - Malware Investigation
+* Cortex XDR - Large Upload
 * Cortex XDR - Identity Analytics
+* Cortex XDR - Malware Investigation
 
 ### Integrations
 
@@ -34,7 +36,7 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-This playbook does not use any scripts.
+* Set
 
 ### Commands
 
