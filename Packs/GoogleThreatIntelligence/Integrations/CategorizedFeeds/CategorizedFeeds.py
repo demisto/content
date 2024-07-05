@@ -2,7 +2,6 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 import bz2
-import datetime
 import io
 import json
 import tarfile
@@ -14,9 +13,10 @@ urllib3.disable_warnings()
 
 def _get_current_hour():
     """Gets current hour for Threat feeds."""
-    time_obj = datetime.datetime.utcnow() - datetime.timedelta(hours=2)
+    time_obj = datetime.utcnow() - timedelta(hours=2)
     hour = time_obj.strftime('%Y%m%d%H')
     return hour
+
 
 def _get_indicators(response):
     """Gets indicators from response."""
@@ -26,10 +26,11 @@ def _get_indicators(response):
     with tarfile.open(fileobj=tar_bytes, mode='r:') as tar:
         for member in tar.getmembers():
             file_data = tar.extractfile(member)
-            while line := file_data.readline():
-                decoded_data = line.decode('utf-8')
-                indicator = json.loads(decoded_data)
-                indicators.append(indicator)
+            if file_data:
+                while line := file_data.readline():
+                    decoded_data = line.decode('utf-8')
+                    indicator = json.loads(decoded_data)
+                    indicators.append(indicator)
     return indicators
 
 
