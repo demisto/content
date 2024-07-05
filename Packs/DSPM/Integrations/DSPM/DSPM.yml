@@ -186,7 +186,88 @@ script:
     - contextPath: DSPM.RiskFinding
       description: Details of the risk finding for the provided ID.
       type: String
-  - arguments: []
+  - arguments:
+    - description: List of regions (comma separated values)
+      isArray: false
+      isOptional: true
+      name: regionIn
+      required: false
+      secret: false
+    - description: Exact region
+      isArray: false
+      isOptional: true
+      name: regionEqual
+      required: false
+      secret: false
+    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE",
+      "FILE_SHARE", "O365"] (comma separated values)'
+      isArray: false
+      isOptional: true
+      name: cloudProviderIn
+      required: false
+      secret: false
+    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
+      "FILE_SHARE", "O365"]'
+      isArray: false
+      isOptional: true
+      name: cloudProviderEqual
+      required: false
+      secret: false
+    - description: List of Service Types (comma separated values)
+      isArray: false
+      isOptional: true
+      name: serviceTypeIn
+      required: false
+      secret: false
+    - description: Exact Service Type
+      isArray: false
+      isOptional: true
+      name: serviceTypeEqual
+      required: false
+      secret: false
+    - description: 'List of project IDs'
+      isArray: true
+      isOptional: true
+      name: projectIdIn
+      required: false
+      secret: false
+    - description: 'Exact project ID'
+      isArray: false
+      isOptional: true
+      name: projectIdEqual
+      required: false
+      secret: false
+    - description: List of Life Cycles (comma separated values)
+      isArray: false
+      isOptional: true
+      name: lifecycleIn
+      required: false
+      secret: false
+    - description: Exact Life Cycle
+      isArray: false
+      isOptional: true
+      name: lifecycleEqual
+      required: false
+      secret: false
+    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
+      order is ascending. Multiple sort criteria are supported.'
+      isArray: false
+      isOptional: true
+      name: sort
+      required: false
+      secret: false
+    - description: Page
+      isArray: false
+      isOptional: true
+      name: page
+      required: false
+      secret: false
+    - description: Page size
+      isArray: false
+      isOptional: true
+      name: size
+      required: false
+      secret: false
     description: for retrieve list of assets for company.
     name: dspm-get-list-of-assets
     outputs:
@@ -213,14 +294,176 @@ script:
     - contextPath: DSPM.AssetFiles
       description: File Details of the asset for the provided ID.
       type: String
-  - arguments: []
+  - arguments:
+    - description: List of regions (comma separated values)
+      isArray: false
+      isOptional: true
+      name: regionIn
+      required: false
+      secret: false
+    - description: Exact region
+      isArray: false
+      isOptional: true
+      name: regionEqual
+      required: false
+      secret: false
+    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE",
+      "FILE_SHARE", "O365"] (comma separated values)'
+      isArray: false
+      isOptional: true
+      name: cloudProviderIn
+      required: false
+      secret: false
+    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
+      "FILE_SHARE", "O365"]'
+      isArray: false
+      isOptional: true
+      name: cloudProviderEqual
+      required: false
+      secret: false
+    - description: List of Service Types (comma separated values)
+      isArray: false
+      isOptional: true
+      name: serviceTypeIn
+      required: false
+      secret: false
+    - description: Exact Service Type
+      isArray: false
+      isOptional: true
+      name: serviceTypeEqual
+      required: false
+      secret: false
+    - description: 'List of project IDs'
+      isArray: true
+      isOptional: true
+      name: projectIdIn
+      required: false
+      secret: false
+    - description: 'Exact project ID'
+      isArray: false
+      isOptional: true
+      name: projectIdEqual
+      required: false
+      secret: false
+    - description: List of Life Cycles (comma separated values)
+      isArray: false
+      isOptional: true
+      name: lifecycleIn
+      required: false
+      secret: false
+    - description: Exact Life Cycle
+      isArray: false
+      isOptional: true
+      name: lifecycleEqual
+      required: false
+      secret: false
+    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
+      order is ascending. Multiple sort criteria are supported.'
+      isArray: false
+      isOptional: true
+      name: sort
+      required: false
+      secret: false
+    - description: Page
+      isArray: false
+      isOptional: true
+      name: page
+      required: false
+      secret: false
+    - description: Page size
+      isArray: false
+      isOptional: true
+      name: size
+      required: false
+      secret: false
     description: for retrieve list of data types for company.
     name: dspm-get-data-types
     outputs:
     - contextPath: DSPM.DataTypes
       description: List of data types for company.
       type: String
-  - arguments: []
+  - arguments:
+    - description: List of regions (comma separated values)
+      isArray: false
+      isOptional: true
+      name: regionIn
+      required: false
+      secret: false
+    - description: Exact region
+      isArray: false
+      isOptional: true
+      name: regionEqual
+      required: false
+      secret: false
+    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE",
+      "FILE_SHARE", "O365"] (comma separated values)'
+      isArray: false
+      isOptional: true
+      name: cloudProviderIn
+      required: false
+      secret: false
+    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
+      "FILE_SHARE", "O365"]'
+      isArray: false
+      isOptional: true
+      name: cloudProviderEqual
+      required: false
+      secret: false
+    - description: List of Service Types (comma separated values)
+      isArray: false
+      isOptional: true
+      name: serviceTypeIn
+      required: false
+      secret: false
+    - description: Exact Service Type
+      isArray: false
+      isOptional: true
+      name: serviceTypeEqual
+      required: false
+      secret: false
+    - description: List of Dig Tag Key (comma separated values)
+      isArray: false
+      isOptional: true
+      name: digTagKeyContains
+      required: false
+      secret: false
+    - description: List of Dig Tag Value (comma separated values)
+      isArray: false
+      isOptional: true
+      name: digTagValueContains
+      required: false
+      secret: false
+    - description: List of Life Cycles (comma separated values)
+      isArray: false
+      isOptional: true
+      name: lifecycleIn
+      required: false
+      secret: false
+    - description: Exact Life Cycle
+      isArray: false
+      isOptional: true
+      name: lifecycleEqual
+      required: false
+      secret: false
+    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
+      order is ascending. Multiple sort criteria are supported.'
+      isArray: false
+      isOptional: true
+      name: sort
+      required: false
+      secret: false
+    - description: Page
+      isArray: false
+      isOptional: true
+      name: page
+      required: false
+      secret: false
+    - description: Page size
+      isArray: false
+      isOptional: true
+      name: size
+      required: false
+      secret: false
     description: for retrieve list of data type findings for company.
     name: dspm-get-data-types-findings
     outputs:

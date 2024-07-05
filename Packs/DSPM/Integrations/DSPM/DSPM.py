@@ -19,6 +19,7 @@ GET_ASSET_LISTS = "/v1/assets"
 GET_ASSET_DETAILS = "/v1/assets/id?id="
 GET_ASSET_FILES = "/v1/classification/asset-files/id?id="
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
+GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
 INCIDENT_STATUS = {
     'OPEN': 1,
     'INVESTIGATING': 2,
@@ -97,10 +98,18 @@ class Client(BaseClient):
             params=params
         )
 
-    def get_data_types(self):
+    def get_data_types(self, params: dict[str, Any]):
         return self._http_request(
             method='GET',
-            url_suffix=GET_DATA_TYPES_ENDPOINT
+            url_suffix=GET_DATA_TYPES_ENDPOINT,
+            params=params
+        )
+    
+    def get_data_type_findings(self, params: dict[str, Any]):
+        return self._http_request(
+            method='GET',
+            url_suffix=GET_DATA_TYPE_FINDINGS_ENDPOINT,
+            params=params
         )
 
     def get_risk_information(self, risk_id: str):
@@ -181,7 +190,7 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
         "affects.equals": args.get('affectsEqual'),
         "status.in": args.get('statusIn'),
         "status.equals": args.get('statusEqual'),
-        "page": page,
+        "page": args.get('page'),
         "sort": args.get('sort'),
         "size": args.get('size')
     }
@@ -277,8 +286,8 @@ def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
         "lifecycle.in": args.get('lifecycleIn'),
         "lifecycle.equals": args.get('lifecycleEqual'),
         "sort": args.get('sort'),
-        "page": page,
-        "size": args.get('size', 20)
+        "page": args.get('page'),
+        "size": args.get('size')
     }
     # Remove None values from params
     params = {k: v for k, v in params.items() if v is not None}
@@ -375,9 +384,24 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     )
 
 
-def get_data_types_command(client):
+def get_data_types_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Command to fetch data types."""
-    data_types = client.get_data_types()
+    params = {
+        "region.in": args.get('regionIn'),
+        "region.equals": args.get('regionEqual'),
+        "projectId.in": args.get('projectIdIn'),
+        "projectId.equals": args.get('projectIdEqual'),
+        "cloudProvider.in": args.get('cloudProviderIn'),
+        "cloudProvider.equals": args.get('cloudProviderEqual'),
+        "serviceType.in": args.get('serviceTypeIn'),
+        "serviceType.equals": args.get('serviceTypeEqual'),
+        "lifecycle.in": args.get('lifecycleIn'),
+        "lifecycle.equals": args.get('lifecycleEqual'),
+        "page": args.get('page'),
+        "sort": args.get('sort'),
+        "size": args.get('size')
+    }
+    data_types = client.get_data_types(params)
     data_types_formatted = [{'No': index + 1, 'Key': dt} for index, dt in enumerate(data_types)]
 
     if data_types_formatted:
@@ -404,9 +428,24 @@ def get_data_types_command(client):
     )
 
 
-def get_data_type_findings_command(client):
+def get_data_type_findings_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Command to fetch data types and format them for the XSOAR command results."""
-    data_type_findings = client.get_data_type_findings()
+    params = {
+        "region.in": args.get('regionIn'),
+        "region.equals": args.get('regionEqual'),
+        "projectId.in": args.get('projectIdIn'),
+        "projectId.equals": args.get('projectIdEqual'),
+        "cloudProvider.in": args.get('cloudProviderIn'),
+        "cloudProvider.equals": args.get('cloudProviderEqual'),
+        "serviceType.in": args.get('serviceTypeIn'),
+        "serviceType.equals": args.get('serviceTypeEqual'),
+        "lifecycle.in": args.get('lifecycleIn'),
+        "lifecycle.equals": args.get('lifecycleEqual'),
+        "page": args.get('page'),
+        "sort": args.get('sort'),
+        "size": args.get('size')
+    }
+    data_type_findings = client.get_data_type_findings(params)
 
     if not data_type_findings:  # Check if the list is empty
         readable_output = (
@@ -900,9 +939,9 @@ def main() -> None:
         elif demisto.command() == 'dspm-get-asset-files-by-id':
             return_results(get_asset_files_by_id(client, demisto.args()))
         elif demisto.command() == 'dspm-get-data-types':
-            return_results(get_data_types_command(client))
+            return_results(get_data_types_command(client, demisto.args()))
         elif demisto.command() == 'dspm-get-data-types-findings':
-            return_results(get_data_type_findings_command(client))
+            return_results(get_data_type_findings_command(client, demisto.args()))
         elif demisto.command() == 'dspm-update-risk-finding-status':
             return_results(update_risk_finding_status_command(client, demisto.args()))
         elif demisto.command() == 'get-modified-remote-data':
