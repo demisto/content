@@ -309,7 +309,9 @@ def test_get_backup_anomaly():
     resp0 = get_backup_anomaly(0)
     resp1 = get_backup_anomaly(1)
     resp2 = get_backup_anomaly(2)
-    assert resp0 == "Undefined" and resp1 == "File Activity" and resp2 == "File Type"
+    assert resp0 == "Undefined"
+    assert resp1 == "File Activity"
+    assert resp2 == "File Type"
 
 
 def test_if_zero_set_none():

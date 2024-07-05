@@ -413,7 +413,7 @@ class Client(BaseClient):
             response = self._http_request(
                 method=method.upper(),
                 url_suffix=endpoint,
-                headers=self.headers if (not headers) else headers,
+                headers=headers if headers else self.headers,
                 json_data=json_data,
                 params=params,
                 resp_type="response",
@@ -445,10 +445,10 @@ class Client(BaseClient):
         else:
             current_epoch = int(datetime.now().timestamp())
             token_expiry_from_last_generation = int(
-                (
-                    self.access_token_last_generation
-                    + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
-                )
+
+                self.access_token_last_generation
+                + str(self.access_token_expiry_in_days * 7 * 24 * 60 * 60)
+
             )
             if current_epoch > token_expiry_from_last_generation:
                 demisto.debug("Token is expired, re-generating")
@@ -794,7 +794,7 @@ class Client(BaseClient):
             "originating_client": extract_from_regex(
                 message,
                 "",
-                r"{} \[(.*?)\]".format(field_mapper(Constants.originating_client)),
+                fr"{field_mapper(Constants.originating_client)} \[(.*?)\]",
             ),
             "affected_files_count": if_zero_set_none(
                 extract_from_regex(
@@ -1143,9 +1143,8 @@ class Client(BaseClient):
         """
         recovery_target_id = None
         response = self.http_request("GET", "/V4/recoverytargets", None)
-        if response is not None:
-            if "recoveryTargets" in response:
-                recovery_target_id = response["recoveryTargets"][0]["id"]
+        if response is not None and "recoveryTargets" in response:
+            recovery_target_id = response["recoveryTargets"][0]["id"]
         return recovery_target_id
 
     def search_recovery_group(self, recovery_group_name):
@@ -1160,19 +1159,17 @@ class Client(BaseClient):
         """
         recovery_group_id = None
         response = self.http_request("GET", "/recoverygroups")
-        if response is not None:
-            # print(response)
-            if "recoveryGroups" in response:
-                groups = response["recoveryGroups"]
-                for group in groups:
-                    current_group_name = group["name"].lower()
-                    if current_group_name == recovery_group_name.lower():
-                        recovery_group_id = group["id"]
-                        demisto.info(
-                            "Found recovery group {} with id [{}]".format(
-                                recovery_group_name, recovery_group_id
-                            )
+        if response is not None and "recoveryGroups" in response:
+            groups = response["recoveryGroups"]
+            for group in groups:
+                current_group_name = group["name"].lower()
+                if current_group_name == recovery_group_name.lower():
+                    recovery_group_id = group["id"]
+                    demisto.info(
+                        "Found recovery group {} with id [{}]".format(
+                            recovery_group_name, recovery_group_id
                         )
+                    )
         return recovery_group_id
 
     def add_recovery_group(self, target_id, recovery_group_name):
@@ -1200,11 +1197,10 @@ class Client(BaseClient):
             }
             response = self.http_request("POST", "/recoverygroup", json_data=data)
             # print(response)
-            if response is not None:
-                if "recoveryGroup" in response:
-                    recovery_group_id = response["recoveryGroup"]["id"]
+            if response is not None and "recoveryGroup" in response:
+                recovery_group_id = response["recoveryGroup"]["id"]
         else:
-            demisto.info("Recovery group exists with id [{}]".format(recovery_group_id))
+            demisto.info(f"Recovery group exists with id [{recovery_group_id}]")
         return recovery_group_id
 
     def add_vm_to_recovery(
@@ -1247,7 +1243,7 @@ class Client(BaseClient):
 
         # body = json.dumps(data, indent=4)
         response = self.http_request(
-            "POST", "/recoverygroup/{}/entity".format(recovery_group_id), json_data=data
+            "POST", f"/recoverygroup/{recovery_group_id}/entity", json_data=data
         )
         if response is not None:
             if response["errorCode"] == 0:
@@ -1263,7 +1259,7 @@ class Client(BaseClient):
                     )
                 )
         else:
-            demisto.error("Status code [{}]".format(response.status_code))
+            demisto.error(f"Status code [{response.status_code}]")
             return False
         return True
 
@@ -1278,21 +1274,20 @@ class Client(BaseClient):
             dict: A dictionary containing information about the VM, including vmName, vmGroupId, hypervisorId, vmGuid,
                 and backupSetId. If the VM is not found, an empty dictionary is returned.
         """
-        vm_info = dict()
+        vm_info = {}
         response = self.http_request("GET", "/v4/virtualmachines")
-        if response is not None:
-            if "virtualMachines" in response:
-                vms = response["virtualMachines"]
-                for vm in vms:
-                    current_vm_name = vm["name"].lower()
-                    if current_vm_name == vm_name.lower():
-                        demisto.info("Found VM [{}] ".format(current_vm_name))
-                        vm_info["vmName"] = current_vm_name
-                        vm_info["vmGroupId"] = vm["vmGroup"]["id"]
-                        vm_info["hypervisorId"] = vm["hypervisor"]["id"]
-                        vm_info["vmGuid"] = vm["UUID"]
-                        if "backupset" in vm:
-                            vm_info["backupSetId"] = vm["backupset"]["backupSetId"]
+        if response is not None and "virtualMachines" in response:
+            vms = response["virtualMachines"]
+            for vm in vms:
+                current_vm_name = vm["name"].lower()
+                if current_vm_name == vm_name.lower():
+                    demisto.info(f"Found VM [{current_vm_name}] ")
+                    vm_info["vmName"] = current_vm_name
+                    vm_info["vmGroupId"] = vm["vmGroup"]["id"]
+                    vm_info["hypervisorId"] = vm["hypervisor"]["id"]
+                    vm_info["vmGuid"] = vm["UUID"]
+                    if "backupset" in vm:
+                        vm_info["backupSetId"] = vm["backupset"]["backupSetId"]
         return vm_info
 
     def get_point_in_time_timestamp(self, input_date):
@@ -1316,13 +1311,13 @@ class Client(BaseClient):
 
     def add_vm_to_recovery_group(self, vm_name, inpute_date):
         point_in_time_ts = self.get_point_in_time_timestamp(inpute_date)
-        demisto.error("Point in time reference {}".format(point_in_time_ts))
+        demisto.error(f"Point in time reference {point_in_time_ts}")
         recovery_group_name = "APIRecoveryGroup"
         target_id = self.list_recovery_target()
-        demisto.debug("Target Id {}".format(target_id))
+        demisto.debug(f"Target Id {target_id}")
         if target_id is not None:
             vm_info = self.fetch_vm_details(vm_name)
-            demisto.debug("Found VM with details {}".format(vm_info))
+            demisto.debug(f"Found VM with details {vm_info}")
             if len(vm_info) > 0:
                 recovery_group_id = self.add_recovery_group(
                     target_id, recovery_group_name
@@ -1334,7 +1329,7 @@ class Client(BaseClient):
                         return True
                     else:
                         raise Exception(
-                            "Add VM [{}] to recovery group failed.".format(vm_name)
+                            f"Add VM [{vm_name}] to recovery group failed."
                         )
                 else:
                     raise Exception("Recovery group is not available.")
@@ -1465,7 +1460,7 @@ def disable_data_aging(client):
 def copy_files_to_war_room():
     files = demisto.incident().get("CustomFields", {}).get("commvaultfileslist")
     out_resp = ""
-    for file_ in files if (not (files is None)) else []:
+    for file_ in files if (files is not None) else []:
         out_resp = out_resp + file_["folder"] + "\\" + file_["filename"] + "\n"
     demisto.results(fileResult("Suspiciousfiles.txt", str(out_resp).encode()))
     return "Copied files to the War Room with the file name Suspiciousfiles.txt"
@@ -1617,7 +1612,7 @@ def main() -> None:
     # Azure Key Vault Parameters
     client.set_props(params)
     # is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
-    client.qsdk_token = "QSDK {}".format(cv_api_token)
+    client.qsdk_token = f"QSDK {cv_api_token}"
     forwarding_rule_type: str | None = params.get("forwardingRule")
     port: int = 0
     try:
