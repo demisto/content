@@ -1,10 +1,9 @@
-description: Test playbook to excercise and test/validate the commands supplied via
-  the ProofpointThreatProtection integration.
-dirtyInputs: true
-id: test-pptp-playbook
+description: Test playbook to excercise and test/validate the commands supplied via the ProofpointThreatProtection integration.
+id: test-ProofpointThreatProtectionIntegration-Playbook
 inputs: []
 name: test-ProofpointThreatProtectionIntegration-Playbook
 outputs: []
+fromversion: 6.10.0
 starttaskid: "0"
 tasks:
   "0":
@@ -26,6 +25,7 @@ tasks:
       iscommand: false
       name: ""
       version: -1
+      description: ''
     taskid: 6bf070ca-ee5b-4a4b-8320-a45e44668c23
     timertriggers: []
     type: start
@@ -309,6 +309,7 @@ tasks:
       name: Test Done
       type: title
       version: -1
+      description: ''
     taskid: 6996347f-e756-42ec-80bd-6d52f4a50416
     timertriggers: []
     type: title
