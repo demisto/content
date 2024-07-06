@@ -78,28 +78,28 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* ZipFile
 * DownloadAndArchivePythonLibrary
-* FileCreateAndUploadV2
 * PrintErrorEntry
 * GetErrorsFromEntry
+* FileCreateAndUploadV2
+* ZipFile
 
 ### Commands
 
-* aws-ec2-create-vpc-endpoint
-* aws-lambda-create-function
 * aws-eks-describe-cluster
-* aws-ec2-authorize-security-group-ingress-rule
-* aws-eks-create-access-entry
-* aws-iam-create-policy
-* aws-iam-create-role
-* aws-eks-associate-access-policy
 * aws-lambda-publish-layer-version
 * aws-ec2-describe-vpcs
-* aws-eks-update-access-entry
-* aws-eks-update-cluster-config
 * aws-ec2-create-security-group
+* aws-eks-associate-access-policy
+* aws-ec2-create-vpc-endpoint
+* aws-lambda-create-function
+* aws-eks-create-access-entry
+* aws-iam-create-policy
+* aws-eks-update-cluster-config
+* aws-iam-create-role
+* aws-ec2-authorize-security-group-ingress-rule
 * aws-iam-attach-policy
+* aws-eks-update-access-entry
 
 ## Playbook Inputs
 
@@ -112,7 +112,6 @@ This playbook does not use any integrations.
 | FunctionName | The name of the Lambda function. |  | Optional |
 | FunctionCode | Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you. |  | Optional |
 | FunctionRuntime | The runtime environment for the function.	 |  | Optional |
-| FunctionArchitecture | A list of compatible architectures.	 |  | Optional |
 | FunctionHandler | The name of the method within your code that Lambda calls to execute your function.	 |  | Optional |
 | LayerName | The name to assign to the new Lambda layer. |  | Optional |
 | LayerRuntime | The name of the method within your code that Lambda calls to execute your function.	 |  | Optional |
@@ -120,7 +119,6 @@ This playbook does not use any integrations.
 | LibraryName | The Python library to download and attach to the Lambda Function. <br/>e.g.<br/>To be able to use the kubernetes library, use 'kubernetes' and the script will download and pack its files. |  | Optional |
 | LambdaRoleName | The lambda role name to create. |  | Optional |
 | LambdaPolicyName | The lambda policy name to create. |  | Optional |
-| TrustPolicyDocument | The trust policy document. |  | Optional |
 | SecurityGroupName | The security group name to create. |  | Optional |
 
 ## Playbook Outputs
