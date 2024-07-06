@@ -1,29 +1,29 @@
 This playbook automates the deployment of an AWS Lambda function to manage resources within an Amazon EKS cluster. It ensures that all necessary configurations are created, updated, and verified.
 
-**Setup**
+### Setup
 
 - **Describe EKS Cluster**: Gather essential details of the EKS cluster.
 - **Create IAM Role**: Set up a new IAM role for the Lambda function.
 - **Create and Attach Policy**: Define and attach a policy to the IAM role to grant necessary permissions.
 
-**Authentication Mode Check**
+### Authentication Mode Check
 
 - **Verify Authentication Mode**: Ensure the current authentication mode allows API access.
   - **If not**: Update the cluster authentication mode to permit API access.
 
-**Access Entry Configuration**
+### Access Entry Configuration
 
 - **Create Access Entry**: Establish a new access entry in the EKS cluster.
 - **Associate Access Policy**: Link the access policy with the created access entry.
 - **Update Access Entry**: Apply the latest configurations to the access entry.
 
-**VPC and Security Group Setup**
+### VPC and Security Group Setup
 
 - **Describe VPCs**: Identify the appropriate VPC for the Lambda function.
 - **Create Security Group**: Define a security group to manage Lambda function traffic.
 - **Set Ingress Rules**: Configure ingress rules for the security group.
 
-**VPC Endpoint Creation**
+### VPC Endpoint Creation
 
 - **Create VPC Endpoint for eks-auth**: Establish a VPC endpoint for EKS authentication.
 - **Check for Errors**: Verify if there are any errors during the creation of the VPC endpoint.
@@ -31,7 +31,7 @@ This playbook automates the deployment of an AWS Lambda function to manage resou
 - **Verify VPC Endpoint Existence**: Ensure the VPC endpoint already exists.
   - **If exists**: Proceed with the next steps.
 
-**Lambda Function Deployment**
+### Lambda Function Deployment
 
 - **Download Kubernetes Library**: Fetch the necessary Kubernetes library.
 - **Publish AWS Lambda Layer**: Publish a new layer version for the AWS Lambda function.
@@ -39,16 +39,30 @@ This playbook automates the deployment of an AWS Lambda function to manage resou
 - **Zip Lambda Code**: Compress the Lambda function code for deployment.
 - **Create AWS Lambda Function**: Deploy the Lambda function using the zipped code.
 
-**Conclusion**
+### Resolution
 
 - **Final Verification**: Ensure all operations have been successfully completed.
 - **Completion**: Confirm the deployment process is finished, ensuring robust management of EKS authentication through AWS Lambda.
 
-
-
 This playbook provides a comprehensive, automated approach to deploying an AWS Lambda function for managing resources within an EKS cluster, efficiently handling all configurations and potential errors.
 
+### Required Integration
 
+#### AWS IAM (Identity and Access Management)
+- [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)
+- [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)
+
+#### AWS EC2 (Elastic Compute Cloud)
+- [AWS EC2 API Documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html)
+- [Cortex XSOAR AWS EC2 Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEC2/)
+
+#### AWS EKS (Elastic Kubernetes Service)
+- [AWS EKS API Documentation](https://docs.aws.amazon.com/eks/latest/APIReference/Welcome.html)
+- [Cortex XSOAR AWS EKS Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEKS/)
+
+#### AWS Lambda
+- [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
+- [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSLambda/).
 
 ## Dependencies
 
@@ -64,28 +78,28 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* DownloadAndArchivePythonLibrary
 * ZipFile
+* DownloadAndArchivePythonLibrary
 * FileCreateAndUploadV2
-* GetErrorsFromEntry
 * PrintErrorEntry
+* GetErrorsFromEntry
 
 ### Commands
 
-* aws-lambda-publish-layer-version
-* aws-eks-describe-cluster
-* aws-eks-associate-access-policy
-* aws-eks-update-access-entry
-* aws-ec2-describe-vpcs
-* aws-lambda-create-function
-* aws-iam-attach-policy
-* aws-ec2-authorize-security-group-ingress-rule
-* aws-eks-update-cluster-config
-* aws-iam-create-role
-* aws-ec2-create-security-group
-* aws-iam-create-policy
-* aws-eks-create-access-entry
 * aws-ec2-create-vpc-endpoint
+* aws-lambda-create-function
+* aws-eks-describe-cluster
+* aws-ec2-authorize-security-group-ingress-rule
+* aws-eks-create-access-entry
+* aws-iam-create-policy
+* aws-iam-create-role
+* aws-eks-associate-access-policy
+* aws-lambda-publish-layer-version
+* aws-ec2-describe-vpcs
+* aws-eks-update-access-entry
+* aws-eks-update-cluster-config
+* aws-ec2-create-security-group
+* aws-iam-attach-policy
 
 ## Playbook Inputs
 
