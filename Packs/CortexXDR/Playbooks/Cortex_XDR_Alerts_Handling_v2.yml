@@ -1,17 +1,15 @@
 id: Cortex XDR Alerts Handling v2
 version: -1
-contentitemexportablefields:
-  contentitemfields: {}
 name: Cortex XDR Alerts Handling v2
 description: "This playbook is used to loop over every alert in a Cortex XDR incident. \nSupported alert categories:\n- Malware\n- Port Scan\n- Cloud Cryptojacking\n- Cloud Token Theft\n- RDP Brute-Force\n- First SSO Access\n- Cloud IAM User Access Investigation\n- Identity Analytics\n- Malicious Pod."
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 9c36d95d-b324-4c82-8a03-1994ede59fdf
+    taskid: 42f27e72-959d-4e01-8adf-c00187510762
     type: start
     task:
-      id: 9c36d95d-b324-4c82-8a03-1994ede59fdf
+      id: 42f27e72-959d-4e01-8adf-c00187510762
       version: -1
       name: ""
       iscommand: false
@@ -26,7 +24,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 70
+          "y": 80
         }
       }
     note: false
@@ -38,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a4411fb2-41fd-459b-8a37-394d0d05156d
+    taskid: 42e4ac28-c6d4-4f0b-8cdb-4edcd684ca92
     type: condition
     task:
-      id: a4411fb2-41fd-459b-8a37-394d0d05156d
+      id: 42e4ac28-c6d4-4f0b-8cdb-4edcd684ca92
       version: -1
       name: Choose playbook by category
       description: Choose the playbook to run by the alert category.
@@ -103,7 +101,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: 'PaloAltoNetworksXDR.Incident.alerts.alert_id '
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
                       iscontext: true
                     right:
                       value:
@@ -307,7 +305,7 @@ tasks:
                 - - operator: isEqualString
                     left:
                       value:
-                        simple: 'PaloAltoNetworksXDR.Incident.alerts.alert_id '
+                        simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
                       iscontext: true
                     right:
                       value:
@@ -325,7 +323,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 200
+          "y": 210
         }
       }
     note: false
@@ -337,10 +335,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 3ee49877-ed34-469e-8f5b-73536d3d40bd
+    taskid: 3bfb5821-8d6a-4809-8b8e-e8aed054e2df
     type: title
     task:
-      id: 3ee49877-ed34-469e-8f5b-73536d3d40bd
+      id: 3bfb5821-8d6a-4809-8b8e-e8aed054e2df
       version: -1
       name: Done
       type: title
@@ -365,10 +363,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 73393504-1664-4f81-8baf-f5e29f222cea
+    taskid: 7359b4be-b4e2-4ae1-8974-99679135918b
     type: title
     task:
-      id: 73393504-1664-4f81-8baf-f5e29f222cea
+      id: 7359b4be-b4e2-4ae1-8974-99679135918b
       version: -1
       name: Other alert category
       type: title
@@ -383,8 +381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 405
+          "x": 2670,
+          "y": 395
         }
       }
     note: false
@@ -396,10 +394,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: a43485fb-8b99-42d3-838d-df0065c30417
+    taskid: c7b238f5-0fe4-4f49-8102-795e468badf0
     type: playbook
     task:
-      id: a43485fb-8b99-42d3-838d-df0065c30417
+      id: c7b238f5-0fe4-4f49-8102-795e468badf0
       version: -1
       name: Cortex XDR - Port Scan - Adjusted
       description: "The playbook investigates Cortex XDR incidents involving port scan alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling’. \n\nThe playbook consists of the following procedures:\n- Enrichment and investigation of the scanner and scanned hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Suspicious port scan\n- Port scan by suspicious process\n- Highly suspicious port scan\n- Port scan."
@@ -506,8 +504,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 480,
-          "y": 405
+          "x": 920,
+          "y": 395
         }
       }
     note: false
@@ -519,10 +517,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: af3de00a-e938-41a9-8756-de6e561c3b20
+    taskid: 2872f0e4-d709-49d3-80af-6dd12a3df5c2
     type: playbook
     task:
-      id: af3de00a-e938-41a9-8756-de6e561c3b20
+      id: 2872f0e4-d709-49d3-80af-6dd12a3df5c2
       version: -1
       name: Cortex XDR - Malware Investigation
       description: |
@@ -531,7 +529,7 @@ tasks:
         - Lets the analyst manually retrieve the malicious file.
         - Performs file detonation.
 
-        The playbook is used as a sub-playbook in 'Cortex XDR Incident Handling - v2'.
+        The playbook is used as a sub-playbook in 'Cortex XDR Incident Handling - v2_d
       playbookName: Cortex XDR - Malware Investigation
       type: playbook
       iscommand: false
@@ -643,8 +641,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1800,
-          "y": 405
+          "x": 2240,
+          "y": 395
         }
       }
     note: false
@@ -656,10 +654,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: cc605fa2-db11-46dd-83f6-9781e4196c61
+    taskid: 78e1842a-1098-401d-8a24-e1027c821fe7
     type: playbook
     task:
-      id: cc605fa2-db11-46dd-83f6-9781e4196c61
+      id: 78e1842a-1098-401d-8a24-e1027c821fe7
       version: -1
       name: Cortex XDR - XCloud Cryptojacking
       description: "Investigates a Cortex XDR incident containing a Cloud Cryptojacking related alert. \nThe playbook supports AWS, Azure, and GCP and executes the following:\n\n- Cloud enrichment:\n   - Collects info about the involved resources\n   - Collects info about the involved identities\n   - Collects info about the involved IPs\n- Verdict decision tree\n- Verdict handling:\n   - Handle False Positives\n   - Handle True Positives\n      - Cloud Response - Generic sub-playbook.\n- Notifies the SOC if a malicious verdict was found"
@@ -733,7 +731,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1950,
+          "x": -1580,
           "y": 750
         }
       }
@@ -746,10 +744,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0aa062ec-14be-440b-8606-a05efe27dd8f
+    taskid: 8c27d20c-81bc-40e2-8419-cf4c7f62e1e0
     type: playbook
     task:
-      id: 0aa062ec-14be-440b-8606-a05efe27dd8f
+      id: 8c27d20c-81bc-40e2-8419-cf4c7f62e1e0
       version: -1
       name: GenericPolling
       description: |-
@@ -790,7 +788,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1950,
+          "x": -1580,
           "y": 405
         }
       }
@@ -803,10 +801,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: d876d66f-ca83-4565-8c73-bfcf47d74473
+    taskid: 7c235606-d71d-4132-8273-0529058c00e5
     type: condition
     task:
-      id: d876d66f-ca83-4565-8c73-bfcf47d74473
+      id: 7c235606-d71d-4132-8273-0529058c00e5
       version: -1
       name: Which XCLOUD alert was found?
       description: Checks which XCLOUD alert was found in the incident.
@@ -1172,7 +1170,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1950,
+          "x": -1580,
           "y": 560
         }
       }
@@ -1185,13 +1183,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: f2999d13-c387-4ef3-8e20-c44109eec244
+    taskid: afb9affe-b3de-4c89-8cd5-5c40d7e19e95
     type: playbook
     task:
-      id: f2999d13-c387-4ef3-8e20-c44109eec244
+      id: afb9affe-b3de-4c89-8cd5-5c40d7e19e95
       version: -1
       name: Cortex XDR - Possible External RDP Brute-Force
-      description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigates if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts related to the same username and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious Element\" input allows you to select a specific element that, if identified as suspicious, the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic v2.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity alerts by MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n* Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
+      description: "This playbook investigates a “Possible External RDP Brute Force” XDR Alert by gathering user, IP, and hostname information, and investigates if the following suspicious elements exists:\n- \"IP Reputation\" - Dbot Score is 2-3 \n- \"Source geolocation\" - Connection from unusual country \n-  Related to campaign - IP address related to campaign, based on TIM module\n-  Hunting results - hunt for indicators related to the source IP and the related campaign returned results\n-  XDR Alert search - XDR Alerts related to the same username and endpoint\n\nSet verdict method:\n* Suspicious Element - The \"Suspicious Element\" input allows you to select a specific element that, if identified as suspicious, the investigation's final verdict will be deemed a \"True Positive\".\n\n* Final Verdict -  Each suspicious element is being added to an array called \"Suspicious Elements\", which is used to count potential security threats. The array size will be compared to a final threshold. If the size is greater than or equal to the threshold, the investigation's final verdict will be deemed a \"True Positive\".\n\n* User Engagement - The \"UserEngagementThreshold\" input allows you to set the number of suspicious elements that trigger user engagement. When this threshold is met, an email will be sent to the user and their manager asking for authorization of RDP activity. If the RDP activity is not authorized by the user, the investigation's final verdict will be deemed a \"True Positive\".\n\nUsed Sub-playbooks:\n* Account Enrichment - Generic v2_dev.1\n* Block Indicators - Generic v3\n* Cortex XDR - Get entity al by MITRE tactics - Endpoint\n* Cortex XDR - Get entity alerts by MITRE tactics - user\n* User Investigation - Generic\n* TIM - Indicator Relationships Analysis\n* Threat Hunting - Generic\n* Cortex XDR - Possible External RDP Brute Force - Set Verdict\n* Cortex XDR - Isolate Endpoint\n"
       playbookName: Cortex XDR - Possible External RDP Brute-Force
       type: playbook
       iscommand: false
@@ -1313,8 +1311,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 40,
-          "y": 405
+          "x": 480,
+          "y": 395
         }
       }
     note: false
@@ -1326,10 +1324,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 14129f69-d407-4640-8114-b5548a37dbc0
+    taskid: af704f7c-40a1-4504-8b32-a1b42466b208
     type: playbook
     task:
-      id: 14129f69-d407-4640-8114-b5548a37dbc0
+      id: af704f7c-40a1-4504-8b32-a1b42466b208
       version: -1
       name: Cortex XDR - First SSO Access
       description: |-
@@ -1449,8 +1447,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": 405
+          "x": 40,
+          "y": 395
         }
       }
     note: false
@@ -1462,10 +1460,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+    taskid: 03d9ad54-f3f1-471c-8e9d-e23ca70bd245
     type: playbook
     task:
-      id: f9856c2e-ccdd-4156-8173-1867d2bd48f9
+      id: 03d9ad54-f3f1-471c-8e9d-e23ca70bd245
       version: -1
       name: Cortex XDR - Cloud IAM User Access Investigation
       description: "Investigate and respond to Cortex XDR Cloud alerts where a Cloud IAM user`s access key is used suspiciously to access the cloud environment. \nThe following alerts are supported for AWS, Azure, and GCP environments.\n- Penetration testing tool attempt\n- Penetration testing tool activity\n- Suspicious API call from a Tor exit node\n\n"
@@ -1514,7 +1512,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2790,
+          "x": -2420,
           "y": 750
         }
       }
@@ -1527,10 +1525,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ddd822c1-677d-4ca3-80e1-c1068539f238
+    taskid: f1196718-45f0-40a1-8c50-bccdeab9bffa
     type: playbook
     task:
-      id: ddd822c1-677d-4ca3-80e1-c1068539f238
+      id: f1196718-45f0-40a1-8c50-bccdeab9bffa
       version: -1
       name: Cortex XDR - XCloud Token Theft Response
       description: |-
@@ -1609,7 +1607,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -2370,
+          "x": -2000,
           "y": 750
         }
       }
@@ -1622,10 +1620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+    taskid: fd361936-3224-4f04-81e0-ad04bb7982a9
     type: playbook
     task:
-      id: be0cb5ec-08ca-4334-8efd-9c7c004aa362
+      id: fd361936-3224-4f04-81e0-ad04bb7982a9
       version: -1
       name: Cortex XDR - Cloud Data Exfiltration Response
       playbookName: Cortex XDR - Cloud Data Exfiltration Response
@@ -1660,7 +1658,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -3210,
+          "x": -2840,
           "y": 750
         }
       }
@@ -1673,10 +1671,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b31ca834-7ac6-439d-8246-59fba730f75b
+    taskid: 4f44cece-4ef0-420c-8c89-b36eb4ee36ff
     type: playbook
     task:
-      id: b31ca834-7ac6-439d-8246-59fba730f75b
+      id: 4f44cece-4ef0-420c-8c89-b36eb4ee36ff
       version: -1
       name: Cortex XDR Remote PsExec with LOLBIN command execution alert
       description: "The \"Remote PsExec-like LOLBIN Command Execution\" playbook is designed to address and respond to alerts indicating suspicious activities related to remote PsExec-like LOLBIN command execution from an unsigned non-standard source. \nThe playbook aims to efficiently:\n\n- Get the alert data and check if the execution is blocked. If not will terminate the process (manually by default).\n- Enrich any entities and indicators from the alert and find any related campaigns.\n- Perform command analysis to provide insights and a verdict for the executed command.\n- Perform further endpoint investigation using Cortex XDR.\n- Checks for any malicious verdicts found to raise the severity of the alert.\n- Perform automatic/manual remediation response by blocking any malicious indicators found.\n\nThe playbook is designed to run as a sub-playbook in ‘Cortex XDR Incident Handling - v3 & Cortex XDR Alerts Handling’.\nIt depends on the data from the parent playbooks and cannot be used as a standalone version."
@@ -1740,8 +1738,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 920,
-          "y": 405
+          "x": 1360,
+          "y": 395
         }
       }
     note: false
@@ -1753,10 +1751,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 85150d2a-010a-4720-8926-c0f9f711a68d
+    taskid: a654adf8-a78a-4d1c-8fb3-1e4964634acd
     type: playbook
     task:
-      id: 85150d2a-010a-4720-8926-c0f9f711a68d
+      id: a654adf8-a78a-4d1c-8fb3-1e4964634acd
       version: -1
       name: Cortex XDR - Identity Analytics
       description: |
@@ -1853,8 +1851,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -840,
-          "y": 405
+          "x": -400,
+          "y": 395
         }
       }
     note: false
@@ -1866,10 +1864,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 031e700e-2cbd-474c-8d78-6a7364d2e8f1
+    taskid: a5d6b026-ceeb-4fa1-89eb-87738d057e70
     type: playbook
     task:
-      id: 031e700e-2cbd-474c-8d78-6a7364d2e8f1
+      id: a5d6b026-ceeb-4fa1-89eb-87738d057e70
       version: -1
       name: Cortex XDR - Large Upload
       description: "The playbook investigates Cortex XDR incidents involving large upload alerts. The playbook is designed to run as a sub-playbook of ‘Cortex XDR Alerts Handling v2’. \n\nThe playbook consists of the following procedures:\n- Searches for similar previous incidents that were closed as false positives.\n- Enrichment and investigation of the initiator and destination hostname and IP address.\n- Enrichment and investigation of the initiator user, process, file, or command if it exists.\n- Detection of related indicators and analysis of the relationship between the detected indicators.\n- Utilize the detected indicators to conduct threat hunting.\n- Blocks detected malicious indicators.\n- Endpoint isolation.\n\nThis playbook supports the following Cortex XDR alert names:\n- Large Upload (Generic)\n- Large Upload (SMTP)\n- Large Upload (FTP)\n- Large Upload (HTTPS)"
@@ -1924,8 +1922,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1360,
-          "y": 405
+          "x": 1800,
+          "y": 395
         }
       }
     note: false
@@ -1937,10 +1935,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 173fd476-12f1-403c-839d-8087028dbf73
+    taskid: 5117b380-1718-4d1e-8e24-9e073ec05c99
     type: regular
     task:
-      id: 173fd476-12f1-403c-839d-8087028dbf73
+      id: 5117b380-1718-4d1e-8e24-9e073ec05c99
       version: -1
       name: Set Alert ID to continue with the investigation and response
       description: Set a value in context under the key you entered.
@@ -1963,8 +1961,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2230,
-          "y": 580
+          "x": 2670,
+          "y": 570
         }
       }
     note: false
@@ -1976,10 +1974,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: b9efc9da-9971-4e94-885f-ad668b030f3c
+    taskid: add38fdf-2c25-4a46-8962-5fa3f1fe0376
     type: regular
     task:
-      id: b9efc9da-9971-4e94-885f-ad668b030f3c
+      id: add38fdf-2c25-4a46-8962-5fa3f1fe0376
       version: -1
       name: Set Alert ID to continue with the investigation and response
       description: Set a value in context under the key you entered.
@@ -2002,7 +2000,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -1530,
+          "x": -1160,
           "y": 750
         }
       }
@@ -2015,10 +2013,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: ce90ccfb-1742-4360-8ec4-90365ea2c191
+    taskid: b2cbbb68-dc6d-427b-83db-170c4c57b546
     type: playbook
     task:
-      id: ce90ccfb-1742-4360-8ec4-90365ea2c191
+      id: b2cbbb68-dc6d-427b-83db-170c4c57b546
       version: -1
       name: Cortex XDR - Malicious Pod Response - Agent
       description: "This playbook ensures a swift and effective response to malicious activities within Kubernetes environments, leveraging cloud-native tools to maintain cluster security and integrity.\n\nThe playbook is designed to handle agent-generated alerts due to malicious activities within Kubernetes (K8S) pods, such as mining activities, which requires immediate action. The playbook also addresses scenarios where the malicious pod is killed, but the malicious K8S workload repeatedly creates new pods.\n\nKey Features:\n\n1. Trigger: The playbook is activated when an agent-based mining alert is detected within a Kubernetes pod.\n2. AWS Function Integration: Utilizes an AWS Lambda function to facilitate rapid response actions.\n3. K8S Environment Remediation: \n    - Pod Termination: The playbook includes steps to terminate the affected pod within the K8S environment safely.\n    - Workload Suspension: If necessary, the playbook can be escalated to suspend the entire workload associated with the mining activity.\n\nWorkflow:\n\n1. Alert Detection: The playbook begins with the monitoring agent detecting a mining alert within a Kubernetes pod.\n2. Alert Validation: Validates the alert to ensure it is not a false positive.\n3. Response Decision: \n    - Pod Termination: If the mining activity is isolated to a single pod, the AWS Lambda function is invoked to terminate the affected pod within the K8S environment.\n    - Workload Suspension: If the mining activity is widespread or poses a significant threat, the AWS Lambda function suspends the entire workload within the K8S environment.\n4. Cleanup: Initiates a complete removal of all objects created for the Lambda execution for security and hardening purposes."
@@ -2085,6 +2083,131 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: f9470421-ccd1-4c14-8792-9af82e7cc0a5
+    type: playbook
+    task:
+      id: f9470421-ccd1-4c14-8792-9af82e7cc0a5
+      version: -1
+      name: Cortex XDR - T1036 - Masquerading
+      description: |-
+        This playbook handles masquerading alerts based on the MITRE T1036 technique.
+        An attacker might leverage Microsoft Windows' well-known image names to run malicious processes without being caught.
+
+        **Attacker's Goals:**
+
+        An attacker attempts to masquerade as standard Windows images by using a trusted name to execute malicious code.
+
+        **Investigative Actions:**
+
+        Enrich and Investigate the executed process image and endpoint and verify if it is malicious using:
+
+        * File Reputation
+        * NSRL DB
+        * CommandLine Analysis
+        * Related Alerts
+
+
+        **Response Actions**
+
+        When the playbook executes, it checks for additional activity, and if a malicious behavior is found, the playbook proceeds with containment actions:
+
+        * Auto Process termination
+        * Auto file quarantine
+        * Manual containment
+
+        External resources:
+
+        [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
+
+        [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading)
+      playbookName: Cortex XDR - T1036 - Masquerading
+      type: playbook
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      AlertID:
+        complex:
+          root: inputs.alert_id
+          transformers:
+          - operator: uniq
+      AutoContainment:
+        simple: "False"
+      EndpointID:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: endpoint_id
+          transformers:
+          - operator: uniq
+      FilePath:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.alert_id
+                iscontext: true
+              ignorecase: true
+          accessor: actor_process_image_path
+          transformers:
+          - operator: uniq
+      FileSHA256:
+        complex:
+          root: PaloAltoNetworksXDR.Incident.alerts
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: PaloAltoNetworksXDR.Incident.alerts.mitre_technique_id_and_name
+                iscontext: true
+              right:
+                value:
+                  simple: T1036
+              ignorecase: true
+          accessor: actor_process_image_sha256
+          transformers:
+          - operator: uniq
+    separatecontext: true
+    continueonerrortype: ""
+    loop:
+      iscommand: false
+      exitCondition: ""
+      wait: 1
+      max: 100
+    view: |-
+      {
+        "position": {
+          "x": -980,
+          "y": 405
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2096,14 +2219,15 @@ view: |-
       "1_18_ Remote PsExec with LOLBIN command": 0.67,
       "1_19_Identity Analytics": 0.9,
       "1_20_Large Upload": 0.89,
+      "1_24_Masquerading": 0.81,
       "1_7_#default#": 0.9
     },
     "paper": {
       "dimensions": {
-        "height": 925,
-        "width": 5870,
+        "height": 915,
+        "width": 6310,
         "x": -3260,
-        "y": 70
+        "y": 80
       }
     }
   }
@@ -2116,7 +2240,7 @@ inputs:
   required: false
   description: Incident ID.
   playbookInputQuery:
-- key: alert_id
+- key: AlertID
   value:
     complex:
       root: PaloAltoNetworksXDR.Incident.alerts
@@ -2148,5 +2272,3 @@ tests:
 - Test XDR Playbook general commands
 - Test XDR Playbook
 fromversion: 6.5.0
-marketplaces:
-- xsoar
