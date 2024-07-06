@@ -31,7 +31,7 @@ description: |-
 
   [MITRE Technique T1036](https://attack.mitre.org/techniques/T1036/)
 
-  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Analytics-Alert-Reference-by-Alert-name/Possible-Microsoft-process-masquerading).
+  [Possible Microsoft process masquerading](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR-Analytics-Alert-Reference/Possible-Microsoft-process-masquerading).
 starttaskid: "0"
 tasks:
   "0":
@@ -47,14 +47,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "122"
+      - "82"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 390
+          "x": 1190,
+          "y": 370
         }
       }
     note: false
@@ -162,10 +162,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: a62d9115-d542-4fb9-8d0e-5c0f0a30916c
+    taskid: 99a0286e-bd82-4c28-810f-8a6fdc2608b4
     type: condition
     task:
-      id: a62d9115-d542-4fb9-8d0e-5c0f0a30916c
+      id: 99a0286e-bd82-4c28-810f-8a6fdc2608b4
       version: -1
       name: Are there investigation findings?
       description: Checks if there are findings from the Endpoint Investigation stage.
@@ -199,14 +199,21 @@ tasks:
                 root: CommandlineVerdict
             iscontext: true
           ignorecase: true
-        - operator: lessThanOrEqual
+        - operator: isEmpty
           left:
             value:
-              simple: NSRL_results.hashlookup:trust
+              complex:
+                root: NSRL_results
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: NSRL_results.hashlookup:trust
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "50"
             iscontext: true
-          right:
-            value:
-              simple: "50"
         - operator: isNotEmpty
           left:
             value:
@@ -299,8 +306,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 1040
+          "x": 1190,
+          "y": 520
         }
       }
     note: false
@@ -325,7 +332,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "123"
     scriptarguments:
       Hostname:
         complex:
@@ -351,8 +358,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 970,
-          "y": 1180
+          "x": 1000,
+          "y": 660
         }
       }
     note: false
@@ -480,10 +487,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "117":
     id: "117"
-    taskid: d7248ae7-c0fa-45fb-85e5-4d0e48b5528a
+    taskid: 67594dfb-d192-4d4a-8ca6-5bb510d9ea44
     type: condition
     task:
-      id: d7248ae7-c0fa-45fb-85e5-4d0e48b5528a
+      id: 67594dfb-d192-4d4a-8ca6-5bb510d9ea44
       version: -1
       name: Auto Containment Enabled?
       description: ""
@@ -526,10 +533,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: e24a0587-3cb6-4157-8d5c-22b771c4fc63
+    taskid: 703d03b8-0616-4c72-8a16-a0e6e1fa9563
     type: condition
     task:
-      id: e24a0587-3cb6-4157-8d5c-22b771c4fc63
+      id: 703d03b8-0616-4c72-8a16-a0e6e1fa9563
       version: -1
       name: Execution was Blocked?
       description: ""
@@ -538,9 +545,9 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "82"
+      - "14"
       "no":
-      - "123"
+      - "124"
     separatecontext: false
     conditions:
     - label: "no"
@@ -585,12 +592,27 @@ tasks:
                     ignorecase: true
                 accessor: actor_process_os_pid
             iscontext: true
+      - - operator: isEmpty
+          left:
+            value:
+              complex:
+                root: NSRL_results
+                filters:
+                - - operator: greaterThanOrEqual
+                    left:
+                      value:
+                        simple: NSRL_results.hashlookup:trust
+                      iscontext: true
+                    right:
+                      value:
+                        simple: "50"
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1180,
-          "y": 560
+          "x": 1190,
+          "y": 1300
         }
       }
     note: false
@@ -618,14 +640,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "124"
+      - "122"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 730
+          "x": 1190,
+          "y": 1170
         }
       }
     note: false
@@ -639,10 +661,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "124":
     id: "124"
-    taskid: cd1b9e42-d9ee-4bfa-8965-9719fdf0248b
+    taskid: bd95bfcb-7738-4a61-8289-0267bf280fb6
     type: regular
     task:
-      id: cd1b9e42-d9ee-4bfa-8965-9719fdf0248b
+      id: bd95bfcb-7738-4a61-8289-0267bf280fb6
       version: -1
       name: Kill Suspicious Process
       description: Initiates a new endpoint script execution action using the provided snippet code.
@@ -652,10 +674,11 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "82"
+      - "14"
     scriptarguments:
       endpoint_ids:
-        simple: ${inputs.EndpointID}
+        complex:
+          root: inputs.EndpointID
       snippet_code:
         simple: taskkill /F /PID ${PaloAltoNetworksXDR.Incident.alerts.actor_process_os_pid}
     separatecontext: false
@@ -663,8 +686,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1540,
-          "y": 865
+          "x": 1190,
+          "y": 1525
         }
       }
     note: false
@@ -712,8 +735,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
-          "y": 1330
+          "x": 1410,
+          "y": 810
         }
       }
     note: false
@@ -725,10 +748,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "129":
     id: "129"
-    taskid: f857333a-c371-4cec-8878-d6d5f62307bb
+    taskid: 010b2522-c6a8-4cb7-8f5f-eb054cdc7da6
     type: regular
     task:
-      id: f857333a-c371-4cec-8878-d6d5f62307bb
+      id: 010b2522-c6a8-4cb7-8f5f-eb054cdc7da6
       version: -1
       name: Parse HTTP response
       description: 'Parse a given JSON string "value" to a representative object. Example: ''{"a": "value"}'' => {"a": "value"}.'
@@ -738,10 +761,10 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "123"
     scriptarguments:
       extend-context:
-        simple: NSRL_results=.
+        simple: NSRL_results=
       value:
         complex:
           root: HttpRequest.Response
@@ -752,8 +775,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
-          "y": 1520
+          "x": 1410,
+          "y": 1000
         }
       }
     note: false
@@ -783,8 +806,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1400,
-          "y": 1180
+          "x": 1410,
+          "y": 660
         }
       }
     note: false
@@ -849,10 +872,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2505,
-        "width": 950,
-        "x": 970,
-        "y": 390
+        "height": 2525,
+        "width": 800,
+        "x": 990,
+        "y": 370
       }
     }
   }
@@ -904,6 +927,27 @@ inputs:
   required: false
   description: The file path to investigate.
   playbookInputQuery:
+- key: Username
+  value:
+    complex:
+      root: PaloAltoNetworksXDR.Incident.alerts
+      filters:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
+            iscontext: true
+          right:
+            value:
+              simple: inputs.AlertID
+            iscontext: true
+          ignorecase: true
+      accessor: user_name
+      transformers:
+      - operator: uniq
+  required: false
+  description: The alert's username.
+  playbookInputQuery:
 - key: EndpointID
   value:
     complex:
@@ -950,8 +994,6 @@ tests:
 - Test Playbook - Cortex XDR - Endpoint Investigation
 - Test XDR Playbook execute script commands
 - Test XDR Playbook
-- Test Playbook - Cortex XDR - Retrieve File by sha256
-- Test Playbook - Cortex XDR - False Positive Incident Handling
 fromversion: 6.10.0
 marketplaces:
 - xsoar
