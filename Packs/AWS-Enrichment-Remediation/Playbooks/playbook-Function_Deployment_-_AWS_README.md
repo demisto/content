@@ -78,28 +78,28 @@ This playbook does not use any integrations.
 
 ### Scripts
 
+* FileCreateAndUploadV2
+* GetErrorsFromEntry
+* ZipFile
 * DownloadAndArchivePythonLibrary
 * PrintErrorEntry
-* GetErrorsFromEntry
-* FileCreateAndUploadV2
-* ZipFile
 
 ### Commands
 
 * aws-eks-describe-cluster
-* aws-lambda-publish-layer-version
-* aws-ec2-describe-vpcs
 * aws-ec2-create-security-group
 * aws-eks-associate-access-policy
 * aws-ec2-create-vpc-endpoint
-* aws-lambda-create-function
-* aws-eks-create-access-entry
-* aws-iam-create-policy
 * aws-eks-update-cluster-config
-* aws-iam-create-role
-* aws-ec2-authorize-security-group-ingress-rule
 * aws-iam-attach-policy
 * aws-eks-update-access-entry
+* aws-ec2-describe-vpcs
+* aws-ec2-authorize-security-group-ingress-rule
+* aws-lambda-publish-layer-version
+* aws-eks-create-access-entry
+* aws-lambda-create-function
+* aws-iam-create-policy
+* aws-iam-create-role
 
 ## Playbook Inputs
 

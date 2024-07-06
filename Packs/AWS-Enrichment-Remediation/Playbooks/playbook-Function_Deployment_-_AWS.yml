@@ -1814,4 +1814,7 @@ outputs:
   description: Contents of the errors associated with the entry/entries.
 tests:
 - No tests (auto formatted)
+marketplaces:
+  - xsoar
+  - marketplacev2
 fromversion: 6.10.0

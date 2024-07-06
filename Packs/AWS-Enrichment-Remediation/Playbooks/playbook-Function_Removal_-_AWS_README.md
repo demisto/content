@@ -58,13 +58,13 @@ This playbook does not use any scripts.
 
 ### Commands
 
-* aws-ec2-delete-security-group
 * aws-iam-detach-policy
+* aws-iam-get-role
 * aws-iam-delete-policy
 * aws-lambda-delete-layer-version
-* aws-iam-get-role
-* aws-iam-delete-role
+* aws-ec2-delete-security-group
 * aws-lambda-delete-function
+* aws-iam-delete-role
 
 ## Playbook Inputs
 

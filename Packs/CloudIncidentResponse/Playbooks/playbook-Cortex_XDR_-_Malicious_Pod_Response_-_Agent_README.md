@@ -60,8 +60,8 @@ This playbook does not use any integrations.
 
 ### Commands
 
-* xdr-get-cloud-original-alerts
 * aws-lambda-invoke
+* xdr-get-cloud-original-alerts
 
 ## Playbook Inputs
 
@@ -82,4 +82,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Malicious Pod Response - Agent](../doc_files/Malicious_Pod_Response_-_Agent.png)
+![Cortex XDR - Malicious Pod Response - Agent](../doc_files/Cortex_XDR_-_Malicious_Pod_Response_-_Agent.png)
