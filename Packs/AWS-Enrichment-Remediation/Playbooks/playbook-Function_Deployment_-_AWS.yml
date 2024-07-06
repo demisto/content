@@ -1329,11 +1329,6 @@ inputs:
   required: false
   description: "The runtime environment for the function.\t"
   playbookInputQuery:
-- key: FunctionArchitecture
-  value: {}
-  required: false
-  description: "A list of compatible architectures.\t"
-  playbookInputQuery:
 - key: FunctionHandler
   value: {}
   required: false
@@ -1369,11 +1364,6 @@ inputs:
   required: false
   description: The lambda policy name to create.
   playbookInputQuery:
-- key: TrustPolicyDocument
-  value: {}
-  required: false
-  description: The trust policy document.
-  playbookInputQuery:
 - key: SecurityGroupName
   value: {}
   required: false
@@ -1389,7 +1379,6 @@ inputSections:
   - FunctionName
   - FunctionCode
   - FunctionRuntime
-  - FunctionArchitecture
   - FunctionHandler
   - LayerName
   - LayerRuntime
@@ -1400,7 +1389,6 @@ inputSections:
 - inputs:
   - LambdaRoleName
   - LambdaPolicyName
-  - TrustPolicyDocument
   name: IAMParameters
   description: This group holds inputs related to IAM.
 - inputs:
