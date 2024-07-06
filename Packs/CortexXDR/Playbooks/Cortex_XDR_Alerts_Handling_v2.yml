@@ -993,7 +993,7 @@ tasks:
               simple: An identity performed a suspicious download of multiple cloud storage object
     - label: Malicious Pod
       condition:
-      - - operator: isEqualString
+      - - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1002,7 +1002,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 2736470759
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1011,7 +1011,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 3395838097
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1020,7 +1020,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 4056473708
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1029,7 +1029,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 3906076747
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1038,7 +1038,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 1696441024
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1047,7 +1047,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 15999229
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1056,7 +1056,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 624304616
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1065,7 +1065,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 1099928083
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1074,7 +1074,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 779228750
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1083,7 +1083,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 807956875
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1092,7 +1092,7 @@ tasks:
             value:
               simple: Cryptominers Protection - 3223457282
           ignorecase: true
-        - operator: isEqualString
+        - operator: containsString
           left:
             value:
               simple: PaloAltoNetworksXDR.Incident.alerts.name
@@ -1100,6 +1100,24 @@ tasks:
           right:
             value:
               simple: Cryptominers Protection - 17641322
+          ignorecase: true
+        - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.name
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection - 2736470759
+          ignorecase: true
+      - - operator: containsString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.agent_device_domain
+            iscontext: true
+          right:
+            value:
+              simple: compute
           ignorecase: true
     continueonerrortype: ""
     view: |-
