@@ -149,6 +149,15 @@ tasks:
           right:
             value:
               simple: Cloud Audit Log
+        - operator: isEqualString
+          left:
+            value:
+              simple: PaloAltoNetworksXDR.Incident.alerts.module_id
+            iscontext: true
+          right:
+            value:
+              simple: Cryptominers Protection
+          ignorecase: true
     - label: RDP Brute-Force
       condition:
       - - operator: containsGeneral
