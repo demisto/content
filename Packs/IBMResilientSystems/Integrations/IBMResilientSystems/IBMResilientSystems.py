@@ -119,6 +119,8 @@ EXP_TYPE_ID_DICT = {
 }
 
 ''' CONSTANTS '''
+SCRIPT_ENTITIES = 'entities'
+
 ''' HELPER FUNCTIONS '''
 
 
