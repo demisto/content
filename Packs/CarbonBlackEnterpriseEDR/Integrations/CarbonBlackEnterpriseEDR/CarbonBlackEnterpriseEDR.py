@@ -559,7 +559,7 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
         end = args.get('end')
         closure_reason = args.get('closure_reason')
         comment = args.get('comment')
-        status = args.get('status')
+        status = args.get('state')
 
         # The new API version (v7) does not support 'DISMISSED', instead need to use 'CLOSED'
         if str(status).lower() == 'dismissed':
