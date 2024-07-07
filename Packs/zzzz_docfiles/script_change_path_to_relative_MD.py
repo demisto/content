@@ -30,7 +30,12 @@ def find_image_in_doc_files(image_name, pack_name):
     doc_files_path = os.path.join(PACKS_PATH, pack_name)
     try:
         if os.path.exists(doc_files_path):
-            return f'../../doc_files/{image_name}'
+            if "Playbooks" in doc_files_path:
+                return f'../doc_files/{image_name}'
+            elif "Integrations" in doc_files_path:
+                return f'../../doc_files/{image_name}'
+            return f'doc_files/{image_name}'
+        
     except Exception as error:
         logger.debug(f"Failed to get related text file, error: {error}")
     logger.debug(f"File {doc_files_path} does not exist.")

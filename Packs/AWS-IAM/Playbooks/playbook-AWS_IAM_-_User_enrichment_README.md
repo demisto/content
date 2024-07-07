@@ -32,4 +32,8 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
+<<<<<<< Updated upstream
 ![AWS IAM - User enrichment](https://raw.githubusercontent.com/demisto/content/e77df420e17966a544c5659eafe975edfa84b2bf/Packs/AWS-IAM/doc_files/AWS_IAM_user_enrichment.png)
+=======
+![AWS IAM - User enrichment](../doc_files/AWS_IAM_user_enrichment.png)
+>>>>>>> Stashed changes

@@ -17,6 +17,7 @@ For more information, please refer to the [MITRE ATT&CK - Courses of Action arti
 
 
 **MITRE ATT&CK Dashboard**
+<<<<<<< Updated upstream
 ![MITRE_Dashboard](https://github.com/demisto/content/raw/8a574f7099b52404b57b6bb06a1936faed95790d/Images/MITRE_Dashboard.png)
 
 **Unit 42 STIX Report Indicators**
@@ -24,3 +25,12 @@ For more information, please refer to the [MITRE ATT&CK - Courses of Action arti
 
 **MITRE ATT&CK - Courses of Action Sample Playbook**
 ![Courses_of_Action](https://github.com/demisto/content/raw/8a574f7099b52404b57b6bb06a1936faed95790d/Images/MITRE_ATT%26CK_CoA_-_T1027.png)
+=======
+![MITRE_Dashboard](doc_files/MITRE_Dashboard.png)
+
+**Unit 42 STIX Report Indicators**
+![Maze_Ransomware](doc_files/Maze_Indicator.png)
+
+**MITRE ATT&CK - Courses of Action Sample Playbook**
+![Courses_of_Action](doc_files/MITRE_ATTandCK_CoA_-_T1027.png)
+>>>>>>> Stashed changes
