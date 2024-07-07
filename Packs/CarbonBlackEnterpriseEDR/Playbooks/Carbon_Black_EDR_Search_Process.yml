@@ -1,6 +1,7 @@
 id: Carbon Black EDR Search Process
 version: -1
 name: Carbon Black EDR Search Process
+deprecated: true
 starttaskid: "0"
 description: |-
   Use this playbook to search processes in Carbon Black Enterprise EDR.

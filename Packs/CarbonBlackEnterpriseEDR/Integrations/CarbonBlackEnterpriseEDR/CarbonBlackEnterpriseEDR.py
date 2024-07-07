@@ -631,8 +631,10 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
             response=message,
             continue_to_poll=False)
     
-    else:  # Status is failed
-        raise DemistoException(f"Failed to update the alerts workflow. Request's Status: {request_status}")
+    # Status is failed
+    else:  # The status of the response can be COMPLETED, CREATED or FAILED.
+        raise DemistoException(f"Failed to update the alerts workflow. Request's Status: {request_status}\
+             response keys: {response.keys()}")
 
 
 def list_devices_command(client: Client, args: dict) -> CommandResults | str:
@@ -1283,8 +1285,10 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
     # The new API version (v7) always returns the previous last alert along with the new alerts.
+    if not (int_fetch_limit := arg_to_number(fetch_limit)):
+        raise ValueError ("limit cannot be empty.")
     if last_run:
-        fetch_limit = 1 + arg_to_number(fetch_limit)  # type: ignore - we are sending 50 if user doesn't choose a limit.
+        int_fetch_limit += 1
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
     if not last_fetched_alert_create_time:
@@ -1372,6 +1376,8 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
     # this is not the first time, there is a job_id
     response = client.get_search_process_request(job_id=args['job_id'])
     if response.get('contacted'):
+        #  The response has no 'status' field. If contacted equals to completed then the status is completed, else we are still \
+        # in progress. If there is no 'contacted' or no 'completed' fields then it means that something failed in server.
         status = 'Completed' if response.get('contacted') == response.get('completed') else 'In Progress'
     else:
         status = None
@@ -1400,7 +1406,7 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
             continue_to_poll=False)
         
     else:
-        raise DemistoException('Failed to run process search')
+        raise DemistoException(f'Failed to run process search. response keys: {response.keys()}')
 
 
 def process_search_command_without_polling(client: Client, args: dict) -> CommandResults:
