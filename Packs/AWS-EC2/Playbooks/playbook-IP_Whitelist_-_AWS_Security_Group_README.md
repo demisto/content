@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![IP Whitelist - AWS Security Group](../../doc_files/IP_Whitelist_-_AWS_Security_Group.png)
+![IP Whitelist - AWS Security Group](../doc_files/IP_Whitelist_-_AWS_Security_Group.png)

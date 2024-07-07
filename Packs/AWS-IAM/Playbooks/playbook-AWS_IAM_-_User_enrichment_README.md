@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![AWS IAM - User enrichment](../../doc_files/AWS_IAM_user_enrichment.png)
+![AWS IAM - User enrichment](../doc_files/AWS_IAM_user_enrichment.png)

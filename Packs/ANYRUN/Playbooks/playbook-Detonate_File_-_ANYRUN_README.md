@@ -104,4 +104,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Detonate_File_ANYRUN](../../doc_files/Detonate_File_ANYRUN.png)
+![Detonate_File_ANYRUN](../doc_files/Detonate_File_ANYRUN.png)

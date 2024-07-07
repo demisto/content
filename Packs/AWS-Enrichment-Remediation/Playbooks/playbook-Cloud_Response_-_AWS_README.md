@@ -54,4 +54,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cloud Response - AWS](../../doc_files/Cloud_Response_-_AWS.png)
+![Cloud Response - AWS](../doc_files/Cloud_Response_-_AWS.png)
