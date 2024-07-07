@@ -1512,10 +1512,8 @@ def test_fetch_command(
                                                                               ">\"1657032797\" AND 'Urgency' = \"4-Low\""),
                                                                 mirror_direction="both",
                                                                 )
-    expected_result = BmcITSM.date_to_epoch_for_fetch(
-        arg_to_datetime(max(
-            [BmcITSM.date_to_epoch_for_fetch(arg_to_datetime(ticket.get("occured")))
-             for ticket in incidents_result]
-        ))
+    expected_result = max(
+        [BmcITSM.date_to_epoch_for_fetch(arg_to_datetime(ticket.get("occured")))
+         for ticket in incidents_result]
     )
     assert last_run_result["SRM:Request"]["last_create_time"] == expected_result

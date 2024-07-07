@@ -4,3 +4,8 @@ ITSM
 
 [file:classifier-BMC_ITSM_Outgoing_Mapper.json]
 ignore=MP106
+
+
+XSOAR build: dev-v8.8.0-1146902-1ba0b574 (branch: dev)
+BE3 build: dev-v3.12.0-2446-ge4716 (branch: dev)
+FE build: xsiam--dev-v3.12.0-2360-gbacbeb9d37 (branch: dev)

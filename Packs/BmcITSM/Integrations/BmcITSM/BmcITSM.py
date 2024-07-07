@@ -3339,11 +3339,9 @@ def fetch_relevant_tickets(
         tickets_capacity -= tickets_amount
 
         if fetched_tickets:
-            last_ticket_create_time = max(
+            ticket_type_to_last_epoch[ticket_type] = max(
                 [date_to_epoch_for_fetch(arg_to_datetime(ticket.get("CreateDate")))
                  for ticket in total_tickets])
-            ticket_type_to_last_epoch[ticket_type] = date_to_epoch_for_fetch(
-                arg_to_datetime(last_ticket_create_time))
         if tickets_capacity <= 0:  # no more tickets to retrieve in the current fetch
             break
 
