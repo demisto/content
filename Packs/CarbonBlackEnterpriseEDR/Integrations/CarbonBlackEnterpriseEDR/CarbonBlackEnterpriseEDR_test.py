@@ -356,7 +356,7 @@ def test_alert_workflow_update_request_good_arguments(mocker):
     assert 'api/alerts/v7/orgs' in http_request.call_args[0][1]
     assert http_request.call_args.kwargs['json_data'] == {'time_range': {'start': '1', 'end': '2', 'range': '-2w'},
                                                           'criteria': {'id': ['1234']}, 'determination': 'NONE',
-                                                          'closure_reason': 'bla2', 'status': 'OPEN', 'note': 'bla1'}
+                                                          'closure_reason': 'bla2', 'state': 'OPEN', 'note': 'bla1'}
 
 
 alert_workflow_update_command_func_called_data = [
@@ -367,7 +367,7 @@ alert_workflow_update_command_func_called_data = [
     ({'alert_id': '123', 'request_id': '12345'},  # case there is a request_id.
      'alert_workflow_update_get_request',  # func to be called.
      {'status': 'COMPLETED',
-      'job_parameters': {'job_parameters': {'request': {'status': 'OPEN'}, 'userWorkflowDto': {'changed_by': 'bla'}}},
+      'job_parameters': {'job_parameters': {'request': {'state': 'OPEN'}, 'userWorkflowDto': {'changed_by': 'bla'}}},
       'last_update_time': 'now'})
 ]
 @pytest.mark.parametrize('args, func_to_be_called, response', alert_workflow_update_command_func_called_data)
