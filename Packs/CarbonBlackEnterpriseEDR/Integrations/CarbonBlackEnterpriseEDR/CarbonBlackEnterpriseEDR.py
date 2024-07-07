@@ -514,7 +514,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
         
         # The new API version returns status instead of state,
         # mapping this for the output to look the same
-        alert['state'] = alert.pop('status')
+        alert['state'] = alert['workflow']['status']
         
         contents.append({
             'AlertID': alert.get('id'),
@@ -525,7 +525,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
             'PolicyName': alert.get('device_policy'),
             'ProcessName': alert.get('process_name'),
             'Type': alert.get('type'),
-            'WorkflowState': alert.get('workflow', {}).get('status')
+            'WorkflowState': alert.get('workflow', {}).get('state')
         })
 
     readable_output = tableToMarkdown('Alerts list results', contents, headers, removeNull=True)
@@ -618,11 +618,10 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
 
     elif request_status == 'COMPLETED':
         changed_by = response['job_parameters']['job_parameters']['userWorkflowDto']['changed_by']
-        status_HR = response.get('job_parameters').get('job_parameters').get('request').get('status') if args.get('status')\
-            else None
+        status_HR = response['job_parameters']['job_parameters']['request']['status'] if args.get('state') else None
         message = CommandResults(
             outputs={'AlertID': alert_id, 'ChangedBy': changed_by, 'Comment': args.get('comment'),
-                     'LastUpdateTime': response['last_update_time'], 'Status': status_HR},
+                     'LastUpdateTime': response['last_update_time'], 'State': status_HR},
             outputs_prefix='CarbonBlackEEDR.Alert',
             readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
                                             {'changed_by': changed_by,
