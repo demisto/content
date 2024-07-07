@@ -7,8 +7,11 @@ This pack enables you to
 - Get information about threats, mark a suspicious behavior as a threat, and mitigate threats.
 - Get information about the system sites and reactivate a site if necessary.
 - Get information about activities, events and processes in the system.
+
 The **Sentinel One - Endpoint data collection** playbook collects endpoint information by using SentinelOne commands.
+
 The pack includes the **SentinelOne v2** integration and the **Sentinel One - Endpoint data collection** playbook.
+
 ## How does this pack work?
 Create an instance of the **SentinelOne v2** integration and start fetching information from the SentinelOne database.
 
