@@ -39,7 +39,7 @@ def prepare_demisto_params(params: dict):
     del params['after']
 
 
-class GithubParams(BaseModel):  # pragma: no cover
+class GithubParams(BaseModel):
     """
     A class that stores the request query params
     """
@@ -52,13 +52,13 @@ class GithubParams(BaseModel):  # pragma: no cover
     )
 
 
-class GithubEventsRequestConfig(IntegrationHTTPRequest):  # pragma: no cover
+class GithubEventsRequestConfig(IntegrationHTTPRequest):
     url: AnyUrl
     method: Method = Method.GET
     params: GithubParams  # type: ignore
 
 
-class GithubClient(IntegrationEventsClient):  # pragma: no cover
+class GithubClient(IntegrationEventsClient):
     def set_request_filter(self, after: str):
         if self.request.params:
             self.request.params.phrase = get_github_timestamp_format(after)  # type: ignore
@@ -97,7 +97,7 @@ class GithubGetEvents(IntegrationGetEvents):
         return {'after': last_timestamp}
 
 
-def main():
+def main():  # pragma: no cover
     # Args is always stronger. Get last run even stronger
     demisto.params()['after'] = '1 minute'
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
