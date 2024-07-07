@@ -440,7 +440,7 @@ script:
       description: Ports that are associated with the IP.
       type: String
     - contextPath: IP.ASN
-      description: 'The autonomous system name for the URL, for example: ''AS8948''.'
+      description: "The autonomous system name for the URL, for example: 'AS8948'."
       type: String
     - contextPath: URL.DATA
       description: The URL.
