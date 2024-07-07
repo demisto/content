@@ -2,7 +2,7 @@
 
 The Use Case builder contains tools to help you measure and track use cases through your automation journey, quickly autogenerate OOTB playbooks and custom workflows and more.
 
-![image](https://raw.githubusercontent.com/demisto/content/05f687f1fb7e9b23120082f644369c72a4d25559/Packs/Use_Case_Builder/doc_files/usecasebuilder.png)
+![image](doc_files/usecasebuilder.png)
 
 ## Setup And Configuration
 
@@ -37,7 +37,7 @@ This pack includes 1 dashboards:
 
 - **Use Case Development Dashboard**: High level summary of all Use Cases in Development and their associated metric data.
 
-![image](https://raw.githubusercontent.com/joe-cosgrove/content/usecasebuildermodifications/Packs/Use_Case_Builder/doc_files/ucbmain.png)
+![image](doc_files/ucbmain.png)
 
 ## Dynamic Sections
 

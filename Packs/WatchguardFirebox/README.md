@@ -12,7 +12,7 @@ This pack includes Cortex XSIAM content
 5. In the **Port** text box, the default syslog server port (514) appears. To change the server port, type or select a different port for your server.
 6. From the **Log Format** drop-down list, select **IBM LEEF**.
 
-![Server Screenshot](https://raw.githubusercontent.com/demisto/content/b5ca54c2d18d7352c421f2f038e714b21ae858ba/Packs/WatchguardFirebox/doc_imgs/syslogleef.png)
+![Server Screenshot](doc_files/syslogleef.png)
 
 8. In the **Syslog Settings** section, for each type of log message, select a syslog facility from the drop-down list.
    If you select the IBM LEEF log format, you must select the syslog header checkbox before you can select the syslog facility for the log message types.

@@ -17,6 +17,6 @@ As part of this pack, you will also get out-of-the-box incident type views, with
 
 _For more information, visit our [Cortex XSOAR Developer Docs](https://xsoar.pan.dev/docs/reference/playbooks/palo-alto-networks---endpoint-malware-investigation-v3)_
 
-![Palo Alto Networks - Endpoint Malware Investigation v3](https://raw.githubusercontent.com/demisto/content/e07c7ad07c6f7650bd0bf78d28d4451b5cbe7857/Packs/PANWComprehensiveInvestigation/doc_files/Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v3.png)
+![Palo Alto Networks - Endpoint Malware Investigation v3](doc_files/Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v3.png)
  
 
