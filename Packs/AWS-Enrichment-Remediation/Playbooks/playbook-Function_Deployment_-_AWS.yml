@@ -1,0 +1,1820 @@
+id: Function Deployment - AWS
+version: -1
+name: Function Deployment - AWS
+description: |-
+  This playbook automates the deployment of an AWS Lambda function to manage resources within an Amazon EKS cluster. It ensures that all necessary configurations are created, updated, and verified.
+
+  ### Setup
+
+  - **Describe EKS Cluster**: Gather essential details of the EKS cluster.
+  - **Create IAM Role**: Set up a new IAM role for the Lambda function.
+  - **Create and Attach Policy**: Define and attach a policy to the IAM role to grant necessary permissions.
+
+  ### Authentication Mode Check
+
+  - **Verify Authentication Mode**: Ensure the current authentication mode allows API access.
+    - **If not**: Update the cluster authentication mode to permit API access.
+
+  ### Access Entry Configuration
+
+  - **Create Access Entry**: Establish a new access entry in the EKS cluster.
+  - **Associate Access Policy**: Link the access policy with the created access entry.
+  - **Update Access Entry**: Apply the latest configurations to the access entry.
+
+  ### VPC and Security Group Setup
+
+  - **Describe VPCs**: Identify the appropriate VPC for the Lambda function.
+  - **Create Security Group**: Define a security group to manage Lambda function traffic.
+  - **Set Ingress Rules**: Configure ingress rules for the security group.
+
+  ### VPC Endpoint Creation
+
+  - **Create VPC Endpoint for eks-auth**: Establish a VPC endpoint for EKS authentication.
+  - **Check for Errors**: Verify if there are any errors during the creation of the VPC endpoint.
+    - **If errors**: Handle and log them.
+  - **Verify VPC Endpoint Existence**: Ensure the VPC endpoint already exists.
+    - **If exists**: Proceed with the next steps.
+
+  ### Lambda Function Deployment
+
+  - **Download Kubernetes Library**: Fetch the necessary Kubernetes library.
+  - **Publish AWS Lambda Layer**: Publish a new layer version for the AWS Lambda function.
+  - **Create Lambda Code**: Develop the Lambda function code.
+  - **Zip Lambda Code**: Compress the Lambda function code for deployment.
+  - **Create AWS Lambda Function**: Deploy the Lambda function using the zipped code.
+
+  ### Resolution
+
+  - **Final Verification**: Ensure all operations have been successfully completed.
+  - **Completion**: Confirm the deployment process is finished, ensuring robust management of EKS authentication through AWS Lambda.
+
+  This playbook provides a comprehensive, automated approach to deploying an AWS Lambda function for managing resources within an EKS cluster, efficiently handling all configurations and potential errors.
+
+  ### Required Integration
+
+  #### AWS IAM (Identity and Access Management)
+  - [AWS IAM API Documentation](https://docs.aws.amazon.com/IAM/latest/APIReference/Welcome.html)
+  - [Cortex XSOAR AWS IAM Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSIAM/)
+
+  #### AWS EC2 (Elastic Compute Cloud)
+  - [AWS EC2 API Documentation](https://docs.aws.amazon.com/AWSEC2/latest/APIReference/Welcome.html)
+  - [Cortex XSOAR AWS EC2 Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEC2/)
+
+  #### AWS EKS (Elastic Kubernetes Service)
+  - [AWS EKS API Documentation](https://docs.aws.amazon.com/eks/latest/APIReference/Welcome.html)
+  - [Cortex XSOAR AWS EKS Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSEKS/)
+
+  #### AWS Lambda
+  - [AWS Lambda API Documentation](https://docs.aws.amazon.com/lambda/latest/dg/API_Reference.html)
+  - [Cortex XSOAR AWS Lambda Integration](https://cortex.marketplace.pan.dev/marketplace/details/AWSLambda/).
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 54dd5378-1342-4d82-84fa-99649b7926f7
+    type: start
+    task:
+      id: 54dd5378-1342-4d82-84fa-99649b7926f7
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 2fa1b9d8-7711-49e3-80cd-e572b487aebf
+    type: regular
+    task:
+      id: 2fa1b9d8-7711-49e3-80cd-e572b487aebf
+      version: -1
+      name: EKS - Describe Cluster
+      description: Describes an Amazon EKS cluster.
+      script: '|||aws-eks-describe-cluster'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      cluster_name:
+        simple: ${inputs.ClusterName}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 935b9483-60e9-44e2-8571-358a764a0fb3
+    type: regular
+    task:
+      id: 935b9483-60e9-44e2-8571-358a764a0fb3
+      version: -1
+      name: Create a role for the Lambda function
+      description: Creates a new role for your AWS account.
+      script: '|||aws-iam-create-role'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      assumeRolePolicyDocument:
+        simple: |-
+          {
+            "Version": "2012-10-17",
+            "Statement": {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": "lambda.amazonaws.com"
+              },
+              "Action": "sts:AssumeRole"
+            }
+          }
+      roleName:
+        simple: ${inputs.LambdaRoleName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 340
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: b647b62d-4c70-47d1-8fe5-6551ccf7b334
+    type: regular
+    task:
+      id: b647b62d-4c70-47d1-8fe5-6551ccf7b334
+      version: -1
+      name: Create policy
+      description: Creates a new managed policy for your AWS account.  This operation creates a policy version with a version identifier of v1 and sets v1 as the policy's default version.
+      script: '|||aws-iam-create-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      policyDocument:
+        simple: |-
+          {
+              "Version": "2012-10-17",
+              "Statement": [
+                  {
+                      "Effect": "Allow",
+                      "Action": "eks:*",
+                      "Resource": "*"
+                  },
+                  {
+                      "Effect": "Allow",
+                      "Action": [
+                          "ec2:DescribeNetworkInterfaces",
+                          "ec2:CreateNetworkInterface",
+                          "ec2:DeleteNetworkInterface",
+                          "ec2:DescribeInstances",
+                          "ec2:AttachNetworkInterface"
+                      ],
+                      "Resource": "*"
+                  }
+              ]
+          }
+      policyName:
+        simple: ${inputs.LambdaPolicyName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 500
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 2cef0fd3-6d20-4f8a-8e7d-3fa27d1638ae
+    type: regular
+    task:
+      id: 2cef0fd3-6d20-4f8a-8e7d-3fa27d1638ae
+      version: -1
+      name: Attach the policy to the Lambda role
+      description: Attaches the specified managed policy to the specified IAM Entity.
+      script: '|||aws-iam-attach-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      entityName:
+        simple: ${AWS.IAM.Roles.RoleName}
+      policyArn:
+        simple: ${AWS.IAM.Policies.Arn}
+      type:
+        simple: Role
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 660
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: a59535eb-3371-4fa5-8777-14a41c7bf807
+    type: regular
+    task:
+      id: a59535eb-3371-4fa5-8777-14a41c7bf807
+      version: -1
+      name: EKS - Create access entry
+      description: Creates an access entry.
+      script: '|||aws-eks-create-access-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      cluster_name:
+        simple: ${inputs.ClusterName}
+      principal_arn:
+        simple: ${AWS.IAM.Roles.Arn}
+      region:
+        simple: ${inputs.region}
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1160
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 5e11c0d3-f12f-43f6-884b-1b07e5b580ae
+    type: regular
+    task:
+      id: 5e11c0d3-f12f-43f6-884b-1b07e5b580ae
+      version: -1
+      name: EKS - Associate access policy
+      description: Describes an Amazon EKS cluster.
+      script: '|||aws-eks-associate-access-policy'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      cluster_name:
+        simple: ${inputs.ClusterName}
+      policy_arn:
+        simple: arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy
+      principal_arn:
+        simple: ${AWS.IAM.Roles.Arn}
+      region:
+        simple: ${inputs.region}
+      type:
+        simple: cluster
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1320
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 61b4a2bb-6609-4701-8dd3-ba257660ab25
+    type: regular
+    task:
+      id: 61b4a2bb-6609-4701-8dd3-ba257660ab25
+      version: -1
+      name: EKS - Update access entry
+      description: Updates an access entry.
+      script: '|||aws-eks-update-access-entry'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      cluster_name:
+        simple: ${inputs.ClusterName}
+      kubernetes_groups:
+        simple: cluster-admin
+      principal_arn:
+        simple: ${AWS.IAM.Roles.Arn}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1480
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 45528df7-bb7f-42c5-8bd0-761a893853fb
+    type: regular
+    task:
+      id: 45528df7-bb7f-42c5-8bd0-761a893853fb
+      version: -1
+      name: AWS Lambda - Publish layer version
+      description: Creates an Lambda layer from a ZIP archive.
+      script: '|||aws-lambda-publish-layer-version'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      compatible-architectures:
+        simple: ${inputs.LayerArchitecture}
+      compatible-runtimes:
+        simple: ${inputs.LayerRuntime}
+      layer-name:
+        simple: ${inputs.LayerName}
+      region:
+        simple: ${inputs.region}
+      zip-file:
+        complex:
+          root: File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: inputs.LibraryName
+                iscontext: true
+              ignorecase: true
+          accessor: EntryID
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2900
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: a13603f8-4bba-4f72-8d38-d02255a1e429
+    type: title
+    task:
+      id: a13603f8-4bba-4f72-8d38-d02255a1e429
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3710
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 634c042a-b835-496e-83a9-37cde721742a
+    type: condition
+    task:
+      id: 634c042a-b835-496e-83a9-37cde721742a
+      version: -1
+      name: Check if the authentication mode allows API
+      description: Checks if the cluster allows authentication via API.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      "yes":
+      - "5"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: AWS.EKS.DescribeCluster.accessConfig.authenticationMode
+            iscontext: true
+          right:
+            value:
+              simple: API
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 7fb729bd-cda7-4087-8e76-f68a2ec88100
+    type: regular
+    task:
+      id: 7fb729bd-cda7-4087-8e76-f68a2ec88100
+      version: -1
+      name: Update cluster authentication mode
+      description: 'Updates an Amazon EKS cluster configuration. Only one type of update can be allowed. Potentially harmful: once the authentication mode was updated to ''API'' it is irreversible.'
+      script: '|||aws-eks-update-cluster-config'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      authentication_mode:
+        simple: API_AND_CONFIG_MAP
+      cluster_name:
+        simple: ${inputs.ClusterName}
+      region:
+        simple: ${inputs.region}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 70,
+          "y": 990
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: fb201ae1-4187-4978-8190-6aee638abd62
+    type: regular
+    task:
+      id: fb201ae1-4187-4978-8190-6aee638abd62
+      version: -1
+      name: Download Kubernetes library
+      description: The script installs a Python library using pip and archive it.
+      scriptName: DownloadAndArchivePythonLibrary
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      library_name:
+        simple: ${inputs.LibraryName}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2c183d15-aaf8-499f-8922-9df6eab414ca
+    type: regular
+    task:
+      id: 2c183d15-aaf8-499f-8922-9df6eab414ca
+      version: -1
+      name: Create the Lambda code
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      scriptName: FileCreateAndUploadV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      data:
+        simple: ${inputs.FunctionCode}
+      filename:
+        simple: lambda_function.py
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3190
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 0399941e-47ee-459e-8aa7-60c150b1a1c6
+    type: regular
+    task:
+      id: 0399941e-47ee-459e-8aa7-60c150b1a1c6
+      version: -1
+      name: Zip Lambda code
+      description: Zip a file and upload to war room
+      scriptName: ZipFile
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      entryID:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: lambda_function.py
+              ignorecase: true
+          accessor: EntryID
+      zipName:
+        simple: code
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: fedbbd4d-58b3-4e54-84f1-29b233743f5a
+    type: regular
+    task:
+      id: fedbbd4d-58b3-4e54-84f1-29b233743f5a
+      version: -1
+      name: Create VPC endpoint for eks-auth
+      description: Creates a VPC endpoint.
+      script: '|||aws-ec2-create-vpc-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      region:
+        simple: ${inputs.region}
+      securityGroupIds:
+        simple: ${AWS.EKS.DescribeCluster.resourcesVpcConfig.securityGroupIds}
+      serviceName:
+        simple: com.amazonaws.${inputs.region}.eks-auth
+      subnetIds:
+        simple: ${AWS.EKS.DescribeCluster.resourcesVpcConfig.subnetIds}
+      vpcEndpointType:
+        simple: Interface
+      vpcId:
+        simple: ${AWS.EC2.Vpcs.VpcId}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 2d82ee8b-6bcd-4d34-88c0-f8b1d9ceb10b
+    type: regular
+    task:
+      id: 2d82ee8b-6bcd-4d34-88c0-f8b1d9ceb10b
+      version: -1
+      name: Describe VPCs
+      description: Describes one or more of your VPCs.
+      script: '|||aws-ec2-describe-vpcs'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      region:
+        simple: ${inputs.region}
+      vpcIds:
+        simple: ${AWS.EKS.DescribeCluster.resourcesVpcConfig.vpcId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 19380d04-9017-4578-85d1-6539b235c361
+    type: regular
+    task:
+      id: 19380d04-9017-4578-85d1-6539b235c361
+      version: -1
+      name: Create security group
+      description: Creates a security group.
+      script: '|||aws-ec2-create-security-group'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      description:
+        simple: This security group allow the response function to communicate with the cluster
+      groupName:
+        simple: ${inputs.SecurityGroupName}
+      region:
+        simple: ${inputs.region}
+      vpcId:
+        simple: ${AWS.EC2.Vpcs.VpcId}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b3871919-30b5-4e02-8fcd-fecaeaead4e8
+    type: regular
+    task:
+      id: b3871919-30b5-4e02-8fcd-fecaeaead4e8
+      version: -1
+      name: Create an ingress rule for the security group
+      description: Adds ingress rule to a security group.
+      script: '|||aws-ec2-authorize-security-group-ingress-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+      - "22"
+    scriptarguments:
+      cidrIp:
+        simple: ${AWS.EC2.Vpcs.CidrBlock}
+      fromPort:
+        simple: "443"
+      groupId:
+        simple: ${AWS.EC2.SecurityGroups.GroupId}
+      ipProtocol:
+        simple: tcp
+      region:
+        simple: ${inputs.region}
+      toPort:
+        simple: "443"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1980
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 7a865610-19c6-415a-89d1-ae1d9f558f10
+    type: regular
+    task:
+      id: 7a865610-19c6-415a-89d1-ae1d9f558f10
+      version: -1
+      name: Create VPC endpoint for eks-auth
+      description: Creates a VPC endpoint.
+      script: '|||aws-ec2-create-vpc-endpoint'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      region:
+        simple: ${inputs.region}
+      securityGroupIds:
+        simple: ${AWS.EKS.DescribeCluster.resourcesVpcConfig.securityGroupIds}
+      serviceName:
+        simple: com.amazonaws.${inputs.region}.eks
+      subnetIds:
+        simple: ${AWS.EKS.DescribeCluster.resourcesVpcConfig.subnetIds}
+      vpcEndpointType:
+        simple: Interface
+      vpcId:
+        simple: ${AWS.EC2.Vpcs.VpcId}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 2180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 25d80d46-e3c7-4fdc-8ad4-67d04e22dfd5
+    type: regular
+    task:
+      id: 25d80d46-e3c7-4fdc-8ad4-67d04e22dfd5
+      version: -1
+      name: AWS Lambda - Create function
+      description: Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+      script: '|||aws-lambda-create-function'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      code:
+        complex:
+          root: File
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: File.Name
+                iscontext: true
+              right:
+                value:
+                  simple: code.zip
+              ignorecase: true
+          accessor: EntryID
+      functionName:
+        simple: ${inputs.FunctionName}
+      handler:
+        simple: ${inputs.FunctionHandler}
+      layers:
+        simple: ${AWS.Lambda.Layers.LayerVersionArn}
+      packageType:
+        simple: Zip
+      region:
+        simple: ${inputs.region}
+      role:
+        simple: ${AWS.IAM.Roles.Arn}
+      runtime:
+        simple: ${inputs.FunctionRuntime}
+      vpcConfig:
+        complex:
+          root: AWS.EKS.DescribeCluster
+          accessor: resourcesVpcConfig
+          transformers:
+          - operator: IgnoreFieldsFromJson
+            args:
+              fields:
+                value:
+                  simple: clusterSecurityGroupId,endpointPrivateAccess,endpointPublicAccess,publicAccessCidrs,vpcId
+              json_object: {}
+          - operator: Stringify
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: SecurityGroupIds
+              toReplace:
+                value:
+                  simple: securityGroupIds
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: SubnetIds
+              toReplace:
+                value:
+                  simple: subnetIds
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3530
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 0d583674-cc5b-4a9d-8398-e5649245ac0e
+    type: title
+    task:
+      id: 0d583674-cc5b-4a9d-8398-e5649245ac0e
+      version: -1
+      name: Create Function
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "14"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3060
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: f00e38d5-c3f5-4d1d-8642-34550bad0aab
+    type: regular
+    task:
+      id: f00e38d5-c3f5-4d1d-8642-34550bad0aab
+      version: -1
+      name: Check the error returned for eks-auth VPC endpoint creation
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+      extend-context:
+        simple: ErrorEntries.eksAuth=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 55fce217-fa07-432c-8bf7-8e327e33f763
+    type: condition
+    task:
+      id: 55fce217-fa07-432c-8bf7-8e327e33f763
+      version: -1
+      name: Check if the VPC endpoint already exists
+      description: Checks if a VPC endpoint for eks-auth already exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "33"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ErrorEntries.eksAuth
+            iscontext: true
+          right:
+            value:
+              simple: conflicting
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 700,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: ee2a8892-22db-46c2-8fdd-4dd5271a8529
+    type: regular
+    task:
+      id: ee2a8892-22db-46c2-8fdd-4dd5271a8529
+      version: -1
+      name: VPC endpoint for eks-auth creation error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      message:
+        simple: |-
+          Unable to create a VPC endpoint for eks-auth due to the following error:
+
+          ${ErrorEntries.eksAuth}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1070,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Error Message
+      output:
+        simple: VPC Endpoint Creation Failed
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: b4b59d4a-77f1-49cc-8852-0c8fbe92178d
+    type: regular
+    task:
+      id: b4b59d4a-77f1-49cc-8852-0c8fbe92178d
+      version: -1
+      name: Check the error returned for eks VPC endpoint creation
+      description: Get the error(s) associated with a given entry/entries. Use ${lastCompletedTaskEntries} to check the previous task entries. The automation will return an array of the error contents from those entries.
+      scriptName: GetErrorsFromEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      entry_id:
+        simple: ${lastCompletedTaskEntries}
+      extend-context:
+        simple: ErrorEntries.eks=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 2350
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 81bbd239-7d66-4dba-8916-574494b0fdb0
+    type: condition
+    task:
+      id: 81bbd239-7d66-4dba-8916-574494b0fdb0
+      version: -1
+      name: Check if the VPC endpoint already exists
+      description: Checks if a VPC endpoint for eks already exists.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "36"
+      "yes":
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: containsString
+          left:
+            value:
+              simple: ErrorEntries.eks
+            iscontext: true
+          right:
+            value:
+              simple: conflicting
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 200,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: d1ccb111-1357-494a-8c5b-314bb9a13c19
+    type: regular
+    task:
+      id: d1ccb111-1357-494a-8c5b-314bb9a13c19
+      version: -1
+      name: VPC endpoint for eks creation error
+      description: Prints an error entry with a given message.
+      scriptName: PrintErrorEntry
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    scriptarguments:
+      message:
+        simple: |-
+          Unable to create a VPC endpoint for eks due to the following error:
+
+          ${ErrorEntries.eks}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -180,
+          "y": 2740
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    fieldMapping:
+    - incidentfield: Error Message
+      output:
+        simple: VPC Endpoint Creation Failed
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "11_5_yes": 0.17,
+      "32_13_yes": 0.38,
+      "35_13_yes": 0.43
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3735,
+        "width": 1630,
+        "x": -180,
+        "y": 40
+      }
+    }
+  }
+inputs:
+- key: ClusterName
+  value: {}
+  required: false
+  description: The name of the cluster.
+  playbookInputQuery:
+- key: region
+  value: {}
+  required: false
+  description: The region of the cluster.
+  playbookInputQuery:
+- key: FunctionName
+  value: {}
+  required: false
+  description: The name of the Lambda function.
+  playbookInputQuery:
+- key: FunctionCode
+  value: {}
+  required: false
+  description: Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
+  playbookInputQuery:
+- key: FunctionRuntime
+  value: {}
+  required: false
+  description: "The runtime environment for the function.\t"
+  playbookInputQuery:
+- key: FunctionHandler
+  value: {}
+  required: false
+  description: "The name of the method within your code that Lambda calls to execute your function.\t"
+  playbookInputQuery:
+- key: LayerName
+  value: {}
+  required: false
+  description: The name to assign to the new Lambda layer.
+  playbookInputQuery:
+- key: LayerRuntime
+  value: {}
+  required: false
+  description: "The name of the method within your code that Lambda calls to execute your function.\t"
+  playbookInputQuery:
+- key: LayerArchitecture
+  value: {}
+  required: false
+  description: "A list of compatible architectures.\t"
+  playbookInputQuery:
+- key: LibraryName
+  value: {}
+  required: false
+  description: "The Python library to download and attach to the Lambda Function. \ne.g.\nTo be able to use the kubernetes library, use 'kubernetes' and the script will download and pack its files."
+  playbookInputQuery:
+- key: LambdaRoleName
+  value: {}
+  required: false
+  description: The lambda role name to create.
+  playbookInputQuery:
+- key: LambdaPolicyName
+  value: {}
+  required: false
+  description: The lambda policy name to create.
+  playbookInputQuery:
+- key: SecurityGroupName
+  value: {}
+  required: false
+  description: The security group name to create.
+  playbookInputQuery:
+inputSections:
+- inputs:
+  - ClusterName
+  - region
+  name: General (Inputs group)
+  description: Generic group for inputs
+- inputs:
+  - FunctionName
+  - FunctionCode
+  - FunctionRuntime
+  - FunctionHandler
+  - LayerName
+  - LayerRuntime
+  - LayerArchitecture
+  - LibraryName
+  name: FunctionParameters
+  description: This group holds inputs related to the function creation.
+- inputs:
+  - LambdaRoleName
+  - LambdaPolicyName
+  name: IAMParameters
+  description: This group holds inputs related to IAM.
+- inputs:
+  - SecurityGroupName
+  name: EC2Parameters
+  description: This group holds inputs related to EC2.
+outputSections:
+- outputs:
+  - AWS.EKS.DescribeCluster.name
+  - AWS.EKS.DescribeCluster.arn
+  - AWS.EKS.DescribeCluster.createdAt
+  - AWS.EKS.DescribeCluster.version
+  - AWS.EKS.DescribeCluster.endpoint
+  - AWS.EKS.DescribeCluster.roleArn
+  - AWS.EKS.DescribeCluster.identity
+  - AWS.EKS.DescribeCluster.status
+  - AWS.EKS.DescribeCluster.clientRequestToken
+  - AWS.EKS.DescribeCluster.platformVersion
+  - AWS.EKS.DescribeCluster.tags
+  - AWS.EKS.DescribeCluster.id
+  - AWS.EKS.DescribeCluster.resourcesVpcConfig.subnetIds
+  - AWS.EKS.DescribeCluster.resourcesVpcConfig.securityGroupIds
+  - AWS.EKS.DescribeCluster.resourcesVpcConfig.clusterSecurityGroupId
+  - AWS.EKS.DescribeCluster.resourcesVpcConfig.vpcId
+  - AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPublicAccess
+  - AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPrivateAccess
+  - AWS.EKS.DescribeCluster.resourcesVpcConfig.publicAccessCidrs
+  - AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv4Cidr
+  - AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv6Cidr
+  - AWS.EKS.DescribeCluster.kubernetesNetworkConfig.ipFamily
+  - AWS.EKS.DescribeCluster.logging.clusterLogging
+  - AWS.EKS.DescribeCluster.certificateAuthority.data
+  - AWS.EKS.DescribeCluster.encryptionConfig.resources
+  - AWS.EKS.DescribeCluster.encryptionConfig.provider
+  - AWS.EKS.DescribeCluster.connectorConfig.activationId
+  - AWS.EKS.DescribeCluster.connectorConfig.activationCode
+  - AWS.EKS.DescribeCluster.connectorConfig.activationExpiry
+  - AWS.EKS.DescribeCluster.connectorConfig.provider
+  - AWS.EKS.DescribeCluster.connectorConfig.roleArn
+  - AWS.EKS.DescribeCluster.health.issues
+  - AWS.EKS.DescribeCluster.outpostConfig.outpostArns
+  - AWS.EKS.DescribeCluster.outpostConfig.controlPlaneInstanceType
+  - AWS.EKS.DescribeCluster.outpostConfig.controlPlanePlacement
+  - AWS.EKS.DescribeCluster.accessConfig.bootstrapClusterCreatorAdminPermissions
+  - AWS.EKS.DescribeCluster.accessConfig.authenticationMode
+  - AWS.IAM.Roles.RoleName
+  - AWS.IAM.Roles.RoleId
+  - AWS.IAM.Roles.Arn
+  - AWS.IAM.Roles.CreateDate
+  - AWS.IAM.Roles.Path
+  - AWS.IAM.Roles.AssumeRolePolicyDocument
+  - AWS.IAM.Roles.Description
+  - AWS.IAM.Roles.MaxSessionDuration
+  - AWS.IAM.Policies.PolicyName
+  - AWS.IAM.Policies.PolicyId
+  - AWS.IAM.Policies.Arn
+  - AWS.IAM.Policies.Path
+  - AWS.IAM.Policies.DefaultVersionId
+  - AWS.IAM.Policies.Description
+  - AWS.IAM.Policies.CreateDate
+  - AWS.IAM.Policies.UpdateDate
+  - AWS.EKS.CreateAccessEntry.clusterName
+  - AWS.EKS.CreateAccessEntry.principalArn
+  - AWS.EKS.CreateAccessEntry.kubernetesGroups
+  - AWS.EKS.CreateAccessEntry.accessEntryArn
+  - AWS.EKS.CreateAccessEntry.createdAt
+  - AWS.EKS.CreateAccessEntry.modifiedAt
+  - AWS.EKS.CreateAccessEntry.tags
+  - AWS.EKS.CreateAccessEntry.username
+  - AWS.EKS.CreateAccessEntry.type
+  - AWS.EKS.AssociatedAccessPolicy.clusterName
+  - AWS.EKS.AssociatedAccessPolicy.principalArn
+  - AWS.EKS.AssociatedAccessPolicy.policyArn
+  - AWS.EKS.AssociatedAccessPolicy.associatedAt
+  - AWS.EKS.AssociatedAccessPolicy.modifiedAt
+  - AWS.EKS.AssociatedAccessPolicy.accessScope.type
+  - AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces
+  - AWS.EKS.UpdateAccessEntry.clusterName
+  - AWS.EKS.UpdateAccessEntry.principalArn
+  - AWS.EKS.UpdateAccessEntry.kubernetesGroups
+  - AWS.EKS.UpdateAccessEntry.accessEntryArn
+  - AWS.EKS.UpdateAccessEntry.createdAt
+  - AWS.EKS.UpdateAccessEntry.modifiedAt
+  - AWS.EKS.UpdateAccessEntry.tags
+  - AWS.EKS.UpdateAccessEntry.username
+  - AWS.EKS.UpdateAccessEntry.type
+  - AWS.Lambda.Layers.LayerVersionArn
+  - AWS.Lambda.Layers.LayerArn
+  - AWS.Lambda.Layers.Description
+  - AWS.Lambda.Layers.CreatedDate
+  - AWS.Lambda.Layers.Version
+  - AWS.Lambda.Layers.CompatibleRuntimes
+  - AWS.Lambda.Layers.CompatibleArchitectures
+  - AWS.Lambda.Functions.FunctionName
+  - AWS.Lambda.Functions.FunctionArn
+  - AWS.Lambda.Functions.Runtime
+  - AWS.Lambda.Functions.Role
+  - AWS.Lambda.Functions.Handler
+  - AWS.Lambda.Functions.Description
+  - AWS.Lambda.Functions.PackageType
+  - AWS.Lambda.Functions.LastModified
+  - AWS.Lambda.Functions.Timeout
+  - AWS.Lambda.Functions.VpcConfig.SubnetIds
+  - AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+  - AWS.Lambda.Functions.VpcConfig.VpcId
+  - AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack
+  - AWS.EKS.UpdateCluster.clusterName
+  - AWS.EKS.UpdateCluster.id
+  - AWS.EKS.UpdateCluster.status
+  - AWS.EKS.UpdateCluster.type
+  - AWS.EKS.UpdateCluster.params
+  - AWS.EKS.UpdateCluster.createdAt
+  - File.Name
+  - File.EntryID
+  - File.Type
+  - File.Extension
+  - File.SHA256
+  - ZipFile.ZippedFile
+  - AWS.EC2.Vpcs.VpcEndpoint.VpcEndpointId
+  - AWS.EC2.Vpcs.VpcEndpoint.State
+  - AWS.EC2.Vpcs.VpcEndpoint.ServiceName
+  - AWS.EC2.Vpcs.VpcEndpoint.VpcId
+  - AWS.EC2.Vpcs.VpcEndpoint.EndpointType
+  - AWS.EC2.Vpcs.VpcId
+  - AWS.EC2.Vpcs.AccountId
+  - AWS.EC2.Vpcs.State
+  - AWS.EC2.Vpcs.CidrBlock
+  - AWS.EC2.Vpcs.Tags.Key
+  - AWS.EC2.Vpcs.Tags.Value
+  - AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId
+  - AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+  - AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+  - AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+  - AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId
+  - AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock
+  - AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State
+  - AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage
+  - AWS.EC2.SecurityGroups.GroupName
+  - AWS.EC2.SecurityGroups.Description
+  - AWS.EC2.SecurityGroups.VpcId
+  - AWS.EC2.SecurityGroups.GroupId
+  - AWS.EC2.SecurityGroups.AccountId
+  - ErrorEntries
+  name: General (Outputs group)
+  description: Generic group for outputs
+outputs:
+- contextPath: AWS.EKS.DescribeCluster.name
+  description: The name of your cluster.
+- contextPath: AWS.EKS.DescribeCluster.arn
+  description: The Amazon Resource Name (ARN) of the cluster.
+- contextPath: AWS.EKS.DescribeCluster.createdAt
+  description: The creation date of the object.
+- contextPath: AWS.EKS.DescribeCluster.version
+  description: The Kubernetes server version for the cluster.
+- contextPath: AWS.EKS.DescribeCluster.endpoint
+  description: The endpoint for your Kubernetes API server.
+- contextPath: AWS.EKS.DescribeCluster.roleArn
+  description: The Amazon Resource Name (ARN) of the IAM role that provides permissions for the Kubernetes control plane to make calls to Amazon Web Services API operations on your behalf.
+- contextPath: AWS.EKS.DescribeCluster.identity
+  description: The identity provider information for the cluster.
+- contextPath: AWS.EKS.DescribeCluster.status
+  description: The current status of the cluster.
+- contextPath: AWS.EKS.DescribeCluster.clientRequestToken
+  description: A unique, case-sensitive identifier that you provide to ensure the idempotency of the request.
+- contextPath: AWS.EKS.DescribeCluster.platformVersion
+  description: The platform version of your Amazon EKS cluster.
+- contextPath: AWS.EKS.DescribeCluster.tags
+  description: A dictionary containing metadata for categorization and organization.
+- contextPath: AWS.EKS.DescribeCluster.id
+  description: The ID of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+- contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.subnetIds
+  description: The subnets associated with your cluster.
+- contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.securityGroupIds
+  description: The security groups associated with the cross-account elastic network interfaces that are used to allow communication between your nodes and the Kubernetes control plane.
+- contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.clusterSecurityGroupId
+  description: The cluster security group that was created by Amazon EKS for the cluster. Managed node groups use this security group for control-plane-to-data-plane communication.
+- contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.vpcId
+  description: The VPC associated with your cluster.
+- contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPublicAccess
+  description: Whether the public API server endpoint is enabled.
+- contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.endpointPrivateAccess
+  description: This parameter indicates whether the Amazon EKS private API server endpoint is enabled.
+- contextPath: AWS.EKS.DescribeCluster.resourcesVpcConfig.publicAccessCidrs
+  description: The CIDR blocks that are allowed access to your cluster’s public Kubernetes API server endpoint.
+- contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv4Cidr
+  description: The CIDR block that Kubernetes Pod and Service object IP addresses are assigned from.
+- contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.serviceIpv6Cidr
+  description: The CIDR block that Kubernetes Pod and Service IP addresses are assigned from if you created a 1.21 or later cluster with version 1.10.1 or later of the Amazon VPC CNI add-on and specified ipv6 for ipFamily when you created the cluster.
+- contextPath: AWS.EKS.DescribeCluster.kubernetesNetworkConfig.ipFamily
+  description: The IP family used to assign Kubernetes Pod and Service objects IP addresses.
+- contextPath: AWS.EKS.DescribeCluster.logging.clusterLogging
+  description: The cluster control plane logging configuration for your cluster.
+- contextPath: AWS.EKS.DescribeCluster.certificateAuthority.data
+  description: The Base64-encoded certificate data required to communicate with your cluster.
+- contextPath: AWS.EKS.DescribeCluster.encryptionConfig.resources
+  description: Specifies the resources to be encrypted. The only supported value is secrets.
+- contextPath: AWS.EKS.DescribeCluster.encryptionConfig.provider
+  description: Key Management Service (KMS) key.
+- contextPath: AWS.EKS.DescribeCluster.connectorConfig.activationId
+  description: A unique ID associated with the cluster for registration purposes.
+- contextPath: AWS.EKS.DescribeCluster.connectorConfig.activationCode
+  description: A unique code associated with the cluster for registration purposes.
+- contextPath: AWS.EKS.DescribeCluster.connectorConfig.activationExpiry
+  description: The expiration time of the connected cluster.
+- contextPath: AWS.EKS.DescribeCluster.connectorConfig.provider
+  description: The cluster’s cloud service provider.
+- contextPath: AWS.EKS.DescribeCluster.connectorConfig.roleArn
+  description: The Amazon Resource Name (ARN) of the role to communicate with services from the connected Kubernetes cluster.
+- contextPath: AWS.EKS.DescribeCluster.health.issues
+  description: An object representing the health issues of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+- contextPath: AWS.EKS.DescribeCluster.outpostConfig.outpostArns
+  description: An object representing the configuration of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+- contextPath: AWS.EKS.DescribeCluster.outpostConfig.controlPlaneInstanceType
+  description: The Amazon EC2 instance type used for the control plane.
+- contextPath: AWS.EKS.DescribeCluster.outpostConfig.controlPlanePlacement
+  description: An object representing the placement configuration for all the control plane instances of your local Amazon EKS cluster on an Amazon Web Services Outpost.
+- contextPath: AWS.EKS.DescribeCluster.accessConfig.bootstrapClusterCreatorAdminPermissions
+  description: Specifies whether or not the cluster creator IAM principal was set as a cluster admin access entry during cluster creation time.
+- contextPath: AWS.EKS.DescribeCluster.accessConfig.authenticationMode
+  description: The current authentication mode of the cluster.
+- contextPath: AWS.IAM.Roles.RoleName
+  description: The friendly name that identifies the role.
+- contextPath: AWS.IAM.Roles.RoleId
+  description: The stable and unique string identifying the role.
+- contextPath: AWS.IAM.Roles.Arn
+  description: The Amazon Resource Name (ARN) specifying the role.
+- contextPath: AWS.IAM.Roles.CreateDate
+  description: The date and time, when the role was created.
+- contextPath: AWS.IAM.Roles.Path
+  description: The path to the role.
+- contextPath: AWS.IAM.Roles.AssumeRolePolicyDocument
+  description: he policy that grants an entity permission to assume the role.
+- contextPath: AWS.IAM.Roles.Description
+  description: A description of the role that you provide.
+- contextPath: AWS.IAM.Roles.MaxSessionDuration
+  description: The maximum session duration (in seconds) for the specified role.
+- contextPath: AWS.IAM.Policies.PolicyName
+  description: The friendly name (not ARN) identifying the policy.
+- contextPath: AWS.IAM.Policies.PolicyId
+  description: The stable and unique string identifying the policy.
+- contextPath: AWS.IAM.Policies.Arn
+  description: The Amazon Resource Name (ARN). ARNs are unique identifiers for AWS resources.
+- contextPath: AWS.IAM.Policies.Path
+  description: The path to the policy.
+- contextPath: AWS.IAM.Policies.DefaultVersionId
+  description: The identifier for the version of the policy that is set as the default version.
+- contextPath: AWS.IAM.Policies.Description
+  description: A friendly description of the policy.
+- contextPath: AWS.IAM.Policies.CreateDate
+  description: The date and time, in ISO 8601 date-time format , when the policy was created.
+- contextPath: AWS.IAM.Policies.UpdateDate
+  description: The date and time, in ISO 8601 date-time format , when the policy was last updated.
+- contextPath: AWS.EKS.CreateAccessEntry.clusterName
+  description: The name of the cluster.
+- contextPath: AWS.EKS.CreateAccessEntry.principalArn
+  description: The ARN of the IAM principal for the access entry.
+- contextPath: AWS.EKS.CreateAccessEntry.kubernetesGroups
+  description: A list of names that you’ve specified in a Kubernetes RoleBinding or ClusterRoleBinding object so that Kubernetes authorizes the principalARN access to cluster objects.
+- contextPath: AWS.EKS.CreateAccessEntry.accessEntryArn
+  description: The ARN of the access entry.
+- contextPath: AWS.EKS.CreateAccessEntry.createdAt
+  description: The creation date of the object.
+- contextPath: AWS.EKS.CreateAccessEntry.modifiedAt
+  description: The date and time for the last modification to the object.
+- contextPath: AWS.EKS.CreateAccessEntry.tags
+  description: A dictionary containing metadata for categorization and organization.
+- contextPath: AWS.EKS.CreateAccessEntry.username
+  description: The name of a user that can authenticate to the cluster.
+- contextPath: AWS.EKS.CreateAccessEntry.type
+  description: The type of the access entry.
+- contextPath: AWS.EKS.AssociatedAccessPolicy.clusterName
+  description: The name of your cluster.
+- contextPath: AWS.EKS.AssociatedAccessPolicy.principalArn
+  description: The ARN of the IAM principal for the AccessEntry.
+- contextPath: AWS.EKS.AssociatedAccessPolicy.policyArn
+  description: The ARN of the AccessPolicy.
+- contextPath: AWS.EKS.AssociatedAccessPolicy.associatedAt
+  description: The date and time the AccessPolicy was associated with an AccessEntry.
+- contextPath: AWS.EKS.AssociatedAccessPolicy.modifiedAt
+  description: The date and time for the last modification to the object.
+- contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.type
+  description: The scope type of an access policy.
+- contextPath: AWS.EKS.AssociatedAccessPolicy.accessScope.namespaces
+  description: A Kubernetes namespace that an access policy is scoped to.
+- contextPath: AWS.EKS.UpdateAccessEntry.clusterName
+  description: The name of your cluster.
+- contextPath: AWS.EKS.UpdateAccessEntry.principalArn
+  description: The ARN of the IAM principal for the access entry.
+- contextPath: AWS.EKS.UpdateAccessEntry.kubernetesGroups
+  description: A list of names that you’ve specified in a Kubernetes RoleBinding or ClusterRoleBinding object so that Kubernetes authorizes the principalARN access to cluster objects.
+- contextPath: AWS.EKS.UpdateAccessEntry.accessEntryArn
+  description: The ARN of the access entry.
+- contextPath: AWS.EKS.UpdateAccessEntry.createdAt
+  description: The creation date of the object.
+- contextPath: AWS.EKS.UpdateAccessEntry.modifiedAt
+  description: The date and time for the last modification to the object.
+- contextPath: AWS.EKS.UpdateAccessEntry.tags
+  description: Metadata that assists with categorization and organization. Each tag consists of a key and an optional value.
+- contextPath: AWS.EKS.UpdateAccessEntry.username
+  description: The name of a user that can authenticate to your cluster.
+- contextPath: AWS.EKS.UpdateAccessEntry.type
+  description: The type of the access entry.
+- contextPath: AWS.Lambda.Layers.LayerVersionArn
+  description: The ARN of the layer version.
+- contextPath: AWS.Lambda.Layers.LayerArn
+  description: The ARN of the layer.
+- contextPath: AWS.Lambda.Layers.Description
+  description: The description of the version.
+- contextPath: AWS.Lambda.Layers.CreatedDate
+  description: The date that the layer version was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+- contextPath: AWS.Lambda.Layers.Version
+  description: The version number.
+- contextPath: AWS.Lambda.Layers.CompatibleRuntimes
+  description: The layer’s compatible runtimes.
+- contextPath: AWS.Lambda.Layers.CompatibleArchitectures
+  description: The layer’s compatible architectures.
+  type: unknown
+- contextPath: AWS.Lambda.Functions.FunctionName
+  description: The name of the function.
+- contextPath: AWS.Lambda.Functions.FunctionArn
+  description: The function’s Amazon Resource Name (ARN).
+- contextPath: AWS.Lambda.Functions.Runtime
+  description: The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive.
+- contextPath: AWS.Lambda.Functions.Role
+  description: The function’s execution role.
+- contextPath: AWS.Lambda.Functions.Handler
+  description: The function that Lambda calls to begin running your function.
+- contextPath: AWS.Lambda.Functions.Description
+  description: The function’s description.
+- contextPath: AWS.Lambda.Functions.PackageType
+  description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+- contextPath: AWS.Lambda.Functions.LastModified
+  description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+- contextPath: AWS.Lambda.Functions.Timeout
+  description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+- contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+  description: A list of VPC subnet IDs.
+- contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+  description: A list of VPC security group IDs.
+- contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+  description: The ID of the VPC.
+- contextPath: AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack
+  description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+- contextPath: AWS.EKS.UpdateCluster.clusterName
+  description: The name of the cluster.
+- contextPath: AWS.EKS.UpdateCluster.id
+  description: The ID of the update.
+- contextPath: AWS.EKS.UpdateCluster.status
+  description: The status of the update.
+- contextPath: AWS.EKS.UpdateCluster.type
+  description: The type of the update.
+- contextPath: AWS.EKS.UpdateCluster.params
+  description: The parameters of the update.
+- contextPath: AWS.EKS.UpdateCluster.createdAt
+  description: The creation date of the object.
+- contextPath: File.Name
+  description: The name of the file.
+  type: String
+- contextPath: File.EntryID
+  description: The entry ID of the file.
+  type: String
+- contextPath: File.Type
+  description: The file type.
+  type: String
+- contextPath: File.Extension
+  description: The file extension.
+  type: String
+- contextPath: File.SHA256
+  description: The SHA256 hash of the file.
+  type: String
+- contextPath: ZipFile.ZippedFile
+  description: The zipped file.
+  type: string
+- contextPath: AWS.EC2.Vpcs.VpcEndpoint.VpcEndpointId
+  description: The ID of the endpoint.
+- contextPath: AWS.EC2.Vpcs.VpcEndpoint.State
+  description: The state of the VPC endpoint.
+- contextPath: AWS.EC2.Vpcs.VpcEndpoint.ServiceName
+  description: The service name of the VPC endpoint.
+- contextPath: AWS.EC2.Vpcs.VpcEndpoint.VpcId
+  description: The ID of the VPC to which the endpoint is associated.
+- contextPath: AWS.EC2.Vpcs.VpcEndpoint.EndpointType
+  description: The type of the VPC endpoint.
+- contextPath: AWS.EC2.Vpcs.VpcId
+  description: The ID of the VPC.
+- contextPath: AWS.EC2.Vpcs.AccountId
+  description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+- contextPath: AWS.EC2.Vpcs.State
+  description: The current state of the VPC.
+- contextPath: AWS.EC2.Vpcs.CidrBlock
+  description: The primary IPv4 CIDR block for the VPC.
+- contextPath: AWS.EC2.Vpcs.Tags.Key
+  description: The key of the tag.
+- contextPath: AWS.EC2.Vpcs.Tags.Value
+  description: The value of the tag.
+- contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.AssociationId
+  description: The association ID for the IPv6 CIDR block.
+- contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlock
+  description: The IPv6 CIDR block.
+- contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.State
+  description: The state of the CIDR block.
+- contextPath: AWS.EC2.Vpcs.Tags.Ipv6CidrBlockAssociationSet.Ipv6CidrBlockState.StatusMessage
+  description: A message about the status of the CIDR block, if applicable.
+- contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.AssociationId
+  description: The association ID for the IPv4 CIDR block.
+- contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlock
+  description: The IPv4 CIDR block.
+- contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.State
+  description: The state of the CIDR block.
+- contextPath: AWS.EC2.Vpcs.Tags.CidrBlockAssociationSet.CidrBlockState.StatusMessage
+  description: A message about the status of the CIDR block, if applicable.
+- contextPath: AWS.EC2.SecurityGroups.GroupName
+  description: The name of the security group.
+- contextPath: AWS.EC2.SecurityGroups.Description
+  description: A description for the security group.
+- contextPath: AWS.EC2.SecurityGroups.VpcId
+  description: The ID of the VPC.
+- contextPath: AWS.EC2.SecurityGroups.GroupId
+  description: The ID of the security group.
+- contextPath: AWS.EC2.SecurityGroups.AccountId
+  description: The ID of the AWS account with which the EC2 instance is associated. This key is only present when the parameter "AWS organization accounts" is provided.
+- contextPath: ErrorEntries
+  description: Contents of the errors associated with the entry/entries.
+tests:
+- No tests (auto formatted)
+marketplaces:
+  - xsoar
+  - marketplacev2
+fromversion: 6.10.0
