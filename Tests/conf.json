@@ -3676,7 +3676,7 @@
             "playbookID": "GetIndicatorsByQuery - Test"
         },
         {
-            "playbookID": "DBotFindSimilarIncidents-test",
+            "playbookID": "DBotFindSimilarIncidents-test"
         },
         {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
