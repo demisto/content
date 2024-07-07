@@ -42,7 +42,7 @@ script: '-'
 subtype: python3
 timeout: '0'
 type: python
-dockerimage: devdemisto/ml:1.0.0.101124
+dockerimage: devdemisto/ml:1.0.0.101872
 runas: DBotWeakRole
 tests:
 - DBotFindSimilarIncidentsByIndicators - Test
