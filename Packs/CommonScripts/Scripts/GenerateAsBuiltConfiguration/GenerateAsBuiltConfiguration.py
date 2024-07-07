@@ -687,13 +687,15 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
                                                     field_t[tab.get('name')] = evidence_data
                     field_list.append(field_t)
                 # adding additional data into integration
-                pb_integration[integration["display"]][integration["instance_name"]]["classifier"] = classifier_data
-                pb_integration[integration["display"]][integration["instance_name"]]["incident_type"] = incident_types_data
-                pb_integration[integration["display"]][integration["instance_name"]]["layout"] = layout_data
-                pb_integration[integration["display"]][integration["instance_name"]]["field_type"] = field_t
-                pb_integration[integration["display"]][integration["instance_name"]]["fields"] = fields_data
-                pb_integration[integration["display"]][integration["instance_name"]]["incoming_mapper"] = incoming_mapper_data
-                pb_integration[integration["display"]][integration["instance_name"]]["outgoing_mapper"] = outgoing_mapper_data
+                pb_integration[integration["display"]][integration["instance_name"]] |= {
+                    "classifier": classifier_data,
+                    "incident_type": incident_types_data,
+                    "layout": layout_data,
+                    "field_type": field_t,
+                    "fields": fields_data,
+                    "incoming_mapper": incoming_mapper_data,
+                    "outgoing_mapper": outgoing_mapper_data
+                }
 
     return pb_integration
 
