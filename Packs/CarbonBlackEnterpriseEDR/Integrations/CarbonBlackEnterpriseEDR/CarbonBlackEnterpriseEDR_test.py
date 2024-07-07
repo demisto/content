@@ -360,7 +360,7 @@ def test_alert_workflow_update_request_good_arguments(mocker):
 
 
 alert_workflow_update_command_func_called_data = [
-    ({'alert_id': '123', 'status': 'OPEN'},  # case first time polling (no request_id).
+    ({'alert_id': '123', 'state': 'OPEN'},  # case first time polling (no request_id).
      'alert_workflow_update_request',  # func to be called.
      {'request_id': '123456789'}  # response
      ),
@@ -382,9 +382,9 @@ def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_call
     Then:
         - The right function is called regarding polling.
     """
-    from CarbonBlackEnterpriseEDR import alert_workflow_update_command
+    from CarbonBlackEnterpriseEDR import alert_workflow_update_command_with_polling
     execute_command = mocker.patch.object(CLIENT, func_to_be_called, return_value=response)
-    alert_workflow_update_command(args, CLIENT)
+    alert_workflow_update_command_with_polling(args, CLIENT)
     assert execute_command.called is True
 
 
@@ -406,10 +406,10 @@ def test_alert_workflow_update_command_bad_arguments(args):
     Then:
         - The right exception is called.
     """
-    from CarbonBlackEnterpriseEDR import alert_workflow_update_command
+    from CarbonBlackEnterpriseEDR import alert_workflow_update_command_with_polling
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException):
-        alert_workflow_update_command(args, CLIENT)
+        alert_workflow_update_command_with_polling(args, CLIENT)
 
 
 process_search_command_func_called_data = [

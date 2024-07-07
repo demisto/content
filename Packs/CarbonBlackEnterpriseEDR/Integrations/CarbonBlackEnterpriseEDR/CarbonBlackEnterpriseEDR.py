@@ -574,7 +574,7 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
             "OPEN"
 
         if not determination and not status:
-            raise DemistoException('Must specify at least one of \"remediation_state\" or \"status\".')
+            raise DemistoException('Must specify at least one of \"remediation_state\" or \"state\".')
 
         if start or end:
             if not start or not end:
