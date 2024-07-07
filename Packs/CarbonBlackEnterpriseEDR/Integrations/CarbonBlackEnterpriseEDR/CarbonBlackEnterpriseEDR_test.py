@@ -356,7 +356,7 @@ def test_alert_workflow_update_request_good_arguments(mocker):
     assert 'api/alerts/v7/orgs' in http_request.call_args[0][1]
     assert http_request.call_args.kwargs['json_data'] == {'time_range': {'start': '1', 'end': '2', 'range': '-2w'},
                                                           'criteria': {'id': ['1234']}, 'determination': 'NONE',
-                                                          'closure_reason': 'bla2', 'state': 'OPEN', 'note': 'bla1'}
+                                                          'closure_reason': 'bla2', 'status': 'OPEN', 'note': 'bla1'}
 
 
 alert_workflow_update_command_func_called_data = [
