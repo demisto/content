@@ -88,7 +88,7 @@ script:
       - DISMISSED
       - OPEN
     - description: Value judgement of whether the alert(s) represent a true or false positive.
-      name: determination
+      name: remediation_state
       auto: PREDEFINED
       predefined:
       - TRUE_POSITIVE
@@ -130,8 +130,11 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.LastUpdateTime
       description: Last time the alert was updated.
       type: Date
+    - contextPath: CarbonBlackEEDR.Alert.Remediation
+      description: Description or justification for the change.
+      type: String
     - contextPath: CarbonBlackEEDR.Alert.State
-      description: The alert's status.
+      description: The alert state.
       type: String
     polling: true
   - arguments:

@@ -513,7 +513,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     for alert in alerts:
         
         # The new API version returns status instead of state,
-        # mapping this for the output to look the same
+        # mapping this for the output to look the same.
         alert['state'] = alert['workflow']['status']
         
         contents.append({
@@ -558,7 +558,7 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
 
     if not request_id:  # if this is the first time
         demisto.debug(f'{LOG_INIT} Getting all relevant args for first run')
-        determination = args.get('determination')
+        determination = args.get('remediation_state')
         time_range = args.get('time_range')
         start = args.get('start')
         end = args.get('end')
@@ -573,7 +573,7 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
             "OPEN"
 
         if not determination and not status:
-            raise DemistoException('Must specify at least one of \"determination\" or \"status\".')
+            raise DemistoException('Must specify at least one of \"remediation_state\" or \"status\".')
 
         if start or end:
             if not start or not end:
@@ -621,7 +621,8 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
         status_HR = response['job_parameters']['job_parameters']['request']['status'] if args.get('state') else None
         message = CommandResults(
             outputs={'AlertID': alert_id, 'ChangedBy': changed_by, 'Comment': args.get('comment'),
-                     'LastUpdateTime': response['last_update_time'], 'State': status_HR},
+                     'LastUpdateTime': response['last_update_time'], 'State': status_HR,\
+                     'RemediationState': args.get('remediation_state')},
             outputs_prefix='CarbonBlackEEDR.Alert',
             readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
                                             {'changed_by': changed_by,
