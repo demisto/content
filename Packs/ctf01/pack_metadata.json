@@ -25,7 +25,6 @@
         }
     },
     "marketplaces": [
-        "xsoar",
         "xsoar_saas"
     ]
 }
