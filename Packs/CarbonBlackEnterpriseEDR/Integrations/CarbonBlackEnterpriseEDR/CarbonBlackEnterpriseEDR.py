@@ -10,7 +10,7 @@ import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
+LOG_INIT = "CBEEDR - "
 
 class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool, token=None, cb_org_key=None):
@@ -90,7 +90,7 @@ class Client(BaseClient):
             note=comment,
         )
 
-        demisto.debug(f"{body=}")
+        demisto.debug(f"{LOG_INIT} {body=}")
         try:
             response = self._http_request('POST', suffix_url, json_data=body)
         except Exception as e:
@@ -535,7 +535,7 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
 
 
 @polling_function(name='cb-eedr-alert-workflow-update', interval=60, requires_polling_arg=False)
-def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
+def alert_workflow_update_command_with_polling(args: dict, client: Client) -> PollResult:
     """
        Updates the given alret's workflow. This is a polling function.
 
@@ -549,10 +549,10 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
     request_id = arg_to_number(args.get('request_id'))
     alert_id = args['alert_id']
 
-    demisto.debug(f'Polling is running - got {request_id=}, {alert_id=}')
+    demisto.debug(f'{LOG_INIT} Polling is running - got {request_id=}, {alert_id=}')
 
     if not request_id:  # if this is the first time
-        demisto.debug('Getting all relevant args for first run')
+        demisto.debug(f'{LOG_INIT} Getting all relevant args for first run')
         determination = args.get('determination')
         time_range = args.get('time_range')
         start = args.get('start')
@@ -576,11 +576,11 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
             if start > end:
                 raise DemistoException('start timestamp needs to be before end timestamp')
 
-        demisto.debug('calling alert_workflow_update_request function')
+        demisto.debug(f'{LOG_INIT} calling alert_workflow_update_request function')
         response = client.alert_workflow_update_request(
             alert_id, status, comment, determination, time_range, start, end, closure_reason)
 
-        demisto.debug(f'Recieved response: type= {type(response)}, len= {len(response)}')
+        demisto.debug(f'{LOG_INIT} Recieved response: type= {type(response)}, len= {len(response)}')
 
         return PollResult(
             partial_result=CommandResults(readable_output="running polling"),
@@ -591,18 +591,18 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
 
     request_id = args['request_id']
 
-    demisto.debug('Calling the second endpoint')
+    demisto.debug(f'{LOG_INIT} Calling the second endpoint')
     response = client.alert_workflow_update_get_request(
         request_id)
-    demisto.debug(f'{response=}')
+    demisto.debug(f'{LOG_INIT} {response=}')
 
     request_status = response['status']
-    demisto.debug(f'{request_status=}')
+    demisto.debug(f'{LOG_INIT} {request_status=}')
 
     if request_status == 'CREATED':
         message = CommandResults(
             readable_output="Checking again in 60 seconds...")
-        demisto.debug('returning PollResult with continue_to_poll=True')
+        demisto.debug(f'{LOG_INIT} returning PollResult with continue_to_poll=True')
         return PollResult(
             partial_result=message,
             response=None,
@@ -626,7 +626,7 @@ def alert_workflow_update_command(args: dict, client: Client) -> PollResult:
                                              'comment': args.get('comment'),
                                              'closure reason': args.get('closure_reason'),
                                              'state': status_HR}, removeNull=True))
-        demisto.debug('returning PollResult with continue_to_poll=False')
+        demisto.debug(f'{LOG_INIT} returning PollResult with continue_to_poll=False')
         return PollResult(
             response=message,
             continue_to_poll=False)
@@ -1308,11 +1308,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         limit=fetch_limit,
     )
     alerts = response.get('results', [])
-    demisto.debug(f'got {len(alerts)} alerts from server')
+    demisto.debug(f'{LOG_INIT} got {len(alerts)} alerts from server')
     for alert in alerts:
         alert_id = alert.get('id')
         if alert_id == last_fetched_alert_id:
-            demisto.debug(f'got previously fetched alert {alert_id}, skipping it')
+            demisto.debug(f'{LOG_INIT} got previously fetched alert {alert_id}, skipping it')
             continue
 
         alert_create_date = alert.get('backend_timestamp')
@@ -1327,7 +1327,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
                                                      '%Y-%m-%dT%H:%M:%S.000Z')
         latest_alert_id = alert_id
-    demisto.debug(f'sending {len(incidents)} incidents')
+    demisto.debug(f'{LOG_INIT} sending {len(incidents)} incidents')
     res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
     return incidents, res
 
@@ -1351,7 +1351,7 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
     """
     job_id = args.get('job_id')
     interval_in_seconds = arg_to_number(args.get('interval_in_seconds'))
-    demisto.debug(f'in process_search_command_with_polling function, {job_id=}')
+    demisto.debug(f'{LOG_INIT} in process_search_command_with_polling function, {job_id=}')
 
     if not job_id:  # if this is the first time
         process_name = args.get('process_name', '')
@@ -1366,7 +1366,7 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
         response = client.create_search_process_request(process_name=process_name, process_hash=process_hash,
                                                         event_id=event_id, query=query, limit=limit,
                                                         start_time=start_time, end_time=end_time, start=start)
-        demisto.debug(f'got {response=}')
+        demisto.debug(f'{LOG_INIT} got {response=}')
         return PollResult(partial_result=CommandResults(readable_output=f"job_id is {response.get('job_id')}."),
                           response=None,
                           continue_to_poll=True,
@@ -1617,7 +1617,7 @@ def main():
 
         elif demisto.command() == 'cb-eedr-alert-workflow-update':
             # args have to be sent before client because this is a polling function!
-            return_results(alert_workflow_update_command(demisto.args(), client))
+            return_results(alert_workflow_update_command_with_polling(demisto.args(), client))
 
         elif demisto.command() == 'cb-eedr-devices-list':
             return_results(list_devices_command(client, demisto.args()))

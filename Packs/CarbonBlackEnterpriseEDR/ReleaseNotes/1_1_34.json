@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "***Note:*** Breaking Change- The 'cb-eedr-list-alerts' command has no support to 'alert_category', 'workflow' and 'group_results' fields any more."
+}
