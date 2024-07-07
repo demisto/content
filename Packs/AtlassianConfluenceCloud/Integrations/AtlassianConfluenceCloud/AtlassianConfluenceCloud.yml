@@ -1915,6 +1915,98 @@ script:
     - contextPath: ConfluenceCloud.Group._links.self
       description: Link to the group.
       type: String
+  - arguments:
+      - name: should_push_events
+        auto: PREDEFINED
+        predefined:
+          - "true"
+          - "false"
+      - name: start
+        description: The starting index of the returned records.
+      - name: start_date
+        description: Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds.
+      - name: limit
+        description: The maximum number of records to return per page. Note, this may be restricted by fixed system limits.
+    name: confluence-cloud-get-events
+    outputs:
+      - contextPath: ConfluenceClout.Event.author.type
+        description: The type of author who created this event
+        type: String
+      - contextPath: ConfluenceClout.Event.author.displayName
+        description: The displayName of the author who created this event
+        type: String
+      - contextPath: ConfluenceClout.Event.author.operations
+        description: ''
+        type: Unknown
+      - contextPath: ConfluenceClout.Event.author.username
+        description: Username of the author of this event.
+        type: String
+      - contextPath: ConfluenceClout.Event.author.userKey
+        description: User key of the author of this event.
+        type: String
+      - contextPath: ConfluenceClout.Event.author.accountId
+        description: Account ID of the author of thie event.
+        type: String
+      - contextPath: ConfluenceClout.Event.author.accountType
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.author.externalCollaborator
+        description: ''
+        type: Boolean
+      - contextPath: ConfluenceClout.Event.author.isExternalCollaborator
+        description: ''
+        type: Boolean
+      - contextPath: ConfluenceClout.Event.author.publicName
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.remoteAddress
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.creationDate
+        description: The creation date-time of the audit record, as a timestamp.
+        type: Number
+      - contextPath: ConfluenceClout.Event.summary
+        description: Summary of the audit.
+        type: String
+      - contextPath: ConfluenceClout.Event.description
+        description: Description of the audit.
+        type: String
+      - contextPath: ConfluenceClout.Event.category
+        description: Category of the event.
+        type: String
+      - contextPath: ConfluenceClout.Event.sysAdmin
+        description: ''
+        type: Boolean
+      - contextPath: ConfluenceClout.Event.superAdmin
+        description: ''
+        type: Boolean
+      - contextPath: ConfluenceClout.Event.affectedObject.name
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.affectedObject.objectType
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.changedValues.name
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.changedValues.oldValue
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.changedValues.hiddenOldValue
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.changedValues.newValue
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.changedValues.hiddenNewValue
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.associatedObjects.name
+        description: ''
+        type: String
+      - contextPath: ConfluenceClout.Event.associatedObjects.objectType
+        description: ''
+        type: String
   dockerimage: demisto/python3:3.10.14.91134
   runonce: false
   script: '-'

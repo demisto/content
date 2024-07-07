@@ -984,32 +984,84 @@ def test_confluence_cloud_content_list_command_when_when_object_not_present(requ
 
 def test_fetch_events_with_last_index(mocker: MockerFixture):
     last_run = {'last_index': 10}
-    expected_start_index = last_run['last_index'] + 1
     limit = 5
-    expected_next_run = {'last_index': last_run.get('last_index') + limit}
 
+    expected_start_index = last_run['last_index'] + 1
+    expected_next_run = {'last_index': last_run.get('last_index') + limit}
     expected_events = collector_test_data['get-audit-records']['results'][:limit]
-    mock_client = mocker.patch.object(client, 'search_events', return_value={'results': expected_events})
+    response = {'results': expected_events, 'start': 11}
+
+    mock_client = mocker.patch.object(client, 'search_events', return_value=response)
     next_run, events = fetch_events(client, last_run, limit)
 
-    mock_client.assert_called_with(start_index=expected_start_index, limit=limit)
+    mock_client.assert_called_once_with(start_index=expected_start_index, limit=limit)
     assert next_run == expected_next_run
     assert events == expected_events
 
 
-# def test_fetch_events_without_last_index():
-#     client = MagicMock()
-#     last_run = {}
-#     limit = 5
-#
-#     expected_start_date = str(round((time.time() - 60) * 1000))
-#     expected_events = [{'id': 1}, {'id': 2}]
-#
-#     client.search_events.return_value = {'results': expected_events}
-# 
-#     next_run, events = fetch_events(client, last_run, limit)
-#
-#     assert next_run == {'last_index': len(expected_events)}
-#     assert events == expected_events
-#
-#     client.search_events.assert_called_once_with(start_date=expected_start_date, limit=limit)
+def test_fetch_events_without_last_index(mocker: MockerFixture):
+    last_run = {}
+    limit = 5
+
+    expected_events = collector_test_data['get-audit-records']['results'][:limit]
+    response = {'results': expected_events, 'start': 5}
+    expected_next_run = {'last_index': response['start'] + len(expected_events) - 1}
+
+    mock_client = mocker.patch.object(client, 'search_events', return_value=response)
+    next_run, events = fetch_events(client, last_run, limit)
+
+    mock_client.assert_called_once()
+    assert next_run == expected_next_run
+    assert events == expected_events
+
+
+def test_get_events_with_both_start_index_and_start_date(mocker):
+    mock_client = mocker.MagicMock(spec=Client)
+    args = {
+        'limit': '10',
+        'start': '5',
+        'start_date': '2021-01-01'
+    }
+
+    with pytest.raises(ValueError):
+        get_events(mock_client, args)
+
+
+def test_get_events_without_start_index_and_start_date(mocker):
+    mock_client = mocker.MagicMock(spec=Client)
+    args = {'limit': 10}
+    expected_events = [{'id': 1}, {'id': 2}]
+    mock_client.search_events.return_value = {'results': expected_events}
+
+    events, command_results = get_events(mock_client, args)
+
+    assert events == expected_events
+    assert isinstance(command_results, CommandResults)
+    mock_client.search_events.assert_called_once_with(limit=10, start_index=0)
+
+
+def test_get_events_with_start_index(mocker):
+    mock_client = mocker.MagicMock(spec=Client)
+    args = {'limit': 10, 'start': 5}
+    expected_events = [{'id': 6}, {'id': 7}]
+    mock_client.search_events.return_value = {'results': expected_events}
+
+    events, command_results = get_events(mock_client, args)
+
+    assert events == expected_events
+    assert isinstance(command_results, CommandResults)
+    mock_client.search_events.assert_called_once_with(limit=10, start_index=5)
+
+
+def test_get_events_with_start_date(mocker):
+    mock_client = mocker.MagicMock(spec=Client)
+    start_date = str(round((time.time() - 60) * 1000))
+    args = {'limit': 10, 'start_date': start_date}
+    expected_events = [{'id': 3}, {'id': 4}]
+    mock_client.search_events.return_value = {'results': expected_events}
+
+    events, command_results = get_events(mock_client, args)
+
+    assert events == expected_events
+    assert isinstance(command_results, CommandResults)
+    mock_client.search_events.assert_called_once_with(limit=10, start_date=start_date)

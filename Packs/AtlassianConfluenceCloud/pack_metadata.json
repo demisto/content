@@ -8,14 +8,16 @@
     "email": "",
     "created": "2021-08-16T11:16:19Z",
     "categories": [
-        "IT Services"
+        "IT Services",
+        "Analytics & SIEM"
     ],
     "tags": [],
     "useCases": [],
     "keywords": [
         "confluence",
         "confluence cloud",
-        "atlassian"
+        "atlassian",
+        "event collector"
     ],
     "marketplaces": [
         "xsoar",

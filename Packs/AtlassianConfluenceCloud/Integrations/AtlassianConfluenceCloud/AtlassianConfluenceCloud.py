@@ -1364,13 +1364,15 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
 
     if last_index:
         start_index = last_index + 1
-        events = client.search_events(start_index=start_index, limit=limit).get('results')
+        response = client.search_events(start_index=start_index, limit=limit)
+        events = response.get('results')
 
     else:
         start_date = str(round((time.time() - 60) * 1000))
-        events = client.search_events(start_date=start_date, limit=limit).get('results')
+        response = client.search_events(start_date=start_date, limit=limit)
+        events = response.get('results')
 
-    last_index += len(events)
+    last_index = response.get('start') + len(events) - 1
     demisto.debug(f'Fetched event with id: {last_index}.')
 
     # Save the next_run as a dict with the last_fetch key to be stored
@@ -1380,7 +1382,7 @@ def fetch_events(client: Client, last_run: dict[str, Any], limit: int) -> tuple[
 
 
 def get_events(client: Client, args: dict) -> tuple[list[Dict], CommandResults]:
-    limit = args.get('limit', 50)
+    limit = int(args.get('limit', 50))
     start_index = args.get('start')
     start_date = args.get('start_date')
     if start_index and start_date:
