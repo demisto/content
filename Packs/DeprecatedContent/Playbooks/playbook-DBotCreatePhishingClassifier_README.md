@@ -46,4 +46,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![DBotCreatePhishingClassifier](../../doc_files/DBot_Create_Phishing_Classifier.png)
+![DBotCreatePhishingClassifier](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier.png)

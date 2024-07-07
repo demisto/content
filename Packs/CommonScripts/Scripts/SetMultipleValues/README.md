@@ -30,5 +30,5 @@ There are no outputs for this script.
 ```
 
 ### Context Result
-![Example Output](../../doc_files/88423600-dd54b900-cda0-11ea-89f4-83981367659a.png)
+![Example Output](https://user-images.githubusercontent.com/25312145/88423600-dd54b900-cda0-11ea-89f4-83981367659a.png)
 

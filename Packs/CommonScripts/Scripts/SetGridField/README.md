@@ -59,7 +59,7 @@ Assume the following:
 ```
 
 2. Grid: \
-![Grid](../../doc_files/grid.png)
+![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid.png)
 
 Considering the following cases:
 1. Key value to Grid:
@@ -69,7 +69,7 @@ keys="Received,Thread-Index,X-MS-Exchange-Organization-AuthSource,Accept-Languag
 ```
 
 Grid after update: \
-![Grid](../../doc_files/grid_key_value_update.png)
+![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_key_value_update.png)
  
 2. List of item properties to Grid:
 ```shell script
@@ -78,7 +78,7 @@ keys="name, value"
 ```
 
 Grid after update: \
-![Grid](../../doc_files/grid_list_update.png) 
+![Grid](https://github.com/demisto/content/raw/4510eafaf6cfeb48a42d9032dd0e71200b288ad5/Packs/Legacy/Scripts/SetGridField/doc_files/grid_list_update.png) 
 
 Entry Context:
 ```json
@@ -117,7 +117,7 @@ Entry Context:
 ```script
 !SetGridField_CopyForInvestigation columns=`User id,Risk level,Score,Reasons` grid_id=xdrriskyusers context_path=`PaloAltoNetworksXDR.RiskyUser` keys=`id,risk_level,score,reasons` keys_from_nested=description,points,severity
 ```
-![nested_dict_grid](../../doc_files/nested_dict_grid.png)
+![nested_dict_grid](https://github.com/demisto/content/raw/a1fbdccd9bf97d8d27f6b5bf1d08802a7bdcf475/Packs/CommonScripts/Scripts/SetGridField/doc_files/nested_dict_grid.png)
 
 ## Troubleshooting
 

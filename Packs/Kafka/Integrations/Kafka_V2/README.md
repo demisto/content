@@ -78,9 +78,9 @@
 <h5>Command Example</h5>
 <p><code>!kafka-print-topics</code></p>
 <h5>Context Example</h5>
-<p><img src="../../doc_files/Kafka_V2_mceclip2.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip2.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/Kafka_V2_mceclip3.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip3.png"></p>
 <h3>2. Publish a message to Kafka</h3>
 <hr>
 <p>Publishes a message to Kafka. </p>
@@ -120,7 +120,7 @@
 <p><code>!kafka-publish-msg topic=test value="test message"</code></p>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/Kafka_V2_mceclip4.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip4.png"></p>
 <h3>3. Consume a single Kafka message</h3>
 <hr>
 <p>Consumes a single Kafka message.</p>
@@ -186,9 +186,9 @@
 <h5>Command Example</h5>
 <p><code>!kafka-consume-msg topic=test offset=latest</code></p>
 <h5>Context Example</h5>
-<p><img src="../../doc_files/Kafka_V2_mceclip5.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip5.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/Kafka_V2_mceclip6.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip6.png"></p>
 <h3>4. Print all partitions for a topic</h3>
 <hr>
 <p>Prints all partitions for a topic.</p>
@@ -238,6 +238,6 @@
 <h5>Command Example</h5>
 <p><code>!kafka-fetch-partitions topic=test</code></p>
 <h5>Context Example</h5>
-<p><img src="../../doc_files/Kafka_V2_mceclip7.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip7.png"></p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/Kafka_V2_mceclip8.png"></p>
+<p><img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip8.png"></p>

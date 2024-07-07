@@ -100,7 +100,7 @@
 <pre>!confluence-create-space name=test description="testing space" key=TEST</pre>
 <h5>
 <a id="Human_Readable_Output_54"></a>Human Readable Output</h5>
-<p><img src="../../doc_files/61211686-eda37400-a708-11e9-89df-74f46428a2df.png" alt="image"></p>
+<p><img src="https://user-images.githubusercontent.com/37589583/61211686-eda37400-a708-11e9-89df-74f46428a2df.png" alt="image"></p>
 <h3 id="h_41991150-fafe-4e28-a884-5db88ef3d457">
 <a id="2_Create_content_for_a_space_58"></a>2. Create content for a space</h3>
 <hr>
@@ -181,7 +181,7 @@
 <pre>!confluence-create-content space=DemistoContent title="test confluence integration" type=page body=testing</pre>
 <h5>
 <a id="Human_Readable_Output_89"></a>Human Readable Output</h5>
-<p><img src="../../doc_files/61211959-8cc86b80-a709-11e9-9b02-38223f462487.png" alt="image"></p>
+<p><img src="https://user-images.githubusercontent.com/37589583/61211959-8cc86b80-a709-11e9-9b02-38223f462487.png" alt="image"></p>
 <h3 id="h_d0032205-b3b2-44a6-b00e-eebd5a6c81f0">
 <a id="3_Get_a_list_of_all_spaces_93"></a>3. Get a list of all spaces</h3>
 <hr>
@@ -252,7 +252,7 @@
 <pre>!confluence-list-spaces</pre>
 <h5>
 <a id="Human_Readable_Output_122"></a>Human Readable Output</h5>
-<p><img src="../../doc_files/61212165-1a0bc000-a70a-11e9-8f93-15073bb4850f.png" alt="image"></p>
+<p><img src="https://user-images.githubusercontent.com/37589583/61212165-1a0bc000-a70a-11e9-8f93-15073bb4850f.png" alt="image"></p>
 <h3 id="h_8eb3996f-7730-4a27-a962-6320cf366bd8">
 <a id="4_Get_content_for_a_space_126"></a>4. Get content for a space</h3>
 <hr>
@@ -328,7 +328,7 @@
 <pre>!confluence-get-content key=DemistoContent title=“test confluence integration”</pre>
 <h5>
 <a id="Human_Readable_Output_154"></a>Human Readable Output</h5>
-<p><img src="../../doc_files/61212224-46bfd780-a70a-11e9-87da-e50a5179e2fe.png" alt="image"></p>
+<p><img src="https://user-images.githubusercontent.com/37589583/61212224-46bfd780-a70a-11e9-87da-e50a5179e2fe.png" alt="image"></p>
 <h3 id="h_e517036b-4104-4ed3-9bdd-53fb0876aa10">
 <a id="5_Delete_content_157"></a>5. Delete content</h3>
 <hr>
@@ -384,7 +384,7 @@
 <pre>!confluence-delete-content id=172723162</pre>
 <h5>
 <a id="Human_Readable_Output_181"></a>Human Readable Output</h5>
-<p><img src="../../doc_files/61212428-ed0bdd00-a70a-11e9-9447-b4e11dd66260.png" alt="image"></p>
+<p><img src="https://user-images.githubusercontent.com/37589583/61212428-ed0bdd00-a70a-11e9-9447-b4e11dd66260.png" alt="image"></p>
 <h3 id="h_8037dac0-f498-40e0-9b2b-25b7664d0692">
 <a id="6_Update_overwrite_existing_content_185"></a>6. Update (overwrite) existing content</h3>
 <hr>
@@ -475,7 +475,7 @@
 <pre>!confluence-update-content type=page pageid=172723162 currentversion=2 space=DemistoContent title="test confluence integration" body="new body"</pre>
 <h5>
 <a id="Human_Readable_Output_216"></a>Human Readable Output</h5>
-<p><img src="../../doc_files/61212301-8686bf00-a70a-11e9-9aac-7c2d4698c3bb.png" alt="image"></p>
+<p><img src="https://user-images.githubusercontent.com/37589583/61212301-8686bf00-a70a-11e9-9aac-7c2d4698c3bb.png" alt="image"></p>
 <h3 id="h_7cf7ae25-f72d-449b-b478-439e6323b9c8">
 <a id="7_Run_a_CQL_query_220"></a>7. Run a CQL query</h3>
 <hr>
@@ -561,4 +561,4 @@
 <pre>!confluence-search-content cql="title=\"test confluence integration\""</pre>
 <h5>
 <a id="Human_Readable_Output_250"></a>Human Readable Output</h5>
-<p><img src="../../doc_files/61212390-cf3e7800-a70a-11e9-90db-3f1a72c77d06.png" alt="image"></p>
+<p><img src="https://user-images.githubusercontent.com/37589583/61212390-cf3e7800-a70a-11e9-90db-3f1a72c77d06.png" alt="image"></p>

@@ -47,4 +47,4 @@ This playbook does not use any scripts.
 There are no outputs for this playbook.
 
 ## Playbook Image
-![Playbook Image](../../doc_files/PCR_-_GCP_VPC_Network_Firewall_Misconfig.png)
+![Playbook Image](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Firewall_Misconfig.png)

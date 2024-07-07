@@ -39,5 +39,5 @@ This playbook does not use any commands.
 ## Playbook Image
 ---
 <!-- disable-secrets-detection-start -->
-![Search_Endpoints_By_Hash_Generic](../../doc_files/Search_Endpoints_By_Hash_Generic.png)
+![Search_Endpoints_By_Hash_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_Generic.png)
 <!-- disable-secrets-detection-end -->

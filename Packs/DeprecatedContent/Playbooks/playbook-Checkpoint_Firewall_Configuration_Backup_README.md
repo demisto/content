@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Checkpoint_Firewall_Configuration_Backup](../../doc_files/Checkpoint_Firewall_Configuration_Backup.png)
+![Checkpoint_Firewall_Configuration_Backup](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Checkpoint_Firewall_Configuration_Backup.png)

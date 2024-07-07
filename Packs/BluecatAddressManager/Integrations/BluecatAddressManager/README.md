@@ -649,4 +649,4 @@
 <pre>  !bluecat-am-get-range-by-ip ip=10.0.0.11
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/62834322-13159600-bc53-11e9-9fc4-25b30714114b.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/62834322-13159600-bc53-11e9-9fc4-25b30714114b.png" alt="Screen Shot 2019-08-08 at 15 44 51"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/62834322-13159600-bc53-11e9-9fc4-25b30714114b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/62834322-13159600-bc53-11e9-9fc4-25b30714114b.png" alt="Screen Shot 2019-08-08 at 15 44 51"></a></p>

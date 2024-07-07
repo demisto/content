@@ -111,7 +111,7 @@
 <h5>Context Example</h5>
 <p>Domain:{} 2 items<br> ContentCategories:News/Media<br> Name:cnn.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915576-2665bf80-cfb6-11e8-97df-d16a5f63022a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915576-2665bf80-cfb6-11e8-97df-d16a5f63022a.png" alt="1 investigate-umbrella-domain-categorization" width="752" height="261"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915576-2665bf80-cfb6-11e8-97df-d16a5f63022a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915576-2665bf80-cfb6-11e8-97df-d16a5f63022a.png" alt="1 investigate-umbrella-domain-categorization" width="752" height="261"></a></p>
 <h3 id="h_12059469238361539669280611">2. Get co-occurences for a domain</h3>
 <hr>
 <p>Gets a list of related domains and returns a list of co-occurences for the specified domain. A co-occurrence is when two or more domains are being accessed by the same users within a short time frame. Co-occurrence are not necessarily negative. Legitimate sites co-occur with each other as a part of normal web activity. However, unusual or suspicious co-occurence can provide additional information regarding attacks.</p>
@@ -169,7 +169,7 @@
 <h5>Context Example</h5>
 <p>Domain:{} 2 items<br> CoOccurrences:[] 1 item<br> 0:{} 2 items<br> Name:walla.co.il<br> Score:1<br> Name:walla.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915591-4f865000-cfb6-11e8-8996-d7a3a69d1123.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915591-4f865000-cfb6-11e8-8996-d7a3a69d1123.png" alt="2 investigate-umbrella-domain-co-occurrences" width="750" height="225"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915591-4f865000-cfb6-11e8-8996-d7a3a69d1123.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915591-4f865000-cfb6-11e8-8996-d7a3a69d1123.png" alt="2 investigate-umbrella-domain-co-occurrences" width="750" height="225"></a></p>
 <h3 id="h_34403715040351539671521979">3. Get a list of domain names requested the same time as a specified domain</h3>
 <hr>
 <p>Returns a list of domain names that are frequently seen requested around the same time  as the specified domain name (up to 60 seconds before or after). The returned domain names are ones that are not frequently associated with other domain names.</p>
@@ -226,7 +226,7 @@
 <h5>Context Example</h5>
 <p>Domain:{} 2 items<br> Name:walla.com<br> Related:[] 9 items<br> 0:{} 2 items<br> Name:c3s2.iphmx.com<br> Score:6<br> 1:{} 2 items<br> Name:google.co.ma<br> Score:6<br> 2:{} 2 items<br> Name:email.footsmart.com<br> Score:5<br> 3:{} 2 items<br> Name:link.expediamail.com<br> Score:4<br> 4:{} 2 items<br> Name:cdn.lemediavault.com<br> Score:4<br> 5:{} 2 items<br> Name:click.royalcaribbeanmarketing.com<br> Score:3<br> 6:{} 2 items<br> Name:e2.overtons.com<br> Score:3<br> 7:{} 2 items<br> Name:link.trustpilot.com<br> Score:3<br> 8:{} 2 items<br> Name:tr.subscribermail.com<br> Score:3</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915640-aa1fac00-cfb6-11e8-8add-fceff77d5063.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915640-aa1fac00-cfb6-11e8-8add-fceff77d5063.png" alt="3 investigate-umbrella-domain-related" width="751" height="419"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915640-aa1fac00-cfb6-11e8-8add-fceff77d5063.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915640-aa1fac00-cfb6-11e8-8add-fceff77d5063.png" alt="3 investigate-umbrella-domain-related" width="751" height="419"></a></p>
 <h3 id="h_12028812242331539672611449">4. Get domain security data</h3>
 <hr>
 <p>This contains multiple scores or security features, each of which can be used to determine relevant datapoints to build insight on the reputation or security risk posed by the site. For more security information about this specific domain, see the Cisco Umbrella documentation.</p>
@@ -338,7 +338,7 @@
 <h5>Context Example</h5>
 <p>Domain:{} 2 items<br> Name:cnn.com<br> Security:{} 13 items<br> PrefixScore:-0.008968782766875304<br> Geoscore:0<br> Perplexity:0.13991232622025684<br> Securerank:86.6441456065165<br> Entropy:0.9182958340544894<br> AttackName:<br> ThreatType:<br> Popularity:100<br> ASNScore:-0.009098667373339567<br> RIPScore:0<br> Pagerank:40.99643<br> KolmogorovSmirnovTest:0<br> DGA:0</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915645-d2a7a600-cfb6-11e8-97a6-839482fe5093.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915645-d2a7a600-cfb6-11e8-97a6-839482fe5093.png" alt="5 investigate-umbrella-domain-security" width="750" height="397"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915645-d2a7a600-cfb6-11e8-97a6-839482fe5093.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915645-d2a7a600-cfb6-11e8-97a6-839482fe5093.png" alt="5 investigate-umbrella-domain-security" width="750" height="397"></a></p>
 <h3 id="h_68120690844301539672675764">5. Query the DNS database for domains</h3>
 <hr>
 <p>The DNS database can be used to query the history that Umbrella has seen for a given domain. The most common use case is to obtain the RRs (Resource Record) history for a given domain, passing in the record query type as a parameter, to help build intelligence around an domain.</p>
@@ -479,7 +479,7 @@
 <h5>Context Example</h5>
 <p>Domain:{} 2 items<br> DNSHistory:{} 26 items<br> Prefixes:[] 1 item<br> 0:151.101.0.0<br> FfCandidate:false<br> NonRoutable:false<br> GeoDistanceSum:0<br> Ip:151.101.1.67<br> TtlsMin:60<br> DivRips:0.25<br> GeoDistanceMean:0<br> TtlsMean:60<br> Cname:false<br> PrefixesCount:1<br> RipsStability:1<br> CountryCodes:[] 1 item<br> 0:US<br> TtlsMedian:60<br> LocationsCount:1<br> BaseDomain:cnn.com<br> Asns:[] 1 item<br> 0:54113<br> AsnsCount:1<br> MailExchanger:true<br> TtlsStddev:0<br> CountryCount:1<br> IsSubdomain:false<br> Rips:4<br> TtlsMax:60<br> Locations:[] 1 item<br> 0:{} 2 items<br> lat:37.76969909667969<br> lon:-122.39329528808594<br> Age:92<br> Name:cnn.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915669-2dd99880-cfb7-11e8-9a99-9a1afef99b5a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915669-2dd99880-cfb7-11e8-9a99-9a1afef99b5a.png" alt="6 investigate-umbrella-domain-dns-history" width="751" height="602"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915669-2dd99880-cfb7-11e8-9a99-9a1afef99b5a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915669-2dd99880-cfb7-11e8-9a99-9a1afef99b5a.png" alt="6 investigate-umbrella-domain-dns-history" width="751" height="602"></a></p>
 <h3 id="h_36010770446261539672842125">6. Query the DNS database for IPs</h3>
 <hr>
 <p>The DNS database can be used to query the history that Umbrella has seen for a given IP address. The most common use case is to obtain the DNS Resource Record (RR) history for a given IP, passing in the record query type as a parameter, to help build intelligence around an IP or a range of IPs. The information provided is from within the last 90 days.</p>
@@ -580,7 +580,7 @@
 <h5>Context Example</h5>
 <p>IP:{} 2 items<br> Address:1.2.3.99<br> DNSHistory:{} 2 items<br> Features:{} 9 items<br> DivLd21:1<br> DivLd22:1<br> DivLd2:1<br> DivLd3:1<br> RrCount:2<br> Ld3Count:2<br> Ld2Count:2<br> Ld22Count:2<br> Ld21Count:2<br> RRS:[] 2 items<br> 0:{} 5 items<br> Class:IN<br> Name:1.2.3.99<br> RR:dnstest-099.brightsignnetwork.com.<br> TTL:1800<br> Type:A<br> 1:{} 5 items<br> Class:IN<br> Name:1.2.3.99<br> RR:jp.rogers.com.<br> TTL:86400<br> Type:A</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915673-4649b300-cfb7-11e8-9ae2-0c7b8916a496.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915673-4649b300-cfb7-11e8-9ae2-0c7b8916a496.png" alt="7 investigate-umbrella-ip-dns-history" width="751" height="421"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915673-4649b300-cfb7-11e8-9ae2-0c7b8916a496.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915673-4649b300-cfb7-11e8-9ae2-0c7b8916a496.png" alt="7 investigate-umbrella-ip-dns-history" width="751" height="421"></a></p>
 <h3 id="h_1511178348211539673078668">7. Get malicious domains associated with an IP address</h3>
 <hr>
 <p>Determines whether the specified IP address has any known malicious domains associated with it. The domains that display when using this endpoint are those that currently exist in the Umbrella block list. This endpoint will return an array with a single domain name for each domain associated with the IP, along with an ID number, which you can ignore.</p>
@@ -649,7 +649,7 @@
 <h5>Context Example</h5>
 <p>Domain:{} 2 items<br> Malicious:{} 2 items<br> Description:For IP 1.2.3.4<br> Vendor:Cisco Umbrella<br> Name:summaryorder-qpc.serveftp.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915683-709b7080-cfb7-11e8-99c2-7824a6a4dde1.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915683-709b7080-cfb7-11e8-99c2-7824a6a4dde1.png" alt="8 investigate-umbrella-ip-malicious-domains" width="747" height="137"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915683-709b7080-cfb7-11e8-99c2-7824a6a4dde1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915683-709b7080-cfb7-11e8-99c2-7824a6a4dde1.png" alt="8 investigate-umbrella-ip-malicious-domains" width="747" height="137"></a></p>
 <h3 id="h_89573474650151539674030486">8. Get a list of domains that match a regular expression (regex)</h3>
 <hr>
 <p>Returns a list of domains that match a a regular expression. You can use this for domain squatting. The pattern search functionality in Investigate uses regular expressions (regex) to search against the Investigate database. For more information on regex, see online tools, such as <a href="http://regexr.com/" rel="nofollow">http://regexr.com</a>.</p>
@@ -712,7 +712,7 @@
 <h5>Context Example</h5>
 <p>Domain:{} 4 items<br> FirstSeen:1535363700000<br> FirstSeenISO:2018-08-27T09:55:00.000Z<br> Name:googlemail.top-office.com<br> SecurityCategories:null</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915760-b1e05000-cfb8-11e8-918b-eac0ed61af53.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915760-b1e05000-cfb8-11e8-918b-eac0ed61af53.png" alt="9 investigate-umbrella-domain-search" width="752" height="313"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915760-b1e05000-cfb8-11e8-918b-eac0ed61af53.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915760-b1e05000-cfb8-11e8-918b-eac0ed61af53.png" alt="9 investigate-umbrella-domain-search" width="752" height="313"></a></p>
 <h3 id="h_51225163252081539674588524">9. Get the reputation for a domain</h3>
 <hr>
 <p>Get Domain Reputation info using Cisco Umbrella Investigate.</p>
@@ -881,7 +881,7 @@
 <h5>Context Example</h5>
 <p>DBotScore:{} 4 items<br> Indicator:cnn.com<br> Score:1<br> Type:Domain<br> Vendor:Cisco Umbrella<br> Domain:{} 2 items<br> Name:cnn.com<br> Umbrella:{} 5 items<br> ContentCategories:[] 1 item<br> 0:News/Media<br> FirstQueriedTime:1993-09-22<br> MalwareCategories:[] 0 items<br> RiskScore:1<br> SecureRank:86.5019890432578</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915875-e05f2a80-cfba-11e8-949a-4b76b7528cab.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915875-e05f2a80-cfba-11e8-949a-4b76b7528cab.png" alt="image" width="750" height="332"></a><br> <a href="https://user-images.githubusercontent.com/12241410/46915878-e9e89280-cfba-11e8-8eaf-24e1569f8d0d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915878-e9e89280-cfba-11e8-8eaf-24e1569f8d0d.png" alt="image" width="751" height="203"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915875-e05f2a80-cfba-11e8-949a-4b76b7528cab.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915875-e05f2a80-cfba-11e8-949a-4b76b7528cab.png" alt="image" width="750" height="332"></a><br> <a href="https://user-images.githubusercontent.com/12241410/46915878-e9e89280-cfba-11e8-8eaf-24e1569f8d0d.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915878-e9e89280-cfba-11e8-8eaf-24e1569f8d0d.png" alt="image" width="751" height="203"></a></p>
 <h3 id="h_94733327855831539678097346">10. Get a list of domain names requested the same time as a specified domain and a list of co-occurences</h3>
 <hr>
 <p>Returns a list of domain names that are frequently seen requested around the same time  as the specified domain name (up to 60 seconds before or after), and a list of co-occurences.</p>
@@ -958,7 +958,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 2 items<br> CoOccurences:{} 2 items<br> Data:[] 3 items<br> 0:{} 2 items<br> Name:rgmkt.net<br> Score:0.9783944034610161<br> 1:{} 2 items<br> Name:ns43.domaincontrol.com<br> Score:0.013178370929884454<br> 2:{} 2 items<br> Name:ns44.domaincontrol.com<br> Score:0.008427225609099349<br> Domain:walla.com<br> RelatedDomains:{} 2 items<br> Data:[] 2 items<br> 0:{} 2 items<br> Name:c3s2.iphmx.com<br> Score:4<br> 1:{} 2 items<br> Name:rgmkt.net<br> Score:3<br> Domain:walla.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915887-17354080-cfbb-11e8-9b5e-7a019339293b.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915887-17354080-cfbb-11e8-9b5e-7a019339293b.png" alt="image" width="750" height="504"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915887-17354080-cfbb-11e8-9b5e-7a019339293b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915887-17354080-cfbb-11e8-9b5e-7a019339293b.png" alt="image" width="750" height="504"></a></p>
 <h3 id="h_37604647659561539678104926">11. List all classifiers for a domain</h3>
 <hr>
 <p>List all the classifiers used for a particular domain to assign a particular security categorization or threat type (indicators of compromise).</p>
@@ -1020,7 +1020,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> DomainClassifiers:{} 2 items<br> Data:{} 3 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> SecurityCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Domain:cosmos.furnipict.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46915906-506db080-cfbb-11e8-9be4-8cae18d2de6a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46915906-506db080-cfbb-11e8-9be4-8cae18d2de6a.png" alt="image" width="750" height="260"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46915906-506db080-cfbb-11e8-9be4-8cae18d2de6a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46915906-506db080-cfbb-11e8-9be4-8cae18d2de6a.png" alt="image" width="750" height="260"></a></p>
 <h3 id="h_10552279861461539678186711">12. Get the number of DNS queries for a domain</h3>
 <hr>
 <p>Returns the number of DNS queries made per hour to the specified domain by users of Umbrella's recursive DNS servers.</p>
@@ -1102,7 +1102,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> QueryVolume:{} 2 items<br> Data:{} 3 items<br> QueriesInfo:[] 7 items<br> 0:{} 2 items<br> Queries:3021<br> QueryHour:2018-10-14T06:00:00<br> 1:{} 2 items<br> Queries:2924<br> QueryHour:2018-10-14T07:00:00<br> 2:{} 2 items<br> Queries:3086<br> QueryHour:2018-10-14T08:00:00<br> 3:{} 2 items<br> Queries:3189<br> QueryHour:2018-10-14T09:00:00<br> 4:{} 2 items<br> Queries:3068<br> QueryHour:2018-10-14T10:00:00<br> 5:{} 2 items<br> Queries:0<br> QueryHour:2018-10-14T11:00:00<br> 6:{} 2 items<br> Queries:0<br> QueryHour:2018-10-14T12:00:00<br> StartDate:2018-10-14T06:00:00<br> StopDate:2018-10-14T12:00:00<br> Domain:walla.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916493-28367f80-cfc4-11e8-83fb-e40dff0b3f07.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46916493-28367f80-cfc4-11e8-83fb-e40dff0b3f07.png" alt="image" width="750" height="520"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46916493-28367f80-cfc4-11e8-83fb-e40dff0b3f07.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916493-28367f80-cfc4-11e8-83fb-e40dff0b3f07.png" alt="image" width="750" height="520"></a></p>
 <h3 id="h_98718850465151539678482169">13. Get domain security data</h3>
 <hr>
 <p>The security information API method contains multiple scores or security features, which can act as relevant datapoints to build insight on the reputation.</p>
@@ -1224,7 +1224,7 @@
 <h5>Context Example</h5>
 <p>DBotScore:{} 4 items<br> Indicator:cnn.com<br> Score:1<br> Type:Domain<br> Vendor:Cisco Umbrella<br> Umbrella:{} 1 item<br> DomainDetails:{} 2 items<br> Data:{} 13 items<br> PrefixScore:-0.01103978469603726<br> Geoscore:0<br> Perplexity:0.13991232622025684<br> Securerank:86.5019890432578<br> Entropy:0.9182958340544894<br> AttackName:<br> ThreatType:<br> Popularity:100<br> ASNScore:-0.033617132988484844<br> RIPScore:0<br> Pagerank:39.26072<br> KolmogorovSmirnovTest:0<br> DGA:0<br> Domain:cnn.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916516-7b103700-cfc4-11e8-9a66-9582910c62a4.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46916516-7b103700-cfc4-11e8-9a66-9582910c62a4.png" alt="image" width="751" height="293"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46916516-7b103700-cfc4-11e8-9a66-9582910c62a4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916516-7b103700-cfc4-11e8-9a66-9582910c62a4.png" alt="image" width="751" height="293"></a></p>
 <h3 id="h_93157940570611539678559957">14. Get domains associated with registrar email addresses</h3>
 <hr>
 <p>Returns the domains associated with the email addresses of the registrar that are looked up.</p>
@@ -1321,7 +1321,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> AssociatedDomains:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Domains:[] 2 items<br> 0:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:true<br> Name:careersgoogle.com<br> Security Categories:[] 0 items<br> 1:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:true<br> Name:chronweb.com<br> Security Categories:[] 0 items<br> MoreDataAvailable:false<br> ResultLimit:500<br> TotalResults:2<br> Email:<a href="mailto:dns@google.com">dns@google.com</a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916546-be6aa580-cfc4-11e8-972e-6f65297b4dda.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46916546-be6aa580-cfc4-11e8-972e-6f65297b4dda.png" alt="image" width="753" height="267"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46916546-be6aa580-cfc4-11e8-972e-6f65297b4dda.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916546-be6aa580-cfc4-11e8-972e-6f65297b4dda.png" alt="image" width="753" height="267"></a></p>
 <h3 id="h_41869273074261539678731403">15. Get all domains for a nameserver</h3>
 <hr>
 <p>Get all domains registered by a specified nameserver. In a query, you can search against a single nameserver or multiple nameservers.</p>
@@ -1418,7 +1418,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> AssociatedDomains:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Domains:[] 2 items<br> 0:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:false<br> Name:googlerightsflow.net<br> Security Categories:[] 0 items<br> 1:{} 4 items<br> Content Categories:[] 0 items<br> Is Current:true<br> Name:mycloudaudit.net<br> Security Categories:[] 0 items<br> MoreDataAvailable:true<br> ResultLimit:2<br> TotalResults:2<br> Nameserver:ns1.google.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916586-5cf70680-cfc5-11e8-967f-5f62ad9f084f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46916586-5cf70680-cfc5-11e8-967f-5f62ad9f084f.png" alt="image" width="750" height="271"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46916586-5cf70680-cfc5-11e8-967f-5f62ad9f084f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916586-5cf70680-cfc5-11e8-967f-5f62ad9f084f.png" alt="image" width="750" height="271"></a></p>
 <h3 id="h_17814194977891539678785713">16. Get WHOIS data for a domain</h3>
 <hr>
 <p>Return a standard WHOIS response record for a single domain with all available WHOIS data returned. </p>
@@ -1576,7 +1576,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> WHOIS:{} 2 items<br> Data:{} 10 items<br> Nameservers:[] 4 items<br> 0:ns-1086.awsdns-07.org<br> 1:ns-1630.awsdns-11.co.uk<br> 2:ns-47.awsdns-05.com<br> 3:ns-576.awsdns-08.net<br> IANAID:299<br> Created:1993-09-22<br> Name:cnn.com<br> LastRetrieved:1537481654499<br> Expires:2026-09-21<br> Emails:[] 2 items<br> 0:<a href="mailto:example.gmail.com">example.gmail.com</a><br> 1:<a href="mailto:example.gmail.com">example.gmail.com</a><br> RegistrarName:CSC CORPORATE DOMAINS, INC.<br> Updated:2018-04-10<br> LastObserved:2018-09-20 16:53:49.000 UTC<br> Domain:cnn.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" alt="image" width="751" height="506"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png" alt="image" width="751" height="506"></a></p>
 <h3 id="h_3979943983261539679228550">17. Get malicious domains associated with an IP address</h3>
 <hr>
 <p>Returns a list of malicious domains associated with the specified IP address.</p>
@@ -1643,7 +1643,7 @@
 <h5>Context Example</h5>
 <p>DBotScore:[] 52 items<br> 0:{} 4 items<br> Indicator:bo1aa21.com<br> Score:3<br> Type:Domain<br> Vendor:Cisco Umbrella<br> 1:{} 4 items<br> Indicator:z015.mypsx.net<br> Score:3<br> Type:Domain<br> Vendor:Cisco Umbrella<br> Domain:[] 52 items<br> 0:{} 2 items<br> Malicious:{} 2 items<br> Description:For IP 8.8.8.8<br> Vendor:Cisco Umbrella<br> Name:bo1aa21.com<br> 1:{} 2 items<br> Malicious:{} 2 items<br> Description:For IP 8.8.8.8<br> Vendor:Cisco Umbrella<br> Name:z015.mypsx.net<br> Umbrella:{} 1 item<br> MaliciousDomains:{} 2 items<br> Data:[] 52 items<br> 0:{} 3 items<br> ContentCategories:[] 0 items<br> MalwareCategories:[] 1 item<br> 0:Command and Control<br> Name:bo1aa21.com<br> 1:{} 3 items<br> ContentCategories:[] 1 item<br> 0:Infrastructure<br> MalwareCategories:[] 1 item<br> 0:Malware<br> Name:z015.mypsx.net</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46916774-c0823380-cfc7-11e8-9c81-8668e9470600.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46916774-c0823380-cfc7-11e8-9c81-8668e9470600.png" alt="image" width="750" height="507"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46916774-c0823380-cfc7-11e8-9c81-8668e9470600.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46916774-c0823380-cfc7-11e8-9c81-8668e9470600.png" alt="image" width="750" height="507"></a></p>
 <h3 id="h_27395371286851539680187187">18. Get a list of domains that match a regular expression (regex)</h3>
 <hr>
 <p>Get a list of domains that match a regular expression (regex).</p>
@@ -1725,7 +1725,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> DomainSearch:{} 3 items<br> Data:[] 2 items<br> 0:{} 2 items<br> FirstSeen:1539042240000<br> Name:googleapis.com.nauticaintegral.com<br> 1:{} 2 items<br> FirstSeen:1539244920000<br> Name:googleapis.com.sanpada.com<br> Expression:googleapis.*.com<br> TotalResults:2</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917196-b6166880-cfcc-11e8-8e3d-ccc9dd2583d1.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46917196-b6166880-cfcc-11e8-8e3d-ccc9dd2583d1.png" alt="image" width="750" height="471"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46917196-b6166880-cfcc-11e8-8e3d-ccc9dd2583d1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917196-b6166880-cfcc-11e8-8e3d-ccc9dd2583d1.png" alt="image" width="750" height="471"></a></p>
 <h3 id="h_67454363090421539680195481">19. Query when a domain was attributed to a security category or as a threat type</h3>
 <hr>
 <p>Shows when a domain was attributed to a particular security categorization or threat type (indicators of compromise).</p>
@@ -1792,7 +1792,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> Timeline:{} 2 items<br> Data:[] 4 items<br> 0:{} 4 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> MalwareCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Timestamp:2017-10-21T19:30:33<br> 1:{} 4 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> MalwareCategories:[] 2 items<br> 0:Dynamic DNS<br> 1:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Timestamp:2016-10-21T17:22:03<br> 2:{} 4 items<br> Attacks:[] 1 item<br> 0:Neutrino<br> MalwareCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 1 item<br> 0:Exploit Kit<br> Timestamp:2016-07-11T18:12:06<br> 3:{} 4 items<br> Attacks:[] 0 items<br> MalwareCategories:[] 0 items<br> ThreatTypes:[] 0 items<br> Timestamp:2016-07-09T03:49:08<br> Domain:cosmos.furnipict.com</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917220-0f7e9780-cfcd-11e8-8b5e-4252c6a93a7e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46917220-0f7e9780-cfcd-11e8-8b5e-4252c6a93a7e.png" alt="image" width="750" height="357"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46917220-0f7e9780-cfcd-11e8-8b5e-4252c6a93a7e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917220-0f7e9780-cfcd-11e8-8b5e-4252c6a93a7e.png" alt="image" width="750" height="357"></a></p>
 <h3 id="h_84751396693971539680297675">20. Query when an IP address was attributed to a security organization or as a threat type</h3>
 <hr>
 <p>Shows when an IP was attributed to a particular security categorization or threat type (indicators of compromise).</p>
@@ -1859,7 +1859,7 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> Timeline:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Attacks:[] 0 items<br> MalwareCategories:[] 0 items<br> ThreatTypes:[] 0 items<br> Timestamp:2018-05-31T20:48:59<br> IP:1.2.3.4</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917241-58cee700-cfcd-11e8-8d4b-91e9d49005f8.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46917241-58cee700-cfcd-11e8-8d4b-91e9d49005f8.png" alt="image" width="749" height="251"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46917241-58cee700-cfcd-11e8-8d4b-91e9d49005f8.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917241-58cee700-cfcd-11e8-8d4b-91e9d49005f8.png" alt="image" width="749" height="251"></a></p>
 <h3 id="h_79786501397501539680422818">21. Query when a URL was attributed to a security organization or as a threat type</h3>
 <hr>
 <p>Shows when a URL was attributed to a particular security categorization or threat type (indicators of compromise).</p>
@@ -1926,4 +1926,4 @@
 <h5>Context Example</h5>
 <p>Umbrella:{} 1 item<br> Timeline:{} 2 items<br> Data:[] 1 item<br> 0:{} 4 items<br> Attacks:[] 0 items<br> MalwareCategories:[] 1 item<br> 0:Malware<br> ThreatTypes:[] 0 items<br> Timestamp:2018-08-21T13:21:55<br> URL:httpx://gauttam.com/wp-includes/</p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/12241410/46917266-a64b5400-cfcd-11e8-9aaf-277c50fd8f02.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46917266-a64b5400-cfcd-11e8-9aaf-277c50fd8f02.png" alt="image" width="750" height="288"></a></p>
+<p><a href="https://user-images.githubusercontent.com/12241410/46917266-a64b5400-cfcd-11e8-9aaf-277c50fd8f02.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/12241410/46917266-a64b5400-cfcd-11e8-9aaf-277c50fd8f02.png" alt="image" width="750" height="288"></a></p>

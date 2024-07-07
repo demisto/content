@@ -56,4 +56,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Email_Address_Enrichment_Generic_v2](../../doc_files/Email_Address_Enrichment_Generic_v2.png)
+![Email_Address_Enrichment_Generic_v2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Email_Address_Enrichment_Generic_v2.png)

@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![FailedLogin_SlackV2](../../doc_files/Failed_Login_Playbook_Slack_v2.png)
+![FailedLogin_SlackV2](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Failed_Login_Playbook_Slack_v2.png)

@@ -251,4 +251,4 @@
 <hr>
 <h2>Troubleshooting</h2>
 <p> You might receive this error message if you try to suspend or reactivate a user who does not exist in the account.</p>
-<p><img src="../../doc_files/38675723-f709f718-3e58-11e8-9a01-3b186fddd772.png" width="821" height="128"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/38675723-f709f718-3e58-11e8-9a01-3b186fddd772.png" width="821" height="128"></p>

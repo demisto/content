@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![McAfee_ePO_Endpoint_Compliance_Playbook](../../doc_files/McAfee_ePO_Endpoint_Compliance_Playbook.png)
+![McAfee_ePO_Endpoint_Compliance_Playbook](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/McAfee_ePO_Endpoint_Compliance_Playbook.png)

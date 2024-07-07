@@ -72,9 +72,9 @@
 <h5>Command Example</h5>
 <pre>!smb-download file_path=/Shared/test.txt</pre>
 <h5>Context Output</h5>
-<p><img src="../../doc_files/48847906-59685380-edab-11e8-84ad-e3e012bc6c52.jpg" alt="playground - war room 2018-11-21 16-34-35"></p>
+<p><img src="https://user-images.githubusercontent.com/39116813/48847906-59685380-edab-11e8-84ad-e3e012bc6c52.jpg" alt="playground - war room 2018-11-21 16-34-35"></p>
 <h5>War Room Output</h5>
-<p><img src="../../doc_files/48847811-22923d80-edab-11e8-9bf0-211c4dfc9fef.jpg" width="751" height="265"></p>
+<p><img src="https://user-images.githubusercontent.com/39116813/48847811-22923d80-edab-11e8-9bf0-211c4dfc9fef.jpg" width="751" height="265"></p>
 <h3 id="h_89160909551542737819278">2. Upload a file</h3>
 <hr>
 <p>Uploads a file to an SMB server.</p>
@@ -125,4 +125,4 @@
 <p> </p>
 <h2>Troubleshooting</h2>
 <p>The following error might be due to an incorrect file path, or a permissions issue.</p>
-<p><img src="../../doc_files/48847948-769d2200-edab-11e8-944f-70f34f4130d6.jpg" alt="playground - war room 2018-11-21 16-35-18" width="755" height="110"></p>
+<p><img src="https://user-images.githubusercontent.com/39116813/48847948-769d2200-edab-11e8-944f-70f34f4130d6.jpg" alt="playground - war room 2018-11-21 16-35-18" width="755" height="110"></p>

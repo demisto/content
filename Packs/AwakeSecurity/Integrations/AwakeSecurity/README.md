@@ -179,7 +179,7 @@
 <h5>Command Example</h5>
 <p><code>!awake-query-devices startTime="2018-07-18T07:00:00Z" endTime="2018-07-18T07:30:00Z"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49085895-c96b5380-f25b-11e8-981f-49094d9f5995.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49085895-c96b5380-f25b-11e8-981f-49094d9f5995.png" alt="screen shot 2018-11-27 at 15 47 31"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49085895-c96b5380-f25b-11e8-981f-49094d9f5995.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49085895-c96b5380-f25b-11e8-981f-49094d9f5995.png" alt="screen shot 2018-11-27 at 15 47 31"></a></p>
 <h3 id="h_275281160801544465832555">2. Query activities</h3>
 <p>Query activities in Awake Security</p>
 <h5>Base Command</h5>
@@ -318,7 +318,7 @@
 <h5>Command Example</h5>
 <p><code>!awake-query-activities startTime="2018-07-01T00:00:00Z" endTime="2018-08-01T00:00:00Z" domainName="kck.st"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49085933-e7d14f00-f25b-11e8-9df3-b345ebba8400.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49085933-e7d14f00-f25b-11e8-9df3-b345ebba8400.png" alt="screen shot 2018-11-27 at 15 48 27"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49085933-e7d14f00-f25b-11e8-9df3-b345ebba8400.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49085933-e7d14f00-f25b-11e8-9df3-b345ebba8400.png" alt="screen shot 2018-11-27 at 15 48 27"></a></p>
 <h3 id="h_860964791541544465837899">3. Query domains</h3>
 <p>Query domains in Awake Security</p>
 <h5>Base Command</h5>
@@ -467,7 +467,7 @@
 <h5>Command Example</h5>
 <p><code>!awake-query-domains startTime="2018-07-18T07:00:00Z" endTime="2018-07-18T07:30:00Z"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49086057-47c7f580-f25c-11e8-8bec-053dc454cfcd.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49086057-47c7f580-f25c-11e8-8bec-053dc454cfcd.png" alt="screen shot 2018-11-27 at 15 51 07"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49086057-47c7f580-f25c-11e8-8bec-053dc454cfcd.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49086057-47c7f580-f25c-11e8-8bec-053dc454cfcd.png" alt="screen shot 2018-11-27 at 15 51 07"></a></p>
 <h3 id="h_8010832212271544465843116">4. Download a PCAP</h3>
 <p>Download a PCAP.</p>
 <h5>Base Command</h5>
@@ -586,7 +586,7 @@
 <h5>Command Example</h5>
 <p><code>!awake-pcap-download hostA="10.200.103.100" hostB="10.200.103.100" portA="67" portB="68"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49086088-5e6e4c80-f25c-11e8-8166-377e45e63fee.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49086088-5e6e4c80-f25c-11e8-8166-377e45e63fee.png" alt="screen shot 2018-11-27 at 15 51 46"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49086088-5e6e4c80-f25c-11e8-8166-377e45e63fee.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49086088-5e6e4c80-f25c-11e8-8166-377e45e63fee.png" alt="screen shot 2018-11-27 at 15 51 46"></a></p>
 <h3 id="h_9509238262991544465847677">5. Lookup and enrich a domain</h3>
 <p>Lookup and enrich a domain.</p>
 <h5>Base Command</h5>
@@ -735,7 +735,7 @@
 <h5>Command Example</h5>
 <p><code>!domain domain="adobesc.com"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49086142-7c3bb180-f25c-11e8-822b-61520fa109a9.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49086142-7c3bb180-f25c-11e8-822b-61520fa109a9.png" alt="screen shot 2018-11-27 at 15 52 31"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49086142-7c3bb180-f25c-11e8-822b-61520fa109a9.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49086142-7c3bb180-f25c-11e8-822b-61520fa109a9.png" alt="screen shot 2018-11-27 at 15 52 31"></a></p>
 <h3 id="h_762108223701544465852418">6. Lookup and enrich an IP address</h3>
 <p>Lookup and enrich an IP address.</p>
 <h5>Base Command</h5>
@@ -829,7 +829,7 @@
 <h5>Command Example</h5>
 <p><code>!ip ip="10.200.104.236"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49086196-970e2600-f25c-11e8-9817-0a7c9f674028.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49086196-970e2600-f25c-11e8-9817-0a7c9f674028.png" alt="screen shot 2018-11-27 at 15 53 19"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49086196-970e2600-f25c-11e8-9817-0a7c9f674028.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49086196-970e2600-f25c-11e8-9817-0a7c9f674028.png" alt="screen shot 2018-11-27 at 15 53 19"></a></p>
 <h3 id="h_6557446534401544465856852">7. Lookup and enrich and enrich an email address</h3>
 <p>Lookup and enrich an email address.</p>
 <h5>Base Command</h5>
@@ -968,7 +968,7 @@
 <h5>Command Example</h5>
 <p><code>!email email="rajguru2003@yahoo.com"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49086239-b311c780-f25c-11e8-8d39-b1ddabfeb019.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49086239-b311c780-f25c-11e8-8d39-b1ddabfeb019.png" alt="screen shot 2018-11-27 at 15 54 03"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49086239-b311c780-f25c-11e8-8d39-b1ddabfeb019.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49086239-b311c780-f25c-11e8-8d39-b1ddabfeb019.png" alt="screen shot 2018-11-27 at 15 54 03"></a></p>
 <h3 id="h_5008973985091544465861235">8. Lookup and enrich a device</h3>
 <p>Lookup and enrich a device.</p>
 <h5>Base Command</h5>
@@ -1207,4 +1207,4 @@
 <h5>Command Example</h5>
 <p><code>!device device="dae6720d-0588-d23b-c006-63cf1134537b"</code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37335599/49086270-cf156900-f25c-11e8-8bcf-3fcc02c17db6.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49086270-cf156900-f25c-11e8-8bcf-3fcc02c17db6.png" alt="screen shot 2018-11-27 at 15 54 03"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37335599/49086270-cf156900-f25c-11e8-8bcf-3fcc02c17db6.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37335599/49086270-cf156900-f25c-11e8-8bcf-3fcc02c17db6.png" alt="screen shot 2018-11-27 at 15 54 03"></a></p>

@@ -40,4 +40,4 @@ There are no outputs for this playbook.
 ## Playbook Image
 
 ---
-![Handle Darktrace Model Breach](../../doc_files/Handle_Darktrace_Model_Breach_Wed_Dec_02_2020.png)
+![Handle Darktrace Model Breach](https://raw.githubusercontent.com/katherinemcgauleydarktrace/DarktraceXSOARImages/master/Handle_Darktrace_Model_Breach_Wed_Dec_02_2020.png)

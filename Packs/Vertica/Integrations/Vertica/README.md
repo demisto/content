@@ -164,4 +164,4 @@ TableSchema:v_catalog
 TableSchemaId:8301</pre>
 </div>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/55957498-2eee3880-5c6f-11e9-9566-6e4dcfcea39b.png"></p>
+<p><img src="https://user-images.githubusercontent.com/12241410/55957498-2eee3880-5c6f-11e9-9566-6e4dcfcea39b.png"></p>

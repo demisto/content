@@ -38,4 +38,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Prisma Cloud Remediation - Azure AKS Misconfiguration](../../doc_files/PCR_-_Azure_AKS_Misconfig.png)
+![Prisma Cloud Remediation - Azure AKS Misconfiguration](https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_AKS_Misconfig.png)

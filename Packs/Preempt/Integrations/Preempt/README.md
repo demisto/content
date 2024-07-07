@@ -132,7 +132,7 @@
 </table>
 <p> </p>
 <h4>Human Readable Output</h4>
-<p><img src="../../doc_files/40068766-0c22749e-5872-11e8-89a2-2327746f3c40.png" width="648" height="250"></p>
+<p><img src="https://user-images.githubusercontent.com/37335599/40068766-0c22749e-5872-11e8-89a2-2327746f3c40.png" width="648" height="250"></p>
 <p> </p>
 <h4>Raw Output</h4>
 <pre>{  
@@ -274,7 +274,7 @@
 </table>
 <p> </p>
 <h4>Human Readable Output</h4>
-<p><img src="../../doc_files/40178946-a3180b50-59eb-11e8-84b8-0b2bbf220da1.png" width="665" height="286"></p>
+<p><img src="https://user-images.githubusercontent.com/37335599/40178946-a3180b50-59eb-11e8-84b8-0b2bbf220da1.png" width="665" height="286"></p>
 <p> </p>
 <h4>Raw Output</h4>
 <pre>{  

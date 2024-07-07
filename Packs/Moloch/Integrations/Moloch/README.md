@@ -276,7 +276,7 @@
 <p><code>!moloch_connections_csv date="-1"
 </code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44390423-e6dea200-a535-11e8-9c05-2758da9b568b.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44390423-e6dea200-a535-11e8-9c05-2758da9b568b.png" alt="screen shot 2018-08-21 at 11 32 06" width="749" height="77"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37589583/44390423-e6dea200-a535-11e8-9c05-2758da9b568b.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44390423-e6dea200-a535-11e8-9c05-2758da9b568b.png" alt="screen shot 2018-08-21 at 11 32 06" width="749" height="77"></a></p>
 <h3> </h3>
 <h3 id="h_5776399291731534849792667">3. Return a list of files</h3>
 <hr>
@@ -427,7 +427,7 @@
 <p><code>!moloch_sessions_json stopTime="2014/02/26 11:27:57"
 </code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44390893-1215c100-a537-11e8-9b55-387330049a5e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44390893-1215c100-a537-11e8-9b55-387330049a5e.png" alt="image" width="747" height="313"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37589583/44390893-1215c100-a537-11e8-9b55-387330049a5e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44390893-1215c100-a537-11e8-9b55-387330049a5e.png" alt="image" width="747" height="313"></a></p>
 <h3> </h3>
 <h3 id="h_8715631133381534849806087">5. Retrieve session data in CSV</h3>
 <hr>
@@ -509,7 +509,7 @@
 </code></p>
 <h5> </h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44390942-35d90700-a537-11e8-8599-91969b2e8afd.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44390942-35d90700-a537-11e8-8599-91969b2e8afd.png" alt="image" width="748" height="70"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37589583/44390942-35d90700-a537-11e8-8599-91969b2e8afd.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44390942-35d90700-a537-11e8-8599-91969b2e8afd.png" alt="image" width="748" height="70"></a></p>
 <h3> </h3>
 <h3 id="h_9944458354201534849812715">6. Retrieve raw session data in PCAP</h3>
 <hr>
@@ -597,7 +597,7 @@
 </code></p>
 <h5> </h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44391036-76388500-a537-11e8-93c7-746d9a00a6b1.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44391036-76388500-a537-11e8-93c7-746d9a00a6b1.png" alt="image" width="752" height="66"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37589583/44391036-76388500-a537-11e8-93c7-746d9a00a6b1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44391036-76388500-a537-11e8-93c7-746d9a00a6b1.png" alt="image" width="752" height="66"></a></p>
 <h3> </h3>
 <h3 id="h_6574066535021534849825151">7. Retrieve Spigraph data in JSON</h3>
 <hr>
@@ -665,7 +665,7 @@
 </code></p>
 <h5> </h5>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44391124-b435a900-a537-11e8-9ff7-8ed23760e886.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44391124-b435a900-a537-11e8-9ff7-8ed23760e886.png" alt="image" width="752" height="63"></a><br><a href="https://user-images.githubusercontent.com/37589583/44391182-d92a1c00-a537-11e8-835f-ad2df937caf3.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44391182-d92a1c00-a537-11e8-835f-ad2df937caf3.png" alt="image"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37589583/44391124-b435a900-a537-11e8-9ff7-8ed23760e886.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44391124-b435a900-a537-11e8-9ff7-8ed23760e886.png" alt="image" width="752" height="63"></a><br><a href="https://user-images.githubusercontent.com/37589583/44391182-d92a1c00-a537-11e8-835f-ad2df937caf3.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44391182-d92a1c00-a537-11e8-835f-ad2df937caf3.png" alt="image"></a></p>
 <h3> </h3>
 <h3 id="h_7273295005831534849837430">8. Retrieve Spiview data in JSON</h3>
 <hr>
@@ -726,7 +726,7 @@
 <p><code>!moloch_spiview_json startTime=1520542248 stopTime=1533329500
 </code></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/37589583/44391263-04147000-a538-11e8-92e1-da62736c0494.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/44391263-04147000-a538-11e8-92e1-da62736c0494.png" alt="image" width="751" height="129"></a></p>
+<p><a href="https://user-images.githubusercontent.com/37589583/44391263-04147000-a538-11e8-92e1-da62736c0494.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/37589583/44391263-04147000-a538-11e8-92e1-da62736c0494.png" alt="image" width="751" height="129"></a></p>
 <h3> </h3>
 <h3 id="h_5058951916611534849845170">9. Retrieve unique data for a field in JSON</h3>
 <hr>

@@ -1009,7 +1009,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/50224301-3929b580-03a6-11e9-8551-49b9a70f1ed2.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50224301-3929b580-03a6-11e9-8551-49b9a70f1ed2.png" alt="image"></a></p>
+<p><a href="https://user-images.githubusercontent.com/20818773/50224301-3929b580-03a6-11e9-8551-49b9a70f1ed2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/50224301-3929b580-03a6-11e9-8551-49b9a70f1ed2.png" alt="image"></a></p>
 <h3 id="h_6886909672131545286762811">15. Check the reputation of an IP address</h3>
 <hr>
 <p>Checks the reputation of an IP address in TruSTAR.</p>
@@ -1128,7 +1128,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/50224462-a9d0d200-03a6-11e9-988a-2ac641052602.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50224462-a9d0d200-03a6-11e9-988a-2ac641052602.png" alt="image"></a></p>
+<p><a href="https://user-images.githubusercontent.com/20818773/50224462-a9d0d200-03a6-11e9-988a-2ac641052602.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/50224462-a9d0d200-03a6-11e9-988a-2ac641052602.png" alt="image"></a></p>
 <h3 id="h_4306752342961545286769832">16. Check the reputation of a URL</h3>
 <hr>
 <p>Checks the reputation of a URL in TruSTAR.</p>
@@ -1247,7 +1247,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/50224336-59597480-03a6-11e9-9b81-305fc5f3b4d9.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50224336-59597480-03a6-11e9-9b81-305fc5f3b4d9.png" alt="image"></a></p>
+<p><a href="https://user-images.githubusercontent.com/20818773/50224336-59597480-03a6-11e9-9b81-305fc5f3b4d9.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/50224336-59597480-03a6-11e9-9b81-305fc5f3b4d9.png" alt="image"></a></p>
 <h3 id="h_3113296953781545286777076">17. Check the reputation of a domain</h3>
 <hr>
 <p>Checks the reputation of a domain in TruStar.</p>
@@ -1366,4 +1366,4 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/50224567-e56b9c00-03a6-11e9-9e64-3ca5bbf58989.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/50224567-e56b9c00-03a6-11e9-9e64-3ca5bbf58989.png" alt="image"></a></p>
+<p><a href="https://user-images.githubusercontent.com/20818773/50224567-e56b9c00-03a6-11e9-9e64-3ca5bbf58989.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/50224567-e56b9c00-03a6-11e9-9e64-3ca5bbf58989.png" alt="image"></a></p>

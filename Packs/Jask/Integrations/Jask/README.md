@@ -287,8 +287,8 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43684921-fbe92ade-98b1-11e8-9794-92f65a727065.png" width="753" height="396"></p>
-<p><img src="../../doc_files/43684938-6d4f3222-98b2-11e8-9601-a301bea40052.png" width="753" height="419"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43684921-fbe92ade-98b1-11e8-9794-92f65a727065.png" width="753" height="396"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43684938-6d4f3222-98b2-11e8-9601-a301bea40052.png" width="753" height="419"></p>
 <p> </p>
 <h3 id="h_455075379781533534471017">2. Get comments for an insight</h3>
 <hr>
@@ -476,7 +476,7 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43685069-bb7351ca-98b4-11e8-976c-6d601e0d7b42.png" alt="image" width="751" height="525"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43685069-bb7351ca-98b4-11e8-976c-6d601e0d7b42.png" alt="image" width="751" height="525"></p>
 <p> </p>
 <h3 id="h_8236589612211533534481518">4. Get details for an entity</h3>
 <hr>
@@ -580,7 +580,7 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43685094-4774a4f8-98b5-11e8-88fc-867d30fba121.png" alt="image" width="750" height="374"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43685094-4774a4f8-98b5-11e8-88fc-867d30fba121.png" alt="image" width="750" height="374"></p>
 <p> </p>
 <h3 id="h_7145323282911533534488219">5. Get related entities</h3>
 <hr>
@@ -724,7 +724,7 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43685082-fe26e220-98b4-11e8-8050-77e37a7348c4.png" alt="image" width="752" height="197"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43685082-fe26e220-98b4-11e8-8050-77e37a7348c4.png" alt="image" width="752" height="197"></p>
 <p> </p>
 <h3 id="h_8632925473601533534494371">6. Get a list of entities on allow list</h3>
 <hr>
@@ -811,7 +811,7 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43685014-eb84c642-98b3-11e8-8f7d-e16e3c68514a.png" alt="image" width="752" height="219"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43685014-eb84c642-98b3-11e8-8f7d-e16e3c68514a.png" alt="image" width="752" height="219"></p>
 <p> </p>
 <h3 id="h_2458651614281533534504337">7. Search JASK insights</h3>
 <hr>
@@ -963,7 +963,7 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43685112-911cc8a6-98b5-11e8-96d6-4e67c59e45db.png" alt="image" width="752" height="191"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43685112-911cc8a6-98b5-11e8-96d6-4e67c59e45db.png" alt="image" width="752" height="191"></p>
 <p> </p>
 <h3 id="h_3876303084951533534510096">8. Search JASK signals</h3>
 <hr>
@@ -1077,7 +1077,7 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43684958-b96c6cb0-98b2-11e8-838f-db2d78f7f209.png" alt="image" width="752" height="225"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43684958-b96c6cb0-98b2-11e8-838f-db2d78f7f209.png" alt="image" width="752" height="225"></p>
 <p> </p>
 <h3 id="h_2402374295611533534516772">9. Search JASK entities</h3>
 <hr>
@@ -1226,5 +1226,5 @@
 }</pre>
 <p> </p>
 <h5>Human Readable Output</h5>
-<p><img src="../../doc_files/43685003-c0169ecc-98b3-11e8-892a-dd85e72e715e.png" alt="image" width="752" height="59"></p>
+<p><img src="https://user-images.githubusercontent.com/7270217/43685003-c0169ecc-98b3-11e8-892a-dd85e72e715e.png" alt="image" width="752" height="59"></p>
 <p> </p>
