@@ -32,6 +32,9 @@ getTenantAccountName = function () {
             account_name = 'acc_' + tenant_name
         }
     }
+    else{
+        logDebug('getTenantAccountName: The server url ' + server_url + ' does not contain the expected tenant prefix acc_');
+    }
     return account_name
 }
 
