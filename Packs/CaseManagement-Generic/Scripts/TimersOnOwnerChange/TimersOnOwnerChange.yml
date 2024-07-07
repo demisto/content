@@ -3,9 +3,9 @@ args:
   name: old
 - description: The new value of the changed field
   name: new
-comment: 'Stops the "Time To Assignment" timer once an owner is assigned to the Incident
-
-  Starts the "Remediation SLA'' timer once an owner is assigned to the Incident'
+comment: |-
+  Stops the "Time To Assignment" timer once an owner is assigned to the Incident
+  Starts the "Remediation SLA' timer once an owner is assigned to the Incident
 commonfields:
   id: TimersOnOwnerChange
   version: -1
