@@ -108,7 +108,7 @@ ADF_TEXT_CASES = [
             }
         ]
     }
-     )
+    )
 ]
 
 
@@ -134,36 +134,36 @@ def test_extract_issue_id_from_comment_url(url, expected_issue_id):
 
 ISSUE_FIELDS_MAPPING_CASES = [
     ([
-         {
-             "id": "statuscategorychangedate",
-             "key": "statuscategorychangedate",
-             "name": "Status Category Changed",
-             "custom": False,
-             "orderable": False,
-             "navigable": True,
-             "searchable": True,
-             "clauseNames": [
-                 "statusCategoryChangedDate"
-             ],
-             "schema": {
-                 "type": "datetime",
-                 "system": "statuscategorychangedate"
-             }
-         },
-         {
-             "id": "parent",
-             "key": "parent",
-             "name": "Parent",
-             "custom": False,
-             "orderable": False,
-             "navigable": True,
-             "searchable": False,
-             "clauseNames": [
-                 "parent"
-             ]
-         }], {
-         "statuscategorychangedate": "Status Category Changed",
-         "parent": "Parent"})
+        {
+            "id": "statuscategorychangedate",
+            "key": "statuscategorychangedate",
+            "name": "Status Category Changed",
+            "custom": False,
+            "orderable": False,
+            "navigable": True,
+            "searchable": True,
+            "clauseNames": [
+                "statusCategoryChangedDate"
+            ],
+            "schema": {
+                "type": "datetime",
+                "system": "statuscategorychangedate"
+            }
+        },
+        {
+            "id": "parent",
+            "key": "parent",
+            "name": "Parent",
+            "custom": False,
+            "orderable": False,
+            "navigable": True,
+            "searchable": False,
+            "clauseNames": [
+                "parent"
+            ]
+        }], {
+        "statuscategorychangedate": "Status Category Changed",
+        "parent": "Parent"})
 ]
 
 
@@ -634,8 +634,8 @@ class TestJiraEditIssueCommand:
         # 'Selected for development' correlates to the transition 'In Development', which as stated, has an ID of 21
         expected_issue_fields = {'transition': {'id': '21'},
                                  'fields': {'description': 'dummy description', 'project':
-                                     {'key': 'dummy_project_key', 'id':
-                                         'dummy_project_id'}, 'labels': ['label1', 'label2'],
+                                            {'key': 'dummy_project_key', 'id':
+                                             'dummy_project_id'}, 'labels': ['label1', 'label2'],
                                             'components': [{'name': 'comp1'}, {'name': 'comp2'}],
                                             'customfield_1': 'dummy custom field'}}
         mocker.patch.object(client, 'get_issue', return_value={})
@@ -660,8 +660,8 @@ class TestJiraEditIssueCommand:
                 'labels': 'label1,label2', 'components': 'comp1,comp2',
                 'customfield_1': 'dummy custom field'}
         expected_issue_fields = {'fields': {'description': 'dummy description', 'project':
-            {'key': 'dummy_project_key', 'id':
-                'dummy_project_id'}, 'labels': ['label1', 'label2'],
+                                            {'key': 'dummy_project_key', 'id':
+                                             'dummy_project_id'}, 'labels': ['label1', 'label2'],
                                             'components': [{'name': 'comp1'}, {'name': 'comp2'}],
                                             'customfield_1': 'dummy custom field'}}
         mocker.patch.object(client, 'get_issue', return_value={})
@@ -684,8 +684,8 @@ class TestJiraEditIssueCommand:
         args = {'issue_key': 'dummy_key', 'components': 'comp1,comp2', 'labels': 'label1,label2',
                 'summary': 'appended summary', 'action': 'append'}
         expected_issue_fields = {'fields': {'components':
-                                                [{'name': 'current-comp1'}, {'name': 'current-comp2'},
-                                                 {'name': 'comp1'}, {'name': 'comp2'}],
+                                            [{'name': 'current-comp1'}, {'name': 'current-comp2'},
+                                             {'name': 'comp1'}, {'name': 'comp2'}],
                                             'labels': ['current-label1', 'current-label2', 'label1', 'label2'],
                                             'summary': 'current summary, appended summary'}}
         mocker.patch.object(client, 'get_issue', side_effect=[{
@@ -1023,7 +1023,7 @@ class TestJiraListIssueFieldsCommand:
         command_result = list_fields_command(client=client, args={'issue_key': 'dummy_issue_key'})
         # [start_at: start_at + max_results] is the way do the pagination manually, therefore we check it.
         expected_outputs = expected_context['EntryContext']['Jira.IssueField(val.id && val.id == obj.id)'][start_at: start_at
-                                                                                                                     + max_results]
+                                                                                                           + max_results]
         assert expected_outputs == command_result.to_context()['EntryContext']['Jira.IssueField(val.id && val.id == obj.id)']
 
 
