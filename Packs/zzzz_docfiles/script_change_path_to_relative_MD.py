@@ -29,17 +29,17 @@ def find_image_in_doc_files(image_name, pack_name):
     """
     doc_files_path = os.path.join(PACKS_PATH, pack_name)
     try:
-        if os.path.exists(doc_files_path):
-            if "Playbooks" in doc_files_path:
-                return f'../doc_files/{image_name}'
-            elif "Integrations" in doc_files_path:
-                return f'../../doc_files/{image_name}'
-            return f'doc_files/{image_name}'
-        
+        return os.path.exists(doc_files_path)
+            # if "Playbooks" in doc_files_path:
+            #     return f'../doc_files/{image_name}'
+            # elif "Integrations" in doc_files_path:
+            #     return f'../../doc_files/{image_name}'
+            # return f'doc_files/{image_name}'
+
     except Exception as error:
         logger.debug(f"Failed to get related text file, error: {error}")
     logger.debug(f"File {doc_files_path} does not exist.")
-    return ''
+    return False
 
 
 def change_image_link_to_relative(lines, md_path):
@@ -61,16 +61,19 @@ def change_image_link_to_relative(lines, md_path):
                 url = res.group(0) or res.group(1)
             parse_url = urlparse(url)
             url_path = Path(parse_url.path)
-            if new_replace_url := find_image_in_doc_files(url_path.name, pack_name):
+            if find_image_in_doc_files(url_path.name, pack_name):
+                new_replace_url = f'doc_files/{url_path.name}'
                 if '<img src="' in url:
-                    new_replace_url=f'<img src="{new_replace_url}'
+                    list_not_found.append(url)
+                    continue
+                    # new_replace_url=f'<img src="{new_replace_url}'
                 lines[i] = line.replace(url, new_replace_url)
                 try:
                     with open(md_path, 'w') as file:
                         file.writelines(lines)
-                    list_success.append(url)
                 except Exception as e:
                     logger.debug(e)
+                list_success.append(url)
             else:
                 list_not_found.append(url)
     return {"list_success": list_success, "list_not_found":list_not_found}
@@ -105,14 +108,18 @@ def extract_image_links_from_files_and_save_to_json():
     then extracts image links from those files and saves the information to a JSON file.
     """
     paths_links = list(Path(PACKS_PATH).rglob("*.md"))
-    paths_links_str = [str(path) for path in paths_links]
-    filtered_md_files = [file for file in paths_links_str if 'ReleaseNotes' not in file.split(os.sep)]
+    filtered_md_files = [
+        path for path in paths_links
+        if 'ReleaseNotes' not in path.parts and 'Playbooks' not in path.parts and 'Integrations' not in path.parts
+    ]
+    paths_links_str = [str(path) for path in filtered_md_files]
+    
     
 
     images_information_success = {}
     images_information_failed = {}
     _errors = {}
-    for link in filtered_md_files:
+    for link in paths_links_str:
         
         images_information_log_success, images_information_log_fails, str_error = search_image_links(link)
         if images_information_log_success:
