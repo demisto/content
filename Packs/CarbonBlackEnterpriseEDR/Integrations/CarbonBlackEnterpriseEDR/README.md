@@ -555,7 +555,6 @@ RBAC Permissions Required - org.alerts: READ
 | CarbonBlackEEDR.Alert.notes_present | Boolean | Whether notes are present. | 
 | CarbonBlackEEDR.Alert.run_state | String | Alert run state. | 
 | CarbonBlackEEDR.Alert.severity | Number | Alert severity. | 
-| CarbonBlackEEDR.Alert.category | String | Alert category. | 
 | CarbonBlackEEDR.Alert.threat_cause_vector | String | Threat cause vector. | 
 | CarbonBlackEEDR.Alert.device_username | String | Device username. | 
 | CarbonBlackEEDR.Alert.workflow.changed_by | String | Alert workflow - changed by. | 
@@ -2845,7 +2844,7 @@ Returns a list of alerts.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | minimum_severity | Alert minimum severity (In range of 1-10). | Optional | 
-| device_os_version | A comma-separated list of device operating system versions.  | Optional | 
+| device_os_version | Device OS version. Supports comma-separated values. | Optional | 
 | policy_id | The policy ID. Supports comma-separated values. | Optional | 
 | alert_tag | Alert tags. Supports comma-separated values. | Optional | 
 | alert_id | Alert ID. Supports comma-separated values. | Optional | 
@@ -2856,8 +2855,8 @@ Returns a list of alerts.
 | policy_name | Policy name. Supports comma-separated values. | Optional | 
 | reputation | Alert reputation. Supports comma-separated values. | Optional | 
 | alert_type | Alert type. Supports comma-separated values. | Optional | 
-| device_name | Device name. Supports comma-separated values. Examples- "C:\\Users\\exmaple_user\\Example" or  "/home/example_user/Example". | Optional | 
-| process_name | Process name. Supports comma-separated values. Examples- "C:\\Users\\exmaple_user\\Example" or  "/home/example_user/Example". | Optional | 
+| device_name | A comma-separated list of device names. Examples- "C:\\Users\\example_user\\Example" or  "/home/example_user/Example". | Optional | 
+| process_name | A comma-separated list of process names. Examples- "C:\\Users\\example_user\\Example" or  "/home/example_user/Example". | Optional | 
 | sort_field | Field by which to sort the results. Possible values are: first_event_timestamp, last_event_timestamp. Default is first_event_timestamp. | Optional | 
 | sort_order | How to order the results. Can be "ASC" (ascending) or "DESC" (descending). Possible values are: ASC, DESC. Default is DESC. | Optional | 
 | limit | The maximum number of results to return. Default is 10. | Optional | 
@@ -2869,7 +2868,7 @@ Returns a list of alerts.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | CarbonBlackEEDR.Alert.threat_id | String | Threat ID. | 
-| CarbonBlackEEDR.Alert.first_event_timestamp | Date | First event time. | 
+| CarbonBlackEEDR.Alert.first_event_time | Date | First event time. | 
 | CarbonBlackEEDR.Alert.target_value | String | Alert target value. | 
 | CarbonBlackEEDR.Alert.reason | String | Alert reason. | 
 | CarbonBlackEEDR.Alert.org_key | String | Organization key. | 
@@ -2877,13 +2876,13 @@ Returns a list of alerts.
 | CarbonBlackEEDR.Alert.report_id | String | Report ID. | 
 | CarbonBlackEEDR.Alert.watchlists.id | String | Watchlist ID. | 
 | CarbonBlackEEDR.Alert.watchlists.name | String | Watchlist name. | 
-| CarbonBlackEEDR.Alert.device_os_version | String | Device operating system version. | 
+| CarbonBlackEEDR.Alert.device_os_version | String | Device OS version. | 
 | CarbonBlackEEDR.Alert.threat_cause_threat_category | String | Threat cause threat category. | 
 | CarbonBlackEEDR.Alert.policy_id | String | Policy ID. | 
 | CarbonBlackEEDR.Alert.threat_indicators.process_name | String | Threat indicator - process name. | 
 | CarbonBlackEEDR.Alert.threat_indicators.sha256 | String | Indicator SHA256 hash. | 
 | CarbonBlackEEDR.Alert.threat_cause_actor_sha256 | String | Threat cause actor SHA256. | 
-| CarbonBlackEEDR.Alert.device_os | String | Device operating system. | 
+| CarbonBlackEEDR.Alert.device_os | String | Device OS. | 
 | CarbonBlackEEDR.Alert.document_guid | String | Document GUID. | 
 | CarbonBlackEEDR.Alert.create_time | Date | Alert create time. | 
 | CarbonBlackEEDR.Alert.threat_cause_actor_name | String | Threat cause actor name. | 
@@ -2912,4 +2911,63 @@ Returns a list of alerts.
 | CarbonBlackEEDR.Alert.workflow.comment | String | Alert workflow - comment. | 
 | CarbonBlackEEDR.Alert.workflow.last_update_time | Date | Alert workflow - last updated time. | 
 | CarbonBlackEEDR.Alert.workflow.remediation | String | Alert workflow - remediation. | 
-| CarbonBlackEEDR.Alert.workflow.status | String | Alert workflow - status. | 
+| CarbonBlackEEDR.Alert.workflow.state | String | Alert workflow state. | 
+### cb-eedr-process-search
+
+***
+Creates a process search job and returns results if 'polling' argument is True.
+
+#### Base Command
+
+`cb-eedr-process-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| process_name | The process name to search. | Optional | 
+| process_hash | The process hash to search. | Optional | 
+| event_id | The event ID to search. | Optional | 
+| limit | The maximum number of rows to return. Default is 20. | Optional | 
+| query | A free-style query. For example, "process_name:svchost.exe". | Optional | 
+| start_time | First appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is 1 day ago. | Optional | 
+| end_time | Last appearance time range (&lt;number&gt; &lt;time unit&gt;, e.g., 1 hour, 30 minutes). Default is current time. | Optional | 
+| start | Index of first records to fetch. Default is 0. | Optional | 
+| job_id | Job ID to retrieve. | Optional | 
+| polling | whether to run the command with polling. Possible values are: true, false. Default is True. | Optional | 
+| interval_in_seconds | The time in seconds to wait between polling. Default is 60. | Optional | 
+| time_out | The timeout duration in seconds for polling retries. Default is 600. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackEEDR.SearchProcess.job_id | String | The ID of the job found by the search. | 
+| CarbonBlackEEDR.SearchProcess.status | String | The status of the job found by the search. | 
+| CarbonBlackEEDR.SearchProcess.results.device_id | Number | The device ID that is guaranteed to be unique within each PSC environment. | 
+| CarbonBlackEEDR.SearchProcess.results.process_username | String | The user names related to the process. | 
+| CarbonBlackEEDR.SearchProcess.results.backend_timestamp | Date | A date/time field formatted as an ISO-8601 string based on the UTC timezone. For example, device_timestamp:2018-03-14T21:06:45.183Z. | 
+| CarbonBlackEEDR.SearchProcess.results.childproc_count | Number | The cumulative count of child-process creations since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.crossproc_count | Number | The cumulative count of cross-process events since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.device_group_id | Number | The ID of the sensor group where the device belongs. | 
+| CarbonBlackEEDR.SearchProcess.results.device_name | String | The name of the device. | 
+| CarbonBlackEEDR.SearchProcess.results.device_policy_id | Number | The ID of the policy applied to the device. | 
+| CarbonBlackEEDR.SearchProcess.results.device_timestamp | Date | The time displayed on the sensor based on the sensor’s clock. The time is an ISO-8601 formatted time string based on the UTC timezone. | 
+| CarbonBlackEEDR.SearchProcess.results.enriched | Boolean | True if the process document came from the CBD data stream. | 
+| CarbonBlackEEDR.SearchProcess.results.enriched_event_type | String | The CBD enriched event type. | 
+| CarbonBlackEEDR.SearchProcess.results.event_type | String | The CBD event type \(valid only for events coming through analytics\). Possible values are: CREATE_PROCESS, DATA_ACCESS, FILE_CREATE, INJECT_CODE, NETWORK, POLICY_ACTION, REGISTRY_ACCESS, and SYSTEM_API_CALL. | 
+| CarbonBlackEEDR.SearchProcess.results.filemod_count | Number | The cumulative count of file modifications since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.ingress_time | Date | Unknown | 
+| CarbonBlackEEDR.SearchProcess.results.legacy | Boolean | True if the process document came from the legacy data stream \(deprecated, use enriched\). | 
+| CarbonBlackEEDR.SearchProcess.results.modload_count | Number | The cumulative count of module loads since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.netconn_count | Number | The cumulative count of network connections since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.org_id | String | The globally unique organization key. This will most likely be the PSC organization ID \+ PSC environment ID or some other unique token used across environments. | 
+| CarbonBlackEEDR.SearchProcess.results.parent_guid | String | The process GUID of the parent process. | 
+| CarbonBlackEEDR.SearchProcess.results.parent_pid | Number | The PID of the parent process. | 
+| CarbonBlackEEDR.SearchProcess.results.process_guid | String | Unique ID of the solr document. Appears as process_guid \+ server-side timestamp in epoch ms \(1/1/1970 based\). | 
+| CarbonBlackEEDR.SearchProcess.results.process_hash | String | The MD5 and SHA-256 hashes of the process’s main module in a multi-valued field. | 
+| CarbonBlackEEDR.SearchProcess.results.process_name | String | The tokenized file path of the process’s main module. | 
+| CarbonBlackEEDR.SearchProcess.results.process_pid | Number | The PID of a process. Can be multi-valued in case of exec/fork on Linux/OSX. | 
+| CarbonBlackEEDR.SearchProcess.results.process_username | String | User names related to the process. | 
+| CarbonBlackEEDR.SearchProcess.results.regmod_count | Number | The cumulative count of registry modifications since process tracking started. | 
+| CarbonBlackEEDR.SearchProcess.results.scriptload_count | Number | The cumulative count of loaded scripts since process tracking started. | 
