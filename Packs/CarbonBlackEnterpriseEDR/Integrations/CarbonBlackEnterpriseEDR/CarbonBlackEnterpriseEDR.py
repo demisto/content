@@ -511,6 +511,11 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     if not alerts:
         return 'No alerts were found'
     for alert in alerts:
+        
+        # The new API version returns status instead of state,
+        # mapping this for the output to look the same
+        alert['state'] = alert.pop('status')
+        
         contents.append({
             'AlertID': alert.get('id'),
             'CreateTime': alert.get('backend_timestamp'),

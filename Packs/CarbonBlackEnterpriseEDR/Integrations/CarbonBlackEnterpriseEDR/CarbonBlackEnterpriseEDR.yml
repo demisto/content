@@ -579,8 +579,8 @@ script:
     - contextPath: CarbonBlackEEDR.Alert.workflow.remediation
       description: Alert workflow - remediation.
       type: String
-    - contextPath: CarbonBlackEEDR.Alert.workflow.status
-      description: Alert workflow status.
+    - contextPath: CarbonBlackEEDR.Alert.workflow.state
+      description: Alert workflow state.
       type: String
   - description: Retrieves all watchlists.
     name: cb-eedr-watchlist-list
