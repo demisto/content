@@ -7,12 +7,11 @@ PRODUCT = 'Password Manager'
 
 DEFAULT_MAX_FETCH = 500
 DEFAULT_FIRST_FETCH = '3 days'
-DEFAULT_STARTTIME = 10
-DEFAULT_ENDTIME = 10
-DEFAULT_LIMIT = 10
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
 
 AUTHENTICATION_FULL_URL = 'https://identity.bitwarden.com/connect/token'
+
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 
 class Client(BaseClient):
@@ -62,18 +61,18 @@ class Client(BaseClient):
         return new_access_token
 
     def store_token_in_context(self, token: str, expire_in: int) -> None:
-
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
         set_integration_context(context={
             'token': token,
             'expires': str(expire_date)
         })
 
-    def get_events(self, start_time: datetime = None, end_time: datetime = None, limit: int = DEFAULT_MAX_FETCH) -> List[Dict[
-        str, Any]]:
-        # params = {'starttime': start_time, 'endtime': end_time, 'expandenums': "true", 'includeacknowledged': "true",
-        #           'minimal': "false", 'includebreachurl': "true"}
-        # params = {'starttime': start_time.strftime("%H:%M:%S"), 'endtime': end_time.strftime("%H:%M:%S")}
+    def get_events(self, start_date: str = "", end_date: str = "", continuation_token: str = "") -> dict:
+        params = {
+            'start': start_date,
+            'end': end_date,
+            'continuationToken': continuation_token
+        }
 
         headers = {
             'Authorization': f'Bearer {self.token}'
@@ -83,18 +82,17 @@ class Client(BaseClient):
             method='GET',
             url_suffix='/public/events',
             headers=headers,
-            # params=params
+            params=params
         )
 
-        return res.get('data')
+        return res
 
 
-def test_module(client: Client, first_fetch_time: int) -> str:
-    demisto.log("in test module")
+def test_module(client: Client) -> str:
     try:
-        retrieve_events, last_run = fetch_events(client, max_fetch=1, last_run={}, start_time=first_fetch_time,
-                                                 end_time=convert_to_timestamp(datetime.now()))
+        retrieve_events, last_run = fetch_events(client, max_fetch=1)
         demisto.log(f"{retrieve_events=}")
+        demisto.log(f"{last_run=}")
     except DemistoException as e:
         raise e
 
@@ -111,38 +109,116 @@ def convert_to_timestamp(date: datetime | None) -> int:
     return 0
 
 
-def filter_events(events: List[Dict[str, Any]], last_fetched_pid: int, max_fetch: int) -> List[Dict[str, Any]]:
-    """Filters events by ascending pbid and max_fetch"""
-    for index, event in enumerate(events):
-        if event.get('pbid', 0) > last_fetched_pid:
-            return events[index:index + max_fetch]
-    return []
+def calculate_fetch_dates(start_date: str, last_run: dict, end_date: str = "") -> tuple:
+    """
+    Calculates the start and end dates for fetching events.
+
+    This function takes the start date and end date provided as arguments.
+    If these are not provided, it uses the last run information to calculate the start and end dates.
+    If the last run information is also not available,
+     it uses the current time as the end date and the time one minute before the current time as the start date.
+
+    Args:
+        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
+        last_run_key (str): The key to retrieve the last fetch date from the last run dictionary.
+        last_run (dict): A dictionary containing information about the last run.
+        end_date (str, optional): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format. Defaults to "".
+
+    Returns:
+        tuple: A tuple containing two elements:
+            - The start date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+            - The end date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+    """
+    now_utc_time = get_current_time()
+    # argument > last run > current time
+    start_date = start_date or last_run.get('last_fetch') or (
+        (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
+    # argument > current time
+    end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
+    return start_date, end_date
 
 
-def fetch_events(client: Client, max_fetch: int, last_run: Dict[str, Any], start_time: int, end_time: int):
-    fetching_start_time = demisto.getLastRun() if demisto.getLastRun() else start_time
-    retrieve_events = client.get_events(fetching_start_time, end_time)
-    retrieve_events = filter_events(retrieve_events, int(last_run.get('last_fetch_itemId', 0)), max_fetch)
-    if retrieve_events:
-        # extracting last fetch time and last fetched events.
-        last_fetch_time = retrieve_events[-1].get('date')
-        last_fetched_itemId = retrieve_events[-1].get('itemId')
-        demisto.debug(f'Setting last run to itemId: {last_fetched_itemId} time:{timestamp_to_datestring(last_fetch_time)}')
-        last_run = {'last_fetch_time': retrieve_events[-1].get('date'),
-                    'last_fetch_itemId': last_fetched_itemId}
-    return retrieve_events, last_run
+def fetch_events(client: Client, max_fetch: int, start_date_str: str = "", end_date_str: str = "") -> tuple:
+    last_run = demisto.getLastRun()
+    continuation_token = last_run.get("continuationToken", "")
+    demisto.log(f"{continuation_token=}")
+    events, next_run = get_events(client, start_date_str, max_fetch, last_run, continuation_token)
+
+    if 'continuationToken' in next_run:
+        next_run["nextTrigger"] = "0"
+
+    for event in events:
+        event['_time'] = event.get('date')
+
+    return events, next_run
 
 
-def get_events_command(client: Client, args: Dict[str, Any]) -> tuple[List[Dict[str, Any]], CommandResults]:
-    limit = arg_to_number(args.get('limit')) or DEFAULT_LIMIT
-    start_time = None
-    end_time = None
-    events = client.get_events(start_time=start_time, end_time=end_time, limit=limit)
+def get_events(client: Client, start_date: str, max_fetch: int, last_run: dict, continuation_token) -> tuple:
+    created, current_date = calculate_fetch_dates(start_date, last_run=last_run)
+    events: List[dict] = []
+    has_next = True
+    while has_next:
+        has_next = False
+        if len(events) >= max_fetch:
+            break
+        response = client.get_events(start_date, end_date, continuation_token)
+
+        if continuation_token := response.get("continuationToken"):
+            has_next = True
+        events.extend(response.get('data'))
+
+    if continuation_token:
+        demisto.debug(
+            f"Bitwarden - Fetched {len(events)} which is the maximum number of events."
+            f" Will keep the fetching in the next fetch.")
+        new_last_run_with_continuation_token = {"continuationToken": continuation_token, "last_fetch": created}
+        return events, new_last_run_with_continuation_token
+    # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
+    new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date"), DATE_FORMAT)
+                                             for event in events) if dt is not None]).strftime(
+        DATE_FORMAT) if events else current_date
+    new_last_run_without_continuation_token = {"last_fetch": new_last_fetch_date}
+    demisto.debug(f"Bitwarden - Fetched {len(events)} events")
+    return events, new_last_run_without_continuation_token
+
+
+def validate_start_and_end_dates(start_date_str: str, end_date_str: str):
+    """
+    Validates the start and end dates provided in the arguments.
+
+    This function checks if the start date is missing or if it is greater than the end date.
+     If either of these conditions is true, it raises a ValueError. Otherwise, it returns the start and end dates.
+
+    Args:
+        args (dict): A dictionary containing the arguments for the command.
+                     It should contain keys 'start_date' and 'end_date' with values representing the date range.
+
+    Returns:
+        tuple: A tuple containing two elements:
+            - The start date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+            - The end date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
+
+    Raises:
+        ValueError: If the start date is missing or if it is greater than the end date.
+    """
+    if start_date := arg_to_datetime(start_date_str):
+        start_date_str = start_date.strftime(DATE_FORMAT)
+    if end_date := arg_to_datetime(end_date_str):
+        end_date_str = end_date.strftime(DATE_FORMAT)
+    if (end_date and not start_date) or (start_date and end_date and start_date >= end_date):
+        raise ValueError("Either the start date is missing or it is greater than the end date. Please provide valid dates.")
+    return start_date_str, end_date_str
+
+
+def get_events_command(client: Client, start_date_str: str, end_date_str: str, max_fetch: int, last_run: dict,
+                       limit: int) -> tuple:
+    valid_start_date, valid_end_date = validate_start_and_end_dates(start_date_str, end_date_str)
+    events, _ = fetch_events(client=client, max_fetch=limit, start_date_str=valid_start_date, end_date_str=valid_end_date)
     if events:
-        return events, CommandResults(
-            readable_output=tableToMarkdown("Open Incidents", events),
-            raw_response=events
-        )
+        events = events[:limit]
+        return events, CommandResults(readable_output=tableToMarkdown("Bitwarden Events", events),
+                                      raw_response=events)
+
     return [], CommandResults(readable_output='No events found')
 
 
@@ -153,13 +229,13 @@ def main() -> None:  # pragma: no cover
     :return:
     :rtype:
     """
-    print("in main")
     demisto_params = demisto.params()
     base_url = demisto_params.get('url', 'https://api.bitwarden.com')
     client_id = demisto_params.get('credentials', {}).get('identifier')
     client_secret = demisto_params.get('credentials', {}).get('password')
     max_events_per_fetch = arg_to_number(demisto_params.get('max_fetch')) or DEFAULT_MAX_FETCH
-    first_fetch_time_timestamp = convert_to_timestamp(arg_to_datetime(demisto_params.get('first_fetch', DEFAULT_FIRST_FETCH)))
+    first_fetch_time_timestamp = convert_to_timestamp(
+        arg_to_datetime(demisto_params.get('first_fetch', DEFAULT_FIRST_FETCH)))
     verify_certificate = not demisto_params.get('insecure', False)
     proxy = demisto_params.get('proxy', False)
     command = demisto.command()
@@ -173,9 +249,9 @@ def main() -> None:  # pragma: no cover
             proxy=proxy)
         args = demisto.args()
         if command == 'test-module':
-            return_results(test_module(client, first_fetch_time_timestamp))
-        elif command == 'bitwarden-get-events':  # rename with bitwarden
-            events, results = get_events_command(client=client, args={})
+            return_results(test_module(client))
+        elif command == 'bitwarden-get-events':
+            events, results = get_events_command(client=client, args=args)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
