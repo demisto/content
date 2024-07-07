@@ -1,0 +1,661 @@
+{
+    "/Users/mmorag/dev/demisto/content/Packs/BigFix/Integrations/BigFix/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47254258-ab465280-d468-11e8-9704-04bfb8f7d653.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47254275-f2ccde80-d468-11e8-80a0-92c666923ece.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47254399-9cf93600-d46a-11e8-83a6-f120afec4208.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47254373-4855bb00-d46a-11e8-9f89-e4e4fa758d65.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47254533-6c1a0080-d46c-11e8-9c50-bbe3287f4230.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47683576-a7d56880-dbd8-11e8-9541-ce40ec3b0bd4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47684624-2da6e300-dbdc-11e8-837c-a03944aaa7cd.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47684527-df91df80-dbdb-11e8-8b95-3b4ef944e40b.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47684576-06501600-dbdc-11e8-991f-7acbb506b795.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/47684400-74480d80-dbdb-11e8-951a-fa05307f269f.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ArcSightLogger/Integrations/ArcSightLogger/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/ArcsightLogger_mceclip0.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/ArcsightLogger_mceclip1.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/ArcsightLogger_mceclip2.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SecureWorks/Integrations/SecureWorks/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/40768782-f4c671ca-64be-11e8-9380-3240eb3629a3.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46961277-1a0e5f00-d0a9-11e8-946c-42bedfe8d4ac.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46999808-5f756f80-d12f-11e8-9219-108908a2bdfc.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/40653720-a9dd4e52-6344-11e8-8911-1988d74f4eb4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/47001732-d7459900-d133-11e8-90c4-4436dd18bf29.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/40656711-f069e7be-634d-11e8-834e-23f454a48067.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/47002456-b5e5ac80-d135-11e8-905b-f7f41c8e062c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/47002702-5cca4880-d136-11e8-826f-0f2400771017.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/40658614-78930ba6-6354-11e8-9b87-a125bd8d6d81.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/47002995-ef6ae780-d136-11e8-8c71-ce8d2d0e481e.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RedCanary/Integrations/RedCanary/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47007260-80928c00-d140-11e8-8d41-6c9e90a9d615.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47007379-c0597380-d140-11e8-98aa-531be44f8c56.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47003133-3c4ebe00-d137-11e8-98eb-ca627c18d7fd.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47007761-a0767f80-d141-11e8-90e2-09c67fea5381.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47012290-9d34c100-d14c-11e8-971c-7cb6187fd010.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47012455-f13fa580-d14c-11e8-98fa-a49e288d325f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47012686-7b880980-d14d-11e8-95be-8c88dfda4cbf.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/47012822-e6d1db80-d14d-11e8-9773-0b69802f9ba8.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RsaNetWitnessPacketsAndLogs/Integrations/RSANetWitnessPacketsAndLogs/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38619069-02ebbb4e-3da4-11e8-97be-d9f096860fae.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38617956-fe7a9a24-3da0-11e8-9a0a-62762a81ff8c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38615982-2db34cce-3d9b-11e8-8a7e-48a679f0d10c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38616096-834a48e0-3d9b-11e8-8b06-a2a0a309a95e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38616236-f1648674-3d9b-11e8-8e27-e805af8d0679.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38616272-1ae3b682-3d9c-11e8-81db-f873a0c0e454.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38617765-8289dd30-3da0-11e8-9d43-07e43711cbd5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38618665-00d56770-3da3-11e8-84ab-364a38e82cfe.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BitDam/Integrations/BitDam/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/12241410/47354978-daf39580-d6c8-11e8-9b26-7919dbdc7d4a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/47355146-4473a400-d6c9-11e8-8ded-a3f99e31ddb7.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SymantecMSS/Integrations/SymantecMSS/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/33279417/34202907-e1afa1c2-e581-11e7-8bfe-4d53507a5d13.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/33279417/34202791-8091b81c-e581-11e7-985e-81d2f6f149e9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/33279417/34202921-ec3b607c-e581-11e7-8e61-363534a12eae.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MaxMind_GeoIP2/Integrations/MaxMind_GeoIP2/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/42912128/51251659-864b7800-19a2-11e9-9273-6508d2db872e.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AutoFocus/Integrations/Autofocus/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/54493457-f8740680-48d8-11e9-83ad-0143b5163cb1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/54493477-2d805900-48d9-11e9-8fbc-251cc7e1ba4f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/54493481-3ffa9280-48d9-11e9-9427-2463431fa703.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/54493492-57d21680-48d9-11e9-8fc7-eca5cb37ae8e.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Devo/Integrations/Devo/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46580548-ac6e8d00-ca2f-11e8-81d7-7b90c48c2fbc.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/47137984-cbd3a880-d2c0-11e8-9d1c-082313f15d1a.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ThreatConnect/Integrations/ThreatConnect/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50242697-cfc09b80-03d3-11e9-9615-35fc485fa84c_1_Search_for_an_IP_indicator.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281763-2e7c2880-0459-11e9-88ea-ed6532e56bad_1_Human_Readable_Output.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50274409-df78c800-0445-11e9-9a30-6f3335a6a60a_2_Search_for_a_URL_indicator_Context_Example.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/43cf97390b184fce1f2f08ebc92c7848c7bcc04a/docs/images/Integrations/ThreatConnect_50281785-3d62db00-0459-11e9-8d1d-6e5841fa37e6.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50275319-bd804500-0447-11e9-927f-3e272f74bb60.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281206-64201200-0457-11e9-8b72-4db2d9aadb0a.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281877-96327380-0459-11e9-8c94-a1136e0949a7.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281926-c37f2180-0459-11e9-83bb-8d6abeb79d48.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282035-18bb3300-045a-11e9-9a51-1bc93a3b7df0_7_Tag_an_existing_indicator_Human_Readable_Output.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/43cf97390b184fce1f2f08ebc92c7848c7bcc04a/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663_8_Get_an_indicator_Human_Readable_Output.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50281832-6edba680-0459-11e9-8ac2-e0f00b97db98_9_Get_all_indicators_with_a_specific_tag_Human_Readable.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_50282140-78b1d980-045a-11e9-995b-a9fc2595b663.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/ThreatConnect_45597328-339d8780-b9d3-11e8-8f72-94a09c8c75ee.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Carbon_Black_Enterprise_Live_Response/Integrations/Carbonblackliveresponse/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/28726415/43703413-677cbe4c-9965-11e8-9b1a-d4b3f04c4de7.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/28726415/43703931-e78b6146-9966-11e8-8ff1-aefad37df01d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/28726415/43703073-629f8f40-9964-11e8-95ca-f1e909fdae0c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/28726415/43704204-9502339a-9967-11e8-8861-5b2b2ab7c16d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/28726415/43704245-b033bd50-9967-11e8-9ba8-dab53573f7af.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/28726415/43704732-4b5aa8f6-9969-11e8-8f45-e76e3bef8ca0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/31587493/47308009-1e9ebe80-d639-11e8-840a-558301dd6c1d.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MailSenderNew/Integrations/MailSenderNew/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/1395797/58482464-14ace300-8167-11e9-86c5-fa389b49a99c.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Cylance_Protect/Integrations/Cylance_Protect_v2/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/12241410/48305021-47292280-e52c-11e8-9ba0-6a579b41ed4e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/48305028-51e3b780-e52c-11e8-8dd6-14ec09966997.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/48305036-57410200-e52c-11e8-98c0-9f714ae2e7ed.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/48305037-5d36e300-e52c-11e8-8444-db223ee4b34e.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Recorded_Future/Integrations/Recorded_Future/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52179606-40d1dc00-27e5-11e9-90fb-8b675105c75d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52179711-3fed7a00-27e6-11e9-9365-894b22815c11.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52179776-141ec400-27e7-11e9-91f7-fa24c1e290c2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52180330-af1a9c80-27ed-11e9-9be2-c8fd4ff93b58.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52180426-7d560580-27ee-11e9-9494-3867242aa829.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52180463-09682d00-27ef-11e9-8092-979b44295d54.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52180478-50eeb900-27ef-11e9-8860-fc088b799368.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52180512-e12cfe00-27ef-11e9-8f37-8fe5fdf33843.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52180529-091c6180-27f0-11e9-8224-ad3ac75ed7dc.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52180553-6e705280-27f0-11e9-9ef7-c1c13029eb58.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52209971-3ddef600-288e-11e9-8e00-e964cea64913.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210045-7b438380-288e-11e9-8ea5-81a8ac075eea.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210168-dbd2c080-288e-11e9-8be5-96f62b1d62f0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210325-67e4e800-288f-11e9-9434-5def18e623d0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210449-d164f680-288f-11e9-861b-54c725025772.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210580-26a10800-2890-11e9-95f3-1206fcfd4422.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210727-84cdeb00-2890-11e9-9f2b-05575fb07f43.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210851-d5454880-2890-11e9-8375-82058307dd3a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52210941-12113f80-2891-11e9-9be2-bb944ef37462.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52211023-4ab11900-2891-11e9-92e2-05f407dfe2f2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52211907-dcba2100-2893-11e9-83ce-f048959938f9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52212030-30c50580-2894-11e9-84e2-d8e40d9f4c65.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52214134-9e276500-2899-11e9-8acd-d7166a2c24db.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Exchange2016_Compliance/Integrations/Exchange2016_Compliance/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/45535078/53808136-24e36680-3f5a-11e9-923b-9a98353a3c38.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/45535078/53808179-3e84ae00-3f5a-11e9-9009-d2eea842c2d2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/45535078/53808542-31b48a00-3f5b-11e9-993c-8c2e83b8759a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/45535078/53808212-552b0500-3f5a-11e9-8866-cc2cce045131.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/45535078/53808250-696f0200-3f5a-11e9-99d8-bbc86c3fc971.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AWS-CloudWatchLogs/Integrations/AWS-CloudWatchLogs/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45023945-0eeefa80-b038-11e8-9f41-ddb1ef8b6c78.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45029145-01da0780-b048-11e8-894c-6b361ec9d200.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45030390-ecff7300-b04b-11e8-8e69-abc9b94a9032.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45029385-bbd17380-b048-11e8-9651-b1183e42a1ff.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45035904-69e61900-b05b-11e8-8c58-c77b86f767ba.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45035876-5935a300-b05b-11e8-82a2-818e2671fee6.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45031032-030e3300-b04e-11e8-985d-084d68b9a5c2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45031063-16210300-b04e-11e8-915e-334eb5658e36.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45033213-220fc380-b054-11e8-87bd-db85c3b53fb7.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45033162-ff7daa80-b053-11e8-8e42-5225d38e1bb8.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45033993-82076980-b056-11e8-8a1b-ff0a9f4cb3e0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45034065-acf1bd80-b056-11e8-9314-946f75e9c220.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45035763-0b209f80-b05b-11e8-86d1-bd20010b3b85.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45035693-e4626900-b05a-11e8-8d20-959dc8905a83.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45036317-6dc66b00-b05c-11e8-874e-8c511268edf6.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45036441-d1509880-b05c-11e8-8ce5-02d6d3640351.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45036378-a5cdae00-b05c-11e8-8969-a7945db1d75a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/34302832/45036365-99495580-b05c-11e8-94ca-972868c0b189.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ThreatGrid/Integrations/ThreatGrid/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47485524-e79df800-d846-11e8-8a55-d4ae00888c44.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47431026-a6084100-d7a3-11e8-93ba-595783320aed.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47431109-d3ed8580-d7a3-11e8-8d5e-1733cfea7209.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47432202-48c1bf00-d7a6-11e8-8aa2-d86296c48e80.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47432285-7e66a800-d7a6-11e8-9077-477d92bc0710.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47432696-78bd9200-d7a7-11e8-9d31-7309e77f97df.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Threat_Grid_mceclip0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47433069-4ceedc00-d7a8-11e8-9369-91f808bd5565.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47433233-afe07300-d7a8-11e8-8cfb-79f8bf08941e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47433444-241b1680-d7a9-11e8-8055-c335ec4df33a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47433625-7d834580-d7a9-11e8-90c5-887dc34186f3.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47433917-131ed500-d7aa-11e8-8cd8-a2964f31d24e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47435252-e61ff180-d7ac-11e8-8565-4a41610e3693.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47435410-3dbe5d00-d7ad-11e8-9daf-d6d1ecb91dad.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47436037-62670480-d7ae-11e8-8328-7f69151fff1b.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47437441-43b63d00-d7b1-11e8-916b-41bb5a119b1a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47438632-82e58d80-d7b3-11e8-962b-f5ec7b8e6bf1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47441386-b971d700-d7b8-11e8-9caa-e55eae2b0932.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47480262-82dba100-d838-11e8-9e4b-9c7d2c9bb643.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47480951-c3d4b500-d83a-11e8-899c-908d7c24a5a4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47481818-7c9bf380-d83d-11e8-9a7b-582e42a856fd.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47482519-7e66b680-d83f-11e8-81c0-1953bc691ce5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47482806-4449e480-d840-11e8-8f0b-d73bd18a09a4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47483865-f2ef2480-d842-11e8-924c-69ff668f83c1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47484658-faafc880-d844-11e8-805f-fbe2530872ed.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47484718-1a46f100-d845-11e8-8b11-bcbce534db95.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47430682-be2b9080-d7a2-11e8-87b8-9749ee4c22f2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47486140-56c81c00-d848-11e8-8a49-abe9bb7184fa.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47486645-7e6bb400-d849-11e8-84bc-ccf5aa070ebd.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47486691-98a59200-d849-11e8-8178-f8bdf5842b68.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47486902-0d78cc00-d84a-11e8-9015-ad05ee52f4b3.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47486756-bbd04180-d849-11e8-85a4-0622a22550fc.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47496245-eb3d7900-d85e-11e8-9d8c-37359b7d999f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47497034-5b4cfe80-d861-11e8-83af-34b7cea5b4b5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47497188-d1516580-d861-11e8-953a-219bc6c965ef.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47497213-e75f2600-d861-11e8-96c5-b3257fe22e98.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47497291-2beac180-d862-11e8-99c2-0c64a014bf66.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47497306-3e64fb00-d862-11e8-8f1b-c2aa623b33ff.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ProtectWise/Integrations/ProtectWise/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/3792355/29264877-6cc04a82-80e7-11e7-8494-7c4860763995.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/3792355/29264909-98cc9644-80e7-11e7-97ec-abb5c5b55f98.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/3792355/29264939-bd54d472-80e7-11e7-95de-22bd3990ea52.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/3792355/29265449-b8e6d618-80e9-11e7-8547-f81014ce3630.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Cisco-umbrella/Integrations/Cisco-umbrella-investigate/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915576-2665bf80-cfb6-11e8-97df-d16a5f63022a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915591-4f865000-cfb6-11e8-8996-d7a3a69d1123.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915640-aa1fac00-cfb6-11e8-8add-fceff77d5063.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915645-d2a7a600-cfb6-11e8-97a6-839482fe5093.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915669-2dd99880-cfb7-11e8-9a99-9a1afef99b5a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915673-4649b300-cfb7-11e8-9ae2-0c7b8916a496.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915683-709b7080-cfb7-11e8-99c2-7824a6a4dde1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915760-b1e05000-cfb8-11e8-918b-eac0ed61af53.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915875-e05f2a80-cfba-11e8-949a-4b76b7528cab.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915887-17354080-cfbb-11e8-9b5e-7a019339293b.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46915906-506db080-cfbb-11e8-9be4-8cae18d2de6a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46916493-28367f80-cfc4-11e8-83fb-e40dff0b3f07.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46916516-7b103700-cfc4-11e8-9a66-9582910c62a4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46916546-be6aa580-cfc4-11e8-972e-6f65297b4dda.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46916586-5cf70680-cfc5-11e8-967f-5f62ad9f084f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46916628-d131aa00-cfc5-11e8-8661-33f6a8e3105a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46916774-c0823380-cfc7-11e8-9c81-8668e9470600.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46917196-b6166880-cfcc-11e8-8e3d-ccc9dd2583d1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46917220-0f7e9780-cfcd-11e8-8b5e-4252c6a93a7e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46917241-58cee700-cfcd-11e8-8d4b-91e9d49005f8.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/12241410/46917266-a64b5400-cfcd-11e8-9aaf-277c50fd8f02.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ReversingLabs_A1000/Integrations/ReversingLabsA1000/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip0.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip1.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip2.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip3.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip4.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip5.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_A1000_mceclip6.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/McAfee-MAR/Integrations/McAfee-MAR/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/46249224/51332801-15c95780-1a85-11e9-9c10-9c80ce2644a5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/51327213-7eaad280-1a79-11e9-98a4-f38eaac9eb5f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/51330887-237cde00-1a81-11e9-9cbf-e748467a1e87.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-McAfee-MAR_McAfee_Active_Response.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962321-6f4c1b00-40f3-11e9-9694-46e36aa9a85c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962359-8c80e980-40f3-11e9-95ec-01be67333154.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962402-a7535e00-40f3-11e9-90d7-65d334ae475f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962439-c18d3c00-40f3-11e9-9716-4876d3291139.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962484-db2e8380-40f3-11e9-80d6-a3b6b5b3f688.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962572-192ba780-40f4-11e9-8e89-f8b1bd3bb2d4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962702-6e67b900-40f4-11e9-825a-06f1e377c323.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/46249224/53962741-88a19700-40f4-11e9-8443-73e9bba8badb.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Jask/Integrations/Jask/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43684921-fbe92ade-98b1-11e8-9794-92f65a727065.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43684938-6d4f3222-98b2-11e8-9601-a301bea40052.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43685069-bb7351ca-98b4-11e8-976c-6d601e0d7b42.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43685094-4774a4f8-98b5-11e8-88fc-867d30fba121.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43685082-fe26e220-98b4-11e8-8050-77e37a7348c4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43685014-eb84c642-98b3-11e8-8f7d-e16e3c68514a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43685112-911cc8a6-98b5-11e8-96d6-4e67c59e45db.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43684958-b96c6cb0-98b2-11e8-838f-db2d78f7f209.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/43685003-c0169ecc-98b3-11e8-892a-dd85e72e715e.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Moloch/Integrations/Moloch/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37589583/44390423-e6dea200-a535-11e8-9c05-2758da9b568b.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/44390893-1215c100-a537-11e8-9b55-387330049a5e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/44390942-35d90700-a537-11e8-8599-91969b2e8afd.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/44391036-76388500-a537-11e8-93c7-746d9a00a6b1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/44391124-b435a900-a537-11e8-9ff7-8ed23760e886.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/44391263-04147000-a538-11e8-92e1-da62736c0494.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WhatIsMyBrowser/Integrations/WhatIsMyBrowser/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/42912128/52565803-8e1b0280-2e10-11e9-9a79-d0172cde27d1.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AttivoBotsink/Integrations/AttivoBotsink/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/30797606/50386345-2c31fc80-06ed-11e9-82a5-34adbe1e70b0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/50386272-33a4d600-06ec-11e9-94e6-190461ed0e86.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/50384845-80c87e00-06d3-11e9-81aa-2273285dc439.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/50385548-1ec24580-06e0-11e9-939b-e91cd907bf6d.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CuckooSandbox/Integrations/CuckooSandbox/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157108-adcd7f00-f327-11e8-9ffb-3b57b4327a0c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157027-824a9480-f327-11e8-8813-15f08d63acee.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157277-16b4f700-f328-11e8-8b31-fb08c628d6da.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157339-3e0bc400-f328-11e8-9ddd-da51c00ac0f9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157518-a6f33c00-f328-11e8-8539-2870fdbde759.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157703-1c5f0c80-f329-11e8-8f21-4f9dbcaf3c87.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157787-516b5f00-f329-11e8-81b0-0d595faf30e7.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157767-457f9d00-f329-11e8-8f01-10e753777cd8.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157858-7a8bef80-f329-11e8-808b-01796ac94398.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49157878-87a8de80-f329-11e8-89ef-0bdd15b6bb77.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49158077-030a9000-f32a-11e8-989f-12f8770db8e9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49158053-f128ed00-f329-11e8-9b81-722afff6f14f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49158230-57ae0b00-f32a-11e8-8c6d-c01004978697.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49158254-64326380-f32a-11e8-811e-dad6b1030eeb.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49158413-bffcec80-f32a-11e8-8ed2-e4d40f5a615e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/11165655/49158380-ad82b300-f32a-11e8-9655-6958941205b7.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Preempt/Integrations/Preempt/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40068766-0c22749e-5872-11e8-89a2-2327746f3c40.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40178946-a3180b50-59eb-11e8-84b8-0b2bbf220da1.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AwakeSecurity/Integrations/AwakeSecurity/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49085895-c96b5380-f25b-11e8-981f-49094d9f5995.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49085933-e7d14f00-f25b-11e8-9df3-b345ebba8400.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49086057-47c7f580-f25c-11e8-8bec-053dc454cfcd.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49086088-5e6e4c80-f25c-11e8-8166-377e45e63fee.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49086142-7c3bb180-f25c-11e8-822b-61520fa109a9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49086196-970e2600-f25c-11e8-9817-0a7c9f674028.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49086239-b311c780-f25c-11e8-8d39-b1ddabfeb019.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/49086270-cf156900-f25c-11e8-8bcf-3fcc02c17db6.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/dnstwist/Integrations/dnstwist/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/39294725/49379863-ed75db80-f718-11e8-8a6d-a320982019c7.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BluecatAddressManager/Integrations/BluecatAddressManager/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/62834322-13159600-bc53-11e9-9fc4-25b30714114b.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Integrations/QRadar/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47648599-299aa700-db83-11e8-934f-bf3394767da9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47648802-cbba8f00-db83-11e8-8f08-bd00838990af.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47649297-84350280-db85-11e8-8ada-f478394b3c41.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47649648-89df1800-db86-11e8-8c2f-a164c8c7517f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47650820-10e1bf80-db8a-11e8-9577-3c639cc88472.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47650998-a67d4f00-db8a-11e8-8cb1-9791acccdff4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47652269-278a1580-db8e-11e8-913a-f761a9338f25.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47652373-69b35700-db8e-11e8-80cf-e42e65bcd3c1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47652469-b5fe9700-db8e-11e8-89ec-eab5dd6af828.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47652630-1d1c4b80-db8f-11e8-9dd7-52947cfa8927.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/47652885-da0ea800-db8f-11e8-9d8b-e5e46cb8cb17.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/49080365-10514d00-f24c-11e8-92a1-e61367eb9fb1.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/49080464-632b0480-f24c-11e8-91cd-3560d2626c2f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/49081049-37108300-f24e-11e8-9554-95b2adccd563.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/49079426-345f5f00-f249-11e8-8855-aecf575781f0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/48839982-f91ae700-ed95-11e8-85f4-6bce65b27f33.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrowdStrikeHost/Integrations/FalconHost/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44453104-f119a280-a600-11e8-801c-5ed975c90dbf.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44453190-29b97c00-a601-11e8-8e98-53efd2012e86.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44453869-cb8d9880-a602-11e8-9964-c12089b7a88e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44453995-11e2f780-a603-11e8-80e7-b08848624a57.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44460535-21b80700-a616-11e8-887e-d2bf6a45c505.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44460608-72c7fb00-a616-11e8-8aa5-58617013e9b5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44460773-0f8a9880-a617-11e8-83e9-b94d145b6074.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/44460697-d0f4de00-a616-11e8-885f-17e15c238985.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/46602938-54508d00-cafa-11e8-8f98-a8ecece76aff.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/46602972-66323000-cafa-11e8-8d03-ca8b83d53e25.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CheckpointFirewall/Integrations/CheckPoint/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/52956734-b5d21380-3398-11e9-84d4-fb6eb40d9cbc.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/52952045-1444c500-338c-11e9-941a-53a7cea3363a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/52951911-c039e080-338b-11e9-9918-c4986fdd4e19.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Kafka/Integrations/Kafka_V2/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip2.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip3.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip4.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip5.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip6.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip7.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/Kafka_V2_mceclip8.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/McAfeeNSM/Integrations/McAfeeNSM/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46800139-7565e780-cd5f-11e8-81d6-02f79db8dddf.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46800212-a5ad8600-cd5f-11e8-8f11-86ebf0f2ca56.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46800465-6cc1e100-cd60-11e8-972a-35871783836f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46800954-ead2b780-cd61-11e8-90d5-b2ee2a75980e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/46801086-4bfa8b00-cd62-11e8-90f6-f292a615d366.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/McAfee_Advanced_Threat_Defense/Integrations/McAfee_Advanced_Threat_Defense/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40610544-7cbb0438-627b-11e8-9842-77cec02258c9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40295195-22d87fb2-5ce1-11e8-970a-6cf5056b56de.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40611388-ce82cef6-627e-11e8-97d5-c41379e1e6b4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40305260-6b07b0f2-5d02-11e8-8c6a-1ade6c796ef4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40305663-1b4031a0-5d04-11e8-8860-dcb5ddfb2654.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40306682-4b9ef512-5d08-11e8-900e-088899639569.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40612912-138722f8-6285-11e8-81d8-f912aefc07d7.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40611388-ce82cef6-627e-11e8-97d5-c41379e1e6b4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/40072030-28d30712-587b-11e8-812a-4fedbf7c1001.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleKubernetesEngine/Integrations/GoogleKubernetesEngine/README.md": [
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/create-project-1.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-menu.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-search.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-1.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/enable-gke-api-enable-2.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-acount-menu.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-1.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-2.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-3.png\"",
+        "<img src=\"https://github.com/demisto/content/raw/2ee9f543ab14293cef22d46e96f7f29c4b376502/Packs/GoogleKubernetesEngine/doc_files/service-account-create-4.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Okta/Integrations/Okta/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43458368-b70ff2a4-94d2-11e8-91b3-dd8467e3e076.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43458391-cbbeda8a-94d2-11e8-99cd-7913ec999799.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/44389432-8189b180-a533-11e8-8984-b29dcd5851e5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/44389475-a0884380-a533-11e8-8c0f-365e1b9bc723.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49521506-3e6b0880-f8ae-11e8-9f2a-37ec8d49d5b0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49521733-c2bd8b80-f8ae-11e8-878f-e10e60a951ac.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49521874-00221900-f8af-11e8-8ab8-5c50575a372c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43457688-4e6ba010-94d0-11e8-9697-89a0edda4ba3.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43457838-c2f59d64-94d0-11e8-99d5-743216e3cf57.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43460338-02e11d74-94d9-11e8-86d5-058fa1e15651.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43460466-632e38c4-94d9-11e8-9f2a-2187b3076b18.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43460554-9fa5d1fe-94d9-11e8-8769-eddc01050544.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43461863-3629ab34-94dd-11e8-8959-58bafde323ef.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43462420-baffa5ec-94de-11e8-853f-bf02b25c9690.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43462731-91389038-94df-11e8-9fe5-39b030db28fe.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43463112-8652d6dc-94e0-11e8-88a0-e53e59dc79e4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43463068-64380af4-94e0-11e8-9824-b7f9f0d0ed43.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43462076-ccb0ee46-94dd-11e8-8bac-9a54b5315c9a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43464242-3cd6e748-94e3-11e8-974e-5d27d1b0ccbf.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/43464335-8cb9d3ec-94e3-11e8-900b-8b27c7789dd6.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Confluence/Integrations/Confluence/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61211686-eda37400-a708-11e9-89df-74f46428a2df.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61211959-8cc86b80-a709-11e9-9b02-38223f462487.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61212165-1a0bc000-a70a-11e9-8f93-15073bb4850f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61212224-46bfd780-a70a-11e9-87da-e50a5179e2fe.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61212428-ed0bdd00-a70a-11e9-9447-b4e11dd66260.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61212301-8686bf00-a70a-11e9-9aac-7c2d4698c3bb.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61212390-cf3e7800-a70a-11e9-90db-3f1a72c77d06.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PhishLabs/Integrations/PhishLabsIOC/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/58381182-d8408200-7fc2-11e9-8726-8056cab1feea.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/HybridAnalysis/Integrations/HybridAnalysis/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/50294648/64110038-af7e1480-cd89-11e9-83d1-260b6cfc46a4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50294648/64110089-d1779700-cd89-11e9-8081-cbafd5302d48.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50294648/64110158-f9ff9100-cd89-11e9-98d6-002df881848c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50294648/64110245-392de200-cd8a-11e9-81da-6141a1a0868e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50294648/64110344-9033b700-cd8a-11e9-98d1-158a2f4b047a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50294648/64110375-a477b400-cd8a-11e9-9f40-0ba69357a9ad.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50294648/64110431-d0933500-cd8a-11e9-8844-1b1e3d1370d3.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SMB/Integrations/SMB/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/39116813/48847906-59685380-edab-11e8-84ad-e3e012bc6c52.jpg\"",
+        "<img src=\"https://user-images.githubusercontent.com/39116813/48847811-22923d80-edab-11e8-9bf0-211c4dfc9fef.jpg\"",
+        "<img src=\"https://user-images.githubusercontent.com/39116813/48847948-769d2200-edab-11e8-944f-70f34f4130d6.jpg\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloud/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_Titanium_Cloud_mceclip0.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-ReversingLabs_Titanium_Cloud_mceclip1.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Salesforce/Integrations/Salesforce/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/30797606/44449362-98450c80-a5f6-11e8-94e0-6a5b31093efb.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/44452383-0db4db00-a5ff-11e8-8f75-6027a8a339e2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/44452576-874cc900-a5ff-11e8-9c5b-4ce0f75ae3f9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/44452616-a8adb500-a5ff-11e8-96d5-46069125ce64.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/44452464-43f25a80-a5ff-11e8-918a-7efb4af4ea29.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/44452529-66847380-a5ff-11e8-80af-32177c2479d0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/44452804-1bb72b80-a600-11e8-9ab0-85b6fb631091.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip1.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip2.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip3.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip4.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip5.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip6.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-Salesforce_mceclip7.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GRR/Integrations/GRR/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/20818773/44957392-5c515780-aed2-11e8-9660-173f343e1da4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/44957436-f44f4100-aed2-11e8-83ac-ca734bce7c9d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/44958397-05527f00-aee0-11e8-8810-79fea033d908.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/44958498-865e4600-aee1-11e8-8ed9-f5475b8f3347.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/44958552-1603f480-aee2-11e8-8acb-eed94aa56d85.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/44958573-582d3600-aee2-11e8-9235-73f008ec5265.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Integrations/integration-SafeBreach_README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip0.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip1.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip2.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip3.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip4.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/integration-SafeBreach_mceclip5.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Integrations/PaloAltoNetworksCortex/README.md": [
+        "<img src=\"https://github.com/demisto/content/raw/f1905b0493aa2a06c0ad0306a77e6fb0e0e5214f/Packs/DeprecatedContent/Integrations/PaloAltoNetworksCortex/doc_files/mceclip0.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Integrations/PaloAlto_MineMeld/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip0.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip4.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip3.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip2.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip8.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip6.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip7.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip5.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/PaloAlto_MineMeld_mceclip1.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/InfoArmor_VigilanteATI/Integrations/InfoArmorVigilanteATI/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703409-71463100-fc0d-11e8-81e8-96fdb7eb04fe.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703479-5cb66880-fc0e-11e8-817f-508a2b963d47.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703715-30e8b200-fc11-11e8-8a71-f99424e6f979.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703730-6d1c1280-fc11-11e8-8e08-139ff002bbcf.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703770-077c5600-fc12-11e8-8f2b-372b4014f2ac.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703803-7a85cc80-fc12-11e8-8dd2-96feb2ab4a44.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703847-fc75f580-fc12-11e8-8b0b-34754ee045c7.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703860-1e6f7800-fc13-11e8-8480-45fe81652b7f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703867-3941ec80-fc13-11e8-9d11-26c1dc86e815.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/7270217/49703874-4c54bc80-fc13-11e8-9cb5-688e59fecdc6.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Anomali_ThreatStream/Integrations/AnomaliThreatStream/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/37356596-0a3037b6-26ef-11e8-8190-33c46f922e76.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/37357065-1d87d110-26f0-11e8-88dd-ce7fa57c2333.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38622450-e197e028-3dab-11e8-8052-dcca83edaf2e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38622011-dee2abfc-3daa-11e8-981e-9b6df753f93c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/38622277-7cd944ec-3dab-11e8-832b-1f8113a2d2dd.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SNDBOX/Integrations/SNDBOX/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/30797606/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/49791293-d9456600-fd38-11e8-9996-a96434e70e57.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/49791827-f0d11e80-fd39-11e8-9ab4-bff7177937e5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/49791444-2d504a80-fd39-11e8-98fd-38b2fefe17f3.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/49791216-a3a07d00-fd38-11e8-9b59-9dd1df80cd68.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/30797606/49791673-ae0f4680-fd39-11e8-8655-e3aa2d84a508.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AbuseDB/Integrations/AbuseDB/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/44546251/50418178-b89a0780-0832-11e9-86ee-8b206273ca11.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44546251/50418320-70c7b000-0833-11e9-8c4d-8f24735aa127.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44546251/50419024-44ae2e00-0837-11e9-926a-2e7084b547ab.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44546251/50419051-6d362800-0837-11e9-9f8c-8a9577c8cfad.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44546251/50474306-2d9f4580-09c9-11e9-8d74-82b22fedb185.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AlphaSOC_Network_Behavior_Analytics/Integrations/AlphaSOCNetworkBehaviorAnalytics/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-AlphaSOC_Network_Behavior_Analytics_mceclip0.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-AlphaSOC_Network_Behavior_Analytics_mceclip1.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-AlphaSOC_Network_Behavior_Analytics_mceclip2.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ThreatQ/Integrations/ThreatQ_v2/README.md": [
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/search-by-name.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/ip.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/url.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/file.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/email.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/domain.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/create-indicator.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/add-attribute.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/modify-attribute.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/link-objects.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/create-adversary.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/create-event.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-related-indicators.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/update-status.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-related-events.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-related-adversaries.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/upload-file.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/search-by-id.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/unlink-objects.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/delete-object.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/add-source.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/delete-source.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/delete-attribute.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/edit-adversary.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/edit-indicator.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/edit-event.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/update-score.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/download-file.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-all-indicators.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-all-events.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/e572d45cc445522b558166d4d0232598fb983d9b/Packs/ThreatQ/doc_files/get-all-adversaries.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PhishAI/Integrations/PhishAI/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37335599/53904776-86393180-404f-11e9-91b0-bb572f709568.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/53904907-d6b08f00-404f-11e9-9cce-14c2e2092783.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37335599/53904858-b8e32a00-404f-11e9-8976-b74d63b9deeb.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ServiceNow/Integrations/ServiceNow/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49080934-eac54300-f24d-11e8-8a68-41401ef2f37c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49081133-7939c480-f24e-11e8-9e91-bad17c618e8d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49081247-e4839680-f24e-11e8-848f-fda6bc14fe9e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49081310-21e82400-f24f-11e8-9876-4d1ae0f32f1a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49081488-b6eb1d00-f24f-11e8-8c33-4da0b732937a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49081549-e13cda80-f24f-11e8-9b64-19e3f49483e8.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49081849-bf902300-f250-11e8-9786-f55cd9faa98a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49082217-e569f780-f251-11e8-8fda-a0516b297d6f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49082687-17c82480-f253-11e8-9ab2-bdbb379fbdad.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49082769-480fc300-f253-11e8-93f2-c2ca049ffdbc.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49083041-1519ff00-f254-11e8-9af9-ac2fd755965d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49083116-5d392180-f254-11e8-8854-6b250075eab2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49083163-82c62b00-f254-11e8-95bd-ff220d887ee2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49084292-b35b9400-f257-11e8-98b9-40c404c2a52f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49084519-5dd3b700-f258-11e8-8675-47bf47bc3fba.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49084595-95dafa00-f258-11e8-99d0-d55a044b5b8d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49084694-dfc3e000-f258-11e8-83d5-f5ee9b23f9c6.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/49531657-66189b80-f8c3-11e8-8479-cba45949186c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/35098543/52177960-28f05d00-27d1-11e9-8628-9e46a3916f61.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ThinkstCanary/Integrations/ThinkstCanary/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/43776787/53302684-b58aba00-3869-11e9-8a7e-67c13fc8562c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/53302739-35b11f80-386a-11e9-95be-5af5db6e8a8a.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/53302758-86c11380-386a-11e9-89c5-d1bd1ab46a45.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/53302772-b5d78500-386a-11e9-816c-bb69eecfe879.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/53302809-2f6f7300-386b-11e9-8eba-71a9d6f4ddd8.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/53302891-55494780-386c-11e9-8f2d-5e96faf84353.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Skyformation/Integrations/integration-Skyformation_README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/7270217/38675723-f709f718-3e58-11e8-9a01-3b186fddd772.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleVault/Integrations/GoogleVault/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/43776787/47161140-145b8800-d2fa-11e8-9eac-3381061bc230.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/47161524-e165c400-d2fa-11e8-88fe-21fbdfef451f.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/47161595-078b6400-d2fb-11e8-8d97-2c5975abd758.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/47162143-1b839580-d2fc-11e8-814e-609584fd2f10.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/47167893-352ada00-d308-11e8-8ca3-593707cdf3f0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/43776787/47168080-ae2a3180-d308-11e8-918e-48f021b79e2b.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50386641-b1201480-06f3-11e9-994b-a26fa654a213.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50386644-b3826e80-06f3-11e9-957f-aebba5164fa9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50386650-dc0a6880-06f3-11e9-94f9-ab366ae92621.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50386652-e6c4fd80-06f3-11e9-843d-3df773e91f7c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50386711-ec6f1300-06f4-11e9-942d-639d880239ba.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50398687-394cfb00-0782-11e9-8300-616e41056052.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50395068-79a07f00-076a-11e9-8eb8-c93c685947f0.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50398745-ac567180-0782-11e9-96ff-78f11d2dd497.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50395014-275f5e00-076a-11e9-9e28-52f4087c7007.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50395016-2af2e500-076a-11e9-8613-4b8b87e563fb.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50395180-1105d200-076b-11e9-958a-21d8f021a4d6.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50395183-1400c280-076b-11e9-82fa-a06d21843ba4.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396288-e2d7c080-0771-11e9-87fe-f3afc8a53085.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396294-eff4af80-0771-11e9-8ffa-724ca19a507c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396412-99d43c00-0772-11e9-9171-bc61c3c4d3a2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396502-2bdc4480-0773-11e9-8854-8c26545e7447.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396507-326abc00-0773-11e9-84de-3592cabe44ca.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396812-f0427a00-0774-11e9-8f5f-999c320a3e47.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396815-f20c3d80-0774-11e9-9bcb-55fd151a6e59.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396947-bfaf1000-0775-11e9-8f15-ca2dc368e3cb.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50396949-c2116a00-0775-11e9-82ca-ee7bd4de9a8d.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50397147-081afd80-0777-11e9-8dbb-d77e1e6f1ae5.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50397150-09e4c100-0777-11e9-882b-0dc0f854ddf9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50397265-d48ca300-0777-11e9-8925-8efd86cec6d7.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50398334-56cc9580-077f-11e9-9d8f-e2eb81150e67.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/44666568/50398335-592eef80-077f-11e9-8149-eb21e8df7cf4.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip3.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip2.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip1.png\"",
+        "<img src=\"https://raw.githubusercontent.com/demisto/content/ca13780e216a39751600dcb1e386d12f52fc8f25/docs/images/Integrations/GoogleVault_mceclip0.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Vertica/Integrations/Vertica/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/12241410/55957498-2eee3880-5c6f-11e9-9566-6e4dcfcea39b.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TruSTAR/Integrations/TruSTAR/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/20818773/50224301-3929b580-03a6-11e9-8551-49b9a70f1ed2.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/50224462-a9d0d200-03a6-11e9-988a-2ac641052602.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/50224336-59597480-03a6-11e9-9b81-305fc5f3b4d9.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/20818773/50224567-e56b9c00-03a6-11e9-9e64-3ca5bbf58989.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/C2sec/Integrations/C2sec/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61213135-cf3f7780-a70c-11e9-8a13-09c6f2701b43.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61213344-758b7d00-a70d-11e9-8f4d-57227824201b.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61213321-6278ad00-a70d-11e9-8d2d-7e05f7c5e955.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61213286-496ffc00-a70d-11e9-97dc-ad932cad733c.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/37589583/61213200-06ae2400-a70d-11e9-93b0-d7fd5ff7a763.png\""
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/McAfee-TIE/Integrations/McAfee-TIE/README.md": [
+        "<img src=\"https://user-images.githubusercontent.com/50324325/62193823-43228680-b381-11e9-94c6-1a31e905b14e.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50324325/62193925-7402bb80-b381-11e9-948e-a9467a62b61b.png\"",
+        "<img src=\"https://user-images.githubusercontent.com/50324325/62193959-8e3c9980-b381-11e9-8f6a-c2c90c57118a.png\""
+    ]
+}
