@@ -514,7 +514,8 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
         
         # The new API version returns status instead of state,
         # mapping this for the output to look the same.
-        alert['state'] = alert['workflow']['status']
+        alert['workflow']['state'] = alert['workflow']['status']
+        alert['first_event_time'] = alert['first_event_timestamp']
         
         contents.append({
             'AlertID': alert.get('id'),
