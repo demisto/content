@@ -446,6 +446,9 @@
                 "Cloud Service": {
                     "simple": "service_provider"
                 },
+                "Cloud Account ID": {
+                    "simple": "service_provider_account_id"
+                },
                 "Last Update Time": {
                     "simple": "timestamp"
                 },
