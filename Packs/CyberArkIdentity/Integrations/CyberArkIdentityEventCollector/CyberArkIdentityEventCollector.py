@@ -132,8 +132,8 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",
-            # url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/token/{self.options.app_id}",
+            # url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",
+            url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/token/{self.options.app_id}",
             headers={'Authorization': f"Basic {credentials}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
             verify=not self.request.verify,
@@ -142,19 +142,20 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         response = self.call(request)
         if response.ok:
             demisto.debug('authenticated successfully')
-            demisto.debug(f"response text is: {response.text}")
-            demisto.debug(f"response content is: {response.content}")
-            demisto.debug(f"response is redirect: {response.is_redirect}")
             try:
-                res_text = response.text
-                demisto.debug("from text to json")
-                res_dict = json.loads(res_text)
-                demisto.debug(f"got res_dict: {res_dict}")
-                self.access_token = res_dict.get('access_token')
-                # self.access_token = response.json()['access_token']
+                self.access_token = response.json()['access_token']
             except Exception as e:
-                demisto.debug(f"failed with {e}")
-                return_error(f"failed to parse response, e is: {e}")
+                demisto.debug(f"failed to retrieve access token: {e}")
+                request = IntegrationHTTPRequest(
+                    method=Method.POST,
+                    url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",
+                    headers={'Authorization': f"Basic {credentials}"},
+                    data={'grant_type': 'client_credentials', 'scope': 'siem'},
+                    verify=not self.request.verify,
+                )
+
+                response = self.call(request)
+                self.access_token = response.json()['access_token']
             self.request.headers['Authorization'] = f'Bearer {self.access_token}'
         else:
             demisto.debug(f'authentication failed: {response.json()}')
