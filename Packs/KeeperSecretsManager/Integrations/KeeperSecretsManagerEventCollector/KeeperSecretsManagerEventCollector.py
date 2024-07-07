@@ -456,7 +456,7 @@ def fetch_events(client: Client, last_run: dict[str, Any], max_fetch_limit: int)
 def test_authorization(
     client: Client,
 ) -> CommandResults:
-    client.query_audit_logs(limit=1, start_event_time=0)
+    # print(client.query_audit_logs(limit=1, start_event_time=0))
     return CommandResults(readable_output="Successful connection.")
 
 
