@@ -138,7 +138,7 @@ def calculate_fetch_dates(start_date: str, last_run: dict, end_date: str = "") -
     return start_date, end_date
 
 
-def fetch_events(client: Client, max_fetch: int, start_date_str: str = "", end_date_str: str = "") -> tuple:
+def fetch_events(client: Client, max_fetch: int) -> tuple:
     last_run = demisto.getLastRun()
     continuation_token = last_run.get("continuationToken", "")
     demisto.log(f"{continuation_token=}")  # TODO: Remove
@@ -210,12 +210,10 @@ def validate_start_and_end_dates(start_date_str: str, end_date_str: str):
     return start_date_str, end_date_str
 
 
-def get_events_command(client: Client, start_date_str: str, end_date_str: str, max_fetch: int, last_run: dict,
-                       limit: int) -> tuple:
-    valid_start_date, valid_end_date = validate_start_and_end_dates(start_date_str, end_date_str)
-    events, _ = fetch_events(client=client, max_fetch=limit, start_date_str=valid_start_date, end_date_str=valid_end_date)
+def get_events_command(client: Client, start_date_str: str, end_date_str: str, max_fetch: int) -> tuple:
+    events, _ = fetch_events(client=client, max_fetch=max_fetch, start_date_str=start_date_str, end_date_str=end_date_str)
     if events:
-        events = events[:limit]
+        events = events[:max_fetch]
         return events, CommandResults(readable_output=tableToMarkdown("Bitwarden Events", events),
                                       raw_response=events)
 
@@ -233,11 +231,10 @@ def main() -> None:  # pragma: no cover
     base_url = demisto_params.get('url', 'https://api.bitwarden.com')
     client_id = demisto_params.get('credentials', {}).get('identifier')
     client_secret = demisto_params.get('credentials', {}).get('password')
-    max_events_per_fetch = arg_to_number(demisto_params.get('max_fetch')) or DEFAULT_MAX_FETCH
-    first_fetch_time_timestamp = convert_to_timestamp(
-        arg_to_datetime(demisto_params.get('first_fetch', DEFAULT_FIRST_FETCH)))
+    max_events_per_fetch = arg_to_number(demisto_params.get('max_fetch_events')) or DEFAULT_MAX_FETCH
     verify_certificate = not demisto_params.get('insecure', False)
     proxy = demisto_params.get('proxy', False)
+
     command = demisto.command()
     demisto.debug(f'Command being called is {command}')
     try:
@@ -251,29 +248,24 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'bitwarden-get-events':
-            events, results = get_events_command(client=client, args=args)
+            valid_start_date, valid_end_date = validate_start_and_end_dates(args.get('start'), args.get('end'))
+            events, results = get_events_command(client=client,
+                                                 start_date_str=valid_start_date,
+                                                 end_date_str=valid_end_date,
+                                                 max_fetch=max_events_per_fetch)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         elif demisto.command() == 'fetch-events':
-            last_run = demisto.getLastRun()
             events, new_last_run = fetch_events(client=client,
-                                                max_fetch=max_events_per_fetch,
-                                                start_time=first_fetch_time_timestamp,
-                                                end_time=int(datetime.now().timestamp()),
-                                                last_run=last_run)
+                                                max_fetch=max_events_per_fetch)
             if events:
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)  # type: ignore
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 if new_last_run:
                     demisto.setLastRun(new_last_run)
-        else:
-            raise NotImplementedError(f'{command} command is not implemented.')
 
     except Exception as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            return_error('Authorization Error: make sure API Key is correctly set')
-        else:
-            return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
