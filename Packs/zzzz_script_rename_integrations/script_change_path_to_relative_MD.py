@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from urllib.parse import urlparse
 import logging
+import requests
 
 logger = logging.getLogger(__name__)
 PACKS_PATH = '/Users/mmorag/dev/demisto/content/Packs'
@@ -12,7 +13,7 @@ HTML_IMAGE_LINK_REGEX_SDK = r'(<img.*?src\s*=\s*"(https://.*?)")'
 URL_IMAGE_LINK_REGEX = r"(\!\[.*?\])\((?P<url>https://[a-zA-Z_/\.0-9\- :%]*?)\)((].*)?)"
 
 
-def find_image_in_doc_files(image_name, pack_name):
+def find_image_in_doc_files(image_name, pack_name, url =''):
     """
         Searches for a specific image file within the document files of a given pack.
 
@@ -27,9 +28,16 @@ def find_image_in_doc_files(image_name, pack_name):
             OSError: If there is an error while checking for the existence of the document files path.
 
     """
-    doc_files_path = os.path.join(PACKS_PATH, pack_name)
+    doc_files_path = os.path.join(PACKS_PATH, f'{pack_name}/doc_files')
     try:
-        return os.path.exists(doc_files_path)
+        if os.path.exists(doc_files_path):
+            response = requests.get(url, verify=False)
+            if response.status_code == 200:
+                filename = url.split('/')[-1]
+                full_path = os.path.join(doc_files_path, filename)
+        with open(full_path, 'wb') as f:
+            f.write(response.content)
+        return True
     except Exception as error:
         logger.debug(f"Failed to get related text file, error: {error}")
     logger.debug(f"File {doc_files_path} does not exist.")
@@ -53,13 +61,16 @@ def change_image_link_to_relative(lines, md_path):
             url = res["url"]
             if not url:
                 url = res.group(0) or res.group(1)
+            if '<img src="' in url:
+                    list_not_found.append(url)
+                    url= url[len('<img src="'):-1]
             parse_url = urlparse(url)
             url_path = Path(parse_url.path)
-            if find_image_in_doc_files(url_path.name, pack_name):
+            if find_image_in_doc_files(url_path.name, pack_name, url):
                 new_replace_url = f'../../doc_files/{url_path.name}'
-                if '<img src="' in url:
-                    list_not_found.append(url)
-                    new_replace_url=f'<img src="{new_replace_url}'
+                # if '<img src="' in url:
+                #     list_not_found.append(url)
+                #     new_replace_url=f'<img src="{new_replace_url}'
                 lines[i] = line.replace(url, new_replace_url)
                 try:
                     with open(md_path, 'w') as file:
