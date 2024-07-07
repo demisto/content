@@ -1,4 +1,4 @@
-id: 9d8f2fc1-b8d5-4bad-8465-6e670d13988d
+id: ReliaQuest GreyMatter DRP - URL_IoC Assessment & Enrichment_url
 version: 258
 contentitemexportablefields:
   contentitemfields:
@@ -9,6 +9,7 @@ contentitemexportablefields:
     toServerVersion: ""
     definitionid: ""
 vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
 name: ReliaQuest GreyMatter DRP - URL_IoC Assessment & Enrichment_url
 description: Enrichment of URL IOC types - sub-playbook for IOC Assessment & Enrichment
   playbook

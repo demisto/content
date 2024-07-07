@@ -1,4 +1,4 @@
-id: 5440720c-6b65-4341-8896-9a69964138e1
+id: ReliaQuest GreyMatter DRP - IP_IoC Assessment & Enrichment
 version: 270
 contentitemexportablefields:
   contentitemfields:
@@ -13,6 +13,7 @@ name: ReliaQuest GreyMatter DRP - IP_IoC Assessment & Enrichment
 description: Enrichment of IP IOC types - sub-playbook for IOC Assessment & Enrichment
   playbook
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"

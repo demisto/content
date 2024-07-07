@@ -5,8 +5,8 @@
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
-	"id": "DigitalShadowsIncidentMapper",
+    "fromVersion": "6.0.0",
+	"id": "Reliaquest_GreyMatter_DRP_Incidents_Mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -208,7 +208,7 @@
 			}
 		}
 	},
-	"name": "Reliaquest GreyMatter DRP Incidents Mapper",
+	"name": "Reliaquest_GreyMatter_DRP_Incidents_Mapper",
 	"nameRaw": "Reliaquest GreyMatter DRP Incidents Mapper",
 	"packID": "",
 	"packName": "",

@@ -1,4 +1,4 @@
-id: 6420c86e-5cac-4725-83a7-a43c8d46045d
+id: ReliaQuest GreyMatter DRP - CVE_IoC Assessment & Enrichment
 version: 259
 contentitemexportablefields:
   contentitemfields:
@@ -654,3 +654,4 @@ outputs:
   description: Indicator Type
   type: string
 sourceplaybookid: Digital Shadows - CVE_IoC Assessment & Enrichment
+fromversion: 5.0.0

@@ -1,4 +1,4 @@
-id: 7ff975db-3efd-4687-8e31-8a54d82393fc
+id: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
 version: 259
 contentitemexportablefields:
   contentitemfields:
@@ -9,6 +9,7 @@ contentitemexportablefields:
     toServerVersion: ""
     definitionid: ""
 vcShouldKeepItemLegacyProdMachine: false
+fromversion: 5.0.0
 name: ReliaQuest GreyMatter DRP - SHA1_IoC Assessment & Enrichment
 description: Enrichment of SHA1 IOC types - sub-playbook for IOC Assessment & Enrichment
   playbook

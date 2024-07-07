@@ -3072,5 +3072,6 @@
 	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "",
+    "fromVersion": "6.0.0",
 	"version": -1
 }

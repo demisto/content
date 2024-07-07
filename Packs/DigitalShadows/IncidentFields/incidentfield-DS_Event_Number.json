@@ -16,7 +16,7 @@
 	"description": "",
 	"editForm": true,
 	"fieldCalcScript": "",
-	"fromServerVersion": "",
+    "fromVersion": "5.0.0",
 	"group": 0,
 	"hidden": false,
 	"id": "incident_dseventnumber",
@@ -49,5 +49,6 @@
 	"validatedError": "",
 	"validationRegex": "",
 	"version": -1,
-	"x2_fields": ""
+	"x2_fields": "",
+    "fromVersion": "5.0.0"
 }

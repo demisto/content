@@ -1,4 +1,4 @@
-id: 57535a1d-a7c0-4144-83e2-dd6bacfe0649
+id: ReliaQuest GreyMatter DRP - Domain_IoC Assessment & Enrichment
 version: 260
 contentitemexportablefields:
   contentitemfields:
@@ -662,3 +662,4 @@ outputs:
   description: Indicator Type
   type: string
 sourceplaybookid: Digital Shadows - Domain_IoC Assessment & Enrichment
+fromversion: 5.0.0

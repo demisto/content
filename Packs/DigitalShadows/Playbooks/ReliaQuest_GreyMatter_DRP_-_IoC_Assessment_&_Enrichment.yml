@@ -1,4 +1,4 @@
-id: 2126568c-ab8b-4c9c-8bfc-99d558079e51
+id: ReliaQuest GreyMatter DRP - IoC Assessment & Enrichment
 version: 8
 contentitemexportablefields:
   contentitemfields:
@@ -13,6 +13,7 @@ name: ReliaQuest GreyMatter DRP - IoC Assessment & Enrichment
 description: Enrich indicators by providing intelligence and more associated indicators
   based on confirmed reporting in Digital Shadows SearchLight.
 starttaskid: "0"
+fromversion: 5.0.0
 tasks:
   "0":
     id: "0"
