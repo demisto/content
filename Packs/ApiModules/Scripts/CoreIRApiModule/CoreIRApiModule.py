@@ -217,6 +217,7 @@ class CoreClient(BaseClient):
         headers = headers if headers else self._headers
         data = json.dumps(json_data) if json_data else data
         address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        demisto.debug(f"http_request: {method=} {address=} {data=} {headers=}")
         response = demisto._apiCall(
             method=method,
             path=address,
@@ -1540,7 +1541,7 @@ class CoreClient(BaseClient):
         }
         response = self._http_request(
             method='POST',
-            url_suffix="/endpoints/terminate_process",
+            url_suffix="/endpoints/terminate_process/",
             json_data=request_data
         )
         demisto.debug(f"###$$$ terminate_process: {response=}")
@@ -1551,12 +1552,12 @@ class CoreClient(BaseClient):
         request_data: Dict[str, Any] = {
             "agent_id": agent_id,
             "causality_id": causality_id,
-            "process_name": process_name,
-            "incident_id": incident_id
+            # "process_name": process_name,
+            # "incident_id": incident_id
         }
         response = self._http_request(
             method='POST',
-            url_suffix="/endpoints/terminate_process",
+            url_suffix="/endpoints/terminate_process/",
             json_data=request_data
         )
         demisto.debug(f"###$$$ terminate_causality: {response=}")
