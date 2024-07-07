@@ -1,28 +1,27 @@
-elasticcommonfields: {}
 id: EvaluateMLModllAtProduction-Test
 version: -1
-name: EvaluateMLModllAtProduction-Test
+name: DBotFindSimilarIncidents-test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 29ce4aa3-1c60-4977-81a8-ccd4534c9e8e
+    taskid: 53859bf6-0ad5-48e8-83ea-e56e86b07a82
     type: start
     task:
-      elasticcommonfields: {}
-      id: 29ce4aa3-1c60-4977-81a8-ccd4534c9e8e
+      id: 53859bf6-0ad5-48e8-83ea-e56e86b07a82
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "5"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
@@ -31,50 +30,19 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-  "1":
-    id: "1"
-    taskid: df1817d1-ba19-419e-8aa2-694f6b8eeca7
-    type: regular
-    task:
-      elasticcommonfields: {}
-      id: df1817d1-ba19-419e-8aa2-694f6b8eeca7
-      version: -1
-      name: Create Incidents
-      scriptName: CreateIncidentsForEvaluateMLModllAtProduction
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "2"
-    scriptarguments:
-      historicListName: {}
-      numberOfIncidents:
-        simple: "100"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 450,
-          "y": 220
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b65f3ed9-a3e8-490f-8d32-d19fbe712c10
+    taskid: ab3d08f1-8bc2-4c87-857b-2e29bb3f5f38
     type: regular
     task:
-      elasticcommonfields: {}
-      id: b65f3ed9-a3e8-490f-8d32-d19fbe712c10
+      id: ab3d08f1-8bc2-4c87-857b-2e29bb3f5f38
       version: -1
-      name: Evaluate Model
-      description: Evaluate ML model in production
-      scriptName: EvaluateMLModllAtProduction
+      name: DBotFindSimilarIncidents
+      description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+      scriptName: DBotFindSimilarIncidents
       type: regular
       iscommand: false
       brand: ""
@@ -82,25 +50,29 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      additionalFields: {}
-      emailPredictionKey:
-        simple: ${EmailPredictionKey}
-      emailPredictionProbabilityKey:
-        simple: ${EmailPredictionProbabilityKey}
-      emailTagKey:
-        simple: ${EmailTagKey}
-      incidentTypes:
-        simple: Simulation
-      incidentsQuery: {}
-      modelTargetAccuracy: {}
-      phishingLabels:
-        simple: Tag1:ham,Tag2:spam
+      fieldExactMatch:
+        simple: accountname
+      fromDate:
+        simple: 1 hour
+      incidentId:
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      similarTextField:
+        simple: details
+      toDate:
+        simple: now
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 420
+          "x": 265,
+          "y": 545
         }
       }
     note: false
@@ -108,38 +80,53 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: f884e4d2-30f8-4def-87c9-2c027ef8270a
+    taskid: bdd0da3d-8aad-4682-8aff-d2c6a3321690
     type: condition
     task:
-      elasticcommonfields: {}
-      id: f884e4d2-30f8-4def-87c9-2c027ef8270a
+      id: bdd0da3d-8aad-4682-8aff-d2c6a3321690
       version: -1
-      name: Check Precision equals 1
+      name: Check results
       type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      "yes":
+      "Yes":
       - "4"
     separatecontext: false
     conditions:
-    - label: "yes"
+    - label: "Yes"
       condition:
-      - - operator: greaterThan
+      - - operator: isTrue
           left:
             value:
-              simple: EvaluateMLModllAtProduction.EvaluationScores.Precision.All
+              simple: DBotFindSimilarIncidents.isSimilarIncidentFound
+            iscontext: true
+      - - operator: isEqualString
+          left:
+            value:
+              simple: DBotFindSimilarIncidents.similarIncident.id
             iscontext: true
           right:
             value:
-              simple: "0.95"
+              complex:
+                root: CreatedIncidentID
+                transformers:
+                - operator: atIndex
+                  args:
+                    index:
+                      value:
+                        simple: "1"
+            iscontext: true
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 610
+          "x": 265,
+          "y": 720
         }
       }
     note: false
@@ -147,24 +134,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 14b3a70e-27cb-4582-8ea0-659eef8b932c
+    taskid: bd930f7e-c2f1-4b46-8efa-6562c60105fe
     type: title
     task:
-      elasticcommonfields: {}
-      id: 14b3a70e-27cb-4582-8ea0-659eef8b932c
+      id: bd930f7e-c2f1-4b46-8efa-6562c60105fe
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 800
+          "x": 265,
+          "y": 895
         }
       }
     note: false
@@ -172,14 +162,136 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: c2bb7962-e995-45e1-8636-0ecf2b3ff45c
+    type: regular
+    task:
+      id: c2bb7962-e995-45e1-8636-0ecf2b3ff45c
+      version: -1
+      name: Clear context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+      - "7"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 58890a1b-198a-4f21-87d6-a73d27b24075
+    type: regular
+    task:
+      id: 58890a1b-198a-4f21-87d6-a73d27b24075
+      version: -1
+      name: Create incident 1
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accountname:
+        simple: SimilarAccountName
+      details:
+        simple: this is a test incident and should match up with TestIncident_2
+      name:
+        simple: TestIncident_1
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 89bf5bb4-77e5-4462-819e-656511050e55
+    type: regular
+    task:
+      id: 89bf5bb4-77e5-4462-819e-656511050e55
+      version: -1
+      name: Create incident 2
+      description: commands.local.cmd.create.inc
+      script: Builtin|||createNewIncident
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      accountname:
+        simple: SimilarAccountName
+      details:
+        simple: this is a test incident and should match up with TestIncident_1
+      name:
+        simple: TestIncident_2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 815,
-        "width": 380,
-        "x": 450,
+        "height": 910,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
@@ -187,3 +299,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.0.0
+description: ''

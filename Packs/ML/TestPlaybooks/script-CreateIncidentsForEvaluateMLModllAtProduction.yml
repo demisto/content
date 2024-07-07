@@ -17,7 +17,7 @@ script: >+
   incident1_template = {
       'type': 'Simulation',
       'name': 'Tag1',
-      'details': 'ham',
+      'classification': 'ham',
       'description': 1.0
   }
 
@@ -25,7 +25,7 @@ script: >+
   incident2_template = {
       'type': 'Simulation',
       'name': 'Tag2',
-      'details': 'spam',
+      'classification': 'spam',
       'description': 1.0,
   }
 
@@ -54,7 +54,7 @@ script: >+
           'EmailBodyKey': 'details',
           'EmailTagKey': 'name',
           'IncidentsQuery': 'type:Simulation',
-          'EmailPredictionKey': 'details',
+          'EmailPredictionKey': 'classification',
           'EmailPredictionProbabilityKey': 'description'
       }
   })
