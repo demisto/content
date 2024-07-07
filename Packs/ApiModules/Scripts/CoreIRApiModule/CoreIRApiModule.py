@@ -1540,7 +1540,7 @@ class CoreClient(BaseClient):
         }
         response = self._http_request(
             method='POST',
-            url_suffix="public_api/v1/endpoints/terminate_process/",
+            url_suffix="/endpoints/terminate_process",
             json_data=request_data
         )
         demisto.debug(f"###$$$ terminate_process: {response=}")
@@ -1556,7 +1556,7 @@ class CoreClient(BaseClient):
         }
         response = self._http_request(
             method='POST',
-            url_suffix="public_api/v1/endpoints/terminate_process/",
+            url_suffix="/endpoints/terminate_process",
             json_data=request_data
         )
         demisto.debug(f"###$$$ terminate_causality: {response=}")
