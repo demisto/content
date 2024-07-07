@@ -331,6 +331,8 @@ def main():  # pragma: no cover
 
         elif command == 'core-retrieve-file-details':
             return_entry, file_results = retrieve_file_details_command(client, args, False)
+            print(f'DANF: return_entry: {return_entry}')
+            print(f'DANF: file_results: {file_results}')
             demisto.results(return_entry)
             if file_results:
                 demisto.results(file_results)
