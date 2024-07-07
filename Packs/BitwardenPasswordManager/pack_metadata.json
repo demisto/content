@@ -1,6 +1,6 @@
 {
-    "name": "BitwardenPasswordManager",
-    "description": "## FILL MANDATORY FIELD ##",
+    "name": "Bitwarden Password Manager",
+    "description": "Bitwarden Password Manager is a secure, open-source tool for storing and managing passwords and sensitive information across devices.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",
