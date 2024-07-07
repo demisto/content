@@ -161,7 +161,7 @@ def get_events(client: Client, start_date: str, max_fetch: int, last_run: dict, 
         has_next = False
         if len(events) >= max_fetch:
             break
-        response = client.get_events(start_date, end_date, continuation_token)
+        response = client.get_events(start_date=start_date, continuation_token=continuation_token)
 
         if continuation_token := response.get("continuationToken"):
             has_next = True
