@@ -811,7 +811,7 @@ script:
     description: Get list of available scripts.
     arguments:
     - name: script_id
-      description: Internal ID/name of the script.
+      description: Internal ID/name of the script. Leave empty to list all available scripts.
       required: false
     outputs:
     - contextPath: Resilient.Script

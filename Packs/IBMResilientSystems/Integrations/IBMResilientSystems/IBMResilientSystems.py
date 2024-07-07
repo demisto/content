@@ -118,6 +118,7 @@ EXP_TYPE_ID_DICT = {
     3: 'Individual'
 }
 
+''' CONSTANTS '''
 ''' HELPER FUNCTIONS '''
 
 
@@ -1084,10 +1085,33 @@ def list_scripts_command(rs_client: SimpleClient, args: dict) -> CommandResults:
         or a specific script if `script_id` argument was provided.
     """
     human_readable = ''
+    script_id = args.get("script_id", "")
     try:
-        response = rs_client.get(f'/scripts/{args.get("script_id", "")}')
-        human_readable = str(response)
-    #     human_readable = "TODO"
+        response = rs_client.get(f'/scripts/{script_id}')
+        demisto.debug(f'list_scripts_command {response=}')
+
+        script_ids = []
+        scripts_to_process = [response] if script_id else response.get(SCRIPT_ENTITIES, [])
+        human_readable += "Received script IDs: {received_ids}"
+        for script in scripts_to_process:
+            script_id = script.get('id', '')
+            script_ids.append(script_id)
+            # Padding blank lines inorder to format the outputs in a block.
+            human_readable += f"""
+            
+            Script ID: {script_id}
+            Script Name: {script.get('name, ''')}
+            Description: {script.get('description', '')}
+            Language: {script.get('language', '')}
+            
+            """
+        demisto.info(f'list_scripts_command received script ids: {str(script_ids)}')
+        return CommandResults(
+                outputs_prefix="Resilient.Script",
+                outputs=response,
+                readable_output=human_readable.format(received_ids=str(script_ids))
+            )
+
     except (SimpleHTTPException, RetryHTTPException) as e:
         if e.response.status_code == STATUS_NOT_FOUND:
             return CommandResults(
@@ -1107,6 +1131,30 @@ def upload_incident_attachment_command(rs_client: SimpleClient, args: dict) -> C
     """
         Uploads a file from XSOAR to an IBM SOAR incident.
     """
+    incident_id = args.get('incident_id')
+    entry_id = args.get('entry_id')
+    try:
+        file_path_obj = demisto.getFilePath(entry_id)
+    except ValueError as e:
+        raise DemistoException(f' Could not find a file with entry ID: {entry_id}')
+
+    file_path,  file_name = file_path_obj.get('path'), file_path_obj.get('name')
+
+    try:
+        response = rs_client.post_attachment(uri=f'/incidents/{incident_id}/attachments',
+                                             filepath=file_path,
+                                             filename=file_name)
+        demisto.debug(f'upload_incident_attachment_command {response=}')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not upload a file with entry ID: {entry_id} to incident: {incident_id}.'
+                            f'\nGot error: {e.response.text}'
+        )
+    return CommandResults(
+        readable_output=f'File was uploaded successfully to {incident_id}.'
+    )
+
 
 def test_module():
     """Verify that the first_fetch parameter is according to the standards, if exists.
