@@ -6,4 +6,4 @@ Supported from version 6.1 and later.
 
 After installing this pack, you will be able to add the "Elastisearch Monitoring" dashboard to your Dashboards page. 
 
-![](https://github.com/demisto/content/raw/d00f7b655d992599701e175e917f11c2d8c3e3e9/Packs/ElasticsearchMonitoring/doc_files/demo-dashboard.png)
+![](doc_files/demo-dashboard.png)
