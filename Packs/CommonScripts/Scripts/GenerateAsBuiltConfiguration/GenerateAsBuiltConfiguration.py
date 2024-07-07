@@ -17,7 +17,7 @@ configuration = None
 autodata = False
 
 
-def create_context(data: dict | list[dict], args: list) -> dict:
+def create_context(data: Any, args: list) -> dict | list:
     """
     This function accepts the raw data and creates new dict based on the values
     in args.
@@ -106,14 +106,14 @@ def post_api_request(url: str, body: dict) -> dict:
     raw_res = demisto.executeCommand("core-api-post", api_args)
     try:
         res = raw_res[0]['Contents']['response']
-        return res
     except KeyError:
         return_error(f'API Request failed, no response from API call to {url}')
     except TypeError:
         return_error(f'API Request failed, failed to {raw_res}')
+    return res
 
 
-def get_api_request(url: str) -> list:
+def get_api_request(url: str) -> list | str | None:
     """Get API request.
 
     Args:
@@ -122,20 +122,15 @@ def get_api_request(url: str) -> list:
     Returns:
         Dict: dictionary representation of the response
     """
-    api_args = {
-        "uri": url
-    }
-    raw_res = demisto.executeCommand("core-api-get", api_args)
+    raw_res = demisto.executeCommand("core-api-get", {"uri": url})
     try:
         res = raw_res[0]['Contents']['response']
         # If it's a string and not an object response, means this command has failed.
-        if type(res) is str:
-            if autodata is True:
-                return res
-            return None
-        return res
+        if isinstance(res, str):
+            return res if autodata is True else None
     except KeyError:
         return_error(f'API Request failed, no response from API call to {url}')
+    return res
 
 
 def get_all_incidents(days: int = 60, size: int = 1000) -> dict:
@@ -167,8 +162,7 @@ def get_all_incidents(days: int = 60, size: int = 1000) -> dict:
         }
     }
 
-    r = post_api_request("/incidents/search", body)
-    return r.get("data")
+    return cast(dict, post_api_request("/incidents/search", body).get("data"))
 
 
 def get_open_incidents(days: int = 7, size: int = 1000) -> dict:
@@ -242,8 +236,8 @@ def get_enabled_integrations(max_request_size: int) -> list:
     Returns:
         SortedTableData: TableData object with the enabled instances.
     """
-    r = post_api_request("/settings/integration/search", {"size": max_request_size})
-    instances = r.get("instances")
+    res = post_api_request("/settings/integration/search", {"size": max_request_size})
+    instances: list = res.get("instances", [])
     enabled_instances = []
     for instance in instances:
         if instance.get("enabled"):
@@ -257,23 +251,23 @@ def get_custom_playbooks() -> list[str]:
     Returns:
         TableData: TableData object with the custom playbooks.
     """
-    res = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks")
+    res: list = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks", [])
     return [pb["name"] for pb in res]
 
 
-def get_all_playbooks() -> dict:
+def get_all_playbooks() -> list:
     """Return all the playbooks installed in XSOAR
 
     Returns:
         TableData: TableData object with the all playbooks.
     """
-    res = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks")
+    res: list = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks", [])
     for pb in res:
         pb["TotalTasks"] = len(pb.get("tasks", []))
     return res
 
 
-def get_layouts() -> list:
+def get_layouts() -> dict | list:
     """Return the data for the custom Layouts.
 
     Returns:
@@ -285,7 +279,7 @@ def get_layouts() -> list:
     return filtered_data
 
 
-def get_incident_types() -> list:
+def get_incident_types() -> dict | list:
     """Return the data for the incident types.
 
     Returns:
@@ -297,7 +291,7 @@ def get_incident_types() -> list:
     return filtered_data
 
 
-def get_incident_fields() -> list:
+def get_incident_fields() -> dict | list:
     """Return the data for the custom incident fields.
 
     Returns:
@@ -318,16 +312,16 @@ def get_classifier_mapper() -> tuple:
     """
     fields = ['description', 'id', 'modified', 'name', 'system', 'type',
               'defaultIncidentType', 'keyTypeMap', 'mapping', 'packID', 'packName']
-    resp = post_api_request("/classifier/search", {}).get("classifiers")
+    resp: list = post_api_request("/classifier/search", {}).get("classifiers", [])
     if resp:
-        filtered_data = create_context(resp, fields)
+        filtered_data: list = create_context(resp, fields)
         class_data, i_mapper_data, o_mapper_data = separate_classfier_mapper(filtered_data)
-        return class_data, i_mapper_data, o_mapper_data
     else:
         return_error("No classifier and mapper data found.")
+    return class_data, i_mapper_data, o_mapper_data
 
 
-def get_playbooks() -> list:
+def get_playbooks() -> dict | list:
     """Return the data for the custom Playbooks
 
     Returns:
@@ -339,7 +333,7 @@ def get_playbooks() -> list:
     return filtered_data
 
 
-def get_automations() -> list:
+def get_automations() -> dict | list:
     """Return the data for the custom automation
 
     Returns:
@@ -351,7 +345,7 @@ def get_automations() -> list:
     return filtered_data
 
 
-def get_integrations() -> tuple:
+def get_integrations() -> tuple[list, list]:
     """
     This function provides the filtered integration data and the filtered instance data for that particular integration.
 
@@ -366,7 +360,7 @@ def get_integrations() -> tuple:
                             'id', 'name']  # if require script then add 'integrationScript'
 
     resp = post_api_request("/settings/integration/search", {})
-    int_data = resp.get("configurations")
+    int_data: list = resp.get("configurations", [])
     for data in int_data:
         command_list = []
         command_value: Dict[str, Union[str, List[str], None]] = {
@@ -389,8 +383,8 @@ def get_integrations() -> tuple:
         command_value["display"] = data['display']
         command_value["description"] = data['description']
         command_value["commands"] = command_list
-    instance_data = create_context(resp.get("instances"), instance_fields)
-    configuration_data = create_context(resp.get("configurations"), configuration_fields)
+    instance_data: list = create_context(resp.get("instances", []), instance_fields)
+    configuration_data: list = create_context(resp.get("configurations", []), configuration_fields)
     merge_data(instance_data, configuration_data)
     return instance_data, command_data
 
@@ -408,6 +402,8 @@ def get_playbook_data(playbook_name: str) -> dict:
     for data_item in playbooks:
         if data_item["name"] == playbook_name:
             return dict(data_item)
+    demisto.debug(f'playbook {playbook_name} not found')
+    return {}
 
 
 def get_playbook_dependencies(playbook: dict) -> dict:
@@ -431,7 +427,7 @@ def get_playbook_dependencies(playbook: dict) -> dict:
         ],
         "dependencyLevel": "optional"
     }
-    resp = post_api_request("/itemsdependencies", body).get("existing").get("playbook").get(pb_id)
+    resp: list = post_api_request("/itemsdependencies", body).get("existing").get("playbook").get(pb_id)
     if not resp:
         raise DemistoException(f"Failed to retrieve dependencies for {pb_name}")
 
@@ -451,7 +447,7 @@ def get_playbook_dependencies(playbook: dict) -> dict:
     return dependencies
 
 
-def get_playbook_automation(playbook: dict, filter_auto: set) -> dict:
+def get_playbook_automation(playbook: dict, filter_auto: set) -> Optional[dict]:
     """
     This function accepts the playbook data and fetches the automation linked to that particular playbook.
 
@@ -465,7 +461,6 @@ def get_playbook_automation(playbook: dict, filter_auto: set) -> dict:
     pb_automation = None
     if filter_auto:
         for script in filter_auto:
-            # if not script["system"]:
             for automation_data in automations:
                 if script in [automation_data["name"], automation_data["id"]] and not automation_data.get("system", False):
                     if not pb_automation:

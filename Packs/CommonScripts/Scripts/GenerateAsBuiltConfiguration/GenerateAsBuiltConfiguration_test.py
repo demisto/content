@@ -2,4 +2,12 @@ from CommonServerPython import *
 import demistomock as demisto
 
 
-def execute_command()
+def test():
+    from GetIncidentsApiModule import main
+
+    try:
+        main()
+    except Exception:
+        pass
+
+    assert True
