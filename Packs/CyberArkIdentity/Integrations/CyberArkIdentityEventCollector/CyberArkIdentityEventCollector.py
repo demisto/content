@@ -132,8 +132,7 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         credentials = base64.b64encode(f'{self.credentials.identifier}:{self.credentials.password}'.encode()).decode()
         request = IntegrationHTTPRequest(
             method=Method.POST,
-            # url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",
-            url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/token/{self.options.app_id}",
+            url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",
             headers={'Authorization': f"Basic {credentials}"},
             data={'grant_type': 'client_credentials', 'scope': 'siem'},
             verify=not self.request.verify,
@@ -142,20 +141,7 @@ class CyberArkIdentityEventsClient(IntegrationEventsClient):
         response = self.call(request)
         if response.ok:
             demisto.debug('authenticated successfully')
-            try:
-                self.access_token = response.json()['access_token']
-            except Exception as e:
-                demisto.debug(f"failed to retrieve access token: {e}")
-                request = IntegrationHTTPRequest(
-                    method=Method.POST,
-                    url=f"{str(self.request.url).removesuffix('/RedRock/Query')}/oauth2/platformtoken",
-                    headers={'Authorization': f"Basic {credentials}"},
-                    data={'grant_type': 'client_credentials', 'scope': 'siem'},
-                    verify=not self.request.verify,
-                )
-
-                response = self.call(request)
-                self.access_token = response.json()['access_token']
+            self.access_token = response.json()['access_token']
             self.request.headers['Authorization'] = f'Bearer {self.access_token}'
         else:
             demisto.debug(f'authentication failed: {response.json()}')
