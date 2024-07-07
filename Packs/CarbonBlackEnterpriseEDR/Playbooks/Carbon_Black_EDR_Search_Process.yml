@@ -4,7 +4,7 @@ name: Carbon Black EDR Search Process
 deprecated: true
 starttaskid: "0"
 description: |-
-  Use this playbook to search processes in Carbon Black Enterprise EDR.
+  Deprecated. Use 'cb-eedr-process-search' command instead.
   This playbook implements polling by continuously running the `cb-eedr-process-search-results` command
   until the operation completes.
 tasks:
