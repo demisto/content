@@ -57,20 +57,16 @@ def change_image_link_to_relative(lines, md_path):
             url_path = Path(parse_url.path)
             if find_image_in_doc_files(url_path.name, pack_name):
                 new_replace_url = f'doc_files/{url_path.name}'
-                if "Playbooks" in md_path:
-                    new_replace_url = f'../doc_files/{url_path.name}'
-                elif "Integrations" in md_path:
-                    new_replace_url = f'../../doc_files/{url_path.name}'
                 if '<img src="' in url:
-                    new_replace_url=f'<img src="{new_replace_url}'
                     list_not_found.append(url)
+                    continue
                 lines[i] = line.replace(url, new_replace_url)
                 try:
                     with open(md_path, 'w') as file:
                         file.writelines(lines)
-                    list_success.append(url)
                 except Exception as e:
                     logger.debug(e)
+                list_success.append(url)
             else:
                 list_not_found.append(url)
     return {"list_success": list_success, "list_not_found":list_not_found}
@@ -105,23 +101,23 @@ def extract_image_links_from_files_and_save_to_json():
     then extracts image links from those files and saves the information to a JSON file.
     """
     paths_links = list(Path(PACKS_PATH).rglob("*.md"))
-    paths_links_str = [str(path) for path in paths_links]
-    filtered_md_files = [file for file in paths_links_str if 'ReleaseNotes' not in file.split(os.sep)]
-    filtered_md_files_Playbooks = [file for file in filtered_md_files if 'Playbooks' in file.split(os.sep)]
-    filtered_md_files_integrations = [file for file in filtered_md_files if 'Integrations' in file.split(os.sep)]
-    filtered_md_files_without_p = [file for file in paths_links_str if 'Playbooks' not in file.split(os.sep)]
-    filtered_md_files_finale = [file for file in filtered_md_files_without_p if 'Integrations' not in file.split(os.sep)]
+    filtered_md_files = [
+        path for path in paths_links
+        if 'ReleaseNotes' not in path.parts and 'Playbooks' not in path.parts and 'Integrations' not in path.parts
+    ]
+    paths_links_str = [str(path) for path in filtered_md_files]
+    
 
     images_information_success = {}
     images_information_failed = {}
     _errors = {}
-    for link in filtered_md_files_finale:
+    for link in paths_links_str:
         
         images_information_log_success, images_information_log_fails, str_error = search_image_links(link)
         if images_information_log_success:
             images_information_success[link] = images_information_log_success
         if images_information_failed:
-            images_information_failed[link] = images_information_failed
+            images_information_failed[link] = images_information_log_fails
         if str_error:
             _errors[link] = str_error
     try:
@@ -131,10 +127,6 @@ def extract_image_links_from_files_and_save_to_json():
             json.dump(images_information_failed, file_fails, indent=4)
         with open('/Users/mmorag/dev/demisto/content/Packs/AAA_change_image_path/_errors.json', "a") as errors_files:
             json.dump(_errors, errors_files, indent=4)
-        with open('/Users/mmorag/dev/demisto/content/Packs/AAA_change_image_path/filtered_md_files_Playbooks.json', "a") as file_p:
-            json.dump(filtered_md_files_Playbooks, file_p, indent=4)
-        with open('/Users/mmorag/dev/demisto/content/Packs/AAA_change_image_path/_errors.json', "a") as errors_i:
-            json.dump(filtered_md_files_integrations, errors_i, indent=4)
     except Exception as e:
         logger.debug(e)
         logger.debug(f'{_errors=}')
