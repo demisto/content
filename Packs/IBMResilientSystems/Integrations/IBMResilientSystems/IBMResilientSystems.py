@@ -1115,17 +1115,9 @@ def list_scripts_command(rs_client: SimpleClient, args: dict) -> CommandResults:
             )
 
     except (SimpleHTTPException, RetryHTTPException) as e:
-        if e.response.status_code == STATUS_NOT_FOUND:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=e.response.text
-            )
-        else:
-            raise
-    return CommandResults(
-            outputs_prefix="Resilient.Script",
-            outputs=response,
-            readable_output=human_readable
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not find a script with ID: {script_id}.\nGot error: {e.response.text}'
         )
 
 
