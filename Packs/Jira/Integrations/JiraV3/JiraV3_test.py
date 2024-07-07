@@ -108,7 +108,7 @@ ADF_TEXT_CASES = [
             }
         ]
     }
-    )
+     )
 ]
 
 
@@ -134,36 +134,36 @@ def test_extract_issue_id_from_comment_url(url, expected_issue_id):
 
 ISSUE_FIELDS_MAPPING_CASES = [
     ([
-        {
-            "id": "statuscategorychangedate",
-            "key": "statuscategorychangedate",
-            "name": "Status Category Changed",
-            "custom": False,
-            "orderable": False,
-            "navigable": True,
-            "searchable": True,
-            "clauseNames": [
-                "statusCategoryChangedDate"
-            ],
-            "schema": {
-                "type": "datetime",
-                "system": "statuscategorychangedate"
-            }
-        },
-        {
-            "id": "parent",
-            "key": "parent",
-            "name": "Parent",
-            "custom": False,
-            "orderable": False,
-            "navigable": True,
-            "searchable": False,
-            "clauseNames": [
-                "parent"
-            ]
-        }], {
-        "statuscategorychangedate": "Status Category Changed",
-        "parent": "Parent"})
+         {
+             "id": "statuscategorychangedate",
+             "key": "statuscategorychangedate",
+             "name": "Status Category Changed",
+             "custom": False,
+             "orderable": False,
+             "navigable": True,
+             "searchable": True,
+             "clauseNames": [
+                 "statusCategoryChangedDate"
+             ],
+             "schema": {
+                 "type": "datetime",
+                 "system": "statuscategorychangedate"
+             }
+         },
+         {
+             "id": "parent",
+             "key": "parent",
+             "name": "Parent",
+             "custom": False,
+             "orderable": False,
+             "navigable": True,
+             "searchable": False,
+             "clauseNames": [
+                 "parent"
+             ]
+         }], {
+         "statuscategorychangedate": "Status Category Changed",
+         "parent": "Parent"})
 ]
 
 
@@ -634,8 +634,8 @@ class TestJiraEditIssueCommand:
         # 'Selected for development' correlates to the transition 'In Development', which as stated, has an ID of 21
         expected_issue_fields = {'transition': {'id': '21'},
                                  'fields': {'description': 'dummy description', 'project':
-                                            {'key': 'dummy_project_key', 'id':
-                                             'dummy_project_id'}, 'labels': ['label1', 'label2'],
+                                     {'key': 'dummy_project_key', 'id':
+                                         'dummy_project_id'}, 'labels': ['label1', 'label2'],
                                             'components': [{'name': 'comp1'}, {'name': 'comp2'}],
                                             'customfield_1': 'dummy custom field'}}
         mocker.patch.object(client, 'get_issue', return_value={})
@@ -660,8 +660,8 @@ class TestJiraEditIssueCommand:
                 'labels': 'label1,label2', 'components': 'comp1,comp2',
                 'customfield_1': 'dummy custom field'}
         expected_issue_fields = {'fields': {'description': 'dummy description', 'project':
-                                            {'key': 'dummy_project_key', 'id':
-                                             'dummy_project_id'}, 'labels': ['label1', 'label2'],
+            {'key': 'dummy_project_key', 'id':
+                'dummy_project_id'}, 'labels': ['label1', 'label2'],
                                             'components': [{'name': 'comp1'}, {'name': 'comp2'}],
                                             'customfield_1': 'dummy custom field'}}
         mocker.patch.object(client, 'get_issue', return_value={})
@@ -684,8 +684,8 @@ class TestJiraEditIssueCommand:
         args = {'issue_key': 'dummy_key', 'components': 'comp1,comp2', 'labels': 'label1,label2',
                 'summary': 'appended summary', 'action': 'append'}
         expected_issue_fields = {'fields': {'components':
-                                            [{'name': 'current-comp1'}, {'name': 'current-comp2'},
-                                             {'name': 'comp1'}, {'name': 'comp2'}],
+                                                [{'name': 'current-comp1'}, {'name': 'current-comp2'},
+                                                 {'name': 'comp1'}, {'name': 'comp2'}],
                                             'labels': ['current-label1', 'current-label2', 'label1', 'label2'],
                                             'summary': 'current summary, appended summary'}}
         mocker.patch.object(client, 'get_issue', side_effect=[{
@@ -1023,7 +1023,7 @@ class TestJiraListIssueFieldsCommand:
         command_result = list_fields_command(client=client, args={'issue_key': 'dummy_issue_key'})
         # [start_at: start_at + max_results] is the way do the pagination manually, therefore we check it.
         expected_outputs = expected_context['EntryContext']['Jira.IssueField(val.id && val.id == obj.id)'][start_at: start_at
-                                                                                                           + max_results]
+                                                                                                                     + max_results]
         assert expected_outputs == command_result.to_context()['EntryContext']['Jira.IssueField(val.id && val.id == obj.id)']
 
 
@@ -2025,7 +2025,7 @@ class TestJiraGetRemoteData:
             {"Comment": "Comment 3", "Updated": "2023-05-01", "UpdatedUser": "User 3"}]
         expected_parsed_entries = [
             {"Type": 1, "Contents": "Comment 3\nJira Author: None",
-                "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True}
+             "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True}
         ]
         assert updated_incident.get('extractedComments') == expected_extracted_attachments
         assert parsed_entries == expected_parsed_entries
@@ -2082,12 +2082,41 @@ class TestJiraGetRemoteData:
         close_reason = "Issue was marked as \"Resolved\", or status was changed to \"Done\""
         expected_parsed_entries = [
             {"Type": 1, "Contents": "Comment 3\nJira Author: None",
-                "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True},
+             "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True},
             {"File": "dummy_file_name", "FileID": "id1", "Tags": ["attachment from jira"]},
             {"Type": 1, "Contents": {"dbotIncidentClose": True,
                                      "closeReason": close_reason}, "ContentsFormat": "json"}
         ]
         mocker.patch('JiraV3.get_updated_remote_data', return_value=expected_parsed_entries)
+        remote_data_response = get_remote_data_command(client=client, args={'id': '1234', 'lastUpdate': '2023-01-01'},
+                                                       attachment_tag_from_jira='',
+                                                       comment_tag_from_jira='', mirror_resolved_issue=True,
+                                                       fetch_comments=True, fetch_attachments=True)
+        assert remote_data_response.entries == expected_parsed_entries
+
+    def test_get_remote_data_comment_updated_time_same_as_issue_updated_time(self, mocker):
+        """
+        Given:
+            - A Jira client with an issue that has a comment with the same updated time as the issue updated time.
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command.
+        Then
+            - Validate that the comment is returned, as it is considered as part of the issue update.
+        """
+        from JiraV3 import get_remote_data_command
+        client = jira_base_client_mock()
+        issue_response = {'id': '1234', 'fields': {'summary': 'dummy summary', 'updated': '2023-01-01'}}
+        mocker.patch.object(client, 'get_issue', return_value=issue_response)
+        mocker.patch('JiraV3.get_user_timezone', return_value='Asia/Jerusalem')
+
+        expected_parsed_entries = [
+            {"Type": 1, "Contents": "Comment 3\nJira Author: None",
+             "ContentsFormat": "text", "Tags": [""], "Note": True}
+        ]
+        mocked_get_comments_entries = [{"Comment": "Comment 3", "Updated": "2023-01-01"}]
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident',
+                     return_value=mocked_get_comments_entries)
+
         remote_data_response = get_remote_data_command(client=client, args={'id': '1234', 'lastUpdate': '2023-01-01'},
                                                        attachment_tag_from_jira='',
                                                        comment_tag_from_jira='', mirror_resolved_issue=True,
@@ -2632,8 +2661,8 @@ class TestJiraIssueAssign:
         from JiraV3 import update_issue_assignee_command
         get_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
         args = {
-            'assignee': assignee,           # For Jira OnPrem
-            'assignee_id': assignee_id,     # For Jira Cloud
+            'assignee': assignee,  # For Jira OnPrem
+            'assignee_id': assignee_id,  # For Jira Cloud
             'issue_id': 21487,
         }
         client: JiraBaseClient = jira_base_client_mock()
@@ -2659,8 +2688,8 @@ class TestJiraIssueAssign:
         from JiraV3 import update_issue_assignee_command
 
         args = {
-            'assignee': None,       # For Jira OnPrem
-            'assignee_id': None,    # For Jira Cloud
+            'assignee': None,  # For Jira OnPrem
+            'assignee_id': None,  # For Jira Cloud
             'issue_id': 21487,
         }
 
