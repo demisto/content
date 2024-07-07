@@ -447,7 +447,7 @@ def get_playbook_dependencies(playbook: dict) -> dict:
     return dependencies
 
 
-def get_playbook_automation(playbook: dict, filter_auto: set) -> Optional[dict]:
+def get_playbook_automation(playbook: dict, filter_auto: set) -> dict:
     """
     This function accepts the playbook data and fetches the automation linked to that particular playbook.
 
@@ -458,20 +458,17 @@ def get_playbook_automation(playbook: dict, filter_auto: set) -> Optional[dict]:
     Returns:
     pb_automation : dictionary having custom automation data for a specific playbook
     """
-    pb_automation = None
+    pb_automation = {}
     if filter_auto:
         for script in filter_auto:
             for automation_data in automations:
                 if script in [automation_data["name"], automation_data["id"]] and not automation_data.get("system", False):
-                    if not pb_automation:
-                        pb_automation = {automation_data["name"]: dict(automation_data)}
-                    else:
-                        pb_automation[automation_data["name"]] = dict(automation_data)
+                    pb_automation[automation_data["name"]] = dict(automation_data)
                     break
     return pb_automation
 
 
-def get_playbook_subplaybook(playbook: dict, filter_play: set) -> None:
+def get_playbook_subplaybook(playbook: dict, filter_play: set) -> dict:
     """
     This function accepts the playbook data and fetches the subplaybooks for that particular playbook.
 
@@ -482,20 +479,17 @@ def get_playbook_subplaybook(playbook: dict, filter_play: set) -> None:
     Returns:
     pb_subpplaybook : dictionary having subplaybook data for a specific playbook
     """
-    pb_subplaybook = None
+    pb_subplaybook = {}
     if filter_play:
         for subplaybook in filter_play:
             for pb in playbooks:
                 if subplaybook in [pb["name"], pb["id"]] and not pb.get("system", False):
-                    if not pb_subplaybook:
-                        pb_subplaybook = {pb["name"]: dict(pb)}
-                    else:
-                        pb_subplaybook[pb["name"]] = dict(pb)
+                    pb_subplaybook[pb["name"]] = pb
                     break
     return pb_subplaybook
 
 
-def get_instance_classifier_incident_type(integration_instance: dict, incident_types: list, classifiers: list) -> tuple[dict, dict]:
+def get_instance_classifier_incident_type(integration_instance: dict, incident_types: list, classifiers: list) -> tuple:
     """
     This function accepts the integration instance, incident types and classifers and then establishes the mapping for the
     classifier and incident type data for an interation instance and returns data only for those classifers and incident types.
@@ -510,7 +504,7 @@ def get_instance_classifier_incident_type(integration_instance: dict, incident_t
     incident_type_data : dictionary having incident types data mapped to an integration
     """
     classifier_data = None
-    incident_type_data = None
+    incident_type_data = {}
     classifier_id = integration_instance.get("mappingId", None)
     inc_type_id = integration_instance.get("incident_type", None)
     if classifier_id:
@@ -521,10 +515,7 @@ def get_instance_classifier_incident_type(integration_instance: dict, incident_t
                 for classifier_incident_type in classifier_incident_types:
                     for incident_type in incident_types:
                         if classifier_incident_type == incident_type["id"]:
-                            if not incident_type_data:
-                                incident_type_data = {incident_type["name"]: incident_type}
-                            else:
-                                incident_type_data[incident_type["name"]] = incident_type
+                            incident_type_data[incident_type["name"]] = incident_type
                             break
                 break
 
@@ -560,7 +551,7 @@ def get_instance_incoming_mapper(integration_instance: dict, mappers: list) -> d
     return in_mapper
 
 
-def get_instance_outgoing_mapper(integration_instance: dict, mappers: list) -> dict:
+def get_instance_outgoing_mapper(integration_instance: dict, mappers: list) -> dict | None:
     """
     This function accepts the integration instance data and outgoing mapper data, then establishes the mapping for the
     outgoing mapper for an interation instance and returns data only for those outgoing mappers.
@@ -601,8 +592,8 @@ def get_instance_layout_fields(
     layouts_data : dictionary having layouts data mapped to an incident type
     fields_data : dictionary having custom incident field data mapped to an incident type
     """
-    layout_data = None
-    fields_data = None
+    layout_data = {}
+    fields_data = {}
     incident_types = instance_incident_types
     if incident_types:
         for type_name, type_data in incident_types.items():
@@ -611,10 +602,7 @@ def get_instance_layout_fields(
                 if layout["id"] == layout_id:
                     l_d = {**layout}
                     l_d["incident_type"] = type_name
-                    if not layout_data:
-                        layout_data = {layout["name"]: l_d}
-                    else:
-                        layout_data[layout["name"]] = l_d
+                    layout_data[layout["name"]] = l_d
                     break
 
             for incident_field in incident_fields:
@@ -622,15 +610,12 @@ def get_instance_layout_fields(
                 associated_types = _types if _types else []
                 # if (type_data["id"] in associated_types or incident_field["associatedToAll"]) #and not incident_field["system"]:
                 if type_data["id"] in associated_types and not incident_field["locked"]:
-                    if not fields_data:
-                        fields_data = {incident_field["name"]: incident_field}
-                    else:
-                        fields_data[incident_field["name"]] = incident_field
+                    fields_data[incident_field["name"]] = incident_field
 
     return layout_data, fields_data
 
 
-def get_playbook_integration(playbook: dict, filter_int: list) -> None:
+def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
     """
     This function accepts the playbook data and fetches the integration for that particular playbook.
 
@@ -642,7 +627,7 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> None:
     pb_integration : dictionary having complete integration data for a specific playbook, containing classifiers,
     incident types, field types, layout, incident fields, incoming mapper and outgoing mapper.
     """
-    pb_integration = None
+    pb_integration = {}
     # d = []
     section_data = []
     items = []
@@ -663,13 +648,10 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> None:
                 outgoing_mapper_data = get_instance_outgoing_mapper(integration, outgoing_mappers)
                 # get integration layouts and incident_fields
                 layout_data, fields_data = get_instance_layout_fields(integration, incident_types_data, layouts, incident_fields)
-                if not pb_integration:
-                    pb_integration = {integration["display"]: {integration["instance_name"]: {**integration}}}
+                if integration["display"] not in pb_integration:
+                    pb_integration[integration["display"]] = {integration["instance_name"]: integration.copy()}
                 else:
-                    if integration["display"] not in pb_integration:
-                        pb_integration[integration["display"]] = {integration["instance_name"]: {**integration}}
-                    else:
-                        pb_integration[integration["display"]][integration["instance_name"]] = {**integration}
+                    pb_integration[integration["display"]][integration["instance_name"]] = integration.copy()
 
                 if layout_data is not None:
                     for k, v in layout_data.items():
@@ -722,7 +704,7 @@ def get_custom_automations() -> list:
     Returns:
         SingleFieldData: SingleFieldData object representing custom automations
     """
-    return post_api_request("/automation/search", {"query": "system:F AND hidden:F"}).get("scripts")
+    return cast(list, post_api_request("/automation/search", {"query": "system:F AND hidden:F"}).get("scripts", []))
 
 
 def sub_data(playbook: dict) -> tuple:
@@ -741,11 +723,11 @@ def sub_data(playbook: dict) -> tuple:
     task_name = set()
     int_data: List = []
     task_dict = {}
-    for data_key, data_value in playbook.items():
+    for data_key in playbook:
         if data_key == "tasks":
-            task_data = playbook.get('tasks')
+            task_data: list = playbook.get('tasks', [])
             for data in task_data:
-                task_dict = task_data.get(data)
+                task_dict: list = task_data.get(data, [])
                 for k in task_dict:
                     if k == 'task':
                         new = task_dict.get(k)
