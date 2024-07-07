@@ -54,7 +54,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 370
+          "y": 160
         }
       }
     note: false
@@ -86,7 +86,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 1695
+          "y": 965
         }
       }
     note: false
@@ -117,7 +117,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 2015
+          "y": 1285
         }
       }
     note: false
@@ -127,45 +127,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "33":
-    id: "33"
-    taskid: 66d87a9c-5118-41e9-8b70-207cceee7d28
-    type: title
-    task:
-      id: 66d87a9c-5118-41e9-8b70-207cceee7d28
-      version: -1
-      name: Containment
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "117"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1190,
-          "y": 2360
-        }
-      }
-    note: false
-    timertriggers:
-    - fieldname: detectionsla
-      action: stop
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: 99a0286e-bd82-4c28-810f-8a6fdc2608b4
+    taskid: f33c8322-7cb9-4ce8-8e34-8fb2ea350e3d
     type: condition
     task:
-      id: 99a0286e-bd82-4c28-810f-8a6fdc2608b4
+      id: f33c8322-7cb9-4ce8-8e34-8fb2ea350e3d
       version: -1
       name: Are there investigation findings?
       description: Checks if there are findings from the Endpoint Investigation stage.
@@ -176,7 +143,7 @@ tasks:
       '#default#':
       - "41"
       "Yes":
-      - "33"
+      - "123"
     separatecontext: false
     conditions:
     - label: "Yes"
@@ -243,7 +210,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 2145
+          "y": 1415
         }
       }
     note: false
@@ -255,10 +222,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: 558dd79b-8beb-4805-8b90-edb40eb4b7c7
+    taskid: ce8e03e2-051a-4fed-812c-71f10e4929bd
     type: title
     task:
-      id: 558dd79b-8beb-4805-8b90-edb40eb4b7c7
+      id: ce8e03e2-051a-4fed-812c-71f10e4929bd
       version: -1
       name: Done
       type: title
@@ -271,14 +238,14 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 2830
+          "y": 2300
         }
       }
     note: false
     timertriggers:
     - fieldname: containmentsla
       action: stop
-    - fieldname: incidentduration
+    - fieldname: detectionsla
       action: stop
     ignoreworker: false
     skipunavailable: false
@@ -287,10 +254,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "82":
     id: "82"
-    taskid: fc92dc32-4630-4027-8b9e-8a6361240d98
+    taskid: 2c9ddd1d-cf6b-4452-8280-4b8d8f4fd1c5
     type: title
     task:
-      id: fc92dc32-4630-4027-8b9e-8a6361240d98
+      id: 2c9ddd1d-cf6b-4452-8280-4b8d8f4fd1c5
       version: -1
       name: Enrichment & Analysis
       type: title
@@ -307,11 +274,13 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 520
+          "y": 310
         }
       }
     note: false
-    timertriggers: []
+    timertriggers:
+    - fieldname: detectionsla
+      action: start
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -332,7 +301,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "123"
+      - "14"
     scriptarguments:
       Hostname:
         complex:
@@ -359,7 +328,7 @@ tasks:
       {
         "position": {
           "x": 1000,
-          "y": 660
+          "y": 450
         }
       }
     note: false
@@ -403,7 +372,7 @@ tasks:
       {
         "position": {
           "x": 990,
-          "y": 1840
+          "y": 1110
         }
       }
     note: false
@@ -475,53 +444,7 @@ tasks:
       {
         "position": {
           "x": 1400,
-          "y": 1840
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "117":
-    id: "117"
-    taskid: 67594dfb-d192-4d4a-8ca6-5bb510d9ea44
-    type: condition
-    task:
-      id: 67594dfb-d192-4d4a-8ca6-5bb510d9ea44
-      version: -1
-      name: Auto Containment Enabled?
-      description: ""
-      type: condition
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#default#':
-      - "41"
-      "yes":
-      - "136"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isEqualString
-          left:
-            value:
-              complex:
-                root: inputs.AutoContainment
-            iscontext: true
-          right:
-            value:
-              simple: "True"
-          ignorecase: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1190,
-          "y": 2500
+          "y": 1110
         }
       }
     note: false
@@ -533,10 +456,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: 703d03b8-0616-4c72-8a16-a0e6e1fa9563
+    taskid: 9a330673-1b8a-454a-8521-ea122e37b6fb
     type: condition
     task:
-      id: 703d03b8-0616-4c72-8a16-a0e6e1fa9563
+      id: 9a330673-1b8a-454a-8521-ea122e37b6fb
       version: -1
       name: Execution was Blocked?
       description: ""
@@ -545,7 +468,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "14"
+      - "41"
       "no":
       - "124"
     separatecontext: false
@@ -612,15 +535,11 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 1300
+          "y": 1950
         }
       }
     note: false
-    timertriggers:
-    - fieldname: incidentduration
-      action: start
-    - fieldname: detectionsla
-      action: start
+    timertriggers: []
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
@@ -628,26 +547,26 @@ tasks:
     isautoswitchedtoquietmode: false
   "123":
     id: "123"
-    taskid: e34a609e-4e8c-477e-8541-ce0f1419412c
+    taskid: ff7ff220-14d1-47a3-8d24-c7d2948eaab2
     type: title
     task:
-      id: e34a609e-4e8c-477e-8541-ce0f1419412c
+      id: ff7ff220-14d1-47a3-8d24-c7d2948eaab2
       version: -1
-      name: Early Containment
+      name: Containment
       type: title
       iscommand: false
       brand: ""
       description: ''
     nexttasks:
       '#none#':
-      - "122"
+      - "137"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1190,
-          "y": 1170
+          "y": 1610
         }
       }
     note: false
@@ -674,7 +593,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "14"
+      - "41"
     scriptarguments:
       endpoint_ids:
         complex:
@@ -687,7 +606,7 @@ tasks:
       {
         "position": {
           "x": 1190,
-          "y": 1525
+          "y": 2140
         }
       }
     note: false
@@ -736,7 +655,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": 810
+          "y": 600
         }
       }
     note: false
@@ -761,7 +680,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "123"
+      - "14"
     scriptarguments:
       extend-context:
         simple: NSRL_results=
@@ -776,7 +695,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": 1000
+          "y": 790
         }
       }
     note: false
@@ -807,7 +726,7 @@ tasks:
       {
         "position": {
           "x": 1410,
-          "y": 660
+          "y": 450
         }
       }
     note: false
@@ -817,44 +736,42 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "136":
-    id: "136"
-    taskid: f110e78b-1db0-48cf-8f51-e833d3d4c1ce
-    type: playbook
+  "137":
+    id: "137"
+    taskid: 3a0c9e40-5735-4f0e-85f1-f12af401f0d5
+    type: condition
     task:
-      id: f110e78b-1db0-48cf-8f51-e833d3d4c1ce
+      id: 3a0c9e40-5735-4f0e-85f1-f12af401f0d5
       version: -1
-      name: Cortex XDR - Quarantine File v2
-      description: "This playbook accepts \"file path\", \"file hash\" and \"endpoint id\" to quarantine a selected file and wait until the action is done. All 3 inputs are required to quarantine a single file. This playbook does not support the quarantine of multiple files.  \n"
-      playbookName: Cortex XDR - Quarantine File v2
-      type: playbook
+      name: Auto Containment Enabled?
+      type: condition
       iscommand: false
       brand: ""
     nexttasks:
-      '#none#':
+      '#default#':
       - "41"
-    scriptarguments:
-      endpoint_id:
-        complex:
-          root: inputs.EndpointID
-      file_hash:
-        complex:
-          root: inputs.FileSHA256
-      file_path:
-        complex:
-          root: inputs.FilePath
-    separatecontext: true
+      "yes":
+      - "122"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.AutoContainment
+            iscontext: true
+          right:
+            value:
+              simple: "True"
+          ignorecase: true
     continueonerrortype: ""
-    loop:
-      iscommand: false
-      exitCondition: ""
-      wait: 1
-      max: 100
     view: |-
       {
         "position": {
           "x": 1190,
-          "y": 2680
+          "y": 1740
         }
       }
     note: false
@@ -867,15 +784,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "117_136_yes": 0.37,
-      "37_41_#default#": 0.16
+      "122_124_no": 0.5,
+      "137_122_yes": 0.44,
+      "37_123_Yes": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 2525,
+        "height": 2205,
         "width": 800,
         "x": 990,
-        "y": 370
+        "y": 160
       }
     }
   }
@@ -926,27 +844,6 @@ inputs:
       - operator: uniq
   required: false
   description: The file path to investigate.
-  playbookInputQuery:
-- key: Username
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      filters:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-            iscontext: true
-          right:
-            value:
-              simple: inputs.AlertID
-            iscontext: true
-          ignorecase: true
-      accessor: user_name
-      transformers:
-      - operator: uniq
-  required: false
-  description: The alert's username.
   playbookInputQuery:
 - key: EndpointID
   value:

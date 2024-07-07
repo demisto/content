@@ -35,9 +35,8 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Cortex XDR - Quarantine File v2
-* Entity Enrichment - Generic v3
 * Cortex XDR - Endpoint Investigation
+* Entity Enrichment - Generic v3
 * Command-Line Analysis
 
 ### Integrations
@@ -62,7 +61,6 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 | AutoContainment | Setting this input to True will quarantine the file automatically in case of a malicious file. | False | Optional |
 | FileSHA256 | The file SHA256 to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_sha256 | Optional |
 | FilePath | The file path to investigate. | PaloAltoNetworksXDR.Incident.alerts.actor_process_image_path | Optional |
-| Username | The alert's username. | PaloAltoNetworksXDR.Incident.alerts.user_name | Optional |
 | EndpointID | The IP, hostname, or ID of the endpoint. | PaloAltoNetworksXDR.Incident.alerts.endpoint_id | Optional |
 | AlertID | The ID of the alert. | PaloAltoNetworksXDR.Incident.alerts.alert_id | Optional |
 
