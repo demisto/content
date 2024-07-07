@@ -137,12 +137,14 @@ def get_events(client: Client, start_date: str, max_fetch: int) -> tuple:
             has_next = True
         events.extend(response.get('data'))
 
+    events = events[:max_fetch]
     created, current_date = calculate_fetch_dates(start_date, last_run=last_run)  # TODO: Check whats is it
     if continuation_token:
         demisto.debug(
             f"Bitwarden - Fetched {len(events)} which is the maximum number of events."
             f" Will keep the fetching in the next fetch.")
         new_last_run_with_continuation_token = {"continuationToken": continuation_token, "last_fetch": created}
+        demisto.log(f"{new_last_run_with_continuation_token=}")  # TODO: Check whats is it
         return events, new_last_run_with_continuation_token
     # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
     new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date"), DATE_FORMAT)
@@ -150,6 +152,7 @@ def get_events(client: Client, start_date: str, max_fetch: int) -> tuple:
         DATE_FORMAT) if events else current_date
     new_last_run_without_continuation_token = {"last_fetch": new_last_fetch_date}
     demisto.debug(f"Bitwarden - Fetched {len(events)} events")
+    demisto.log(f"{new_last_run_without_continuation_token=}")  # TODO: Check whats is it
     return events, new_last_run_without_continuation_token
 
 
