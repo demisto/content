@@ -380,6 +380,119 @@
                 }
             }
         },
+        "CrowdStrike Falcon On-Demand Scans Detection": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "composite_id"
+                },
+                "Behaviour Objective": {
+                    "simple": "objective"
+                },
+                "Behaviour Tactic": {
+                    "simple": "tactic"
+                },
+                "CrowdStrike Falcon Platform Name": {
+                    "simple": "device.platform_name"
+                },
+                "CrowdStrike Falcon Product Type Description": {
+                    "simple": "device.product_type_desc"
+                },
+                "CrowdStrike Falcon System Manufacturer": {
+                    "simple": "device.system_manufacturer"
+                },
+                "CrowdStrike Falcon System Product Name": {
+                    "simple": "device.system_product_name"
+                },
+                "CrowdStrike Falcon Scan Name": {
+                    "simple": "name"
+                },
+                "CrowdStrike Falcon Scan Id": {
+                    "simple": "scan_id"
+                },
+                "CrowdStrike Falcon Pattern ID":{ 
+                    "simple": "pattern_id"
+                },
+                "Tactic ID": {
+                    "simple": "tactic_id"
+                },
+                "Technique": {
+                    "simple": "technique"
+                },
+                "Technique ID": {
+                    "simple": "technique_id"
+                },
+                "Device External IP": {
+                    "simple": "device.external_ip"
+                },
+                "Device Local IP": {
+                    "simple": "device.local_ip"
+                },
+                "MAC Address": {
+                    "simple": "device.mac_address"
+                },
+                "OS": {
+                    "simple": "device.os_version"
+                },
+                "Device Name": {
+					"simple": "device.hostname"
+				},
+                "Cloud Instance ID": {
+                    "simple": "device.instance_id"
+                },
+                "Agent Version": {
+                    "simple": "device.agent_version"
+                },
+                "Cloud Service": {
+                    "simple": "service_provider"
+                },
+                "Last Update Time": {
+                    "simple": "timestamp"
+                },
+                "Display Name":{ 
+                    "simple": "display_name"
+                },
+                "Device Id": {
+                    "simple": "device.device_id"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "File Name": {
+                    "simple": "filename"
+                },
+                "File Path": {
+                    "simple": "filepath"
+                },
+                "Vendor Product": {
+                    "simple": "product"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "SHA256": {
+                    "simple": "sha256"
+                },
+                "Detection  type": {
+                    "simple": "type"
+                },
+                "State": {
+                    "simple": "status"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "simple": "composite_id"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "IncomingMirrorError": {
+                    "simple": "in_mirror_error"
+                }
+            }
+        },
         "CrowdStrike Falcon Detection": {
             "dontMapEventToLabels": true,
             "internalMapping": {
@@ -464,13 +577,13 @@
                     "simple": "sha256"
                 },
                 "Hostnames": {
-                    "simple": "hostname"
+                    "simple": "device.hostname"
                 },
                 "Last Update Time": {
                     "simple": "timestamp"
                 },
                 "MAC Address": {
-                    "simple": "mac_address"
+                    "simple": "device.mac_address"
                 },
                 "MD5": {
                     "simple": "md5"
