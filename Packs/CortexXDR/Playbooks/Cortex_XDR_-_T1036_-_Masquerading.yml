@@ -824,27 +824,6 @@ inputs:
   required: false
   description: The file SHA256 to investigate.
   playbookInputQuery:
-- key: FilePath
-  value:
-    complex:
-      root: PaloAltoNetworksXDR.Incident.alerts
-      filters:
-      - - operator: isEqualString
-          left:
-            value:
-              simple: PaloAltoNetworksXDR.Incident.alerts.alert_id
-            iscontext: true
-          right:
-            value:
-              simple: inputs.AlertID
-            iscontext: true
-          ignorecase: true
-      accessor: actor_process_image_path
-      transformers:
-      - operator: uniq
-  required: false
-  description: The file path to investigate.
-  playbookInputQuery:
 - key: EndpointID
   value:
     complex:
