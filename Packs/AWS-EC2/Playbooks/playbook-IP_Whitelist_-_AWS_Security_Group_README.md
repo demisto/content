@@ -37,8 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-<<<<<<< Updated upstream
 ![IP Whitelist - AWS Security Group](https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/AWS-EC2/doc_files/IP_Whitelist_-_AWS_Security_Group.png)
-=======
-![IP Whitelist - AWS Security Group](../doc_files/IP_Whitelist_-_AWS_Security_Group.png)
->>>>>>> Stashed changes
