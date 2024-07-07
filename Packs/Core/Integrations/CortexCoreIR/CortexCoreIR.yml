@@ -2940,51 +2940,50 @@ script:
       description: Type of user group.
       type: String
   - arguments:
-    - description: agent id.
+    - description: The agent id.
       name: agent_id
       isArray: false
       required: true
-    - description: instance_id.
+    - description: The instance id.
       name: instance_id
       isArray: false
       required: true
-    - description: process_name.
+    - description: The process name.
       name: process_name
       isArray: false
-      required: true
-    - description: incident_id.
+      required: false
+    - description: The incident id.
       name: incident_id
       isArray: false
-      required: true
+      required: false
     name: core-terminate-process
-    description: test
-    outputs:
-    - contextPath: Core.terminateProcess.group_action_id
-      description: test. permissions role=xdr-qa, project=qa2-test-1240179042, reason=CRTX-117833, approver=aazadaliyev
-
-      type: String
-  - arguments:
-    - description: agent id.
-      name: agent_id
-      isArray: false
-      required: true
-    - description: causality_id.
-      name: causality_id
-      isArray: false
-      required: true
-    - description: process_name.
-      name: process_name
-      isArray: false
-      required: true
-    - description: incident_id.
-      name: incident_id
-      isArray: false
-      required: true
-    name: core-causality-process
-    description: test
+    description: Terminate a process by it's instance id.
     outputs:
     - contextPath: Core.terminateProcess.group_action_id
       description: test.
+      type: String
+  - arguments:
+    - description: The agent id.
+      name: agent_id
+      isArray: false
+      required: true
+    - description: The causality id.
+      name: causality_id
+      isArray: false
+      required: true
+    - description: The process name.
+      name: process_name
+      isArray: false
+      required: false
+    - description: The incident id.
+      name: incident_id
+      isArray: false
+      required: false
+    name: core-causality-process
+    description: Stops a process by it's causality id.
+    outputs:
+    - contextPath: Core.terminateProcess.group_action_id
+      description: The group action id.
       type: String
   runonce: false
   script: '-'
