@@ -89,4 +89,4 @@ if __name__ in ("__main__", "builtins", "__builtin__"):
         url_options = demisto.args().get("url_options")
         return_outputs(*defang(input, defang_options, mail_options, url_options))
     except Exception as e:
-        print(f"Error occurred while running the command. Exception info:\n{str(e)}")
+        return_error(f"Error occurred while running the command. Exception info:\n{str(e)}")
