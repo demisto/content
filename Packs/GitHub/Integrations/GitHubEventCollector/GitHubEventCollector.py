@@ -99,7 +99,9 @@ class GithubGetEvents(IntegrationGetEvents):
 
 def main():
     # Args is always stronger. Get last run even stronger
+    demisto.params()['after'] = '1 minute'
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
+    demisto.debug(f'{demisto_params.get("after")=}')
 
     should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
 
@@ -125,6 +127,7 @@ def main():
             return_results('ok')
         elif command in ('github-get-events', 'fetch-events'):
             events = get_events.run()
+            demisto.debug(f'{len(events)=}')
 
             if command == 'fetch-events':
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
