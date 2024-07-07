@@ -141,7 +141,7 @@ def calculate_fetch_dates(start_date: str, last_run: dict, end_date: str = "") -
 def fetch_events(client: Client, max_fetch: int, start_date_str: str = "", end_date_str: str = "") -> tuple:
     last_run = demisto.getLastRun()
     continuation_token = last_run.get("continuationToken", "")
-    demisto.log(f"{continuation_token=}")
+    demisto.log(f"{continuation_token=}")  # TODO: Remove
     events, next_run = get_events(client, start_date_str, max_fetch, last_run, continuation_token)
 
     if 'continuationToken' in next_run:
