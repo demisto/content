@@ -21,7 +21,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: "CyberChef is a web-application developed by GCHQ that's been called the \u201CCyber Swiss Army Knife\u201D. "
+description: 'CyberChef is a web-application developed by GCHQ that''s been called the “Cyber Swiss Army Knife”. '
 display: CyberChef
 name: CyberChef
 script:

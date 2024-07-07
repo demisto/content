@@ -2,7 +2,10 @@ args:
 - name: value
   required: true
   description: Value to strip accent marks from
-comment: "Strip accent marks (diacritics) from a given string.\nFor example: \"Ni\xF1o \u05E9\u05C1\u05B8\u05DC\u05D5\u05B9\u05DD Montr\xE9al \u0627\u064E\u0644\u0633\u064E\u0651\u0644\u064E\u0627\u0645\u064F \u0639\u064E\u0644\u064E\u064A\u0652\u0643\u064F\u0645\u0652\u200E\"\nWill return: \"Nino \u05E9\u05DC\u05D5\u05DD Montreal \u0627\u0644\u0633\u0644\u0627\u0645 \u0639\u0644\u064A\u0643\u0645\""
+comment:  |-
+  Strip accent marks (diacritics) from a given string.
+  For example: "Niño שָׁלוֹם Montréal اَلسَّلَامُ عَلَيْكُمْ‎"
+  Will return: "Nino שלום Montreal السلام عليكم"
 commonfields:
   id: StripAccentMarksFromString
   version: -1

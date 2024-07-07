@@ -198,7 +198,7 @@ script:
       - SV
       - ZH
       required: true
-    - description: 'The document file to be translated. The file name should be included in this part''s content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported: "docx" - Microsoft Word Document "pptx" - Microsoft PowerPoint Document "pdf" - Portable Document Format "htm / html" - HTML Document "txt" - Plain Text Document Please note that in order to translate PDF documents you need to give one-time consent to using the Adobe API via the account interface.'
+    - description: "The document file to be translated. The file name should be included in this part's content disposition. As an alternative, the filename parameter can be used. The following file types and extensions are supported: \"docx\" - Microsoft Word Document \"pptx\" - Microsoft PowerPoint Document \"pdf\" - Portable Document Format \"htm / html\" - HTML Document \"txt\" - Plain Text Document Please note that in order to translate PDF documents you need to give one-time consent to using the Adobe API via the account interface."
       name: file
       required: true
     - description: The name of the uploaded file. Can be used as an alternative to including the file name in the file part's content disposition.
