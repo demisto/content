@@ -48,7 +48,7 @@ configuration:
   - CRITICAL
   type: 15
   required: false
-description: "This Integration is used to to fetch-incidents via \u201CActive alerts\u201D, get alert details via \u201CAlert details\u201D, and get the \u201CAgent list\u201D."
+description: 'This Integration is used to to fetch-incidents via "Active alerts", get alert details via "Alert details", and get the "Agent list".'
 display: ThousandEyes
 name: ThousandEyes
 script:
