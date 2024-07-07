@@ -51,7 +51,7 @@ script:
       name: keep_storage
     - description: Remove all types of build cache
       name: prune_all
-    - description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the list of build cache objects.  Available filters:  - `until= duration `: duration relative to daemon''s time, during which build cache was not used, in Go''s duration format (e.g., ''24h'') - `id= id ` - `parent= id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private` '
+    - description:  "A JSON encoded value of the filters (a `map[string][]string`) to process on the list of build cache objects.  Available filters:  - `until= duration `: duration relative to daemon's time, during which build cache was not used, in Go's duration format (e.g., '24h') - `id= id ` - `parent= id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private` "
       name: filters
     description: Delete builder cache
     name: docker-build-prune
@@ -107,7 +107,7 @@ script:
     - description: ID or name of the container
       name: id
       required: true
-    description: "Get changes on a container\u2019s filesystem"
+    description: Get changes on a container's filesystem
     name: docker-container-changes
     outputs:
     - contextPath: Docker.ContainerChangeResponseItem.Path
@@ -170,7 +170,7 @@ script:
       name: containerconfig_networkdisabled
     - description: MAC address of the container.
       name: containerconfig_macaddress
-    - description: '`ONBUILD` metadata that were defined in the image''s `Dockerfile`. '
+    - description: "`ONBUILD` metadata that were defined in the image's `Dockerfile`. "
       isArray: true
       name: containerconfig_onbuild
     - description: User-defined key/value metadata.
@@ -199,7 +199,7 @@ script:
       name: hostconfig_restartpolicy_Name
     - description: hostconfig_restartpolicy MaximumRetryCount
       name: hostconfig_restartpolicy_MaximumRetryCount
-    - description: 'Automatically remove the container when the container''s process exits. This has no effect if `RestartPolicy` is set. '
+    - description: "Automatically remove the container when the container's process exits. This has no effect if `RestartPolicy` is set. "
       name: hostconfig_autoremove
     - description: Driver that this container uses to mount volumes.
       name: hostconfig_volumedriver
@@ -209,14 +209,14 @@ script:
     - description: 'Specification for mounts to be added to the container. '
       isArray: true
       name: hostconfig_mounts
-    - description: 'A list of kernel capabilities to add to the container. Conflicts with option ''Capabilities''. '
+    - description: "A list of kernel capabilities to add to the container. Conflicts with option 'Capabilities'. "
       isArray: true
       name: hostconfig_capadd
-    - description: 'A list of kernel capabilities to drop from the container. Conflicts with option ''Capabilities''. '
+    - description: "A list of kernel capabilities to add to the container. Conflicts with option 'Capabilities'. "
       isArray: true
       name: hostconfig_capdrop
     - auto: PREDEFINED
-      description: 'cgroup namespace mode for the container. Possible values are:  - `"private"`: the container runs in its own private cgroup namespace - `"host"`: use the host system''s cgroup namespace  If not specified, the daemon default is used, which can either be `"private"` or `"host"`, depending on daemon version, kernel support and configuration. '
+      description: "cgroup namespace mode for the container. Possible values are:  - `\"private\"`: the container runs in its own private cgroup namespace - `\"host\"`: use the host system's cgroup namespace  If not specified, the daemon default is used, which can either be `\"private\"` or `\"host\"`, depending on daemon version, kernel support and configuration. "
       name: hostconfig_cgroupnsmode
       predefined:
       - private
@@ -230,13 +230,13 @@ script:
     - description: A list of DNS search domains.
       isArray: true
       name: hostconfig_dnssearch
-    - description: 'A list of hostnames/IP mappings to add to the container''s `/etc/hosts` file. Specified in the form `["hostname:IP"]`. '
+    - description: "A list of hostnames/IP mappings to add to the container's `/etc/hosts` file. Specified in the form `[\"hostname:IP\"]`. "
       isArray: true
       name: hostconfig_extrahosts
     - description: 'A list of additional groups that the container process will run as. '
       isArray: true
       name: hostconfig_groupadd
-    - description: 'IPC sharing mode for the container. Possible values are:  - `"none"`: own private IPC namespace, with /dev/shm not mounted - `"private"`: own private IPC namespace - `"shareable"`: own private IPC namespace, with a possibility to share it with other containers - `"container: name|id "`: join another (shareable) container''s IPC namespace - `"host"`: use the host system''s IPC namespace  If not specified, daemon default is used, which can either be `"private"` or `"shareable"`, depending on daemon version and configuration. '
+    - description: "IPC sharing mode for the container. Possible values are:  - `\"none\"`: own private IPC namespace, with /dev/shm not mounted - `\"private\"`: own private IPC namespace - `\"shareable\"`: own private IPC namespace, with a possibility to share it with other containers - `\"container: name|id \"`: join another (shareable) container's IPC namespace - `\"host\"`: use the host system's IPC namespace  If not specified, daemon default is used, which can either be `\"private\"` or `\"shareable\"`, depending on daemon version and configuration. "
       name: hostconfig_ipcmode
     - description: Cgroup to use for the container.
       name: hostconfig_cgroup
@@ -245,11 +245,11 @@ script:
       name: hostconfig_links
     - description: 'An integer value containing the score given to the container in order to tune OOM killer preferences. '
       name: hostconfig_oomscoreadj
-    - description: 'Set the PID (Process) Namespace mode for the container. It can be either:  - `"container: name|id "`: joins another container''s PID namespace - `"host"`: use the host''s PID namespace inside the container '
+    - description: "Set the PID (Process) Namespace mode for the container. It can be either:  - `\"container: name|id \"`: joins another container's PID namespace - `\"host\"`: use the host's PID namespace inside the container "
       name: hostconfig_pidmode
     - description: Gives the container full access to the host.
       name: hostconfig_privileged
-    - description: 'Allocates an ephemeral host port for all of a container''s exposed ports.  Ports are de-allocated when the container stops and allocated when the container starts. The allocated port might be changed when restarting the container.  The port is selected from the ephemeral port range that depends on the kernel. For example, on Linux the range is defined by `/proc/sys/net/ipv4/ip_local_port_range`. '
+    - description: "Allocates an ephemeral host port for all of a container's exposed ports.  Ports are de-allocated when the container stops and allocated when the container starts. The allocated port might be changed when restarting the container.  The port is selected from the ephemeral port range that depends on the kernel. For example, on Linux the range is defined by `/proc/sys/net/ipv4/ip_local_port_range`. "
       name: hostconfig_publishallports
     - description: Mount the container's root filesystem as read only.
       name: hostconfig_readonlyrootfs
@@ -381,7 +381,7 @@ script:
       name: limit
     - description: 'Return the size of container as fields `SizeRw` and `SizeRootFs`. '
       name: size
-    - description: 'Filters to process on the container list, encoded as JSON (a `map[string][]string`). For example, `{"status": ["paused"]}` will only return paused containers.  Available filters:  - `ancestor`=(` image-name [: tag ]`, ` image id `, or ` image@digest `) - `before`=(` container id ` or ` container name `) - `expose`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `exited= int ` containers with exit code of ` int ` - `health`=(`starting`|`healthy`|`unhealthy`|`none`) - `id= ID ` a container''s ID - `isolation=`(`default`|`process`|`hyperv`) (Windows daemon only) - `is-task=`(`true`|`false`) - `label=key` or `label="key=value"` of a container label - `name= name ` a container''s name - `network`=(` network id ` or ` network name `) - `publish`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `since`=(` container id ` or ` container name `) - `status=`(`created`|`restarting`|`running`|`removing`|`paused`|`exited`|`dead`) - `volume`=(` volume name ` or ` mount point destination `) '
+    - description: "Filters to process on the container list, encoded as JSON (a `map[string][]string`). For example, `{\"status\": [\"paused\"]}` will only return paused containers.  Available filters:  - `ancestor`=(` image-name [: tag ]`, ` image id `, or ` image@digest `) - `before`=(` container id ` or ` container name `) - `expose`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `exited= int ` containers with exit code of ` int ` - `health`=(`starting`|`healthy`|`unhealthy`|`none`) - `id= ID ` a container's ID - `isolation=`(`default`|`process`|`hyperv`) (Windows daemon only) - `is-task=`(`true`|`false`) - `label=key` or `label=\"key=value\"` of a container label - `name= name ` a container's name - `network`=(` network id ` or ` network name `) - `publish`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `since`=(` container id ` or ` container name `) - `status=`(`created`|`restarting`|`running`|`removing`|`paused`|`exited`|`dead`) - `volume`=(` volume name ` or ` mount point destination `) "
       name: filters
     description: List containers
     name: docker-container-list
@@ -524,7 +524,7 @@ script:
       required: true
     - description: Maximum number of results to return
       name: limit
-    - description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters:  - `is-automated=(true|false)` - `is-official=(true|false)` - `stars= number ` Matches images that has at least ''number'' stars. '
+    - description: "A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters:  - `is-automated=(true|false)` - `is-official=(true|false)` - `stars= number ` Matches images that has at least 'number' stars. "
       name: filters
     description: Search images
     name: docker-image-search
@@ -936,7 +936,7 @@ script:
       description: 'Kernel version of the host.  On Linux, this information obtained from `uname`. On Windows this information is queried from the  kbd HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ /kbd  registry value, for example _"10.0 14393 (14393.1198.amd64fre.rs1_release_sec.170427-1353)"_. '
       type: String
     - contextPath: Docker.SystemInfo.OperatingSystem
-      description: 'Name of the host''s operating system, for example: "Ubuntu 16.04.2 LTS" or "Windows Server 2016 Datacenter" '
+      description: "Name of the host's operating system, for example: \"Ubuntu 16.04.2 LTS\" or \"Windows Server 2016 Datacenter\" "
       type: String
     - contextPath: Docker.SystemInfo.OSVersion
       description: 'Version of the host''s operating system   p    /  /p       Note  : The information returned in this field, including its   very existence, and the formatting of values, should not be considered   stable, and may change without notice. '
@@ -981,7 +981,7 @@ script:
       description: 'The network endpoint that the Engine advertises for the purpose of node discovery. ClusterAdvertise is a `host:port` combination on which the daemon is reachable by other hosts.   p    /  /p       Deprecated  : This field is only propagated when using standalone Swarm   mode, and overlay networking using an external k/v store. Overlay   networks with Swarm mode enabled use the built-in raft store, and   this field will be empty. '
       type: String
     - contextPath: Docker.SystemInfo.Runtimes.path
-      description: 'Name and, optional, path, of the OCI executable binary.  If the path is omitted, the daemon searches the host''s `$PATH` for the binary and uses the first result. '
+      description: "Name and, optional, path of the `docker-init` binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
       type: String
     - contextPath: Docker.SystemInfo.DefaultRuntime
       description: 'Name of the default OCI runtime that is used when starting containers.  The default can be overridden per-container at create time. '
@@ -1071,7 +1071,7 @@ script:
       description: The ID of the node that this task is on.
       type: String
   - arguments:
-    - description: 'The new volume''s name. If not specified, Docker generates a name. '
+    - description: "The new volume's name. If not specified, Docker generates a name. "
       name: volumeconfig_name
     - description: Name of the volume driver to use.
       name: volumeconfig_driver
