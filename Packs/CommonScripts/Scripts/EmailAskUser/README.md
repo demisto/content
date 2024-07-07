@@ -33,20 +33,20 @@ Then add Case Yes and set the input as Option 1 and Case No and set the input as
 ## Example
 An example arrangement for EmailAskUser task is as below:
 
-![image](https://user-images.githubusercontent.com/54623333/99517136-efc5b480-2986-11eb-879c-a0a88923c4b9.png)
+![image](../../doc_files/99517136-efc5b480-2986-11eb-879c-a0a88923c4b9.png)
 
 
 There needs to be a manual conditional task *after* the EmailAskUser Task - It is this task that is referenced as "task" in the EmailAskUser parameters.
 
 It is good practice to tag the wait task as shown:
 
-![image](https://user-images.githubusercontent.com/54623333/99517219-0409b180-2987-11eb-9aa4-7e96b2a12238.png)
+![image](../../doc_files/99517219-0409b180-2987-11eb-9aa4-7e96b2a12238.png)
 
 
 The tag you choose (in this case "Await") can be used in lieu of the task id in the task field of the EmailAskUser Task:
 
 
-![image](https://user-images.githubusercontent.com/54623333/99517256-0f5cdd00-2987-11eb-8a1f-1dc41d166b42.png)
+![image](../../doc_files/99517256-0f5cdd00-2987-11eb-8a1f-1dc41d166b42.png)
 
 
 
