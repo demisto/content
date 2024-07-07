@@ -370,6 +370,8 @@ alert_workflow_update_command_func_called_data = [
       'job_parameters': {'job_parameters': {'request': {'state': 'OPEN'}, 'userWorkflowDto': {'changed_by': 'bla'}}},
       'last_update_time': 'now'})
 ]
+
+
 @pytest.mark.parametrize('args, func_to_be_called, response', alert_workflow_update_command_func_called_data)
 def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_called, response):
     """

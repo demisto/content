@@ -12,6 +12,7 @@ import urllib3
 urllib3.disable_warnings()
 LOG_INIT = "CBEEDR - "
 
+
 class Client(BaseClient):
     def __init__(self, base_url: str, use_ssl: bool, use_proxy: bool, token=None, cb_org_key=None):
         self.token = token
@@ -511,12 +512,12 @@ def alert_list_command(client: Client, args: dict) -> CommandResults | str:
     if not alerts:
         return 'No alerts were found'
     for alert in alerts:
-        
+
         # The new API version returns status instead of state,
         # mapping this for the output to look the same.
         alert['workflow']['state'] = alert['workflow']['status']
         alert['first_event_time'] = alert['first_event_timestamp']
-        
+
         contents.append({
             'AlertID': alert.get('id'),
             'CreateTime': alert.get('backend_timestamp'),
@@ -622,7 +623,7 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
         status_HR = response['job_parameters']['job_parameters']['request']['status'] if args.get('state') else None
         message = CommandResults(
             outputs={'AlertID': alert_id, 'ChangedBy': changed_by, 'Comment': args.get('comment'),
-                     'LastUpdateTime': response['last_update_time'], 'State': status_HR,\
+                     'LastUpdateTime': response['last_update_time'], 'State': status_HR,
                      'RemediationState': args.get('remediation_state')},
             outputs_prefix='CarbonBlackEEDR.Alert',
             readable_output=tableToMarkdown(f'Successfully updated the alert: "{alert_id}"',
@@ -632,12 +633,12 @@ def alert_workflow_update_command_with_polling(args: dict, client: Client) -> Po
                                              'comment': args.get('comment'),
                                              'closure reason': args.get('closure_reason'),
                                              'state': status_HR}, removeNull=True),
-            outputs_key_field= 'AlertID')
+            outputs_key_field='AlertID')
         demisto.debug(f'{LOG_INIT} returning PollResult with continue_to_poll=False')
         return PollResult(
             response=message,
             continue_to_poll=False)
-    
+
     # Status is failed
     else:  # The status of the response can be COMPLETED, CREATED or FAILED.
         raise DemistoException(f"Failed to update the alerts workflow. Request's Status: {request_status}\
@@ -1293,7 +1294,7 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
     # The new API version (v7) always returns the previous last alert along with the new alerts.
     if not (int_fetch_limit := arg_to_number(fetch_limit)):
-        raise ValueError ("limit cannot be empty.")
+        raise ValueError("limit cannot be empty.")
     if last_run:
         int_fetch_limit += 1
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
@@ -1404,14 +1405,14 @@ def process_search_command_with_polling(args: dict, client: Client) -> PollResul
         headers = ["process_hash", "process_name", "device_name", "device_timestamp", "process_pid", "process_username"]
         human_readable = tableToMarkdown(name=title, t=output.get('results'), removeNull=True, headers=headers)
         message = CommandResults(outputs_prefix='CarbonBlackEEDR.SearchProcess',
-                                outputs=output,
-                                outputs_key_field='job_id',
-                                raw_response=response,
-                                readable_output=human_readable)
+                                 outputs=output,
+                                 outputs_key_field='job_id',
+                                 raw_response=response,
+                                 readable_output=human_readable)
         return PollResult(
             response=message,
             continue_to_poll=False)
-        
+
     else:
         raise DemistoException(f'Failed to run process search. response keys: {response.keys()}')
 
