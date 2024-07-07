@@ -1,8 +1,11 @@
-## BaseIntegration Help
+_____
 
-Markdown file for integration configuration  help snippet. In this file add:
+## Bitwarden Password Manager Event Collector
 
-- Brief information about how to retrieve the API key of your product
-- Other useful information on how to configure your integration in XSOAR
+_____
+Use this integration to fetch events from Bitwarden Password Manager.
+_____
 
-Since this is a Markdown file, we encourage you to use MD formatting for sections, sub-sections, lists, etc.
+## Creating an API Client in Bitwarden Password Manager
+
+The API Key client_id and client_secret can be obtained by an owner from the Admin Console vault by navigating to Settings → Organization info screen and scrolling down to the API key section.

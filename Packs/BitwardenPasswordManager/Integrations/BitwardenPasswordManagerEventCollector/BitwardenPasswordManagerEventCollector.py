@@ -25,7 +25,6 @@ class Client(BaseClient):
 
     def login(self, client_id: str, client_secret: str) -> str:
         integration_context = get_integration_context()
-        demisto.log(f"{integration_context=}")  # TODO: Remove this line
         if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
             if expires_date and not self.is_token_expired(expires_date):
