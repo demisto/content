@@ -5,3 +5,4 @@
 !cb-eedr-add-alert-notes alert_id=1bc5dff7-e2fb-f336-7997-277b142c9ec1 notes="xsoar alert notes"
 !cb-eedr-add-threat-tags threat_id=fb6a305cd33e6b99b3010d3005f65943 tags=CSIRC-77777
 !cb-eedr-get-threat-tags threat_id=fb6a305cd33e6b99b3010d3005f65943
+!cb-eedr-list-alerts
