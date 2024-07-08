@@ -1317,7 +1317,6 @@ If Exchange is configured with an international flavor `Inbox` will be named acc
 |target-mailbox|The mailbox on which to apply the search.|Optional|
 |folder-path|The path of the folder to retrieve. If empty, will retrieve the folder "AllItems".|Optional|
 |is-public|Whether the folder is a Public Folder. Default is "False".|Optional|
-|
 
 #### Outputs
 
