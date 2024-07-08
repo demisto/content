@@ -108,7 +108,7 @@ def main():
         t.append({'Use Case Adoption & Coverage': use_case, 'Status': '❌'})
     table = tableToMarkdown(name='Use Case Coverage', t=t, headers=headers)
 
-    return table
+    return_results(table)
 
 
 ''' ENTRY POINT '''
