@@ -168,7 +168,7 @@
                 "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
-            "timeout": 1200,
+            "timeout": 800,
             "memory_threshold": 200
         },
         {
