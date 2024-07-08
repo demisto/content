@@ -68,9 +68,10 @@ class Client(BaseClient):
         if continuation_token:
             params = {'continuationToken': continuation_token}
         else:
+            start_date = start_date[:-1] + '.00'
             params = {
-                'start': start_date[:-6],
-                'end': (get_current_time() + timedelta(minutes=2)).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-4]
+                'start': start_date,
+                'end': (get_current_time() + timedelta(days=1)).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-4]
             }
 
         headers = {'Authorization': f'Bearer {self.token}'}
@@ -141,14 +142,6 @@ def fetch_events(client: Client, max_fetch: int, start_date_str: str = '') -> tu
     return events, new_last_run
 
 
-def validate_start_date(start_date_str: str):
-    if start_date := arg_to_datetime(start_date_str):
-        start_date_str = start_date.strftime(DATE_FORMAT)
-    if not start_date:
-        raise ValueError('The start date is missing or it is invalid. Please provide valid date.')
-    return start_date_str
-
-
 def main() -> None:  # pragma: no cover
     """
     main function, parses params and runs command functions
@@ -174,16 +167,17 @@ def main() -> None:  # pragma: no cover
             client_secret=client_secret,
             proxy=proxy)
         args = demisto.args()
+        start_date = arg_to_datetime(args.get('start'))
+        start_date_str = start_date.strftime(DATE_FORMAT)
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'bitwarden-get-events':
-            valid_start_date = validate_start_date(args.get('start'))
-            events, results = get_events_command(client=client, start_date_str=valid_start_date, max_fetch=max_events_per_fetch)
+            events, results = get_events_command(client=client, start_date_str=start_date_str, max_fetch=max_events_per_fetch)
             return_results(results)
             if argToBoolean(args.get('should_push_events')):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         elif demisto.command() == 'fetch-events':
-            events, new_last_run = fetch_events(client=client, max_fetch=max_events_per_fetch)
+            events, new_last_run = fetch_events(client=client, max_fetch=max_events_per_fetch, start_date_str=start_date_str)
             if events:
                 if new_last_run:
                     demisto.debug(f'{new_last_run=}')
