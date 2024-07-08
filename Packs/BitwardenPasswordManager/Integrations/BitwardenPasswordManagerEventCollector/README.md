@@ -34,10 +34,10 @@ Gets events from Bitwarden.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| start | The start date from which to filter events. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                               | **Required** |
+| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| start | The start date from which to filter events.                                                                                                                   | Optional | 
+| should_push_events | Set this argument to True in order to save events to XSIAM, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
 

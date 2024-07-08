@@ -64,7 +64,7 @@ class Client(BaseClient):
             'expires': str(expire_date)
         })
 
-    def get_events(self, start_date: str = "", continuation_token: str = "") -> dict:
+    def get_events(self, start_date: str = '', continuation_token: str = '') -> dict:
         params = {
             'start': start_date,
             'continuationToken': continuation_token
@@ -85,10 +85,9 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    try:
-        fetch_events(client, max_fetch=1)
-    except DemistoException as e:
-        raise e
+    event, _ = fetch_events(client, max_fetch=1)
+    if not event:
+        raise ValueError('failed to fetch events')
 
     return 'ok'
 
@@ -97,15 +96,15 @@ def get_events_command(client: Client, start_date_str: str, max_fetch: int) -> t
     events, _ = fetch_events(client=client, max_fetch=max_fetch, start_date_str=start_date_str)
     if events:
         events = events[:max_fetch]
-        return events, CommandResults(readable_output=tableToMarkdown("Bitwarden Events", events),
+        return events, CommandResults(readable_output=tableToMarkdown('Bitwarden Events', events),
                                       raw_response=events)
 
     return [], CommandResults(readable_output='No events found')
 
 
-def fetch_events(client: Client, max_fetch: int, start_date_str: str = "") -> tuple:
+def fetch_events(client: Client, max_fetch: int, start_date_str: str = '') -> tuple:
     last_run = demisto.getLastRun()
-    continuation_token = last_run.get("continuationToken", "")
+    continuation_token = last_run.get('continuationToken', '')
     events: List[dict] = []
     has_next = True
     while has_next:
@@ -114,27 +113,25 @@ def fetch_events(client: Client, max_fetch: int, start_date_str: str = "") -> tu
             break
         response = client.get_events(start_date=start_date_str, continuation_token=continuation_token)
 
-        if continuation_token := response.get("continuationToken"):
+        if continuation_token := response.get('continuationToken'):
             has_next = True
         events.extend(response.get('data'))
 
     events = events[:max_fetch]
-    created = calculate_fetch_dates(start_date_str, last_run=last_run)
     if continuation_token:
         demisto.debug(
-            f"Bitwarden - Fetched {len(events)} which is the maximum number of events."
-            f" Will keep the fetching in the next fetch.")
-        new_last_run = {"continuationToken": continuation_token, "last_fetch": created}
+            f'Bitwarden - Fetched {len(events)} which is the maximum or greater then the number of events.'
+            f' Will keep the fetching in the next fetch.')
+        created = start_date_str or last_run.get('last_fetch') or (
+            (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT))
+        new_last_run = {'continuationToken': continuation_token, 'last_fetch': created, 'nextTrigger': '0'}
     else:
         # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
-        new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date"), DATE_FORMAT)
+        new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get('date'), DATE_FORMAT)
                                                  for event in events) if dt is not None]).strftime(
             DATE_FORMAT) if events else get_current_time()
-        new_last_run = {"last_fetch": new_last_fetch_date}
-        demisto.debug(f"Bitwarden - Fetched {len(events)} events")
-
-    if 'continuationToken' in new_last_run:
-        new_last_run["nextTrigger"] = "0"
+        new_last_run = {'last_fetch': new_last_fetch_date}
+        demisto.debug(f'Bitwarden - Fetched {len(events)} events')
 
     for event in events:
         event['_time'] = event.get('date')
@@ -146,17 +143,8 @@ def validate_start_date(start_date_str: str):
     if start_date := arg_to_datetime(start_date_str):
         start_date_str = start_date.strftime(DATE_FORMAT)
     if not start_date:
-        raise ValueError("The start date is missing or it is invalid. Please provide valid date.")
+        raise ValueError('The start date is missing or it is invalid. Please provide valid date.')
     return start_date_str
-
-
-def calculate_fetch_dates(start_date: str, last_run: dict) -> tuple:
-    now_utc_time = get_current_time()
-    # argument > last run > current time
-    start_date = start_date or last_run.get('last_fetch') or (
-        (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
-    # argument > current time
-    return start_date
 
 
 def main() -> None:  # pragma: no cover
@@ -190,7 +178,7 @@ def main() -> None:  # pragma: no cover
             valid_start_date = validate_start_date(args.get('start'))
             events, results = get_events_command(client=client, start_date_str=valid_start_date, max_fetch=max_events_per_fetch)
             return_results(results)
-            if argToBoolean(args.get("should_push_events")):
+            if argToBoolean(args.get('should_push_events')):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         elif demisto.command() == 'fetch-events':
             events, new_last_run = fetch_events(client=client, max_fetch=max_events_per_fetch)
