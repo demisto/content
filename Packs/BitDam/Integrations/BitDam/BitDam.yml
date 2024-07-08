@@ -43,7 +43,7 @@ script:
     arguments:
     - name: idValue
       required: true
-      description: The value of the file's unique identifier (for example - file's SHA1)
+      description: The value of the file's unique identifier (for example - file's SHA1).
     outputs:
     - contextPath: BitDam.Analysis.Status
       description: The status of the analysis. Can be "DONE" or "IN_PROGRESS".
@@ -69,7 +69,7 @@ script:
     - contextPath: File.Malicious.Name
       description: The name of the file.
       type: string
-    - contextPath: File.Malicious.Vendor
+    - contextPath: File.Malicious.VendoridValue
       description: For malicious files, the vendor that made the decision.
       type: string
     - contextPath: File.Malicious.Description
