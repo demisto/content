@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: "new-collect-test-install-test"
+  CURRENT_BRANCH_NAME: "testing-all"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "new-collect-test-install-test"
+    ref: "testing-all"
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
