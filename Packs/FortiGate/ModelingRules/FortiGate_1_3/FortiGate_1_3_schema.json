@@ -24,6 +24,14 @@
       "type": "string",
       "is_array": false
     },
+    "c6a2": {
+      "type": "string",
+      "is_array": false
+    },
+    "c6a3": {
+      "type": "string",
+      "is_array": false
+    },
     "cat": {
       "type": "string",
       "is_array": false
@@ -36,7 +44,19 @@
       "type": "string",
       "is_array": false
     },
+    "destinationTranslatedAddress": {
+      "type": "string",
+      "is_array": false
+    },
     "deviceExternalId": {
+      "type": "string",
+      "is_array": false
+    },
+    "deviceInboundInterface": {
+      "type": "string",
+      "is_array": false
+    },
+    "deviceOutboundInterface": {
       "type": "string",
       "is_array": false
     },
@@ -56,11 +76,111 @@
       "type": "string",
       "is_array": false
     },
+    "dvchost": {
+      "type": "string",
+      "is_array": false
+    },
+    "externalID": {
+      "type": "string",
+      "is_array": false
+    },
     "externalId": {
       "type": "string",
       "is_array": false
     },
     "fname": {
+      "type": "string",
+      "is_array": false
+    },
+    "fsize": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGinitiator": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTadgroup": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTap": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTapp": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTappid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTapplist": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTapprisk": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTapsn": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTassigned": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTassignip": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTattack": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTattackid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTauditreporttype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTbanned_src": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTbssid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTcatdesc": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTccertissuer": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTcfgattr": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTcfgobj": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTcfgpath": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTcipher": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTcommand": {
       "type": "string",
       "is_array": false
     },
@@ -176,6 +296,380 @@
       "type": "string",
       "is_array": false
     },
+    "FTNTFGTcveid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdaddr": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdevintfname": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdevtype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdhcp_msg": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdst_host": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstauthserver": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstcity": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstcountry": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstdevtype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstfamily": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdsthwversion": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstosname": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstregion": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstuser": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTdstunauthuser": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTerror_num": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTerror": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTeventtype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTfctuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTfilehash": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTfiletype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTforwardedfor": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTgateway": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTgroup": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGThttpcode": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGThttpmethod": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTicmpcode": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTicmptype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTincidentserialno": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTinitiator": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTinvalidmac": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTipaddr": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTlease": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTlocal": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTlogin": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTmanuf": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTmasterdstmac": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTmastersrcmac": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTmethod": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTnat": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTnew_status": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTnew_value": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTnewvalue": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTold_status": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTold_value": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGToldvalue": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGToldwprof": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTopercountry": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTpolicy_id": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTpolicyid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTpoolname": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTprofile": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTqclass": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTqname": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTqtype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTqtypeval": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTreferralurl": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTref": {
+      "type": "string",
+      "is_array": false
+    },
+    
+
+    "FTNTFGTremote": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTreporttype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsaddr": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTserialno": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTserver": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTshapingpolicyid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsn": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsnclosest": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsrccity": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsrccountry": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsrcfamily": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsrchwvendor": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsrchwversion": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsrcregion": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsrcuuid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTsslaction": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTstamac": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTtamac": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTthreattype": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTtlsver": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTtrueclntip": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTtunnelid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTtunnelip": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTutmaction": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTvirus": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTviruscat": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTvirusid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTvoip_proto": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTvpntunnel": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTvulncat": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTvulnid": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTvulnname": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTxauthgroup": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTxauthuser": {
+      "type": "string",
+      "is_array": false
+    },
     "in": {
       "type": "string",
       "is_array": false
@@ -204,7 +698,19 @@
       "type": "string",
       "is_array": false
     },
+    "requestClientApplication": {
+      "type": "string",
+      "is_array": false
+    },
+    "requestContext": {
+      "type": "string",
+      "is_array": false
+    },
     "shost": {
+      "type": "string",
+      "is_array": false
+    },
+    "sourceTranslatedAddress": {
       "type": "string",
       "is_array": false
     },
