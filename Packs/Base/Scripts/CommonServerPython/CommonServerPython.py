@@ -45,23 +45,14 @@ _MODULES_LINE_MAPPING = {
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
-XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB
+XSIAM_EVENT_CHUNK_SIZE_LIMIT = 4 * (10 ** 6)  # 4 MB
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
 MASK = '<XX_REPLACED>'
 SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
-
-try:
-    if 'context' in demisto.callingContext \
-            and 'ExecutedCommands' in demisto.callingContext['context'] \
-            and 'name' in demisto.callingContext['context']['ExecutedCommands'][0]:
-        context_executed_commands_name = demisto.callingContext['context']['ExecutedCommands'][0]['name']
-        with open('script_info.txt', 'w') as file_demisto_info:
-            file_demisto_info.write(context_executed_commands_name)
-except Exception as exc_script_info:
-    demisto.info('failed to save the script info.\nError: {}'.format(exc_script_info))
+MAX_ERROR_MESSAGE_LENGTH = 50000
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
@@ -1604,9 +1595,9 @@ def stringUnEscape(st):
 class IntegrationLogger(object):
     """
       a logger for python integrations:
-      use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-      use LOG.print_log(verbose=True/False) to display all records in War-Room (if verbose) and server log.
-      use add_replace_strs to add sensitive strings that should be replaced before going to the log.
+      use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+      use `LOG.print_log(verbose=True/False)` to display all records in War-Room (if verbose) and server log.
+      use `add_replace_strs` to add sensitive strings that should be replaced before going to the log.
 
       :type message: ``str``
       :param message: The message to be logged
@@ -1810,8 +1801,8 @@ class IntegrationLogger(object):
 
 """
 a logger for python integrations:
-use LOG(<message>) to add a record to the logger (message can be any object with __str__)
-use LOG.print_log() to display all records in War-Room and server log.
+use `LOG(<message>)` to add a record to the logger (message can be any object with __str__)
+use `LOG.print_log()` to display all records in War-Room and server log.
 """
 LOG = IntegrationLogger(debug_logging=is_debug_mode())
 
@@ -7257,7 +7248,7 @@ def return_error(message, error='', outputs=None):
         Returns error entry with given message and exits the script
 
         :type message: ``str``
-        :param message: The message to return in the entry (required)
+        :param message: The message to return to the entry (required)
 
         :type error: ``str`` or Exception
         :param error: The raw error message to log (optional)
@@ -7296,6 +7287,10 @@ def return_error(message, error='', outputs=None):
     if is_server_handled:
         raise Exception(message)
     else:
+        if len(message) > MAX_ERROR_MESSAGE_LENGTH:
+            half_length = MAX_ERROR_MESSAGE_LENGTH // 2
+            message = message[:half_length] + "...This error body was truncated..." + message[half_length * (-1):]
+
         demisto.results({
             'Type': entryTypes['error'],
             'ContentsFormat': formats['text'],
@@ -8271,7 +8266,7 @@ get_demisto_version = GetDemistoVersion()
 
 
 def get_demisto_version_as_str():
-    """Get the Demisto Server version as a string <version>-<build>. If unknown will return: 'Unknown'.
+    """Get the Demisto Server version as a string `<version>-<build>`. If unknown will return: 'Unknown'.
     Meant to be use in places where we want to display the version. If you want to perform logic based upon vesrion
     use: is_demisto_version_ge.
 
@@ -8394,6 +8389,14 @@ def is_xsiam():
     :rtype: ``bool``
     """
     return demisto.demistoVersion().get("platform") == "x2"
+
+
+def is_using_engine():
+    """Determines whether or not the platform is using engine.
+    :return: True iff the platform is using engine.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("engine")
 
 
 class DemistoHandler(logging.Handler):
@@ -9305,7 +9308,7 @@ if 'requests' in sys.modules:
 
 def generic_http_request(method,
                          server_url,
-                         timeout=10,
+                         timeout=60,
                          verify=True,
                          proxy=False,
                          client_headers=None,
@@ -11636,12 +11639,14 @@ def split_data_to_chunks(data, target_chunk_size):
         data = data.split('\n')
     for data_part in data:
         if chunk_size >= target_chunk_size:
+            demisto.debug("reached max chunk size, sending chunk with size: {size}".format(size=chunk_size))
             yield chunk
             chunk = []
             chunk_size = 0
         chunk.append(data_part)
         chunk_size += sys.getsizeof(data_part)
     if chunk_size != 0:
+        demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
 
 
@@ -11936,7 +11941,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
                                     error_msg=header_msg, headers=headers,
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True)
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
 
     if should_update_health_module:
         demisto.updateModuleHealth({'{data_type}Pulled'.format(data_type=data_type): data_size})

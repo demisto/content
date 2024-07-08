@@ -33,7 +33,7 @@ tags:
 - email
 - preProcessing
 type: python
-dockerimage: demisto/python3:3.10.14.91134
+dockerimage: demisto/python3:3.10.14.98471
 runas: DBotRole
 tests:
 - No tests (auto formatted)
