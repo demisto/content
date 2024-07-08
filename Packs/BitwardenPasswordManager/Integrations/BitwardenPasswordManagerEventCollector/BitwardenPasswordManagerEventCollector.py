@@ -89,7 +89,7 @@ class Client(BaseClient):
 
 def test_module(client: Client) -> str:
     try:
-        retrieve_events, last_run = fetch_events(client, max_fetch=1)
+        fetch_events(client, max_fetch=1)
     except DemistoException as e:
         raise e
 
@@ -122,7 +122,7 @@ def fetch_events(client: Client, max_fetch: int, start_date_str: str = "") -> tu
         events.extend(response.get('data'))
 
     events = events[:max_fetch]
-    created, current_date = calculate_fetch_dates(start_date_str, last_run=last_run)  # TODO: Check whats is it
+    created = calculate_fetch_dates(start_date_str, last_run=last_run)  # TODO: Check whats is it
     if continuation_token:
         demisto.debug(
             f"Bitwarden - Fetched {len(events)} which is the maximum number of events."
@@ -132,7 +132,7 @@ def fetch_events(client: Client, max_fetch: int, start_date_str: str = "") -> tu
         # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
         new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get("date"), DATE_FORMAT)
                                                  for event in events) if dt is not None]).strftime(
-            DATE_FORMAT) if events else current_date
+            DATE_FORMAT) if events else get_current_time()
         new_last_run = {"last_fetch": new_last_fetch_date}
         demisto.debug(f"Bitwarden - Fetched {len(events)} events")
 
@@ -198,9 +198,10 @@ def main() -> None:  # pragma: no cover
         elif demisto.command() == 'fetch-events':
             events, new_last_run = fetch_events(client=client, max_fetch=max_events_per_fetch)
             if events:
-                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 if new_last_run:
                     demisto.setLastRun(new_last_run)
+                send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
+
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
