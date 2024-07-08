@@ -57,22 +57,33 @@ For more details about the authentication used in this integration, see [Microso
 
 ## Permissions
 
+In order to function as expected, the service account should have:
+
+**Impersonation rights** - Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
+
+Note: In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+
 In order to function as expected, the application used to authenticate should have:
 
-* **Impersonation rights** - Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange).
+**full_access_as_app** - To set this permission follow these steps:
 
-* **full_access_as_app** - To set this permission follow [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
+1. Navigate to Home > App registrations.
+2. Search for your app under ‘all applications’.
+3. Click API permissions > Add permission.
+4. Search for the `Office 365 Exchange Online` API -> `Application Permission`-> `full_access_as_app` permission. 
 
-* * In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
+for more information on this permission, visit [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
+
+
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
-**Note** You can't manage the *Office 365 Exchange Online* app permissions via the Azure portal.
+**Note** You can't manage the _Office 365 Exchange Online_ app permissions via the Azure portal.
 
 ## Configure Integration on XSOAR (Parameters)
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for EWS O365.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click **Add instance** to create and configure a new integration instance.  
 
 | **Parameter** | **Description** |**Required**|
 | --- | --- | --- |
@@ -1702,7 +1713,7 @@ There is no context output for this command.
 
 <details><summary><h3 style={{display: 'inline'}}> General </h3></summary> 
 
-* ews-get-searchable-mailboxes: 
-* * When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
+* ews-get-searchable-mailboxes:   
+When using UPN parameter, the command ews-get-searchable-mailboxes would work after assigning RBAC roles requested in the management role header as explained in the [Microsoft Documentation](https://learn.microsoft.com/en-us/Exchange/policy-and-compliance/ediscovery/assign-permissions?redirectedfrom=MSDN&view=exchserver-2019).
 
 </details>
