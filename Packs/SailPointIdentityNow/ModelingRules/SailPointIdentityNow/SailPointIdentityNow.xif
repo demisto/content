@@ -4,11 +4,7 @@ alter
     dst_name = `target` -> name
 | alter
     src_email = arrayindex(regextract(src_name, "(?:\w+)\@\S+"),0),
-    src_first_name = arrayindex(regextract(src_name, "(?:\w+)\s"),0),
-    src_last_name = arrayindex(regextract(src_name, "\w+\s(\w+\s*\w*)"),0),
-    dst_email = arrayindex(regextract(dst_name, "(?:\w+)\@\S+"),0),
-    dst_first_name = arrayindex(regextract(dst_name, "(?:\w+)\s"),0),
-    dst_last_name = arrayindex(regextract(dst_name, "\w+\s(\w+\s*\w*)"),0)
+    dst_email = arrayindex(regextract(dst_name, "(?:\w+)\@\S+"),0)
 | alter
     xdm.event.original_event_type = action,
     xdm.event.id = id,
@@ -24,12 +20,8 @@ alter
     xdm.target.resource.type = "Stack",
     xdm.target.ipv4 = if(incidr(ipAddress, "0.0.0.0/0"), ipAddress),
     xdm.target.ipv6  = arrayindex(regextract(ipAddress, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"), 0),
-    xdm.source.user.username = if(src_email != null, arrayindex(regextract(src_email, "(\w+)\@"),0), src_last_name = null, src_name),
-    xdm.source.user.first_name = src_first_name,
-    xdm.source.user.last_name = src_last_name,
+    xdm.source.user.username = if(src_email != null, arrayindex(regextract(src_email, "(\w+)\@"),0), src_name),
     xdm.source.user.upn = src_email,
-    xdm.target.user.username = if(dst_email != null, arrayindex(regextract(dst_email, "(\w+)\@"),0), dst_last_name = null, dst_name),
-    xdm.target.user.first_name = dst_first_name,
-    xdm.target.user.last_name = dst_last_name,
+    xdm.target.user.username = if(dst_email != null, arrayindex(regextract(dst_email, "(\w+)\@"),0), dst_name),
     xdm.target.user.upn = dst_email,
     xdm.event.description = attributes;
