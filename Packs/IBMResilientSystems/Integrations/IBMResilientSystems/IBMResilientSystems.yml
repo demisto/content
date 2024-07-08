@@ -815,7 +815,7 @@ script:
       required: false
     outputs:
     - contextPath: Resilient.Script
-      description: The ID of the artifact.
+      description: Retrieved script or list of scripts with metadata.
       type: Dictionary
 
   - name: rs-upload-incident-attachment
@@ -870,10 +870,14 @@ script:
 
   - name: rs-list-task-instructions
     description: Get the task's instructions.
-#    arguments: ...
-#    outputs: ...
-
-
+    arguments:
+    - name: task_id
+      description: ID of the task to list its instructions.
+      required: true
+    outputs:
+    - contextPath: Resilient.Task
+      description: Task # TODO - Compelte.
+      type: Dictionary
   dockerimage: demisto/resilient:2.0.0.86430
   isfetch: true
   runonce: false

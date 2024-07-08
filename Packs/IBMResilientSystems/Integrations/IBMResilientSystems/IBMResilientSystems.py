@@ -1109,10 +1109,10 @@ def list_scripts_command(rs_client: SimpleClient, args: dict) -> CommandResults:
             """
         demisto.info(f'list_scripts_command received script ids: {str(script_ids)}')
         return CommandResults(
-                outputs_prefix="Resilient.Script",
-                outputs=response,
-                readable_output=human_readable.format(received_ids=str(script_ids))
-            )
+            outputs_prefix='Resilient.Script',
+            outputs=response,
+            readable_output=human_readable.format(received_ids=str(script_ids))
+        )
 
     except (SimpleHTTPException, RetryHTTPException) as e:
         return CommandResults(
@@ -1130,9 +1130,12 @@ def upload_incident_attachment_command(rs_client: SimpleClient, args: dict) -> C
     try:
         file_path_obj = demisto.getFilePath(entry_id)
     except ValueError as e:
-        raise DemistoException(f' Could not find a file with entry ID: {entry_id}')
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not find a file with entry ID: {entry_id}'
+        )
 
-    file_path,  file_name = file_path_obj.get('path'), file_path_obj.get('name')
+    file_path, file_name = file_path_obj.get('path'), file_path_obj.get('name')
 
     try:
         response = rs_client.post_attachment(uri=f'/incidents/{incident_id}/attachments',
@@ -1147,6 +1150,18 @@ def upload_incident_attachment_command(rs_client: SimpleClient, args: dict) -> C
         )
     return CommandResults(
         readable_output=f'File was uploaded successfully to {incident_id}.'
+    )
+
+
+def list_task_instructions(rs_client: SimpleClient, args: dict) -> CommandResults:
+    task_id = args.get('task_id')
+    response = rs_client.get(f'/tasks/{task_id}/instructions_ex')
+    # instructions = process_insturctions
+    demisto.debug(f'{response=}')
+    return CommandResults(
+        outputs_prefix='Resilient.Task',
+        outputs=response,
+        readable_output=response
     )
 
 
@@ -1243,6 +1258,8 @@ def main():
             return_results(list_scripts_command(client, args))
         elif command == 'rs-upload-incident-attachment':
             return_results(upload_incident_attachment_command(client, args))
+        elif command == 'rs-list-task-instructions':
+            return_results(list_task_instructions(client, args))
     except Exception as e:
         LOG(str(e))
         LOG.print_log()
