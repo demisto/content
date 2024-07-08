@@ -3,7 +3,7 @@ Use this feed integration to fetch Google Threat Intelligence Categorized Feeds 
 ## Configure Google Threat Intelligence Feeds on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Google Threat Intelligence Categorized Feeds.
+2. Search for Google Threat Intelligence Feeds.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description** | **Required** |
