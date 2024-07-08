@@ -28,7 +28,6 @@ class Client(BaseClient):
         if token := integration_context.get('token'):
             expires_date = integration_context.get('expires')
             if expires_date and not self.is_token_expired(expires_date):
-                demisto.log(f"Token is valid: {expires_date=}")  # TODO: Remove this line
                 return token
 
         json_data = {
@@ -56,12 +55,10 @@ class Client(BaseClient):
         expire_in = arg_to_number(access_token_obj.get('expires_in')) or 1
         self.store_token_in_context(new_access_token, expire_in)
 
-        demisto.log(f"Created new token: {expire_in=}")  # TODO: Remove this line
         return new_access_token
 
     def store_token_in_context(self, token: str, expire_in: int) -> None:
         expire_date = get_current_time() + timedelta(seconds=expire_in) - timedelta(minutes=MINUTES_BEFORE_TOKEN_EXPIRED)
-        demisto.log(f"{expire_date=}")  # TODO: Remove this line
         set_integration_context(context={
             'token': token,
             'expires': str(expire_date)
@@ -122,7 +119,7 @@ def fetch_events(client: Client, max_fetch: int, start_date_str: str = "") -> tu
         events.extend(response.get('data'))
 
     events = events[:max_fetch]
-    created = calculate_fetch_dates(start_date_str, last_run=last_run)  # TODO: Check whats is it
+    created = calculate_fetch_dates(start_date_str, last_run=last_run)
     if continuation_token:
         demisto.debug(
             f"Bitwarden - Fetched {len(events)} which is the maximum number of events."
