@@ -221,7 +221,7 @@ script:
       description: The id of the flow.
       type: textArea
     - name: sid
-      description: The id if the rule.
+      description: The id of the rule.
       type: textArea
     - name: probe_name
       description: The name of the jizo probe.
