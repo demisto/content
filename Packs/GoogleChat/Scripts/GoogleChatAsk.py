@@ -9,7 +9,9 @@ def parse_option_text(option):
     parts = option.split("#", 1)
     if len(parts) == 2:
         text, color = parts
-        #TODO
+        if color not in ['red', 'green', 'blue']:
+            raise DemistoException(f"The option: {option} has invalid color: {color}, the color options are red, green, blue.")
+        style = color
     else:
         text = option
         style = None
@@ -21,6 +23,11 @@ def create_adaptive_card(message, user_options, response_type):
         option_text, option_style = parse_option_text(option)
         select_button = {
             "text": option_text,
+            "color": {
+                    "red": "1" if option_style == "red" else "0",
+                    "green": "1" if option_style == "green" else "0",
+                    "blue": "1" if option_style == "blue" else "0",
+                    },
             "onClick": {
                 "action":{
                     "function": option_text}}
@@ -83,12 +90,8 @@ def main():
                                    DATE_FORMAT)
 
     formatted_entitlement = entitlement + '@' + demisto.investigation()['id'] # type: ignore
-    if demisto_args.get('task'):
-        formatted_entitlement += '|' + demisto_args.get('task') # type: ignore
-
-    # args = {
-    #     'ignoreAddURL': 'true',
-    # }
+    if demisto_args.get('task_id'):
+        formatted_entitlement += '|' + demisto_args.get('task_id') # type: ignore
     args = {}
 
     user_options = [option1, option2]

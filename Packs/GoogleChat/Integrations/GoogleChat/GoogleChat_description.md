@@ -4,8 +4,10 @@ In order to use this integration, you need to enter your Zoom credentials in the
 
 ### Redirect user's response to Xsoar
 
-Navigate to [here](https://console.cloud.google.com/apis/credentials) > click on the button +CREATE CREDENTIALS > OAuth client ID > under Authorized redirect URIs insert your Xsoar url
-
+Navigate to [here](https://console.cloud.google.com/apis/credentials) > click on the button +CREATE CREDENTIALS > OAuth client ID > under Authorized redirect URIs insert your XSOAR url
+#### And
+Navigate to [here](https://console.cloud.google.com/apis/dashboard) > Click on the +ENABLE APIS AND SERVICES > choose GOOGLE CHAT API > go to configuration > 
+under Connection settings click on App URL > and set the App URL as followed <your-xsoar-url>/instance/execute/<name-og-the-instance> 
 ### Space ID param
 
 Go to Google Chat and log in with your Google account [here](https://chat.google.com) > Enter on the required space > display the url (e.g https://mail.google.com/chat/u/0/#chat/space/123456) > the ID after the space is the space ID (e.g 123456)

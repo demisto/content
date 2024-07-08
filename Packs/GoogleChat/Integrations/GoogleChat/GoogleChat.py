@@ -143,7 +143,6 @@ class GoogleChatClient(BaseClient):
             raise e
 
     def send_chat_reply_request(self, url_suffix, params, body):
-        demisto.debug("inside send_chat_reply_request")
         try:
             headers = {
                 'Authorization': f'Bearer {self._access_token}',
@@ -195,7 +194,10 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
     message_to = args.get('to')
     space_id = args.get('space_id', client._space_id)
     thread_id = args.get('thread_id')
-    adaptive_card = json.loads(args.get('adaptive_card')) if args.get('adaptive_card') else None  # type: ignore
+    try:
+        adaptive_card = json.loads(args.get('adaptive_card')) if args.get('adaptive_card') else None  # type: ignore
+    except Exception as e:
+        raise DemistoException(f"Could not parse the adaptive card which was uploaded. Error: {e}")
     entitlement = args.get('entitlement')
     expiry = args.get('expiry')
     default_reply = args.get('default_reply')
@@ -283,7 +285,7 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
     """
     parts = entitlement.split('@', 1)
     if len(parts) < 2:
-        raise DemistoException("Entitlement cannot be parsed- entitlement not in format.")
+        raise DemistoException("Entitlement cannot be parsed- entitlement not in format (entitlementID@incidentID|taskID).")
     guid = parts[0]
     id_and_task = parts[1].split('|', 1)
     incident_id = id_and_task[0]
@@ -318,7 +320,6 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id_hi
         If the message contains entitlement, return a reply.
     """
     integration_context = get_integration_context()
-    demisto.debug(f"{integration_context=}")
     messages = integration_context.get('messages', [])
     reply = ''
     if not messages or not message_id_hierarchy:
@@ -328,15 +329,12 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id_hi
     if message_filter:
         message = message_filter[0]
         entitlement = message.get('entitlement')
-        demisto.debug(f"{entitlement=}")
         reply = message.get('reply', f'Thank you {user_name} for your response: {action_selected}.')
-        demisto.debug(f"{reply=}")
         guid, incident_id, task_id = extract_entitlement(entitlement)
         try:
             demisto.handleEntitlementForUser(incident_id, guid, user_name, action_selected, task_id)
             message['remove'] = True
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
-            demisto.debug(f"{get_integration_context()=}")
         except Exception as e:
             demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}.')
     return reply
@@ -355,11 +353,6 @@ async def process_entitlement_reply(entitlement_reply, message_hierarchy):
     :param action_selected: str: The text attached to the button, used for string replacement.
     :return: None
     """
-    # if '{user}' in entitlement_reply:
-    #     entitlement_reply = entitlement_reply.replace('{user}', str(user_name))
-    # if '{response}' in entitlement_reply and action_text:
-    #     entitlement_reply = entitlement_reply.replace('{response}', str(action_text))
-
     url_suffix = f"{message_hierarchy}"
     params = {
         "updateMask": "*"
@@ -380,14 +373,11 @@ async def check_for_expired_messages():
     if messages:
         messages = json.loads(messages)
         now = datetime.now(timezone.utc)
-        demisto.debug(f"{now=}")
         updated_messages = False
         for message in messages:
-            demisto.debug(f"{message.get('expiry')=}")
             if message.get('expiry'):
                 expiry = datetime.strptime(message['expiry'], DATE_FORMAT).replace(tzinfo=timezone.utc)
                 if expiry < now:
-                    demisto.debug(f"message expired: {message}")
                     await answer_survey(message)
                     message['remove'] = True
                     updated_messages = True
