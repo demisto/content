@@ -11,6 +11,15 @@ import urllib3
 urllib3.disable_warnings()
 
 
+FEED_STR = {
+    'apt': 'APT',
+    'cve': 'CVE',
+    'iot': 'IoT',
+    'mobile': 'Mobile',
+    'ransomware': 'Ransomware',
+}
+
+
 def _get_current_hour():
     """Gets current hour for Threat feeds."""
     time_obj = datetime.utcnow() - timedelta(hours=2)
@@ -148,7 +157,7 @@ def get_indicators_command(client: Client,
     indicators = fetch_indicators_command(client, feed_type, tlp_color, feed_tags, limit)
 
     human_readable = tableToMarkdown(
-        'Indicators from Google Threat Intelligence Categorized Feeds:',
+        f'Indicators from Google Threat Intelligence {FEED_STR.get(feed_type, feed_type)} Feeds:',
         indicators,
         headers=[
             'sha256',
