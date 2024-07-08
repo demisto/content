@@ -1,6 +1,6 @@
 category: Data Enrichment & Threat Intelligence
 commonfields:
-  id: Google Threat Intelligence Categorized Feeds
+  id: Google Threat Intelligence Feeds
   version: -1
 configuration:
 - display: API Key (leave empty. Fill in the API key in the password field.)
