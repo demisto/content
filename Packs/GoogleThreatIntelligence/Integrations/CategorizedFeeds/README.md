@@ -1,6 +1,6 @@
 Use this feed integration to fetch Google Threat Intelligence Categorized Feeds matches. It processes the latest finished job retrieving its matches based on the limit parameter (40 by default) in every fetch until there are no more matches for that job.
 
-## Configure Google Threat Intelligence Categorized Feeds on Cortex XSOAR
+## Configure Google Threat Intelligence Feeds on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Google Threat Intelligence Categorized Feeds.
