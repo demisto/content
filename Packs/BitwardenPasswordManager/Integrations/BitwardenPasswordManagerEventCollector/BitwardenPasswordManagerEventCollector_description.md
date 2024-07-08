@@ -1,4 +1,3 @@
-_____
 
 ## Bitwarden Password Manager Event Collector
 

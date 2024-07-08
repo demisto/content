@@ -1,4 +1,4 @@
-The API Key client_id and client_secret can be obtained by an owner from the Admin Console vault by navigating to Settings → Organization info screen and scrolling down to the API key section.
+This integration collects event logs from Bitwarden Password Manager to Cortex XSIAM.
 This integration was integrated and tested with version xx of Bitwarden Password Manager Event Collector.
 
 ## Configure Bitwarden Password Manager Event Collector on Cortex XSOAR
