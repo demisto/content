@@ -90,8 +90,6 @@ class Client(BaseClient):
 def test_module(client: Client) -> str:
     try:
         retrieve_events, last_run = fetch_events(client, max_fetch=1)
-        demisto.log(f"{retrieve_events=}")  # TODO: Remove this line
-        demisto.log(f"{last_run=}")  # TODO: Remove this line
     except DemistoException as e:
         raise e
 
@@ -155,61 +153,21 @@ def get_events(client: Client, start_date: str, max_fetch: int) -> tuple:
     return events, new_last_run_without_continuation_token
 
 
-def validate_start_and_end_dates(start_date_str: str, end_date_str: str):
-    """
-    Validates the start and end dates provided in the arguments.
-
-    This function checks if the start date is missing or if it is greater than the end date.
-     If either of these conditions is true, it raises a ValueError. Otherwise, it returns the start and end dates.
-
-    Args:
-        args (dict): A dictionary containing the arguments for the command.
-                     It should contain keys 'start_date' and 'end_date' with values representing the date range.
-
-    Returns:
-        tuple: A tuple containing two elements:
-            - The start date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
-            - The end date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
-
-    Raises:
-        ValueError: If the start date is missing or if it is greater than the end date.
-    """
+def validate_start_date(start_date_str: str):
     if start_date := arg_to_datetime(start_date_str):
         start_date_str = start_date.strftime(DATE_FORMAT)
-    if end_date := arg_to_datetime(end_date_str):
-        end_date_str = end_date.strftime(DATE_FORMAT)
-    if (end_date and not start_date) or (start_date and end_date and start_date >= end_date):
-        raise ValueError("Either the start date is missing or it is greater than the end date. Please provide valid dates.")
-    return start_date_str, end_date_str
+    if not start_date:
+        raise ValueError("The start date is missing or it is invalid. Please provide valid date.")
+    return start_date_str
 
 
-def calculate_fetch_dates(start_date: str, last_run: dict, end_date: str = "") -> tuple:
-    """
-    Calculates the start and end dates for fetching events.
-
-    This function takes the start date and end date provided as arguments.
-    If these are not provided, it uses the last run information to calculate the start and end dates.
-    If the last run information is also not available,
-     it uses the current time as the end date and the time one minute before the current time as the start date.
-
-    Args:
-        start_date (str): The start date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format.
-        last_run_key (str): The key to retrieve the last fetch date from the last run dictionary.
-        last_run (dict): A dictionary containing information about the last run.
-        end_date (str, optional): The end date for fetching events in '%Y-%m-%dT%H:%M:%SZ' format. Defaults to "".
-
-    Returns:
-        tuple: A tuple containing two elements:
-            - The start date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
-            - The end date as a string in the format '%Y-%m-%dT%H:%M:%SZ'.
-    """
+def calculate_fetch_dates(start_date: str, last_run: dict) -> tuple:
     now_utc_time = get_current_time()
     # argument > last run > current time
     start_date = start_date or last_run.get('last_fetch') or (
         (now_utc_time - timedelta(minutes=1)).strftime(DATE_FORMAT))
     # argument > current time
-    end_date = end_date or now_utc_time.strftime(DATE_FORMAT)
-    return start_date, end_date
+    return start_date
 
 
 def main() -> None:  # pragma: no cover
@@ -240,7 +198,7 @@ def main() -> None:  # pragma: no cover
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'bitwarden-get-events':
-            valid_start_date, valid_end_date = validate_start_and_end_dates(args.get('start'), args.get('end'))
+            valid_start_date = validate_start_date(args.get('start'))
             events, results = get_events_command(client=client, start_date_str=valid_start_date, max_fetch=max_events_per_fetch)
             return_results(results)
             if argToBoolean(args.get("should_push_events")):

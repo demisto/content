@@ -37,7 +37,6 @@ Gets events from Bitwarden.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | start | The start date from which to filter events. | Optional | 
-| end | The end date to which to filter events. | Optional | 
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
