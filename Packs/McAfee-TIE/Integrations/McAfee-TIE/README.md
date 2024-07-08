@@ -135,7 +135,7 @@
 <pre>!file file=3d720dc2b8b0ff23f616aa850447e702eb89047e</pre>
 <h5 class="code-line" data-line-start="67" data-line-end="68">
 <a id="Human_Readable_Output_67"></a>Human Readable Output</h5>
-<p class="has-line-data" data-line-start="68" data-line-end="69"><img src="https://user-images.githubusercontent.com/50324325/62193823-43228680-b381-11e9-94c6-1a31e905b14e.png" alt="image"></p>
+<p class="has-line-data" data-line-start="68" data-line-end="69"><img src="../../doc_files/62193823-43228680-b381-11e9-94c6-1a31e905b14e.png" alt="image"></p>
 <h3 id="h_e37c9af6-dce4-4198-bd27-2c152fc253b1" class="code-line" data-line-start="70" data-line-end="71">
 <a id="2_Set_the_enterprise_reputation_for_a_file_70"></a>2. Set the enterprise reputation for a file</h3>
 <hr>
@@ -186,7 +186,7 @@
 </pre>
 <h5 class="code-line" data-line-start="95" data-line-end="96">
 <a id="Human_Readable_Output_95"></a>Human Readable Output</h5>
-<p class="has-line-data" data-line-start="96" data-line-end="97"><img src="https://user-images.githubusercontent.com/50324325/62193925-7402bb80-b381-11e9-948e-a9467a62b61b.png" alt="image"></p>
+<p class="has-line-data" data-line-start="96" data-line-end="97"><img src="../../doc_files/62193925-7402bb80-b381-11e9-948e-a9467a62b61b.png" alt="image"></p>
 <h3 id="h_f459cc8b-6849-4afa-be3c-2aaa5c96a7d0" class="code-line" data-line-start="99" data-line-end="100">
 <a id="3_Get_the_systems_that_referenced_a_file_99"></a>3. Get the systems that referenced a file</h3>
 <hr>
@@ -258,4 +258,4 @@
 </pre>
 <h5 class="code-line" data-line-start="128" data-line-end="129">
 <a id="Human_Readable_Output_128"></a>Human Readable Output</h5>
-<p class="has-line-data" data-line-start="129" data-line-end="130"><img src="https://user-images.githubusercontent.com/50324325/62193959-8e3c9980-b381-11e9-8f6a-c2c90c57118a.png" alt="image"></p>
+<p class="has-line-data" data-line-start="129" data-line-end="130"><img src="../../doc_files/62193959-8e3c9980-b381-11e9-8f6a-c2c90c57118a.png" alt="image"></p>

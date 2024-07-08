@@ -200,7 +200,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47648599-299aa700-db83-11e8-934f-bf3394767da9.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47648599-299aa700-db83-11e8-934f-bf3394767da9.png" alt="image" width="746" height="221"></a></p>
+<p><a href="../../doc_files/47648599-299aa700-db83-11e8-934f-bf3394767da9.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47648599-299aa700-db83-11e8-934f-bf3394767da9.png" alt="image" width="746" height="221"></a></p>
 <h3 id="h_79018805312601540896231220">2. Get an offense by offense ID</h3>
 <hr>
 <p>Gets the offense with the matching offense ID from QRadar.</p>
@@ -409,7 +409,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47648802-cbba8f00-db83-11e8-8f08-bd00838990af.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47648802-cbba8f00-db83-11e8-8f08-bd00838990af.png" alt="image" width="749" height="375"></a></p>
+<p><a href="../../doc_files/47648802-cbba8f00-db83-11e8-8f08-bd00838990af.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47648802-cbba8f00-db83-11e8-8f08-bd00838990af.png" alt="image" width="749" height="375"></a></p>
 <h3 id="h_92149467514891540897075885">3. Search QRadar using AQLqradar-searches</h3>
 <hr>
 <p>Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.</p>
@@ -474,7 +474,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47649297-84350280-db85-11e8-8ada-f478394b3c41.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47649297-84350280-db85-11e8-8ada-f478394b3c41.png" alt="image" width="756" height="84"></a></p>
+<p><a href="../../doc_files/47649297-84350280-db85-11e8-8ada-f478394b3c41.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47649297-84350280-db85-11e8-8ada-f478394b3c41.png" alt="image" width="756" height="84"></a></p>
 <h3 id="h_87386991016071540897177298">4. Get a search ID and state</h3>
 <hr>
 <p>Gets a specific search ID and state.</p>
@@ -539,7 +539,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47649648-89df1800-db86-11e8-8c2f-a164c8c7517f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47649648-89df1800-db86-11e8-8c2f-a164c8c7517f.png" alt="image" width="756" height="84"></a></p>
+<p><a href="../../doc_files/47649648-89df1800-db86-11e8-8c2f-a164c8c7517f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47649648-89df1800-db86-11e8-8c2f-a164c8c7517f.png" alt="image" width="756" height="84"></a></p>
 <h3 id="h_84112099417241540897241075">5. Get search results</h3>
 <hr>
 <p>Gets search results.</p>
@@ -614,7 +614,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47650820-10e1bf80-db8a-11e8-9577-3c639cc88472.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47650820-10e1bf80-db8a-11e8-9577-3c639cc88472.png" alt="image" width="750" height="64"></a></p>
+<p><a href="../../doc_files/47650820-10e1bf80-db8a-11e8-9577-3c639cc88472.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47650820-10e1bf80-db8a-11e8-9577-3c639cc88472.png" alt="image" width="750" height="64"></a></p>
 <h3 id="h_32241731218401540897478973">6. Update an offense</h3>
 <hr>
 <p>Updates an offense.</p>
@@ -837,7 +837,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47650998-a67d4f00-db8a-11e8-8cb1-9791acccdff4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47650998-a67d4f00-db8a-11e8-8cb1-9791acccdff4.png" alt="image" width="752" height="379"></a></p>
+<p><a href="../../doc_files/47650998-a67d4f00-db8a-11e8-8cb1-9791acccdff4.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47650998-a67d4f00-db8a-11e8-8cb1-9791acccdff4.png" alt="image" width="752" height="379"></a></p>
 <h3 id="h_70700940319551540897642241">7. List all assets</h3>
 <hr>
 <p>List all assets found in the model.</p>
@@ -965,7 +965,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47652269-278a1580-db8e-11e8-913a-f761a9338f25.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47652269-278a1580-db8e-11e8-913a-f761a9338f25.png" alt="image" width="750" height="160"></a></p>
+<p><a href="../../doc_files/47652269-278a1580-db8e-11e8-913a-f761a9338f25.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47652269-278a1580-db8e-11e8-913a-f761a9338f25.png" alt="image" width="750" height="160"></a></p>
 <h3 id="h_72974687620691540897778597">8. Get an asset by the asset ID</h3>
 <hr>
 <p>Retrieves the asset by ID.</p>
@@ -1184,7 +1184,7 @@
     ]
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47652373-69b35700-db8e-11e8-80cf-e42e65bcd3c1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47652373-69b35700-db8e-11e8-80cf-e42e65bcd3c1.png" alt="image" width="751" height="157"></a></p>
+<p><a href="../../doc_files/47652373-69b35700-db8e-11e8-80cf-e42e65bcd3c1.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47652373-69b35700-db8e-11e8-80cf-e42e65bcd3c1.png" alt="image" width="751" height="157"></a></p>
 <h3 id="h_9608617121821540897848969">9. Get the reason an offense was closed</h3>
 <hr>
 <p>Get closing reasons.</p>
@@ -1288,7 +1288,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47652469-b5fe9700-db8e-11e8-89ec-eab5dd6af828.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47652469-b5fe9700-db8e-11e8-89ec-eab5dd6af828.png" alt="image" width="746" height="175"></a></p>
+<p><a href="../../doc_files/47652469-b5fe9700-db8e-11e8-89ec-eab5dd6af828.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47652469-b5fe9700-db8e-11e8-89ec-eab5dd6af828.png" alt="image" width="746" height="175"></a></p>
 <h3 id="h_13326172022941540897946185">10. Create a note for an offense</h3>
 <hr>
 <p>Creates a note on an offense.</p>
@@ -1375,7 +1375,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47652630-1d1c4b80-db8f-11e8-9dd7-52947cfa8927.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47652630-1d1c4b80-db8f-11e8-9dd7-52947cfa8927.png" alt="image" width="749" height="157"></a></p>
+<p><a href="../../doc_files/47652630-1d1c4b80-db8f-11e8-9dd7-52947cfa8927.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47652630-1d1c4b80-db8f-11e8-9dd7-52947cfa8927.png" alt="image" width="749" height="157"></a></p>
 <h3 id="h_28576390725071540898006566">11. Get a note for an offense</h3>
 <hr>
 <p>Retrieve a note for an offense.</p>
@@ -1462,7 +1462,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/47652885-da0ea800-db8f-11e8-9d8b-e5e46cb8cb17.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/47652885-da0ea800-db8f-11e8-9d8b-e5e46cb8cb17.png" alt="image" width="750" height="157"></a></p>
+<p><a href="../../doc_files/47652885-da0ea800-db8f-11e8-9d8b-e5e46cb8cb17.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47652885-da0ea800-db8f-11e8-9d8b-e5e46cb8cb17.png" alt="image" width="750" height="157"></a></p>
 <h3 id="h_80276129726171540898072833">12. Get a reference by the reference name</h3>
 <hr>
 <p>Information about the reference set that had data added or updated. This returns information set but not the contained data. This feature is supported from version 8.1 and later.</p>
@@ -1568,7 +1568,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/49080365-10514d00-f24c-11e8-92a1-e61367eb9fb1.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/49080365-10514d00-f24c-11e8-92a1-e61367eb9fb1.png" alt="image" width="751" height="313"></a></p>
+<p><a href="../../doc_files/49080365-10514d00-f24c-11e8-92a1-e61367eb9fb1.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49080365-10514d00-f24c-11e8-92a1-e61367eb9fb1.png" alt="image" width="751" height="313"></a></p>
 <h3 id="h_8213343321021542805401917">13. Create a reference set</h3>
 <hr>
 <p>Creates a new reference set. If the specified name is already in use, the command will fail.</p>
@@ -1661,7 +1661,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/49080464-632b0480-f24c-11e8-91cd-3560d2626c2f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/49080464-632b0480-f24c-11e8-91cd-3560d2626c2f.png" alt="image" width="748" height="186"></a></p>
+<p><a href="../../doc_files/49080464-632b0480-f24c-11e8-91cd-3560d2626c2f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49080464-632b0480-f24c-11e8-91cd-3560d2626c2f.png" alt="image" width="748" height="186"></a></p>
 <h3 id="h_4048846705401542805486739">14. Delete a reference</h3>
 <hr>
 <p>Deletes a reference set corresponding to the name provided.</p>
@@ -1690,7 +1690,7 @@
 <h5>Command Example</h5>
 <pre>!qradar-delete-reference-set ref_name=Date</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/49081049-37108300-f24e-11e8-9554-95b2adccd563.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/49081049-37108300-f24e-11e8-9554-95b2adccd563.png" alt="image" width="757" height="54"></a></p>
+<p><a href="../../doc_files/49081049-37108300-f24e-11e8-9554-95b2adccd563.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081049-37108300-f24e-11e8-9554-95b2adccd563.png" alt="image" width="757" height="54"></a></p>
 <h3 id="h_1052844619731542805553936">15. Create a value in a reference set</h3>
 <hr>
 <p>Creates a value in a reference set.</p>
@@ -1786,7 +1786,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/49079426-345f5f00-f249-11e8-8855-aecf575781f0.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/49079426-345f5f00-f249-11e8-8855-aecf575781f0.png" alt="image" width="757" height="191"></a></p>
+<p><a href="../../doc_files/49079426-345f5f00-f249-11e8-8855-aecf575781f0.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49079426-345f5f00-f249-11e8-8855-aecf575781f0.png" alt="image" width="757" height="191"></a></p>
 <h3 id="h_38204499011231542805639258">16. Add or update a value in a reference set</h3>
 <hr>
 <p>Adds or updates a value in a reference set.</p>
@@ -1879,7 +1879,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/48839982-f91ae700-ed95-11e8-85f4-6bce65b27f33.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/48839982-f91ae700-ed95-11e8-85f4-6bce65b27f33.png" alt="image" width="751" height="188"></a></p>
+<p><a href="../../doc_files/48839982-f91ae700-ed95-11e8-85f4-6bce65b27f33.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/48839982-f91ae700-ed95-11e8-85f4-6bce65b27f33.png" alt="image" width="751" height="188"></a></p>
 <h3 id="h_54862502414121542805968008">17. Delete a value from a reference set</h3>
 <hr>
 <p>Deletes a value from a reference set.</p>
@@ -1970,4 +1970,4 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/20818773/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/20818773/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" alt="image" width="755" height="188"></a></p>
+<p><a href="../../doc_files/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49081012-1811f100-f24e-11e8-81e6-af9cdf4f1a5a.png" alt="image" width="755" height="188"></a></p>

@@ -288,9 +288,9 @@ Returns a list of Okta applications data.
 ##### Okta Applications (1 - 3)
 |ID|Name|Label|Logo|
 |---|---|---|---|
-| 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
-| 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod - DryRun | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
-| 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 | ![](https://op1static.oktacdn.com/fs/bcg/4/gfsnda403rf16Qe790h7) |
+| 0ob8zlypk6GVPRr2T0h7 | workday | Workday - Preview | ![](../../doc_files/gfsnda403rf16Qe790h7) |
+| 0oabz0ozy5dDpEKyA0h7 | workday | Workday - Prod - DryRun | ![](../../doc_files/gfsnda403rf16Qe790h7) |
+| 0oae3ioe51sQ64Aui2h7 | workday | Workday - Impl1 | ![](../../doc_files/gfsnda403rf16Qe790h7) |
 
 
 ### okta-list-user-applications
@@ -359,7 +359,7 @@ There are no input arguments for this command.
 ##### Okta IAM Configuration
 |ApplicationID|Instance|Label|Logo|Name|
 |---|---|---|---|---|
-| 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_instance_1 | ServiceNow | ![](https://op1static.oktacdn.com/fs/bcg/4/gfskliw1i51ScX6pf0h7) | servicenow |
+| 0oc8zlypk6GVPRr2G0h7 | ServiceNow IAM_instance_1 | ServiceNow | ![](../../doc_files/gfskliw1i51ScX6pf0h7) | servicenow |
 
 
 ### okta-iam-set-configuration
