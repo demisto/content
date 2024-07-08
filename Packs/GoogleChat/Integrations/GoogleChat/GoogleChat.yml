@@ -14,8 +14,8 @@ configuration:
   section: Connect
   hiddenusername: true
   type: 9
-- displaypassword: Google Chat Space Token
-  name: space_token
+- displaypassword: Google Chat Service Account JSON
+  name: service_account_json
   required: false
   section: Connect
   hiddenusername: true
@@ -79,7 +79,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/fastapi:1.0.0.83979
+  dockerimage: devdemisto/google-chat:1.0.0.101907
 fromversion: 5.5.0
 tests:
 - No tests (auto formatted)

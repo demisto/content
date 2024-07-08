@@ -1,3 +1,4 @@
+from copy import copy
 from traceback import format_exc
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 import demistomock as demisto  # noqa: F401
@@ -9,6 +10,8 @@ from fastapi import Depends, FastAPI, Request, Response, status
 from fastapi_utils.tasks import repeat_every
 from fastapi.security.api_key import APIKey, APIKeyHeader
 from uvicorn.logging import AccessFormatter
+import time
+import jwt
 
 ''' CONSTANTS '''
 
@@ -51,20 +54,64 @@ class UserAgentFormatter(AccessFormatter):
 
 
 class GoogleChatClient(BaseClient):
-    def __init__(self, space_id, space_key, space_token):
+    def __init__(self, space_id, space_key):
         super().__init__(base_url='https://chat.googleapis.com/v1')
         self._space_id = space_id
         self._space_key = space_key
-        self._space_token = space_token
 
-    # def create_access_token(self):
-    #     credentials = service_account.Credentials.from_service_account_file(
-    #         self._space_token, scopes=SCOPES)
-    #     # credentials.refresh(Request(scope=SCOPES))
-    #     try:
-    #         self._access_token = credentials.token
-    #     except Exception as e:
-    #         raise DemistoException(f"Could not generate an access token with error: {e}")
+    def create_access_token(self, service_account_json):
+        integration_context = get_integration_context()
+        service_account_info = json.loads(service_account_json)
+        service_account_access_token = f'{service_account_info.get("private_key_id")}.access_token'
+        service_account_expiry_time = f'{service_account_info.get("private_key_id")}.expiry_time'
+        previous_token = integration_context.get(service_account_access_token)
+        previous_token_expiry_time = integration_context.get(service_account_expiry_time)
+        if previous_token and previous_token_expiry_time and previous_token_expiry_time > date_to_timestamp(datetime.now()):
+            self._access_token = previous_token
+        else:
+            try:
+                expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
+                scopes = ["https://www.googleapis.com/auth/chat.bot"]
+                now = int(time.time())
+                header = {
+                    "alg": "RS256",
+                    "typ": "JWT",
+                    "kid": service_account_info["private_key_id"]
+                }
+                payload = {
+                    "iss": service_account_info["client_email"],
+                    "sub": service_account_info["client_email"],
+                    "aud": service_account_info["token_uri"],
+                    "iat": now,
+                    "exp": now + 3600,  # Token valid for 1 hour
+                    "scope": " ".join(scopes)
+                }
+
+                signed_jwt = jwt.encode(payload, service_account_info["private_key"], headers=header, algorithm="RS256")
+
+                response = requests.post(
+                    service_account_info["token_uri"],
+                    headers={"Content-Type": "application/x-www-form-urlencoded"},
+                    data={
+                        "grant_type": "urn:ietf:params:oauth:grant-type:jwt-bearer",
+                        "assertion": signed_jwt
+                    }
+                )
+
+                response_data = response.json()
+                if response.status_code != 200:
+                    raise DemistoException("Request was not successful. Please make sure to upload the correct service account json")
+                if access_token := response_data.get("access_token"):
+                    expiry_time += (response_data.get('expires_in') * 1000)
+                new_token = {
+                        service_account_access_token: access_token,
+                        service_account_expiry_time: expiry_time
+                    }
+                    # stores received token and expiration time in the integration context
+                set_integration_context(new_token)
+                self._access_token = response_data["access_token"]
+            except Exception as e:
+                raise DemistoException(f"Could not generate an access token. Error: {e}.")
 
     def send_notification_request(self,
                                   message_body: str | None,
@@ -74,7 +121,7 @@ class GoogleChatClient(BaseClient):
                                   adaptive_card: dict[str, Any] | None):
         params = {"key": self._space_key}
         headers = {
-            'Authorization': f'Bearer {self._space_token}',
+            'Authorization': f'Bearer {self._access_token}',
             'Content-Type': 'application/json; charset=UTF-8'
         }
         body = {}
@@ -99,7 +146,7 @@ class GoogleChatClient(BaseClient):
         demisto.debug("inside send_chat_reply_request")
         try:
             headers = {
-                'Authorization': f'Bearer {self._space_token}',
+                'Authorization': f'Bearer {self._access_token}',
                 'Content-Type': 'application/json; charset=UTF-8'
             }
             self._http_request('PATCH', url_suffix=url_suffix, params=params, json_data=body, headers=headers)
@@ -155,9 +202,9 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
 
     result = client.send_notification_request(message_body if not 'no_message' else '',
                                               message_to, space_id, thread_id, adaptive_card)
-    message_id = result.get('name')
+    message_id_hierarchy = result.get('name')
     if result.get('name') and entitlement and expiry and default_reply:
-        save_entitlement(entitlement, message_id, space_id, expiry, message_to, thread_id, default_reply)
+        save_entitlement(entitlement, message_id_hierarchy, space_id, expiry, message_to, thread_id, default_reply)
     headers = ['Message name', 'Sender Name', 'Sender display Name', 'Sender Type', 'Space Display Name', 'Space Name',
                'Space Type', 'Thread Name', 'Thread Key']
     adjusted_response = create_hr_response(result)
@@ -173,13 +220,13 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
     return command_results
 
 
-def save_entitlement(entitlement, message_id, space_id, expiry, message_to, thread_id, default_reply):
+def save_entitlement(entitlement, message_id_hierarchy, space_id, expiry, message_to, thread_id, default_reply):
     """
     Saves an entitlement.
 
     Args:
         entitlement: The entitlement.
-        message_id: The message_id
+        message_id_hierarchy: The message id hierarchy
         space_id: The space_id.
         expiry: The survey expiration date.
         message_to: the user the message was sent to.
@@ -190,11 +237,10 @@ def save_entitlement(entitlement, message_id, space_id, expiry, message_to, thre
     if messages:
         messages = json.loads(integration_context['messages'])
     messages.append({
-        'message_id': message_id,
+        'message_id_hierarchy': message_id_hierarchy,
         'entitlement': entitlement,
         'space_id': space_id,
         'expiry': expiry,
-        'sent_time': datetime.strftime(datetime.now(timezone.utc), DATE_FORMAT),
         'message_to': message_to,
         'thread_id': thread_id,
         'default_reply': default_reply
@@ -205,41 +251,7 @@ def save_entitlement(entitlement, message_id, space_id, expiry, message_to, thre
 
 def run_long_running(port):
     while True:
-        # certificate = demisto.params().get('certificate', '')
-        # private_key = demisto.params().get('key', '')
-
-        # certificate_path = ''
-        # private_key_path = ''
         try:
-            # ssl_args = {}
-
-            # if certificate and private_key:
-            #     certificate_file = NamedTemporaryFile(delete=False)
-            #     certificate_path = certificate_file.name
-            #     certificate_file.write(bytes(certificate, 'utf-8'))
-            #     certificate_file.close()
-            #     ssl_args['ssl_certfile'] = certificate_path
-
-            #     private_key_file = NamedTemporaryFile(delete=False)
-            #     private_key_path = private_key_file.name
-            #     private_key_file.write(bytes(private_key, 'utf-8'))
-            #     private_key_file.close()
-            #     ssl_args['ssl_keyfile'] = private_key_path
-
-            #     demisto.debug('Starting HTTPS Server')
-            # else:
-            #     demisto.debug('Starting HTTP Server')
-
-            # integration_logger = IntegrationLogger()
-            # integration_logger.buffering = False
-            # log_config = dict(uvicorn.config.LOGGING_CONFIG)
-            # log_config['handlers']['default']['stream'] = integration_logger
-            # log_config['handlers']['access']['stream'] = integration_logger
-            # log_config['formatters']['access'] = {
-            #     '()': UserAgentFormatter,
-            #     'fmt': '%(levelprefix)s %(client_addr)s - "%(request_line)s" %(status_code)s "%(user_agent)s"'
-            # }
-            # uvicorn.run(app, host='0.0.0.0', port=port, log_config=log_config, **ssl_args)
             demisto.debug('Starting HTTP Server')
             integration_logger = IntegrationLogger()
             integration_logger.buffering = False
@@ -255,10 +267,6 @@ def run_long_running(port):
             demisto.error(f'An error occurred in the long running loop: {str(e)} - {format_exc()}')
             demisto.updateModuleHealth(f'An error occurred: {str(e)}')
         finally:
-            # if certificate_path:
-            #     os.unlink(certificate_path)
-            # if private_key_path:
-            #     os.unlink(private_key_path)
             demisto.debug(f'Checking server status, loop iteration complete. Server should be up on port {port}')
             time.sleep(5)
 
@@ -290,21 +298,19 @@ def extract_entitlement(entitlement: str) -> tuple[str, str, str]:
 async def answer_survey(message: dict):
     entitlement = message.get('entitlement', '')
     default_reply = message.get('default_reply')
+    message_id_hierarchy = message.get('message_id_hierarchy')
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
         demisto.handleEntitlementForUser(incident_id, guid, '', default_reply, task_id)
-        # TODO
-        # account_id = CLIENT.account_id
-        # bot_jid = CLIENT.bot_jid
-        # if account_id and bot_jid:
-        #     _ = await process_entitlement_reply(text, account_id, bot_jid, to_jid)
+        entitlement_reply = f'Thank you for your response: {default_reply}.'
+        await process_entitlement_reply(entitlement_reply, message_id_hierarchy)
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
     message['remove'] = True
     return incident_id
 
 
-async def check_and_handle_entitlement(user_name, action_selected, message_id, space_id) -> str:
+async def check_and_handle_entitlement(user_name, action_selected, message_id_hierarchy) -> str:
     """
     Handles an entitlement message (a reply to a question)
     Args:
@@ -315,21 +321,24 @@ async def check_and_handle_entitlement(user_name, action_selected, message_id, s
     demisto.debug(f"{integration_context=}")
     messages = integration_context.get('messages', [])
     reply = ''
-    if not messages or not message_id:
+    if not messages or not message_id_hierarchy:
         return reply
     messages = json.loads(messages)
-    message_filter = list(filter(lambda q: q.get('message_id') == message_id, messages))
+    message_filter = list(filter(lambda q: q.get('message_id_hierarchy') == message_id_hierarchy, messages))
     if message_filter:
         message = message_filter[0]
         entitlement = message.get('entitlement')
         demisto.debug(f"{entitlement=}")
-        reply = message.get('reply', f'Thank you {user_name} for your response {action_selected}.')
+        reply = message.get('reply', f'Thank you {user_name} for your response: {action_selected}.')
         demisto.debug(f"{reply=}")
         guid, incident_id, task_id = extract_entitlement(entitlement)
-        demisto.handleEntitlementForUser(incident_id, guid, user_name, action_selected, task_id)
-        message['remove'] = True
-        set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
-        demisto.debug(f"{get_integration_context()=}")
+        try:
+            demisto.handleEntitlementForUser(incident_id, guid, user_name, action_selected, task_id)
+            message['remove'] = True
+            set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
+            demisto.debug(f"{get_integration_context()=}")
+        except Exception as e:
+            demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}.')
     return reply
 
 
@@ -337,11 +346,11 @@ async def googleChat_send_chat_reply_async(url_suffix, params, body):
     CLIENT.send_chat_reply_request(url_suffix, params, body)
 
 
-async def process_entitlement_reply(entitlement_reply, message_hierarchy, user_name, action_selected):
+async def process_entitlement_reply(entitlement_reply, message_hierarchy):
     """
     Triggered when an entitlement reply is found, this function will update the original message with the reply message.
     :param entitlement_reply: str: The text to update the asking question with.
-    :param message_id: str: The message_id to reply to.
+    :param message_id_hierarchy: str: The message to reply to.
     :param user_name: str: name of the user who answered the entitlement
     :param action_selected: str: The text attached to the button, used for string replacement.
     :return: None
@@ -366,19 +375,21 @@ async def process_entitlement_reply(entitlement_reply, message_hierarchy, user_n
 async def check_for_expired_messages():
     """Send the default response if the message expiry time has expired.
     """
-    demisto.debug("inside check_for_expired_messages")
     integration_context = get_integration_context()
     messages = integration_context.get('messages')
     if messages:
         messages = json.loads(messages)
         now = datetime.now(timezone.utc)
+        demisto.debug(f"{now=}")
         updated_messages = False
         for message in messages:
+            demisto.debug(f"{message.get('expiry')=}")
             if message.get('expiry'):
-                expiry = datetime.strptime(message['expiry'], DATE_FORMAT)
-                if expiry > now:
+                expiry = datetime.strptime(message['expiry'], DATE_FORMAT).replace(tzinfo=timezone.utc)
+                if expiry < now:
                     demisto.debug(f"message expired: {message}")
-                    _ = await answer_survey(message)
+                    await answer_survey(message)
+                    message['remove'] = True
                     updated_messages = True
         if updated_messages:
             set_to_integration_context_with_retries({'messages': messages}, OBJECTS_TO_KEYS)
@@ -387,8 +398,6 @@ async def check_for_expired_messages():
 @app.post('/')
 async def handle_googleChat_response(request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth),
                                      token: APIKey = Depends(token_auth)):
-    # async def handle_googleChat_response(request: Request, credentials: HTTPBasicCredentials = Depends(basic_auth),
-    #                             token: APIKey = Depends(token_auth)):
     """handle any response that came from Google Chat app.
     Args:
         request : Google Chat response to survey.
@@ -396,43 +405,18 @@ async def handle_googleChat_response(request: Request, credentials: HTTPBasicCre
         JSONResponse: response from Google Chat survey
     """
     request = await request.json()
-    demisto.debug(f"{request=}")
-    demisto.debug(f"{credentials=}")
-    demisto.debug(f"{token=}")
-    demisto.debug(f"{demisto.params().get('space_token', {}).get('password')=}")
-
-    # auth_failed = False
-    # v_token = demisto.params().get('verification_token', {}).get('password')
-    # if not str(token).startswith('Basic') and v_token:
-    #     if token != v_token:
-    #         auth_failed = True
-
-    # if credentials and credentials_param and (username := credentials_param.get('identifier')):
-    #     password = credentials_param.get('password', '')
-    #     if not compare_digest(credentials.username, username) or not compare_digest(credentials.password, password):
-    #         auth_failed = True
-    # if auth_failed:
-    #     demisto.debug('Authorization failed')
-    #     return Response(status_code=status.HTTP_401_UNAUTHORIZED, content='Authorization failed.')
+    #TODO ensure verifying the response
     event_type = request['type']
     try:
         if event_type == "CARD_CLICKED":
-            message_id = request.get('message', {}).get('name')
-            demisto.debug(f"{message_id=}")
-            space_id = request.get('space', {}).get('name')
-            demisto.debug(f"{space_id=}")
+            message_id_hierarchy = request.get('message', {}).get('name')
             action_selected = request.get('action', {}).get('actionMethodName')
-            demisto.debug(f"{action_selected=}")
             user_name = request.get('user', {}).get('displayName')
-            demisto.debug(f"{user_name=}")
-            demisto.debug(f'Got the a response with the following details {message_id=}, {space_id=}, {action_selected=}')
-            entitlement_reply = await check_and_handle_entitlement(user_name, action_selected, message_id, space_id)
+            entitlement_reply = await check_and_handle_entitlement(user_name, action_selected, message_id_hierarchy)
             demisto.debug(f"{entitlement_reply=}")
             if entitlement_reply:
-                demisto.debug("before process_entitlement_reply")
-                await process_entitlement_reply(entitlement_reply, message_id, user_name, action_selected)
+                await process_entitlement_reply(entitlement_reply, message_id_hierarchy)
                 demisto.updateModuleHealth("")
-            demisto.debug(f"Action {action_selected} was clicked on message id {message_id}")
         else:
             return Response(status_code=status.HTTP_400_BAD_REQUEST)
         return Response(status_code=status.HTTP_200_OK)
@@ -455,8 +439,8 @@ def main() -> None:
             raise ValueError(f'Invalid listen port - {e}')
     try:
         client = GoogleChatClient(params.get('space_id'),
-                                  params.get('space_key', {}).get('password'),
-                                  params.get('space_token', {}).get('password'))
+                                  params.get('space_key', {}).get('password'))
+        client.create_access_token(params.get('service_account_json', {}).get('password'))
         global CLIENT
         CLIENT = client
         if command == 'long-running-execution':

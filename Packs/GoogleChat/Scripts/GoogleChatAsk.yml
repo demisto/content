@@ -23,8 +23,8 @@ args:
 - name: additional_options
   description: A CSV list of additional options.
   type: textArea
-- name: task
-  description: The task to close with the reply. If empty, then no playbook tasks
+- name: task_id
+  description: The task_id to close with the reply. If empty, then no playbook tasks
     will be closed.
   type: textArea
 - name: lifetime
@@ -39,6 +39,9 @@ args:
   predefined:
   - button
   - dropdown
+  type: textArea
+- name: default_reply
+  description: The default reply if the user does not response after lifetime exceeded.
   type: textArea
 comment: Sends a message (question) to either user (in a direct message) or to a channel. The message includes predefined reply options. The response can also close a task (might be conditional) in a playbook.
 commonfields:
