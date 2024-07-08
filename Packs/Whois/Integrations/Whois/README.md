@@ -12,7 +12,7 @@ This integration was integrated and tested with version 1.0 of Whois
     | Return Errors | If set, failed command results will be returned as warnings instead of errors. | False |
     | Proxy URL | Supports socks4/socks5/http connect proxies \(e.g. socks5h://host:1080\). Will effect all commands except for the \`ip\` command. | False |
     | Use system proxy settings | Effect the \`ip\` command and the other commands only if the Proxy URL is not set. | False |
-    | Use old version | Indicates whether to use the previous/legacy implementation of the integration commands and their outputs or the new ones. | False |
+    | Use legacy context | Indicates whether to use the previous/legacy implementation of the integration commands and their outputs or the new ones. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
     | Rate Limit Retry Count | The number of times to try when getting a Rate Limit response. | False |
     | Rate Limit Wait Seconds | The number of seconds to wait between each iteration when getting a Rate Limit response. | False |

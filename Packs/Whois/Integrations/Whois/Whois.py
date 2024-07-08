@@ -8,8 +8,8 @@ import socks
 import ipwhois
 from typing import Dict, List, Optional, Type
 import urllib
-from whois import whois
-
+import whois
+from whois.parser import PywhoisError
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
@@ -7181,7 +7181,8 @@ whois_exception_mapping: Dict[Type, str] = {
     socket.gaierror: "connection_error",
     WhoisInvalidDomain: "general_error",
     WhoisEmptyResponse: "service_error",
-    TypeError: "general_error"
+    TypeError: "general_error",
+    PywhoisError: "service_error"
 }
 
 
@@ -8836,28 +8837,43 @@ def setup_proxy():
 
 def extract_hard_date(date):
     """
-    Extracts and formats a date from a string using regex.
+    Extracts and formats a date from a string using regular expressions and datetime manipulation.
 
     Args:
-        date (str): String potentially containing a date.
+        date (str): String potentially containing a date in formats like YYYY/MM/DD, YYYY-MM-DD,
+                    DD/MM/YYYY, or DD-MM-YYYY.
 
     Returns:
-        Optional[str]: Formatted date string (DD-MM-YYYY) if found, None otherwise.
+        str or None: Formatted date string in DD-MM-YYYY format if a valid date is found in the input string,
+                     or None if no valid date is found.
+
+    Note:
+        This function uses a regular expression to find date patterns in the input string.
+        If a matching date is found, it converts it to a standardized DD-MM-YYYY format.
+        Supported date separators include '/', '-', and ','.
+
+    Example:
+        >>> extract_hard_date("[接続年月日] 2013/09/04")
+        '04-09-2013'
+        >>> extract_hard_date("[接続年月日]  04/09/2013")
+        '04-09-2013'
+        >>> extract_hard_date("Invalid date format")
+        None
     """
     match = re.search(r"\d{4}[,/-]\d{2}[,/-]\d{2}|\d{2}[,/-]\d{2}[,/-]\d{4}", date)
-    if match:
-        date_str = match.group()
-        date_str_standardized = date_str.replace(",", "/").replace("-", "/")
-        if len(date_str_standardized.split("/")[0]) == 2:
-            date_format = "%d/%m/%Y"
-        else:
-            date_format = "%Y/%m/%d"
-        date_obj = datetime.strptime(date_str_standardized, date_format)
-        return date_obj.strftime("%d-%m-%Y")
-    return None
+    if not match:
+        return None
+    date_str = match.group()
+    date_str_standardized = date_str.replace(",", "/").replace("-", "/")
+    if len(date_str_standardized.split("/")[0]) == 2:
+        date_format = "%d/%m/%Y"
+    else:
+        date_format = "%Y/%m/%d"
+    date_obj = datetime.strptime(date_str_standardized, date_format)
+    return date_obj.strftime("%d-%m-%Y")
 
 
-def extract_date(raw_data: dict, date_requested: str) -> str:
+def extract_date(date) -> str:
     """
     Extracts and formats a date from raw data.
 
@@ -8868,7 +8884,6 @@ def extract_date(raw_data: dict, date_requested: str) -> str:
     Returns:
         str: Formatted date string (DD-MM-YYYY) or original value if parsing fails.
     """
-    date = raw_data.get(date_requested)
     if date:
         try:
             if isinstance(date, list):
@@ -8931,10 +8946,35 @@ def get_info_by_prefix(domain_data: dict, prefix: str) -> dict:
         )
 
     return {
-        process_key(key): value
+        camelize_string(process_key(key)): value
         for key, value in domain_data.items()
         if key.startswith(prefix) and value
     }
+
+
+def rename_keys(d: dict, key_mapping: dict) -> dict:
+    """
+    Rename keys in a dictionary according to the provided mapping.
+
+    Args:
+        d (dict): The dictionary whose keys are to be renamed.
+        key_mapping (dict): A dictionary where keys are existing keys in `d`
+                            and values are new keys to replace them.
+
+    Returns:
+        dict: A new dictionary with keys renamed according to `key_mapping`.
+
+    Example:
+        >>> data = {'a': 1, 'b': 2, 'c': 3}
+        >>> mapping = {'a': 'A', 'b': 'B'}
+        >>> rename_keys(data, mapping)
+        {'A': 1, 'B': 2, 'c': 3}
+    """
+    renamed_dict = d.copy()
+    for old_key, new_key in key_mapping.items():
+        if old_key in renamed_dict:
+            renamed_dict[new_key] = renamed_dict.pop(old_key)
+    return renamed_dict
 
 
 def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
@@ -8948,48 +8988,45 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
     Returns:
         dict: A dictionary containing structured WHOIS context data.
     """
-    res = {}
     context_data = {
+        "Raw": {f"{key}": f"{value}" for key, value in raw_data.items()},
         "Name": domain,
-        "ID": raw_data.get("domain_id"),
-        "Whois_server": raw_data.get("whois_server"),
-        "CreationDate": extract_date(raw_data, "creation_date"),
-        "ExpirationDate": extract_date(raw_data, "expiration_date"),
-        "UpdatedDate": extract_date(raw_data, "updated_date"),
-        "Organization": raw_data.get("org"),
-        "Referral url": raw_data.get("referral_url", ""),
-        "Address": raw_data.get("address"),
-        "Administrator": raw_data.get("admin"),
-        "City": raw_data.get("city"),
-        "State": raw_data.get("state"),
-        "Country": raw_data.get("country"),
-        "Dnssec": raw_data.get("dnssec"),
-        "Admin": get_info_by_prefix(raw_data, "admin"),
-        "Registrant": get_info_by_prefix(raw_data, "registrant"),
-        "Registrar": get_info_by_prefix(raw_data, "registrar"),
-        "Tech": get_info_by_prefix(raw_data, "tech"),
-        "Phone": raw_data.get("phone"),
-        "Emails": raw_data.get("emails"),
-        "NameServers": extract_name_servers(raw_data.get("name_servers", [])),
-        "DomainStatus": raw_data.get("status", []),
+        "NameServers": extract_name_servers(raw_data.pop("name_servers", [])),
         "FeedRelatedIndicators": (
             [
                 {"Type": "email", "Value": email}
                 for email in list(raw_data.get("emails", []))
             ]
             if isinstance(raw_data.get("emails"), list)
-            else raw_data.get("emails")
+            else {"Type": "email", "Value":raw_data.get("emails")}
         ),
-        "Raw": ", ".join([f"{key}: {value}" for key, value in raw_data.items()]),
     }
+    raw_data.pop("name", None)
+    for key in ["creation_date", "expiration_date", "updated_date"]:
+        context_data[camelize_string(key)] = extract_date(raw_data.pop(key, None))
+
+    costum_prefixses = ("admin", "registrant", "registrar", "tech")
+    for key in costum_prefixses:
+        context_data[key.capitalize()] = get_info_by_prefix(raw_data, key)
+    context_data.update(
+        {
+            camelize_string(key): value
+            for key, value in raw_data.items()
+            if not key.startswith(costum_prefixses)
+        }
+    )
+    context_data = rename_keys(
+        context_data, {"Org": "Organization", "Status": "DomainStatus"}
+    )
     remove_nulls_from_dictionary(context_data)
+    res = {}
     res.update({"WHOIS": context_data})
     res.update(context_data)
     res.pop("Raw", None)
     return res
 
 
-def whois_and_domain_comand(command: str, reliability: str) -> list[CommandResults]:
+def whois_and_domain_command(command: str, reliability: str) -> list[CommandResults]:
     args = demisto.args()
     domains = argToList(args.get("query") or args.get("domain"))
     execution_metrics = ExecutionMetrics()
@@ -8998,7 +9035,7 @@ def whois_and_domain_comand(command: str, reliability: str) -> list[CommandResul
     for domain in domains:
         demisto.debug(f"Getting whois for a single {domain=}")
         try:
-            domain_data = whois(domain)
+            domain_data = whois.whois(domain)
             demisto.debug(
                 f"'python-whois' lib return raw_data for {domain=} is: {domain_data=}"
             )
@@ -9071,7 +9108,7 @@ def whois_and_domain_comand(command: str, reliability: str) -> list[CommandResul
 def new_test_command():
     test_domain = "google.com"
     demisto.debug(f"Testing module using domain '{test_domain}'...")
-    whois_result = arrange_raw_whois_data_to_context(whois(test_domain), test_domain)
+    whois_result = arrange_raw_whois_data_to_context(whois.whois(test_domain), test_domain)
     try:
         if whois_result["WHOIS"]["NameServers"][0] == "ns1.google.com":
             return "ok"
@@ -9103,7 +9140,7 @@ def main():  # pragma: no cover
     if old_version == False and command != "ip":
         demisto.debug("Run by new context data layout")
         if command == "domain" or command == "whois":
-            return_results(whois_and_domain_comand(command, reliability))
+            return_results(whois_and_domain_command(command, reliability))
         if command == 'test-module':
             return_results(new_test_command())
     else:

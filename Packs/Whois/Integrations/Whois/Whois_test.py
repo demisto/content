@@ -656,12 +656,32 @@ def test_parse_nic_contact_new_regex():
 @pytest.mark.parametrize(
     "raw_data, domain, expected",
     [
-        (load_test_data("test_data/test-arrange-data.json")['raw']['google'], "google.com", load_test_data("test_data/test-arrange-data.json")['res']['google']),  # noqa: E501
-        (load_test_data("test_data/test-arrange-data.json")['raw']['ansa'], "ansa.it", load_test_data("test_data/test-arrange-data.json")['res']['ansa']),  # noqa: E501
-        (load_test_data("test_data/test-arrange-data.json")['raw']['jp'], "nhk.or.jp", load_test_data("test_data/test-arrange-data.json")['res']['jp']),  # noqa: E501
-        (load_test_data("test_data/test-arrange-data.json")['raw']['microsoft'], "microsoft.com", load_test_data("test_data/test-arrange-data.json")['res']['microsoft']),  # noqa: E501
-        (load_test_data("test_data/test-arrange-data.json")['raw']['apple'], "apple.com", load_test_data("test_data/test-arrange-data.json")['res']['apple'])  # noqa: E501
-    ]
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["google"],
+            "google.com",
+            load_test_data("test_data/test-arrange-data.json")["res"]["google"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["ansa"],
+            "ansa.it",
+            load_test_data("test_data/test-arrange-data.json")["res"]["ansa"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["jp"],
+            "nhk.or.jp",
+            load_test_data("test_data/test-arrange-data.json")["res"]["jp"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["microsoft"],
+            "microsoft.com",
+            load_test_data("test_data/test-arrange-data.json")["res"]["microsoft"],
+        ),  # noqa: E501
+        (
+            load_test_data("test_data/test-arrange-data.json")["raw"]["apple"],
+            "apple.com",
+            load_test_data("test_data/test-arrange-data.json")["res"]["apple"],
+        ),  # noqa: E501
+    ],
 )
 def test_arrange_raw_to_context(raw_data, domain, expected):
     """
@@ -676,6 +696,7 @@ def test_arrange_raw_to_context(raw_data, domain, expected):
         - Assert that the returned context dictionary 'res' matches the expected 'expected'.
     """
     from Whois import arrange_raw_whois_data_to_context
+
     res = arrange_raw_whois_data_to_context(raw_data, domain)
     assert res == expected
 
@@ -689,7 +710,7 @@ def test_arrange_raw_to_context(raw_data, domain, expected):
         (["EXAMPLE.COM", "example.com", "example.NET"], ["example.com", "example.net"]),
         (["server1.com", "server2.com", "server1.com"], ["server1.com", "server2.com"]),
         ([], []),
-    ]
+    ],
 )
 def test_extract_name_servers(servers, expected):
     """
@@ -703,6 +724,7 @@ def test_extract_name_servers(servers, expected):
         - Assert that the output matches the expected 'expected'.
     """
     from Whois import extract_name_servers
+
     assert extract_name_servers(servers) == expected
 
 
@@ -710,49 +732,59 @@ def test_extract_name_servers(servers, expected):
     "domain_data, prefix, expected",
     [
         # Test case for registrar prefix
-        ({"registrar": "Namecheap", "registrar_url": "https://www.namecheap.com"},
-         "registrar",
-         {"Name": "Namecheap", "Url": "https://www.namecheap.com"}),
-
+        (
+            {"registrar": "Namecheap", "registrar_url": "https://www.namecheap.com"},
+            "registrar",
+            {"Name": "Namecheap", "Url": "https://www.namecheap.com"},
+        ),
         # Test case for admin prefix
-        ({"admin_name": "John Doe", "admin_email": "john@example.com", "admin_phone": None},
-         "admin",
-         {"Name": "John Doe", "Email": "john@example.com"}),
-
+        (
+            {
+                "admin_name": "John Doe",
+                "admin_email": "john@example.com",
+                "admin_phone": None,
+            },
+            "admin",
+            {"Name": "John Doe", "Email": "john@example.com"},
+        ),
         # Test case for tech prefix with some None values
-        ({"tech_name": "Jane Smith", "tech_email": None, "tech_phone": "+1234567890"},
-         "tech",
-         {"Name": "Jane Smith", "Phone": "+1234567890"}),
-
+        (
+            {
+                "tech_name": "Jane Smith",
+                "tech_email": None,
+                "tech_phone": "+1234567890",
+            },
+            "tech",
+            {"Name": "Jane Smith", "Phone": "+1234567890"},
+        ),
         # Test case for billing prefix (empty result)
-        ({"domain_name": "example.com", "creation_date": "2020-01-01"},
-         "billing",
-         {}),
-
+        ({"domain_name": "example.com", "creation_date": "2020-01-01"}, "billing", {}),
         # Test case for mixed prefixes
-        ({"registrar": "GoDaddy", "admin_name": "Alice", "tech_email": "tech@example.com"},
-         "registrar",
-         {"Name": "GoDaddy"}),
-
+        (
+            {
+                "registrar": "GoDaddy",
+                "admin_name": "Alice",
+                "tech_email": "tech@example.com",
+            },
+            "registrar",
+            {"Name": "GoDaddy"},
+        ),
         # Test case for non-existent prefix
-        ({"registrar": "Namecheap", "admin_name": "Bob"},
-         "invalid_prefix",
-         {}),
-
+        ({"registrar": "Namecheap", "admin_name": "Bob"}, "invalid_prefix", {}),
         # Test case for empty input
-        ({},
-         "any_prefix",
-         {}),
-
+        ({}, "any_prefix", {}),
         # Test case for registrar prefix with underscore in key
-        ({"registrar": "Domain.com", "registrar_abuse_email": "abuse@domain.com"},
-         "registrar",
-         {"Name": "Domain.com", "Abuse_email": "abuse@domain.com"}),
-
+        (
+            {"registrar": "Domain.com", "registrar_abuse_email": "abuse@domain.com"},
+            "registrar",
+            {"Name": "Domain.com", "AbuseEmail": "abuse@domain.com"},
+        ),
         # Test case for multi-word key
-        ({"admin_first_name": "John", "admin_last_name": "Doe"},
-         "admin",
-         {"First_name": "John", "Last_name": "Doe"}),
+        (
+            {"admin_first_name": "John", "admin_last_name": "Doe"},
+            "admin",
+            {"FirstName": "John", "LastName": "Doe"},
+        ),
     ],
 )
 def test_get_info_by_prefix(domain_data, prefix, expected):
@@ -767,18 +799,19 @@ def test_get_info_by_prefix(domain_data, prefix, expected):
           verifying correct filtering based on the prefix.
     """
     from Whois import get_info_by_prefix
+
     assert get_info_by_prefix(domain_data, prefix) == expected
 
 
-@pytest.mark.parametrize("raw_data, date_requested, expected", [
-    ({"created_date": ["2023-05-17"]}, "created_date", "17-05-2023"),
-    ({"created_date": "2023-05-17"}, "created_date", "17-05-2023"),
-    ({"created_date": []}, "created_date", ""),
-    ({"created_date": None}, "created_date", ""),
-    ({}, "created_date", ""),
-    ({"created_date": ["invalid-date"]}, "created_date", "invalid-date")
+@pytest.mark.parametrize("date, expected", [
+    (["2023-05-17"], "17-05-2023"),
+    ("2023-05-17", "17-05-2023"),
+    ([], ""),
+    (None, ""),
+    ({}, ""),
+    (["invalid-date"], "invalid-date")
 ])
-def test_extract_date(raw_data, date_requested, expected, mocker):
+def test_extract_date(date, expected, mocker):
     """
     Given:
         - `raw_data` containing the raw data to extract date from.
@@ -792,23 +825,26 @@ def test_extract_date(raw_data, date_requested, expected, mocker):
     """
     from Whois import extract_date
     mocker.patch.object(demisto, "debug")
-    assert extract_date(raw_data, date_requested) == expected
+    assert extract_date(date) == expected
 
 
-@pytest.mark.parametrize("input_date, expected_output", [
-    ("[接続年月日]                    2013/09/04", "04-09-2013"),
-    ("[接続年月日]                    2013,09,04", "04-09-2013"),
-    ("[接続年月日]                    09-04-2013", "09-04-2013"),
-    ("[接続年月日]                    04/09/2013", "04-09-2013"),
-    ("[接続年月日]                    2013-09-04", "04-09-2013"),
-    ("[接続年月日]                    2013-04-09", "09-04-2013"),
-    ("[接続年月日]                    04-09/2013", "04-09-2013"),
-    ("[接続年月日]                    2013/043-09", None),
-    ("[接続年月日]                    04/09-013", None),
-    ("[接続年月日]                    abc/def/ghi", None),
-    ("[接続年月日]                    123/456/789", None),
-    ("[接続年月日]                    123-456-789", None),
-])
+@pytest.mark.parametrize(
+    "input_date, expected_output",
+    [
+        ("[接続年月日]                    2013/09/04", "04-09-2013"),
+        ("[接続年月日]                    2013,09,04", "04-09-2013"),
+        ("[接続年月日]                    09-04-2013", "09-04-2013"),
+        ("[接続年月日]                    04/09/2013", "04-09-2013"),
+        ("[接続年月日]                    2013-09-04", "04-09-2013"),
+        ("[接続年月日]                    2013-04-09", "09-04-2013"),
+        ("[接続年月日]                    04-09/2013", "04-09-2013"),
+        ("[接続年月日]                    2013/043-09", None),
+        ("[接続年月日]                    04/09-013", None),
+        ("[接続年月日]                    abc/def/ghi", None),
+        ("[接続年月日]                    123/456/789", None),
+        ("[接続年月日]                    123-456-789", None),
+    ],
+)
 def test_extract_hard_date(input_date, expected_output):
     """
     Given:
@@ -822,3 +858,58 @@ def test_extract_hard_date(input_date, expected_output):
     """
     from Whois import extract_hard_date
     assert extract_hard_date(input_date) == expected_output
+
+
+@pytest.mark.parametrize(
+    "input_dict, key_mapping, expected_output",
+    [
+        ({"a": 1, "b": 2, "c": 3}, {"a": "A", "b": "B"}, {"A": 1, "B": 2, "c": 3}),
+        ({"a": 1, "b": 2, "c": 3}, {"d": "D"}, {"a": 1, "b": 2, "c": 3}),
+        ({}, {"a": "A"}, {}),
+    ],
+)
+def test_rename_keys(input_dict, key_mapping, expected_output):
+    from Whois import rename_keys
+
+    assert rename_keys(input_dict, key_mapping) == expected_output
+
+
+def test_new_test_command(mocker: MockerFixture):
+    import whois
+
+    mocker.patch.object(demisto, "results")
+    mocker.patch.object(demisto, "params", return_value={"old-version": "false"})
+    mocker.patch.object(demisto, "command", return_value="test-module")
+    mocker.patch.object(
+        whois,
+        "whois",
+        return_value=load_test_data("test_data/test-arrange-data.json")["raw"][
+            "google"
+        ],
+    )
+    mocker.patch.object(
+        Whois,
+        "arrange_raw_whois_data_to_context",
+        return_value=load_test_data("test_data/test-arrange-data.json")["res"][
+            "google"
+        ],
+    )
+    Whois.main()
+    assert_results_ok()
+
+
+def test_whois_and_domain_command(mocker: MockerFixture):
+    from Whois import whois_and_domain_command
+    import whois
+
+    mocker.patch.object(demisto, "debug")
+    mocker.patch.object(demisto, "args", return_value={"domain": "google.com"})
+    mocker.patch.object(ExecutionMetrics, "is_supported", return_value=True)
+    mocker.patch.object(
+        whois,
+        "whois",
+        return_value=load_test_data("test_data/test-arrange-data.json")["raw"]["google"]
+        ,
+    )
+    res = whois_and_domain_command("domain", DBotScoreReliability.B)
+    assert len(res) == 2

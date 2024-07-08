@@ -603,12 +603,12 @@ tasks:
     - incidentfield: Registration Email
       output:
         complex:
-          root: Domain.WHOIS.Registrant.email
+          root: Domain.WHOIS.Registrant.Email
           filters:
           - - operator: containsGeneral
               left:
                 value:
-                  simple: Domain.WHOIS.Registrant.email
+                  simple: Domain.WHOIS.Registrant.Email
                 iscontext: true
               right:
                 value:
