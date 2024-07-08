@@ -25,7 +25,7 @@ def get_phishing_map_labels(comma_values):
             labels_dict[v] = v
     if len(set(labels_dict.values())) == 1:
         mapped_value = list(labels_dict.values())[0]
-        error = ['Label mapping error: you need to map to at least two labels: {}.'.format(mapped_value)]
+        error = [f'Label mapping error: you need to map to at least two labels: {mapped_value}.']
         return_error('\n'.join(error))
     return {k: canonize_label(v) for k, v in labels_dict.items()}
 
@@ -97,7 +97,7 @@ def return_file_result_with_predictions_on_test_set(data, y_true, y_pred, y_pred
 
 def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob_field, model_target_accuracy,
          labels_mapping, additional_fields):
-    non_empty_fields = '{},{}'.format(y_true_field.strip(), y_pred_field.strip())
+    non_empty_fields = f'{y_true_field.strip()},{y_pred_field.strip()}'
     incidents_query_args = {'incidentTypes': incident_types,
                             'NonEmptyFields': non_empty_fields,
                             }

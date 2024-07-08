@@ -35,6 +35,7 @@ def get_model_data(model_name, store_type, is_return_error):
             return model_data, model_type
     else:
         handle_error("error reading model %s from Demisto" % model_name, is_return_error)
+    return None
 
 
 def handle_error(message, is_return_error):
@@ -88,6 +89,7 @@ def preprocess_text(text, model_type, is_return_error):
         else:
             words_to_token_maps = tokenized_text_result['originalWordsToTokens']
         return input_text, words_to_token_maps
+    return None
 
 
 def predict_phishing_words(model_name, model_store_type, email_subject, email_body, min_text_length, label_threshold,
@@ -110,7 +112,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
 
 
 def predict_batch_incidents_light_output(email_subject, email_body, phishing_model, model_type, min_text_length):
-    text_list = [{'text': "%s \n%s" % (subject, body)} for subject, body in zip(email_subject, email_body)]
+    text_list = [{'text': f"{subject} \n{body}"} for subject, body in zip(email_subject, email_body)]
     preprocessed_text_list = preprocess_text(text_list, model_type, is_return_error=False)
     batch_predictions = []
     for input_text in preprocessed_text_list:
@@ -132,14 +134,14 @@ def predict_batch_incidents_light_output(email_subject, email_body, phishing_mod
         'Type': entryTypes['note'],
         'Contents': batch_predictions,
         'ContentsFormat': formats['json'],
-        'HumanReadable': 'Applied predictions on {} incidents.'.format(len(batch_predictions)),
+        'HumanReadable': f'Applied predictions on {len(batch_predictions)} incidents.',
     }
 
 
 def predict_single_incident_full_output(email_subject, email_body, is_return_error, label_threshold, min_text_length,
                                         model_type, phishing_model, set_incidents_fields, top_word_limit,
                                         word_threshold):
-    text = "%s \n%s" % (email_subject, email_body)
+    text = f"{email_subject} \n{email_body}"
     input_text, words_to_token_maps = preprocess_text(text, model_type, is_return_error)
     filtered_text, filtered_text_number_of_words = phishing_model.filter_model_words(input_text)
     if filtered_text_number_of_words == 0:
@@ -170,7 +172,7 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     highlighted_text_markdown = text.strip()
     for word in positive_words:
         for cased_word in [word.lower(), word.title(), word.upper()]:
-            highlighted_text_markdown = re.sub(r'(?<!\w)({})(?!\w)'.format(cased_word), '**{}**'.format(cased_word),
+            highlighted_text_markdown = re.sub(fr'(?<!\w)({cased_word})(?!\w)', f'**{cased_word}**',
                                                highlighted_text_markdown)
     highlighted_text_markdown = re.sub(r'\n+', '\n', highlighted_text_markdown)
     explain_result['PositiveWords'] = [w.lower() for w in positive_words]
@@ -178,7 +180,7 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     explain_result['OriginalText'] = text.strip()
     explain_result['TextTokensHighlighted'] = highlighted_text_markdown
     predicted_label = explain_result["Label"]
-    explain_result_hr = dict()
+    explain_result_hr = {}
     explain_result_hr['TextTokensHighlighted'] = highlighted_text_markdown
     explain_result_hr['Label'] = predicted_label
     explain_result_hr['Probability'] = "%.2f" % predicted_prob
