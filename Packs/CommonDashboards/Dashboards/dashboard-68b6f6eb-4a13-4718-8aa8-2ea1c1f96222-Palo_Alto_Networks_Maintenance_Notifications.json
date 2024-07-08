@@ -42,7 +42,6 @@
                     "insecure": "true",
                     "url": "https://status.paloaltonetworks.com/history.rss"
                 },
-                "prevName": "Unit42 Blog Feed",
                 "propagationLabels": [
                     "all"
                 ],
