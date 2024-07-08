@@ -186,9 +186,9 @@
 <h5>Command Example</h5>
 <pre><code>!sndbox-analysis-info analysis_id="65577395-48d8-4d51-bc97-bc2486f49ca0"</code></pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" alt="image" width="751" height="489"></a></p>
+<p><a href="../../doc_files/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" alt="image" width="751" height="489"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/49791293-d9456600-fd38-11e8-9996-a96434e70e57.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/49791293-d9456600-fd38-11e8-9996-a96434e70e57.png" alt="image" width="751" height="523"></a></p>
+<p><a href="../../doc_files/49791293-d9456600-fd38-11e8-9996-a96434e70e57.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49791293-d9456600-fd38-11e8-9996-a96434e70e57.png" alt="image" width="751" height="523"></a></p>
 <h3 id="h_2304130541861544531959006">3. Submit a sample for analysis</h3>
 <hr>
 <p>Submit a sample for analysis.</p>
@@ -313,9 +313,9 @@
 <h5>Command Example</h5>
 <pre><code>!sndbox-analysis-submit-sample file_id="288@670"</code></pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" alt="image" width="749" height="488"></a></p>
+<p><a href="../../doc_files/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49791577-72747c80-fd39-11e8-9798-43ec28f944a2.png" alt="image" width="749" height="488"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/49791827-f0d11e80-fd39-11e8-9ab4-bff7177937e5.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/49791827-f0d11e80-fd39-11e8-9ab4-bff7177937e5.png" alt="image" width="747" height="463"></a></p>
+<p><a href="../../doc_files/49791827-f0d11e80-fd39-11e8-9ab4-bff7177937e5.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49791827-f0d11e80-fd39-11e8-9ab4-bff7177937e5.png" alt="image" width="747" height="463"></a></p>
 <h3 id="h_5502284292481544531962948">4. Download a report resource</h3>
 <hr>
 <p>Download a resource belonging to a report. This can be the full report, dropped binaries, etc.</p>
@@ -390,9 +390,9 @@
 <h5>Command Example</h5>
 <pre><code>!sndbox-download-report analysis_id=65577395-48d8-4d51-bc97-bc2486f49ca0 type=json</code></pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/49791444-2d504a80-fd39-11e8-98fd-38b2fefe17f3.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/49791444-2d504a80-fd39-11e8-98fd-38b2fefe17f3.png" alt="image" width="750" height="113"></a></p>
+<p><a href="../../doc_files/49791444-2d504a80-fd39-11e8-98fd-38b2fefe17f3.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49791444-2d504a80-fd39-11e8-98fd-38b2fefe17f3.png" alt="image" width="750" height="113"></a></p>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/49791216-a3a07d00-fd38-11e8-9b59-9dd1df80cd68.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/49791216-a3a07d00-fd38-11e8-9b59-9dd1df80cd68.png" alt="image" width="753" height="58"></a></p>
+<p><a href="../../doc_files/49791216-a3a07d00-fd38-11e8-9b59-9dd1df80cd68.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49791216-a3a07d00-fd38-11e8-9b59-9dd1df80cd68.png" alt="image" width="753" height="58"></a></p>
 <h3 id="h_3020137963091544531966873">5. (Deprecated) Detonate a file</h3>
 <hr>
 <p>Submit a sample for detonation. This command is deprecated.</p>
@@ -604,4 +604,4 @@
 <h5>Command Example</h5>
 <pre><code>!sndbox-download-sample analysis_id=65577395-48d8-4d51-bc97-bc2486f49ca0</code></pre>
 <h5>Context Example</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/49791673-ae0f4680-fd39-11e8-8655-e3aa2d84a508.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/49791673-ae0f4680-fd39-11e8-8655-e3aa2d84a508.png" alt="image" width="750" height="285"></a></p>
+<p><a href="../../doc_files/49791673-ae0f4680-fd39-11e8-8655-e3aa2d84a508.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/49791673-ae0f4680-fd39-11e8-8655-e3aa2d84a508.png" alt="image" width="750" height="285"></a></p>
