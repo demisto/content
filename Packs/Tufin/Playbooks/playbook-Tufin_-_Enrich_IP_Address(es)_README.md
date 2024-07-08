@@ -42,4 +42,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tufin - Enrich IP Address(es)](../doc_files/Tufin%20-%20Enrich%20a%20Single%20IP%20Address.png)
+![Tufin - Enrich IP Address(es)](../doc_files/tufin-enrich_a_single__ip_address.png)

@@ -46,4 +46,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tufin - Get Application Information from SecureApp](../doc_files/Tufin%20-%20Get%20Application%20Information%20from%20SecureApp.png)
+![Tufin - Get Application Information from SecureApp](../doc_files/tufin-get_application_information_from_secureapp.png)

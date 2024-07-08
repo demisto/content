@@ -40,4 +40,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tufin - Get Network Device Info by IP Address](../doc_files/Tufin%20-%20Get%20Network%20Device%20Info%20by%20IP%20Address.png)
+![Tufin - Get Network Device Info by IP Address](../doc_files/tufin-get_network_device_info_by_ip_address.png)

@@ -29,4 +29,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Tufin - Investigate Network Alert](../doc_files/Tufin%20-%20Investigate%20Network%20Alert.png)
+![Tufin - Investigate Network Alert](../doc_files/tufin-investigate_network_alert.png)
