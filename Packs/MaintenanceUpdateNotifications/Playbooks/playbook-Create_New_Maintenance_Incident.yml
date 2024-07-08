@@ -1,0 +1,308 @@
+contentitemexportablefields:
+  contentitemfields:
+    propagationLabels:
+    - all
+id: Create New Maintenance Incident
+inputs:
+- description: ""
+  key: MaintenanceDetails
+  playbookInputQuery:
+  required: true
+  value: {}
+name: Create New Maintenance Incident
+outputs: []
+quiet: true
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 239d9e50-d270-4d96-84d7-edd49320cf57
+      iscommand: false
+      name: ""
+      version: -1
+      description: ''
+    taskid: 239d9e50-d270-4d96-84d7-edd49320cf57
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -100
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "7"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      details:
+        simple: ${inputs.MaintenanceDetails.summary}
+      emailccto:
+        simple: ${incident.emailccto}
+      emailinstance:
+        simple: ${incident.emailinstance}
+      externalendtime:
+        simple: ${inputs.MaintenanceDetails.maintenanceEndDate}
+      externalstarttime:
+        simple: ${inputs.MaintenanceDetails.maintenanceStartDate}
+      incidenturl:
+        simple: ${inputs.MaintenanceDetails.link}
+      monitoremailsubject:
+        simple: ${incident.monitoremailsubject}
+      name:
+        simple: ${inputs.MaintenanceDetails.title}
+      sendemailto:
+        simple: ${incident.sendemailto}
+      type:
+        simple: Maintenance Activity
+      updatedetails:
+        simple: ${inputs.MaintenanceDetails.summary}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.create.inc
+      id: 490ac920-9c16-428a-8667-5252183638b7
+      iscommand: true
+      name: Create New Incident
+      script: Builtin|||createNewIncident
+      type: regular
+      version: -1
+    taskid: 490ac920-9c16-428a-8667-5252183638b7
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 470
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "4"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      extend-context:
+        simple: foundIncidentID=Contents.data.id
+      fromdate:
+        simple: 30 days ago
+      ignore-outputs:
+        simple: "true"
+      query:
+        simple: incidenturl:"${inputs.MaintenanceDetails.link}"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: "Searches Cortex XSOAR Incidents and returnrs the most relevant fields. Default search range is the last 30 days, if you want to change this, use the fromDate argument. \n\nReturns the id, name, type, severity, status, owner, and created/closed times to context.  You can add additional fields using the add_field_to_context argument.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient."
+      id: 5d896a08-5b19-4cb2-8b8a-fe747a979b94
+      iscommand: false
+      name: Check for existing incident
+      scriptName: SearchIncidentsSummary
+      type: regular
+      version: -1
+    taskid: 5d896a08-5b19-4cb2-8b8a-fe747a979b94
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+  "4":
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              simple: foundIncidentID
+          operator: isNotEmpty
+      label: "yes"
+    continueonerrortype: ""
+    id: "4"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "1"
+      "yes":
+      - "5"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e4851573-6cd5-493a-8542-49f92ad2f956
+      iscommand: false
+      name: Is incident ID found?
+      type: condition
+      version: -1
+    taskid: e4851573-6cd5-493a-8542-49f92ad2f956
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 230
+        }
+      }
+  "5":
+    continueonerrortype: ""
+    id: "5"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "6"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      all:
+        simple: "yes"
+      subplaybook:
+        simple: "yes"
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      id: ede376f2-4b76-4eef-88df-cb4b896c8f0a
+      iscommand: false
+      name: Delete Subplaybook Context
+      scriptName: DeleteContext
+      type: regular
+      version: -1
+    taskid: ede376f2-4b76-4eef-88df-cb4b896c8f0a
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 830
+        }
+      }
+  "6":
+    continueonerrortype: ""
+    id: "6"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: cf174625-2252-4b3a-8d9a-b3f5d2f31e03
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+      description: ''
+    taskid: cf174625-2252-4b3a-8d9a-b3f5d2f31e03
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1010
+        }
+      }
+  "7":
+    continueonerrortype: ""
+    id: "7"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "5"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      action:
+        simple: link
+      linkedIncidentIDs:
+        simple: ${CreatedIncidentID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.linkIncidents
+      id: a5aaa63c-5fa0-433b-8f07-b4ec238e6239
+      iscommand: true
+      name: Link to current incident
+      script: Builtin|||linkIncidents
+      type: regular
+      version: -1
+    taskid: a5aaa63c-5fa0-433b-8f07-b4ec238e6239
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 740,
+          "y": 640
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {
+      "4_5_yes": 0.49
+    },
+    "paper": {
+      "dimensions": {
+        "height": 1175,
+        "width": 670,
+        "x": 450,
+        "y": -100
+      }
+    }
+  }
+tests:
+- No tests (auto formatted)
+fromversion: 6.0.0

@@ -1,0 +1,440 @@
+contentitemexportablefields:
+  contentitemfields:
+    definitionid: ''
+    fromServerVersion: ''
+    itemVersion: ''
+    packID: e317b9f6-c83d-43ad-85c4-44081f6c3e78
+    packName: Maintenance Update Notifications
+    prevname: ''
+    propagationLabels:
+    - all
+    toServerVersion: ''
+id: XSOAR 8 Maintenance Update Notification
+inputs: []
+name: XSOAR 8 Maintenance Update Notification
+outputs: []
+quiet: true
+starttaskid: '0'
+tasks:
+  '0':
+    continueonerrortype: ''
+    id: '0'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '1'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 349b8dd2-3c6b-4a55-8ca6-a5ab691c307b
+      iscommand: false
+      name: ''
+      version: -1
+    taskid: 349b8dd2-3c6b-4a55-8ca6-a5ab691c307b
+    timertriggers: []
+    type: start
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 50\n  }\n}"
+  '1':
+    continueonerrortype: ''
+    id: '1'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '7'
+    note: false
+    quietmode: 0
+    reputationcalc: 1
+    scriptarguments:
+      extend-context:
+        simple: RssFeed=entries={"title":val.title,"summary":val.summary,"maintenanceStartDate":val.published,"maintenanceEndDate":val.maintenanceenddate,"link":val.link}
+      limit:
+        simple: '100'
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      description: Gets the reports from the RSS feed.
+      id: 5c9af361-5710-4220-8169-fa80515eec63
+      iscommand: true
+      name: Get RSS feed updates
+      script: '|||rss-get-indicators'
+      type: regular
+      version: -1
+    taskid: 5c9af361-5710-4220-8169-fa80515eec63
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 195\n  }\n}"
+  '4':
+    continueonerrortype: ''
+    id: '4'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 2c580dab-9b12-4a94-873e-55418b87c6c8
+      iscommand: false
+      name: No action needed
+      type: title
+      version: -1
+    taskid: 2c580dab-9b12-4a94-873e-55418b87c6c8
+    timertriggers: []
+    type: title
+    view: "{\n  \"position\": {\n    \"x\": 50,\n    \"y\": 560\n  }\n}"
+  '5':
+    continueonerrortype: ''
+    id: '5'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MaintenanceDetails:
+        complex:
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: containsGeneral
+              right:
+                value:
+                  simple: XSOAR
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: incident.xsoarcloudregion
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: notContainsGeneral
+              right:
+                value:
+                  simple: America Government
+          root: RssFeed
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: b7576782-f22c-4c89-8e41-1f79c2c5e653
+      iscommand: false
+      name: Create New Maintenance Incident
+      playbookId: Create New Maintenance Incident
+      type: playbook
+      version: -1
+    taskid: b7576782-f22c-4c89-8e41-1f79c2c5e653
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 600\n  }\n}"
+  '6':
+    continueonerrortype: ''
+    id: '6'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: Builtin
+      description: commands.local.cmd.close.inv
+      id: 870f8a54-fbd0-4948-8b63-b254b7f2ba42
+      iscommand: true
+      name: Close Incident
+      script: Builtin|||closeInvestigation
+      type: regular
+      version: -1
+    taskid: 870f8a54-fbd0-4948-8b63-b254b7f2ba42
+    timertriggers: []
+    type: regular
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 810\n  }\n}"
+  '7':
+    conditions:
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: XSOAR
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: incident.xsoarcloudregion
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: notContainsGeneral
+                    right:
+                      value:
+                        simple: America Government
+                root: RssFeed
+          operator: isNotEmpty
+      label: Non America Government
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: XSOAR
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: containsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: incident.xsoarcloudregion
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: America Government
+                root: RssFeed
+          operator: isNotEmpty
+      label: America Government
+    - condition:
+      - - ignorecase: true
+          left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: containsGeneral
+                    right:
+                      value:
+                        simple: XSOAR
+                - - ignorecase: true
+                    left:
+                      iscontext: true
+                      value:
+                        simple: RssFeed.title
+                    operator: notContainsGeneral
+                    right:
+                      iscontext: true
+                      value:
+                        simple: incident.xsoarcloudregion
+                root: RssFeed
+          operator: isNotEmpty
+      label: Generic XSOAR Notifications
+    continueonerrortype: ''
+    id: '7'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - '4'
+      America Government:
+      - '8'
+      Generic XSOAR Notifications:
+      - '9'
+      Non America Government:
+      - '5'
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ''
+      id: f3028d3e-73a1-460b-8a54-41348e56a35c
+      iscommand: false
+      name: Filter by Region Group
+      type: condition
+      version: -1
+    taskid: f3028d3e-73a1-460b-8a54-41348e56a35c
+    timertriggers: []
+    type: condition
+    view: "{\n  \"position\": {\n    \"x\": 695,\n    \"y\": 370\n  }\n}"
+  '8':
+    continueonerrortype: ''
+    id: '8'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MaintenanceDetails:
+        complex:
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: containsGeneral
+              right:
+                value:
+                  simple: XSOAR 8
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: containsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: incident.xsoarcloudregion
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: containsGeneral
+              right:
+                value:
+                  simple: America Government
+          root: RssFeed
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: c36db3e3-df99-494d-85ab-f969d66956ec
+      iscommand: false
+      name: Create New Maintenance Incident
+      playbookId: Create New Maintenance Incident
+      type: playbook
+      version: -1
+    taskid: c36db3e3-df99-494d-85ab-f969d66956ec
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 910,\n    \"y\": 600\n  }\n}"
+  '9':
+    continueonerrortype: ''
+    id: '9'
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    loop:
+      exitCondition: ''
+      forEach: true
+      iscommand: false
+      max: 100
+      wait: 1
+    nexttasks:
+      '#none#':
+      - '6'
+    note: false
+    quietmode: 0
+    scriptarguments:
+      MaintenanceDetails:
+        complex:
+          filters:
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: containsGeneral
+              right:
+                value:
+                  simple: XSOAR
+          - - ignorecase: true
+              left:
+                iscontext: true
+                value:
+                  simple: RssFeed.title
+              operator: notContainsGeneral
+              right:
+                iscontext: true
+                value:
+                  simple: incident.xsoarcloudregion
+          root: RssFeed
+    separatecontext: true
+    skipunavailable: false
+    task:
+      brand: ''
+      id: 34235698-f7fc-4826-84ee-92eb02022389
+      iscommand: false
+      name: Create New Maintenance Incident
+      playbookId: Create New Maintenance Incident
+      type: playbook
+      version: -1
+    taskid: 34235698-f7fc-4826-84ee-92eb02022389
+    timertriggers: []
+    type: playbook
+    view: "{\n  \"position\": {\n    \"x\": 1350,\n    \"y\": 560\n  }\n}"
+version: -1
+view: "{\n  \"linkLabelsPosition\": {},\n  \"paper\": {\n    \"dimensions\": {\n      \"height\": 855,\n      \"width\": 1680,\n      \"x\": 50,\n      \"y\": 50\n    }\n  }\n}"

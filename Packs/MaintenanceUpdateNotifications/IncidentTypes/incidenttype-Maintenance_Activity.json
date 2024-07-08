@@ -1,0 +1,28 @@
+{
+    "autorun": true,
+    "color": "#0E28C6",
+    "days": 0,
+    "daysR": 0,
+    "default": false,
+    "detached": false,
+    "disabled": false,
+    "extractSettings": {
+        "fieldCliNameToExtractSettings": {},
+        "mode": "Specific"
+    },
+    "hours": 0,
+    "hoursR": 0,
+    "id": "Maintenance Activity",
+    "layout": "Maintenance Activity",
+    "locked": false,
+    "name": "Maintenance Activity",
+    "onChangeRepAlg": 1,
+    "playbookId": "Send Maintenance Email",
+    "readonly": false,
+    "reputationCalc": 1,
+    "system": false,
+    "version": -1,
+    "weeks": 0,
+    "weeksR": 0,
+    "fromVersion": "6.0.0"
+}
