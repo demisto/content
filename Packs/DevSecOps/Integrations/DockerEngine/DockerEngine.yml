@@ -212,7 +212,7 @@ script:
     - description: "A list of kernel capabilities to add to the container. Conflicts with option 'Capabilities'. "
       isArray: true
       name: hostconfig_capadd
-    - description: "A list of kernel capabilities to add to the container. Conflicts with option 'Capabilities'. "
+    - description: "A list of kernel capabilities to drop from the container. Conflicts with option 'Capabilities'. "
       isArray: true
       name: hostconfig_capdrop
     - auto: PREDEFINED
@@ -939,7 +939,7 @@ script:
       description: "Name of the host's operating system, for example: \"Ubuntu 16.04.2 LTS\" or \"Windows Server 2016 Datacenter\" "
       type: String
     - contextPath: Docker.SystemInfo.OSVersion
-      description: 'Version of the host''s operating system   p    /  /p       Note  : The information returned in this field, including its   very existence, and the formatting of values, should not be considered   stable, and may change without notice. '
+      description: "Version of the host's operating system   p    /  /p       Note  : The information returned in this field, including its   very existence, and the formatting of values, should not be considered   stable, and may change without notice. "
       type: String
     - contextPath: Docker.SystemInfo.OSType
       description: 'Generic type of the operating system of the host, as returned by the Go runtime (`GOOS`).  Currently returned values are "linux" and "windows". A full list of possible values can be found in the [Go documentation](https://golang.org/doc/install/source#environment). '
@@ -981,7 +981,7 @@ script:
       description: 'The network endpoint that the Engine advertises for the purpose of node discovery. ClusterAdvertise is a `host:port` combination on which the daemon is reachable by other hosts.   p    /  /p       Deprecated  : This field is only propagated when using standalone Swarm   mode, and overlay networking using an external k/v store. Overlay   networks with Swarm mode enabled use the built-in raft store, and   this field will be empty. '
       type: String
     - contextPath: Docker.SystemInfo.Runtimes.path
-      description: "Name and, optional, path of the `docker-init` binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
+      description: "Name and, optional, path of the OCI executable binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
       type: String
     - contextPath: Docker.SystemInfo.DefaultRuntime
       description: 'Name of the default OCI runtime that is used when starting containers.  The default can be overridden per-container at create time. '
