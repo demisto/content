@@ -653,7 +653,7 @@ tasks:
     task:
       id: 4e9b77ee-dc7b-47da-83a3-3e9c0e6f878f
       version: -1
-      name: Remediation Stage
+      name: Manual Remediation Stage
       type: title
       iscommand: false
       brand: ""

@@ -699,7 +699,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 150
+          "y": 170
         }
       }
     note: false
@@ -1983,7 +1983,16 @@ tasks:
       val1:
         simple: ASSET-SSM-AGENT-STATUS
       val2:
-        simple: ${AWS.SSM.InventoryEntry.Entries.[0].InstanceStatus}
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: InstanceStatus
+            operator: getField
       val3:
         simple: n/a
     separatecontext: false
@@ -1993,13 +2002,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: ca38f6a9-ccce-4116-8dbf-e0b2139c7f30
+      id: b685526c-05d1-49a6-8976-54cec87051fd
       iscommand: false
       name: Set system IDs grid field (SSMAgentStatus)
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: ca38f6a9-ccce-4116-8dbf-e0b2139c7f30
+    taskid: b685526c-05d1-49a6-8976-54cec87051fd
     timertriggers: []
     type: regular
     view: |-
@@ -2028,7 +2037,16 @@ tasks:
       val1:
         simple: ASSET-SSM-ID
       val2:
-        simple: ${AWS.SSM.InventoryEntry.Entries.[0].InstanceId}
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: InstanceId
+            operator: getField
       val3:
         simple: n/a
     separatecontext: false
@@ -2038,13 +2056,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 98696045-bbff-44c9-8514-a38685798484
+      id: 6b837a41-225c-4a41-880d-e04829a897db
       iscommand: false
       name: Set system IDs grid field (SSMInstanceID)
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 98696045-bbff-44c9-8514-a38685798484
+    taskid: 6b837a41-225c-4a41-880d-e04829a897db
     timertriggers: []
     type: regular
     view: |-
@@ -2073,7 +2091,16 @@ tasks:
       val1:
         simple: ASSET-SSM-PLATFORM-NAME
       val2:
-        simple: ${AWS.SSM.InventoryEntry.Entries.[0].PlatformName}
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: PlatformName
+            operator: getField
       val3:
         simple: n/a
     separatecontext: false
@@ -2083,13 +2110,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 28c5f001-3476-41b5-880b-a7dea4c7635b
+      id: 0385d4a3-a23d-4cbc-8bdb-bb49f09687bd
       iscommand: false
       name: Set system IDs grid field (SSMPlatformName)
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 28c5f001-3476-41b5-880b-a7dea4c7635b
+    taskid: 0385d4a3-a23d-4cbc-8bdb-bb49f09687bd
     timertriggers: []
     type: regular
     view: |-
@@ -2118,7 +2145,16 @@ tasks:
       val1:
         simple: ASSET-SSM-PLATFORM-TYPE
       val2:
-        simple: ${AWS.SSM.InventoryEntry.Entries.[0].PlatformType}
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: PlatformType
+            operator: getField
       val3:
         simple: n/a
     separatecontext: false
@@ -2128,13 +2164,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 1f1f2f4f-7d6b-431e-8310-8f43cc018647
+      id: d261ca8f-cb4e-4a63-8879-fc8b88e79b57
       iscommand: false
       name: Set system IDs grid field (SSMPlatformType)
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 1f1f2f4f-7d6b-431e-8310-8f43cc018647
+    taskid: d261ca8f-cb4e-4a63-8879-fc8b88e79b57
     timertriggers: []
     type: regular
     view: |-
@@ -2163,7 +2199,16 @@ tasks:
       val1:
         simple: ASSET-SSM-PLATFORM-VERSION
       val2:
-        simple: ${AWS.SSM.InventoryEntry.Entries.[0].PlatformVersion}
+        complex:
+          accessor: Entries
+          root: AWS.SSM.InventoryEntry
+          transformers:
+          - operator: FirstArrayElement
+          - args:
+              field:
+                value:
+                  simple: PlatformVersion
+            operator: getField
       val3:
         simple: n/a
     separatecontext: false
@@ -2173,13 +2218,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well. For example:
         `!GridFieldSetup keys=ip,src val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" gridfiled="gridfield"`
-      id: 82a20e29-ebcf-4b2d-8d16-59adcb8376cf
+      id: a84f696e-8f71-45a0-8878-b1235db97942
       iscommand: false
       name: Set system IDs grid field (SSMPlatformVersion)
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: 82a20e29-ebcf-4b2d-8d16-59adcb8376cf
+    taskid: a84f696e-8f71-45a0-8878-b1235db97942
     timertriggers: []
     type: regular
     view: |-
