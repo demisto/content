@@ -472,7 +472,8 @@ class Client(BaseClient):
                     headers=headers,
                     error_handler=self.qradar_error_handler,
                     timeout=timeout or self.timeout,
-                    resp_type=resp_type
+                    resp_type=resp_type,
+                    with_metrics=True
                 )
             except (DemistoException, requests.ReadTimeout) as error:
                 demisto.error(f'Error {error} in time {_time}')
@@ -655,6 +656,18 @@ class Client(BaseClient):
             url_suffix=f'/ariel/searches/{search_id}',
         )
 
+    def search_delete(self, search_id: str):
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'/ariel/searches/{search_id}',
+        )
+
+    def search_cancel(self, search_id: str):
+        return self.http_request(
+            method='POST',
+            url_suffix=f'/ariel/searches/{search_id}?status=CANCELED',
+        )
+
     def search_results_get(self, search_id: str, range_: Optional[str] = None):
         return self.http_request(
             method='GET',
@@ -691,7 +704,7 @@ class Client(BaseClient):
     def reference_set_delete(self, ref_name: str, purge_only: Optional[str] = None, fields: Optional[str] = None):
         return self.http_request(
             method='DELETE',
-            url_suffix=f'/reference_data/sets/{parse.quote(ref_name, safe="")}',
+            url_suffix=f'/reference_data/sets/{parse.quote(parse.quote(ref_name, safe=""), safe="")}',
             params=assign_params(purge_only=purge_only, fields=fields)
         )
 
@@ -1232,6 +1245,7 @@ def safely_update_context_data(
                                                                      should_update_last_mirror,
                                                                      should_add_reset_key,
                                                                      should_force_update)
+            print_debug_msg(f"{updated_context=}")
 
             set_integration_context(updated_context, version=new_version)
             print_debug_msg(f'Updated integration context after version {new_version}.')
@@ -2223,7 +2237,9 @@ def poll_offense_events_with_retry(
         if retry < max_retries - 1:
             time.sleep(EVENTS_INTERVAL_SECS)
 
-    print_debug_msg(f'Max retries for getting events for offense {offense_id}.')
+    print_debug_msg(f'Max retries for getting events for offense {offense_id}. Cancel query search_id: {search_id}')
+    # need to cancel query
+    client.search_cancel(search_id=search_id)
     return [], 'Fetching events is in progress'
 
 
@@ -3134,6 +3150,55 @@ def qradar_search_status_get_command(client: Client, args: dict) -> CommandResul
     )
 
 
+def qradar_search_delete_command(client: Client, args: dict) -> CommandResults:
+    """
+    Delete search from QRadar service.
+    possible arguments:
+    - search_id (Required): The search ID to delete.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    search_id: str = args.get('search_id', '')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.search_delete(search_id)
+
+    return CommandResults(
+        readable_output=f'Search ID {search_id} was successfully deleted.',
+        raw_response=response
+    )
+
+
+def qradar_search_cancel_command(client: Client, args: dict) -> CommandResults:
+    """
+    Cancelled search from QRadar service.
+    possible arguments:
+    - search_id (Required): The search ID to delete.
+    Args:
+        client (Client): QRadar client to perform the API call.
+        args (Dict): Demisto args.
+
+    Returns:
+        CommandResults.
+    """
+    search_id: str = args.get('search_id', '')
+
+    # if this call fails, raise an error and stop command execution
+    response = client.search_cancel(search_id)
+    if response.get('status') == 'COMPLETED':
+        output = f'Search ID {search_id} is already in a completed status.'
+    else:
+        output = f'Search ID {search_id} was successfully cancelled.'
+    return CommandResults(
+        readable_output=output,
+        raw_response=response
+    )
+
+
 def qradar_search_results_get_command(client: Client, args: dict) -> CommandResults:
     """
     Retrieves search results from QRadar service.
@@ -3339,8 +3404,7 @@ def qradar_reference_set_value_delete_command(client: Client, args: dict) -> Com
     original_value = value
 
     if date_value:
-        value = get_time_parameter(original_value, epoch_format=True)
-
+        value = str(get_time_parameter(original_value, epoch_format=True))
     # if this call fails, raise an error and stop command execution
     try:
         response = client.reference_set_value_delete(ref_name, value)
@@ -3918,6 +3982,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
             },
             'ContentsFormat': EntryFormat.JSON
         })
+    already_mirrored = False
     if mirror_options == MIRROR_OFFENSE_AND_EVENTS:
         if (num_events := context_data.get(MIRRORED_OFFENSES_FETCHED_CTX_KEY, {}).get(offense_id)) and \
                 int(num_events) >= (events_limit := int(params.get('events_limit', DEFAULT_EVENTS_LIMIT))):
@@ -3926,6 +3991,7 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
                             f'Not fetching events again.')
             # delete the offense from the queue
             delete_offense_from_context(offense_id, context_data, context_version)
+            already_mirrored = True
         else:
             events, status = get_remote_events(client,
                                                offense_id,
@@ -3945,21 +4011,22 @@ def get_remote_data_command(client: Client, params: dict[str, Any], args: dict) 
     enriched_offense = enrich_offenses_result(client, offense, ip_enrich, asset_enrich)
 
     final_offense_data = sanitize_outputs(enriched_offense)[0]
-    events_mirrored = get_num_events(final_offense_data.get('events', []))
-    print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
-    events_message = update_events_mirror_message(
-        mirror_options=mirror_options,
-        events_limit=events_limit,
-        events_count=int(final_offense_data.get('event_count', 0)),
-        events_mirrored=events_mirrored,
-        events_mirrored_collapsed=len(final_offense_data.get('events', [])),
-        fetch_mode=fetch_mode,
-        offense_id=int(offense_id),
-    )
-    print_debug_msg(f'offense {offense_id} events_message: {events_message}')
-    final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
-    final_offense_data['mirroring_events_message'] = events_message
-    final_offense_data['events_fetched'] = events_mirrored
+    if not already_mirrored:
+        events_mirrored = get_num_events(final_offense_data.get('events', []))
+        print_debug_msg(f'Offense {offense_id} mirrored events: {events_mirrored}')
+        events_message = update_events_mirror_message(
+            mirror_options=mirror_options,
+            events_limit=events_limit,
+            events_count=int(final_offense_data.get('event_count', 0)),
+            events_mirrored=events_mirrored,
+            events_mirrored_collapsed=len(final_offense_data.get('events', [])),
+            fetch_mode=fetch_mode,
+            offense_id=int(offense_id),
+        )
+        print_debug_msg(f'offense {offense_id} events_message: {events_message}')
+        final_offense_data['last_mirror_in_time'] = datetime.now().isoformat()
+        final_offense_data['mirroring_events_message'] = events_message
+        final_offense_data['events_fetched'] = events_mirrored
     return GetRemoteDataResponse(final_offense_data, entries)
 
 
@@ -4166,6 +4233,7 @@ def qradar_search_retrieve_events_command(
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     is_polling = argToBoolean(args.get('polling', True))
+    timeout_in_secs = int(args.get('timeout_in_seconds', 600))
     search_command_results = None
     if not search_id:
         search_command_results = qradar_search_create_command(client, params, args)
@@ -4186,7 +4254,12 @@ def qradar_search_retrieve_events_command(
         print_debug_msg(f"Polling event failed due to {e}. Will try to poll again in the next interval.")
         events = []
         status = QueryStatus.WAIT.value
-
+    if is_last_run and status == QueryStatus.WAIT.value:
+        print_debug_msg("Its the last run of the polling, will cancel the query request. ")
+        client.search_cancel(search_id=search_id)
+        return CommandResults(
+            readable_output='Got polling timeout. Quary got cancelled.',
+        )
     if is_last_run and args.get('success') and not events:
         # if last run, we want to get the events that were fetched in the previous calls
         return CommandResults(
@@ -4206,14 +4279,15 @@ def qradar_search_retrieve_events_command(
             # return scheduled command result without search id to search again
             polling_args = {
                 'interval_in_seconds': interval_in_secs,
+                'timeout_in_seconds': timeout_in_secs,
                 'success': True,
                 **args
             }
-
             scheduled_command = ScheduledCommand(
                 command='qradar-search-retrieve-events',
                 next_run_in_seconds=interval_in_secs,
                 args=polling_args,
+                timeout_in_seconds=timeout_in_secs
             )
             return CommandResults(scheduled_command=scheduled_command if is_polling else None,
                                   readable_output='Not all events were fetched. Searching again.',
@@ -4235,11 +4309,13 @@ def qradar_search_retrieve_events_command(
     polling_args = {
         'search_id': search_id,
         'interval_in_seconds': interval_in_secs,
+        'timeout_in_seconds': timeout_in_secs,
         **args
     }
     scheduled_command = ScheduledCommand(
         command='qradar-search-retrieve-events',
         next_run_in_seconds=interval_in_secs,
+        timeout_in_seconds=timeout_in_secs,
         args=polling_args,
     )
     outputs = {'ID': search_id, 'Status': QueryStatus.WAIT}
@@ -5128,6 +5204,12 @@ def main() -> None:  # pragma: no cover
         ]:
             return_results(qradar_search_results_get_command(client, args))
 
+        elif command == 'qradar-search-cancel':
+            return_results(qradar_search_cancel_command(client, args))
+
+        elif command == 'qradar-search-delete':
+            return_results(qradar_search_delete_command(client, args))
+
         elif command in [
             'qradar-reference-sets-list',
             'qradar-get-reference-by-name',
@@ -5255,6 +5337,11 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         print_debug_msg(f"The integration context_data is {get_integration_context()}")
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{traceback.format_exc()}\nException is: {str(e)}')
+    finally:
+        #  CIAC-10628
+        if command not in ("test-module", "fetch-incidents", "long-running-execution"):
+            client._return_execution_metrics_results()
+            client.execution_metrics.metrics = None
 
 
 ''' ENTRY POINT '''

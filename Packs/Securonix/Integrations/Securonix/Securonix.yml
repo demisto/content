@@ -286,13 +286,16 @@ script:
     - description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
       name: to
       required: true
-    - description: Free-text query. For example, query=?resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation?.
+    - description: "Free-text query. For example, query=\"resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation\".\nNote: Use the XSOAR automation browser to run the command if the \"query\" argument contains the special characters."
       name: query
     description: Gets a list of activity data for the specified resource group.
     name: securonix-list-activity-data
     outputs:
     - contextPath: Securonix.ActivityData.Accountname
       description: Account name.
+      type: String
+    - contextPath: Securonix.ActivityData.Accountresourcekey
+      description: Account source key.
       type: String
     - contextPath: Securonix.ActivityData.Agentfilename
       description: Agent file name.
@@ -393,6 +396,18 @@ script:
     - contextPath: Securonix.ActivityData.Timeline
       description: Time when the activity occurred, in Epoch time.
       type: String
+    - contextPath: Securonix.Activity.totalDocuments
+      description: Total number of events.
+      type: Number
+    - contextPath: Securonix.Activity.message
+      description: Message from the API.
+      type: String
+    - contextPath: Securonix.Activity.queryId
+      description: Query Id for the pagination.
+      type: String
+    - contextPath: Securonix.Activity.command_name
+      description: The command name.
+      type: String
   - arguments:
     - description: Start date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
       name: from
@@ -400,10 +415,12 @@ script:
     - description: End date/time for which to retrieve activity data (in the format MM/dd/yyyy HH:mm:ss).
       name: to
       required: true
-    - description: Free-text query, For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".
+    - description: "Free-text query, For example, query=\"resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation\".\nNote: Use the XSOAR automation browser to run the command if the \"query\" argument contains the special characters."
       name: query
     - description: Paginate next set of results.
       name: query_id
+    - description: "Provide the policy type for retrying if the violations are not found in the initial attempt. The types of policies that can be retried are: \"Land Speed\", \"TIER2\", \"DIRECTIVE\", \"BEACONING\"."
+      name: policy_type
     description: Gets a list activity data for an account name.
     name: securonix-list-violation-data
     polling: true
@@ -1546,7 +1563,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
   script: '-'

@@ -1,14 +1,14 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "anas-yousef",
-        "mmhw",
-        "maimorag"
+        "MosheEichler",
+        "samuelFain",
+        "israelpoli"
     ],
-    "CONTRIBUTION_TL": "JasBeilin",
+    "CONTRIBUTION_TL": "thefrieddan1",
     "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
     "ON_CALL_DEVS": [
-        "adaud",
-        "ilappe"
+        "skidorball",
+        "ayousef"
     ],
     "DOC_REVIEWER": "ShirleyDenkberg",
     "TIM_REVIEWER": "MLainer1"

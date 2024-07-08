@@ -1,4 +1,4 @@
-[MODEL: dataset=aruba_clearpass_raw]
+[MODEL: dataset=aruba_networks_clearpass_raw]
 filter cat ~= "[s|S]ession"
 | alter
 	dst_ip_v4 = if(dst !~= ":", dst, null),

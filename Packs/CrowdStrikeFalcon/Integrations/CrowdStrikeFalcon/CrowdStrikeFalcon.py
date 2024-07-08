@@ -32,6 +32,7 @@ SERVER = PARAMS['url'].removesuffix('/')
 USE_SSL = not PARAMS.get('insecure', False)
 # How many time before the first fetch to retrieve incidents
 FETCH_TIME = PARAMS.get('fetch_time', '3 days')
+PROXY = PARAMS.get('proxy', False)
 BYTE_CREDS = f'{CLIENT_ID}:{SECRET}'.encode()
 # Headers to be sent in requests
 HEADERS = {
@@ -45,8 +46,6 @@ INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
-# Remove proxy if not set to true in params
-handle_proxy()
 
 ''' KEY DICTIONARY '''
 
@@ -295,6 +294,29 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 ''' HELPER FUNCTIONS '''
 
 
+def error_handler(res):
+    res_json = res.json()
+    reason = res.reason
+    demisto.debug(f'CrowdStrike Falcon error handler {res.status_code=} {reason=}')
+    resources = res_json.get('resources', {})
+    extracted_error_message = ''
+    if resources:
+        if isinstance(resources, list):
+            extracted_error_message += f'\n{str(resources)}'
+        else:
+            for host_id, resource in resources.items():
+                errors = resource.get('errors', []) if isinstance(resource, dict) else ''
+                if errors:
+                    error_message = errors[0].get('message')
+                    extracted_error_message += f'\nHost ID {host_id} - {error_message}'
+    elif res_json.get('errors') and not extracted_error_message:
+        errors = res_json.get('errors', [])
+        for error in errors:
+            extracted_error_message += f"\n{error.get('message')}"
+    reason += extracted_error_message
+    raise DemistoException(f'Error in API call to CrowdStrike Falcon: code: {res.status_code} - reason: {reason}')
+
+
 def http_request(method, url_suffix, params=None, data=None, files=None, headers=HEADERS, safe=False,
                  get_token_flag=True, no_json=False, json=None, status_code=None, timeout=None):
     """
@@ -340,79 +362,72 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
-    url = SERVER + url_suffix
 
     headers['User-Agent'] = 'PANW-XSOAR'
+    int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
+
+    # in case of 401,403,429 status codes we want to return the response, generate a new token and try again with retries.
+    valid_status_codes = [200, 201, 202, 204, 401, 403, 429]
+    # Handling a case when we want to return an entry for 404 status code.
+    if status_code:
+        # To cover the condition when status_code is a list of status codes
+        if isinstance(status_code, list):
+            valid_status_codes = valid_status_codes + status_code
+        else:
+            valid_status_codes.append(status_code)
 
     try:
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            params=params,
-            data=data,
+        res = generic_http_request(
+            method=method,
+            server_url=SERVER,
             headers=headers,
+            url_suffix=url_suffix,
+            data=data,
             files=files,
-            json=json,
-            timeout=timeout,
+            params=params,
+            proxy=PROXY,
+            resp_type='response',
+            verify=USE_SSL,
+            error_handler=error_handler,
+            json_data=json,
+            timeout=int_timeout,
+            ok_codes=valid_status_codes
         )
     except requests.exceptions.RequestException as e:
         return_error(f'Error in connection to the server. Please make sure you entered the URL correctly.'
                      f' Exception is {str(e)}.')
     try:
-        valid_status_codes = {200, 201, 202, 204}
-        # Handling a case when we want to return an entry for 404 status code.
-        if status_code:
-            # To cover the condition when status_code is a list of status codes
-            if isinstance(status_code, list):
-                valid_status_codes.update(status_code)
-            else:
-                valid_status_codes.add(status_code)
+        # removing 401,403,429 status codes, now we want to generate a new token and try again
+        valid_status_codes.remove(401)
+        valid_status_codes.remove(403)
+        valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
-            res_json = res.json()
-            reason = res.reason
-            resources = res_json.get('resources', {})
-            extracted_error_message = ''
-            if resources:
-                if isinstance(resources, list):
-                    extracted_error_message += f'\n{str(resources)}'
-                else:
-                    for host_id, resource in resources.items():
-                        errors = resource.get('errors', []) if isinstance(resource, dict) else ''
-                        if errors:
-                            error_message = errors[0].get('message')
-                            extracted_error_message += f'\nHost ID {host_id} - {error_message}'
-            elif res_json.get('errors') and not extracted_error_message:
-                errors = res_json.get('errors', [])
-                for error in errors:
-                    extracted_error_message += f"\n{error.get('message')}"
-            reason += extracted_error_message
-            err_msg = 'Error in API call to CrowdStrike Falcon: code: {code} - reason: {reason}'.format(
-                code=res.status_code,
-                reason=reason
-            )
             # try to create a new token
-            if res.status_code in (401, 403) and get_token_flag:
-                LOG(err_msg)
+            if res.status_code in (401, 403, 429) and get_token_flag:
+                demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
-                return http_request(
+                demisto.debug('calling generic_http_request with retries=5 and status_list_to_retry=[429]')
+                res = generic_http_request(
                     method=method,
-                    url_suffix=url_suffix,
-                    params=params,
-                    data=data,
+                    server_url=SERVER,
                     headers=headers,
+                    url_suffix=url_suffix,
+                    data=data,
                     files=files,
-                    json=json,
-                    safe=safe,
-                    get_token_flag=False,
-                    status_code=status_code,
-                    no_json=no_json,
-                    timeout=timeout,
+                    params=params,
+                    proxy=PROXY,
+                    retries=5,
+                    status_list_to_retry=[429],
+                    resp_type='response',
+                    error_handler=error_handler,
+                    json_data=json,
+                    timeout=int_timeout,
+                    ok_codes=valid_status_codes
                 )
+                return res if no_json else res.json()
             elif safe:
                 return None
-            raise DemistoException(err_msg)
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
@@ -1241,15 +1256,19 @@ def get_token(new_token=False):
     ctx = demisto.getIntegrationContext()
     if ctx and not new_token:
         passed_mins = get_passed_mins(now, ctx.get('time'))
+        demisto.debug(f'{passed_mins=}')
         if passed_mins >= TOKEN_LIFE_TIME:
             # token expired
+            demisto.debug('token expired')
             auth_token = get_token_request()
             demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
         else:
             # token hasn't expired
+            demisto.debug("token hasn't expired")
             auth_token = ctx.get('auth_token')
     else:
         # there is no token
+        demisto.debug('there is no token')
         auth_token = get_token_request()
         demisto.setIntegrationContext({'auth_token': auth_token, 'time': date_to_timestamp(now) / 1000})
     return auth_token
@@ -1275,6 +1294,7 @@ def get_token_request():
         err_msg = 'Authorization Error: User has no authorization to create a token. Please make sure you entered the' \
                   ' credentials correctly.'
         raise Exception(err_msg)
+    demisto.debug(f'{token_res.get("expires_in")=}')
     return token_res.get('access_token')
 
 
@@ -2187,6 +2207,8 @@ def get_remote_data_command(args: dict[str, Any]):
     """
     remote_args = GetRemoteDataArgs(args)
     remote_incident_id = remote_args.remote_incident_id
+    reopen_statuses_list = argToList(demisto.params().get('reopen_statuses', ''))
+    demisto.debug(f'In get_remote_data_command {reopen_statuses_list=}')
 
     mirrored_data = {}
     entries: list = []
@@ -2198,20 +2220,20 @@ def get_remote_data_command(args: dict[str, Any]):
             mirrored_data, updated_object = get_remote_incident_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update incident {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_incident_entries(updated_object, entries, remote_incident_id)  # sets in place
+                set_xsoar_incident_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
 
         elif incident_type == IncidentType.DETECTION:
             mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update detection {remote_incident_id} with fields: {updated_object}')
-                set_xsoar_detection_entries(updated_object, entries, remote_incident_id)  # sets in place
+                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)  # sets in place
 
         elif incident_type == IncidentType.IDP_OR_MOBILE_DETECTION:
             mirrored_data, updated_object, detection_type = get_remote_idp_or_mobile_detection_data(remote_incident_id)
             if updated_object:
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_idp_or_mobile_detection_entries(
-                    updated_object, entries, remote_incident_id, detection_type)  # sets in place
+                    updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)  # sets in place
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2293,36 +2315,55 @@ def get_remote_idp_or_mobile_detection_data(remote_incident_id):
     """
     mirrored_data_list = get_detection_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
+    demisto.debug(f'in get_remote_idp_or_mobile_detection_data {mirrored_data=}')
     detection_type = ''
+    mirroring_fields = ['status']
     updated_object: dict[str, Any] = {}
     if 'idp' in mirrored_data['product']:
         updated_object = {'incident_type': IDP_DETECTION}
         detection_type = 'IDP'
+        mirroring_fields.append('id')
     if 'mobile' in mirrored_data['product']:
         updated_object = {'incident_type': MOBILE_DETECTION}
         detection_type = 'Mobile'
-    set_updated_object(updated_object, mirrored_data, ['status'])
+        mirroring_fields.append('mobile_detection_id')
+    set_updated_object(updated_object, mirrored_data, mirroring_fields)
+    demisto.debug(f'in get_remote_idp_or_mobile_detection_data {mirroring_fields=} {updated_object=}')
     return mirrored_data, updated_object, detection_type
 
 
-def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str):
+def set_xsoar_incident_entries(updated_object: dict[str, Any], entries: list, remote_incident_id: str,
+                               reopen_statuses_list: list):
+    reopen_statuses_set = {str(status).strip() for status in reopen_statuses_list} \
+        if reopen_statuses_list else set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}
+    demisto.debug(f'In set_xsoar_incident_entries {reopen_statuses_set=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'Closed':
             close_in_xsoar(entries, remote_incident_id, 'Incident')
-        elif updated_object.get('status') in (set(STATUS_TEXT_TO_NUM.keys()) - {'Closed'}):
+        elif updated_object.get('status', '') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_incident_id, 'Incident')
+        else:
+            demisto.debug(f"In set_xsoar_incident_entries not closing and not reopening since {updated_object.get('status')=}  "
+                          f"and {reopen_statuses_set=}.")
 
 
-def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str):
+def set_xsoar_detection_entries(updated_object: dict[str, Any], entries: list, remote_detection_id: str,
+                                reopen_statuses_list: list):
+    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list} \
+        if reopen_statuses_list else (set(DETECTION_STATUS) - {'closed'})
+    demisto.debug(f'In set_xsoar_detection_entries {reopen_statuses_set=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_detection_id, 'Detection')
-        elif updated_object.get('status') in (set(DETECTION_STATUS) - {'closed'}):
+        elif updated_object.get('status') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_detection_id, 'Detection')
+        else:
+            demisto.debug(f"In set_xsoar_detection_entries not closing and not reopening since {updated_object.get('status')=}  "
+                          f"and {reopen_statuses_set=}.")
 
 
-def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list,
-                                              remote_idp_detection_id: str, incident_type_name: str):
+def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], entries: list, remote_idp_detection_id: str,
+                                              incident_type_name: str, reopen_statuses_list: list):
     """
         Send the updated object to the relevant status handler
 
@@ -2332,15 +2373,23 @@ def set_xsoar_idp_or_mobile_detection_entries(updated_object: dict[str, Any], en
         :param entries: The list of entries to add the new entry into.
         :type remote_idp_detection_id: ``str``
         :param remote_idp_detection_id: the remote idp detection id
+        :type reopen_statuses_list: ``list``
+        :param reopen_statuses_list: the set of statuses that should reopen an incident in XSOAR.
 
         :return: The response.
         :rtype ``dict``
     """
+    reopen_statuses_set = {str(status).lower().strip().replace(' ', '_') for status in reopen_statuses_list} \
+        if reopen_statuses_list else (set(IDP_AND_MOBILE_DETECTION_STATUS) - {'closed'})
+    demisto.debug(f'In set_xsoar_idp_or_mobile_detection_entries {reopen_statuses_set=}')
     if demisto.params().get('close_incident'):
         if updated_object.get('status') == 'closed':
             close_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
-        elif updated_object.get('status') in (set(IDP_AND_MOBILE_DETECTION_STATUS) - {'closed'}):
+        elif updated_object.get('status') in reopen_statuses_set:
             reopen_in_xsoar(entries, remote_idp_detection_id, incident_type_name)
+        else:
+            demisto.debug(f"In set_xsoar_idp_or_mobile_detection_entries not closing and not reopening since "
+                          f"{updated_object.get('status')=}  and {reopen_statuses_set=}.")
 
 
 def close_in_xsoar(entries: list, remote_incident_id: str, incident_type_name: str):
@@ -2712,7 +2761,7 @@ def fetch_incidents():
                                                                id_field='name',
                                                                date_format=DETECTION_DATE_FORMAT,
                                                                new_offset=detections_offset)
-        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch idp_detections. Fetched {len(detections) if detections else 0}")
+        demisto.debug(f"CrowdstrikeFalconMsg: Ending fetch endpoint_detections. Fetched {len(detections) if detections else 0}")
 
     if 'Incidents' in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         incidents_offset: int = current_fetch_info_incidents.get('offset') or 0
@@ -6274,13 +6323,12 @@ def create_gql_client(url_suffix="identity-protection/combined/graphql/v1"):
     kwargs = {
         'url': f"{SERVER}/{url_suffix}",
         'verify': USE_SSL,
-        'retries': 3,
+        'retries': 10,
         'headers': {'Authorization': f'Bearer {get_token()}',
                     "Accept": "application/json",
                     "Content-Type": "application/json"}
     }
     transport = RequestsHTTPTransport(**kwargs)
-    handle_proxy()
     client = Client(
         transport=transport,
         fetch_schema_from_transport=True,

@@ -27,6 +27,7 @@ The CrowdStrike Falcon OAuth 2 API integration (formerly Falcon Firehose API), e
     | Close Mirrored XSOAR Incident | When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident. | False |
     | Close Mirrored CrowdStrike Falcon Incident or Detection | When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored. | False |
     | Fetch types | Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. | False |
+    | Reopen Statuses | Crowdsrike Falcon statuses that will reopen an incident in XSOAR if closed. You can choose any combination. | False |
     | Incidents Fetch Interval |  | False |
     | Advanced: Time in minutes to look back when fetching incidents and detections | Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created. | False |
 
@@ -67,8 +68,8 @@ To setup the mirroring follow these instructions:
 4. In the *Fetch types* integration parameter, select what to mirror - incidents or detections or both.
 5. Optional: You can go to the *Incidents fetch query* or *Detections fetch query* parameter and select the query to fetch the incidents or detections from CrowdStrike Falcon.
 6. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
-    - Incoming - Any changes in CrowdStrike Falcon incidents (`state`, `status`, `tactics`, `techniques`, `objectives`, `tags`, `hosts.hostname`)
-      or detections (`status`, `severity`, `behaviors.tactic`, `behaviors.scenario`, `behaviors.objective`, `behaviors.technique`, `device.hostname`) 
+    - Incoming - Any changes in CrowdStrike Falcon incidents (`state`, `status`, `tactics`, `techniques`, `objectives`, `tags`, `hosts.hostname`, `incident_id`)
+      or detections (`status`, `severity`, `behaviors.tactic`, `behaviors.scenario`, `behaviors.objective`, `behaviors.technique`, `device.hostname`, `detection_id`, `behaviors.display_name`) 
       will be reflected in XSOAR incidents.
     - Outgoing - Any changes in XSOAR incidents will be reflected in CrowdStrike Falcon incidents (`tags`, `status`) or detections (`status`).
     - Incoming And Outgoing - Changes in XSOAR incidents and CrowdStrike Falcon incidents or detections will be reflected in both directions.
@@ -762,7 +763,7 @@ Returns files based on the provided IDs. These files are used for the RTR 'put' 
 ### 12. cs-falcon-list-files
 
 ---
-Returns a list of put-file ID's that are available for the user in the `put` command.
+Returns a list of put-file ID's that are available for the user in the `put` command. Due to an API limitation, the maximum number of files returned is 100.
 
 #### Base Command
 

@@ -29,7 +29,7 @@ class DatetimeEncoder(json.JSONEncoder):
 def create_entry(title: str, data: Union[Dict[str, Any], List[Any]],
                  outputs: Any, outputs_prefix: str) -> CommandResults:
     return CommandResults(entry_type=EntryType.NOTE, content_format=EntryFormat.JSON,
-                          readable_output=tableToMarkdown(title, data) if data else 'No result were found',
+                          readable_output=tableToMarkdown(title, data, removeNull=True) if data else 'No result were found',
                           outputs=outputs,
                           outputs_prefix=outputs_prefix)
 
@@ -192,11 +192,12 @@ def list_resource_record_sets(
         response = aws_session.list_resource_record_sets(**kwargs)
         records = response['ResourceRecordSets']
         for record in records:
+            resource_records = record.get("ResourceRecords") or []
             data.append({
-                'Name': record['Name'],
-                'Type': record['Type'],
-                'TTL': record['TTL'],
-                'ResourceRecords': record['ResourceRecords'][0]['Value']
+                'Name': record.get('Name'),
+                'Type': record.get('Type'),
+                'TTL': record.get('TTL'),
+                'ResourceRecords': resource_records[0]['Value'] if resource_records else None
             })
         output = json.loads(json.dumps(response['ResourceRecordSets'], cls=DatetimeEncoder))
         return create_entry('AWS Route53 Record Sets', data, output, 'AWS.Route53.RecordSets')

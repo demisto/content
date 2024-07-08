@@ -1,0 +1,38 @@
+{
+    "created_at": "2023-09-10T08:23:45.123456Z",
+    "email": "john.doe@example.com",
+    "last_login": "2024-05-28T15:20:30.987654Z",
+    "logins_count": 123,
+    "name": "John Doe",
+    "nickname": "johndoe123",
+    "updated_at": "2024-05-28T15:20:30.987654Z",
+    "user_id": "local|1a2b3c4d5e6f7g8h9i0j",
+    "username": "johndoe",
+    "user_metadata": {
+        "current_domain": {
+            "id": "12345678-1234-5678-9abc-def012345678",
+            "name": "example_domain"
+        }
+    },
+    "failed_logins_count": 0,
+    "account_lockout_at": null,
+    "failed_logins_initial_attempt_at": null,
+    "last_failed_login_at": null,
+    "password_changed_at": "2023-09-10T08:23:45.123456Z",
+    "password_change_required": false,
+    "certificate_subject_dn": "",
+    "enable_cert_auth": false,
+    "auth_domain": "12345678-1234-5678-9abc-def012345678",
+    "login_flags": {
+        "prevent_ui_login": false
+    },
+    "auth_domain_name": "example_domain",
+    "allowed_auth_methods": [
+        "password"
+    ],
+    "allowed_client_types": [
+        "unregistered",
+        "public",
+        "confidential"
+    ]
+}

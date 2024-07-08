@@ -29,6 +29,7 @@ This integration was integrated and tested with version 2.6.5 of Cortex XDR - IR
     | Prevent Only Mode                                                                | Whether the XDR tenant Mode is prevent only                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     | False        |
     | Incident Statuses to Fetch                                                       | The statuses of the incidents that will be fetched. If no status is provided then incidents of all the statuses will be fetched. Note: An incident whose status was changed to a filtered status after its creation time will not be fetched.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | False        |
     | Incidents Fetch Interval                                                         |                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | False        |
+    | Close all related alerts in XDR | Close all related alerts in Cortex XDR once an incident has been closed in Cortex XSOAR. | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -230,22 +231,22 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| lte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or before the specified date/time will be retrieved. | Optional | 
-| gte_creation_time | A date in the format 2019-12-31T23:59:00. Only incidents that were created on or after the specified date/time will be retrieved. | Optional | 
-| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00. | Optional | 
-| incident_id_list | An array or CSV string of incident IDs. | Optional | 
-| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on. | Optional | 
-| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc. | Optional | 
-| page | Page number (for pagination). The default is 0 (the first page). Default is 0. | Optional | 
-| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100. | Optional | 
+| **Argument Name** | **Description**                                                                                                                                                                                                            | **Required** |
+| --- |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| lte_creation_time | A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or before the specified date/time will be retrieved.                                                                                  | Optional | 
+| gte_creation_time | A date in the format 2019-12-31T23:59:00 in UTC. Only incidents that were created on or after the specified date/time will be retrieved.                                                                                          | Optional | 
+| lte_modification_time | Filters returned incidents that were created on or before the specified date/time, in the format 2019-12-31T23:59:00.                                                                                                      | Optional | 
+| gte_modification_time | Filters returned incidents that were modified on or after the specified date/time, in the format 2019-12-31T23:59:00.                                                                                                      | Optional | 
+| incident_id_list | An array or CSV string of incident IDs.                                                                                                                                                                                    | Optional | 
+| since_creation_time | Filters returned incidents that were created on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.                                                                                   | Optional | 
+| since_modification_time | Filters returned incidents that were modified on or after the specified date/time range, for example, 1 month, 2 days, 1 hour, and so on.                                                                                  | Optional | 
+| sort_by_modification_time | Sorts returned incidents by the date/time that the incident was last modified ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                    | Optional | 
+| sort_by_creation_time | Sorts returned incidents by the date/time that the incident was created ("asc" - ascending, "desc" - descending). Possible values are: asc, desc.                                                                          | Optional | 
+| page | Page number (for pagination). The default is 0 (the first page). Default is 0.                                                                                                                                             | Optional | 
+| limit | Maximum number of incidents to return per page. The default and maximum is 100. Default is 100.                                                                                                                            | Optional | 
 | status | Filters only incidents in the specified status. The options are: new, under_investigation, resolved_known_issue, resolved_false_positive, resolved_true_positive resolved_security_testing, resolved_other, resolved_auto. | Optional | 
-| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false. | Optional | 
-| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days. | Optional | 
+| starred | Whether the incident is starred (Boolean value: true or false). Possible values are: true, false.                                                                                                                          | Optional | 
+| starred_incidents_fetch_window | Starred fetch window timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). Default is 3 days.                                                                                                              | Optional | 
 
 
 #### Context Output
@@ -313,13 +314,13 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
             "description": "'test 1' generated by Virus Total - Firewall", 
             "severity": "medium", 
             "modification_time": 1579237974014, 
-            "assigned_user_pretty_name": "woo@demisto.com", 
+            "assigned_user_pretty_name": "woo@test.com", 
             "notes": null, 
             "creation_time": 1576100096594, 
             "alert_count": 1, 
             "med_severity_alert_count": 0, 
             "detection_time": null, 
-            "assigned_user_mail": "woo@demisto.com", 
+            "assigned_user_mail": "woo@test.com", 
             "resolve_comment": null, 
             "status": "new", 
             "user_count": 1, 
@@ -360,11 +361,11 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 
 >### Incidents
 
->|alert_count|assigned_user_mail|assigned_user_pretty_name|creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 5 |  |  | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
->| 1 | woo@demisto.com | woo@demisto.com | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
->| 2 |  |  | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
+>|alert_count| assigned_user_mail | assigned_user_pretty_name |creation_time|description|detection_time|high_severity_alert_count|host_count|incident_id|low_severity_alert_count|manual_description|manual_severity|med_severity_alert_count|modification_time|notes|resolve_comment|severity|starred|status|user_count|xdr_url|
+>|---|--------------------|---------------------------|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 5 |                    |                           | 1577276587937 | 5 'This alert from content  TestXDRPlaybook' alerts detected by Checkpoint - SandBlast   |  | 4 | 1 | 4 | 0 |  | medium | 1 | 1579290004178 |  | This issue was solved in Incident number 192304 | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/4` |
+>| 1 | woo@test.com       | woo@test.com              | 1576100096594 | 'test 1' generated by Virus Total - Firewall |  | 1 | 1 | 3 | 0 |  | medium | 0 | 1579237974014 |  |  | medium | false | new | 1 | `https://some.xdr.url.com/incident-view/3` |
+>| 2 |                    |                           | 1576062816474 | 'Alert Name Example 333' along with 1 other alert generated by Virus Total - VPN & Firewall-3 and Checkpoint - SandBlast |  | 2 | 1 | 2 | 0 |  | high | 0 | 1579288790259 |  |  | high | false | under_investigation | 1 | `https://some.xdr.url.com/incident-view/2` |
 
 
 ### xdr-get-incident-extra-data
@@ -548,7 +549,7 @@ Builtin Roles with this permission includes: "Investigator", "Privileged Investi
 | incident_id | XDR incident ID. You can get the incident ID from the output of the 'xdr-get-incidents' command or the 'xdr-get-incident-extra-details' command. | Required | 
 | manual_severity | Severity to assign to the incident (LOW, MEDIUM, or HIGH). Possible values are: HIGH, MEDIUM, LOW. | Optional | 
 | assigned_user_mail | Email address of the user to assign to the incident. | Optional | 
-| assigned_user_pretty_name | Full name of the user assigned to the incident. | Optional | 
+| assigned_user_pretty_name | Full name of the user assigned to the incident. To supply a new value in this field, you must also provide a value for the 'assigned_user_mail' argument. | Optional | 
 | status | Status of the incident. Valid values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. Possible values are: NEW, UNDER_INVESTIGATION, RESOLVED_KNOWN_ISSUE, RESOLVED_DUPLICATE, RESOLVED_FALSE_POSITIVE, RESOLVED_TRUE_POSITIVE, RESOLVED_SECURITY_TESTING, RESOLVED_OTHER. | Optional | 
 | resolve_comment | Comment explaining why the incident was resolved. This should be set when the incident is resolved. | Optional | 
 | unassign_user | If true, will remove all assigned users from the incident. Possible values are: true. | Optional | 
@@ -2446,8 +2447,8 @@ Builtin Roles with this permission includes: "Investigator", "Responder", "Privi
 | sort_order | The order in which we sort the results. Possible values are: DESC, ASC. | Optional | 
 | offset | The first page from which we bring the alerts. Default is 0. | Optional | 
 | limit | The last page from which we bring the alerts. Default is 50. | Optional | 
-| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
-| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss.000Z). | Optional | 
+| start_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
+| end_time | Relevant when "time_frame" argument is "custom". Supports Epoch timestamp and simplified extended ISO format (YYYY-MM-DDThh:mm:ss). | Optional | 
 | starred | Whether the alert is starred or not. Possible values are: true, false. | Optional | 
 | mitre_technique_id_and_name | The MITRE attack technique. | Optional | 
 
@@ -3839,3 +3840,33 @@ There is no context output for this command.
 
 >The endpoint alias was changed successfully.
 Note: If there is no error in the process, then this is the output even when the specific endpoint does not exist.
+
+### xdr-update-alert
+
+***
+Update one or more alerts. You can update up to 100 alerts per request. Missing fields are ignored. Required license: Cortex XDR Prevent, Cortex XDR Pro per Endpoint, or Cortex XDR Pro per GB.
+
+#### Base Command
+
+`xdr-update-alert`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| alert_ids | Comma-separated list of alert IDs. | Required | 
+| severity | Severity of the incident which was closed. Possible values are: critical, high, medium, low. | Optional | 
+| status | New status for updated alerts. Possible values are: new, resolved_threat_handled, under_investigation, resolved_security_testing, resolved_auto, resolved_known_issue, resolved_duplicate, resolved_other, resolved_false_positive, resolved_true_positive. | Optional | 
+| comment | Comment to append to updated alerts. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!xdr-update-alert alert_ids=35326 severity=low```
+
+#### Human Readable Output
+
+>Alerts with IDs 35326 have been updated successfully.
+
+

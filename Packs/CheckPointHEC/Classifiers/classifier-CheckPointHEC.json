@@ -1,0 +1,28 @@
+{
+    "description": "CheckPointHEC Classifier to CheckPointHEC Security Event Type",
+    "feed": false,
+    "id": "CheckPointHEC Classifier",
+    "keyTypeMap": {
+        "anomaly": "CheckPointHEC Security Event",
+        "alert": "CheckPointHEC Security Event",
+        "dlp": "CheckPointHEC Security Event",
+        "malicious_url": "CheckPointHEC Security Event",
+        "malicious_url_click": "CheckPointHEC Security Event",
+        "malware": "CheckPointHEC Security Event",
+        "phishing": "CheckPointHEC Security Event",
+        "shadow_it": "CheckPointHEC Security Event",
+        "suspicious_phishing": "CheckPointHEC Security Event",
+        "suspicious_malware": "CheckPointHEC Security Event",
+        "spam": "CheckPointHEC Security Event"
+    },
+    "name": "CheckPointHEC Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

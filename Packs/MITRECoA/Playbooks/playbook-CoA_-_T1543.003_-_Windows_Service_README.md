@@ -51,4 +51,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1543.003 - Windows Service](../doc_files/MITRE_ATT&CK_CoA_-_T1543.003_-_Windows_Service.png)
+![MITRE ATT&CK CoA - T1543.003 - Windows Service](../doc_files/MITRE_ATTandCK_CoA_-_T1543_003_-_Windows_Service.png)

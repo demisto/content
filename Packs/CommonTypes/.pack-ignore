@@ -204,6 +204,9 @@ ignore=IF115
 [file:incidentfield-Alert_Source.json]
 ignore=IF100
 
+[file:incidentfield-Alert_Rules.json]
+ignore=IF100
+
 [file:incidentfield-Use_Case_Description.json]
 ignore=IF100
 

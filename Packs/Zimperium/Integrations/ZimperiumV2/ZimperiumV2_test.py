@@ -362,7 +362,7 @@ def test_fetch_incidents_first_run(client, requests_mock):
     )
 
     assert len(incidents) == 2
-    assert next_run['time'] == '2023-12-12T14:59:26.000000Z'
+    assert next_run['time'] == '2023-12-12T14:59:26.000Z'
 
 
 @freeze_time("2023-12-12 15:00:00 GTM")
@@ -389,7 +389,7 @@ def test_fetch_incidents_last_run_not_empty(client, requests_mock):
     )
 
     assert len(incidents) == 1
-    assert next_run['time'] == '2023-12-12T14:59:26.000000Z'
+    assert next_run['time'] == '2023-12-12T14:59:26.000Z'
 
 
 @freeze_time("2023-12-12 15:00:00 GTM")
@@ -416,7 +416,7 @@ def test_fetch_incidents_no_new_incidents(client, requests_mock):
     )
 
     assert len(incidents) == 0
-    assert next_run['time'] == '2023-12-12T15:00:00.000000Z'
+    assert next_run['time'] == '2023-12-12T15:00:00.000Z'
 
 
 @pytest.mark.parametrize('proxy, result', [('true', True), ('false', False)])

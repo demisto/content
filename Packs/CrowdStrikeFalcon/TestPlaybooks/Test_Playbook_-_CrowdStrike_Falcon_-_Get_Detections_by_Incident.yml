@@ -254,7 +254,7 @@ tasks:
                 iscontext: true
           accessor: incident_id
           transformers:
-          - operator: FirstArrayElement
+          - operator: LastArrayElement
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -266,7 +266,7 @@ tasks:
       {
         "position": {
           "x": -400,
-          "y": -3330
+          "y": -3320
         }
       }
     note: false
@@ -386,17 +386,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "262"
-      - "292"
-      - "251"
-      - "253"
+      - "368"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -400,
-          "y": -2510
+          "x": -650,
+          "y": -2575
         }
       }
     note: false
@@ -3805,6 +3802,83 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "368":
+    id: "368"
+    taskid: 209143a5-bb32-4dcc-8413-f7e954b538ca
+    type: condition
+    task:
+      id: 209143a5-bb32-4dcc-8413-f7e954b538ca
+      version: -1
+      name: CrowdStrike.FoundDetections is False
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "369"
+      "yes":
+      - "251"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: CrowdStrike
+                accessor: FoundDetections
+            iscontext: true
+          right:
+            value:
+              simple: "False"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1630,
+          "y": -1410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "369":
+    id: "369"
+    taskid: 85b11c59-0148-4fbf-8831-a4a91a351035
+    type: title
+    task:
+      id: 85b11c59-0148-4fbf-8831-a4a91a351035
+      version: -1
+      name: No Detections was found
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "253"
+      - "262"
+      - "292"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -1560,
+          "y": -1180
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3850,8 +3924,8 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 4310,
-        "width": 6470,
-        "x": -400,
+        "width": 7700,
+        "x": -1630,
         "y": -3955
       }
     }

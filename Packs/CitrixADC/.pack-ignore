@@ -1,3 +1,7 @@
 [file:CitrixADC_1_3.yml]
 ignore=MR108,PR101
 
+[known_words]
+Citrix
+ADC
+

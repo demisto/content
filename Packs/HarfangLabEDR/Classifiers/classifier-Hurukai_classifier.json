@@ -1,0 +1,20 @@
+{
+    "defaultIncidentType": "Hurukai threat",
+    "description": "",
+    "feed": false,
+    "id": "Hurukai classifier",
+    "keyTypeMap": {
+        "Hurukai alert": "Hurukai alert",
+        "Hurukai threat": "Hurukai threat"
+    },
+    "name": "Hurukai classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "incident_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

@@ -1,20 +1,20 @@
 id: DeleteContext-test
-version: -1
+version: 8
+vcShouldKeepItemLegacyProdMachine: false
 name: DeleteContext-test
 description: 'Testing DeleteContext automation.'
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 47a39e51-a802-416f-88ea-3e1fdc46479c
+    taskid: 9c8be592-ad95-4c1a-8f25-12ddd71fb5ae
     type: start
     task:
-      id: 47a39e51-a802-416f-88ea-3e1fdc46479c
+      id: 9c8be592-ad95-4c1a-8f25-12ddd71fb5ae
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "6"
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 481f82e8-46a8-4097-8ef9-616f29c55593
+    taskid: bc1776f3-8db6-43b6-8929-6bd0264396ec
     type: regular
     task:
-      id: 481f82e8-46a8-4097-8ef9-616f29c55593
+      id: bc1776f3-8db6-43b6-8929-6bd0264396ec
       version: -1
       name: 'Set key #1'
       description: Sets a value into the context with the given context key
@@ -74,10 +74,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: a7845012-d219-418f-8214-d9bdf27d38d4
+    taskid: 602c58bc-685b-4063-8614-669886d221fd
     type: regular
     task:
-      id: a7845012-d219-418f-8214-d9bdf27d38d4
+      id: 602c58bc-685b-4063-8614-669886d221fd
       version: -1
       name: 'Delete all keys except '
       description: Delete field from context
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 00c4f368-ee94-4c65-800a-4bd7e2b4ca02
+    taskid: 8581c22b-d5c9-4475-87a1-b525dbdef3d1
     type: condition
     task:
-      id: 00c4f368-ee94-4c65-800a-4bd7e2b4ca02
+      id: 8581c22b-d5c9-4475-87a1-b525dbdef3d1
       version: -1
       name: Check if excluded key exists
       type: condition
@@ -129,14 +129,14 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: isEqualString
           left:
             value:
               simple: key2.key2_1
             iscontext: true
           right:
             value:
-              simple: '"value2_1" '
+              simple: value2_1
       - - operator: isExists
           left:
             value:
@@ -159,10 +159,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a2d62678-d1ea-4289-84d2-9ff08ca753b1
+    taskid: a19da4e2-47b4-4948-8a90-be6c68fd6e0a
     type: regular
     task:
-      id: a2d62678-d1ea-4289-84d2-9ff08ca753b1
+      id: a19da4e2-47b4-4948-8a90-be6c68fd6e0a
       version: -1
       name: FAIL - Excluded key deleted
       description: Prints an error entry with a given message
@@ -191,10 +191,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: f4c7c939-7a9c-4a0e-8492-623988fa5af3
+    taskid: 34fec89a-2150-4686-8026-a6b8991c2d00
     type: title
     task:
-      id: f4c7c939-7a9c-4a0e-8492-623988fa5af3
+      id: 34fec89a-2150-4686-8026-a6b8991c2d00
       version: -1
       name: all good
       description: Prints text to war room (Markdown supported)
@@ -219,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 5379d481-4472-416e-87f1-d9cfdb69060d
+    taskid: f99db4d0-904a-44c5-8a34-19662fca7e77
     type: regular
     task:
-      id: 5379d481-4472-416e-87f1-d9cfdb69060d
+      id: f99db4d0-904a-44c5-8a34-19662fca7e77
       version: -1
       name: Print current playbook id
       description: Prints text to war room (Markdown supported)
@@ -251,10 +251,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 193b8b89-6608-427a-8b74-1f36012bd170
+    taskid: aa565577-547b-46e3-81ef-2860423b8647
     type: regular
     task:
-      id: 193b8b89-6608-427a-8b74-1f36012bd170
+      id: aa565577-547b-46e3-81ef-2860423b8647
       version: -1
       name: 'Set key #2'
       description: Sets a value into the context with the given context key
@@ -288,10 +288,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: be85f1fe-913a-4456-84f1-fe40d5ff2a64
+    taskid: 223c9463-0dee-457d-8020-e6c0b1c46525
     type: regular
     task:
-      id: be85f1fe-913a-4456-84f1-fe40d5ff2a64
+      id: 223c9463-0dee-457d-8020-e6c0b1c46525
       version: -1
       name: Set object key
       description: Set a value in context under the key you entered.
@@ -327,10 +327,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 9ef222c3-30b9-4b4b-8473-2c70842da3c1
+    taskid: 7d5be9c7-a10d-415a-871a-704f5936b7d9
     type: regular
     task:
-      id: 9ef222c3-30b9-4b4b-8473-2c70842da3c1
+      id: 7d5be9c7-a10d-415a-871a-704f5936b7d9
       version: -1
       name: Delete object key
       description: |-
@@ -369,10 +369,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 7a5f0b52-c88f-4fcb-8d2f-228b7887b18f
+    taskid: 8814b33b-a61a-4b41-8cfe-3d468d26c635
     type: condition
     task:
-      id: 7a5f0b52-c88f-4fcb-8d2f-228b7887b18f
+      id: 8814b33b-a61a-4b41-8cfe-3d468d26c635
       version: -1
       name: Check if object key deleted
       type: condition
@@ -411,10 +411,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 0e64f19c-0b02-4d1d-8698-32dba5fddc6a
+    taskid: 882a0eb2-86dc-4a99-80be-234fa398b91d
     type: regular
     task:
-      id: 0e64f19c-0b02-4d1d-8698-32dba5fddc6a
+      id: 882a0eb2-86dc-4a99-80be-234fa398b91d
       version: -1
       name: FAIL - Object key not deleted
       description: Prints an error entry with a given message.
@@ -443,10 +443,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 55137319-0962-401c-8b9d-0e58b812fdbf
+    taskid: 83631094-d5a4-42d9-8c5f-d1e027e43ce8
     type: regular
     task:
-      id: 55137319-0962-401c-8b9d-0e58b812fdbf
+      id: 83631094-d5a4-42d9-8c5f-d1e027e43ce8
       version: -1
       name: 'Set key #3'
       description: Sets a value into the context with the given context key
@@ -480,10 +480,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 937ec50b-cb3c-43a1-898d-66f6ec65c949
+    taskid: e3aea8d2-1884-43be-80b1-7f8ad0d97604
     type: regular
     task:
-      id: 937ec50b-cb3c-43a1-898d-66f6ec65c949
+      id: e3aea8d2-1884-43be-80b1-7f8ad0d97604
       version: -1
       name: 'Set key #4'
       description: Sets a value into the context with the given context key
@@ -517,10 +517,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 79235338-4164-4384-8b8c-387ffda79396
+    taskid: 09fe4449-af00-4842-84c7-7c500f64fa40
     type: regular
     task:
-      id: 79235338-4164-4384-8b8c-387ffda79396
+      id: 09fe4449-af00-4842-84c7-7c500f64fa40
       version: -1
       name: Delete csv keys
       description: |-
@@ -557,10 +557,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 6245fb84-ee99-4460-8db6-a849a73cd835
+    taskid: 630b55d4-2737-46a9-84f4-8efad3f56c8d
     type: condition
     task:
-      id: 6245fb84-ee99-4460-8db6-a849a73cd835
+      id: 630b55d4-2737-46a9-84f4-8efad3f56c8d
       version: -1
       name: ' Check if key deleted #1'
       type: condition
@@ -597,10 +597,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 8db0814f-76d3-47b8-8ff4-59ceb9a5b3ed
+    taskid: c44295fa-715c-4b93-8549-65c780887929
     type: regular
     task:
-      id: 8db0814f-76d3-47b8-8ff4-59ceb9a5b3ed
+      id: c44295fa-715c-4b93-8549-65c780887929
       version: -1
       name: FAIL - Check keys deleted
       description: Prints an error entry with a given message.
@@ -629,10 +629,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 3e65e605-c278-4a33-83c3-4e67da047267
+    taskid: b8893174-f8e0-4732-8096-6b1e0d353a51
     type: condition
     task:
-      id: 3e65e605-c278-4a33-83c3-4e67da047267
+      id: b8893174-f8e0-4732-8096-6b1e0d353a51
       version: -1
       name: 'Check if key deleted #2'
       type: condition
@@ -640,7 +640,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "5"
+      - "20"
       "yes":
       - "16"
     separatecontext: false
@@ -671,16 +671,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: b7564b93-12d0-45cc-860f-f36c08e0d419
+    taskid: a0733baf-2c9e-4107-8278-48b34f60326b
     type: title
     task:
-      id: b7564b93-12d0-45cc-860f-f36c08e0d419
+      id: a0733baf-2c9e-4107-8278-48b34f60326b
       version: -1
       name: DISABLED - Can not set & delete an object key
       type: title
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "8"
@@ -691,6 +690,74 @@ tasks:
         "position": {
           "x": -40,
           "y": 2005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: e64a3f12-5537-4e1c-8255-2082e78f4441
+    type: regular
+    task:
+      id: e64a3f12-5537-4e1c-8255-2082e78f4441
+      version: -1
+      name: Test py script - executeCommand 'DeleteContext'
+      scriptName: test-executecommand-deletecontext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2325
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 9290362a-d8b3-42c8-8ae0-bac11d638c1d
+    type: regular
+    task:
+      id: 9290362a-d8b3-42c8-8ae0-bac11d638c1d
+      version: -1
+      name: 'Set key #5'
+      description: Sets a value into the context with the given context key
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    scriptarguments:
+      key:
+        simple: key5
+      value:
+        simple: value5
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2105
         }
       }
     note: false
@@ -717,4 +784,4 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.10.0
+fromversion: 6.9.0

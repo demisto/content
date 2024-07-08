@@ -6,10 +6,10 @@ starttaskid: '0'
 tasks:
   '0':
     id: '0'
-    taskid: 51f75382-1305-4354-8979-49a204553bbd
+    taskid: e8d9de22-8cb1-45cb-8336-7a3634a2eaef
     type: start
     task:
-      id: 51f75382-1305-4354-8979-49a204553bbd
+      id: e8d9de22-8cb1-45cb-8336-7a3634a2eaef
       version: -1
       name: ''
       iscommand: false
@@ -23,8 +23,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 50
+          "x": 510,
+          "y": 20
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '3':
     id: '3'
-    taskid: d2a675b7-aab6-4178-827f-689b608a0cd0
+    taskid: 4d5d4d16-ec25-4600-8aa3-9db0085d2be4
     type: condition
     task:
-      id: d2a675b7-aab6-4178-827f-689b608a0cd0
+      id: 4d5d4d16-ec25-4600-8aa3-9db0085d2be4
       version: -1
       name: What provider is this service?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -53,6 +53,8 @@ tasks:
       - '10'
       Azure:
       - '6'
+      Cortex Endpoint:
+      - '13'
       GCP:
       - '9'
       On Prem:
@@ -127,12 +129,29 @@ tasks:
           right:
             value:
               simple: On Prem
+    - label: Cortex Endpoint
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: alert.asmsystemids
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: alert.asmsystemids.type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: CORTEX-ENDPOINT-ASSET-ID
+            iscontext: true
     continueonerrortype: ''
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 235
+          "x": 510,
+          "y": 170
         }
       }
     note: false
@@ -144,10 +163,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '4':
     id: '4'
-    taskid: ae695e07-cbca-4f09-8b68-cffb4378a93d
+    taskid: 025137d8-71d5-4a03-87fc-593dc78f0167
     type: title
     task:
-      id: ae695e07-cbca-4f09-8b68-cffb4378a93d
+      id: 025137d8-71d5-4a03-87fc-593dc78f0167
       version: -1
       name: Completed
       type: title
@@ -159,8 +178,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 860
+          "x": 510,
+          "y": 1060
         }
       }
     note: false
@@ -172,17 +191,24 @@ tasks:
     isautoswitchedtoquietmode: false
   '6':
     id: '6'
-    taskid: c510a13b-9767-4f1f-807a-3ab0e5651644
+    taskid: 8755ee7e-a021-424c-8a4c-0159367c490a
     type: playbook
     task:
-      id: c510a13b-9767-4f1f-807a-3ab0e5651644
+      id: 8755ee7e-a021-424c-8a4c-0159367c490a
       version: -1
       name: Azure - Network Security Group Remediation
-      description: "This playbook adds new Azure Network Security Groups (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allows traffic from private IP address and blocks the rest of the RDP traffic.\n\nConditions and limitations:\n- Limited to one resource group.\n- 200 Azure rules viewed at once to find the offending rule.\n- 2 priorities lower than the offending rule priority must be available.\n- Adds rules to NSGs associated to NICs."
-      playbookName: Azure - Network Security Group Remediation
+      description: |-
+        This playbook adds new Azure Network Security Groups (NSG) rules to NSGs attached to a NIC. The new rules will give access only to a private IP address range and block traffic that's exposed to the public internet ([using the private IP of the VM as stated in Azure documentation](https://learn.microsoft.com/en-us/azure/virtual-network/network-security-groups-overview)). For example, if RDP is exposed to the public internet, this playbook adds new firewall rules that only allow traffic from private IP addresses and blocks the rest of the RDP traffic.
+
+        Conditions and limitations:
+        - Limited to one resource group.
+        - 200 Azure rules viewed at once to find offending rule.
+        - 2 priorities lower than the offending rule priority must be available.
+        - Adds rules to NSGs associated to NICs.
       type: playbook
       iscommand: false
       brand: ''
+      playbookId: Azure - Network Security Group Remediation
     nexttasks:
       '#none#':
       - '4'
@@ -212,12 +238,7 @@ tasks:
               right:
                 value:
                   simple: Azure
-          transformers:
-          - operator: getField
-            args:
-              field:
-                value:
-                  simple: IP
+          accessor: ip
       RemotePort:
         complex:
           root: alert
@@ -226,6 +247,8 @@ tasks:
         complex:
           root: alert
           accessor: protocol
+      RemediationAllowRanges:
+        simple: 172.16.0.0/12,10.0.0.0/8,192.168.0.0/16
     separatecontext: true
     continueonerrortype: ''
     loop:
@@ -236,8 +259,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1100,
-          "y": 450
+          "x": 1070,
+          "y": 560
         }
       }
     note: false
@@ -249,17 +272,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '7':
     id: '7'
-    taskid: bf0705bb-bdd5-4ba7-808a-e735b2396319
+    taskid: 4a5a1b3f-8f19-486d-8778-6bdadca1adc9
     type: playbook
     task:
-      id: bf0705bb-bdd5-4ba7-808a-e735b2396319
+      id: 4a5a1b3f-8f19-486d-8778-6bdadca1adc9
       version: -1
       name: AWS - Unclaimed S3 Bucket Remediation
       description: The playbook will create the unclaimed S3 bucket.
-      playbookName: AWS - Unclaimed S3 Bucket Remediation
       type: playbook
       iscommand: false
       brand: ''
+      playbookId: AWS - Unclaimed S3 Bucket Remediation
     nexttasks:
       '#none#':
       - '4'
@@ -287,8 +310,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 220,
-          "y": 470
+          "x": 0,
+          "y": 550
         }
       }
     note: false
@@ -300,17 +323,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '8':
     id: '8'
-    taskid: 00322392-5990-499f-8924-dca8422cb81e
+    taskid: ac918c29-4d5f-48b5-8060-94a4c15cc060
     type: playbook
     task:
-      id: 00322392-5990-499f-8924-dca8422cb81e
+      id: ac918c29-4d5f-48b5-8060-94a4c15cc060
       version: -1
       name: AWS - Security Group Remediation v2
       description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive. It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
-      playbookName: AWS - Security Group Remediation v2
       type: playbook
       iscommand: false
       brand: ''
+      playbookId: AWS - Security Group Remediation v2
     nexttasks:
       '#none#':
       - '4'
@@ -358,8 +381,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -30,
-          "y": 680
+          "x": -260,
+          "y": 835
         }
       }
     note: false
@@ -371,16 +394,16 @@ tasks:
     isautoswitchedtoquietmode: false
   '9':
     id: '9'
-    taskid: c99909d1-19d5-4bdd-8e05-b65991ee850c
+    taskid: 3bfc76d9-be4e-4402-84eb-1b09f3af599f
     type: playbook
     task:
-      id: c99909d1-19d5-4bdd-8e05-b65991ee850c
+      id: 3bfc76d9-be4e-4402-84eb-1b09f3af599f
       version: -1
       name: GCP - Firewall Remediation
-      playbookName: GCP - Firewall Remediation
       type: playbook
       iscommand: false
       brand: ''
+      playbookId: GCP - Firewall Remediation
       description: ''
     nexttasks:
       '#none#':
@@ -449,8 +472,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 680,
-          "y": 470
+          "x": 740,
+          "y": 750
         }
       }
     note: false
@@ -462,10 +485,10 @@ tasks:
     isautoswitchedtoquietmode: false
   '10':
     id: '10'
-    taskid: 244da719-dd83-4ef4-801a-5e009d79259a
+    taskid: 7c022be5-c22d-4413-854c-d2a87249e532
     type: condition
     task:
-      id: 244da719-dd83-4ef4-801a-5e009d79259a
+      id: 7c022be5-c22d-4413-854c-d2a87249e532
       version: -1
       name: Is AWSAssumeRoleName Input defined?
       description: Determines which cloud provider the service is in order to direct to the correct enrichment.
@@ -491,8 +514,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -210,
-          "y": 450
+          "x": -260,
+          "y": 400
         }
       }
     note: false
@@ -504,17 +527,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '11':
     id: '11'
-    taskid: 0efa486c-40f7-440f-8ff2-fd9202e5f5a7
+    taskid: 85ddd43d-66b3-48f5-8861-a1c60e51024e
     type: playbook
     task:
-      id: 0efa486c-40f7-440f-8ff2-fd9202e5f5a7
+      id: 85ddd43d-66b3-48f5-8861-a1c60e51024e
       version: -1
       name: AWS - Security Group Remediation v2
       description: This playbook takes in some information about an EC2 instance (ID and public_ip) and with provided port and protocol, determines what security groups on the primary interface of an EC2 instance are over-permissive.  It uses an automation to determine what interface on an EC2 instance has an over-permissive security group on, determine which security groups have over-permissive rules and to replace them with a copy of the security group that has only the over-permissive portion removed.  Over-permissive is defined as sensitive ports (SSH, RDP, etc) being exposed to the internet via IPv4.
-      playbookName: AWS - Security Group Remediation v2
       type: playbook
       iscommand: false
       brand: ''
+      playbookId: AWS - Security Group Remediation v2
     nexttasks:
       '#none#':
       - '4'
@@ -583,8 +606,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -460,
-          "y": 680
+          "x": -510,
+          "y": 655
         }
       }
     note: false
@@ -596,17 +619,17 @@ tasks:
     isautoswitchedtoquietmode: false
   '12':
     id: '12'
-    taskid: 1787656d-ba63-465a-8f31-b8dfa60fe177
+    taskid: 0300188b-1a4f-4da1-8d6f-559597a8873c
     type: playbook
     task:
-      id: 1787656d-ba63-465a-8f31-b8dfa60fe177
+      id: 0300188b-1a4f-4da1-8d6f-559597a8873c
       version: -1
       name: Cortex ASM - On Prem Remediation
       description: "This playbook adds new block rule(s) to on-prem firewall vendors in order to block internet access for internet exposures.\n\nConditions:\nThis is currently limited to stand-alone firewalls for PAN-OS."
-      playbookName: Cortex ASM - On Prem Remediation
       type: playbook
       iscommand: false
       brand: ''
+      playbookId: Cortex ASM - On Prem Remediation
     nexttasks:
       '#none#':
       - '4'
@@ -674,8 +697,64 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1520,
-          "y": 420
+          "x": 1300,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  '13':
+    id: '13'
+    taskid: 56f329df-f61c-49b0-8b5d-048a4330f190
+    type: playbook
+    task:
+      id: 56f329df-f61c-49b0-8b5d-048a4330f190
+      version: -1
+      name: Cortex ASM - Cortex Endpoint Remediation
+      type: playbook
+      iscommand: false
+      brand: ''
+      playbookId: Cortex ASM - Cortex Endpoint Remediation
+      description: ''
+    nexttasks:
+      '#none#':
+      - '4'
+    scriptarguments:
+      CortexEndpointID:
+        complex:
+          root: alert.asmsystemids
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: alert.asmsystemids.type
+                iscontext: true
+              right:
+                value:
+                  simple: CORTEX-ENDPOINT-ASSET-ID
+          transformers:
+          - operator: getField
+            args:
+              field:
+                value:
+                  simple: id
+    separatecontext: true
+    continueonerrortype: ''
+    loop:
+      iscommand: false
+      exitCondition: ''
+      wait: 1
+      max: 0
+    view: |-
+      {
+        "position": {
+          "x": 300,
+          "y": 750
         }
       }
     note: false
@@ -690,10 +769,10 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 875,
-        "width": 2360,
-        "x": -460,
-        "y": 50
+        "height": 1105,
+        "width": 2190,
+        "x": -510,
+        "y": 20
       }
     }
   }

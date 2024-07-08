@@ -51,4 +51,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Prisma Cloud Compute - ServiceNow Ticket (HTML Table)](../doc_files/Prisma_Cloud_Compute_-_ServiceNow_Ticket_(HTML_Table).png)
+![Prisma Cloud Compute - ServiceNow Ticket (HTML Table)](../doc_files/Prisma_Cloud_Compute_-_ServiceNow_Ticket_HTML_Table.png)

@@ -1,4 +1,4 @@
-Get scan info from Check Point Smart API
+Get scan info from Check Point Smart API.
 
 ## Script Data
 
@@ -15,6 +15,7 @@ Get scan info from Check Point Smart API
 This script uses the following commands and scripts.
 
 * checkpointhec-get-scan-info
+* CheckPointHEC
 
 ## Inputs
 
