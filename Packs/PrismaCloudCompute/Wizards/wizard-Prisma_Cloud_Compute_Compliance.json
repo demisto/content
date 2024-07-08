@@ -101,6 +101,9 @@
       "set_playbook": [
         {
           "name": "Prisma Cloud Compute - Compliance Alert v2"
+        },
+        {
+            "name": "Prisma Cloud Compute - Audit Alert v3"
         }
       ],
       "supporting_integrations": [
