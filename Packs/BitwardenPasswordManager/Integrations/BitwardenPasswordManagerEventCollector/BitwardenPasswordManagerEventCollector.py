@@ -65,10 +65,10 @@ class Client(BaseClient):
         })
 
     def get_events(self, start_date: str = '', continuation_token: str = '') -> dict:
-        params = {
-            'start': start_date,
-            'continuationToken': continuation_token
-        }
+        if continuation_token:
+            params = {'continuationToken': continuation_token}
+        else:
+            params = {'start': start_date}
 
         headers = {
             'Authorization': f'Bearer {self.token}'
@@ -104,6 +104,7 @@ def get_events_command(client: Client, start_date_str: str, max_fetch: int) -> t
 
 def fetch_events(client: Client, max_fetch: int, start_date_str: str = '') -> tuple:
     last_run = demisto.getLastRun()
+    demisto.debug(f'{last_run=}')
     continuation_token = last_run.get('continuationToken', '')
     events: List[dict] = []
     has_next = True
@@ -111,13 +112,13 @@ def fetch_events(client: Client, max_fetch: int, start_date_str: str = '') -> tu
         has_next = False
         if len(events) >= max_fetch:
             break
-        response = client.get_events(start_date=start_date_str, continuation_token=continuation_token)
+        start_date = last_run.get('last_fetch', '') if last_run.get('last_fetch', '') else start_date_str
+        response = client.get_events(start_date=start_date, continuation_token=continuation_token)
 
         if continuation_token := response.get('continuationToken'):
             has_next = True
         events.extend(response.get('data'))
 
-    events = events[:max_fetch]
     if continuation_token:
         demisto.debug(
             f'Bitwarden - Fetched {len(events)} which is the maximum or greater then the number of events.'
@@ -184,6 +185,7 @@ def main() -> None:  # pragma: no cover
             events, new_last_run = fetch_events(client=client, max_fetch=max_events_per_fetch)
             if events:
                 if new_last_run:
+                    demisto.debug(f'{new_last_run=}')
                     demisto.setLastRun(new_last_run)
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
 
