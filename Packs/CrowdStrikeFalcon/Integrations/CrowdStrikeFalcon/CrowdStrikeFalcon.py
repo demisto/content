@@ -2403,6 +2403,11 @@ def get_remote_data_command(args: dict[str, Any]):
                 demisto.debug(f'Update {detection_type} detection {remote_incident_id} with fields: {updated_object}')
                 set_xsoar_idp_or_mobile_detection_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list)  # sets in place
+        elif incident_type == IncidentType.ON_DEMAND:
+            mirrored_data, updated_object = get_remote_detection_data(remote_incident_id)
+            if updated_object:
+                demisto.debug(f'Update on-demand detection {remote_incident_id} with fields: {updated_object}')
+                set_xsoar_detection_entries(updated_object, entries, remote_incident_id, reopen_statuses_list)
 
         else:
             # this is here as prints can disrupt mirroring
@@ -2655,6 +2660,11 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     if MOBILE_DETECTION_FETCH_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'mobile'"
+        ).get('resources', [])
+    if ON_DEMAND_DETECTION_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ods'"
+            
         ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
