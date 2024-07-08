@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "Changed the incident field 'name BmcITSM Display ID' to 'Bmc Display ID' for alignment with the cli name. Changed the corresponding mappers as well. In case you are using custom mappers please change the mapping accordingly."
+    "breakingChangesNotes": "The *BmcITSM Display ID* incident field has been renamed to *Bmc Display ID* to align with its CLI name. The *BMC ITSM Incoming Mapper* has been updated accordingly. **If this field is being used in custom mappers, ensure they are updated as well.**"
 }
