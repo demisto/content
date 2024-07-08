@@ -18,7 +18,6 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -31,14 +30,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 45426724-fbd0-417f-89d3-8b71ab784309
+    taskid: ab3d08f1-8bc2-4c87-857b-2e29bb3f5f38
     type: regular
     task:
-      id: 45426724-fbd0-417f-89d3-8b71ab784309
+      id: ab3d08f1-8bc2-4c87-857b-2e29bb3f5f38
       version: -1
       name: DBotFindSimilarIncidents
       description: Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
@@ -52,6 +52,8 @@ tasks:
     scriptarguments:
       fieldExactMatch:
         simple: accountname
+      fromDate:
+        simple: 1 hour
       incidentId:
         complex:
           root: CreatedIncidentID
@@ -66,7 +68,6 @@ tasks:
       toDate:
         simple: now
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -79,6 +80,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -120,7 +122,6 @@ tasks:
                       value:
                         simple: "1"
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -133,6 +134,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -148,7 +150,6 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -161,6 +162,7 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -296,5 +298,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 6.9.0
+fromversion: 5.0.0
 description: ''
