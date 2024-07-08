@@ -31,7 +31,7 @@ configuration:
   name: cluster_id
   required: true
   type: 0
-description: Threat Protection APIs are REST APIs that allow our Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
+description: Threat Protection APIs are REST APIs that allow Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
 display: Proofpoint Threat Protection
 name: Proofpoint Threat Protection
 script:
@@ -49,18 +49,18 @@ script:
       - add
       - delete
       required: true
-      description: add or delete.
+      description: The action to perform.
     - auto: PREDEFINED
       name: attribute
       predefined:
-      - $from
-      - $hfrom
-      - $ip
-      - $host
-      - $helo
-      - $rcpt
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
       required: true
-      description: Supported Attributes for the Organizational Safe List.
+      description: Supported attributes for the Organizational Block List.
     - auto: PREDEFINED
       name: operator
       predefined:
@@ -69,8 +69,8 @@ script:
       - contain
       - not_contain
       required: true
-      description: Supported Operators for the Organizational Safe List.
-    - description: Entry to be added to list.
+      description: Supported operators for the Organizational Block List.
+    - description: The entry that the action is to be performed upon in the Organizational Block List.
       name: value
       required: true
     - description: A short comment about the entry (max 150 chars). "comment" is ignored for the "delete" action.
@@ -85,7 +85,7 @@ script:
     name: proofpoint-tp-safelist-get
     outputs:
     - contextPath: ProofpointThreatProtection.Safelist
-      description: A list of entries in the safelist.
+      description: A list of entries in the Organizational Safe List.
   - arguments:
     - auto: PREDEFINED
       name: action
@@ -93,18 +93,18 @@ script:
       - add
       - delete
       required: true
-      description: add or delete.
+      description: The action to perform.
     - auto: PREDEFINED
       name: attribute
       predefined:
-      - $from
-      - $hfrom
-      - $ip
-      - $host
-      - $helo
-      - $rcpt
+      - '$from'
+      - '$hfrom'
+      - '$ip'
+      - '$host'
+      - '$helo'
+      - '$rcpt'
       required: true
-      description: Supported Attributes for the Organizational Safe List.
+      description: Supported attributes for the Organizational Safe List.
     - auto: PREDEFINED
       name: operator
       predefined:
@@ -113,8 +113,8 @@ script:
       - contain
       - not_contain
       required: true
-      description: Supported Operators for the Organizational Safe List.
-    - description: Entry to be added to list.
+      description: Supported operators for the Organizational Safe List.
+    - description: The entry that the action is to be performed upon in the Organizational Safe List.
       name: value
       required: true
     - description: A short comment about the entry (max 150 chars). "comment" is optional for "add" action and ignored for the "delete" action.

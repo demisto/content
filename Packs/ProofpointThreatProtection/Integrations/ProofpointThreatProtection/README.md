@@ -1,4 +1,4 @@
-Threat Protection APIs are REST APIs that allow our Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
+Threat Protection APIs are REST APIs that allow Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
 ## Configure Proofpoint Threat Protection on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Instances**.
@@ -53,10 +53,10 @@ Add/Delete entry from the Organizational Block List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | add or delete. Possible values are: add, delete. | Required | 
-| attribute | Supported Attributes for the Organizational Block List. Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
-| operator | Supported Operators for the Organizational Block List. Possible values are: equal, not_equal, contain, not_contain. | Required | 
-| value | Entry to be added to list. | Required | 
+| action | The action to perform. Possible values are: add, delete. | Required | 
+| attribute | Supported attributes for the Organizational Block List. Possible values are: \$from, \$hfrom, \$ip, \$host, \$helo, \$rcpt. | Required | 
+| operator | Supported operators for the Organizational Block List. Possible values are: equal, not_equal, contain, not_contain. | Required | 
+| value | The entry that the action is to be performed upon in the Organizational Block List. | Required | 
 | comment | A short comment about the entry (max 150 chars). "comment" is ignored for the "delete" action. | Optional | 
 
 #### Context Output
@@ -82,7 +82,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ProofpointThreatProtection.Safelist | unknown | A list of entries in the safelist. | 
+| ProofpointThreatProtection.Safelist | unknown | A list of entries in the Organizational Safe List. | 
 
 ### proofpoint-tp-safelist-add-or-delete-entry
 
@@ -97,10 +97,10 @@ Add To/Delete From the Organizational Safe List.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | add or delete. Possible values are: add, delete. | Required | 
-| attribute | Supported Attributes for the Organizational Safe List. Possible values are: $from, $hfrom, $ip, $host, $helo, $rcpt. | Required | 
-| operator | Supported Operators for the Organizational Safe List. Possible values are: equal, not_equal, contain, not_contain. | Required | 
-| value | Entry to be added to list. | Required | 
+| action | The action to perform. Possible values are: add, delete. | Required | 
+| attribute | Supported attributes for the Organizational Safe List. Possible values are: \$from, \$hfrom, \$ip, \$host, \$helo, \$rcpt. | Required | 
+| operator | Supported operators for the Organizational Safe List. Possible values are: equal, not_equal, contain, not_contain. | Required | 
+| value | The entry that the action is to be performed upon in the Organizational Safe List. | Required | 
 | comment | A short comment about the entry (max 150 chars). "comment" is optional for "add" action and ignored for the "delete" action. | Optional | 
 
 #### Context Output
