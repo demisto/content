@@ -156,6 +156,10 @@
       "type": "string",
       "is_array": false
     },
+    "FTNTFGTcat": {
+      "type": "string",
+      "is_array": false
+    },
     "FTNTFGTcatdesc": {
       "type": "string",
       "is_array": false
@@ -184,31 +188,15 @@
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRapp": {
+    "FTNTFGTdstmac": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRcat": {
+    "FTNTFGTdstunauthuser": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRCRlevel": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRdstmac": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRdstunauthuser": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRdstunauthusersource": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRduration": {
+    "FTNTFGTduration": {
       "type": "string",
       "is_array": false
     },
@@ -216,83 +204,67 @@
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRlogdesc": {
+    "FTNTFGTlogdesc": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRlogid": {
+    "FTNTFGTmethod": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRmethod": {
+    "FTNTFGTosname": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRosname": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRpdstport": {
+    "FTNTFGTpdstport": {
       "type": "int",
       "is_array": false
     },
-    "FTNTFGTCRpolicyname": {
+    "FTNTFGTpolicyname": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRpsrcport": {
+    "FTNTFGTpsrcport": {
       "type": "int",
       "is_array": false
     },
-    "FTNTFGTCRrcvdpkt": {
+    "FTNTFGTrcvdpkt": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRref": {
+    "FTNTFGTresult": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRresult": {
+    "FTNTFGTscertcname": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRscertcname": {
+    "FTNTFGTscertissuer": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRscertissuer": {
+    "FTNTFGTsentpkt": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRsentpkt": {
+    "FTNTFGTseverity": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRseverity": {
+    "FTNTFGTsrcmac": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRsrcfamily": {
+    "FTNTFGTsubtype": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRsrcmac": {
+    "FTNTFGTunauthuser": {
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTCRsubtype": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRunauthuser": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRunauthusersource": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTCRvd": {
+    "FTNTFGTvd": {
       "type": "string",
       "is_array": false
     },
@@ -353,10 +325,6 @@
       "is_array": false
     },
     "FTNTFGTdstuser": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTdstunauthuser": {
       "type": "string",
       "is_array": false
     },
@@ -436,6 +404,10 @@
       "type": "string",
       "is_array": false
     },
+    "FTNTFGTlogid": {
+      "type": "string",
+      "is_array": false
+    },
     "FTNTFGTlogin": {
       "type": "string",
       "is_array": false
@@ -449,10 +421,6 @@
       "is_array": false
     },
     "FTNTFGTmastersrcmac": {
-      "type": "string",
-      "is_array": false
-    },
-    "FTNTFGTmethod": {
       "type": "string",
       "is_array": false
     },
@@ -532,8 +500,6 @@
       "type": "string",
       "is_array": false
     },
-    
-
     "FTNTFGTremote": {
       "type": "string",
       "is_array": false
