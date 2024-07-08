@@ -6,11 +6,12 @@ commonfields:
   id: CrowdstrikeFalcon
   version: -1
 configuration:
-- display: Post Raptor release
-  name: raptor_release
+- display: Use legacy API
+  name: legacy_version
   type: 8
-  section: Collect
-  additionalinfo: Choose whether the users account was upgraded to the Raptor release or not.
+  section: Connect
+  advanced: true
+  additionalinfo: "Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.'"
   defaultvalue: 'false'
 - defaultvalue: https://api.crowdstrike.com
   display: Server URL (e.g., https://api.crowdstrike.com)
@@ -167,7 +168,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is for Post Raptor release only.
+  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is not available in the legacy version.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -316,7 +317,7 @@ script:
     - description: The ID of the behavior. The ID of the behavior can be retrieved by running the cs-falcon-search-detection or cs-falcon-get-detections-for-incident command.
       name: behavior_id
       required: true
-    description: Searches for and fetches the behavior that matches the query.
+    description: Searches for and fetches the behavior that matches the query. Deprecated - No replacement available.
     deprecated: true
     name: cs-falcon-get-behavior
     outputs:
@@ -1867,7 +1868,7 @@ script:
       description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.behaviors.behavior_id
-      description: 'The ID of the behavior. Note: This output does not exist in the post raptor version.'''
+      description: 'The ID of the behavior. Note: This output exist only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.filename
       description: The filename of the triggering process.
@@ -1903,10 +1904,10 @@ script:
       description: The IOC value.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".  Note: This output does not exist in the post raptor version.'
+      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". Note: This output exist only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_description
-      description: "The IOC description.  Note: This output does not exist in the post raptor version."
+      description: "The IOC description. Note: This output exist only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.user_name
       description: The user name.
@@ -1987,19 +1988,19 @@ script:
       description: Whether an email is sent about this detection.
       type: Boolean
     - contextPath: CrowdStrike.Detections.first_behavior
-      description: 'The datetime of the first behavior.  Note: This output does not exist in the post raptor version.'
+      description: 'The datetime of the first behavior. Note: This output exist only in the legacy version.'
       type: Date
     - contextPath: CrowdStrike.Detections.last_behavior
-      description: 'The datetime of the last behavior.  Note: This output does not exist in the post raptor version.'''
+      description: 'The datetime of the last behavior. Note: This output exist only in the legacy version.'
       type: Date
     - contextPath: CrowdStrike.Detections.max_confidence
-      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output does not exist in the post raptor version.'
+      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100. Note: This output exist only in the legacy version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity
-      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output does not exist in the post raptor version.'
+      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output exist only in the legacy version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output does not exist in the post raptor version.'
+      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". Note: This output exist only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
@@ -2008,10 +2009,10 @@ script:
       description: The status of the detection.
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_uid
-      description: "The UID of the user for whom the detection is assigned. Note: This output does not exist in the post raptor version."
+      description: "The UID of the user for whom the detection is assigned. Note: This output exist only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: "The human-readable name of the user to whom the detection is currently assigned.  Note: This output does not exist in the post raptor version."
+      description: "The human-readable name of the user to whom the detection is currently assigned. Note: This output exist only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The domain of the Active Directory.

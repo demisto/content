@@ -48,11 +48,11 @@ INCIDENTS_PER_FETCH = int(PARAMS.get('incidents_per_fetch', 15))
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DETECTION_DATE_FORMAT = IOM_DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
 DEFAULT_TIMEOUT = 30
-POST_RAPTOR_RELEASE = PARAMS.get('raptor_release', False)
+LEGACY_VERSION = PARAMS.get('legacy_version', False)
 
 ''' KEY DICTIONARY '''
 
-DETECTIONS_BASE_KEY_MAP = {
+LEGACY_DETECTIONS_BASE_KEY_MAP = {
     'device.hostname': 'System',
     'device.cid': 'CustomerID',
     'hostinfo.domain': 'MachineDomain',
@@ -66,7 +66,7 @@ DETECTIONS_BASE_KEY_MAP = {
     'max_confidence': 'MaxConfidence',
 }
 
-POST_RAPTOR_RELEASE_DETECTIONS_BASE_KEY_MAP = {
+DETECTIONS_BASE_KEY_MAP = {
     'device.hostname': 'System',
     'device.cid': 'CustomerID',
     'device.hostinfo.domain': 'MachineDomain',
@@ -208,7 +208,7 @@ ENDPOINT_KEY_MAP = {
         'Index': Split Array Index
     }
 """
-DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
+LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     {
         'Path': 'parent_details.parent_process_graph_id',
         'NewKey': 'SensorID',
@@ -229,7 +229,7 @@ DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     },
 ]
 
-POST_RAPTOR_RELEASE_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
+DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP = [
     {
         'Path': 'parent_details.process_graph_id',
         'NewKey': 'SensorID',
@@ -276,9 +276,9 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
 
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                      'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
-POST_RAPTOR_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
+CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
                                      'technique', 'device.hostname', "composite_id", 'display_name']
-CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
+LEGACY_CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
                                     'tags', 'hosts.hostname', 'incident_id']
 
 MIRROR_DIRECTION_DICT = {
@@ -350,16 +350,14 @@ def truncate_long_time_str(detections: List[Dict], time_key: str) -> List[Dict]:
     return detections
 
 
-
 def modify_detection_outputs(detection):
     """
-    Modifies the detection outputs in the post raptor release, to be in the same format as the pre raptor release.
+    Modifies the detection outputs in the newer version (raptor release) to be in the same format as the legacy version.
     Args:
         detection: The detection to modify.
     Returns:
         The nested modified detection.
     """
-    #TODO double check if using pop instead of get is ok
     behavior = {key: detection.pop(key, None) for key in DETECTIONS_BEHAVIORS_KEY_MAP}
     behavior.update({
         "parent_details": detection.pop("parent_details", None),
@@ -580,7 +578,7 @@ def build_query_params(query_params: dict) -> str:
 
 def modify_detection_summaries_outputs(detection: dict):
     """
-    Modifies the detection summaries outputs in the post raptor release, to be in the same format as the pre raptor release.
+    Modifies the detection summaries outputs in the new version (raptor release) to be in the same format as the legacy version.
     
     Args:
         detection: The detection to modify.
@@ -683,7 +681,7 @@ def detection_to_incident(detection):
         :rtype ``dict``
     """
     add_mirroring_fields(detection)
-    # detection_id and severity key names change between the old version and the Raptor release
+    # detection_id and severity key names change between the legacy and the new version
     detection_id = detection.get('detection_id') or detection.get('composite_id')
     severity = detection.get('max_severity_displayname') or detection.get('severity_name')
     incident = {
@@ -1482,10 +1480,10 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
     elif last_behavior_time:
         params['filter'] = f"first_behavior:>'{last_behavior_time}'"
 
-    if POST_RAPTOR_RELEASE:
+    if not LEGACY_VERSION:
         endpoint_url = "alerts/queries/alerts/v2?filter=product"
         text_to_encode = ":'epp'+type:'ldt'"
-        # in Raptor we send only the filter_arg argument as encoded string without the params
+        # in the new version we send only the filter_arg argument as encoded string without the params
         if filter_arg:
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
@@ -1517,12 +1515,12 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     elif last_created_timestamp:
         params['filter'] = f"created_timestamp:>'{last_created_timestamp}'"
     elif last_updated_timestamp:
-        timestamp_key = 'date_updated' if not POST_RAPTOR_RELEASE else 'updated_timestamp'
+        timestamp_key = 'date_updated' if LEGACY_VERSION else 'updated_timestamp'
         params['filter'] = f"{timestamp_key}:>'{last_updated_timestamp}'"
     
-    endpoint_url = '/detects/queries/detects/v1' if not POST_RAPTOR_RELEASE else "/alerts/queries/alerts/v2?filter=product"
+    endpoint_url = '/detects/queries/detects/v1' if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter=product"
    
-    if POST_RAPTOR_RELEASE:
+    if not LEGACY_VERSION:
         endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter', None)}")
 
     response = http_request('GET', endpoint_url, params)
@@ -1537,8 +1535,8 @@ def get_detections_entities(detections_ids: list):
         :param detections_ids: IDs of the requested detections.
         :return: Response json of the get detection entities endpoint (detection objects)
     """
-    ids_json = {'ids': detections_ids} if not POST_RAPTOR_RELEASE else {"composite_ids": detections_ids}
-    url = '/detects/entities/summaries/GET/v1' if not POST_RAPTOR_RELEASE else '/alerts/entities/alerts/v2'
+    ids_json = {'ids': detections_ids} if LEGACY_VERSION else {"composite_ids": detections_ids}
+    url = '/detects/entities/summaries/GET/v1' if LEGACY_VERSION else '/alerts/entities/alerts/v2'
     demisto.debug(f"Getting detections entities from {url} with {ids_json=}")
     if detections_ids:
         response = http_request(
@@ -1593,10 +1591,10 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
     }
     if limit:
         params['limit'] = limit
-    endpoint_url = "/alerts/queries/alerts/v1" if not POST_RAPTOR_RELEASE else \
+    endpoint_url = "/alerts/queries/alerts/v1" if LEGACY_VERSION else \
     "/alerts/queries/alerts/v2?filter="
-    #if post raptor release we need to add the product type to the filter to the url as encoded string
-    if POST_RAPTOR_RELEASE:
+    #in the new version we need to add the product type to the filter to the url as encoded string
+    if not LEGACY_VERSION:
         endpoint_url += urllib.parse.quote_plus(params.pop('filter', None))
     response = http_request('GET', endpoint_url, params)
     
@@ -1626,8 +1624,8 @@ def get_detection_entities(incidents_ids: list):
         :return: The response.
         :rtype ``dict``
     """
-    url_endpoint_version = 'v1' if not POST_RAPTOR_RELEASE else 'v2'
-    ids_json = {'ids': incidents_ids} if not POST_RAPTOR_RELEASE else {"composite_ids": incidents_ids}
+    url_endpoint_version = 'v1' if LEGACY_VERSION else 'v2'
+    ids_json = {'ids': incidents_ids} if LEGACY_VERSION else {"composite_ids": incidents_ids}
     return http_request(
         'POST',
         f'/alerts/entities/alerts/{url_endpoint_version}',
@@ -1985,7 +1983,7 @@ def behavior_to_entry_context(behavior):
         :return: Behavior in entry context representation
     """
     raw_entry = get_trasnformed_dict(behavior, DETECTIONS_BEHAVIORS_KEY_MAP)
-    split_key_map = DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP if not POST_RAPTOR_RELEASE else POST_RAPTOR_RELEASE_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
+    split_key_map = LEGACY_DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP if LEGACY_VERSION else DETECTIONS_BEHAVIORS_SPLIT_KEY_MAP
     raw_entry.update(extract_transformed_dict_with_split(behavior, split_key_map))
     return raw_entry
 
@@ -2024,7 +2022,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
         payload['show_in_ui'] = show_in_ui
     if comment:
         payload['comment'] = comment
-    if POST_RAPTOR_RELEASE:
+    if not LEGACY_VERSION:
         # modify the payload to match the Raptor API
         ids = payload.pop('ids')
         payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
@@ -2036,7 +2034,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
         # We do this so show_in_ui value won't contain ""
         data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
                                                                            '"show_in_ui": true')
-    url = "/alerts/entities/alerts/v3" if POST_RAPTOR_RELEASE else "/detects/entities/detects/v2"
+    url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/detects/entities/detects/v2"
     return http_request('PATCH', url, data=data)
 
 
@@ -2454,7 +2452,7 @@ def get_remote_incident_data(remote_incident_id: str):
         mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
 
     updated_object: dict[str, Any] = {'incident_type': 'incident'}
-    set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
+    set_updated_object(updated_object, mirrored_data, LEGACY_CS_FALCON_INCIDENT_INCOMING_ARGS)
     return mirrored_data, updated_object
 
 
@@ -2466,12 +2464,12 @@ def get_remote_detection_data(remote_incident_id: str):
     """
     mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
-    # severity key name is different in the Raptor release
+    # severity key name is different in the new version
     severity = mirrored_data.get('max_severity_displayname') or mirrored_data.get('severity_name')
     mirrored_data['severity'] = severity_string_to_int(severity)
     demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
-    incomming_args = CS_FALCON_DETECTION_INCOMING_ARGS if not POST_RAPTOR_RELEASE else POST_RAPTOR_CS_FALCON_DETECTION_INCOMING_ARGS
+    incomming_args = CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, incomming_args)
     demisto.debug(f'After set_updated_object {updated_object=}')
@@ -3093,8 +3091,8 @@ def fetch_incidents():
                         'last_fetch_query': ioa_fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
         
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
-        if not POST_RAPTOR_RELEASE:
-            raise DemistoException('On-Demand Scans Detection is supported only from Raptor release and above.')
+        if LEGACY_VERSION:
+            raise DemistoException('On-Demand Scans Detection is not supported in legacy version.')
         demisto.debug('Fetching On-Demand Scans Detection incidents')
         demisto.debug(f'on_demand_detections_last_run= {current_fetch_on_demand_detections}')
         
@@ -4144,11 +4142,11 @@ def search_detections_command():
         for detection in demisto.get(raw_res, "resources"):
             detection_entry = {}
 
-            if POST_RAPTOR_RELEASE:
+            if not LEGACY_VERSION:
                 detection = modify_detection_outputs(detection)
                 
-            for path, new_key in (DETECTIONS_BASE_KEY_MAP.items() if not POST_RAPTOR_RELEASE else
-                                  POST_RAPTOR_RELEASE_DETECTIONS_BASE_KEY_MAP.items()):
+            for path, new_key in (LEGACY_DETECTIONS_BASE_KEY_MAP.items() if LEGACY_VERSION else
+                                  DETECTIONS_BASE_KEY_MAP.items()):
                 detection_entry[new_key] = demisto.get(detection, path)
             behaviors = []
 
@@ -4158,7 +4156,7 @@ def search_detections_command():
 
             if extended_data:
                 detection_entry['Device'] = demisto.get(detection, 'device')
-                if not POST_RAPTOR_RELEASE:     # Raptor release does not have the 'behaviors_processed' key
+                if LEGACY_VERSION:     #The new version (raptor) does not have the 'behaviors_processed' key
                     detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
 
             entries.append(detection_entry)
@@ -4889,10 +4887,9 @@ def detections_to_human_readable(detections):
     detections_readable_outputs = []
     for detection in detections:
         readable_output = assign_params(status=detection.get('status'),
-                                        max_severity=detection.get('max_severity_displayname') if not POST_RAPTOR_RELEASE else\
+                                        max_severity=detection.get('max_severity_displayname') if LEGACY_VERSION else\
                                             detection.get('severity_name'),
-                                        detection_id=detection.get('detection_id') if not POST_RAPTOR_RELEASE else\
-                                            detection.get("composite_id"),
+                                        detection_id=detection.get('detection_id'),
                                         created_time=detection.get('created_timestamp'))
         detections_readable_outputs.append(readable_output)
     headers = ['detection_id', 'created_time', 'status', 'max_severity']
@@ -4914,8 +4911,8 @@ def list_detection_summaries_command():
         detections_ids = demisto.get(get_fetch_detections(), 'resources')
     detections_response_data = get_detections_entities(detections_ids)
     detections = list(detections_response_data.get('resources')) if detections_response_data else []
-    if POST_RAPTOR_RELEASE:
-        # modify the "post raptor" outputs to match the old format for backward compatibility
+    if not LEGACY_VERSION:
+        # modify the new version (raptor) outputs to match the old format for backward compatibility
         detections = [modify_detection_summaries_outputs(detection) for detection in detections]
     detections_human_readable = detections_to_human_readable(detections)
 
@@ -6757,7 +6754,7 @@ def resolve_detections_prepare_body_request(ids: list[str],
         if value:
             param = {"name": key, "value": value}
             action_params.append(param)
-    ids_request_key =  'composite_ids' if POST_RAPTOR_RELEASE else 'ids'
+    ids_request_key =  'composite_ids' if not LEGACY_VERSION else 'ids'
     return {'action_parameters': action_params, ids_request_key: ids}
 
 
@@ -6770,7 +6767,7 @@ def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
     Returns:
         dict[str, Any]: The raw response of the API.
     """
-    url_suffix = '/alerts/entities/alerts/v3' if POST_RAPTOR_RELEASE else '/alerts/entities/alerts/v2'
+    url_suffix = '/alerts/entities/alerts/v3' if not LEGACY_VERSION else '/alerts/entities/alerts/v2'
     body_payload = resolve_detections_prepare_body_request(ids=ids, action_params_values=kwargs)
     return http_request(method='PATCH', url_suffix=url_suffix, json=body_payload)
 
