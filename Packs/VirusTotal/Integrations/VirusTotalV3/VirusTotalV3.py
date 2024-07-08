@@ -118,7 +118,7 @@ class VTFile(Common.File):
 
     def to_context(self):
         context = super().to_context()
-        file_context = context[Common.File.CONTEXT_PATH]
+        file_context = context[super().CONTEXT_PATH]
 
         if self.count_vt_vendors_which_flagged_malicious is not None:
             file_context['Count VT Vendors Which Flagged Malicious'] = self.count_vt_vendors_which_flagged_malicious
@@ -156,7 +156,7 @@ class VTIP(Common.IP):
 
     def to_context(self):
         context = super().to_context()
-        file_context = context[Common.IP.CONTEXT_PATH]
+        file_context = context[super().CONTEXT_PATH]
 
         if self.count_vt_vendors_which_flagged_malicious is not None:
             file_context['Count VT Vendors Which Flagged Malicious'] = self.count_vt_vendors_which_flagged_malicious
@@ -194,7 +194,7 @@ class VTURL(Common.URL):
 
     def to_context(self):
         context = super().to_context()
-        file_context = context[Common.URL.CONTEXT_PATH]
+        file_context = context[super().CONTEXT_PATH]
 
         if self.count_vt_vendors_which_flagged_malicious is not None:
             file_context['Count VT Vendors Which Flagged Malicious'] = self.count_vt_vendors_which_flagged_malicious
@@ -232,7 +232,7 @@ class VTDomain(Common.Domain):
 
     def to_context(self):
         context = super().to_context()
-        file_context = context[Common.Domain.CONTEXT_PATH]
+        file_context = context[super().CONTEXT_PATH]
 
         if self.count_vt_vendors_which_flagged_malicious is not None:
             file_context['Count VT Vendors Which Flagged Malicious'] = self.count_vt_vendors_which_flagged_malicious
