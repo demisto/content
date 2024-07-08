@@ -4108,6 +4108,7 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
         - the mirrored_object in the GetRemoteDataResponse contains the modified incident fields
         - the entries in the GetRemoteDataResponse contain expected entries (an incident closure/reopen entry when needed)
     """
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
     from CrowdStrikeFalcon import get_remote_data_command
     incident_entity = input_data.response_incident.copy()
     incident_entity['status'] = incident_status
@@ -4166,6 +4167,7 @@ def test_get_remote_detection_data(mocker):
     Then
         - returns the relevant detection entity from the remote system with the relevant incoming mirroring fields
     """
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
     from CrowdStrikeFalcon import get_remote_detection_data
     detection_entity = input_data.response_detection.copy()
     mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity.copy()]})
@@ -4373,6 +4375,7 @@ def test_get_modified_remote_data_command(mocker):
     Then
         - returns a list of incidents, detections, and idp detections IDs that were modified since the lastUpdate time
     """
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION',True)
     from CrowdStrikeFalcon import get_modified_remote_data_command
     mock_get_incidents = mocker.patch('CrowdStrikeFalcon.get_incidents_ids',
                                       return_value={'resources': [input_data.remote_incident_id]})

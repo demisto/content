@@ -274,7 +274,7 @@ CS_FALCON_DETECTION_OUTGOING_ARGS = {'status': f'Updated detection status, one o
 CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or removed from the incident',
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
 
-CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
+LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
                                      'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
                                      'technique', 'device.hostname', "composite_id", 'display_name']
@@ -2469,7 +2469,7 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data['severity'] = severity_string_to_int(severity)
     demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
-    incomming_args = CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
+    incomming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
     set_updated_object(updated_object, mirrored_data, incomming_args)
     demisto.debug(f'After set_updated_object {updated_object=}')
@@ -2659,7 +2659,7 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'mobile'"
         ).get('resources', [])
-    if ON_DEMAND_DETECTION_FETCH_TYPE in fetch_types:
+    if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ods'"
             
