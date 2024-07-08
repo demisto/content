@@ -192,6 +192,10 @@ class AutoBumperManager:
         for pr in self.github_repo_obj.get_pulls(
             state="open", sort="created", base=BASE
         ):
+            if pr.draft:
+                # The bot does not go through a PR that is in draft
+                continue
+
             print(
                 f"{t.yellow}Looking on pr number [{pr.number}]: last updated: "
                 f"{str(pr.updated_at)}, branch={pr.head.ref}"

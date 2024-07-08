@@ -53,7 +53,7 @@ tasks:
       {
         "position": {
           "x": 210,
-          "y": 1730
+          "y": 2170
         }
       }
     note: false
@@ -78,7 +78,7 @@ tasks:
       brand: AWS - EC2
     nexttasks:
       '#none#':
-      - "2"
+      - "25"
     scriptarguments:
       groupIds:
         complex:
@@ -702,8 +702,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 880,
-          "y": 1370
+          "x": 940,
+          "y": 1350
         }
       }
   "24":
@@ -714,7 +714,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "2"
+      - "25"
     note: false
     quietmode: 0
     scriptarguments:
@@ -742,7 +742,111 @@ tasks:
       {
         "position": {
           "x": 880,
-          "y": 1550
+          "y": 1610
+        }
+      }
+  "25":
+    conditions:
+    - condition:
+      - - left:
+            iscontext: true
+            value:
+              complex:
+                filters:
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.brand
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: AWS - System Manager
+                - - left:
+                      iscontext: true
+                      value:
+                        simple: modules.state
+                    operator: isEqualString
+                    right:
+                      value:
+                        simple: active
+                root: modules
+          operator: isExists
+          right:
+            value: {}
+      label: "yes"
+    continueonerrortype: ""
+    id: "25"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "26"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: Determines if the AWS - Systems Manager integration instance is configured.
+      id: 25c42040-ec5b-4942-85c9-50aa659a4842
+      iscommand: false
+      name: Is AWS - Systems Manager enabled?
+      type: condition
+      version: -1
+    taskid: 25c42040-ec5b-4942-85c9-50aa659a4842
+    timertriggers: []
+    type: condition
+    view: |-
+      {
+        "position": {
+          "x": 470,
+          "y": 1820
+        }
+      }
+  "26":
+    continueonerrortype: ""
+    id: "26"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      instance_id:
+        simple: ${AWS.EC2.Instances.InstanceId}
+      region:
+        simple: ${AWS.EC2.Instances.Region}
+      roleArn:
+        simple: ${AssumeRoleArn}
+      roleSessionName:
+        simple: AWS-SSM-Command
+      type_name:
+        simple: Instance Information
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: AWS - System Manager
+      description: A list of inventory items returned by the request.
+      id: 47310a34-97d6-406b-884c-6c98a5855f45
+      iscommand: true
+      name: Get Instance ID information from SSM Inventory list.
+      script: AWS - System Manager|||aws-ssm-inventory-entry-list
+      type: regular
+      version: -1
+    taskid: 47310a34-97d6-406b-884c-6c98a5855f45
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 2000
         }
       }
 view: |-
@@ -753,12 +857,11 @@ view: |-
       "13_16_#default#": 0.35,
       "15_16_#default#": 0.22,
       "18_16_#default#": 0.35,
-      "20_21_#default#": 0.31,
-      "23_2_#default#": 0.33
+      "20_21_#default#": 0.31
     },
     "paper": {
       "dimensions": {
-        "height": 2575,
+        "height": 3015,
         "width": 1190,
         "x": 210,
         "y": -780
@@ -766,37 +869,37 @@ view: |-
     }
   }
 inputs:
-- key: ""
+- key: "AwsIP"
+  value:
+    complex:
+      accessor: remoteip
+      root: alert
+  required: true
+  description: AWS IP address in the alert.
+  playbookInputQuery:
+- key: AWSAssumeRoleName
   value: {}
   required: false
-  description: ""
+  description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
   playbookInputQuery:
+- description: ""
+  key: ""
+  playbookInputQuery:
+    daterange:
+      fromdate: "0001-01-01T00:00:00Z"
+      fromdatelicenseval: "0001-01-01T00:00:00Z"
+      period:
+        by: ""
+        byfrom: ""
+        byto: ""
+        field: ""
+        fromvalue:
+        tovalue:
+      todate: "0001-01-01T00:00:00Z"
     query: ""
     queryEntity: indicators
     results:
-    daterange:
-      fromdate: "0001-01-01T00:00:00Z"
-      todate: "0001-01-01T00:00:00Z"
-      period:
-        by: ""
-        byto: ""
-        byfrom: ""
-        tovalue:
-        fromvalue:
-        field: ""
-      fromdatelicenseval: "0001-01-01T00:00:00Z"
     runFromLastJobTime: true
-- key: AwsIP
-  value:
-    complex:
-      root: alert
-      accessor: remoteip
-  required: true
-  description: AWS IP in alert
-  playbookInputQuery:
-- description: If assuming roles for AWS, this is the name of the role to assume (should be the same for all organizations).
-  key: AWSAssumeRoleName
-  playbookInputQuery:
   required: false
   value: {}
 outputs:
@@ -809,7 +912,25 @@ outputs:
 - contextPath: AWSHierarchy
   description: AWS account hierarchy information.
   type: unknown
-quiet: true
+- contextPath: AWS.SSM
+  description: AWS SSM information.
+  type: unknown
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}
+inputSections:
+- description: Generic group for inputs.
+  inputs:
+  - AwsIP
+  - AWSAssumeRoleName
+  name: General (Inputs group)
+outputSections:
+- description: Generic group for outputs.
+  name: General (Outputs group)
+  outputs:
+  - AWS.EC2.Instances
+  - AWS.EC2.SecurityGroups
+  - AWSHierarchy
+  - AWS.SSM
