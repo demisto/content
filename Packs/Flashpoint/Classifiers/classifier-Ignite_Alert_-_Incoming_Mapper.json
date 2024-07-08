@@ -197,7 +197,7 @@
                                 "args": {
                                     "separator": {
                                         "value": {
-                                            "simple": ","
+                                            "simple": ", "
                                         }
                                     }
                                 },
@@ -279,7 +279,7 @@
                                 "args": {
                                     "separator": {
                                         "value": {
-                                            "simple": ","
+                                            "simple": ", "
                                         }
                                     }
                                 },
