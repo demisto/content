@@ -478,5 +478,5 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.86272
+  dockerimage: demisto/python3:3.11.9.101916
 fromversion: 5.0.0
