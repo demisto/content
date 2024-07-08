@@ -68,11 +68,12 @@ class Client(BaseClient):
         if continuation_token:
             params = {'continuationToken': continuation_token}
         else:
-            params = {'start': start_date, 'end': get_current_time() + timedelta(minutes=2)}
+            params = {
+                'start': start_date[:-6],
+                'end': (get_current_time() + timedelta(minutes=2)).strftime('%Y-%m-%dT%H:%M:%S.%f')[:-4]
+            }
 
-        headers = {
-            'Authorization': f'Bearer {self.token}'
-        }
+        headers = {'Authorization': f'Bearer {self.token}'}
 
         res = self._http_request(
             method='GET',
