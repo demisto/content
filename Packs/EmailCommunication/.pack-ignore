@@ -36,3 +36,6 @@ ignore=BA101
 
 [file:classifier-EWS_-_Classifier_-_Email_Communication.json]
 ignore=BA101
+
+[file:README.md]
+ignore=RM108

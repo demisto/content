@@ -11,7 +11,7 @@ ignore=BA101
 ignore=BA101
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM108
 
 [file:classifier-mapper-incoming-PrismaCloudCompute.json]
 ignore=BA101

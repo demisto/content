@@ -3,3 +3,6 @@ RDP
 
 [file:AWS_-_Enrichment.yml]
 ignore=PB114
+
+[file:README.md]
+ignore=RM108

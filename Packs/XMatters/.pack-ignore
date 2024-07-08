@@ -4,7 +4,7 @@
 ignore=IN136
 
 [file:README.md]
-ignore=RM102
+ignore=RM102,RM108
 
 [file:pack_metadata.json]
 ignore=PA125

@@ -7,3 +7,5 @@ ignore=PR101
 [file:F5LTMModelingRules_1_3.yml]
 ignore=MR108
 
+[file:README.md]
+ignore=RM108

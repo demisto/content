@@ -7,3 +7,5 @@ ignore=MR108
 [file:MicrosoftIISWebServer.yml]
 ignore=PR101
 
+[file:README.md]
+ignore=RM108

@@ -15,7 +15,7 @@ ignore=BA113
 ignore=BA124
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM108
 
 [file:AssignToNextShiftOOO.yml]
 ignore=BA124

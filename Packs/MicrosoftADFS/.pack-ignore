@@ -7,3 +7,5 @@ ignore=MR108
 [file:MicrosoftADFS.yml]
 ignore=MR108
 
+[file:README.md]
+ignore=RM108

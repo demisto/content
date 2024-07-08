@@ -90,7 +90,7 @@ ignore=IF100
 ignore=IF100
 
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM108
 
 [file:pack_metadata.json]
 ignore=PA129

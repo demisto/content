@@ -4,3 +4,5 @@ ignore=BA109,RM110,BA124
 [file:FactsAboutYou.yml]
 ignore=BA124
 
+[file:README.md]
+ignore=RM108

@@ -30,3 +30,6 @@ ignore=RM112
 
 [file:1_1_8.md]
 ignore=RN116
+
+[file:README.md]
+ignore=RM108

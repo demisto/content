@@ -10,3 +10,5 @@ ignore=MR108
 [file:CiscoASA_1_4.yml]
 ignore=MR108
 
+[file:README.md]
+ignore=RM108

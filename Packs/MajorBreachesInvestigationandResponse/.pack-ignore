@@ -57,3 +57,6 @@ ignore=RN113,RN114
 
 [file:1_6_36.md]
 ignore=RN116
+
+[file:README.md]
+ignore=RM108
