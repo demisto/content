@@ -114,7 +114,7 @@ script:
     name: gti-feed-get-indicators
   - description: "This command will reset your fetch history."
     name: gti-feed-reset-fetch-indicators
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.9.101916
   feed: true
   runonce: false
   script: "-"
