@@ -187,7 +187,6 @@ def main():  # pragma: no cover
         verify=verify_cert,
         headers=headers,
         timeout=timeout,
-        using_base_client_http_request=True,
     )
 
     try:
