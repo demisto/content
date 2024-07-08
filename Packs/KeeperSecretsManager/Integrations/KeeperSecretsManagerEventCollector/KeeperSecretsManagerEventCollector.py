@@ -151,7 +151,7 @@ class Client:
 
     class PasswordStep(LoginStepPassword):
         """
-        In charge of verifying the user's password after verifying the device registeration.
+        In charge of verifying the user's password after verifying the device registration.
         """
 
         def __init__(self, salt_bytes: bytes, salt_iterations: int):
@@ -201,7 +201,6 @@ class Client:
         current_time = get_current_time_in_seconds()
         if self.keeper_params.session_token and current_time >= valid_until - 10:
             demisto.info("Refreshing session token")
-            # First helper
             encrypted_device_token = LoginV3API.get_device_id(self.keeper_params)
             resp = self.save_device_tokens(
                 encrypted_device_token=encrypted_device_token,
@@ -265,7 +264,9 @@ class Client:
                 resp.encryptedLoginToken,  # type: ignore
             )
         elif resp.loginState == APIRequest_pb2.REQUIRES_AUTH_HASH:  # type: ignore
-            raise DemistoException("Try running the 'complete-authentication' command without supplying a code argument")
+            raise DemistoException(
+                "Try running the 'ksm-event-collector-auth-complete' command without supplying a code argument"
+            )
         else:
             raise DemistoException(f"Unknown login state {resp.loginState}")  # type: ignore
 
@@ -291,7 +292,6 @@ class Client:
             password_step = self.PasswordStep(salt_bytes=salt.salt, salt_iterations=salt.iterations)
             verify_password_response = password_step.verify_password(self.keeper_params, encrypted_login_token)
             if verify_password_response.loginState == APIRequest_pb2.LOGGED_IN:  # type: ignore
-                print("dene")
                 LoginV3Flow.post_login_processing(self.keeper_params, verify_password_response)
             else:
                 raise DemistoException(f"Unknown login state after verify password {verify_password_response.loginState}")  # type: ignore
