@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: move-core-file-dir
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: move-core-file-dir
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
