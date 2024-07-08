@@ -267,7 +267,7 @@ def get_all_playbooks() -> list:
     return res
 
 
-def get_layouts() -> dict | list:
+def get_layouts() -> list:
     """Return the data for the custom Layouts.
 
     Returns:
@@ -276,10 +276,10 @@ def get_layouts() -> dict | list:
     fields = ['description', 'details', 'detailsV2', 'group', 'id', 'modified', 'name', 'packID', 'packName', 'system']
     resp = get_api_request("/layouts")
     filtered_data = create_context(resp, fields)
-    return filtered_data
+    return cast(list, filtered_data)
 
 
-def get_incident_types() -> dict | list:
+def get_incident_types() -> list:
     """Return the data for the incident types.
 
     Returns:
@@ -288,10 +288,10 @@ def get_incident_types() -> dict | list:
     fields = ['id', 'layout', 'modified', 'name', 'playbookId', 'system', 'packID', 'packName']
     resp = get_api_request("/incidenttype")
     filtered_data = create_context(resp, fields)
-    return filtered_data
+    return cast(list, filtered_data)
 
 
-def get_incident_fields() -> dict | list:
+def get_incident_fields() -> list:
     """Return the data for the custom incident fields.
 
     Returns:
@@ -301,10 +301,10 @@ def get_incident_fields() -> dict | list:
               'id', 'modified', 'name', 'type', 'system', 'locked', 'packID', 'packName']
     resp = get_api_request("/incidentfields")
     filtered_data = create_context(resp, fields)
-    return filtered_data
+    return cast(list, filtered_data)
 
 
-def get_classifier_mapper() -> tuple:
+def get_classifier_mapper() -> tuple[Any, Any, Any]:
     """Return the data for the custom classifers, incoming mapper and outgoing mapper.
 
     Returns:
@@ -314,7 +314,7 @@ def get_classifier_mapper() -> tuple:
               'defaultIncidentType', 'keyTypeMap', 'mapping', 'packID', 'packName']
     resp: list = post_api_request("/classifier/search", {}).get("classifiers", [])
     if resp:
-        filtered_data: list = create_context(resp, fields)
+        filtered_data = cast(list, create_context(resp, fields))
         class_data, i_mapper_data, o_mapper_data = separate_classfier_mapper(filtered_data)
     else:
         return_error("No classifier and mapper data found.")
@@ -345,7 +345,7 @@ def get_automations() -> dict | list:
     return filtered_data
 
 
-def get_integrations() -> tuple[list, list]:
+def get_integrations() -> tuple[list, dict]:
     """
     This function provides the filtered integration data and the filtered instance data for that particular integration.
 
@@ -383,8 +383,8 @@ def get_integrations() -> tuple[list, list]:
         command_value["display"] = data['display']
         command_value["description"] = data['description']
         command_value["commands"] = command_list
-    instance_data: list = create_context(resp.get("instances", []), instance_fields)
-    configuration_data: list = create_context(resp.get("configurations", []), configuration_fields)
+    instance_data = cast(list, create_context(resp.get("instances", []), instance_fields))
+    configuration_data = cast(list, create_context(resp.get("configurations", []), configuration_fields))
     merge_data(instance_data, configuration_data)
     return instance_data, command_data
 
@@ -427,7 +427,7 @@ def get_playbook_dependencies(playbook: dict) -> dict:
         ],
         "dependencyLevel": "optional"
     }
-    resp: list = post_api_request("/itemsdependencies", body).get("existing").get("playbook").get(pb_id)
+    resp = cast(list, post_api_request("/itemsdependencies", body).get("existing").get("playbook").get(pb_id))
     if not resp:
         raise DemistoException(f"Failed to retrieve dependencies for {pb_name}")
 
@@ -723,13 +723,13 @@ def sub_data(playbook: dict) -> tuple:
     """
     test_d = set()
     task_name = set()
-    int_data: List = []
-    task_dict = {}
+    int_data: list = []
+    task_dict: dict = {}
     for data_key in playbook:
         if data_key == "tasks":
             task_data: list = playbook.get('tasks', [])
             for data in task_data:
-                task_dict: list = task_data.get(data, [])
+                task_dict = task_data.get(data, {})
                 for k in task_dict:
                     if k == 'task':
                         new = task_dict.get(k)
