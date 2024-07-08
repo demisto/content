@@ -76,4 +76,4 @@ Examples:
 
 ## Playbook Image
 ---
-![Logz.io Indicator Hunting ](../doc_files/Logz.io_Indicator_Hunting.png)
+![Logz.io Indicator Hunting ](../doc_files/Logzio_Indicator_Hunting.png)

@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Logz.Io Handle Alert](../doc_files/Logz.Io_Handle_Alert.png)
+![Logz.Io Handle Alert](../doc_files/LogzIo_Handle_Alert.png)
