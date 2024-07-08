@@ -908,8 +908,9 @@ def test_whois_and_domain_command(mocker: MockerFixture):
     mocker.patch.object(
         whois,
         "whois",
-        return_value=load_test_data("test_data/test-arrange-data.json")["raw"]["google"]
-        ,
+        return_value=load_test_data("test_data/test-arrange-data.json")["raw"][
+            "google"
+        ],
     )
     res = whois_and_domain_command("domain", DBotScoreReliability.B)
     assert len(res) == 2

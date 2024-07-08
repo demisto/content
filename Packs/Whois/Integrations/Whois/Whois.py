@@ -8998,7 +8998,7 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
                 for email in list(raw_data.get("emails", []))
             ]
             if isinstance(raw_data.get("emails"), list)
-            else {"Type": "email", "Value":raw_data.get("emails")}
+            else {"Type": "email", "Value": raw_data.get("emails")}
         ),
     }
     raw_data.pop("name", None)
