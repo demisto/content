@@ -1701,7 +1701,7 @@ def build_domain_output(
         relationships_response=relationships_response,
         reliability=client.reliability
     )
-    
+
     domain_indicator = _get_domain_indicator(client, score_calculator, domain, raw_response)
 
     if not extended_data:
