@@ -73,6 +73,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for EWS O365.
 3. Click **Add instance** to create and configure a new integration instance.
+
 | **Parameter** | **Description** |**Required**|
 | --- | --- | --- |
 | ID / Application ID | ID can be received after following the System Integration Setup (Device side steps). | False |
@@ -426,7 +427,7 @@ No known limitations.
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-delete-items</h3></summary>
 
-## ews-delete-items
+### ews-delete-items
 
 #### Description
 
