@@ -1,6 +1,50 @@
 [MODEL: dataset = jamf_protect_raw]
-// Jamf audit logs mapping
 config case_sensitive = true
+
+// Jamf computers logs mapping
+| filter source_log_type = "computers"
+| alter 
+check_in = checkin,
+computer_created = created , //first connected 
+host_name = hostName ,
+memory_size = memorySize , // Already in bytes
+model_name = modelName ,
+operating_system = osString ,
+serial_number = serial,
+universally_unique_identifier = uuid ,
+agent_version = version ,
+signatures_version = concat("Threat Version ",to_string(signaturesVersion)) ,
+// plan
+computer_plan = plan
+// insights
+| alter insights_status = object_create("Rules Status Failed", insightsStatsFail , "Rules Status Passed", insightsStatsPass , "Rules Status Unknown", insightsStatsUnknown )
+// discard all rules that passed and keep the failed rules that can be a risk to the asset
+| alter tmp_computer_risks = arrayfilter(scorecard ->[], "@element"->pass="false")
+// Create new array with the relevant information
+| alter computer_risks = arraymap(tmp_computer_risks, object_create("Section", "@element"->section, "Rule Name", "@element"-> label, "Tags", replex(arraystring("@element"->tags[], ""), "\"", "")))
+// Check if the last connection IP is v4 or v6
+|alter last_connection_ipv4 = arrayindex(regextract(lastConnectionIp, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0) 
+| alter last_connection_ipv6 = arrayindex(regextract(lastConnectionIp , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
+
+// XDM mapping
+| alter xdm.source.host.boot_time = check_in,
+xdm.source.agent.installation_time = computer_created, 
+xdm.source.host.hostname = host_name , 
+xdm.event.description = insights_status, 
+xdm.source.host.memory = memory_size,
+xdm.source.host.device_model = model_name , 
+xdm.source.host.os = operating_system , 
+xdm.source.host.device_id = serial_number, 
+xdm.source.host.hardware_uuid = universally_unique_identifier ,
+xdm.source.agent.version = agent_version, 
+xdm.observer.version = signatures_version ,
+xdm.network.rule = computer_plan , 
+xdm.alert.risks = computer_risks ,
+xdm.source.ipv4 = last_connection_ipv4 ,
+xdm.source.ipv6 = last_connection_ipv6 ;
+
+
+// Jamf audit logs mapping
 | filter source_log_type = "audit"
 | alter
         host_ipv4_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
