@@ -27,7 +27,7 @@ name: CyberChef
 script:
   commands:
   - arguments:
-    - description: input data to be used in baking
+    - description: input data to be used in baking.
       name: input
       required: true
     - description: 'recipe how to bake. use JSON formatting. For example:  {         "op": "to decimal",         "args": {             "delimiter": "Colon"         }     }.'

@@ -24,7 +24,7 @@ display: BigFix
 name: BigFix
 script:
   commands:
-  - description: Retrieves all the sites
+  - description: Retrieves all the sites.
     name: bigfix-get-sites
     outputs:
     - contextPath: Bigfix.Site
@@ -68,7 +68,7 @@ script:
     name: bigfix-get-site
     outputs:
     - contextPath: Bigfix.Site
-      description: Site
+      description: Site.
       type: unknown
     - contextPath: Bigfix.Site.Name
       description: Name of the site.
@@ -117,7 +117,7 @@ script:
       description: Name of the Patch requested.
       type: string
     - contextPath: Bigfix.Patch.Resource
-      description: The link for the patch
+      description: The link for the patch.
       type: string
     - contextPath: Bigfix.Patch.Description
       description: Description of the Patch requested.
@@ -161,7 +161,7 @@ script:
     name: bigfix-get-endpoints
     outputs:
     - contextPath: Bigfix.Endpoint
-      description: Endpoint (computer)
+      description: Endpoint (computer).
       type: Unknown
     - contextPath: Bigfix.Endpoint.ID
       description: The if of the endpoint (computer ID).
@@ -251,7 +251,7 @@ script:
       description: User name.
       type: string
   - arguments:
-    - description: Computer ID
+    - description: Computer ID.
       name: computer_id
       required: true
     description: Retrieve endpoint (computer) details.
@@ -348,10 +348,10 @@ script:
       description: User name.
       type: string
   - arguments:
-    - description: Name of the site. If the site is external or operator then site must be provided
+    - description: Name of the site. If the site is external or operator then site must be provided.
       name: site_name
       required: true
-    - description: Provide ids of computers to deploy the patch. Pass 'all' to deploy to all the computers
+    - description: Provide ids of computers to deploy the patch. Pass 'all' to deploy to all the computers.
       isArray: true
       name: computer_ids
       required: true
@@ -365,29 +365,29 @@ script:
     name: bigfix-deploy-patch
     outputs:
     - contextPath: Bigfix.Action.ID
-      description: Action ID
+      description: Action ID.
       type: number
     - contextPath: Bigfix.Action.Name
-      description: Action Name
+      description: Action Name.
       type: string
     - contextPath: Bigfix.Action.SiteName
-      description: Site name
+      description: Site name.
       type: string
     - contextPath: Bigfix.Action.ComputerIDs
-      description: Computers IDs to which the patch was applied to
+      description: Computers IDs to which the patch was applied to.
       type: Unknown
     - contextPath: Bigfix.Action.AllComputers
-      description: true if patch was applied to all the computers
+      description: true if patch was applied to all the computers.
       type: boolean
     - contextPath: Bigfix.Action.Resource
-      description: Link to action in bigfix
+      description: Link to action in bigfix.
       type: string
   - arguments:
-    - description: Fixlet id
+    - description: Fixlet id.
       name: id
       required: true
     - auto: PREDEFINED
-      description: 'Type of the site. One of the following options: external,operator,master,custom'
+      description: 'Type of the site. One of the following options: external,operator,master,custom.'
       name: site_type
       predefined:
       - external
@@ -395,22 +395,22 @@ script:
       - master
       - custom
       required: true
-    - description: Name of the site. If the site is external or operator then site must be provided
+    - description: Name of the site. If the site is external or operator then site must be provided.
       name: site_name
-    description: Retrieve patch (fixlet) by id
+    description: Retrieve patch (fixlet) by id.
     name: bigfix-get-patch
     outputs:
     - contextPath: Bigfix.Patch.ID
-      description: Patch(fixlet) id
+      description: Patch(fixlet) id.
       type: Unknown
     - contextPath: Bigfix.Patch.Name
-      description: Patch name
+      description: Patch name.
       type: Unknown
     - contextPath: Bigfix.Patch.Resource
-      description: Link (URL) to the patch
+      description: Link (URL) to the patch.
       type: Unknown
     - contextPath: Bigfix.Patch.Description
-      description: Description
+      description: Description.
       type: Unknown
     - contextPath: Bigfix.Patch.Relevance
       description: Relevance of the Patch requested.
@@ -440,39 +440,39 @@ script:
       description: Action Script of the Patch requested.
       type: string
   - arguments:
-    - description: Action ID
+    - description: Action ID.
       name: action_id
       required: true
     description: 'Stops and deletes the specified action. Note: You cannot delete actions that are members of a Multiple Action Group. This note applies to HCL BigFix V9.2 and later.'
     name: bigfix-action-delete
   - arguments:
-    - description: Action ID
+    - description: Action ID.
       name: action_id
       required: true
     description: Gets the status of an action against it's targets.
     name: bigfix-action-status
     outputs:
     - contextPath: Bigfix.Action.ID
-      description: Action ID
+      description: Action ID.
       type: string
     - contextPath: Bigfix.Action.Status
-      description: Action Status (e.g Open, Stopped)
+      description: Action Status (e.g Open, Stopped).
       type: string
   - arguments:
-    - description: Action ID
+    - description: Action ID.
       name: action_id
       required: true
     description: Stops the specified action.
     name: bigfix-action-stop
   - arguments:
-    - description: 'Relevance query (example:  names of bes computers)'
+    - description: 'Relevance query (example:  names of bes computers).'
       name: relevance
       required: true
     description: Evaluate a relevance expression and get the result. This runs request is processed through the server to WebReports.
     name: bigfix-query
     outputs:
     - contextPath: Bigfix.QueryResults
-      description: The results of the query
+      description: The results of the query.
       type: unknown
   runonce: false
   script: '-'
@@ -480,3 +480,5 @@ script:
   type: python
   dockerimage: demisto/python3:3.11.9.101916
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)
