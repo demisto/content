@@ -109,6 +109,7 @@ def main():
     table = tableToMarkdown(name='Use Case Coverage', t=t, headers=headers)
 
     return_results(table)
+    return table
 
 
 ''' ENTRY POINT '''
