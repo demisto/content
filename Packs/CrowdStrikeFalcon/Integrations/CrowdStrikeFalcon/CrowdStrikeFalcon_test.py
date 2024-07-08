@@ -2233,6 +2233,7 @@ class TestFetch:
         Then:
             The `first_behavior_time` changes and no `offset` is added.
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         mocker.patch.object(demisto, 'getLastRun',
                             return_value=[{'time': '2020-09-04T09:16:10.000000Z',
                                           'offset': 2}, {}, {}])
@@ -2261,6 +2262,7 @@ class TestFetch:
             - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(f'{SERVER_URL}/detects/queries/detects/v1', json={'resources': ['ldt:1', 'ldt:2'],
                                                                             'meta': {'pagination': {'total': 4}}})
@@ -2312,6 +2314,7 @@ class TestFetch:
             "incident_type": "detection" is in raw result returned by the indicator
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'getLastRun', return_value=[{
             'time': '2020-09-04T09:16:10Z',
@@ -2353,6 +2356,7 @@ class TestFetch:
             Validate the results contains only IDP detection when fetch_incidents_or_detections = ['IDP Detections'],
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         from CrowdStrikeFalcon import fetch_incidents
         mocker.patch.object(demisto, 'getLastRun', return_value=[{'time': '2020-09-04T09:16:10Z'}, {}, {}])
 
@@ -2432,6 +2436,7 @@ class TestIncidentFetch:
 
     @freeze_time("2020-08-26 17:22:13 UTC")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       'offset': 2}, {}])
         # Override post to have 1 results so FETCH_LIMIT won't be reached
@@ -2457,6 +2462,7 @@ class TestIncidentFetch:
             - In the next call, the offset will be reset to 0 and the last time will be the latest detection time
 
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         # mock the total number of detections to be 4, so offset will be set
         requests_mock.get(f'{SERVER_URL}/incidents/queries/incidents/v1', json={'resources': ['ldt:1', 'ldt:2'],
                                                                                 'pagination': {'meta': {'total': 4}}})
@@ -2504,6 +2510,7 @@ class TestIncidentFetch:
         Then:
             "incident_type": "incident" is in raw result returned by the indicator
         """
+        mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
         mocker.patch.object(demisto, 'getLastRun', return_value=[{}, {'time': '2020-09-04T09:16:10Z',
                                                                       }])
         from CrowdStrikeFalcon import fetch_incidents
