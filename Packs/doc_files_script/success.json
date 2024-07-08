@@ -1,0 +1,1229 @@
+{
+    "/Users/mmorag/dev/demisto/content/Packs/Tanium/Playbooks/playbook-Tanium_-_Get_Saved_Question_Result_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tanium_Get_Saved_Question_Result.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tanium/Playbooks/playbook-Tanium_-_Ask_Question_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tanium_Ask_Question.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CarbonBlackProtect/Playbooks/playbook-Carbon_black_Protection_Rapid_IOC_Hunting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Carbon_black_Protection_Rapid_IOC_Hunting.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CarbonBlackProtect/Playbooks/playbook-Search_Endpoints_By_Hash_-_Carbon_Black_Protection_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/f975de39b05cd3560b782f54d37637741d87ff65/docs/images/playbooks/Search_Endpoints_By_Hash_Carbon_Black_Protection.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/HelloWorld/Playbooks/playbook-Handle_Hello_World_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6bbd43a604ed992299a9db196509006da8414cf3/Packs/HelloWorld/doc_files/Handle_Hello_World_Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/HelloWorld/Playbooks/playbook-HelloWorld_Scan_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6bbd43a604ed992299a9db196509006da8414cf3/Packs/HelloWorld/doc_files/HelloWorld_Scan.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FireEyeHelix/Playbooks/playbook-FireEye_Helix_Archive_Search_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/FireEye_Helix_Archive_Search.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BitDam/Playbooks/playbook-BitDam_Scan_File_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_-_BitDam.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tufin/Playbooks/playbook-Tufin_-_Enrich_IP_Address(es)_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Enrich%20a%20Single%20IP%20Address.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tufin/Playbooks/playbook-Tufin_-_Investigate_Network_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Investigate%20Network%20Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tufin/Playbooks/playbook-Tufin_-_Enrich_Source_&_Destination_IP_Information_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Enrich%20Source%20%26%20Destination%20IP%20Information.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tufin/Playbooks/playbook-Tufin_-_Get_Application_Information_from_SecureApp_README.md": [
+        "https://github.com/demisto/content/raw/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Get%20Application%20Information%20from%20SecureApp.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tufin/Playbooks/playbook-Tufin_-_Get_Network_Device_Info_by_IP_Address_README.md": [
+        "https://github.com/demisto/content/raw/37e0906aef21802f8f4a8ecd5ea16d9eb642f0ed/Packs/Tufin/doc_files/Tufin%20-%20Get%20Network%20Device%20Info%20by%20IP%20Address.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Cybereason/Playbooks/playbook-Search_Endpoints_By_Hash_-_Cybereason_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Search_Endpoints_By_Hash_-_Cybereason.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Cybereason/Playbooks/playbook-Unisolate_Endpoint_-_Cybereason_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/Cybereason/doc_files/Unisolate_Endpoint_-_Cybereason.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/fireeye/Playbooks/playbook-Detonate_File_-_FireEye_AX_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_FireEye_AX.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SentinelOne/Playbooks/playbook-Sentinel_One_-_Endpoint_data_collection_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Sentinel_One_Endpoint_data_collection.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SentinelOne/Playbooks/playbook-Sentinel_One_-_Query_Endpoints_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Sentinel_One_Endpoint_data_collection.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Digital_Defense_FrontlineVM/Playbooks/playbook-Digital_Defense_FrontlineVM_-_Old_Vulnerabilities_Found_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Digital_Defense_FrontlineVM_Old_Vulnerabilities_Found.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Digital_Defense_FrontlineVM/Playbooks/playbook-Digital_Defense_FrontlineVM_-_PAN-OS_block_assets_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Digital_Defense_FrontlineVM_PAN-OS_block_assets.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Digital_Defense_FrontlineVM/Playbooks/playbook-Digital_Defense_FrontlineVM_-_Scan_Asset_Not_Recently_Scanned_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Digital_Defense_FrontlineVM_Scan_Asset_Not_Recently_Scanned.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ArcSightESM/Playbooks/playbook-TIM_-_ArcSight_Add_Url_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/ArcSightESM/doc_files/TIM_-_ArcSight_Add_Url_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ArcSightESM/Playbooks/playbook-TIM_-_ArcSight_Add_IP_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/ArcSightESM/doc_files/TIM_-_ArcSight_Add_IP_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ArcSightESM/Playbooks/playbook-TIM_-_ArcSight_Add_Bad_Hash_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/ArcSightESM/doc_files/TIM_-_ArcSight_Add_Bad_Hash_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ArcSightESM/Playbooks/playbook-TIM_-_ArcSight_Add_Domain_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/ArcSightESM/doc_files/TIM_-_ArcSight_Add_Domain_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ArcSightESM/Playbooks/playbook-Arcsight_-_Get_events_related_to_the_Case_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Arcsight_Get_events_related_to_the_Case.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskSense/Playbooks/playbook-CVE_Exposure_-_RiskSense_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/a754dc49eb361097936b6c53f5c5a989b82769d3/Packs/RiskSense/doc_files/CVE_Exposure_-_RiskSense.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskSense/Playbooks/playbook-Ransomware_Exposure_-_RiskSense_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/a754dc49eb361097936b6c53f5c5a989b82769d3/Packs/RiskSense/doc_files/Ransomware_Exposure_-_RiskSense.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/IntegrationsAndIncidentsHealthCheck/Playbooks/playbook-JOB_-_Integrations_and_Playbooks_Health_Check_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/540045cb42ae4da5e862424df5293e4502f6981e/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/IntegrationsAndIncidentsHealthCheck/Playbooks/playbook-JOB_-_Integrations_and_Playbooks_Health_Check_-_Lists_handling_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/63a3dc4dadf030473dc093d855c25fc3b3f57ded/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup_-_Lists_handling.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/IntegrationsAndIncidentsHealthCheck/Playbooks/playbook-Integrations_and_Playbooks_Health_Check_-_Running_Scripts_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/63a3dc4dadf030473dc093d855c25fc3b3f57ded/Packs/IntegrationsAndIncidentsHealthCheck/doc_files/JOB_-_Integrations_and_Playbooks_Checkup_-_Running_Scripts.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Humio/Playbooks/playbook-Humio_QueryJob_Poll_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/5f77da55c3b21ee99419920211e21d9f0c0d044c/Packs/Humio/doc_files/playbook-Humio_QueryJob_Poll.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AutoFocus/Playbooks/playbook-AutoFocusPolling_README.md": [
+        "https://github.com/demisto/content/raw/cc9fb76a907ec5e86d6cdac7a8820d1828c52e02/Packs/AutoFocus/doc_files/AutoFocusPolling.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FireEyeEX/Playbooks/playbook-Get_Email_From_Email_Gateway_-_FireEye_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/FireEyeEX/doc_files/Get_Email_From_Email_Gateway_-_FireEye.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FireEyeEX/Playbooks/playbook-Block_Domain_-_FireEye_Email_Security_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/7d20d193ddfe06ad3ead0effb87db3e71fe675a8/Packs/FireEyeEX/doc_files/Block_Domain_-_FireEye_Email_Security.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-Acquire_And_Analyze_Host_Forensics_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/f80f71e1e885d285d611b7e685443cc7896f6706/Packs/WindowsForensicsPack/doc_files/Acquire_And_Analyze_Host_Forensics.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-Forensics_Tools_Analysis_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/Forensics_Tools_Analysis.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-PS-Remote_Acquire_Host_Forensics_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS-Remote_Acquire_Host_Forensics.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-PS-Remote_Get_Registry_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_Registry.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-PS-Remote_Get_Network_Traffic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_Network_Traffic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-Registry_Parse_Data_Analysis_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/f80f71e1e885d285d611b7e685443cc7896f6706/Packs/WindowsForensicsPack/doc_files/Registry_Data_Analysis.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-PS-Remote_Get_MFT_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS-Remote_Get_MFT.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/WindowsForensics/Playbooks/playbook-PS-Remote_Get_File_Sample_From_Path_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/65c9d37bc1973acdb297e39173648cb1ba7cb0fb/Packs/WindowsForensicsPack/doc_files/PS_Remote_-_Get_File_Sample_From_Path.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Carbon_Black_Enterprise_Live_Response/Playbooks/playbook-Get_File_Sample_From_Path_-_VMware_Carbon_Black_EDR_-_Live_Response_API_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/Carbon_Black_Enterprise_Live_Response/doc_files/Get_File_Sample_From_Path_-_VMware_Carbon_Black_EDR_Live_Response_API.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Core/Playbooks/playbook-Ransomware_Advanced_Analysis_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6b468656734d10b98f9deee7d24897b0acec6292/Packs/Core/doc_files/Ransomware_Advanced_Analysis.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Zscaler/Playbooks/playbook-Block_Domain_-_Zscaler_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/7d20d193ddfe06ad3ead0effb87db3e71fe675a8/Packs/Zscaler/doc_files/Block_Domain_-_Zscaler.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DigitalGuardian/Playbooks/DigitalGuardian_Demo_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/DigitalGuardian/doc_files/DigitalGuardian_image.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Lost_Stolen_Device/Playbooks/playbook-lost_stolen_device_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Lost_Stolen_Device_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Rundeck/Playbooks/Rundeck-job-execute-Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ab6c17a1784a8c4888cbde68854c2a22dc4893e4/docs/images/playbooks/Rundeck-job-execute-Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Darktrace/Playbooks/playbook-HandleDarktraceModelBreach_README.md": [
+        "https://raw.githubusercontent.com/katherinemcgauleydarktrace/DarktraceXSOARImages/master/Handle_Darktrace_Model_Breach_Wed_Dec_02_2020.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleCloudCompute/Playbooks/playbook-IP_Whitelist_-_GCP_Firewall_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/GoogleCloudCompute/doc_files/IP_Whitelist_-_GCP_Firewall.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_URL_Intelligence_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/url_enrich.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_URL_Reputation_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/url_reputation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_Threat_Assessment_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/triage_playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_CVE_Reputation_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/cve_reputation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_IOC_Reputation_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/ioc_reputation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_IP_Intelligence_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/ip_enrich.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_Detailed_Alert_example_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/detailed-alert-playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_Domain_Reputation_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/domain_reputation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_File_Intelligence_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/cve_enrich.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_Domain_Intelligence_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/domain_enrich.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_File_Reputation_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/file_reputation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_CVE_Intelligence_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/cve_enrich.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RecordedFuture/Playbooks/playbook-Recorded_Future_IP_Reputation_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/ip_reputation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CortexAttackSurfaceManagement/Playbooks/Cortex_ASM_-_Vulnerability_Management_Enrichment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/15935bbaa183dd38239aada567b1eb7cbae9b704/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Vulnerability_Management_Enrichment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CortexAttackSurfaceManagement/Playbooks/Cortex_ASM_-_Extract_IP_Indicator_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/15935bbaa183dd38239aada567b1eb7cbae9b704/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Extract_IP_Indicator.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CortexAttackSurfaceManagement/Playbooks/Cortex_ASM_-_CMDB_Enrichment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/15935bbaa183dd38239aada567b1eb7cbae9b704/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Cylance_Protect/Playbooks/playbook-Endpoint_Enrichment_-_Cylance_Protect_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Enrichment_Cylance_Protect_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Cylance_Protect/Playbooks/playbook-Get_File_Sample_By_Hash_-_Cylance_Protect_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Cylance_Protect.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Cylance_Protect/Playbooks/playbook-Get_File_Sample_By_Hash_-_Cylance_Protect_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Cylance_Protect_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/IllusiveNetworks/Playbooks/playbook-Illusive-Incident-Escalation_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/bb996a5e640102bdfdefb010f1e42c147b4b573c/Packs/IllusiveNetworks/doc_files/Illusive-Incident_Escalation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/IllusiveNetworks/Playbooks/playbook-Illusive-Collect-Forensics-On-Demand_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0d472d7658632fa55e87a39e3562056d9cd289b8/Packs/IllusiveNetworks/doc_files/Illusive-Collect-Forensics-On-Demand.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/IllusiveNetworks/Playbooks/playbook-Illusive-Data-Enrichment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/bb996a5e640102bdfdefb010f1e42c147b4b573c/Packs/IllusiveNetworks/doc_files/Illusive-Data_Enrichment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/IllusiveNetworks/Playbooks/playbook-Illusive-Retrieve-Incident_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0d472d7658632fa55e87a39e3562056d9cd289b8/Packs/IllusiveNetworks/doc_files/Illusive-Retrieve-Incident.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AccentureCTI/Playbooks/playbook-ACTI_Block_High_Severity_Indicators_README.md": [
+        "https://user-images.githubusercontent.com/40510780/163229991-a9350f71-39f5-4cf2-a40c-f10b8a7a0777.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AccentureCTI/Playbooks/playbook-ACTI_Report_Enrichment_README.md": [
+        "https://user-images.githubusercontent.com/40510780/161069052-feb0b049-e189-42ea-bd3b-db96fdab09d8.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AccentureCTI/Playbooks/playbook-ACTI_Block_Indicators_from_an_Incident_README.md": [
+        "https://user-images.githubusercontent.com/40510780/163230245-bc862aca-9dc3-4eea-bca6-c50e311fe605.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AccentureCTI/Playbooks/playbook-ACTI_Indicator_Enrichment_README.md": [
+        "https://user-images.githubusercontent.com/40510780/161070840-5246a1bc-b8e9-46f6-83d9-2136a2ee5ca5.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AccentureCTI/Playbooks/playbook-ACTI_Vulnerability_Enrichment_README.md": [
+        "https://user-images.githubusercontent.com/40510780/161071089-cbd8df9a-dbd3-4e51-a256-59002bcaad92.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AccentureCTI/Playbooks/playbook-ACTI_Incident_Enrichment_README.md": [
+        "https://user-images.githubusercontent.com/40510780/171863775-19f86d1d-e691-4d2d-bd20-f259f0747d52.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AccentureCTI/Playbooks/playbook-ACTI_Create_Report-Indicator_Associations_README.md": [
+        "https://user-images.githubusercontent.com/40510780/164019981-8da85350-7c55-4c40-bd69-e1177119e64e.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AWS-Enrichment-Remediation/Playbooks/playbook-Cloud_Response_-_AWS_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6790c6160863055ad2d0f906e0ffa18963bd7b20/Packs/AWS-Enrichment-Remediation/doc_files/Cloud_Response_-_AWS.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AWS-EC2/Playbooks/playbook-IP_Whitelist_-_AWS_Security_Group_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/AWS-EC2/doc_files/IP_Whitelist_-_AWS_Security_Group.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FeedAzure/Playbooks/playbook-TIM_-_Process_Azure_indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/8206fc4ae62e42cb218085fab9a4b0cd10496300/Packs/FeedAzure/doc_files/TIM_-_Process_Azure_indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FeedOffice365/Playbooks/playbook-TIM_-_Process_Office365_indicators_README.md": [
+        "https://github.com/demisto/content/raw/8206fc4ae62e42cb218085fab9a4b0cd10496300/Packs/FeedOffice365/doc_files/TIM_-_Process_Office365_indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Exchange2016_Compliance/Playbooks/playbook-Exchange_2016_Search_and_Delete_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Exchange_2016_Search_and_Delete.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ThreatGrid/Playbooks/playbook-Detonate_URL_-_ThreatGrid_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_ThreatGrid.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ThreatGrid/Playbooks/playbook-Detonate_File_-_ThreatGrid_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_ThreatGrid.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DomainTools_Iris/Playbooks/playbook-Indicator_Pivoting-DomainTools_Iris_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Indicator_Pivoting_DomainTools_Iris.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleChronicleBackstory/Playbooks/playbook-ChronicleAssets_Investigation_And_Remediation_-_Chronicle_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/16ffc1758735f7ac94990651419a94961c81f329/Packs/GoogleChronicleBackstory/doc_files/ChronicleAssets_Investigation_And_Remediation_-_Chronicle.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleChronicleBackstory/Playbooks/playbook-List_Device_Events_-_Chronicle_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/94f5c6cd2d456d700e20cc18c233cad547c04d63/Packs/GoogleChronicleBackstory/doc_files/List_Device_Events_-_Chronicle.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleChronicleBackstory/Playbooks/playbook-ChronicleAsset_Investigation_-_Chronicle_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/16ffc1758735f7ac94990651419a94961c81f329/Packs/GoogleChronicleBackstory/doc_files/ChronicleAsset_Investigation_-_Chronicle.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PhishingAlerts/Playbooks/playbook-Phishing_Alerts_-_Check_Severity_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/f49c8d86d18876948cd50ba32befb4f575420024/Packs/PhishingAlerts/doc_files/Phishing_Alerts_-_Check_Severity.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FireEyeHX/Playbooks/playbook-FireEye_HX_-_Unisolate_Endpoint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/FireEyeHX/doc_files/FireEye_HX_-_Unisolate_Endpoint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FireEyeHX/Playbooks/playbook-FireEye_HX_-_Isolate_Endpoint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/497a9bab0a9ca682950f322e71bd30c06f1af32c/Packs/FireEyeHX/doc_files/FireEye_HX_-_Isolate_Endpoint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Expanse_Unmanaged_Cloud_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/ExpanseV2/doc_files/Expanse_Unmanaged_Cloud.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Xpanse_Incident_Handling_-_Generic_README.md": [
+        "https://github.com/demisto/content/raw/97883646d9289a6d020bd511c1a268ec0ad5a70a/Packs/ExpanseV2/doc_files/Xpanse_Incident_Handling_-_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Extract_and_Enrich_Expanse_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/d0830e20f52f390a75c5ac3752f52c9df7ab77f1/Packs/ExpanseV2/doc_files/Extract_and_Enrich_Expanse_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-NSA_-_5_Security_Vulnerabilities_Under_Active_Nation-State_Attack_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0f623dce7c9542ad5346674529176553f2568de7/Packs/ExpanseV2/doc_files/NSA_-_5_Security_Vulnerabilities_Under_Active_Nation-State_Attack.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Handle_Expanse_Incident_README.md": [
+        "https://github.com/demisto/content/raw/6f6b91706ecfd8a193f98b711c108edde7ece906/Packs/ExpanseV2/doc_files/Handle_Expanse_Incident.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Expanse_Attribution_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/ExpanseV2/doc_files/Expanse_Attribution.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Expanse_Find_Cloud_IP_Address_Region_and_Service_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/d0830e20f52f390a75c5ac3752f52c9df7ab77f1/Packs/ExpanseV2/doc_files/Expanse_Find_Cloud_IP_Address_Region_and_Service.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Expanse_VM_Enrich_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/ExpanseV2/doc_files/Expanse_VM_Enrich.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Expanse_Enrich_Cloud_Assets_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/d0830e20f52f390a75c5ac3752f52c9df7ab77f1/Packs/ExpanseV2/doc_files/Expanse_Enrich_Cloud_Assets.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExpanseV2/Playbooks/playbook-Handle_Expanse_Incident_-_Attribution_Only_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/ExpanseV2/doc_files/Handle_Expanse_Incident_-_Attribution_Only.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Send_Investigation_Summary_Reports_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Send_Investigation_Summary_Reports.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Send_Investigation_Summary_Reports_Job_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Send_Investigation_Summary_Reports_Job.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-File_Enrichment_-_File_reputation_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_File_reputation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_-_Critical_Assets_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Critical_Assets_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_-_Indicators_DBotScore_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Indicators_DBotScore.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-GenericPolling_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/GenericPolling.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Dedup_-_Generic_v2_README.md": [
+        "https://github.com/demisto/content/raw/bd4b287e4642b242e8befcd6e832b66c4b03af97/Packs/CommonPlaybooks/doc_files/Dedup_-_Generic_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-DBot_Indicator_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Indicator_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Wait_Until_Datetime_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Wait_Until_Datetime.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Calculate_Severity_-_3rd-party_integrations_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_3rd-party_integrations.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Recovery_Plan_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/f3d7d9140f4d82efde1704ed92b8de3176c35b2e/Packs/CommonPlaybooks/doc_files/Recovery_Plan.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Field_Polling_README.md": [
+        "https://github.com/demisto/content/raw/978fcd6bff93c2c821cd5f2104bd3f20ee33bf87/Packs/CommonPlaybooks/doc_files/playbook-Field_Polling.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CommonPlaybooks/Playbooks/playbook-Isolate_Endpoint_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Isolate_Endpoint_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Wiz/Playbooks/Assess_Wiz_Issues_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/Wiz/Author_image.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_SIEM/Playbooks/playbook-TIM_-_Add_Domain_Indicators_To_SIEM_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_SIEM/doc_files/TIM_-_Add_Domain_Indicators_To_SIEM.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_SIEM/Playbooks/playbook-TIM_-_Add_Bad_Hash_Indicators_To_SIEM_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_SIEM/doc_files/TIM_-_Add_Bad_Hash_Indicators_To_SIEM.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_SIEM/Playbooks/playbook-TIM_-_Add_Url_Indicators_To_SIEM_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_SIEM/doc_files/TIM_-_Add_Url_Indicators_To_SIEM.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_SIEM/Playbooks/playbook-TIM_-_Add_All_Indicator_Types_To_SIEM_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_SIEM/doc_files/TIM_-_Add_All_Indicator_Types_To_SIEM.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_SIEM/Playbooks/playbook-TIM_-_Add_IP_Indicators_To_SIEM_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_SIEM/doc_files/TIM_-_Add_IP_Indicators_To_SIEM.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/AWS-IAM/Playbooks/playbook-AWS_IAM_-_User_enrichment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/e77df420e17966a544c5659eafe975edfa84b2bf/Packs/AWS-IAM/doc_files/AWS_IAM_user_enrichment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Bonusly/Playbooks/Bonusly_-_AutoGratitude_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/014a50dcaac847219e23c996ddf622e1360547a1/Packs/Bonusly/doc_files/Bonusly_-_AutoGratitude.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExtraHop/Playbooks/playbook-ExtraHop_-_Get_Peers_by_Host_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ExtraHop_Get_Peers_by_Host.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ExtraHop/Playbooks/playbook-ExtraHop_-_Default_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ExtraHop_Default.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Carbon_Black_Enterprise_Response/Playbooks/playbook-Get_binary_file_from_Carbon_Black_by_its_MD5_hash_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/Carbon_Black_Enterprise_Response/doc_files/Get_binary_file_from_Carbon_Black_by_MD5_hash.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Carbon_Black_Enterprise_Response/Playbooks/playbook-Carbon_Black_Response_-_Unisolate_Endpoint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/Carbon_Black_Enterprise_Response/doc_files/Carbon_Black_Response_-_Unisolate_Endpoint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Carbon_Black_Enterprise_Response/Playbooks/playbook-Get_File_Sample_From_Path_-_Carbon_Black_Enterprise_Response_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_From_Path_Carbon_Black_Enterprise_Response.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Carbon_Black_Enterprise_Response/Playbooks/playbook-Get_File_Sample_By_Hash_-_Carbon_Black_Enterprise_Response_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Carbon_Black_Enterprise_Response.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MicrosoftExchangeOnline/Playbooks/playbook-Office_365_Search_and_Delete_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Office_365_Search_and_Delete.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Logzio/Playbooks/Logzio_Indicator_Hunting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/14cab9aeb5118a43188e919cc91a36438a1c5635/Packs/Logzio/doc_imgs/Logz.io_Indicator_Hunting.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Logzio/Playbooks/Logzio_Handle_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/3cf14921e3e322c96eaf85fa5b161a07616a32fe/Packs/Logzio/doc_imgs/Logz.Io_Handle_Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_-_Block_IP_-_Static_Address_Group_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Block_IP_Static_Address_Group.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_DAG_Configuration_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_DAG_Configuration.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_-_Block_URL_-_Custom_URL_Category_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Block_URL_Custom_URL_Category.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_-_Block_IP_-_Custom_Block_Rule_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Block_IP_Custom_Block_Rule.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-Panorama_Query_Logs_6_2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Panorama_Query_Logs.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_Query_Logs_For_Indicators_6_2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Query_Logs_For_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_-_Create_Or_Edit_Rule_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Create_Or_Edit_Rule.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_-_Add_Static_Routes_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Add_Static_Routes.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_-_Delete_Static_Routes_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Delete_Static_Routes.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PAN-OS/Playbooks/playbook-PAN-OS_Log_Forwarding_Setup_And_Maintenance_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Log_Forwarding_Setup_And_Maintenance.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ShiftManagement/Playbooks/Assign_Active_Incidents_to_Next_Shift_V2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/b38c74f48cef1fd878e3a326abf3676e92cc2654/Packs/ShiftManagement/doc_files/Shift_management_-_Assign_Active_Incidents_to_Next%20Shift_V2.PNG"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ShiftManagement/Playbooks/Set_up_a_Shift_handover_meeting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/b38c74f48cef1fd878e3a326abf3676e92cc2654/Packs/ShiftManagement/doc_files/Shift_management_-_Set_up_a_Shift_handover_meeting.PNG"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ShiftManagement/Playbooks/Shift_handover_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0f054e42b87d33cbce6cbdef8610b1f50bb06917/Packs/ShiftManagement/doc_files/Shift_management_-_Shift_handover.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Gurucul/Playbooks/playbook-GRACase-README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/Gurucul/doc_files/GraCases.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Gurucul/Playbooks/playbook-GRACase_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/Gurucul/doc_files/GraCases.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Polygon/Playbooks/playbook-Detonate_URL_-_Group-IB_TDS_Polygon_README.md": [
+        "https://github.com/demisto/content/raw/c81536f5842604b7e7f0be024721bdf07447992a/docs/images/playbooks/Detonate_URL_-_Group-IB_TDS_Polygon.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ANYRUN/Playbooks/playbook-Detonate_File_From_URL_-_ANYRUN_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_From_URL_ANYRUN.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ANYRUN/Playbooks/playbook-Detonate_File_-_ANYRUN_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_ANYRUN.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ANYRUN/Playbooks/playbook-Detonate_URL_-_ANYRUN_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_ANYRUN.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Traps/Playbooks/playbook-Traps_Scan_Endpoint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Scan_Endpoint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Traps/Playbooks/playbook-Block_File_-_Quarantine_-_Traps_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_File_Quarantine_Traps.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Traps/Playbooks/playbook-Traps_Blacklist_File_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Blacklist_File.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Traps/Playbooks/playbook-Traps_Retrieve_And_Download_Files_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Retrieve_And_Download_FIles.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Traps/Playbooks/playbook-Isolate_Endpoint_-_Traps_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Traps_Isolate_Endpoint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MicrosoftExchangeOnPremise/Playbooks/playbook-Search_And_Delete_Emails_-_EWS_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_And_Delete_Emails_EWS.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MicrosoftExchangeOnPremise/Playbooks/playbook-Process_Email_-_EWS_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_EWS.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SANS/Playbooks/playbook-SANS_-_Lessons_Learned_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/SANS_-_Lessons_Learned.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SANS/Playbooks/playbook-SANS_-_Incident_Handlers_Checklist_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/SANS_-_Incident_Handlers_Checklist.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Palo_Alto_Networks_WildFire/Playbooks/playbook-Detonate_URL_-_WildFire-v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_WildFire-v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Palo_Alto_Networks_WildFire/Playbooks/playbook-Detonate_File_From_URL_-_WildFire_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_From_URL_WildFire.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Palo_Alto_Networks_WildFire/Playbooks/playbook-Detonate_URL_-_WildFire-v2.1_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_WildFire-v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CuckooSandbox/Playbooks/playbook-Detonate_File_-_Cuckoo_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Cuckoo.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CuckooSandbox/Playbooks/playbook-Detonate_URL_-_Cuckoo_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Cuckoo.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Malware/Playbooks/playbook-Endpoint_Malware_Investigation_-_Generic_V2_README.md": [
+        "https://github.com/demisto/content/raw/ee07059dc8769d6f5652a4a07b668d63266cafaf/Packs/Malware/doc_files/Endpoint_Malware_Investigation_-_Generic_V2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Malware/Playbooks/playbook-Endpoint_Malware_Investigation_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Malware_Investigation_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Akamai_WAF/Playbooks/playbook-Akamai_WAF_-_Activate_Network_Lists_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Akamai_WAF_Activate_Network_Lists.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Lastline/Playbooks/playbook-Detonate_URL_-_Lastline_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Lastline.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Lastline/Playbooks/playbook-Detonate_URL_-_Lastline_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_Lastline_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Lastline/Playbooks/playbook-Detonate_File_-_Lastline_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Lastline.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Lastline/Playbooks/playbook-Detonate_File_-_Lastline_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_Lastline_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/NIST/Playbooks/playbook-NIST_-_Lessons_Learned_README.md": [
+        "https://github.com/demisto/content/raw/751f18104cb7f0a908b610393bc5fb29ff3b9967/Packs/NIST/doc_files/NIST_-_Lessons_Learned.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/NIST/Playbooks/playbook-NIST_-_Handling_an_Incident_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/NIST_Handling_an_Incident_Template.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Whois/Playbooks/playbook-TIM_-_Process_Domains_With_Whois_README.md": [
+        "https://github.com/demisto/content/raw/b87122fb25b376e3f74e36a8fa9984116ff3b30b/Packs/Whois/doc_files/TIM_-_Process_Domains_With_Whois.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Whois/Playbooks/playbook-TIM_-_Process_Domain_Age_With_Whois_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/b1805708a947057d21f9b82a3270b3a6de5f7469/Packs/Whois/doc_files/TIM_-_Process_Domain_Age_With_Whois.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Arcanna/Playbooks/playbook-Arcanna-Generic-Investigation_README.md": [
+        "https://github.com/demisto/content/assets/24822739/96220ef5-a3af-4ff7-bd0f-29336f8e1e02"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Arcanna/Playbooks/playbook-Arcanna-Generic-Investigation-V2-With-Feedback_README.md": [
+        "https://user-images.githubusercontent.com/6702878/124025997-cdeede80-d9f9-11eb-8faa-e297c7cd3ca7.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/OpenCTI/Playbooks/OpenCTI_-_Create_Indicator_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6658b5fc7c87cd5a5c189a4da8ad77c4a840585a/Packs/OpenCTI/doc_files/OpenCTI_-_Create_Indicator.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tenable_io/Playbooks/playbook-Tenable_io_Scan_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tenable_io_Scan.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Active_Directory_Query/Playbooks/playbook-Active_Directory_Investigation_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ee0c80f7977b1ae2701f5499859a1b70f17cb68b/Packs/Active_Directory_Query/doc_files/Active_Directory_Investigation.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Playbooks/playbook-TIM_-_QRadar_Add_Bad_Hash_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/QRadar/doc_files/TIM_-_QRadar_Add_Bad_Hash_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Playbooks/playbook-QRadarCorrelationLog_README.md": [
+        "https://user-images.githubusercontent.com/50324325/81265692-33d91380-904c-11ea-9937-4839f6df52b1.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Playbooks/playbook-TIM_-_QRadar_Add_IP_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/QRadar/doc_files/TIM_-_QRadar_Add_IP_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Playbooks/playbook-Access_Investigation_-_QRadar_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/7417184a2a92d69f7b06e32a41595395fd0f9bc9/Packs/QRadar/doc_files/Access_Investigation_-_QRadar.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Playbooks/playbook-TIM_-_QRadar_Add_Url_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/QRadar/doc_files/TIM_-_QRadar_Add_Url_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Playbooks/playbook-QRadar-GetOffenseCorrelationsV2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/7417184a2a92d69f7b06e32a41595395fd0f9bc9/Packs/QRadar/doc_files/QRadar_-_Get_offense_correlations_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/QRadar/Playbooks/playbook-TIM_-_QRadar_Add_Domain_Indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/QRadar/doc_files/TIM_-_QRadar_Add_Domain_Indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/HIPAA-BreachNotification/Playbooks/playbook-HIPAA_-_Breach_Notification_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/HIPAA-BreachNotification/doc_files/HIPAA_-_Breach_Notification.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrowdStrikeHost/Playbooks/playbook-CrowdStrike_Endpoint_Enrichment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CrowdStrike_Endpoint_Enrichment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrowdStrikeHost/Playbooks/playbook-Search_Endpoints_By_Hash_-_CrowdStrike_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_CrowdStrike.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Ransomware/Playbooks/playbook-ransomware_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ransomware.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GDPR/Playbooks/playbook-GDPR_Breach_Notification_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/GDPR_Breach_Notification.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Accessdata/Playbooks/playbook-Accessdata__Dump_memory_for_malicious_process_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Accessdata_Dump_memory_for_malicious_process.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EmployeeOffboarding/Playbooks/IT_-_Employee_Offboarding_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/IT_Employee_Offboarding.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EmployeeOffboarding/Playbooks/IT_-_Employee_Offboarding_-_Manual_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/IT_Employee_Offboarding_Manual.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EmployeeOffboarding/Playbooks/Employee_Offboarding_-_Gather_User_Information_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Gather_User_Information.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EmployeeOffboarding/Playbooks/Employee_Offboarding_-_Retain_&_Delete_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Retain_%26_Delete.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EmployeeOffboarding/Playbooks/Employee_Offboarding_-_Delegate_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Delegate.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EmployeeOffboarding/Playbooks/Employee_Offboarding_-_Revoke_Permissions_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Employee_Offboarding_Revoke_Permissions.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CloudConvert/Playbooks/CloudConvertConvertFile_README.md": [
+        "https://user-images.githubusercontent.com/72340690/100620498-2ad0cc00-3327-11eb-8959-3ec0726dbced.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/VirusTotal-Private_API/Playbooks/playbook-File_Enrichment_-_Virus_Total_Private_API_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_Virus_Total_Private_API.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EDL/Playbooks/Modify_EDL_README.md": [
+        "https://user-images.githubusercontent.com/91506078/159843984-16859c01-eb4e-4ebc-93a4-bed625b793e1.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/EDL/Playbooks/playbook-PAN-OS_EDL_Service_Configuration_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/EDL/doc_files/PAN-OS_EDL_Service_Configuration.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Rapid7_Nexpose/Playbooks/playbook-Scan_Nexpose_Site_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Scan_Nexpose_Site.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Rapid7_Nexpose/Playbooks/playbook-Scan_Nexpose_Assets_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Scan_Nexpose_Assets.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/JoeSecurity/Playbooks/playbook-Detonate_File_From_URL_-_JoeSecurity_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_From_URL_JoeSecurity.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/JoeSecurity/Playbooks/playbook-Detonate_File_-_JoeSecurity_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_JoeSecurity.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ML/Playbooks/playbook-DBot_Create_Phishing_Classifier_V2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier_V2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ML/Playbooks/playbook-DBot_Create_Phishing_Classifier_V2_Job_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier_V2_Job.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Symantec_Messaging_Gateway/Playbooks/playbook-Symantec_block_Email_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/d7d8d7fc1ddeb0e52e003fc29ec192373d889620/Packs/Symantec_Messaging_Gateway/docs_files/Symantec_block_Email.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Symantec_Messaging_Gateway/Playbooks/playbook-Block_Domain_-_Symantec_Messaging_Gateway_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/7d20d193ddfe06ad3ead0effb87db3e71fe675a8/Packs/Symantec_Messaging_Gateway/docs_files/Block_Domain_-_Symantec_Messaging_Gateway.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PaloAltoNetworks_PAN_OS_EDL_Management/Playbooks/playbook-PAN-OS_-_Block_Domain_-_External_Dynamic_List_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Block_Domain_External_Dynamic_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PaloAltoNetworks_PAN_OS_EDL_Management/Playbooks/playbook-PAN-OS_-_Block_IP_and_URL_-_External_Dynamic_List_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/PAN-OS_-_Block_IP_and_URL_-_External_Dynamic_List_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PaloAltoNetworks_PAN_OS_EDL_Management/Playbooks/playbook-PAN-OS_EDL_Setup_v3_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/PAN-OS_EDL_Setup_v3.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PaloAltoNetworks_PAN_OS_EDL_Management/Playbooks/playbook-Block_IOCs_from_CSV_-_External_Dynamic_List_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_IOCs_from_CSV_External_Dynamic_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MajorBreachesInvestigationandResponse/Playbooks/playbook-CVE-2021-1675_-_PrintNightmare_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/5e978763512b656661dc04ad65ce4f388dace3ac/Packs/MajorBreachesInvestigationandResponse/doc_files/CVE-2021-1675_-_PrintNightmare.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MajorBreachesInvestigationandResponse/Playbooks/playbook-SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook_README_5_9_9.md": [
+        "https://raw.githubusercontent.com/demisto/content/9d5ace6b2b1c3e6d40d8a36613d83217c62ef8b6/Packs/MajorBreachesInvestigationandResponse/doc_files/SolarStorm_and_SUNBURST_Hunting_and_Response_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/MajorBreachesInvestigationandResponse/Playbooks/playbook-Rapid_Breach_Response_-_Set_Incident_Info_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/2fb9f32873308d68a591f1c1c5400d78e8057884/Packs/MajorBreachesInvestigationandResponse/doc_files/Rapid_Breach_Response_-_Set_Incident_Info.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GroupIB_ThreatIntelligenceAttribution/Playbooks/Incident_Postprocessing_-_Group-IB_Threat_Intelligence_&_Attribution_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/951efb2cd026c6382d207447ee78eb3c5a1f97aa/Packs/GroupIB_ThreatIntelligenceAttribution/doc_files/Incident_Postprocessing_-_Group-IB_Threat_Intelligence_%26_Attribution_Wed_Oct_20_2021.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaSaasSecurity/Playbooks/Saas_Security_-_Take_Action_on_the_Incident_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/26042a9bc42a1d8b8267ac794e0692de938f2a62/Packs/PrismaSaasSecurity/doc_files/Take_Action_on_the_Incident_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/McAfee_Advanced_Threat_Defense/Playbooks/playbook-Detonate_File_-_McAfee_ATD_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/ATD_Detonate_File.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/McAfee_Advanced_Threat_Defense/Playbooks/playbook-Detonate_URL_-_McAfee_ATD_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_McAfee_ATD.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/NGFWTSAgentDeployment/Playbooks/NGFW_Remove_Offline_TS_Agent_README.md": [
+        "https://github.com/demisto/content/raw/103784c12ffdc0826c8610a1324dd60e7b4e2e13/Packs/NGFWTSAgentDeployment/doc_files/NGFW_Remove_Offline_TS_Agent_Fri_Feb_04_2022.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/NGFWTSAgentDeployment/Playbooks/PANW_NGFW_TS_Agent_Deployment_README.md": [
+        "https://github.com/demisto/content/raw/103784c12ffdc0826c8610a1324dd60e7b4e2e13/Packs/NGFWTSAgentDeployment/doc_files/PANW_NGFW_TS_Agent_Deployment_Fri_Feb_04_2022.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/NGFWTSAgentDeployment/Playbooks/JOB_-_PANW_NGFW_TS_Agent_Cleanup_README.md": [
+        "https://github.com/demisto/content/raw/103784c12ffdc0826c8610a1324dd60e7b4e2e13/Packs/NGFWTSAgentDeployment/doc_files/JOB_-_PANW_NGFW_TS_Agent_Cleanup_Fri_Feb_04_2022.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CortexXDR/Playbooks/playbook-Cortex_XDR_-_Run_script_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/2e19477c6355d781bf8f5c9dfdd1216a6bca07b7/Packs/CortexXDR/doc_files/Cortex_XDR_-_Run_script.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CortexXDR/Playbooks/playbook-Cortex_XDR_-_Block_File_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/d7b8843c1f247d799cde3e54a294e7b8e2f31af7/Packs/CortexXDR/doc_files/Cortex_XDR_-_Block_File.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CortexXDR/Playbooks/playbook-Cortex_XDR_disconnected_endpoints_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/eef4d1c2706bf41afa522d6cec8d092bc2e3e562/Packs/CortexXDR/doc_files/Cortex_XDR_disconnected_endpoints.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CortexXDR/Playbooks/playbook-JOB_-_Cortex_XDR_query_endpoint_device_control_violations_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/a5193eb37b596ddf338156ce7b5f99aae0b27b35/Packs/CortexXDR/doc_files/JOB_-_Cortex_XDR_query_endpoint_device_control_violations.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrowdStrikeFalcon/Playbooks/playbook-Crowdstrike_Falcon_-_Isolate_Endpoint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6f43af05ffb84712ada1b960cde85de91f409cb7/Packs/CrowdStrikeFalcon/doc_files/Crowdstrike_Falcon_-_Isolate_Endpoint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrowdStrikeFalcon/Playbooks/playbook-Crowdstrike_Falcon_-_Unisolate_Endpoint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/4966d5a5c9b80af03106f8da8dcd8512b3cb259e/Packs/CrowdStrikeFalcon/doc_files/Crowdstrike_Falcon_-_Unisolate_Endpoint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Mimecast/Playbooks/playbook-Get_Email_From_Email_Gateway_-_Mimecast_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/Mimecast/doc_files/Get_Email_From_Email_Gateway_-_Mimecast.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Okta/Playbooks/playbook-Allow_IP_-_Okta_Zone_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/Okta/doc_files/Allow_IP_-_Okta_Zone.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PaloAltoNetworks_IoT/Playbooks/playbook-iot-with-servicenow-playbook_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/92edd9fcaa5edf797748bce9182cde2730ea08e1/Packs/PaloAltoNetworks_IoT/doc_files/Palo_Alto_Neworks_IoT_Security_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PaloAltoNetworks_IoT/Playbooks/playbook-iot-check-servicenow_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/92edd9fcaa5edf797748bce9182cde2730ea08e1/Packs/PaloAltoNetworks_IoT/doc_files/Palo_Alto_Neworks_IoT_Security_ServiceNow_Check.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloudCompute/Playbooks/Prisma_Cloud_Compute_-_Vulnerability_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Prisma_Cloud_Compute_Vulnerability_Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloudCompute/Playbooks/Prisma_Cloud_Compute_-_Compliance_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Prisma_Cloud_Compute_Compliance_Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloudCompute/Playbooks/Prisma_Cloud_Compute_-_Cloud_Discovery_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Prisma_Cloud_Compute_Cloud_Discovery_Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloudCompute/Playbooks/Prisma_Cloud_Compute_-_Audit_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Prisma_Cloud_Compute_Audit_Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PhishLabs/Playbooks/playbook-PhishLabsPopulateIndicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PhishLabsPopulateIndicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PhishLabs/Playbooks/playbook-PhishLabsWhitelistIndicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PhishLabsWhitelistIndicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrowdStrikeFalconSandbox/Playbooks/playbook-Detonate_URL_-_CrowdStrike_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_URL_CrowdStrike.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrowdStrikeFalconSandbox/Playbooks/playbook-Detonate_File_-_CrowdStrike_Falcon_Sandbox_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CrowdStrike_Falcon_Sandbox_Detonate_file.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/HybridAnalysis/Playbooks/playbook-Detonate_File_-_HybridAnalysis_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/bf8a2c7a52660270f2feb78b649076aa204a25e3/Packs/HybridAnalysis/doc_files/Detonate_File_HybridAnalysis.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/HybridAnalysis/Playbooks/playbook-Hybrid-analysis_quick-scan_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/bf8a2c7a52660270f2feb78b649076aa204a25e3/Packs/HybridAnalysis/doc_files/Hybrid-analysis_quick-scan.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/D2/Playbooks/playbook-Get_File_Sample_From_Path_-_D2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_From_Path_D2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/D2/Playbooks/playbook-D2_-_Endpoint_data_collection_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/D2_Endpoint_data_collection.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ProofpointServerProtection/Playbooks/playbook-Get_Email_From_Email_Gateway_-_Proofpoint_Protection_Server_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/5153dd815b5288877b560e3fdcc3d9ab28cda57e/Packs/ProofpointServerProtection/doc_files/Get_Email_From_Email_Gateway_-_Proofpoint_Protection_Server.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Uptycs/Playbooks/playbook-Uptycs_-_Bad_IP_Incident_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Uptycs_Bad_IP_Incident.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Uptycs/Playbooks/playbook-Uptycs_-_Outbound_Connection_to_Threat_IOC_Incident_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Uptycs_Outbound_Connection_to_Threat_IOC_Incident.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrisisManagement/Playbooks/Continuously_Process_Survey_Responses_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Continuously_Process_Survey_Responses.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrisisManagement/Playbooks/Process_Survey_Response_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Process_Survey_Response.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CrisisManagement/Playbooks/Employee_Status_Survey_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Employee_Status_Survey.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/VMRay/Playbooks/playbook-VMRay-File-Enrichment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/60e253f2612941a5868c069dac05a06d9eed8360/docs/images/playbooks/File_Enrichment_VMRay.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Slack/Playbooks/playbook-Slack_-_General_Failed_Logins_v2.1_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Slack_-_General_Failed_Logins_v2.1.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Phishing/Playbooks/Calculate_Severity_By_Email_Authenticity_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/7a20daa4d3560df3be0d2f3f41c00d43ac1a1e23/Packs/Phishing/doc_files/Calculate_Severity_By_Email_Authenticity.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Phishing/Playbooks/Get_Original_Email_-_Gmail_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/7a20daa4d3560df3be0d2f3f41c00d43ac1a1e23/Packs/Phishing/doc_files/Get_Original_Email_Gmail.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Phishing/Playbooks/Phishing_-_Core_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/db1f80d334d03013923c6a9188b1a78fe87f55d4/Packs/Phishing/doc_files/Phishing_-_Core.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Phishing/Playbooks/Phishing_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/fa5df62bb61153a5602bbf9fb97ef7a1181f44a8/Packs/Phishing/doc_files/Phishing_Playbook_-_Manual.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Phishing/Playbooks/Process_Email_-_Core_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/82895af983e287954ef4565db548f9ae91d0487a/Packs/Phishing/doc_files/Process_Email_-_Core.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Azure-Enrichment-Remediation/Playbooks/playbook-Cloud_Response_-_Azure_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/37db8986e1fd776d2264975f321ef82022c24512/Packs/Azure-Enrichment-Remediation/doc_files/Cloud_Response_-_Azure.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PcapAnalysis/Playbooks/playbook-PCAP_Parsing_And_Indicator_Enrichment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/4aafc23b561dbda28a476869e411829e5de23214/Packs/PcapAnalysis/doc_files/PCAP_Parsing_And_Indicator_Enrichment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PcapAnalysis/Playbooks/playbook-PCAP_File_Carving_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/e0d6d4931c90beed5db6a76db0c1d71bd6181b6f/Packs/PcapAnalysis/doc_files/PCAP_File_Carving.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PcapAnalysis/Playbooks/playbook-PCAP_Analysis_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/bcca716ea174ff2dc7716db18d86872b1aab05c4/Packs/PcapAnalysis/doc_files/PCAP_Analysis.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PcapAnalysis/Playbooks/playbook-PCAP_Search_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/92a11ee3040136818c9a7dc34d05b2c87b33f4be/Packs/PcapAnalysis/doc_files/PCAP_Search.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Sixgill-Darkfeed/Playbooks/Darkfeed_IOC_detonation_and_proactive_blocking_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/3aa893886a4453c62cf25c3e338820e621e1a10b/Packs/Sixgill-Darkfeed/doc_files/Darkfeed_IOC_detonation_and_proactive_blocking.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Sixgill-Darkfeed/Playbooks/Darkfeed_-_malware_download_from_feed_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/3aa893886a4453c62cf25c3e338820e621e1a10b/Packs/Sixgill-Darkfeed/doc_files/Darkfeed_-_malware_download_from_feed.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BreachNotification-US/Playbooks/playbook-Residents_Notification_-_Breach_Notification_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ddf1dde33bee934554152c990a1b9fee54645142/Packs/BreachNotification-US/doc_files/Residents_Notification.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BreachNotification-US/Playbooks/playbook-PII_Check_-_Breach_Notification_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ddf1dde33bee934554152c990a1b9fee54645142/Packs/BreachNotification-US/doc_files/PII_Check_-_Breach_Notification.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BreachNotification-US/Playbooks/playbook-California_-_Breach_Notification_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ddf1dde33bee934554152c990a1b9fee54645142/Packs/BreachNotification-US/doc_files/California_-_Breach_Notification.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BreachNotification-US/Playbooks/playbook-US_-_Breach_Notification_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/BreachNotification-US/doc_files/US_-_Breach_Notification.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BreachNotification-US/Playbooks/playbook-New_York_-_Breach_Notification_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/ddf1dde33bee934554152c990a1b9fee54645142/Packs/BreachNotification-US/doc_files/New_York_-_Breach_Notification.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Search_Endpoints_By_Hash_-_Carbon_Black_Response_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_Carbon_Black_Response.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Calculate_Severity_-_Critical_assets_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Critical_assets.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-VulnerabilityHandling_-_Qualys_-_CustomFieldsToDefaultLayout_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/VulnerabilityHandling_Qualys_AddCustomFieldsToDefaultLayout.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-File_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/File_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Email_Address_Enrichment_-_Generic_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Email_Address_Enrichment_Generic_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Email_Address_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Email_Address_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-PAN-OS_-_Block_IP_and_URL_-_External_Dynamic_List_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_Block_IP_and_URL_External_Dynamic_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-PANW_-_Hunting_and_threat_detection_by_indicator_type_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PANW_Hunting_and_threat_detection_by_indicator_type_V2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/PANW_-_Hunting_and_threat_detection_by_indicator_type_V2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PANW_Hunting_and_threat_detection_by_indicator_type_V2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Vulnerability_Handling_-_Qualys_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Vulnerability_Handling_Qualys.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-FailedLogin_SlackV2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Failed_Login_Playbook_Slack_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-QRadar_-_Get_offense_correlations__README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/QRadar_Get_offense_correlations.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Endpoint_data_collection_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_data_collection.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-C&C-Communication-Hunting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/C_and_C_Communication_Hunting.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v2_README.md": [
+        "https://github.com/demisto/content/raw/df6bb54423cd8240018434d008721778c282510b/Packs/PANWComprehensiveInvestigation/doc_files/Palo_Alto_Networks_-_Endpoint_Malware_Investigation_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Domain_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Domain_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Checkpoint_Firewall_Configuration_Backup_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Checkpoint_Firewall_Configuration_Backup.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Calculate_Severity_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Calculate_Severity_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Rapid_IOC_Hunting_Playbook_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Rapid_IOC_Hunting_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-McAfee_ePO_Repository_Compliance_Playbook_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/McAfee_ePO_Repository_Compliance_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Block_IP_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_IP_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Extract_Indicators_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Extract_Indicators_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Block_File_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_File_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Entity_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Entity_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Malware_Investigation_-_Generic_-_Setup_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Malware_Investigation_Generic_Setup.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-URL_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/URL_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Search_Endpoints_By_Hash_-_Generic_4_5_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Search_Endpoints_By_Hash_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Account_Enrichment_-_Generic_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Account_Enrichment_Generic_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Endpoint_Enrichment_-_Generic_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Enrichment_Generic_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-DBotCreatePhishingClassifier_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Dedup_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Dedup_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Hunt_Extracted_Hashes_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/Hunting/doc_files/Hunt_Extracted_Hashes.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Account_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Account_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Extract_Indicators_From_File_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Extract_Indicators_From_File_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Process_Email_-_Add_custom_fields_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Process_Email_Add_custom_fields.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Block_Indicators_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Block_Indicators_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-DeDup_incidents_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DeDup_incidents.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-PAN-OS_EDL_Setup_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PAN-OS_EDL_Setup.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Phishing_Investigation_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Phishing_Investigation_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Hunt_for_bad_IOCs_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Hunt_for_bad_IOCs.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-IP_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/IP_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-McAfee_ePO_Endpoint_Compliance_Playbook_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/McAfee_ePO_Endpoint_Compliance_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Enrich_DXL_with_ATD_verdict_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Enrich_DXL_with_ATD_verdict.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Add_Indicator_to_Miner_-_Palo_Alto_MineMeld_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Add_Indicator_to_Miner_Palo_Alto_MineMeld.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Malware_Investigation_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Malware_Investigation_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-DeDup_incidents_-_ML_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DeDup_incidents_-_ML.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Enrich_McAfee_DXL_using_3rd_party_sandbox_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Enrich_McAfee_DXL_using_3rd_party_sandbox.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Get_File_Sample_By_Hash_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-DBotCreatePhishingClassifierJob_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Create_Phishing_Classifier_Job.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Carbon_Black_Rapid_IOC_Hunting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Carbon_Black_Rapid_IOC_Hunting.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Endpoint_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Endpoint_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-PanoramaQueryTrafficLogs_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PanoramaQueryTrafficLogs.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-CrowdStrike_Rapid_IOC_Hunting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CrowdStrike_Rapid_IOC_Hunting.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/DeprecatedContent/Playbooks/playbook-Demisto_Self-Defense_-_Account_policy_monitoring_playbook_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Demisto_Self-Defense_Account_policy_monitoring_playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Anomali_ThreatStream/Playbooks/playbook-Detonate_File_-_ThreatStream_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_ThreatStream.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Tenable_sc/Playbooks/playbook-tenable.sc-scan_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tenable_sc_scan.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-IP_Whitelist_And_Exclusion_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/IP_Whitelist_And_Exclusion_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Vulnerability_Scan_-_RiskIQ_Digital_Footprint_-_Tenable.io_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/Vulnerability_Scan_-_RiskIQ_Digital_Footprint_-_Tenable.io.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-RiskIQAsset_Enrichment_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/RiskIQAsset_Enrichment_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Check_IP_Address_For_Whitelisting_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/Check_IP_Address_For_Whitelisting_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Check_Indicators_For_Unkown_Assets_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/Check_Indicators_For_Unknown_Assets_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Add_Unknown_Indicators_To_Inventory_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/Add_Unknown_Indicators_To_Inventory_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-RiskIQAsset_Basic_Information_Enrichment_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/RiskIQAsset_Basic_Information_Enrichment_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Auto_Add_Assets_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/Auto_Add_Assets_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Auto_Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/RiskIQDigitalFootprint/doc_files/Auto_Update_Or_Remove_Assets_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/RiskIQDigitalFootprint/Playbooks/playbook-Enrich_Incident_With_Asset_Details_-_RiskIQ_Digital_Footprint_README.md": [
+        "https://github.com/demisto/content/raw/89de9c30e0dac047d5a3b66250e804717da35dd2/Packs/RiskIQDigitalFootprint/doc_files/Enrich_Incident_With_Asset_Details_-_RiskIQ_Digital_Footprint.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/NTT_Cyber_Threat_Sensor/Playbooks/Handle_TD_events_README.md": [
+        "https://github.com/demisto/content/raw/a34dd05bc5fdaf1e2d17fe4b82bcd7098ace6463/Packs/NTT_Cyber_Threat_Sensor/doc_files/Handle_TD_events.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CyberTotal/Playbooks/CyberTotal_Whois_-_CyCraft_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/CyberTotal/doc_files/CyberTotalWhois.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CyberTotal/Playbooks/CyberTotal_Auto_Enrichment_-_CyCraft_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/CyberTotal/doc_files/CyberTotalAutoEnrichment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SNDBOX/Playbooks/playbook-Detonate_File_-_SNDBOX_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Detonate_File_SNDBOX.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FireMonSecurityManager/Playbooks/playbook-FireMon_Pre_Change_Assessment_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/daf3dab8a76d316777520a23d4747d2c9fbda5aa/Packs/FireMonSecurityManager/Playbooks/playbook-FireMon_Pre_Change_Assessment.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FireMonSecurityManager/Playbooks/playbook-FireMon_Create_Policy_Planner_Ticket_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/daf3dab8a76d316777520a23d4747d2c9fbda5aa/Packs/FireMonSecurityManager/Playbooks/playbook-FireMon_Create_Policy_Planner_Ticket.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ShadowIT/Playbooks/playbook-Handle_Shadow_IT_Incident_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/648779658c81bf10e86d0aaf106d3626b6d9e5bc/Packs/ShadowIT/doc_files/Handle_Shadow_IT_Incident.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ServiceNow/Playbooks/playbook-ServiceNow_Ticket_State_Polling_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/ServiceNow/doc_files/ServiceNow_Ticket_State_Polling.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/ServiceNow/Playbooks/playbook-Mirror_ServiceNow_Ticket_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/master/Packs/ServiceNow/doc_files/Mirror_ServiceNow_Ticket.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/FeedAWS/Playbooks/playbook-TIM_-_Process_AWS_indicators_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/8206fc4ae62e42cb218085fab9a4b0cd10496300/Packs/FeedAWS/doc_files/TIM_-_Process_AWS_indicators.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SplunkPy/Playbooks/playbook-Splunk_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1612bb1a42cd5c913d76775970f14a5bc2578695/Packs/SplunkPy/doc_files/Splunk_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/SplunkPy/Playbooks/playbook-Splunk_Indicator_Hunting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Splunk_Indicator_Hunting.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_GCP_Kub_Engine_Cluster_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_Kub_Engine_Cluster_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_GCP_VPC_Network_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_AWS_EC2_Instance_Misconfig_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PCR_AWS_EC2_Instance_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_AWS_IAM_Policy_Misconfig_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PCR_AWS_IAM_Policy_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_GCP_VPC_Network_Project_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Project_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PrismaCloudRemediation_-_AWSInactiveUsersForMoreThan30Days_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PrismaCloudRemediation_AWSInactiveUsersForMoreThan30Days.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PrismaCloudRemediation_-_AWSSecurityGroupsTrafficToTCPPort_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PrismaCloudRemediation_AWSSecurityGroupsAllowInternetTrafficToTCPPort.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_Azure_Network_Security_Group_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_Network_Security_Group_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_GCP_Kub_Engine_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_Kub_Engine_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_Azure_Network_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_Network_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_GCP_VPC_Network_Firewall_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_GCP_VPC_Network_Firewall_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_Azure_SQL_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_SQL_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_AWS_IAM_Password_Policy_Misconfig_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PCR_AWS_IAM_Password_Policy_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_Azure_SQL_Database_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_SQL_Database_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_-_Find_Public_Cloud_Resource_by_Public_IP_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/852016ad0103ba42e8b5c8f596246fd14a4e7a90/Packs/PrismaCloud/doc_files/Prisma_Cloud_-_Find_Public_Cloud_Resource_by_Public_IP.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_Correlate_Alerts_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/852016ad0103ba42e8b5c8f596246fd14a4e7a90/Packs/PrismaCloud/doc_files/Prisma_Cloud_Correlate_Alerts.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_Azure_AKS_Cluster_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_AKS_Cluster_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-PCR_-_Azure_AKS_Misconfig_README.md": [
+        "https://github.com/demisto/content/raw/master/Packs/PrismaCloud/doc_files/PCR_-_Azure_AKS_Misconfig.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_-_Find_Public_Cloud_Resource_by_FQDN_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/852016ad0103ba42e8b5c8f596246fd14a4e7a90/Packs/PrismaCloud/doc_files/Prisma_Cloud_-_Find_Public_Cloud_Resource_by_FQDN.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloud/Playbooks/playbook-Prisma_Cloud_-_VM_Alert_Prioritization_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/98ead849e9e32921f64f7ac07fda2bff1b5f7c0b/Packs/PrismaCloud/doc_files/Prisma_Cloud_-_VM_Alert_Prioritization_Video.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/trendMicroDsm/Playbooks/playbook-TrendMicro_Malware_Alert_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/TrendMicro_Malware_Alert.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/BPA/Playbooks/playbook-BPA_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Palo_Alto_Networks_BPA_Playbook.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PhishUp/Playbooks/PhishUp_Mail_Scanner_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/69bf4f8875443f05bad0be5bbbfdcc56bb1fe419/Packs/PhishUp/doc_files/PhishUp_Mail_Scanner.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Endace/Playbooks/playbook_Endace_Search_Archive_Download_PCAP_v2_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/495a2da87de9d6a64d87d48876f2033139431197/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_Download_PCAP_v2.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Endace/Playbooks/playbook_Endace_Search_Archive_Download_PCAP_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6076f09ff5093102f383da8c11dfce0b12331d82/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_Download_PCAP.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/Endace/Playbooks/playbook_Endace_Search_Archive_Download_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/6076f09ff5093102f383da8c11dfce0b12331d82/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_and_Download.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/OnboardingIntegration/Playbooks/playbook-PhishingDemo-Onboarding_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PhishingDemo-Onboarding.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleVault/Playbooks/playbook-GVault_-_Search_Drive_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Google_Vault_Search_Drive.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleVault/Playbooks/playbook-GVault_-_Search_Groups_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Google_Vault_Search_Groups.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleVault/Playbooks/playbook-Display_Results_-_GVault_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Google_Vault_Display_Results.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/GoogleVault/Playbooks/playbook-GVault_-_Search_Mail_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Google_Vault_Search_Mail.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PenfieldAI/Playbooks/Penfield_Assign_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/21bd874b23f776e5e9706a8e2125b9d8b78e3224/docs/images/playbooks/Penfield_Assign.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/C2sec/Playbooks/playbook-C2SEC-Domain_Scan_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/C2SEC_Domain_Scan.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/CVESearch/Playbooks/playbook-CVE_Enrichment_-_Generic_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CVE_Enrichment_Generic.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaAccess/Playbooks/playbook-Prisma_Access_-_Connection_Health_Check_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/b3a446de893a8ab8b0b256640c206d7533f45ae6/Packs/PrismaAccess/doc_files/Prisma_Access_Tunnel_Health.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaAccess/Playbooks/playbook-Prisma_Access_-__Logout_User_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/c20427ed8dde64841a1249b5d7c44e8773df2b72/Packs/PrismaAccess/doc_files/Prisma_Access_-__Logout_User.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaAccess/Playbooks/playbook-Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/PrismaAccess/doc_files/Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_Indicators_-_Fully_Automated_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_-_Fully_Automated.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_File_Indicators_With_File_Hash_Type_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Process_File_Indicators_With_File_Hash_Type.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_Indicators_Against_Approved_Hash_List_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_Against_Approved_Hash_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_Indicators_Manual_Review_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_-_Manual_Review.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_Indicators_Against_Business_Partners_URL_List_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_Against_Business_Partners_URL_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Review_Indicators_Manually_For_Whitelisting_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Review_Indicators_Manually_For_Whitelisting.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Indicator_Auto_Processing_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/af0957a7f2d6633bfd8e0083d70809463313ca66/Packs/TIM_Processing/doc_files/TIM_-_Indicator_Auto_Processing.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_CIDR_Indicators_By_Size_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Process_CIDR_Indicators_By_Size.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_Indicators_Against_Business_Partners_Domains_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_Against_Business_Partners_IP_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Update_Indicators_Organizational_External_IP_Tag_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cccd5a9429521a24db91a981e7d2157df187a4df/Packs/TIM_Processing/doc_files/TIM_-_Update_Indicators_Organizational_External_IP_Tag.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Run_Enrichment_For_All__Indicator_Types_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Run_Enrichment_For_All_Indicator_Types.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Indicators_Exclusion_By_Related_Incidents_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/75e7294b81733c91e2be73477d5544b186bcb692/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_Exclusion_By_Related_Incidents.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Review_Indicators_Manually_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/0ce0007e6dcec27648d6dd4d30a432de945681f1/Packs/TIM_Processing/doc_files/TIM_-_Review_Indicators_Manually.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_Indicators_Against_Business_Partners_IP_List_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/e92ff661c91a592df117d0e1ea7e3234568946d0/Packs/TIM/doc_files/TIM_-_Process_Indicators_Against_Business_Partners_IP_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TIM_Processing/Playbooks/playbook-TIM_-_Process_Indicators_Against_Organizations_External_IP_README.md": [
+        "https://raw.githubusercontent.com/demisto/content/cccd5a9429521a24db91a981e7d2157df187a4df/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_Against_Organizations_External_IP_List.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/TeamManagement/Playbooks/playbook-Set_Team_Members_README.md": [
+        "https://user-images.githubusercontent.com/53576129/123927657-f7b9ee00-d984-11eb-820b-adc37801f104.png"
+    ],
+    "/Users/mmorag/dev/demisto/content/Packs/PrismaCloudComputeReporting/Playbooks/Prisma_Cloud_Compute_Vulnerability_and_Compliance_Reporting_README.md": [
+        "https://github.com/demisto/content/raw/ce5b68827e8ea6fb0cdb7fb50b3bcfb6fa2d0db0/Packs/PrismaCloudComputeReporting/doc_files/Prisma_Cloud_Compute_Vulnerability_and_Compliance_Reporting.png"
+    ]
+}
