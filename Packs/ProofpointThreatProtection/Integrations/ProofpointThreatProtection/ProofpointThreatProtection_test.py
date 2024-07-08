@@ -9,20 +9,35 @@ import urllib3
 urllib3.disable_warnings()
 
 ''' CONSTANTS '''
+
+TEST_SERVER_IP_BINDING = "127.0.0.1"
+TEST_SERVER_TCP_PORT = 8000
+
 TEST_WITH_FASTAPI_SERVER = True
 
 try:
+    ''' TEST LOAD the FastAPI/Uvicorn server-side mock server. '''
     from test_data.ProofpointThreatProtection_fastapi_server import app
     from time import sleep
     from multiprocessing import Process
     import uvicorn
 
+    def _testload_run_uvicorn_server():
+        uvicorn.run(app, host=TEST_SERVER_IP_BINDING, port=TEST_SERVER_TCP_PORT, workers=1, log_level=50)
+
+    def _testload_run_server_process():
+        sp = Process(target=_testload_run_uvicorn_server)
+        sp.start()
+        return sp
+
+    _testload_server_process = _testload_run_server_process()
+    sleep(.5)
+    _testload_server_process.kill()
+    _testload_server_process = None
+
 except Exception:
     TEST_WITH_FASTAPI_SERVER = False
 
-
-TEST_SERVER_IP_BINDING = "127.0.0.1"
-TEST_SERVER_TCP_PORT = 8000
 
 TEST_SERVER_BASE_URL = f'http://{TEST_SERVER_IP_BINDING}:{TEST_SERVER_TCP_PORT}/api/v1'
 TEST_AUTH_HOST = f'http://{TEST_SERVER_IP_BINDING}:{TEST_SERVER_TCP_PORT}/v1'
