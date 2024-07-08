@@ -198,7 +198,7 @@ def main():
             proxy=proxy,
             headers={
                 'x-apikey': params['credentials']['password'],
-                'x-tool': 'CortexGTICategorizedFeeds',
+                'x-tool': 'CortexGTIFeeds',
             }
         )
 
