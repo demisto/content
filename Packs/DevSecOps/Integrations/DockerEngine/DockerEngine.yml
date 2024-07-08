@@ -51,7 +51,7 @@ script:
       name: keep_storage
     - description: Remove all types of build cache
       name: prune_all
-    - description:  "A JSON encoded value of the filters (a `map[string][]string`) to process on the list of build cache objects.  Available filters:  - `until= duration `: duration relative to daemon's time, during which build cache was not used, in Go's duration format (e.g., '24h') - `id= id ` - `parent= id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private` "
+    - description: "A JSON encoded value of the filters (a `map[string][]string`) to process on the list of build cache objects.  Available filters:  - `until= duration `: duration relative to daemon's time, during which build cache was not used, in Go's duration format (e.g., '24h') - `id= id ` - `parent= id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private` "
       name: filters
     description: Delete builder cache
     name: docker-build-prune
