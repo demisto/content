@@ -993,7 +993,7 @@ script:
       description: 'Represents the isolation technology to use as a default for containers. The supported values are platform-specific.  If no isolation value is specified on daemon start, on Windows client, the default is `hyperv`, and on Windows server, the default is `process`.  This option is currently not used on other platforms. '
       type: String
     - contextPath: Docker.SystemInfo.InitBinary
-      description: 'Name and, optional, path of the `docker-init` binary.  If the path is omitted, the daemon searches the host''s `$PATH` for the binary and uses the first result. '
+      description: "Name and, optional, path of the `docker-init` binary.  If the path is omitted, the daemon searches the host's `$PATH` for the binary and uses the first result. "
       type: String
     - contextPath: Docker.SystemInfo.ProductLicense
       description: 'Reports a summary of the product license on the daemon.  If a commercial license has been applied to the daemon, information such as number of nodes, and expiration are included. '
