@@ -2330,6 +2330,7 @@ def test_update_remote_data_upload_file_exception(mocker):
     def upload_file_mock(*args):
         raise Exception("ERROR!!!")
 
+    mocker.patch.object(client, 'update', side_effect=update_ticket)
     mocker.patch.object(client, 'upload_file', side_effect=[upload_file_request, upload_file_mock])
     demisto_mocker = mocker.patch.object(demisto, 'error')
     res = update_remote_system_command(client, args, params)
