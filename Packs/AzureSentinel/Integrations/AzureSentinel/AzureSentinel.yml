@@ -2381,7 +2381,7 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.100307
+  dockerimage: demisto/crypto:1.0.0.101635
   isfetch: true
   runonce: false
   script: '-'
