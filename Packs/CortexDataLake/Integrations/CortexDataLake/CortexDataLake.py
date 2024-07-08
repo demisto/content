@@ -262,6 +262,7 @@ class Client(BaseClient):
         return extended_results, raw_results
 
     def initial_query_service(self) -> QueryService:
+        # Added a comment
         credentials = Credentials(
             access_token=self.access_token,
             verify=self.use_ssl
