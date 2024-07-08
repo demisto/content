@@ -94,16 +94,23 @@ configuration:
   type: 15
   additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
   required: false
-description: Use this feed integration to fetch Google Threat Intelligence Categorized Feeds matches.
-display: Google Threat Intelligence Categorized Feeds
-name: Google Threat Intelligence Categorized Feeds
+- additionalinfo: Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, so only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified.
+  defaultvalue: 'true'
+  display: Incremental feed
+  hidden: true
+  name: feedIncremental
+  required: false
+  type: 8
+description: Use this feed integration to fetch Google Threat Intelligence Feeds matches.
+display: Google Threat Intelligence Feeds
+name: Google Threat Intelligence Feeds
 script:
   commands:
   - arguments:
     - name: limit
       defaultValue: "40"
       description: The maximum number of results to return.
-    description: Gets the matches from the latest Categorized Feed.
+    description: Gets the matches from the latest Feed.
     name: gti-feed-get-indicators
   - description: "This command will reset your fetch history."
     name: gti-feed-reset-fetch-indicators

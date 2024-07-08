@@ -1,4 +1,4 @@
-Use this feed integration to fetch Google Threat Intelligence Categorized Feeds matches. It processes the latest finished job retrieving its matches based on the limit parameter (40 by default) in every fetch until there are no more matches for that job.
+Use this feed integration to fetch Google Threat Intelligence Feeds matches. It processes the latest finished job retrieving its matches based on the limit parameter (40 by default) in every fetch until there are no more matches for that job.
 
 ## Configure Google Threat Intelligence Feeds on Cortex XSOAR
 
@@ -28,7 +28,7 @@ You can execute these commands from the Cortex XSOAR CLI, as part of an automati
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### gti-feed-get-indicators
 ***
-Gets the matches from the latest Categorized Feed.
+Gets the matches from the latest feed.
 
 ### gti-feed-reset-fetch-indicators
 ***
@@ -56,7 +56,7 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-### Indicators from Google Threat Intelligence Categorized Feeds:
+### Indicators from Google Threat Intelligence Feeds:
 |Sha256|Filetype|
 |---|---|---|
 | 80db033dfe2b4e966d46a4ceed36e20b98a13891ce364a1308b90da7ad694cf3 | ELF |
