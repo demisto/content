@@ -266,7 +266,7 @@ script:
       description: URL address.
       type: String
     - contextPath: PhishLabs.URL.CreatedAt
-      description: URL creation time, in PhishLabs
+      description: URL creation time, in PhishLabs.
       type: Date
     - contextPath: PhishLabs.URL.UpdatedAt
       description: URL update time, in PhishLabs.
