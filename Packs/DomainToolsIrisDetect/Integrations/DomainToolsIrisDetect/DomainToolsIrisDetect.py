@@ -1000,7 +1000,6 @@ def get_results_helper(
             break
 
         dt_args.update({"offset": offset, "limit": fetch_size})
-        DOMAINTOOLS_PARAMS | dt_args
 
         response = client.query_dt_api(
             end_point, "GET", params=DOMAINTOOLS_PARAMS | dt_args
