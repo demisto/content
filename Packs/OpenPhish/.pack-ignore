@@ -5,4 +5,4 @@ ignore=BA108,BA109
 ignore=IM111
 
 [file:README.md]
-ignore=RM113,RM108
+ignore=RM113
