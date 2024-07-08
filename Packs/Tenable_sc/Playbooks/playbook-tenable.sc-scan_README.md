@@ -52,4 +52,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Tenable_sc_scan](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tenable_sc_scan.png)
+![Tenable_sc_scan](../doc_files/Tenable_sc_scan.png)

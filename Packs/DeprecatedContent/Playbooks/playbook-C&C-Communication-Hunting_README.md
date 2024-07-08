@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![C_and_C_Communication_Hunting](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/C_and_C_Communication_Hunting.png)
+![C_and_C_Communication_Hunting](../doc_files/C_and_C_Communication_Hunting.png)

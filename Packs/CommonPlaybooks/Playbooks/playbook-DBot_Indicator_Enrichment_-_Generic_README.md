@@ -40,4 +40,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![DBot_Indicator_Enrichment_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/DBot_Indicator_Enrichment_Generic.png)
+![DBot_Indicator_Enrichment_Generic](../doc_files/DBot_Indicator_Enrichment_Generic.png)

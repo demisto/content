@@ -56,4 +56,4 @@ No \- Commit manually. | False |  | Optional |
 There are no outputs for this playbook.
 ## Playbook Image
 ---
-![PAN-OS_Block_IP_and_URL_External_Dynamic_List_v2](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/PAN-OS_-_Block_IP_and_URL_-_External_Dynamic_List_v2.png)
+![PAN-OS_Block_IP_and_URL_External_Dynamic_List_v2](../doc_files/PAN-OS_-_Block_IP_and_URL_-_External_Dynamic_List_v2.png)

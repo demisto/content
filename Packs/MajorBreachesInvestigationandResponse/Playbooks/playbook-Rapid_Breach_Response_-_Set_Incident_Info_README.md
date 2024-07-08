@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Rapid Breach Response - Set Incident Info](https://raw.githubusercontent.com/demisto/content/2fb9f32873308d68a591f1c1c5400d78e8057884/Packs/MajorBreachesInvestigationandResponse/doc_files/Rapid_Breach_Response_-_Set_Incident_Info.png)
+![Rapid Breach Response - Set Incident Info](../doc_files/Rapid_Breach_Response_-_Set_Incident_Info.png)

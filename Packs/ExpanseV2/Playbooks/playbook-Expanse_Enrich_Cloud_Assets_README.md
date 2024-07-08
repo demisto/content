@@ -43,4 +43,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Expanse Enrich Cloud Assets](https://raw.githubusercontent.com/demisto/content/d0830e20f52f390a75c5ac3752f52c9df7ab77f1/Packs/ExpanseV2/doc_files/Expanse_Enrich_Cloud_Assets.png)
+![Expanse Enrich Cloud Assets](../doc_files/Expanse_Enrich_Cloud_Assets.png)

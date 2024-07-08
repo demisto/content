@@ -37,4 +37,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Playbook Image](https://raw.githubusercontent.com/demisto/content/75e7294b81733c91e2be73477d5544b186bcb692/Packs/TIM_Processing/doc_files/TIM_-_Process_Indicators_Exclusion_By_Related_Incidents.png)
+![Playbook Image](../doc_files/TIM_-_Process_Indicators_Exclusion_By_Related_Incidents.png)

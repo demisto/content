@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Carbon_Black_Rapid_IOC_Hunting](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Carbon_Black_Rapid_IOC_Hunting.png)
+![Carbon_Black_Rapid_IOC_Hunting](../doc_files/Carbon_Black_Rapid_IOC_Hunting.png)

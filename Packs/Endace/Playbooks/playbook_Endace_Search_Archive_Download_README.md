@@ -62,4 +62,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![Endace Search Archive and Download](https://raw.githubusercontent.com/demisto/content/6076f09ff5093102f383da8c11dfce0b12331d82/Packs/Endace/doc_imgs/playbook_Endace_Search_Archive_and_Download.png)
+![Endace Search Archive and Download](../doc_files/playbook_Endace_Search_Archive_and_Download.png)

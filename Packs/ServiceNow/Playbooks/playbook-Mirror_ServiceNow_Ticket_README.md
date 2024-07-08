@@ -41,4 +41,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Mirror ServiceNow Ticket](https://raw.githubusercontent.com/demisto/content/master/Packs/ServiceNow/doc_files/Mirror_ServiceNow_Ticket.png)
+![Mirror ServiceNow Ticket](../doc_files/Mirror_ServiceNow_Ticket.png)

@@ -55,4 +55,4 @@ This playbook does not use any integrations.
 
 ## Playbook Image
 ---
-![PCAP File Carving](https://raw.githubusercontent.com/demisto/content/e0d6d4931c90beed5db6a76db0c1d71bd6181b6f/Packs/PcapAnalysis/doc_files/PCAP_File_Carving.png)
+![PCAP File Carving](../doc_files/PCAP_File_Carving.png)

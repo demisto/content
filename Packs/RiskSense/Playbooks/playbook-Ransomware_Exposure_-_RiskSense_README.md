@@ -33,4 +33,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![Ransomware Exposure - RiskSense](https://raw.githubusercontent.com/demisto/content/a754dc49eb361097936b6c53f5c5a989b82769d3/Packs/RiskSense/doc_files/Ransomware_Exposure_-_RiskSense.png)
+![Ransomware Exposure - RiskSense](../doc_files/Ransomware_Exposure_-_RiskSense.png)

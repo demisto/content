@@ -25,4 +25,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![GRACase](https://raw.githubusercontent.com/demisto/content/cecf23cfe31b03b76b63daab80b1b7387139c8b6/Packs/Gurucul/doc_files/GraCases.png)
+![GRACase](../doc_files/GraCases.png)

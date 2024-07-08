@@ -33,4 +33,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![Get_File_Sample_By_Hash_Generic](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Get_File_Sample_By_Hash_Generic.png) 
+![Get_File_Sample_By_Hash_Generic](../doc_files/Get_File_Sample_By_Hash_Generic.png) 

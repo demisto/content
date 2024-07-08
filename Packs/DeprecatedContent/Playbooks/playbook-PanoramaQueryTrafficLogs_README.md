@@ -38,4 +38,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PanoramaQueryTrafficLogs](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PanoramaQueryTrafficLogs.png)
+![PanoramaQueryTrafficLogs](../doc_files/PanoramaQueryTrafficLogs.png)

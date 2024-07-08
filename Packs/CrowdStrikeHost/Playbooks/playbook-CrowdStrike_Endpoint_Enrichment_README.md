@@ -39,4 +39,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![CrowdStrike_Endpoint_Enrichment](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/CrowdStrike_Endpoint_Enrichment.png)
+![CrowdStrike_Endpoint_Enrichment](../doc_files/CrowdStrike_Endpoint_Enrichment.png)

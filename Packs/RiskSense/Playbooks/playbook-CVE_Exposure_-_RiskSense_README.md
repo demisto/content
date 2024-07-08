@@ -36,4 +36,4 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ## Playbook Image
 ---
-![CVE Exposure - RiskSense](https://raw.githubusercontent.com/demisto/content/a754dc49eb361097936b6c53f5c5a989b82769d3/Packs/RiskSense/doc_files/CVE_Exposure_-_RiskSense.png)
+![CVE Exposure - RiskSense](../doc_files/CVE_Exposure_-_RiskSense.png)

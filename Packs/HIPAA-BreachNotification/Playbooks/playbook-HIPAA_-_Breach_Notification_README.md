@@ -52,4 +52,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![HIPAA - Breach Notification](https://raw.githubusercontent.com/demisto/content/master/Packs/HIPAA-BreachNotification/doc_files/HIPAA_-_Breach_Notification.png)
+![HIPAA - Breach Notification](../doc_files/HIPAA_-_Breach_Notification.png)
