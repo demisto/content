@@ -7,7 +7,7 @@ commonfields:
 name: PrismaCloud v2
 display: Prisma Cloud v2
 category: Network Security
-description: Prisma Cloud secures infrastructure, workloads and applications, across the entire cloud-native technology stack.
+description: Prisma Cloud secures infrastructure, workloads, and applications, across the entire cloud-native technology stack.
 configuration:
 - additionalinfo: 'Prisma Cloud service tenant admin console URL. The URL for the Prisma Cloud service varies depending on the cluster on which your tenant is deployed. For more information see: https://pan.dev/prisma-cloud/api/cspm/api-urls/.'
   name: url
@@ -55,7 +55,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-- additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at increase time.
+- additionalinfo: Use this parameter to determine how far back to look in the search for incidents that were created before the last run time and did not match the query when they were created. When choosing to increase this value, duplicate incidents might occur at the increased time.
   defaultvalue: 20
   display: 'Advanced: Time in minutes to look back when fetching incidents'
   name: look_back
@@ -67,7 +67,7 @@ configuration:
   defaultvalue: 'alert.status=open'
   name: filters
   type: 0
-  additionalinfo: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+  additionalinfo: 'Comma-separated list of filter names and values, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
   section: Collect
   advanced: true
   required: false
@@ -124,10 +124,10 @@ script:
     - description: Comma-separated list of policy IDs.
       isArray: true
       name: policy_ids
-    - description: The amount of time for snoozing alert. Both snooze value and unit must be specified if snoozing.
+    - description: The amount of time for snoozing the alert. Both the snooze value and the unit must be specified if snoozing.
       name: snooze_value
     - auto: PREDEFINED
-      description: The time unit for snoozing alert. Both snooze value and unit must be specified if snoozing.
+      description: The time unit for snoozing the alert. Both the snooze value and the unit must be specified if snoozing.
       name: snooze_unit
       predefined:
       - hour
@@ -155,7 +155,7 @@ script:
       - epoch
     - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+    - description: 'Comma-separated list of filter names and values, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
       isArray: true
       name: filters
     description: Dismiss or snooze the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times. For snoozing, provide "snooze_unit" and "snooze_value" arguments.
@@ -276,7 +276,7 @@ script:
       description: Whether the filter is static.
       type: Unknown
   - arguments:
-    - description: Comma-seperated list of alert IDs for which to get remediation details. Provided alert IDs must be associated with the same policy. If a policy is specified, all the alerts specified must belong to that policy.
+    - description: Comma-separated list of alert IDs for which to get remediation details. Provided alert IDs must be associated with the same policy. If a policy is specified, all the alerts specified must belong to that policy.
       isArray: true
       name: alert_ids
     - description: Policy ID for which to get remediation details.
@@ -302,7 +302,7 @@ script:
       description: Maximum number of entries to return.
       name: limit
     - auto: PREDEFINED
-      description: Whether to retrieve all results. The "limit" argument will be ignored.
+      description: Whether to retrieve all results. If true, the "limit" argument will be ignored.
       name: all_results
       predefined:
       - 'true'
@@ -367,7 +367,7 @@ script:
       - epoch
     - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+    - description: 'Comma-separated list of filter names and values, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
       isArray: true
       name: filters
     description: Re-open the alerts matching the given filter. Either policy IDs or alert IDs must be provided. When no absolute time nor relative time arguments are provided, the default time range is all times.
@@ -391,12 +391,12 @@ script:
       - epoch
     - description: The amount of "time_range_unit" to go back in time. For example, 3 days, 5 weeks, etc.
       name: time_range_value
-    - description: 'Comma-separated list of filter name and value, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
+    - description: 'Comma-separated list of filter names and values, in the following format: filtername1=filtervalue1,filtername2=filtervalue2,etc. Names and possible values for filters can be found by running the "prisma-cloud-alert-filter-list" command.'
       isArray: true
       name: filters
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: Whether to retrieve the entire / trimmed alert model.
+      description: Whether to retrieve the entire alert model.
       name: detailed
       predefined:
       - 'true'
@@ -404,9 +404,9 @@ script:
     - defaultValue: '50'
       description: Maximum number of entries to return.
       name: limit
-    - description: Token of the next page to retrive. When provided, other arguments are ignored.
+    - description: Token of the next page to retrieve. When provided, other arguments are ignored.
       name: next_token
-    - description: 'The field to sort the results by. Possible values are: alertTime,firstSeen,lastSeen,lastUpdated.'
+    - description: The field to sort the results by.
       name: sort_field
       auto: PREDEFINED
       predefined:
@@ -414,7 +414,7 @@ script:
       - firstSeen
       - lastSeen
       - lastUpdated
-    - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
+    - description: The direction to sort the results by. Sort field must be specified if sorting.
       name: sort_direction
       defaultValue: asc
       auto: PREDEFINED
@@ -543,14 +543,14 @@ script:
       - cloudAccount
       - cloudRegion
       - stateId
-    - description: 'Whether to include the resource JSON or not. Default is "true". "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
+    - description: 'Whether to include the resource JSON or not. "false" will not return the resource JSON, "true" will return the resource JSON. Note that if the value is "true", some of the keys, which contain large data objects, are still omitted by default and in order to retrieve them, set the "include_additional_resource_fields" argument to "true". Doing so can increase the context size dramatically.'
       name: include_resource_json
       defaultValue: 'true'
       auto: PREDEFINED
       predefined:
       - 'true'
       - 'false'
-    - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata. Default is "false".'
+    - description: 'Whether to retrieve all of the resource JSON, including keys with large objects such as: "disks.shieldedInstanceInitialState" and "configure-sh" key under metadata.'
       name: include_additional_resource_fields
       defaultValue: 'false'
       auto: PREDEFINED
@@ -647,7 +647,7 @@ script:
     - defaultValue: '50'
       description: Maximum number of entries to return.
       name: limit
-    - description: 'The field to sort the results by. Possible values are: cloudService, operation, cloudAccount, cloudRegion, id, time, crud, user.'
+    - description: The field to sort the results by. 
       name: sort_field
       auto: PREDEFINED
       predefined:
@@ -659,7 +659,7 @@ script:
       - time
       - crud
       - user
-    - description: 'The direction to sort the results by. Sort field must be specified if sorting. Possible values are: asc, desc. Default is asc.'
+    - description: The direction to sort the results by. Sort field must be specified if sorting.
       name: sort_direction
       defaultValue: asc
       auto: PREDEFINED
@@ -855,10 +855,10 @@ script:
       isArray: true
       name: source_types
       required: true
-    - description: 'Comma-separated list of tag key and value, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc.'
+    - description: 'Comma-separated list of tag keys and values, in the following format: tagkey1=tagvalue1,tagkey2=tagvalue2,etc.'
       isArray: true
       name: tags
-    - description: 'Comma-separated list of statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed.'
+    - description: 'Comma-separated list of the statuses of the files. Available options are: Errors, Suppressed, Passed, Fixed.'
       isArray: true
       name: statuses
     - defaultValue: '50'
@@ -928,7 +928,7 @@ script:
       description: Cloud region ID.
       type: String
     - contextPath: PrismaCloud.Resource.regionName
-      description: Cloud region Name.
+      description: Cloud region name.
       type: String
     - contextPath: PrismaCloud.Resource.service
       description: Cloud service.
@@ -1014,7 +1014,7 @@ script:
       description: Resource list namespaces.
       type: Unknown
   - arguments:
-    - description: The role id to get details of.
+    - description: The role ID to get details of.
       name: role_id
     - description: The resource list name to return only user roles associated with it.
       name: resource_list_name
@@ -1107,7 +1107,7 @@ script:
       description: User time zone.
       type: String
     - contextPath: PrismaCloud.Users.enabled
-      description: User enabled.
+      description: Whether the user is enabled.
       type: Boolean
     - contextPath: PrismaCloud.Users.lastModifiedBy
       description: User last modified user.
@@ -1214,7 +1214,7 @@ script:
       description: Account added on time.
       type: Date
   - arguments:
-    - description: A comma-separated list of accound IDs. To get account IDs, run the "prisma-cloud-account-list" command.
+    - description: A comma-separated list of account IDs. To get account IDs, run the "prisma-cloud-account-list" command.
       isArray: true
       name: account_ids
       required: true
@@ -1254,10 +1254,10 @@ script:
     - description: Restricted Resource Name of the resource to get host finding of. Can be retrieved by running a command that has that RRN.
       name: rrn
       required: true
-    - description: 'Comma separated list of finding types to look for. Available options are: guard_duty_host, guard_duty_iam, inspector_sbp, compliance_cis, host_vulnerability_cve. When left empty, will return all options.'
+    - description: 'Comma-separated list of finding types to look for. Available options are: guard_duty_host, guard_duty_iam, inspector_sbp, compliance_cis, host_vulnerability_cve. When left empty, will return all options.'
       isArray: true
       name: finding_types
-    - description: 'Comma separated list of risk factors to look for. Available options are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE. When left empty, will return all options.'
+    - description: 'Comma-separated list of risk factors to look for. Available options are: CRITICAL_SEVERITY, HIGH_SEVERITY, MEDIUM_SEVERITY, HAS_FIX, REMOTE_EXECUTION, DOS, RECENT_VULNERABILITY, EXPLOIT_EXISTS, ATTACK_COMPLEXITY_LOW, ATTACK_VECTOR_NETWORK, REACHABLE_FROM_THE_INTERNET, LISTENING_PORTS, CONTAINER_IS_RUNNING_AS_ROOT, NO_MANDATORY_SECURITY_PROFILE_APPLIED, RUNNING_AS_PRIVILEGED_CONTAINER, PACKAGE_IN_USE. When left empty, will return all options.'
       isArray: true
       name: risk_factors
     - defaultValue: '50'
@@ -1346,7 +1346,7 @@ script:
     - defaultValue: '50'
       description: Maximum number of entries to return.
       name: limit
-    - description: Token of the next page to retrive.
+    - description: Token of the next page to retrieve.
       name: next_token
     description: Get permission list. You must provide either "query" or "next_token".
     name: prisma-cloud-permission-list
@@ -1683,10 +1683,10 @@ script:
   - arguments:
     - description: Comma-separated list of string IDs to be dismissed.
       name: alert-id
-    - description: The amount of time to snooze. Both snooze value and unit must be specified.
+    - description: The amount of time to snooze. Both snooze-value and snooze-unit must be specified.
       name: snooze-value
     - auto: PREDEFINED
-      description: The time unit for snoozing alert.  Both snooze value and unit must be specified if snoozing.
+      description: The time unit for snoozing alert.  Both snooze-value and snooze-unit must be specified if snoozing.
       name: snooze-unit
       predefined:
       - hour
