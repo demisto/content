@@ -1096,7 +1096,7 @@ def fetch_attachments_for_message(
                     entries.append(
                         fileResult(
                             get_attachment_name(attachment_name=attachment.name, eml_extension=True,
-                                                content_id=attachment.attachment.content_id,
+                                                content_id=attachment.content_id,
                                                 attachment_id=attachment.attachment_id.id),
                             attachment.item.mime_content,
                         )
