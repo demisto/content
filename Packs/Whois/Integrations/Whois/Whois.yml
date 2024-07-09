@@ -247,6 +247,9 @@ script:
     - contextPath: Domain.Registrant.Org
       description: The organization of the registrant.
       type: string
+    - contextPath: Domain.Registrant.Organization
+      description: The organization of the registrant.
+      type: string
     - contextPath: Domain.Registrant.PostalCode
       description: The postal code of the registrant.
       type: string
@@ -305,6 +308,9 @@ script:
       description: The ID of the tech contact.
       type: string
     - contextPath: Domain.Tech.Org
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Organization
       description: The organization of the tech contact.
       type: string
     - contextPath: Domain.Tech.Phone
@@ -850,6 +856,9 @@ script:
     - contextPath: Domain.Registrant.Org
       description: The organization of the registrant.
       type: string
+    - contextPath: Domain.Registrant.Organization
+      description: The organization of the registrant.
+      type: string
     - contextPath: Domain.Registrant.PostalCode
       description: The postal code of the registrant.
       type: string
@@ -908,6 +917,9 @@ script:
       description: The ID of the tech contact.
       type: string
     - contextPath: Domain.Tech.Org
+      description: The organization of the tech contact.
+      type: string
+    - contextPath: Domain.Tech.Organization
       description: The organization of the tech contact.
       type: string
     - contextPath: Domain.Tech.Phone

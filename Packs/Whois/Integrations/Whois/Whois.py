@@ -8981,19 +8981,17 @@ def rename_keys(d: dict, key_mapping: dict) -> dict:
     return renamed_dict
 
 
-def check_and_remove_abuse(
-    domain_info: Dict[str, Union[str, List[str]]]
-) -> Union[str, List[str]]:
+def check_and_remove_abuse(domain_info: Dict[str, Any]):
     """
     Checks for keys or values containing the word 'abuse' in a domain information dictionary.
     Removes and collects these values, and returns them as a list. If only one value is found,
     it returns that value directly.
 
     Args:
-        domain_info (Dict[str, Union[str, List[str]]]): The dictionary containing domain information.
+        domain_info (Dict[str, Any]): The dictionary containing domain information.
 
     Returns:
-        Union[str, List[str]]: A single abuse-related value if only one is found, otherwise a list of abuse-related values.
+        A single abuse-related value if only one is found, otherwise a list of abuse-related values.
     """
     abuse_values = []
     for key, value in list(domain_info.items()):
@@ -9023,7 +9021,7 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
     Returns:
         dict: A dictionary containing structured WHOIS context data.
     """
-    context_data = {
+    context_data:dict[str, Any] = {
         "Raw": {f"{key}": f"{value}" for key, value in raw_data.items()},
         "Name": domain,
         "NameServers": extract_name_servers(raw_data.pop("name_servers", [])),
@@ -9036,7 +9034,7 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
         context_data[prefix.capitalize()] = get_info_by_prefix(raw_data, prefix)
 
     if abuse_emails := check_and_remove_abuse(raw_data):
-        context_data.setdefault("Registrar", {})["AbuseEmail"] = abuse_emails
+        context_data.setdefault("Registrar", {})["AbuseEmail"] = abuse_emails  # type: ignore[index]
 
     emails = raw_data.get("emails")
     context_data["FeedRelatedIndicators"] = [
