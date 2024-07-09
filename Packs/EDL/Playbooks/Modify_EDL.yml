@@ -1,5 +1,5 @@
 id: Modify EDL
-version: 4
+version: -1
 contentitemexportablefields:
   contentitemfields:
     packID: EDL
@@ -729,3 +729,6 @@ inputs:
     Action). May be newline or comma-delimited.
   playbookInputQuery: null
 outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 6.6.0
