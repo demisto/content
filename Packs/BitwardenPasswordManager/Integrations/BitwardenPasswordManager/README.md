@@ -1,10 +1,10 @@
 This integration collects event logs from Bitwarden Password Manager to Cortex XSIAM.
-This integration was integrated and tested with version xx of Bitwarden Password Manager Event Collector.
+This integration was integrated and tested with version xx of Bitwarden Password Manager.
 
-## Configure Bitwarden Password Manager Event Collector on Cortex XSOAR
+## Configure Bitwarden Password Manager on Cortex XSIAM
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Bitwarden Password Manager Event Collector.
+2. Search for Bitwarden Password Manager.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Required** |

@@ -6,7 +6,7 @@ VENDOR = 'Bitwarden'
 PRODUCT = 'Password Manager'
 
 DEFAULT_MAX_FETCH = 500
-DEFAULT_FIRST_FETCH = '3 days'
+DEFAULT_FIRST_FETCH = '2024-07-01T14:16:34Z'
 MINUTES_BEFORE_TOKEN_EXPIRED = 2
 
 AUTHENTICATION_FULL_URL = 'https://identity.bitwarden.com/connect/token'
@@ -104,7 +104,7 @@ def get_events_command(client: Client, start_date_str: str, max_fetch: int) -> t
     return [], CommandResults(readable_output='No events found')
 
 
-def fetch_events(client: Client, max_fetch: int, start_date_str: str = '') -> tuple:
+def fetch_events(client: Client, max_fetch: int, start_date_str: str = DEFAULT_FIRST_FETCH) -> tuple:
     last_run = demisto.getLastRun()
     demisto.debug(f'{last_run=}')
     continuation_token = last_run.get('continuationToken', '')
@@ -167,8 +167,11 @@ def main() -> None:  # pragma: no cover
             client_secret=client_secret,
             proxy=proxy)
         args = demisto.args()
-        start_date = arg_to_datetime(args.get('start'))
-        start_date_str = start_date.strftime(DATE_FORMAT)
+        if args.get('start'):
+            start_date = arg_to_datetime(args.get('start'))
+            start_date_str = start_date.strftime(DATE_FORMAT)
+        else:
+            start_date_str = DEFAULT_FIRST_FETCH
         if command == 'test-module':
             return_results(test_module(client))
         elif command == 'bitwarden-get-events':
