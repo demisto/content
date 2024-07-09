@@ -95,7 +95,7 @@ To limit the application's permissions to only specific mailboxes, follow the [M
 | UPN Address | When provided, the target mailbox if it's different from the Email Address. Otherwise, the Email Address is used. | False |
 | Name of the folder from which to fetch incidents | Supports Exchange Folder ID and sub-folders e.g. Inbox/Phishing. | True |
 | Access Type | Run the commands using `Delegate` or `Impersonation` access types. | False |
-| Public Folder | #TODO  | False |
+| Public Folder |  Whether the folder to be fetched from is public. Public folders can store and organize emails on specific topics or projects. Public folders are usually listed under the "Public Folders" section in the navigation pane in the product itself. | False |
 | Fetch incidents |  | False |
 | Incident type |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
