@@ -7,7 +7,7 @@ import hashlib
 VENDOR = 'Bitwarden'
 PRODUCT = 'Password Manager'
 
-DEFAULT_MAX_FETCH = 500
+DEFAULT_MAX_FETCH = 20
 SECONDS_BEFORE_TOKEN_EXPIRED = 120
 AUTHENTICATION_FULL_URL = 'https://identity.bitwarden.com/connect/token'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -173,9 +173,9 @@ def get_unique_events(events: List[Dict[str, Any]], last_run: Dict[str, Any]) ->
 def filter_events(events: List[Dict[str, Any]], latest: bool) -> List[Dict[str, Any]]:
     sorted_events = sorted(events, key=lambda x: x['date'])
     if latest:
-        date = sorted_events[-1]['date']
-    else:
         date = sorted_events[0]['date']
+    else:
+        date = sorted_events[-1]['date']
     filtered_events = [event for event in sorted_events if event['date'] == date]
 
     return filtered_events
