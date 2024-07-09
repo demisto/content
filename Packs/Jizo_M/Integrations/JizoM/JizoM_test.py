@@ -17,6 +17,7 @@ client = Client(
     proxy=False,
 )
 
+
 def load_mock_response(file_name: str) -> dict:
     """
     Load mock file that simulates an API response.
@@ -47,6 +48,7 @@ def test_test_module(requests_mock):
     requests_mock.get(f"{MOCK_URL}/ping", status_code=200)
     assert test_module(client) == 'ok'
 
+
 def test_get_token(requests_mock):
     """
     To test get_token command when success response come.
@@ -59,10 +61,11 @@ def test_get_token(requests_mock):
 
     from JizoM import get_token
     requests_mock.post(f"{MOCK_URL}/login", json=load_mock_response("connect.json"), status_code=200)
-    result= get_token(client)
+    result = get_token(client)
     assert "token" in result
-    assert type(result['token'])==str
-    
+    assert type(result['token']) == str
+
+
 def test_get_protocols_command(requests_mock):
 
     requests_mock.get(
@@ -81,7 +84,7 @@ def test_get_peers_command(requests_mock):
         f"{MOCK_URL}/jizo_get_peers",
         json=load_mock_response("peers.json"),
     )
-    
+
     response = get_peers_command(client, {})
     assert list(response.outputs.keys()) == [
         "alerts_flows",
@@ -98,7 +101,7 @@ def test_get_query_records_command(requests_mock):
         f"{MOCK_URL}/jizo_query_records",
         json=load_mock_response("query_records.json"),
     )
-    
+
     response = get_query_records_command(client, {})
     assert (
         len(response.outputs["alerts_flows"]["data"])
@@ -114,7 +117,7 @@ def test_get_alert_rules_command(requests_mock):
         f"{MOCK_URL}/jizo_get_alert_rules",
         json=load_mock_response("alert_rules.json"),
     )
-    
+
     response = get_alert_rules_command(client, {})
     assert len(response.outputs) == 1
     assert response.outputs_prefix == "JizoM.AlertRules"
@@ -127,7 +130,7 @@ def test_get_device_records_command(requests_mock):
         f"{MOCK_URL}/jizo_device_records",
         json=load_mock_response("device_records.json"),
     )
-    
+
     response = get_device_records_command(client, {})
     assert response.outputs_prefix == "JizoM.Device.Records"
     assert "severity" in response.outputs["alerts_flows"]["data"][0]
@@ -139,8 +142,34 @@ def test_get_device_alerts_command(requests_mock):
         f"{MOCK_URL}/jizo_get_devicealerts",
         json=load_mock_response("device_alerts.json"),
     )
-    
+
     response = get_device_alerts_command(client, {})
 
     assert response.outputs_prefix == "JizoM.Device.Alerts"
     assert type(response.outputs["alerts_flows"]["data"][0]["port_src"]) == int
+
+
+def test_fetch_incidents(requests_mock):
+    """
+    To test fetch_incidents command when success response come.
+    Given
+        - A valid response
+    Then
+        - Ensure fetch_incidents returns the valid response
+    """
+
+    from JizoM import fetch_incidents, formatting_date, convert_to_demisto_severity
+    requests_mock.get(f"{MOCK_URL}/jizo_query_records", json=load_mock_response("fetch_incidents.json"))
+    next_run, incidents = fetch_incidents(client,max_results=2,last_run={},first_fetch_time="2024-01-01")
+    
+    assert len(incidents)==2
+    assert incidents[0]["type"]== "Jizo Alert"
+    raw_alert= json.loads(incidents[0]["rawJSON"])
+    assert "295" in incidents[0]["name"]
+    assert incidents[0]["severity"]==convert_to_demisto_severity(raw_alert["severity"])
+    assert incidents[0]["occurred"]== formatting_date("2024-03-14 17:20:10.000000")
+    assert "last_fetch" in next_run
+    assert next_run["last_fetch"]== incidents[-1]["occurred"]
+    assert 294 in next_run["last_ids"]
+    assert next_run["first_fetched_ids"]==[295]
+    
