@@ -21,7 +21,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
-     description: ''
+    description: ''
     nexttasks:
       '#none#':
       - "30"
