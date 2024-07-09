@@ -729,15 +729,14 @@ class LdapClient:
         auto_bind = self._get_auto_bind_value()
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             if page := arg_to_number(args.get('page')):
-                page_size = arg_to_number(args.get('page_size', 50)) or 50
                 entries_paged_search(connection=ldap_conn,
                                      search_params=search_params,
                                      page=page,
-                                     page_size=page_size)
+                                     page_size=arg_to_number(args.get('page_size', 50)) or 50)
             else:
                 entries_search(connection=ldap_conn,
                                search_params=search_params,
-                               limit=arg_to_number(args.get('limit', 0)))
+                               limit=arg_to_number(args.get('limit', 50)) or 50)
             outputs = [
                 {**json.loads(entry.entry_to_json()).get('attributes', {}), 'dn': json.loads(entry.entry_to_json()).get('dn')}
                 for entry in ldap_conn.entries
