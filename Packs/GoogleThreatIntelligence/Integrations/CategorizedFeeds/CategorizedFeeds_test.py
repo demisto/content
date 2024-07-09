@@ -81,7 +81,6 @@ def test_main_default_command(mocker):
         'tlp_color': None,
         'feedTags': [],
         'credentials': {'password': 'xxx'},
-        'limit': 10,
     }
 
     mocker.patch.object(demisto, 'params', return_value=params)

@@ -19,12 +19,6 @@ configuration:
   - iot
   - mobile
   - ransomware
-- display: Limit
-  name: limit
-  defaultvalue: 40
-  type: 0
-  additionalinfo: Limit of indicators to fetch from retrohunt job results.
-  required: false
 - display: Fetch indicators
   name: feed
   defaultvalue: "true"
@@ -108,8 +102,8 @@ script:
   commands:
   - arguments:
     - name: limit
-      defaultValue: "40"
-      description: The maximum number of results to return.
+      defaultValue: "0"
+      description: The maximum number of results to return. If 0 all results will be returned.
     description: Gets the matches from the latest Feed.
     name: gti-feed-get-indicators
   - description: "This command will reset your fetch history."

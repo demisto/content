@@ -80,29 +80,39 @@ def fetch_indicators_command(client: Client,
                              feed_type: str,
                              tlp_color: str = None,
                              feed_tags: list = None,
-                             limit: int = 40) -> list[dict]:
+                             limit: int = None) -> list[dict]:
     """Retrieves indicators from the feed
     Args:
         client (Client): Client object with request
         tlp_color (str): Traffic Light Protocol color
         feed_tags (list): Tags to assign fetched indicators
-        limit (int): limit the results
+        limit (int): Limit the results
     Returns:
         Indicators.
     """
     iterator = client.get_threat_feed(feed_type)
     indicators = []
-    if limit > 0:
+
+    if limit:
         iterator = iterator[:limit]
 
     # extract values from iterator
     for item in iterator:
         attributes = item.get('attributes', {})
+
         type_ = FeedIndicatorType.File
         raw_data = {
-            'value': attributes,
+            'value': attributes['sha256'],
             'type': type_,
+            'attributes': attributes,
         }
+
+        gti_assessment = attributes.get('gti_assessment', {})
+        attribution = attributes.get('attribution', {})
+        malware_families = [x['family'] for x in attribution.get('malware_families', [])]
+        malware_families = list(set(malware_families))
+        threat_actors = attribution.get('threat_actors', [])
+        threat_actors = list(set(threat_actors))
 
         # Create indicator object for each value.
         # The object consists of a dictionary with required and optional keys and values, as described blow.
@@ -121,10 +131,17 @@ def fetch_indicators_command(client: Client,
                 'md5': attributes.get('md5'),
                 'sha1': attributes.get('sha1'),
                 'sha256': attributes.get('sha256'),
+                'size': attributes.get('size'),
+                'tags': attributes.get('tags'),
             },
             # A dictionary of the raw data returned from the feed source about the indicator.
             'rawJSON': raw_data,
             'sha256': attributes['sha256'],
+            'gti_threat_score': gti_assessment.get('threat_score', {}).get('value'),
+            'gti_severity': gti_assessment.get('severity', {}).get('value'),
+            'gti_verdict': gti_assessment.get('verdict', {}).get('value'),
+            'malware_families': malware_families or None,
+            'threat_actors': threat_actors or None,
             'fileType': attributes.get('type_description'),
         }
 
@@ -140,8 +157,8 @@ def fetch_indicators_command(client: Client,
 
 
 def get_indicators_command(client: Client,
-                           params: Dict[str, str],
-                           args: Dict[str, str]) -> CommandResults:
+                           params: dict[str, str],
+                           args: dict[str, str]) -> CommandResults:
     """Wrapper for retrieving indicators from the feed to the war-room.
     Args:
         client: Client object with request
@@ -151,9 +168,9 @@ def get_indicators_command(client: Client,
         Outputs.
     """
     feed_type = params.get('feed_type', 'apt')
-    limit = int(args.get('limit', params.get('limit', 40)))
     tlp_color = params.get('tlp_color')
     feed_tags = argToList(params.get('feedTags', ''))
+    limit = int(args.get('limit', 0))
     indicators = fetch_indicators_command(client, feed_type, tlp_color, feed_tags, limit)
 
     human_readable = tableToMarkdown(
@@ -162,6 +179,11 @@ def get_indicators_command(client: Client,
         headers=[
             'sha256',
             'fileType',
+            'gti_threat_score',
+            'gti_severity',
+            'gti_verdict',
+            'malware_families',
+            'threat_actors',
         ],
         headerTransform=string_to_table_header,
         removeNull=True,
@@ -232,8 +254,7 @@ def main():
             feed_type = params.get('feed_type', 'apt')
             tlp_color = params.get('tlp_color')
             feed_tags = argToList(params.get('feedTags'))
-            limit = int(params.get('limit', 40))
-            indicators = fetch_indicators_command(client, feed_type, tlp_color, feed_tags, limit)
+            indicators = fetch_indicators_command(client, feed_type, tlp_color, feed_tags)
             for iter_ in batch(indicators, batch_size=2000):
                 demisto.createIndicators(iter_)
 
