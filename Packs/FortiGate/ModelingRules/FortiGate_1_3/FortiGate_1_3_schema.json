@@ -400,6 +400,10 @@
       "type": "string",
       "is_array": false
     },
+    "FTNTFGTlevel": {
+      "type": "string",
+      "is_array": false
+    },
     "FTNTFGTlocal": {
       "type": "string",
       "is_array": false
