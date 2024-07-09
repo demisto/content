@@ -21,7 +21,7 @@ computer_plan = plan
 // discard all rules that passed and keep the failed rules that can be a risk to the asset
 | alter tmp_computer_risks = arrayfilter(scorecard ->[], "@element"->pass="false")
 // Create new array with the relevant information
-| alter computer_risks = arraymap(tmp_computer_risks, object_create("Section", "@element"->section, "Rule Name", "@element"-> label, "Tags", replex(arraystring("@element"->tags[], ""), "\"", "")))
+| alter computer_risks = arraymap(tmp_computer_risks, object_create("Section", "@element"->section, "Rule Name", "@element"-> label, "Benchmark Level", replex(arraystring("@element"->tags[], ""), "\"", "")))
 // Check if the last connection IP is v4 or v6
 |alter last_connection_ipv4 = arrayindex(regextract(lastConnectionIp, "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0) 
 | alter last_connection_ipv6 = arrayindex(regextract(lastConnectionIp , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
