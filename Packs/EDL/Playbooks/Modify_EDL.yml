@@ -194,9 +194,9 @@ tasks:
       - "26"
     scriptarguments:
       tags:
-        simple: ${incident.edltag}
+        simple: ${incident.genericexportindicatorsservicetag}
       type:
-        simple: ${incident.edlindicatortype}
+        simple: ${incident.genericexportindicatorsserviceindicatortype}
       value:
         complex:
           root: InputIndicatorsArray
@@ -276,7 +276,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: ${incident.edltag}
+        simple: ${incident.genericexportindicatorsservicetag}
       indicatorsValues:
         complex:
           root: InputIndicatorsArray
