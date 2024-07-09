@@ -273,8 +273,8 @@ def check_if_item_is_tim(content_object: BaseContent | None) -> bool:
             return True
     except Exception as er:
         print(f"The pack is not TIM: {er}")
+    finally:
         return False
-    return False
 
 
 def check_files_of_pr_manually(pr_files: list[str]) -> bool:
