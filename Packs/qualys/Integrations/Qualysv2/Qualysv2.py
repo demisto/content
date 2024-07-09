@@ -2912,7 +2912,6 @@ def get_host_list_detections_events(client, since_datetime) -> list:
     while True:
         demisto.debug(f'get_host_list_detection: the next_page = {next_page}')
         host_list_detections = client.get_host_list_detection(since_datetime, next_page=next_page)
-        demisto.debug(f'{host_list_detections=}')
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
         if not host_list_assets:
             demisto.debug('no host_list_assets')
