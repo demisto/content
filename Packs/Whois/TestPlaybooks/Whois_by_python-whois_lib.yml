@@ -420,11 +420,6 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.Emails
-            iscontext: true
-      - - operator: isNotEmpty
-          left:
-            value:
               simple: Domain.WhoisServer
             iscontext: true
       - - operator: isNotExists
