@@ -132,7 +132,7 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
 
     with StderrRedirect() as s:
         phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
-    if s.error != BERT_TOKENIZER_ERROR:
+    if s.error and s.error != BERT_TOKENIZER_ERROR:
         raise DemistoException(s.error)
 
     is_model_applied_on_a_single_incidents = isinstance(email_subject, str) and isinstance(email_body, str)
