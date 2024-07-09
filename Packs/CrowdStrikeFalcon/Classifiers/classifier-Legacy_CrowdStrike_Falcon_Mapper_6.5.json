@@ -1144,7 +1144,7 @@
             }
         }
     },
-    "name": "Legacy CrowdStrike Falcon Mapper",
+    "name": "Legacy CrowdStrike Falcon-Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"
