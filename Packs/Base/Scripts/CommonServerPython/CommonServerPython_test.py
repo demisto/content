@@ -9796,7 +9796,7 @@ def test_get_server_config(mocker):
     server_config = get_server_config()
     assert server_config == {'incident.closereasons': 'CustomReason1, CustomReason 2, Foo', 'versn': 40}
 
-
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
 def test_get_server_config_fail(mocker):
     mock_response = {
         'body': 'NOT A VALID JSON',
