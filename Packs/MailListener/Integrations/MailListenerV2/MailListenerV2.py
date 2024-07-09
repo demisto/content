@@ -347,6 +347,10 @@ def fetch_mails(client: IMAPClient,
         messages_fetched: A list of the ids of the messages fetched
         last_message_in_current_batch: The UID of the last message fetchedd
     """
+
+    if uid_to_fetch_from:
+        uid_to_fetch_from = int(uid_to_fetch_from)
+
     if message_id:
         messages_uids = [message_id]
         demisto.debug("message_id provided, using it for message_uids")
@@ -358,6 +362,9 @@ def fetch_mails(client: IMAPClient,
                                                uid_to_fetch_from)
         demisto.debug(f'message_id not provided, using generated query {messages_query}')
         messages_uids = client.search(messages_query)
+        # convert the uids to int in case one of them is str
+        messages_uids = [int(x) for x in messages_uids]
+
         demisto.debug(f"client returned {len(messages_uids)} message ids: {messages_uids=}")
 
         if len(messages_uids) > limit:  # If there's any reason to shorten the list
@@ -396,7 +403,7 @@ def fetch_mails(client: IMAPClient,
 
         demisto.debug(f"{mail_id=}: Created email object successfully.")
         # Add mails if the current email UID is higher than the previous incident UID
-        if int(email_message_object.id) > int(uid_to_fetch_from):
+        if int(email_message_object.id) > uid_to_fetch_from:
             fetched_email_objects.append(email_message_object)
             demisto.debug(f"{mail_id=}: Collecting {email_message_object.id=} since it's > {uid_to_fetch_from=}")
         else:

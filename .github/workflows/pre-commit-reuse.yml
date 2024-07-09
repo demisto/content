@@ -68,7 +68,7 @@ jobs:
         files: ".report_pytest.xml"
 
     - name: Create pack-wise pytest report
-      run: poetry run python Utils/github_workflow_scripts/parse_junit_per_pack.py
+      run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 

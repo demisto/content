@@ -15,7 +15,7 @@ This integration was integrated and tested with version 1.0.0 of Github Feed.
     | Trust any certificate (not secure) |  | False |
     | Owner | Username of the repository owner | True |
     | Repository / Path to fetch | The name of the repository | True |
-    | Feed type | Predefined list of indicator types:<br/>- YARA: Parses YARA rules from the feed.<br/>- STIX: Parses STIX data from the feed.<br/>- IOCs: Parses Indicators of Compromise \(IOCs\) using regex patterns.<br/> | True |
+    | Feed type | Predefined list of indicator types:<br/>- YARA: Parses YARA rules from the feed. The `Yara` pack is required for this type<br/>- STIX: Parses STIX data from the feed.<br/>- IOCs: Parses Indicators of Compromise \(IOCs\) using regex patterns.<br/> | True |
     | Branch name | The name of the main branch to which to compare. | True |
     | Files extensions to fetch | The extension for the file names to target. | True |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |

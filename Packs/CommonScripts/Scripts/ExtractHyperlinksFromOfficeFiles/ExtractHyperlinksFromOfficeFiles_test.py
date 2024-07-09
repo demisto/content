@@ -12,6 +12,7 @@ from ExtractHyperlinksFromOfficeFiles import extract_hyperlink_by_file_type
     ('test_data/e3.xlsx', {'https://www.paloaltonetworks.com/'}),
     ('test_data/p1.pptx', {'https://xsoar.pan.dev/', 'https://www.paloaltonetworks.com/'}),
     ('test_data/p2.pptx', set()),
+    ('test_data/p3.pptx', {'http://www.google.com'})
 ])
 def test_basescript_dummy(file_path, expected_output):
     """
@@ -24,6 +25,7 @@ def test_basescript_dummy(file_path, expected_output):
         6. excel file with hyperlinks inside text cell.
         7. power point file with hyperlinks on a picture and text.
         8. power point file without hyperlinks.
+        9. power point file with hyperlinks inside grourped shapes.
     When:
         Extracting hyperlinks from file using ExtractHyperlinksFromOfficeFiles script.
     Then:
@@ -36,6 +38,7 @@ def test_basescript_dummy(file_path, expected_output):
         6. hyperlinks extracted from excel file
         7. hyperlinks extracted from power point file
         8. no hyperlinks extracted from power point file
+        9. The grouped shapes are parsed correctly and the hyperlink is extracted.
     """
     response = extract_hyperlink_by_file_type(file_name=file_path, file_path=file_path)
     assert set(response.raw_response) == expected_output
