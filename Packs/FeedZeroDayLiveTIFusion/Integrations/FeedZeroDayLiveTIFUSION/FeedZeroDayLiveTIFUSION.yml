@@ -107,7 +107,7 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: "Zero Day Live is Blackwired\u2019s flagship product that delivers proprietary cyber threat intelligence, enabling our clients to operate at the same speed as the adversary. Zero Day Live specializes in unknown, zero day and early warning threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated, directly into the existing security infrastructure \u2013 measurably reducing the risk of breach."
+description: "Zero Day Live is Blackwired's flagship product that delivers proprietary cyber threat intelligence, enabling our clients to operate at the same speed as the adversary. Zero Day Live specializes in unknown, zero day and early warning threats. Our intelligence is delivered finished, actionable and seamlessly orchestrated, directly into the existing security infrastructure - measurably reducing the risk of breach."
 display: Zero Day Live TI FUSION Feed
 name: ZeroDayLiveTIFUSION Feed
 script:

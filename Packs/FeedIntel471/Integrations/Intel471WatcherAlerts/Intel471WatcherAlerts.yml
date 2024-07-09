@@ -63,7 +63,8 @@ configuration:
   name: insecure
   type: 8
   required: false
-description: '''Intel 471''s watcher alerts provide a mechanism by which customers can be notified in a timely manner of Titan content that is most relevant to them.'''
+description: |-
+  'Intel 471's watcher alerts provide a mechanism by which customers can be notified in a timely manner of Titan content that is most relevant to them.'
 display: Intel471 Watcher Alerts
 name: Intel471 Watcher Alerts
 script:
