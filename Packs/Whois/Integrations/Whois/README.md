@@ -65,45 +65,46 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.Registrar.Id | string | The ID of the registrar. | 
 | Domain.Registrar.Phone | string | The phone number of the registrar. | 
 | Domain.Registrar.Url | string | The URL of the registrar. | 
+| Domain.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
 | Domain.Emails | string | The abuse emails. | 
 | Domain.Address | string | The abuse address. | 
 | Domain.Organization | string | The organization domain name. | 
-| Domain.Whois_server | string | The whois server name. | 
+| Domain.WhoisServer | string | The whois server name. | 
 | Domain.Phone | string | The phone number of the tech administrator. | 
 | Domain.Admin | object | Admin information. | 
 | Domain.Admin.Address | string | The address of the administrator. | 
-| Domain.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.Admin.C | string | The C field of the administrator. | 
 | Domain.Admin.City | string | The city of the administrator. | 
 | Domain.Admin.Country | string | The country of the administrator. | 
 | Domain.Admin.Email | string | The email address of the administrator. | 
 | Domain.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.Admin.FaxExt | string | The fax extension of the administrator. | 
 | Domain.Admin.Id | string | The ID of the administrator. | 
 | Domain.Admin.Name | string | The name of the administrator. | 
 | Domain.Admin.Org | string | The organization of the administrator. | 
 | Domain.Admin.Organization | string | The organization name of the administrator. | 
 | Domain.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.Admin.Phone_ext | string | The phone extension of the administrator. | 
-| Domain.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.Admin.PhoneExt | string | The phone extension of the administrator. | 
+| Domain.Admin.PostalCode | string | The postal code of the administrator. | 
 | Domain.Admin.State | string | The state of the administrator. | 
-| Domain.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.Admin.StateProvince | string | The state or province of the administrator. | 
 | Domain.Admin.Street | string | The street of the administrator. | 
 | Domain.Registrant.Name | string | The name of the registrant. | 
 | Domain.Registrant.Email | string | The email address of the registrant. | 
 | Domain.Registrant.Country | string | The country of the registrant. | 
 | Domain.Registrant.State | string | The state of the registrant. | 
 | Domain.Registrant.Organization | string | The organization of the registrant. | 
-| Domain.Registrant.Postal_code | string | The postal code of the registrant. | 
+| Domain.Registrant.PostalCode | string | The postal code of the registrant. | 
 | Domain.Registrant.Street | string | The street of the registrant. | 
 | Domain.Registrant.Phone | string | The phone number of the registrant. | 
 | Domain.Registrant.City | string | The city of the registrant. | 
 | Domain.Registrant.Address | string | The address of the registrant. | 
-| Domain.Registrant.Contact_name | string | The contact name of the registrant. | 
+| Domain.Registrant.ContactName | string | The contact name of the registrant. | 
 | Domain.Registrant.Fax | string | The fax of the registrant. | 
 | Domain.Registrant.Id | string | The ID of the registrant. | 
 | Domain.Registrant.Number | string | The number of the registrant. | 
-| Domain.Registrant.State_province | string | The state province of the registrant. | 
+| Domain.Registrant.StateProvince | string | The state province of the registrant. | 
 | Domain.Raw | string | The raw output from python-whois lib. | 
 | Domain.Administrator | string | The country of the domain administrator. | 
 | Domain.Tech.Name | string | The name of the tech contact. | 
@@ -115,9 +116,9 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.Tech.ID | string | The ID of the tech contact. | 
 | Domain.Tech.Organization | string | The organization of the tech contact. | 
 | Domain.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.Tech.Postal_code | string | The postal code of the tech contact. | 
+| Domain.Tech.PostalCode | string | The postal code of the tech contact. | 
 | Domain.Tech.State | string | The state of the tech contact. | 
-| Domain.Tech.State_province | string | The state/province of the tech contact. | 
+| Domain.Tech.StateProvince | string | The state/province of the tech contact. | 
 | Domain.Tech.Street | string | The street of the tech contact. | 
 | Domain.ID | string | The ID of the domain. | 
 | Domain.WHOIS.Name | string | The domain name. | 
@@ -136,46 +137,45 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.WHOIS.Registrar.Id | string | The ID of the registrar. | 
 | Domain.WHOIS.Registrar.Phone | string | The phone number of the registrar. | 
 | Domain.WHOIS.Registrar.Url | string | The URL of the registrar. | 
+| Domain.WHOIS.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
 | Domain.WHOIS.Emails | string | The abuse emails. | 
 | Domain.WHOIS.Address | string | The abuse address. | 
 | Domain.WHOIS.Organization | string | The organization domain name. | 
-| Domain.WHOIS.Whois_server | string | The whois server name. | 
+| Domain.WHOIS.WhoisServer | string | The whois server name. | 
 | Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
 | Domain.WHOIS.Admin | object | Admin information. | 
 | Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
-| Domain.WHOIS.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
 | Domain.WHOIS.Admin.City | string | The city of the administrator. | 
 | Domain.WHOIS.Admin.Country | string | The country of the administrator. | 
 | Domain.WHOIS.Admin.Email | string | The email address of the administrator. | 
 | Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.WHOIS.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.WHOIS.Admin.FaxExt | string | The fax extension of the administrator. | 
 | Domain.WHOIS.Admin.Id | string | The ID of the administrator. | 
 | Domain.WHOIS.Admin.Name | string | The name of the administrator. | 
 | Domain.WHOIS.Admin.Org | string | The organization of the administrator. | 
-| Domain.WHOIS.Admin.Organization | string | The organization name of the administrator. | 
 | Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.WHOIS.Admin.Phone_ext | string | The phone extension of the administrator. | 
-| Domain.WHOIS.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.WHOIS.Admin.PhoneExt | string | The phone extension of the administrator. | 
+| Domain.WHOIS.Admin.PostalCode | string | The postal code of the administrator. | 
 | Domain.WHOIS.Admin.State | string | The state of the administrator. | 
-| Domain.WHOIS.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.WHOIS.Admin.StateProvince | string | The state or province of the administrator. | 
 | Domain.WHOIS.Admin.Street | string | The street of the administrator. | 
 | Domain.WHOIS.Registrant.Name | string | The name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | string | The email address of the registrant. | 
 | Domain.WHOIS.Registrant.Country | string | The country of the registrant. | 
 | Domain.WHOIS.Registrant.State | string | The state of the registrant. | 
-| Domain.WHOIS.Registrant.Organization | string | The organization of the registrant. | 
 | Domain.WHOIS.Registrant.Org | string | The organization of the registrant. | 
-| Domain.WHOIS.Registrant.Postal_code | string | The postal code of the registrant. | 
+| Domain.WHOIS.Registrant.PostalCode | string | The postal code of the registrant. | 
 | Domain.WHOIS.Registrant.Street | string | The street of the registrant. | 
 | Domain.WHOIS.Registrant.Phone | string | The phone number of the registrant. | 
 | Domain.WHOIS.Registrant.City | string | The city of the registrant. | 
 | Domain.WHOIS.Registrant.Address | string | The address of the registrant. | 
-| Domain.WHOIS.Registrant.Contact_name | string | The contact name of the registrant. | 
+| Domain.WHOIS.Registrant.ContactName | string | The contact name of the registrant. | 
 | Domain.WHOIS.Registrant.Fax | string | The fax of the registrant. | 
 | Domain.WHOIS.Registrant.Id | string | The ID of the registrant. | 
 | Domain.WHOIS.Registrant.Number | string | The number of the registrant. | 
-| Domain.WHOIS.Registrant.State_province | string | The state province of the registrant. | 
+| Domain.WHOIS.Registrant.StateProvince | string | The state province of the registrant. | 
 | Domain.WHOIS.Raw | string | The raw output from python-whois lib. | 
 | Domain.WHOIS.Administrator | string | The country of the domain administrator. | 
 | Domain.WHOIS.Tech.Name | string | The name of the tech contact. | 
@@ -185,11 +185,11 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.WHOIS.Tech.Email | string | The email address of the tech contact. | 
 | Domain.WHOIS.Tech.Fax | string | The fax number of the tech contact. | 
 | Domain.WHOIS.Tech.ID | string | The ID of the tech contact. | 
-| Domain.WHOIS.Tech.Organization | string | The organization of the tech contact. | 
+| Domain.WHOIS.Tech.Org | string | The organization of the tech contact. | 
 | Domain.WHOIS.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.WHOIS.Tech.Postal_code | string | The postal code of the tech contact. | 
+| Domain.WHOIS.Tech.PostalCode | string | The postal code of the tech contact. | 
 | Domain.WHOIS.Tech.State | string | The state of the tech contact. | 
-| Domain.WHOIS.Tech.State_province | string | The state/province of the tech contact. | 
+| Domain.WHOIS.Tech.StateProvince | string | The state/province of the tech contact. | 
 | Domain.WHOIS.Tech.Street | string | The street of the tech contact. | 
 | Domain.WHOIS.ID | string | The ID of the domain. | 
 | Domain.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. | 
@@ -257,7 +257,7 @@ This pack relies on free services for WHOIS information. As with many free servi
     "Domain": {
         "WHOIS": {
             "Name": "paloaltonetworks.com",
-            "Whois_server": "whois.markmonitor.com",
+            "WhoisServer": "whois.markmonitor.com",
             "CreationDate": "21-02-2005",
             "ExpirationDate": "21-02-2026",
             "UpdatedDate": "08-02-2024",
@@ -301,7 +301,7 @@ This pack relies on free services for WHOIS information. As with many free servi
             "Raw": "domain_name: ['PALOALTONETWORKS.COM', 'paloaltonetworks.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: None, updated_date: [datetime.datetime(2024, 2, 8, 6, 27, 19), datetime.datetime(2024, 2, 8, 6, 27, 19, tzinfo=datetime.timezone.utc)], creation_date: [datetime.datetime(2005, 2, 21, 2, 42, 10), datetime.datetime(2005, 2, 21, 2, 42, 10, tzinfo=datetime.timezone.utc)], expiration_date: [datetime.datetime(2026, 2, 21, 2, 42, 10), datetime.datetime(2026, 2, 21, 0, 0, tzinfo=datetime.timezone.utc)], name_servers: ['A1-184.AKAM.NET', 'A11-64.AKAM.NET', 'A12-67.AKAM.NET', 'A13-66.AKAM.NET', 'A2-65.AKAM.NET', 'A4-64.AKAM.NET', 'a1-184.akam.net', 'a4-64.akam.net', 'a2-65.akam.net', 'a13-66.akam.net', 'a12-67.akam.net', 'a11-64.akam.net'], status: ['clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited', 'clientTransferProhibited https://icann.org/epp#clientTransferProhibited', 'clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited', 'clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)', 'clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)', 'clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)'], emails: ['abusecomplaints@markmonitor.com', 'whoisrequest@markmonitor.com'], dnssec: signedDelegation, name: None, org: Palo Alto Networks, Inc., address: None, city: None, state: CA, registrant_postal_code: None, country: US"
         },
         "Name": "paloaltonetworks.com",
-        "Whois_server": "whois.markmonitor.com",
+        "WhoisServer": "whois.markmonitor.com",
         "CreationDate": "21-02-2005",
         "ExpirationDate": "21-02-2026",
         "UpdatedDate": "08-02-2024",
@@ -350,7 +350,7 @@ This pack relies on free services for WHOIS information. As with many free servi
 #### Human Readable Output
 
 >### Whois results for paloaltonetworks.com
->|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|Whois_server|
+>|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|WhoisServer|
 >|---|---|---|---|---|---|---|---|---|---|
 >| paloaltonetworks.com | 21-02-2005 | 21-02-2026 | 08-02-2024 | a1-184.akam.net,<br>a11-64.akam.net,<br>a12-67.akam.net,<br>a13-66.akam.net,<br>a2-65.akam.net,<br>a4-64.akam.net | Palo Alto Networks, Inc. | Name: MarkMonitor, Inc. | clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,<br>clientTransferProhibited https://icann.org/epp#clientTransferProhibited,<br>clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,<br>clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited),<br>clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited),<br>clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited) | abusecomplaints@markmonitor.com,<br>whoisrequest@markmonitor.com | whois.markmonitor.com |
 
@@ -397,44 +397,44 @@ Provides data enrichment for domains.
 | Domain.Registrar.Id | string | The ID of the registrar. | 
 | Domain.Registrar.Phone | string | The phone number of the registrar. | 
 | Domain.Registrar.Url | string | The URL of the registrar. | 
+| Domain.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
 | Domain.Emails | string | The abuse emails. | 
 | Domain.Address | string | The abuse address. | 
-| Domain.Whois_server | string | The whois server name. | 
+| Domain.WhoisServer | string | The whois server name. | 
 | Domain.Phone | string | The phone number of the tech administrator. | 
 | Domain.Admin | object | Admin information. | 
 | Domain.Admin.Address | string | The address of the administrator. | 
-| Domain.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.Admin.C | string | The C field of the administrator. | 
 | Domain.Admin.City | string | The city of the administrator. | 
 | Domain.Admin.Country | string | The country of the administrator. | 
 | Domain.Admin.Email | string | The email address of the administrator. | 
 | Domain.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.Admin.FaxExt | string | The fax extension of the administrator. | 
 | Domain.Admin.Id | string | The ID of the administrator. | 
 | Domain.Admin.Name | string | The name of the administrator. | 
 | Domain.Admin.Org | string | The organization of the administrator. | 
-| Domain.Admin.Organization | string | The organization name of the administrator. | 
 | Domain.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.Admin.Phone_ext | string | The phone extension of the administrator. | 
-| Domain.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.Admin.PhoneExt | string | The phone extension of the administrator. | 
+| Domain.Admin.PostalCode | string | The postal code of the administrator. | 
 | Domain.Admin.State | string | The state of the administrator. | 
-| Domain.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.Admin.StateProvince | string | The state or province of the administrator. | 
 | Domain.Admin.Street | string | The street of the administrator. | 
 | Domain.Registrant.Name | string | The name of the registrant. | 
 | Domain.Registrant.Email | string | The email address of the registrant. | 
 | Domain.Registrant.Country | string | The country of the registrant. | 
 | Domain.Registrant.State | string | The state of the registrant. | 
-| Domain.Registrant.Organization | string | The organization of the registrant. | 
-| Domain.Registrant.Postal_code | string | The postal code of the registrant. | 
+| Domain.Registrant.Org | string | The organization of the registrant. | 
+| Domain.Registrant.PostalCode | string | The postal code of the registrant. | 
 | Domain.Registrant.Street | string | The street of the registrant. | 
 | Domain.Registrant.Phone | string | The phone number of the registrant. | 
 | Domain.Registrant.City | string | The city of the registrant. | 
 | Domain.Registrant.Address | string | The address of the registrant. | 
-| Domain.Registrant.Contact_name | string | The contact name of the registrant. | 
+| Domain.Registrant.ContactName | string | The contact name of the registrant. | 
 | Domain.Registrant.Fax | string | The fax of the registrant. | 
 | Domain.Registrant.Id | string | The ID of the registrant. | 
 | Domain.Registrant.Number | string | The number of the registrant. | 
-| Domain.Registrant.State_province | string | The state province of the registrant. | 
+| Domain.Registrant.StateProvince | string | The state province of the registrant. | 
 | Domain.Raw | string | The raw output from python-whois lib. | 
 | Domain.Administrator | string | The country of the domain administrator. | 
 | Domain.Tech.Name | string | The name of the tech contact. | 
@@ -444,11 +444,11 @@ Provides data enrichment for domains.
 | Domain.Tech.Email | string | The email address of the tech contact. | 
 | Domain.Tech.Fax | string | The fax number of the tech contact. | 
 | Domain.Tech.ID | string | The ID of the tech contact. | 
-| Domain.Tech.Organization | string | The organization of the tech contact. | 
+| Domain.Tech.Org | string | The organization of the tech contact. | 
 | Domain.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.Tech.Postal_code | string | The postal code of the tech contact. | 
+| Domain.Tech.PostalCode | string | The postal code of the tech contact. | 
 | Domain.Tech.State | string | The state of the tech contact. | 
-| Domain.Tech.State_province | string | The state/province of the tech contact. | 
+| Domain.Tech.StateProvince | string | The state/province of the tech contact. | 
 | Domain.Tech.Street | string | The street of the tech contact. | 
 | Domain.FeedRelatedIndicators.Type | String | Indicators that are associated with the domain. | 
 | Domain.FeedRelatedIndicators.Value | String | The type of the indicators that are associated with the domain. | 
@@ -471,46 +471,45 @@ Provides data enrichment for domains.
 | Domain.WHOIS.Registrar.Id | string | The ID of the registrar. | 
 | Domain.WHOIS.Registrar.Phone | string | The phone number of the registrar. | 
 | Domain.WHOIS.Registrar.Url | string | The URL of the registrar. | 
+| Domain.WHOIS.Registrar.AbuseEmail | string | The email address of the contact for reporting abuse. | 
 | Domain.WHOIS.Emails | string | The abuse emails. | 
 | Domain.WHOIS.Address | string | The abuse address. | 
 | Domain.WHOIS.Organization | string | The organization domain name. | 
-| Domain.WHOIS.Whois_server | string | The whois server name. | 
+| Domain.WHOIS.WhoisServer | string | The whois server name. | 
 | Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
 | Domain.WHOIS.Admin | object | Admin information. | 
 | Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
-| Domain.WHOIS.Admin.Application_purpose | string | The application purpose of the administrator. | 
+| Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
 | Domain.WHOIS.Admin.City | string | The city of the administrator. | 
 | Domain.WHOIS.Admin.Country | string | The country of the administrator. | 
 | Domain.WHOIS.Admin.Email | string | The email address of the administrator. | 
 | Domain.WHOIS.Admin.Fax | string | The fax number of the administrator. | 
-| Domain.WHOIS.Admin.Fax_ext | string | The fax extension of the administrator. | 
+| Domain.WHOIS.Admin.FaxExt | string | The fax extension of the administrator. | 
 | Domain.WHOIS.Admin.Id | string | The ID of the administrator. | 
 | Domain.WHOIS.Admin.Name | string | The name of the administrator. | 
 | Domain.WHOIS.Admin.Org | string | The organization of the administrator. | 
-| Domain.WHOIS.Admin.Organization | string | The organization name of the administrator. | 
 | Domain.WHOIS.Admin.Phone | string | The phone number of the administrator. | 
-| Domain.WHOIS.Admin.Phone_ext | string | The phone extension of the administrator. | 
-| Domain.WHOIS.Admin.Postal_code | string | The postal code of the administrator. | 
+| Domain.WHOIS.Admin.PhoneExt | string | The phone extension of the administrator. | 
+| Domain.WHOIS.Admin.PostalCode | string | The postal code of the administrator. | 
 | Domain.WHOIS.Admin.State | string | The state of the administrator. | 
-| Domain.WHOIS.Admin.State_province | string | The state or province of the administrator. | 
+| Domain.WHOIS.Admin.StateProvince | string | The state or province of the administrator. | 
 | Domain.WHOIS.Admin.Street | string | The street of the administrator. | 
 | Domain.WHOIS.Registrant.Name | string | The name of the registrant. | 
 | Domain.WHOIS.Registrant.Email | string | The email address of the registrant. | 
 | Domain.WHOIS.Registrant.Country | string | The country of the registrant. | 
 | Domain.WHOIS.Registrant.State | string | The state of the registrant. | 
-| Domain.WHOIS.Registrant.Organization | string | The organization of the registrant. | 
 | Domain.WHOIS.Registrant.Org | string | The organization of the registrant. | 
-| Domain.WHOIS.Registrant.Postal_code | string | The postal code of the registrant. | 
+| Domain.WHOIS.Registrant.PostalCode | string | The postal code of the registrant. | 
 | Domain.WHOIS.Registrant.Street | string | The street of the registrant. | 
 | Domain.WHOIS.Registrant.Phone | string | The phone number of the registrant. | 
 | Domain.WHOIS.Registrant.City | string | The city of the registrant. | 
 | Domain.WHOIS.Registrant.Address | string | The address of the registrant. | 
-| Domain.WHOIS.Registrant.Contact_name | string | The contact name of the registrant. | 
+| Domain.WHOIS.Registrant.ContactName | string | The contact name of the registrant. | 
 | Domain.WHOIS.Registrant.Fax | string | The fax of the registrant. | 
 | Domain.WHOIS.Registrant.Id | string | The ID of the registrant. | 
 | Domain.WHOIS.Registrant.Number | string | The number of the registrant. | 
-| Domain.WHOIS.Registrant.State_province | string | The state province of the registrant. | 
+| Domain.WHOIS.Registrant.StateProvince | string | The state province of the registrant. | 
 | Domain.WHOIS.Raw | string | The raw output from python-whois lib. | 
 | Domain.WHOIS.Administrator | string | The country of the domain administrator. | 
 | Domain.WHOIS.Tech.Name | string | The name of the tech contact. | 
@@ -520,11 +519,11 @@ Provides data enrichment for domains.
 | Domain.WHOIS.Tech.Email | string | The email address of the tech contact. | 
 | Domain.WHOIS.Tech.Fax | string | The fax number of the tech contact. | 
 | Domain.WHOIS.Tech.ID | string | The ID of the tech contact. | 
-| Domain.WHOIS.Tech.Organization | string | The organization of the tech contact. | 
+| Domain.WHOIS.Tech.Org | string | The organization of the tech contact. | 
 | Domain.WHOIS.Tech.Phone | string | The phone number of the tech contact. | 
-| Domain.WHOIS.Tech.Postal_code | string | The postal code of the tech contact. | 
+| Domain.WHOIS.Tech.PostalCode | string | The postal code of the tech contact. | 
 | Domain.WHOIS.Tech.State | string | The state of the tech contact. | 
-| Domain.WHOIS.Tech.State_province | string | The state/province of the tech contact. | 
+| Domain.WHOIS.Tech.StateProvince | string | The state/province of the tech contact. | 
 | Domain.WHOIS.Tech.Street | string | The street of the tech contact. | 
 | Domain.Whois.Name | string | \(Legacy output\) The domain name. | 
 | Domain.Whois.DomainStatus | string | \(Legacy output\) The domain status. | 
@@ -599,7 +598,7 @@ Provides data enrichment for domains.
     "Domain": {
         "WHOIS": {
             "Name": "google.com",
-            "Whois_server": "whois.markmonitor.com",
+            "WhoisServer": "whois.markmonitor.com",
             "CreationDate": "15-09-1997",
             "ExpirationDate": "14-09-2028",
             "UpdatedDate": "09-09-2019",
@@ -647,7 +646,7 @@ Provides data enrichment for domains.
             "Raw": "domain_name: ['GOOGLE.COM', 'google.com'], registrar: MarkMonitor, Inc., whois_server: whois.markmonitor.com, referral_url: None, updated_date: [datetime.datetime(2019, 9, 9, 15, 39, 4), datetime.datetime(2019, 9, 9, 15, 39, 4, tzinfo=datetime.timezone.utc)], creation_date: [datetime.datetime(1997, 9, 15, 4, 0), datetime.datetime(1997, 9, 15, 7, 0, tzinfo=datetime.timezone.utc)], expiration_date: [datetime.datetime(2028, 9, 14, 4, 0), datetime.datetime(2028, 9, 13, 7, 0, tzinfo=datetime.timezone.utc)], name_servers: ['NS1.GOOGLE.COM', 'NS2.GOOGLE.COM', 'NS3.GOOGLE.COM', 'NS4.GOOGLE.COM', 'ns4.google.com', 'ns3.google.com', 'ns1.google.com', 'ns2.google.com'], status: ['clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited', 'clientTransferProhibited https://icann.org/epp#clientTransferProhibited', 'clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited', 'serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited', 'serverTransferProhibited https://icann.org/epp#serverTransferProhibited', 'serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited', 'clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited)', 'clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited)', 'clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited)', 'serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited)', 'serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited)', 'serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited)'], emails: ['abusecomplaints@markmonitor.com', 'whoisrequest@markmonitor.com'], dnssec: unsigned, name: None, org: Google LLC, address: None, city: None, state: CA, registrant_postal_code: None, country: US"
         },
         "Name": "google.com",
-        "Whois_server": "whois.markmonitor.com",
+        "WhoisServer": "whois.markmonitor.com",
         "CreationDate": "15-09-1997",
         "ExpirationDate": "14-09-2028",
         "UpdatedDate": "09-09-2019",
@@ -702,7 +701,7 @@ Provides data enrichment for domains.
 
 
 >### Whois results for google.com
->|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|Whois_server|
+>|Name|CreationDate|ExpirationDate|UpdatedDate|NameServers|Organization|Registrar|DomainStatus|Emails|WhoisServer|
 >|---|---|---|---|---|---|---|---|---|---|
 >| google.com | 15-09-1997 | 14-09-2028 | 09-09-2019 | ns1.google.com,<br>ns2.google.com,<br>ns3.google.com,<br>ns4.google.com | Google LLC | Name: MarkMonitor, Inc. | clientDeleteProhibited https://icann.org/epp#clientDeleteProhibited,<br>clientTransferProhibited https://icann.org/epp#clientTransferProhibited,<br>clientUpdateProhibited https://icann.org/epp#clientUpdateProhibited,<br>serverDeleteProhibited https://icann.org/epp#serverDeleteProhibited,<br>serverTransferProhibited https://icann.org/epp#serverTransferProhibited,<br>serverUpdateProhibited https://icann.org/epp#serverUpdateProhibited,<br>clientUpdateProhibited (https://www.icann.org/epp#clientUpdateProhibited),<br>clientTransferProhibited (https://www.icann.org/epp#clientTransferProhibited),<br>clientDeleteProhibited (https://www.icann.org/epp#clientDeleteProhibited),<br>serverUpdateProhibited (https://www.icann.org/epp#serverUpdateProhibited),<br>serverTransferProhibited (https://www.icann.org/epp#serverTransferProhibited),<br>serverDeleteProhibited (https://www.icann.org/epp#serverDeleteProhibited) | abusecomplaints@markmonitor.com,<br>whoisrequest@markmonitor.com | whois.markmonitor.com |
 

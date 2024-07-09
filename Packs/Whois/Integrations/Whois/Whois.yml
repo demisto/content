@@ -160,6 +160,9 @@ script:
     - contextPath: Domain.Registrar.Url
       description: The URL of the registrar.
       type: string
+    - contextPath: Domain.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
     - contextPath: Domain.Emails
       description: The abuse emails.
       type: string
@@ -169,7 +172,7 @@ script:
     - contextPath: Domain.Organization
       description: The organization domain name.
       type: string
-    - contextPath: Domain.Whois_server
+    - contextPath: Domain.WhoisServer
       description: The whois server name.
       type: string
     - contextPath: Domain.Phone
@@ -181,7 +184,7 @@ script:
     - contextPath: Domain.Admin.Address
       description: The address of the administrator.
       type: string
-    - contextPath: Domain.Admin.Application_purpose
+    - contextPath: Domain.Admin.ApplicationPurpose
       description: The application purpose of the administrator.
       type: string
     - contextPath: Domain.Admin.C
@@ -199,7 +202,7 @@ script:
     - contextPath: Domain.Admin.Fax
       description: The fax number of the administrator.
       type: string
-    - contextPath: Domain.Admin.Fax_ext
+    - contextPath: Domain.Admin.FaxExt
       description: The fax extension of the administrator.
       type: string
     - contextPath: Domain.Admin.Id
@@ -209,24 +212,21 @@ script:
       description: The name of the administrator.
       type: string
     - contextPath: Domain.Admin.Org
-      description: The organization of the administrator.
-      type: string
-    - contextPath: Domain.Admin.Organization
       description: The organization name of the administrator.
       type: string
     - contextPath: Domain.Admin.Phone
       description: The phone number of the administrator.
       type: string
-    - contextPath: Domain.Admin.Phone_ext
+    - contextPath: Domain.Admin.PhoneExt
       description: The phone extension of the administrator.
       type: string
-    - contextPath: Domain.Admin.Postal_code
+    - contextPath: Domain.Admin.PostalCode
       description: The postal code of the administrator.
       type: string
     - contextPath: Domain.Admin.State
       description: The state of the administrator.
       type: string
-    - contextPath: Domain.Admin.State_province
+    - contextPath: Domain.Admin.StateProvince
       description: The state or province of the administrator.
       type: string
     - contextPath: Domain.Admin.Street
@@ -244,10 +244,10 @@ script:
     - contextPath: Domain.Registrant.State
       description: The state of the registrant.
       type: string
-    - contextPath: Domain.Registrant.Organization
+    - contextPath: Domain.Registrant.Org
       description: The organization of the registrant.
       type: string
-    - contextPath: Domain.Registrant.Postal_code
+    - contextPath: Domain.Registrant.PostalCode
       description: The postal code of the registrant.
       type: string
     - contextPath: Domain.Registrant.Street
@@ -262,7 +262,7 @@ script:
     - contextPath: Domain.Registrant.Address
       description: The address of the registrant.
       type: string
-    - contextPath: Domain.Registrant.Contact_name
+    - contextPath: Domain.Registrant.ContactName
       description: The contact name of the registrant.
       type: string
     - contextPath: Domain.Registrant.Fax
@@ -274,7 +274,7 @@ script:
     - contextPath: Domain.Registrant.Number
       description: The number of the registrant.
       type: string
-    - contextPath: Domain.Registrant.State_province
+    - contextPath: Domain.Registrant.StateProvince
       description: The state province of the registrant.
       type: string
     - contextPath: Domain.Raw
@@ -304,19 +304,19 @@ script:
     - contextPath: Domain.Tech.ID
       description: The ID of the tech contact.
       type: string
-    - contextPath: Domain.Tech.Organization
+    - contextPath: Domain.Tech.Org
       description: The organization of the tech contact.
       type: string
     - contextPath: Domain.Tech.Phone
       description: The phone number of the tech contact.
       type: string
-    - contextPath: Domain.Tech.Postal_code
+    - contextPath: Domain.Tech.PostalCode
       description: The postal code of the tech contact.
       type: string
     - contextPath: Domain.Tech.State
       description: The state of the tech contact.
       type: string
-    - contextPath: Domain.Tech.State_province
+    - contextPath: Domain.Tech.StateProvince
       description: The state/province of the tech contact.
       type: string
     - contextPath: Domain.Tech.Street
@@ -373,6 +373,9 @@ script:
     - contextPath: Domain.WHOIS.Registrar.Url
       description: The URL of the registrar.
       type: string
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
     - contextPath: Domain.WHOIS.Emails
       description: The abuse emails.
       type: string
@@ -382,7 +385,7 @@ script:
     - contextPath: Domain.WHOIS.Organization
       description: The organization domain name.
       type: string
-    - contextPath: Domain.WHOIS.Whois_server
+    - contextPath: Domain.WHOIS.WhoisServer
       description: The whois server name.
       type: string
     - contextPath: Domain.WHOIS.Phone
@@ -394,7 +397,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Address
       description: The address of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Application_purpose
+    - contextPath: Domain.WHOIS.Admin.ApplicationPurpose
       description: The application purpose of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.C
@@ -412,7 +415,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Fax
       description: The fax number of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Fax_ext
+    - contextPath: Domain.WHOIS.Admin.FaxExt
       description: The fax extension of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.Id
@@ -424,22 +427,22 @@ script:
     - contextPath: Domain.WHOIS.Admin.Org
       description: The organization of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Organization
+    - contextPath: Domain.WHOIS.Admin.Org
       description: The organization name of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.Phone
       description: The phone number of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Phone_ext
+    - contextPath: Domain.WHOIS.Admin.PhoneExt
       description: The phone extension of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Postal_code
+    - contextPath: Domain.WHOIS.Admin.PostalCode
       description: The postal code of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.State
       description: The state of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.State_province
+    - contextPath: Domain.WHOIS.Admin.StateProvince
       description: The state or province of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.Street
@@ -457,13 +460,10 @@ script:
     - contextPath: Domain.WHOIS.Registrant.State
       description: The state of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.Organization
-      description: The organization of the registrant.
-      type: string
     - contextPath: Domain.WHOIS.Registrant.Org
       description: The organization of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.Postal_code
+    - contextPath: Domain.WHOIS.Registrant.PostalCode
       description: The postal code of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Street
@@ -478,7 +478,7 @@ script:
     - contextPath: Domain.WHOIS.Registrant.Address
       description: The address of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.Contact_name
+    - contextPath: Domain.WHOIS.Registrant.ContactName
       description: The contact name of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Fax
@@ -490,7 +490,7 @@ script:
     - contextPath: Domain.WHOIS.Registrant.Number
       description: The number of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.State_province
+    - contextPath: Domain.WHOIS.Registrant.StateProvince
       description: The state province of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Raw
@@ -520,19 +520,19 @@ script:
     - contextPath: Domain.WHOIS.Tech.ID
       description: The ID of the tech contact.
       type: string
-    - contextPath: Domain.WHOIS.Tech.Organization
+    - contextPath: Domain.WHOIS.Tech.Org
       description: The organization of the tech contact.
       type: string
     - contextPath: Domain.WHOIS.Tech.Phone
       description: The phone number of the tech contact.
       type: string
-    - contextPath: Domain.WHOIS.Tech.Postal_code
+    - contextPath: Domain.WHOIS.Tech.PostalCode
       description: The postal code of the tech contact.
       type: string
     - contextPath: Domain.WHOIS.Tech.State
       description: The state of the tech contact.
       type: string
-    - contextPath: Domain.WHOIS.Tech.State_province
+    - contextPath: Domain.WHOIS.Tech.StateProvince
       description: The state/province of the tech contact.
       type: string
     - contextPath: Domain.WHOIS.Tech.Street
@@ -766,13 +766,16 @@ script:
     - contextPath: Domain.Registrar.Url
       description: The URL of the registrar.
       type: string
+    - contextPath: Domain.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
     - contextPath: Domain.Emails
       description: The abuse emails.
       type: string
     - contextPath: Domain.Address
       description: The abuse address.
       type: string
-    - contextPath: Domain.Whois_server
+    - contextPath: Domain.WhoisServer
       description: The whois server name.
       type: string
     - contextPath: Domain.Phone
@@ -784,7 +787,7 @@ script:
     - contextPath: Domain.Admin.Address
       description: The address of the administrator.
       type: string
-    - contextPath: Domain.Admin.Application_purpose
+    - contextPath: Domain.Admin.ApplicationPurpose
       description: The application purpose of the administrator.
       type: string
     - contextPath: Domain.Admin.C
@@ -802,7 +805,7 @@ script:
     - contextPath: Domain.Admin.Fax
       description: The fax number of the administrator.
       type: string
-    - contextPath: Domain.Admin.Fax_ext
+    - contextPath: Domain.Admin.FaxExt
       description: The fax extension of the administrator.
       type: string
     - contextPath: Domain.Admin.Id
@@ -814,22 +817,19 @@ script:
     - contextPath: Domain.Admin.Org
       description: The organization of the administrator.
       type: string
-    - contextPath: Domain.Admin.Organization
-      description: The organization name of the administrator.
-      type: string
     - contextPath: Domain.Admin.Phone
       description: The phone number of the administrator.
       type: string
-    - contextPath: Domain.Admin.Phone_ext
+    - contextPath: Domain.Admin.PhoneExt
       description: The phone extension of the administrator.
       type: string
-    - contextPath: Domain.Admin.Postal_code
+    - contextPath: Domain.Admin.PostalCode
       description: The postal code of the administrator.
       type: string
     - contextPath: Domain.Admin.State
       description: The state of the administrator.
       type: string
-    - contextPath: Domain.Admin.State_province
+    - contextPath: Domain.Admin.StateProvince
       description: The state or province of the administrator.
       type: string
     - contextPath: Domain.Admin.Street
@@ -847,10 +847,10 @@ script:
     - contextPath: Domain.Registrant.State
       description: The state of the registrant.
       type: string
-    - contextPath: Domain.Registrant.Organization
+    - contextPath: Domain.Registrant.Org
       description: The organization of the registrant.
       type: string
-    - contextPath: Domain.Registrant.Postal_code
+    - contextPath: Domain.Registrant.PostalCode
       description: The postal code of the registrant.
       type: string
     - contextPath: Domain.Registrant.Street
@@ -865,7 +865,7 @@ script:
     - contextPath: Domain.Registrant.Address
       description: The address of the registrant.
       type: string
-    - contextPath: Domain.Registrant.Contact_name
+    - contextPath: Domain.Registrant.ContactName
       description: The contact name of the registrant.
       type: string
     - contextPath: Domain.Registrant.Fax
@@ -877,7 +877,7 @@ script:
     - contextPath: Domain.Registrant.Number
       description: The number of the registrant.
       type: string
-    - contextPath: Domain.Registrant.State_province
+    - contextPath: Domain.Registrant.StateProvince
       description: The state province of the registrant.
       type: string
     - contextPath: Domain.Raw
@@ -907,19 +907,19 @@ script:
     - contextPath: Domain.Tech.ID
       description: The ID of the tech contact.
       type: string
-    - contextPath: Domain.Tech.Organization
+    - contextPath: Domain.Tech.Org
       description: The organization of the tech contact.
       type: string
     - contextPath: Domain.Tech.Phone
       description: The phone number of the tech contact.
       type: string
-    - contextPath: Domain.Tech.Postal_code
+    - contextPath: Domain.Tech.PostalCode
       description: The postal code of the tech contact.
       type: string
     - contextPath: Domain.Tech.State
       description: The state of the tech contact.
       type: string
-    - contextPath: Domain.Tech.State_province
+    - contextPath: Domain.Tech.StateProvince
       description: The state/province of the tech contact.
       type: string
     - contextPath: Domain.Tech.Street
@@ -988,6 +988,9 @@ script:
     - contextPath: Domain.WHOIS.Registrar.Url
       description: The URL of the registrar.
       type: string
+    - contextPath: Domain.WHOIS.Registrar.AbuseEmail
+      description: The email address of the contact for reporting abuse.
+      type: string
     - contextPath: Domain.WHOIS.Emails
       description: The abuse emails.
       type: string
@@ -997,7 +1000,7 @@ script:
     - contextPath: Domain.WHOIS.Organization
       description: The organization domain name.
       type: string
-    - contextPath: Domain.WHOIS.Whois_server
+    - contextPath: Domain.WHOIS.WhoisServer
       description: The whois server name.
       type: string
     - contextPath: Domain.WHOIS.Phone
@@ -1009,7 +1012,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Address
       description: The address of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Application_purpose
+    - contextPath: Domain.WHOIS.Admin.ApplicationPurpose
       description: The application purpose of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.C
@@ -1027,7 +1030,7 @@ script:
     - contextPath: Domain.WHOIS.Admin.Fax
       description: The fax number of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Fax_ext
+    - contextPath: Domain.WHOIS.Admin.FaxExt
       description: The fax extension of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.Id
@@ -1039,22 +1042,22 @@ script:
     - contextPath: Domain.WHOIS.Admin.Org
       description: The organization of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Organization
+    - contextPath: Domain.WHOIS.Admin.Org
       description: The organization name of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.Phone
       description: The phone number of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Phone_ext
+    - contextPath: Domain.WHOIS.Admin.PhoneExt
       description: The phone extension of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.Postal_code
+    - contextPath: Domain.WHOIS.Admin.PostalCode
       description: The postal code of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.State
       description: The state of the administrator.
       type: string
-    - contextPath: Domain.WHOIS.Admin.State_province
+    - contextPath: Domain.WHOIS.Admin.StateProvince
       description: The state or province of the administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin.Street
@@ -1072,13 +1075,10 @@ script:
     - contextPath: Domain.WHOIS.Registrant.State
       description: The state of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.Organization
-      description: The organization of the registrant.
-      type: string
     - contextPath: Domain.WHOIS.Registrant.Org
       description: The organization of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.Postal_code
+    - contextPath: Domain.WHOIS.Registrant.PostalCode
       description: The postal code of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Street
@@ -1093,7 +1093,7 @@ script:
     - contextPath: Domain.WHOIS.Registrant.Address
       description: The address of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.Contact_name
+    - contextPath: Domain.WHOIS.Registrant.ContactName
       description: The contact name of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Registrant.Fax
@@ -1105,7 +1105,7 @@ script:
     - contextPath: Domain.WHOIS.Registrant.Number
       description: The number of the registrant.
       type: string
-    - contextPath: Domain.WHOIS.Registrant.State_province
+    - contextPath: Domain.WHOIS.Registrant.StateProvince
       description: The state province of the registrant.
       type: string
     - contextPath: Domain.WHOIS.Raw
@@ -1135,19 +1135,19 @@ script:
     - contextPath: Domain.WHOIS.Tech.ID
       description: The ID of the tech contact.
       type: string
-    - contextPath: Domain.WHOIS.Tech.Organization
+    - contextPath: Domain.WHOIS.Tech.Org
       description: The organization of the tech contact.
       type: string
     - contextPath: Domain.WHOIS.Tech.Phone
       description: The phone number of the tech contact.
       type: string
-    - contextPath: Domain.WHOIS.Tech.Postal_code
+    - contextPath: Domain.WHOIS.Tech.PostalCode
       description: The postal code of the tech contact.
       type: string
     - contextPath: Domain.WHOIS.Tech.State
       description: The state of the tech contact.
       type: string
-    - contextPath: Domain.WHOIS.Tech.State_province
+    - contextPath: Domain.WHOIS.Tech.StateProvince
       description: The state/province of the tech contact.
       type: string
     - contextPath: Domain.WHOIS.Tech.Street
@@ -1438,7 +1438,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  dockerimage: demisto/ippysocks-py3:1.0.0.98184
+  dockerimage: demisto/ippysocks-py3:1.0.0.102706
   runonce: false
   script: '-'
   subtype: python3

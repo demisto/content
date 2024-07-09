@@ -696,7 +696,6 @@ def test_arrange_raw_to_context(raw_data, domain, expected):
         - Assert that the returned context dictionary 'res' matches the expected 'expected'.
     """
     from Whois import arrange_raw_whois_data_to_context
-
     res = arrange_raw_whois_data_to_context(raw_data, domain)
     assert res == expected
 
@@ -914,3 +913,34 @@ def test_whois_and_domain_command(mocker: MockerFixture):
     )
     res = whois_and_domain_command("domain", DBotScoreReliability.B)
     assert len(res) == 2
+
+
+@pytest.mark.parametrize(
+    "domain_info, expected_output, expected_domain_info",
+    [
+        (
+            {"contact": "abuse@domain.com", "support": "support@domain.com"},
+            "abuse@domain.com",
+            {"support": "support@domain.com"}
+        ),
+        (
+            {"emails": ["abuse@domain.com", "infoabuse@domain.com"]},
+            ["abuse@domain.com", "infoabuse@domain.com"],
+            {"emails": []}
+        ),
+        (
+            {"contact": "admin@domain.com", "emails": ["abuse@domain.com", "info@domain.com"]},
+            "abuse@domain.com",
+            {"contact": "admin@domain.com", "emails": ["info@domain.com"]}
+        ),
+        (
+            {"contact": "admin@domain.com", "support": "support@domain.com"},
+            [],
+            {"contact": "admin@domain.com", "support": "support@domain.com"}
+        ),
+    ]
+)
+def test_check_and_remove_abuse(domain_info, expected_output, expected_domain_info):
+    from Whois import check_and_remove_abuse
+    assert check_and_remove_abuse(domain_info) == expected_output
+    assert domain_info == expected_domain_info

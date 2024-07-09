@@ -8937,12 +8937,16 @@ def get_info_by_prefix(domain_data: dict, prefix: str) -> dict:
     Returns:
         dict: Filtered data with processed keys and non-None values.
     """
+
     def process_key(key: str):
         return (
             "Name"
             if key == "registrar"
-            else "Admin" if key == "admin"
-            else key.removeprefix(prefix + "_").capitalize()
+            else (
+                "Admin"
+                if key == "admin"
+                else key.removeprefix(prefix + "_").capitalize()
+            )
         )
 
     return {
@@ -8977,6 +8981,37 @@ def rename_keys(d: dict, key_mapping: dict) -> dict:
     return renamed_dict
 
 
+def check_and_remove_abuse(
+    domain_info: Dict[str, Union[str, List[str]]]
+) -> Union[str, List[str]]:
+    """
+    Checks for keys or values containing the word 'abuse' in a domain information dictionary.
+    Removes and collects these values, and returns them as a list. If only one value is found,
+    it returns that value directly.
+
+    Args:
+        domain_info (Dict[str, Union[str, List[str]]]): The dictionary containing domain information.
+
+    Returns:
+        Union[str, List[str]]: A single abuse-related value if only one is found, otherwise a list of abuse-related values.
+    """
+    abuse_values = []
+    for key, value in list(domain_info.items()):
+        if isinstance(value, str):
+            if "abuse" in value.lower():
+                abuse_values.append(domain_info.pop(key))
+        elif isinstance(value, list):
+            abuse_items = [
+                item
+                for item in value
+                if isinstance(item, str) and "abuse" in item.lower()
+            ]
+            if abuse_items:
+                abuse_values.extend(abuse_items)
+                domain_info[key] = [item for item in value if item not in abuse_items]
+    return abuse_values[0] if len(abuse_values) == 1 else abuse_values
+
+
 def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
     """
     Converts raw WHOIS data into a structured context dictionary.
@@ -8992,37 +9027,37 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
         "Raw": {f"{key}": f"{value}" for key, value in raw_data.items()},
         "Name": domain,
         "NameServers": extract_name_servers(raw_data.pop("name_servers", [])),
-        "FeedRelatedIndicators": (
-            [
-                {"Type": "email", "Value": email}
-                for email in list(raw_data.get("emails", []))
-            ]
-            if isinstance(raw_data.get("emails"), list)
-            else {"Type": "email", "Value": raw_data.get("emails")} if raw_data.get("emails")
-            else {}
-        ),
     }
     raw_data.pop("name", None)
     for key in ["creation_date", "expiration_date", "updated_date"]:
         context_data[camelize_string(key)] = extract_date(raw_data.pop(key, None))
 
-    costum_prefixses = ("admin", "registrant", "registrar", "tech")
-    for key in costum_prefixses:
-        context_data[key.capitalize()] = get_info_by_prefix(raw_data, key)
+    for prefix in ("admin", "registrant", "registrar", "tech"):
+        context_data[prefix.capitalize()] = get_info_by_prefix(raw_data, prefix)
+
+    if abuse_emails := check_and_remove_abuse(raw_data):
+        context_data.setdefault("Registrar", {})["AbuseEmail"] = abuse_emails
+
+    emails = raw_data.get("emails")
+    context_data["FeedRelatedIndicators"] = [
+        {"Type": "email", "Value": email}
+        for email in (emails if isinstance(emails, list) else [emails])
+        if email
+    ]
     context_data.update(
         {
-            camelize_string(key): value
-            for key, value in raw_data.items()
-            if not key.startswith(costum_prefixses)
+            camelize_string(k): v
+            for k, v in raw_data.items()
+            if not k.startswith(("admin", "registrant", "registrar", "tech"))
         }
     )
+
     context_data = rename_keys(
         context_data, {"Org": "Organization", "Status": "DomainStatus"}
     )
+
     remove_nulls_from_dictionary(context_data)
-    res = {}
-    res.update({"WHOIS": context_data})
-    res.update(context_data)
+    res = {**context_data, "WHOIS": context_data}
     res.pop("Raw", None)
     return res
 
@@ -9086,7 +9121,7 @@ def whois_and_domain_command(command: str, reliability: str) -> list[CommandResu
             execution_metrics = increment_metric(
                 execution_metrics=execution_metrics,
                 mapping=whois_exception_mapping,
-                caught_exception=type(e)
+                caught_exception=type(e),
             )
 
             output = {
