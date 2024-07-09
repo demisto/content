@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 import json
 from datetime import datetime
+from requests.auth import HTTPBasicAuth
 
 import urllib3
 from typing import Any
@@ -20,6 +21,7 @@ GET_ASSET_DETAILS = "/v1/assets/id?id="
 GET_ASSET_FILES = "/v1/classification/asset-files/id?id="
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
+GET_CURRENT_JIRA_USER_ENDPOINT: str = "/rest/api/2/myself"
 INCIDENT_STATUS = {
     'OPEN': 1,
     'INVESTIGATING': 2,
@@ -189,6 +191,21 @@ def severity_to_dbot_score(severity):
     return 0
 
 
+def check_jira_credentials():
+    jira_server_url = demisto.params().get('jiraServerUrl', '')
+    jira_getUser_api = f"https://{jira_server_url}{GET_CURRENT_JIRA_USER_ENDPOINT}"
+    jira_email = demisto.params().get('jiraEmail')
+    api_token = demisto.params().get('jiraApiToken')
+
+    auth = HTTPBasicAuth(jira_email, api_token)
+    headers = {
+        "Accept": "application/json"
+    }
+    response = requests.request("GET", jira_getUser_api, headers=headers, auth=auth)
+    if response.status_code != 200:
+        raise Exception("Invalid Jira credentials")
+
+
 ''' COMMAND FUNCTIONS '''
 
 
@@ -196,6 +213,7 @@ def test_module(client: Client) -> str:
     """Tests API connectivity and authentication"""
     try:
         client.fetch_risk_findings({})
+        check_jira_credentials()
         return 'ok'
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
