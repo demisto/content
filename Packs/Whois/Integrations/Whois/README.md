@@ -83,7 +83,6 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.Admin.Id | string | The ID of the administrator. | 
 | Domain.Admin.Name | string | The name of the administrator. | 
 | Domain.Admin.Org | string | The organization of the administrator. | 
-| Domain.Admin.Organization | string | The organization name of the administrator. | 
 | Domain.Admin.Phone | string | The phone number of the administrator. | 
 | Domain.Admin.PhoneExt | string | The phone extension of the administrator. | 
 | Domain.Admin.PostalCode | string | The postal code of the administrator. | 
@@ -94,7 +93,7 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.Registrant.Email | string | The email address of the registrant. | 
 | Domain.Registrant.Country | string | The country of the registrant. | 
 | Domain.Registrant.State | string | The state of the registrant. | 
-| Domain.Registrant.Organization | string | The organization of the registrant. | 
+| Domain.Registrant.Org | string | The organization of the registrant. | 
 | Domain.Registrant.PostalCode | string | The postal code of the registrant. | 
 | Domain.Registrant.Street | string | The street of the registrant. | 
 | Domain.Registrant.Phone | string | The phone number of the registrant. | 
