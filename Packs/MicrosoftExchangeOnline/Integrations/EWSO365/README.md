@@ -77,8 +77,6 @@ for more information on this permission, visit [the Microsoft documentation](htt
 
 To limit the application's permissions to only specific mailboxes, follow the [Microsoft documentation](https://docs.microsoft.com/en-us/graph/auth-limit-mailbox-access). Note that it may take about an hour for permissions changes to take effect.
 
-**Note** You can't manage the _Office 365 Exchange Online_ app permissions via the Azure portal.
-
 ## Configure Integration on XSOAR (Parameters)
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
