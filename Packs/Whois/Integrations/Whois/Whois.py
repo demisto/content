@@ -9021,7 +9021,7 @@ def arrange_raw_whois_data_to_context(raw_data: dict, domain: str) -> dict:
     Returns:
         dict: A dictionary containing structured WHOIS context data.
     """
-    context_data:dict[str, Any] = {
+    context_data: dict[str, Any] = {
         "Raw": {f"{key}": f"{value}" for key, value in raw_data.items()},
         "Name": domain,
         "NameServers": extract_name_servers(raw_data.pop("name_servers", [])),
