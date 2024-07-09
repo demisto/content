@@ -32,6 +32,7 @@ from inspect import currentframe
 
 import demistomock as demisto
 import warnings
+import tempfile
 
 
 def __line__():
@@ -201,7 +202,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, cast, IO
 
     from urllib3 import disable_warnings
     disable_warnings()
@@ -12050,6 +12051,30 @@ def get_server_config():
     body = parse_json_string(response.get('body'))
     server_config = body.get('sysConf', {})
     return server_config
+
+
+class StderrRedirect:
+    '''Context manager to redirect stderr.'''
+    _temp_stderr = None
+    _old_stderr = None
+    error = ''
+
+    def __enter__(self):
+        demisto.debug('entering StderrRedirect')
+        self._temp_stderr = tempfile.TemporaryFile()
+        self._old_stderr = os.dup(sys.stderr.fileno())  # make a copy of stderr
+        os.dup2(self._temp_stderr.fileno(), sys.stderr.fileno())  # redirect stderr to the temporary file
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        demisto.debug(f'exiting StderrRedirect: {exc_type=}, {exc_value=}, {exc_traceback=}')
+        self._temp_stderr.seek(0)
+        self.error = self._temp_stderr.read().decode()
+        demisto.debug(f'stderr: {self.error}')
+        os.dup2(self._old_stderr, sys.stderr.fileno())  # restore stderr
+        os.close(self._old_stderr)
+        self._temp_stderr.close()
+
 
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
