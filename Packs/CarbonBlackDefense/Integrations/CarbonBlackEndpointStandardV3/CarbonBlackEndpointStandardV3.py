@@ -135,7 +135,8 @@ class Client(BaseClient):
         :param policy_id: The ID of the policy.
         """
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
-        self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers)
+        return self._http_request(method='DELETE', url_suffix=suffix_url, headers=self.policy_headers,
+                                  return_empty_response=True)  # Carbon black api return 204 for a successfully request
 
     def update_policy(self, policy_id: int, body: dict) -> dict:
         """Updates a Carbon Black policy by its ID with the provided request body.
@@ -148,19 +149,6 @@ class Client(BaseClient):
 
         :return: A dictionary containing the updated policy data.
         :rtype: dict
-        """
-        body['org_key'] = self.organization_key
-        suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
-        return self._http_request(method='PUT', url_suffix=suffix_url, headers=self.policy_headers, json_data=body)
-
-    def set_policy(self, policy_id: int, body: dict):
-        """Sets a policy with the provided request body.
-
-        :type policy_id: int
-        :param policy_id: The ID of the policy.
-
-        :type body: dict
-        :param body: The request body containing policy details.
         """
         body['org_key'] = self.organization_key
         suffix_url = f'policyservice/v1/orgs/{self.organization_key}/policies/{policy_id}'
@@ -359,7 +347,7 @@ def test_module(client: Client, params: dict) -> str:
     is_fetch = params.get('isFetch')
 
     # if is_fetch = true and custom API key's is no provided
-    if is_fetch and not (client.api_key and client.api_secret_key and client.organization_key):
+    if is_fetch and not (client.api_key and client.api_secret_key):
         return 'To fetch incidents you must fill the following parameters: ' \
                'Custom API key, Custom API secret key and Organization key.'
 
@@ -367,7 +355,7 @@ def test_module(client: Client, params: dict) -> str:
               "(Custom API keys or Api/Live-Response API keys) is required."
 
     # if all of the custom API key's is provided
-    if client.api_key and client.api_secret_key and client.organization_key:
+    if client.api_key and client.api_secret_key:
         try:
             client.test_module_request()
 
@@ -398,7 +386,7 @@ def test_module(client: Client, params: dict) -> str:
                'Custom API key, Custom API secret key and Organization key.'
 
     # if all of the api/live-response API key's is provided
-    if client.policy_api_key and client.policy_api_secret_key and client.organization_key:
+    if client.policy_api_key and client.policy_api_secret_key:
         try:
             client.policy_test_module_request()
             message = 'ok'
@@ -409,7 +397,7 @@ def test_module(client: Client, params: dict) -> str:
                 raise e
     # if only one of the api/live-response API keys are provided
     elif client.policy_api_key or client.policy_api_secret_key:
-        return 'Missing API parameters. Please fill all the relevant parameters: API key, API secret key.'
+        return 'Missing API parameters. Please fill all the relevant parameters: API key, API secret key and Organization key.'
 
     return message
 
@@ -509,7 +497,9 @@ def fetch_incidents(client: Client, params: dict):
 
     new_last_run = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alert_id': alert_id}
     demisto.debug(f"New lest run: {new_last_run}")
-    return incidents, new_last_run
+
+    demisto.incidents(incidents)
+    demisto.setLastRun(new_last_run)
 
 
 def get_alert_details_command(client: Client, args: dict):
@@ -580,15 +570,12 @@ def alerts_search_command(client: Client, args: dict):
             type=argToList(map_alert_type(args.get('type')))
         ),
         query=args.get('query'),
-        rows=arg_to_number(args.get('rows'), required=False),
-        start=arg_to_number(args.get('start'), required=False)
+        rows=arg_to_number(args.get('rows')),
+        start=arg_to_number(args.get('start'))
     )
 
     res = client.get_alerts(body)
-
     alerts = res.get('results', [])
-    if not alerts:
-        return 'No alerts were found.'
 
     headers = ['id', 'device_id', 'device_name', 'device_username', 'backend_timestamp']
 
@@ -617,17 +604,21 @@ def get_policy_command(client: Client, args: dict):
     :rtype: ``CommandResults``
     """
     policy_id_int = arg_to_number(args['policyId'], required=True)
+
     res = client.get_policy_by_id(policy_id_int)  # type: ignore[arg-type]
 
     headers = ["id", "name", "priority_level", "is_system", "description"]
+    readable_output = tableToMarkdown('Carbon Black Defense Policy', res, headers=headers,
+                                      headerTransform=string_to_table_header, removeNull=True)
+
+    formatted_res = format_policy_response(res)
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Policy',
         outputs_key_field='id',
-        outputs=res,
-        readable_output=tableToMarkdown('Carbon Black Defense Policy', res, headers=headers,
-                                        headerTransform=string_to_table_header, removeNull=True),
-        raw_response=res
+        outputs=formatted_res,
+        readable_output=readable_output,
+        raw_response=formatted_res
     )
 
 
@@ -644,7 +635,7 @@ def get_policies_summary_command(client: Client):
 
     headers = ['id', 'name', 'priority_level', 'is_system']
     return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Policy',
+        outputs_prefix='CarbonBlackDefense.PolicySummary',
         outputs_key_field='id',
         outputs=res.get('policies'),
         readable_output=tableToMarkdown('Policies summaries', res.get('policies'),
@@ -666,26 +657,26 @@ def create_policy_command(client: Client, args: dict):
     """
     policy = json.loads(args['policy'])
 
-    policy["name"] = args['name']
-    policy["description"] = args['description']
-    policy["priority_level"] = args['priorityLevel']
-
-    # If the policy is in the old format, transform it.
-    # Sensor settings are required. sensor_settings in the new format.
-    if 'sensorSettings' in policy:
-        policy = translate_policy_to_new_format(policy)
+    for field in ['name', 'priority_level', 'description']:
+        if not policy.get(field):
+            if not args.get(field):
+                raise DemistoException(f"Policy {field.replace('_', ' ')} is required.")
+            policy[field] = args.get(field)
 
     res = client.create_new_policy(policy)
 
     headers = ["id", "description", "name", "priority_level", "is_system"]
+    readable_output = tableToMarkdown('Policy created successfully', res, headers=headers,
+                                      headerTransform=string_to_table_header, removeNull=True)
+
+    formatted_res = format_policy_response(res)
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Policy',
         outputs_key_field='id',
-        outputs=res,
-        readable_output=tableToMarkdown('Policy created successfully', res, headers=headers,
-                                        headerTransform=string_to_table_header, removeNull=True),
-        raw_response=res
+        outputs=formatted_res,
+        readable_output=readable_output,
+        raw_response=formatted_res
     )
 
 
@@ -704,27 +695,28 @@ def update_policy_command(client: Client, args: dict):
 
     policy = json.loads(args['policy'])
 
-    policy["name"] = args['name']
-    policy["description"] = args['description']
-    policy["priority_level"] = args['priorityLevel']
     policy["id"] = policy_id
 
-    # If the policy is in the old format, transform it.
-    # Sensor settings are required. sensor_settings in the new format.
-    if 'sensorSettings' in policy:
-        policy = translate_policy_to_new_format(policy)
+    for field in ['name', 'priority_level', 'description']:
+        if not policy.get(field):
+            if not args.get(field):
+                raise DemistoException(f"Policy {field.replace('_', ' ')} is required.")
+            policy[field] = args.get(field)
 
     res = client.update_policy(policy_id, policy)  # type: ignore[arg-type]
 
     headers = ["id", "description", "name", "priority_level", "is_system"]
+    readable_output = tableToMarkdown(f'Policy with ID: {policy_id} updated successfully', res, headers=headers,
+                                      headerTransform=string_to_table_header, removeNull=True)
+
+    formatted_res = format_policy_response(res)
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Policy',
         outputs_key_field='id',
-        outputs=res,
-        readable_output=tableToMarkdown(f'Policy with ID: {policy_id} updated successfully', res, headers=headers,
-                                        headerTransform=string_to_table_header, removeNull=True),
-        raw_response=res
+        outputs=formatted_res,
+        readable_output=readable_output,
+        raw_response=formatted_res
     )
 
 
@@ -745,22 +737,20 @@ def set_policy_command(client: Client, args: dict):
 
     body["id"] = policy_id
 
-    # If the policy is in the old format, transform it.
-    # Sensor settings are required. sensor_settings in the new format.
-    if 'sensorSettings' in body:
-        body = translate_policy_to_new_format(body)
-
-    res = client.set_policy(policy_id, body)  # type: ignore[arg-type]
+    res = client.update_policy(policy_id, body)  # type: ignore[arg-type]
 
     headers = ["id", "description", "name", "priority_level", "is_system"]
+    readable_output = tableToMarkdown(f'Policy with ID: {policy_id} set successfully', res, headers=headers,
+                                      headerTransform=string_to_table_header, removeNull=True)
+
+    formatted_res = format_policy_response(res)
 
     return CommandResults(
         outputs_prefix='CarbonBlackDefense.Policy',
         outputs_key_field='id',
-        outputs=res,
-        readable_output=tableToMarkdown(f'Policy with ID: {policy_id} set successfully', res, headers=headers,
-                                        headerTransform=string_to_table_header, removeNull=True),
-        raw_response=res
+        outputs=formatted_res,
+        readable_output=readable_output,
+        raw_response=formatted_res
     )
 
 
@@ -817,15 +807,9 @@ def add_rule_to_policy_command(client: Client, args: dict):
         )
     )
 
-    res = client.add_rule_to_policy(policy_id_int, body)  # type: ignore[arg-type]
+    client.add_rule_to_policy(policy_id_int, body)  # type: ignore[arg-type]
 
-    return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Rule',
-        outputs_key_field='id',
-        outputs=res,
-        readable_output=tableToMarkdown('New rule', res),
-        raw_response=res
-    )
+    return get_policy_command(client, {'policyId': policy_id_int})
 
 
 def update_rule_in_policy_command(client: Client, args: dict):
@@ -862,15 +846,9 @@ def update_rule_in_policy_command(client: Client, args: dict):
             value=args['value']
         )
     )
-    res = client.update_rule_in_policy(policy_id_int, rule_id_int, body)  # type: ignore[arg-type]
+    client.update_rule_in_policy(policy_id_int, rule_id_int, body)  # type: ignore[arg-type]
 
-    return CommandResults(
-        outputs_prefix='CarbonBlackDefense.Rule',
-        outputs_key_field='id',
-        outputs=res,
-        readable_output=tableToMarkdown('Updated rule', res),
-        raw_response=res
-    )
+    return get_policy_command(client, {'policyId': policy_id_int})
 
 
 def delete_rule_from_policy_command(client: Client, args: dict):
@@ -894,7 +872,7 @@ def delete_rule_from_policy_command(client: Client, args: dict):
 
     client.delete_rule_from_policy(policy_id_int, rule_id_int)  # type: ignore[arg-type]
 
-    return CommandResults(readable_output="The rule was successfully deleted from policy")
+    return CommandResults(readable_output=f"Rule id {rule_id_int} was successfully deleted from policy id {policy_id_int}")
 
 
 @polling_function(
@@ -948,9 +926,25 @@ def find_processes_command(args: dict, client: Client):
     rows = arg_to_number(args.get("rows", 10))
 
     if 'job_id' not in args:  # first polling iteration
+        fixe_winds_path(args)
         request_body = format_request_body(args)
+
+        if not request_body.get('criteria') and not request_body.get('query'):
+            raise DemistoException("At least one criteria filter or query must be provided.")
+
         res = client.get_processes(request_body)
         job_id = res['job_id']
+
+        if not argToBoolean(args.get('polling')):
+            return PollResult(
+                continue_to_poll=False,
+                response=CommandResults(
+                    outputs_prefix='CarbonBlackDefense.Process',
+                    outputs=res,
+                    raw_response=res
+                )
+            )
+
         return PollResult(
             continue_to_poll=True,
             args_for_next_run={"job_id": job_id, "rows": rows},
@@ -972,8 +966,18 @@ def find_processes_command(args: dict, client: Client):
             response=CommandResults(
                 outputs_prefix='CarbonBlackDefense.Process.Results',
                 outputs_key_field='job_id',
-                outputs=res,
+                outputs=res.get('results', []),
                 readable_output=readable_output,
+                raw_response=res
+            )
+        )
+
+    if not argToBoolean(args.get('polling')):
+        return PollResult(
+            continue_to_poll=False,
+            response=CommandResults(
+                readable_output=f"search in progress, completed: {res.get('contacted')}/{res.get('completed')}",
+                outputs=res,
                 raw_response=res
             )
         )
@@ -1019,17 +1023,29 @@ def find_observation_details_command(args: dict, client: Client):
     rows = arg_to_number(args.get("rows", 10))
 
     if 'job_id' not in args:  # first polling iteration
+        count_unique_devices = args.get('count_unique_devices', False)
         body = assign_params(
             alert_id=args.get('alert_id'),
             observation_ids=argToList(args.get('event_ids')),
             process_hash=args.get('process_hash'),
             device_id=arg_to_number(args.get('device_id')),
-            count_unique_devices=argToBoolean(args.get('count_unique_devices') or False),
-            max_rows=rows
+            count_unique_devices=argToBoolean(count_unique_devices) if count_unique_devices else None,
+            max_rows=arg_to_number(args.get("rows"))
         )
         validate_observation_details_request_body(body)
         res = client.get_observation_details(body)
         job_id = res['job_id']
+
+        if not argToBoolean(args.get('polling')):
+            return PollResult(
+                continue_to_poll=False,
+                response=CommandResults(
+                    outputs_prefix='CarbonBlackDefense.EventDetails',
+                    outputs=res,
+                    raw_response=res
+                )
+            )
+
         return PollResult(
             continue_to_poll=True,
             args_for_next_run={"job_id": job_id, "rows": rows},
@@ -1051,8 +1067,18 @@ def find_observation_details_command(args: dict, client: Client):
             response=CommandResults(
                 outputs_prefix='CarbonBlackDefense.EventDetails.Results',
                 outputs_key_field='job_id',
-                outputs=res,
+                outputs=res.get('results', []),
                 readable_output=readable_output,
+                raw_response=res
+            )
+        )
+
+    if not argToBoolean(args.get('polling')):
+        return PollResult(
+            continue_to_poll=False,
+            response=CommandResults(
+                readable_output=f"search in progress, completed: {res.get('contacted')}/{res.get('completed')}",
+                outputs=res,
                 raw_response=res
             )
         )
@@ -1115,9 +1141,25 @@ def find_observation_command(args: dict, client: Client):
     rows = arg_to_number(args.get("rows", 10))
 
     if 'job_id' not in args:  # first polling iteration
+        fixe_winds_path(args)
         request_body = format_request_body(args)
+
+        if not request_body.get('criteria') and not request_body.get('query'):
+            raise DemistoException("At least one criteria filter or query must be provided.")
+
         res = client.get_observation(request_body)
         job_id = res['job_id']
+
+        if not argToBoolean(args.get('polling')):
+            return PollResult(
+                continue_to_poll=False,
+                response=CommandResults(
+                    outputs_prefix='CarbonBlackDefense.Events',
+                    outputs=res,
+                    raw_response=res
+                )
+            )
+
         return PollResult(
             continue_to_poll=True,
             args_for_next_run={"job_id": job_id, "rows": rows},
@@ -1139,8 +1181,18 @@ def find_observation_command(args: dict, client: Client):
             response=CommandResults(
                 outputs_prefix='CarbonBlackDefense.Events.Results',
                 outputs_key_field='job_id',
-                outputs=res,
+                outputs=res.get('results', []),
                 readable_output=readable_output,
+                raw_response=res
+            )
+        )
+
+    if not argToBoolean(args.get('polling')):
+        return PollResult(
+            continue_to_poll=False,
+            response=CommandResults(
+                readable_output=f"search in progress, completed: {res.get('contacted')}/{res.get('completed')}",
+                outputs=res,
                 raw_response=res
             )
         )
@@ -1466,9 +1518,6 @@ def format_request_body(args: dict):
         time_range=json.loads(args.get('time_range', '{}'))
     )
 
-    if not body.get('criteria') and not body.get('query'):
-        raise DemistoException("At least one criteria filter or query must be provided.")
-
     return body
 
 
@@ -1497,14 +1546,15 @@ def validate_observation_details_request_body(request_body: dict):
     process_hash = request_body.get('process_hash')
     device_id = request_body.get('device_id')
     count_unique_devices = request_body.get('count_unique_devices')
+    max_rows = request_body.get('max_rows')
 
     if alert_id:
         # If alert_id is provided, nothing else should be present
-        if observation_ids or process_hash or device_id or count_unique_devices:
+        if observation_ids or process_hash or device_id or count_unique_devices or max_rows:
             raise ValueError("Invalid request body: 'alert_id' must be specified alone.")
     elif observation_ids:
         # If observation_ids is provided, nothing else should be present
-        if alert_id or process_hash or device_id or count_unique_devices:
+        if alert_id or process_hash or device_id or count_unique_devices or max_rows:
             raise ValueError("Invalid request body: 'observation_ids' must be specified alone.")
     elif process_hash:
         # If process_hash is provided, it can be alone, with device_id, or with count_unique_devices
@@ -1515,132 +1565,27 @@ def validate_observation_details_request_body(request_body: dict):
         raise ValueError("Invalid request body: 'alert_id', 'observation_ids', or 'process_hash' must be specified.")
 
 
-def translate_policy_to_new_format(old_policy: dict) -> dict:
-    """Translate the policy JSON object from the old format to the new format.
+def fixe_winds_path(args):
+    """Sanitizes the specified fields in args by escaping backslashes."""
+    fields_to_sanitize = [
+        'process_name', 'parent_name', 'device_name', 'process_cmdline', 'process_username'
+    ]
 
-    :type old_policy: dict
-    :param old_policy: The policy JSON object in the old format.
+    for field in fields_to_sanitize:
+        if field in args:
+            args[field] = re.escape(args[field])
 
-    :return: The policy JSON object in the new format.
-    :rtype: dict
-    """
-    new_policy = assign_params(
-        values_to_ignore=(None, '', {}, ()),
 
-        id=old_policy.get("id"),
-        name=old_policy.get("name"),
-        description=old_policy.get("description"),
-        priority_level=old_policy.get("priority_level"),
-        is_system=old_policy.get("systemPolicy"),
-        # version=old_policy.get("version"),
-        auto_deregister_inactive_vdi_interval_ms=old_policy.get(
-            "vdiAutoDeregInactiveIntervalMs"
-        ),
-        auto_delete_known_bad_hashes_delay=old_policy.get(
-            "knownBadHashAutoDeleteDelayMs"
-        ),
-        sensor_settings=old_policy.get("sensorSettings", []),
-        directory_action_rules=[
-            {
-                "path": rule.get("path"),
-                "file_upload": rule["actions"].get("FILE_UPLOAD"),
-                "protection": rule["actions"].get("PROTECTION"),
-            }
-            for rule in old_policy.get("directoryActionRules", [])
-        ],
-        rules=old_policy.get("rules", []),
-        av_settings=assign_params(
-            avira_protection_cloud=assign_params(
-                max_file_size=old_policy.get("avSettings", {})
-                .get("apc", {})
-                .get("maxFileSize"),
-                risk_level=old_policy.get("avSettings", {})
-                .get("apc", {})
-                .get("riskLevel"),
-                max_exe_delay=old_policy.get("avSettings", {})
-                .get("apc", {})
-                .get("maxExeDelay"),
-            ),
-            on_access_scan=assign_params(
-                enabled=old_policy.get("avSettings", {})
-                .get("features", [{}])[0]
-                .get("enabled"),
-                mode=old_policy.get("avSettings", {})
-                .get("onAccessScan", {})
-                .get("profile"),
-            ),
-            on_demand_scan=assign_params(
-                enabled=old_policy.get("avSettings", {})
-                .get("features", [{}])[0]
-                .get("enabled"),
-                scan_usb=old_policy.get("avSettings", {})
-                .get("onDemandScan", {})
-                .get("scanUsb"),
-                scan_cd_dvd=old_policy.get("avSettings", {})
-                .get("onDemandScan", {})
-                .get("scanCdDvd"),
-                schedule=assign_params(
-                    recovery_scan_if_missed=old_policy.get("avSettings", {})
-                    .get("onDemandScan", {})
-                    .get("schedule", {})
-                    .get("recoveryScanIfMissed"),
-                    range_hours=old_policy.get("avSettings", {})
-                    .get("onDemandScan", {})
-                    .get("schedule", {})
-                    .get("rangeHours"),
-                    start_hour=old_policy.get("avSettings", {})
-                    .get("onDemandScan", {})
-                    .get("schedule", {})
-                    .get("startHour"),
-                ),
-            ),
-            signature_update=assign_params(
-                enabled=old_policy.get("avSettings", {})
-                .get("features", [{}])[0]
-                .get("enabled"),
-                schedule=assign_params(
-                    full_interval_hours=old_policy.get("avSettings", {})
-                    .get("signatureUpdate", {})
-                    .get("schedule", {})
-                    .get("fullIntervalHours"),
-                    initial_random_delay_hours=old_policy.get("avSettings", {})
-                    .get("signatureUpdate", {})
-                    .get("schedule", {})
-                    .get("initialRandomDelayHours"),
-                    interval_hours=old_policy.get("avSettings", {})
-                    .get("signatureUpdate", {})
-                    .get("schedule", {})
-                    .get("intervalHours"),
-                ),
-            ),
-            update_servers=assign_params(
-                servers_override=old_policy.get("avSettings", {})
-                .get("updateServers", {})
-                .get("serversOverride"),
-                servers_for_onsite_devices=[
-                    assign_params(
-                        server=server.get("server"), preferred=server.get("flags")
-                    )
-                    for server in old_policy.get("avSettings", {})
-                    .get("updateServers", {})
-                    .get("servers", [])
-                ],
-                servers_for_offsite_devices=old_policy.get("avSettings", {})
-                .get("updateServers", {})
-                .get("serversForOffSiteDevices"),
-            ),
-        ),
-        managed_detection_response_permissions=assign_params(
-            policy_modification=old_policy.get("threatSightMdrConfiguration", {}).get(
-                "policyModificationPermission"
-            ),
-            quarantine=old_policy.get("threatSightMdrConfiguration", {}).get(
-                "quarantinePermission"
-            ),
-        ),
+def format_policy_response(response: dict) -> dict:
+    """Translates the response format to the old structure."""
+    return assign_params(
+        id=response.pop("id"),
+        name=response.pop("name") if response.get('name') else None,
+        description=response.pop('description') if response.get('description') else None,
+        priorityLevel=response.pop('priority_level') if response.get('priority_level') else None,
+        version=response.pop('version') if response.get('version') else None,
+        policy=response
     )
-
-    return new_policy
 
 
 ''' MAIN FUNCTION '''
@@ -1676,10 +1621,7 @@ def main() -> None:
         if command == 'test-module':
             results = test_module(client, params)
         elif command == 'fetch-incidents':
-            incidents, last_run = fetch_incidents(client=client, params=params)
-            demisto.incidents(incidents)
-            demisto.setLastRun(last_run)
-            return_results('')
+            fetch_incidents(client=client, params=params)
         elif command == 'cbd-get-alert-details':
             results = get_alert_details_command(client=client, args=args)
         elif command == 'cbd-alerts-search':
@@ -1707,6 +1649,12 @@ def main() -> None:
         elif command == 'cbd-find-observation-details':
             results = find_observation_details_command(client=client, args=args)
         elif command == 'cbd-find-observation':
+            results = find_observation_command(client=client, args=args)
+        elif command == 'cbd-find-processes-results':
+            results = find_processes_command(client=client, args=args)
+        elif command == 'cbd-find-observation-details-results':
+            results = find_observation_details_command(client=client, args=args)
+        elif command == 'cbd-find-observation-results':
             results = find_observation_command(client=client, args=args)
         elif command == 'cbd-device-search':
             results = device_search_command(client=client, args=args)
