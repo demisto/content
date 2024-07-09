@@ -29,7 +29,7 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = 'host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = 'host_last_fetch'
 ASSETS_FETCH_FROM = '90 days'
 MIN_ASSETS_INTERVAL = 59
-HOST_LIMIT = 1000
+HOST_LIMIT = 10000
 TEST_FROM_DATE = 'one day'
 
 ASSETS_DATE_FORMAT = '%Y-%m-%d'
