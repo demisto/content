@@ -40,49 +40,30 @@ class StderrRedirect:
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
-def new_get_model_data(model_name, store_type):
-    if store_type == "mlModel":
+def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> None | tuple[dict, str]:
+
+    def load_from_models(model_name: str) -> None | tuple[dict, str]:
         res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})
         if is_error(res_model):
-            return_error(get_error(res_model))
+            demisto.debug(get_error(res_model))
+            return None
         model_data = res_model[0]['Contents']['modelData']
-        model_type = res_model[0]['Contents']['model']["type"]["type"]
+        model_type = dict_safe_get(res_model, [0, 'Contents', 'model', "type", "type"], UNKNOWN_MODEL_TYPE)
         return model_data, model_type
-    if store_type == "list":
-        res_model_list = demisto.executeCommand("getList", {"listName": model_name})
-        if is_error(res_model_list):
-            return_error(get_error(res_model_list))
-        return res_model_list[0]["Contents"], UNKNOWN_MODEL_TYPE
-    return None
-       
-            
 
-def get_model_data(model_name, store_type, is_return_error):
-    try:
-        return new_get_model_data(model_name, store_type)
-    except Exception as e:
-        demisto.debug(f'new_get_model_data() failed: {e}, {e.args}')
-    res_model_list = demisto.executeCommand("getList", {"listName": model_name})[0]
-    res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-    if is_error(res_model_list) and not is_error(res_model):
-        model_data = res_model['Contents']['modelData']
-        try:
-            model_type = res_model['Contents']['model']["type"]["type"]
-            return model_data, model_type
-        except Exception:
-            return model_data, UNKNOWN_MODEL_TYPE
-    elif not is_error(res_model_list) and is_error(res_model):
-        return res_model_list["Contents"], UNKNOWN_MODEL_TYPE
-    elif not is_error(res_model_list) and not is_error(res_model):
-        if store_type == "list":
-            return res_model_list["Contents"], UNKNOWN_MODEL_TYPE
-        elif store_type == "mlModel":
-            model_data = res_model['Contents']['modelData']
-            model_type = res_model['Contents']['model']["type"]["type"]
-            return model_data, model_type
-    else:
-        handle_error("error reading model %s from Demisto" % model_name, is_return_error)
-    return None
+    def load_from_list(model_name):
+        res_model = demisto.executeCommand("getList", {"listName": model_name})
+        if is_error(res_model):
+            demisto.debug(get_error(res_model))
+            return None
+        return res_model[0]["Contents"], UNKNOWN_MODEL_TYPE
+
+    if store_type == "mlModel":
+        res = load_from_models(model_name) or load_from_list(model_name)
+    if store_type == "list":
+        res = load_from_list(model_name) or load_from_models(model_name)
+
+    return res or handle_error(f"error reading model {model_name} from Demisto", is_return_error)
 
 
 def handle_error(message, is_return_error):

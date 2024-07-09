@@ -1,5 +1,7 @@
 id: DBotFindSimilarIncidents-test
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: DBotFindSimilarIncidents-test
 starttaskid: "0"
 tasks:
@@ -18,6 +20,7 @@ tasks:
       '#none#':
       - "5"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,7 +33,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "2":
@@ -68,11 +70,12 @@ tasks:
       toDate:
         simple: tomorrow
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 545
+          "y": 720
         }
       }
     note: false
@@ -80,7 +83,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "3":
@@ -122,11 +124,12 @@ tasks:
                       value:
                         simple: "1"
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 720
+          "y": 895
         }
       }
     note: false
@@ -134,7 +137,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
@@ -150,11 +152,12 @@ tasks:
       brand: ""
       description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 265,
-          "y": 895
+          "y": 1070
         }
       }
     note: false
@@ -162,7 +165,6 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-    continueonerrortype: ""
     isoversize: false
     isautoswitchedtoquietmode: false
   "5":
@@ -221,7 +223,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       accountname:
         simple: SimilarAccountName
@@ -260,7 +262,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "2"
+      - "8"
     scriptarguments:
       accountname:
         simple: SimilarAccountName
@@ -284,12 +286,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: e4380779-44e3-4395-8e2d-51e6e44ce672
+    type: regular
+    task:
+      id: e4380779-44e3-4395-8e2d-51e6e44ce672
+      version: -1
+      name: Sleep for ten seconds to let the incidents load
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    scriptarguments:
+      seconds:
+        simple: "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 910,
+        "height": 1085,
         "width": 810,
         "x": 50,
         "y": 50
@@ -298,5 +336,5 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
+fromversion: 6.9.0
 description: ''

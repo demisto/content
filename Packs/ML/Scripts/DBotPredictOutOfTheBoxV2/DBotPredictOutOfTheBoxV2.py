@@ -76,6 +76,7 @@ def predict_phishing_words():
         load_oob_model()
     dargs = demisto.args()
     dargs['modelName'] = OUT_OF_THE_BOX_MODEL_NAME
+    dargs['modelStoreType'] = 'mlModel'
     res = demisto.executeCommand('DBotPredictPhishingWords', dargs)
     if is_error(res):
         return_error(get_error(res))
