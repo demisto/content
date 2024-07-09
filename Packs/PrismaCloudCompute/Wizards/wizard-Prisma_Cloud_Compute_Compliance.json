@@ -7,16 +7,6 @@
     "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment in the \"Cortex XSOAR Administrator Guide\" -> \"Set up Your Use Case with the Deployment Wizard\".",
     "dependency_packs": [
       {
-        "name": "Network Security",
-        "min_required": 1,
-        "packs": [
-          {
-            "name": "PaloAltoNetworks_PrismaCloudCompute",
-            "display_name": "Palo Alto Networks - Prisma Cloud Compute"
-          }
-        ]
-      },
-      {
         "name": "Sandbox",
         "min_required": 0,
         "packs": [
@@ -89,7 +79,7 @@
       "fetching_integrations": [
         {
           "priority": 1,
-          "name": "PaloAltoNetworks_PrismaCloudCompute",
+          "name": "PrismaCloudCompute",
           "action": {
             "existing": "Update your current instance to work with the new Prisma Cloud Compute Compliance v2 incident type: \n1. Enable fetching. \n2. Set the 'Prisma Cloud Compute - Classifier'.\n3. Set the Incident type field to 'Prisma Cloud Compute Compliance v2' (the Prisma Cloud Compute classifier will keep on routing other incident types).\n4. Set the Mapper field to 'Palo Alto Networks Prisma Cloud Compute - Incoming Mapper'.",
             "new": "Set up new 'Prisma Cloud Compute' instance to work with the Prisma Cloud Compute Compliance v2 incident type: \n1. Turn on fetching. \n2. Choose the 'Prisma Cloud Compute - Classifier .\n3. Set the Incident type field to 'Prisma Cloud Compute Compliance v2' (the Prisma Cloud Compute classifier will keep on routing other incident types).\n4. Set the Mapper field to 'Palo Alto Networks Prisma Cloud Compute - Incoming Mapper'."
@@ -101,9 +91,6 @@
       "set_playbook": [
         {
           "name": "Prisma Cloud Compute - Compliance Alert v2"
-        },
-        {
-            "name": "Prisma Cloud Compute - Audit Alert v3"
         }
       ],
       "supporting_integrations": [
@@ -114,22 +101,6 @@
             "new": "Configure 'Wildfire' to enable file detonation to improve investigation."
           },
           "description": "Configure Wildfire to enable file detonation to improve investigation."
-        },
-        {
-          "name": "CrowdStrike Falcon X",
-          "action": {
-            "existing": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation.",
-            "new": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
-          },
-          "description": "Configure 'CrowdStrike Falcon X' to enable file detonation to improve investigation."
-        },
-        {
-          "name": "JoeSecurityV2",
-          "action": {
-            "existing": "Configure 'Joe Security V2' to enable file detonation to improve investigation.",
-            "new": "Configure 'Joe Security V2' to enable file detonation to improve investigation."
-          },
-          "description": "Configure 'Joe Security V2' to enable file detonation to improve investigation."
         },
         {
           "name": "Gmail",
