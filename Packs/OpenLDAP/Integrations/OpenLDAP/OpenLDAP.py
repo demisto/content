@@ -18,16 +18,31 @@ MAX_PAGE_SIZE = 2000
 
 
 def create_entries_search_filter(args: dict) -> str:
-    '''
-    '''
+    """
+    Creates the search filter according to the user's selection. Merges all the search filters into one filter.
+    Args:
+        args (dict): The command arguments.
+    Returns:
+        str: The search filter.
+    """
     cn_filter = f"(cn={args.get('cn')})" if args.get('cn') else ''
     description_filter = f"(description={args.get('description')})" if args.get('description') else ''
     object_class = f"(objectClass={args.get('object_class')})" if args.get('object_class') else ''
     uid = f"(uid={args.get('uid')})" if args.get('uid') else ''
     search_filter = args.get('search_filter', '')
+    if not any([cn_filter, description_filter, object_class, uid, search_filter]):
+        return '(objectClass=*)'
     return f'(|{cn_filter}{description_filter}{object_class}{uid}{search_filter})'
 
+
 def get_search_attributes(attributes: str) -> Optional[list[str] | str]:
+    """
+    Returns the search attributes according to the user's selection.
+    Args:
+        attributes (str): The attributes to search for.
+    Returns:
+        list[str] | str: The search attributes.
+    """
     if attributes == 'all':
         return [ALL_ATTRIBUTES, ALL_OPERATIONAL_ATTRIBUTES]
     return {
@@ -39,10 +54,20 @@ def get_search_attributes(attributes: str) -> Optional[list[str] | str]:
 
 
 def entries_paged_search(connection: Connection, search_params: dict, page: int, page_size: int) -> list[dict]:
+    """
+    preforms search on the ldap server with the given page and page size parameters.
+    Args:
+        connection (Connection): Connection object
+        search_params (dict): search parameters
+        page (int): page number
+        page_size (int): page size
+    Returns:
+        list[dict]: search results
+    """
     if page_size > MAX_PAGE_SIZE:
         raise Exception('The page size must be less than or equal to 2000')
     if page == 1:
-        return connection.extend.standard.paged_search(**search_params, paged_size=page_size)
+        return connection.search(**search_params, paged_size=page_size)
     results_to_skip = page_size * (page - 1)
     connection.search(**search_params, paged_size=results_to_skip)
     cookie = connection.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
@@ -50,7 +75,16 @@ def entries_paged_search(connection: Connection, search_params: dict, page: int,
     return connection.response
 
 
-def entries_search(connection: Connection, search_params: dict, limit: int) -> list[dict]:
+def entries_search(connection: Connection, search_params: dict, limit: Optional[int]) -> list[dict]:
+    """
+    preforms search on the ldap server with the given limit parameter.
+    Args:
+        connection (Connection): Connection object
+        search_params (dict): search parameters
+        limit (int): limit of search results
+    Returns:
+        list[dict]: search results
+    """
     connection.search(**search_params, size_limit=limit)
     return connection.response
 
@@ -548,7 +582,7 @@ class LdapClient:
             referrals = ldap_conn.result.get('referrals')
 
             if self.GROUPS_IDENTIFIER_ATTRIBUTE not in entry \
-                or not entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value:
+                    or not entry[self.GROUPS_IDENTIFIER_ATTRIBUTE].value:
                 raise Exception(f"LDAP Authentication - OpenLDAP user's {self.GROUPS_IDENTIFIER_ATTRIBUTE} not found")
 
             return entry, referrals
@@ -689,26 +723,32 @@ class LdapClient:
         search_params = {'search_base': args.get('base_dn', self._base_dn),
                          'search_scope': args.get('search_scope', SUBTREE),
                          'search_filter': create_entries_search_filter(args),
-                         'attributes': get_search_attributes(args.get('attributes')),
+                         'attributes': get_search_attributes(args.get('attributes', '')),
                          }
 
         auto_bind = self._get_auto_bind_value()
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
-            if page := args.get('page'):
-                response = entries_paged_search(connection=ldap_conn,
-                                                search_params=search_params,
-                                                page=page,
-                                                page_size=args.get('page_size', 50))
+            if page := arg_to_number(args.get('page')):
+                page_size = arg_to_number(args.get('page_size', 50)) or 50
+                entries_paged_search(connection=ldap_conn,
+                                     search_params=search_params,
+                                     page=page,
+                                     page_size=page_size)
             else:
-                response = entries_search(connection=ldap_conn,
-                                          search_params=search_params,
-                                          limit=args.get('limit', 0))
+                entries_search(connection=ldap_conn,
+                               search_params=search_params,
+                               limit=arg_to_number(args.get('limit', 0)))
+            outputs = [
+                {**json.loads(entry.entry_to_json()).get('attributes', {}), 'dn': json.loads(entry.entry_to_json()).get('dn')}
+                for entry in ldap_conn.entries
+            ]
+            total = len(outputs)
 
         return CommandResults(
             outputs_prefix='LDAP.Search',
-            outputs=response,
-            raw_response=response,
-            readable_output=tableToMarkdown('LDAP Entries Search Results', response),
+            outputs=outputs,
+            raw_response=outputs,
+            readable_output=tableToMarkdown(f'LDAP Entries Search Results - {total} Found', outputs),
         )
 
     def ad_authenticate(self, username: str, password: str) -> str:
@@ -732,7 +772,7 @@ class LdapClient:
         self._get_formatted_custom_attributes()
 
         if build_number != LdapClient.DEV_BUILD_NUMBER \
-            and int(build_number) < LdapClient.SUPPORTED_BUILD_NUMBER:
+                and int(build_number) < LdapClient.SUPPORTED_BUILD_NUMBER:
             raise Exception(f'LDAP Authentication integration is supported from build number:'
                             f' {LdapClient.SUPPORTED_BUILD_NUMBER}')
 
