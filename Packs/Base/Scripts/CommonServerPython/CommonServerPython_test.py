@@ -18,18 +18,21 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs, safe_sleep
+from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+                                flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
+                                remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
+                                get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
+                                b64_encode, parse_date_range, return_outputs, is_filename_valid, convert_dict_values_bytes_to_str,
+                                argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
+                                FeedIndicatorType, encode_string_results, safe_load_json, remove_empty_elements,
+                                aws_table_to_markdown, is_demisto_version_ge, appendContext, auto_detect_indicator_type,
+                                handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, url_to_clickable_markdown,
+                                WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
+                                DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
+                                response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
+                                is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config
+                                )
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -9769,3 +9772,50 @@ def test_sleep_mocked_time(mocker):
 
     # Verify sleep duration based on mocked time difference
     assert sleep_mocker.call_count == 2
+
+
+def test_get_server_config(mocker):
+    mock_response = {
+        'body': '{"sysConf":{"incident.closereasons":"CustomReason1, CustomReason 2, Foo","versn":40},"defaultMap":{}}\n',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    server_config = get_server_config()
+    assert server_config == {'incident.closereasons': 'CustomReason1, CustomReason 2, Foo', 'versn': 40}
+
+
+def test_get_server_config_fail(mocker):
+    mock_response = {
+        'body': 'NOT A VALID JSON',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    mocked_error = mocker.patch.object(demisto, 'error')
+    assert get_server_config() == {}
+    assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'
