@@ -635,9 +635,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      edlaction:
+        
+      genericexportindicatorsserviceaction:
         simple: ${inputs.EDL Action}
-      edlindicatorslist:
+      genericexportindicatorsserviceindicatorslist:
         complex:
           root: inputs.EDL Indicators List
           transformers:
@@ -646,14 +647,6 @@ tasks:
               separator:
                 value:
                   simple: ','
-      edlindicatortype:
-        simple: ${inputs.EDL Indicator Type}
-      edltag:
-        simple: ${inputs.EDL Tag}
-      genericexportindicatorsserviceaction:
-        simple: ${inputs.EDL Action}
-      genericexportindicatorsserviceindicatorslist:
-        simple: ${inputs.EDL Indicators List}
       genericexportindicatorsserviceindicatortype:
         simple: ${inputs.EDL Indicator Type}
       genericexportindicatorsservicetag:
