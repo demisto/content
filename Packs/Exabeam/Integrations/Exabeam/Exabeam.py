@@ -6,7 +6,6 @@ from typing import Any
 import requests
 import dateparser
 import urllib3
-import pytz
 
 # disable insecure warnings
 urllib3.disable_warnings()
@@ -2197,18 +2196,18 @@ def fetch_exabeam_incidents(client: Client, args: dict[str, str], last_run: dict
 
 
 def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict) -> tuple[list, dict]:
-    current_time = datetime.now(pytz.utc)
+    current_time = datetime.now(timezone.utc)
     last_run_notable_users: str = last_run_obj.get("last_run_notable_users", "")
     demisto.debug(f"Last run notable users: {last_run_notable_users}, before fetch")
 
     if last_run_notable_users:
-        last_run_time = datetime.fromisoformat(last_run_notable_users).astimezone(pytz.utc)
+        last_run_time = datetime.fromisoformat(last_run_notable_users).astimezone(timezone.utc)
         difference = current_time - last_run_time
         difference_minutes = difference.total_seconds() / 60
 
         fetch_interval = arg_to_number(args.get("notable_users_fetch_interval")) or 60
         demisto.debug(f"Difference of {difference_minutes} minutes between the current time and the last run notable users")
-        if difference_minutes <= fetch_interval:
+        if difference_minutes <= fetch_interval:  # Check if the time interval is past.
             return [], last_run_obj
 
         else:
@@ -2233,19 +2232,25 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
     new_usernames = []
     for user in users:
         user_details = user.get("user", {})
-        username, risk_score = user_details.get("username", ""), user_details.get("riskScore", -1)
+        username = user_details.get("username", "")
+        risk_score = user_details.get("riskScore", -1)
         if risk_score >= minimum_risks and username not in existing_usernames:
             new_risky_users.append(user)
             new_usernames.append(username)
 
-    demisto.debug(f"After filtering, there are {len(new_risky_users)} new risky users, and {len(new_usernames)} new usernames")
+    demisto.debug(f"After filtering, there are {len(new_risky_users)} new risky users")
 
     combined_usernames = existing_usernames + new_usernames
+
+    # Calculate the excess length, which is the amount by which the combined list exceeds the maximum allowed length
     excess_length = max(len(combined_usernames) - MAX_LENGTH_CONTEXT, 0)
-    usernames_to_lest_run = existing_usernames[excess_length:] + new_usernames
+
+    # Create the new list of usernames, trimming the excess from the existing ones
+    usernames_to_last_run = existing_usernames[excess_length:] + new_usernames
     demisto.debug(f"{excess_length} usernames deleted from the lest run to avoid exceeding the maximum")
-    last_run_obj["usernames"] = usernames_to_lest_run
-    demisto.debug(f"After the added lest run contain {len(usernames_to_lest_run)} usernames")
+
+    last_run_obj["usernames"] = usernames_to_last_run
+    demisto.debug(f"After the added lest run contain {len(usernames_to_last_run)} usernames")
 
     incidents: list[dict] = []
     for user_data in new_risky_users:

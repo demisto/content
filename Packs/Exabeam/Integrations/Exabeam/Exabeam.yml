@@ -127,11 +127,13 @@ configuration:
   section: Collect
 - display: Max Users Per Fetch
   name: max_fetch_users
+  additionalinfo: Applies only when the Fetch Type is set to Exabeam Notable User.
   type: 0
   section: Collect
   defaultvalue: 50
 - display: Notable Users Fetch Interval
   name: notable_users_fetch_interval
+  additionalinfo: The interval, in whole hours, between consecutive fetch operations.
   defaultvalue: "60"
   type: 19
   section: Collect
