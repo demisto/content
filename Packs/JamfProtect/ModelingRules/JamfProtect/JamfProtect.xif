@@ -2,13 +2,13 @@
 config case_sensitive = true
 
 // Jamf computers logs mapping
-| filter source_log_type = "computers"
+|filter source_log_type = "computers"
 | alter 
 event_type = source_log_type,
 check_in = checkin,
 computer_created = created , //first connected 
 host_name = hostName ,
-memory_size = memorySize , // Already in bytes
+memory_size = to_integer(memorySize) , // Already in bytes
 model_name = modelName ,
 operating_system = osString ,
 serial_number = serial,
@@ -47,7 +47,7 @@ xdm.source.ipv6 = last_connection_ipv6 ;
 
 
 // Jamf audit logs mapping
-| filter source_log_type = "audit"
+filter source_log_type = "audit"
 | alter
         host_ipv4_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"),
         host_ipv6_addresses = arrayfilter(arraymap(split(ips, ","), trim("@element")), "@element" ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}")
