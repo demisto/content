@@ -184,10 +184,7 @@ def filter_events(events: List[Dict[str, Any]], latest: bool) -> List[Dict[str, 
 def hash_events(events: List[Dict[str, Any]]) -> List[Dict[str, Dict[str, Any]]]:
     hashed_events = []
     for event in events:
-        for key, value in event.items():
-            if value is None:
-                event[key] = "null"
-
+        event = {key: "null" if value is None else value for key, value in event.items()}
         event_str = json.dumps(event, sort_keys=True)
         event_hash_object = hashlib.sha256(event_str.encode()).hexdigest()
         hashed_events.append({event_hash_object: event})
