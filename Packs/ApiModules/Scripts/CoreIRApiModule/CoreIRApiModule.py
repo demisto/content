@@ -2968,6 +2968,7 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     """
     # Initially setting the close reason according to the default mapping.
     xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'resolved_other')
+
     # Reading custom XSOAR->XDR close-reason mapping.
     custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
         demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
@@ -2975,16 +2976,15 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 
     # Overriding default close-reason mapping if there exists a custom one.
     if xsoar_close_reason in custom_xsoar_to_xdr_close_reason_mapping:
-        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping[xsoar_close_reason]
+        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping.get(xsoar_close_reason)
         # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
-        demisto.debug(
-            f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
         xdr_close_reason_candidate = "resolved_" + "_".join(xdr_close_reason_candidate.lower().split(" "))
-
         if xdr_close_reason_candidate not in XDR_RESOLVED_STATUS_TO_XSOAR:
             demisto.debug("Warning: Provided XDR close-reason does not exist. Using default XDR close-reason mapping. ")
         else:
             xdr_close_reason = xdr_close_reason_candidate
+            demisto.debug(
+                f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
     else:
         demisto.debug(f"resolve_xdr_close_reason using default mapping {xsoar_close_reason}={xdr_close_reason}")
 
