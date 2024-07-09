@@ -44,10 +44,6 @@
       "type": "string",
       "is_array": false
     },
-    "destinationTranslatedAddress": {
-      "type": "string",
-      "is_array": false
-    },
     "deviceExternalId": {
       "type": "string",
       "is_array": false
@@ -109,6 +105,10 @@
       "is_array": false
     },
     "FTNTFGTapp": {
+      "type": "string",
+      "is_array": false
+    },
+    "FTNTFGTappcat": {
       "type": "string",
       "is_array": false
     },
@@ -682,6 +682,10 @@
     },
     "sourceTranslatedAddress": {
       "type": "string",
+      "is_array": false
+    },
+    "sourceTranslatedPort": {
+      "type": "int",
       "is_array": false
     },
     "sproc": {
