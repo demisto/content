@@ -216,19 +216,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "23"
     scriptarguments:
       alerts_enabled:
         simple: "true"
-      classifier_key: {}
-      classifier_value: {}
-      description: {}
-      report_ids: {}
-      tags_enabled: {}
       watchlist_id:
         simple: ${CarbonBlackEEDR.Watchlist.id}
       watchlist_name:
-        simple: new
+        simple: ${CarbonBlackEEDR.Watchlist.name}
     separatecontext: false
     view: |-
       {
@@ -260,7 +255,7 @@ tasks:
       - "7"
     scriptarguments:
       watchlist_id:
-        simple: ${CarbonBlackEEDR.Watchlist.ID}
+        simple: ${watchListId}
     separatecontext: false
     view: |-
       {
@@ -303,9 +298,8 @@ tasks:
       - - operator: isTrue
           left:
             value:
-              simple: CarbonBlackEEDR.Watchlist.Alerts_enabled
+              simple: ${CarbonBlackEEDR.Watchlist.alerts_enabled}
             iscontext: true
-    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -574,7 +568,7 @@ tasks:
       - "16"
     scriptarguments:
       watchlist_id:
-        simple: ${CarbonBlackEEDR.Watchlist.ID}
+        simple: ${CarbonBlackEEDR.Watchlist.id}
     separatecontext: false
     view: |-
       {
@@ -600,37 +594,15 @@ tasks:
       script: '|||cb-eedr-list-alerts'
       type: regular
       iscommand: true
-      brand: ""
+      brand: Carbon Black Enterprise EDR
     nexttasks:
       '#none#':
       - "20"
     scriptarguments:
-      alert_category: {}
-      alert_id: {}
-      alert_tag: {}
-      alert_type: {}
-      device_id:
-        simple: "3366007"
-      device_name: {}
-      device_os:
-        simple: LINUX
-      device_os_version: {}
-      device_username: {}
-      end_time: {}
-      group_results: {}
       limit:
         simple: "5"
-      minimum_severity: {}
-      policy_id: {}
-      policy_name: {}
-      process_name: {}
-      process_sha256: {}
-      reputation: {}
       sort_field:
-        simple: first_event_time
-      sort_order: {}
-      start_time: {}
-      workflow: {}
+        simple: first_event_timestamp
     separatecontext: false
     view: |-
       {
@@ -661,18 +633,10 @@ tasks:
       '#none#':
       - "21"
     scriptarguments:
-      ad_group_id: {}
-      device_id: {}
-      device_os:
-        simple: WINDOWS
-      end_time: {}
-      limit: {}
-      policy_id: {}
-      sort_field: {}
-      sort_order: {}
-      start_time: {}
-      status: {}
-      target_priority: {}
+      sort_field:
+        simple: av_pack_version
+      start_time:
+        simple: "2019-01-01T11:00:00.157Z"
     separatecontext: false
     view: |-
       {
@@ -705,10 +669,6 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
@@ -743,12 +703,12 @@ tasks:
       - - operator: isExists
           left:
             value:
-              simple: CarbonBlackEEDR.Watchlist.name
+              simple: CarbonBlackEEDR.Watchlist.Name
             iscontext: true
       - - operator: isExists
           left:
             value:
-              simple: CarbonBlackEEDR.Watchlist.id
+              simple: CarbonBlackEEDR.Watchlist.ID
             iscontext: true
     view: |-
       {
@@ -879,7 +839,85 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
-system: true
+  "23":
+    id: "23"
+    taskid: 7e8263c8-f14b-4d6b-8709-1af79da9c6e5
+    type: regular
+    task:
+      id: 7e8263c8-f14b-4d6b-8709-1af79da9c6e5
+      version: -1
+      name: Set watch list id
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    scriptarguments:
+      key:
+        simple: watchListId
+      value:
+        simple: ${CarbonBlackEEDR.Watchlist.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: 581601de-cbb8-469c-8ae4-62a4f3b196a2
+    type: regular
+    task:
+      id: 581601de-cbb8-469c-8ae4-62a4f3b196a2
+      version: -1
+      name: Delete context
+      description: |-
+        Delete field from context.
+
+        This automation runs using the default Limited User role, unless you explicitly change the permissions.
+        For more information, see the section about permissions here:
+        https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      all:
+        simple: "no"
+      key:
+        simple: CarbonBlackEEDR.Watchlist
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 890,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
