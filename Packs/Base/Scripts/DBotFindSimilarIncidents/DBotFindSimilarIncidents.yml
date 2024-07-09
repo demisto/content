@@ -74,6 +74,23 @@ args:
   name: indicatorsTypes
 - description: Help to filter out indicators that appear in many incidents. Relevant if includeIndicatorsSimilarity is "True".
   name: maxIncidentsInIndicatorsForWhiteList
+comment: |-
+  Finds past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+  Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
+commonfields:
+  id: DBotFindSimilarIncidents
+  version: -1
+enabled: true
+name: DBotFindSimilarIncidents
+script: '-'
+subtype: python3
+timeout: '0'
+type: python
+dockerimage: demisto/ml:1.0.0.101889
+runas: DBotWeakRole
+tests:
+- DBotFindSimilarIncidents-test
+fromversion: 5.0.0
 outputs:
 - contextPath: DBotFindSimilarIncidents.isSimilarIncidentFound
   description: Indicates whether similar incidents have been found.
@@ -93,20 +110,3 @@ outputs:
 - contextPath: DBotFindSimilarIncidents.similarIncident.details
   description: The details of the linked incident.
   type: string
-comment: |-
-  Finds past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
-  Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
-commonfields:
-  id: DBotFindSimilarIncidents
-  version: -1
-enabled: true
-name: DBotFindSimilarIncidents
-script: '-'
-subtype: python3
-timeout: '0'
-type: python
-dockerimage: demisto/ml:1.0.0.101889
-runas: DBotWeakRole
-tests:
-- DBotFindSimilarIncidents-test
-fromversion: 5.0.0

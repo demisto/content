@@ -11,6 +11,7 @@ TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 BERT_TOKENIZER_ERROR = "The tokenizer class you load from this checkpoint is not the same type as the class this function is called from. It may result in unexpected tokenization. \nThe tokenizer class you load from this checkpoint is 'BertTokenizer'. \nThe class this function is called from is 'DistilBertTokenizer'.\n"
 
+
 class StderrRedirect:
     '''Context manager to redirect stderr.'''
     temp_stderr: Any
@@ -27,7 +28,7 @@ class StderrRedirect:
     def __exit__(self, exc_type, exc_value, exc_traceback):
         demisto.debug(f'exiting StderrRedirect: {exc_type=}, {exc_value=}, {exc_traceback=}')
         self.temp_stderr.seek(0)
-        self.error = self.temp_stderr.read().encode()
+        self.error = self.temp_stderr.read().decode()
         demisto.debug(f'stderr: {self.error}')
         os.dup2(self.old_stderr, sys.stderr.fileno())  # restore stderr
         os.close(self.old_stderr)
@@ -37,8 +38,28 @@ class StderrRedirect:
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
+def new_get_model_data(model_name, store_type):
+    if store_type == "mlModel":
+        res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})
+        if is_error(res_model):
+            return_error(get_error(res_model))
+        model_data = res_model[0]['Contents']['modelData']
+        model_type = res_model[0]['Contents']['model']["type"]["type"]
+        return model_data, model_type
+    if store_type == "list":
+        res_model_list = demisto.executeCommand("getList", {"listName": model_name})
+        if is_error(res_model_list):
+            return_error(get_error(res_model_list))
+        return res_model_list[0]["Contents"], UNKNOWN_MODEL_TYPE
+    return None
+       
+            
 
 def get_model_data(model_name, store_type, is_return_error):
+    try:
+        return new_get_model_data(model_name, store_type)
+    except Exception as e:
+        demisto.debug(f'new_get_model_data() failed: {e}, {e.args}')
     res_model_list = demisto.executeCommand("getList", {"listName": model_name})[0]
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
     if is_error(res_model_list) and not is_error(res_model):
@@ -194,8 +215,8 @@ def predict_single_incident_full_output(email_subject, email_body, is_return_err
     negative_tokens = OrderedSet(explain_result['NegativeWords'])
     positive_words = find_words_contain_tokens(positive_tokens, words_to_token_maps)
     negative_words = find_words_contain_tokens(negative_tokens, words_to_token_maps)
-    positive_words = list(OrderedSet([s.strip(punctuation) for s in positive_words]))
-    negative_words = list(OrderedSet([s.strip(punctuation) for s in negative_words]))
+    positive_words = OrderedSet([s.strip(punctuation) for s in positive_words])
+    negative_words = OrderedSet([s.strip(punctuation) for s in negative_words])
     positive_words = [w for w in positive_words if w.isalnum()]
     negative_words = [w for w in negative_words if w.isalnum()]
     highlighted_text_markdown = text.strip()

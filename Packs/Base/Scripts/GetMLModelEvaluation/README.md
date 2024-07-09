@@ -1,6 +1,7 @@
 Finds a threshold for ML model, and performs an evaluation based on it
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Finds a threshold for ML model, and performs an evaluation based on it
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ Finds a threshold for ML model, and performs an evaluation based on it
 | detailedOutput | if set to 'true', the output will include a full explanation of the confidence threshold meaning |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
