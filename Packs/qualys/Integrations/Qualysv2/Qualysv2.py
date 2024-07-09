@@ -2915,15 +2915,14 @@ def get_host_list_detections_events(client, since_datetime) -> list:
         demisto.debug(f'{host_list_detections=}')
         host_list_assets, next_url = handle_host_list_detection_result(host_list_detections) or []
         if not host_list_assets:
-            demisto.debug(f'no host_list_assets')
+            demisto.debug('no host_list_assets')
             break
         assets += host_list_assets
         new_next_page = get_next_page_from_url(next_url, 'id_min')
         if not new_next_page or new_next_page == next_page:
-            demisto.debug(f'no new_next_page')
+            demisto.debug('no new_next_page')
             break
-        else:
-            next_page = new_next_page
+        next_page = new_next_page
 
     edited_host_detections = get_detections_from_hosts(assets)
     demisto.debug(f'Parsed detections from hosts, got {len(edited_host_detections)=} assets.')
@@ -2961,7 +2960,7 @@ def fetch_assets(client, since_datetime=None):
     demisto.debug('Starting fetch for assets')
     if not since_datetime:
         since_datetime = arg_to_datetime(ASSETS_FETCH_FROM).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-
+    demisto.debug(f'{since_datetime}')
     assets = get_host_list_detections_events(client, since_datetime)
     vulnerabilities = get_vulnerabilities(client, since_datetime)
 
