@@ -2220,7 +2220,7 @@ class TestFetch:
                                           })
         fetch_incidents()
         assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {},{}]
+            {'time': '2020-09-04T09:16:10Z'}, {'time': '2020-09-04T09:22:10Z'}, {}, {}, {}, {}, {}]
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
@@ -4375,7 +4375,7 @@ def test_get_modified_remote_data_command(mocker):
     Then
         - returns a list of incidents, detections, and idp detections IDs that were modified since the lastUpdate time
     """
-    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION',True)
+    mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', True)
     from CrowdStrikeFalcon import get_modified_remote_data_command
     mock_get_incidents = mocker.patch('CrowdStrikeFalcon.get_incidents_ids',
                                       return_value={'resources': [input_data.remote_incident_id]})
@@ -6047,8 +6047,8 @@ class TestCSFalconCSPMUpdatePolicySettingsCommand:
 
 class TestCSFalconResolveIdentityDetectionCommand:
     @pytest.mark.parametrize('Legacy_version, url_suffix, ids_request_key', [
-        (False,'/alerts/entities/alerts/v3', 'composite_ids'),
-         (True, '/alerts/entities/alerts/v2', 'ids')])
+        (False, '/alerts/entities/alerts/v3', 'composite_ids'),
+        (True, '/alerts/entities/alerts/v2', 'ids')])
     def test_http_request_arguments(self, mocker: MockerFixture, Legacy_version, url_suffix, ids_request_key):
         """
         Given:
@@ -6963,10 +6963,11 @@ def test_error_handler():
     except DemistoException as e:
         assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'
 
+
 @pytest.mark.parametrize('Legacy_version, url_suffix', [
     (False, 'alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'),
-     (True, '/detects/queries/detects/v1')
-     ])
+    (True, '/detects/queries/detects/v1')
+])
 def test_get_detection___url(mocker, Legacy_version, url_suffix):
     """
     Given:
@@ -6990,13 +6991,13 @@ Test Scenarios:
     get_detections(last_behavior_time='2024-06-19T15:25:00Z', behavior_id=123,
                    filter_arg="created_timestamp:>'2024-06-19T15:25:00Z'")
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
-        
+
 
 @pytest.mark.parametrize('Legacy_version, url_suffix, data', [
-        (False,"/alerts/entities/alerts/v3",
-         '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}], "composite_ids": ["123"]}'),
-         (True, '/detects/entities/detects/v2',
-          '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')])
+    (False, "/alerts/entities/alerts/v3",
+     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}], "composite_ids": ["123"]}'),
+    (True, '/detects/entities/detects/v2',
+     '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')])
 def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
     """
     Given:
@@ -7012,17 +7013,16 @@ def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
     mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
 
-    resolve_detection(ids=["123"],status= "resolved", assigned_to_uuid="123",show_in_ui="True",comment="comment")
+    resolve_detection(ids=["123"], status="resolved", assigned_to_uuid="123", show_in_ui="True", comment="comment")
     assert http_request_mocker.call_args_list[0][0][1] == url_suffix
     assert http_request_mocker.call_args_list[0][1]["data"] == data
 
 
-
-
 @pytest.mark.parametrize('Legacy_version, url_suffix, request_params', [
-    (False, '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'
-, {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3}),
-    (True, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
+    (False, '/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27',
+     {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3}),
+    (True, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc',
+     'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
 ])
 def test_get_fetch_detections__url(mocker, Legacy_version, url_suffix, request_params):
     """
@@ -7053,8 +7053,8 @@ def test_get_fetch_detections__url(mocker, Legacy_version, url_suffix, request_p
 
 
 @pytest.mark.parametrize('Legacy_version, expected_output', [
-        (False, [{'status': 'open', 'max_severity': 'critical', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}]),
-         (True, [{'status': 'open', 'max_severity': 'high', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}])])
+    (False, [{'status': 'open', 'max_severity': 'critical', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}]),
+    (True, [{'status': 'open', 'max_severity': 'high', 'detection_id': '123', 'created_time': '2022-01-01T00:00:00Z'}])])
 def test_detections_to_human_readable(mocker, expected_output, Legacy_version):
     """
     Given:
@@ -7066,14 +7066,13 @@ def test_detections_to_human_readable(mocker, expected_output, Legacy_version):
     """
     from CrowdStrikeFalcon import detections_to_human_readable
     mocker.patch('CrowdStrikeFalcon.LEGACY_VERSION', Legacy_version)
-    mock_table_to_markdown =  mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
-    input = {'status': 'open','max_severity_displayname': 'high','detection_id': '123',
-                 'created_timestamp': '2022-01-01T00:00:00Z','severity_name': 'critical'},
+    mock_table_to_markdown = mocker.patch('CrowdStrikeFalcon.tableToMarkdown')
+    input = {'status': 'open', 'max_severity_displayname': 'high', 'detection_id': '123',
+             'created_timestamp': '2022-01-01T00:00:00Z', 'severity_name': 'critical'},
     detections_to_human_readable(input)
-    
+
     assert mock_table_to_markdown.call_args[0][1] == expected_output
-    
-    
+
 
 def test_modify_detection_summaries_outputs():
     """
@@ -7108,7 +7107,7 @@ def test_modify_detection_summaries_outputs():
     assert modified_detection["behaviors"]["parent_details"]["parent_cmdline"] == "parent_cmd_test"
     assert modified_detection["behaviors"]["parent_details"]["parent_md5"] == "parent_md5_test"
     assert modified_detection["behaviors"]["timestamp"] == "time"
-    
+
 
 def test_truncate_long_time_str():
     """
@@ -7120,15 +7119,16 @@ def test_truncate_long_time_str():
         - Validate that the time string is correctly truncated to 6 digits after the dot
     """
     from CrowdStrikeFalcon import truncate_long_time_str
-    
+
     detections = [{"time": "2022-01-01T00:00:00.000000000000000000000000000Z"},
-                   {"time": "2022-01-01T00:00:00.000000Z"},
-                   {"time": "2022-01-01T00:00:00.000000000000000000000000000Z"}]
+                  {"time": "2022-01-01T00:00:00.000000Z"},
+                  {"time": "2022-01-01T00:00:00.000000000000000000000000000Z"}]
     time_key = "time"
-    
+
     assert truncate_long_time_str(detections, time_key) == [{'time': '2022-01-01T00:00:00.000000Z'},
                                                             {'time': '2022-01-01T00:00:00.000000Z'},
                                                             {'time': '2022-01-01T00:00:00.000000Z'}]
+
 
 @pytest.mark.parametrize('Legacy_version, expected_url', [
     (False, '/alerts/entities/alerts/v2'),
@@ -7148,7 +7148,7 @@ def test_get_detections_entities__url(mocker, Legacy_version, expected_url):
     http_request_mocker = mocker.patch('CrowdStrikeFalcon.http_request')
     get_detections_entities(["123"])
     assert http_request_mocker.call_args_list[0][0][1] == expected_url
-    
+
 
 @pytest.mark.parametrize('Legacy_version, expected_url', [
     (False, '/alerts/queries/alerts/v2?filter=created_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27'),
@@ -7181,14 +7181,14 @@ def test_modify_detection_outputs(mocker):
     """
     from CrowdStrikeFalcon import modify_detection_outputs
     mocker.patch('CrowdStrikeFalcon.DETECTIONS_BEHAVIORS_KEY_MAP', {"key1": "value1", "key2": "value2"})
-    
+
     detection = {"key1": "value1", "key2": "value2", "key3": "value3", "parent_details": "details",
                  "triggering_process_graph_id": "id", "testing": "test"}
-    
-    assert modify_detection_outputs(detection) ==  {'key3': 'value3', 'testing': 'test',
-                                                    'behaviors': [{'key1': 'value1',
-                                                    'key2': 'value2',
-                                                    'parent_details': 'details', 'triggering_process_graph_id': 'id'}]}
+
+    assert modify_detection_outputs(detection) == {'key3': 'value3', 'testing': 'test',
+                                                   'behaviors': [{'key1': 'value1',
+                                                                  'key2': 'value2',
+                                                                  'parent_details': 'details', 'triggering_process_graph_id': 'id'}]}
 
 
 @pytest.mark.parametrize('Legacy_version, expected_results', [

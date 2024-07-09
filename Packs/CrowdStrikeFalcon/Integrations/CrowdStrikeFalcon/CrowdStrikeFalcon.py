@@ -275,11 +275,11 @@ CS_FALCON_INCIDENT_OUTGOING_ARGS = {'tag': 'A tag that have been added or remove
                                     'status': f'Updated incident status, one of {"/".join(STATUS_TEXT_TO_NUM.keys())}'}
 
 LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tactic', 'behaviors.scenario', 'behaviors.objective',
-                                     'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
+                                            'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
                                      'technique', 'device.hostname', "composite_id", 'display_name']
 LEGACY_CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
-                                    'tags', 'hosts.hostname', 'incident_id']
+                                           'tags', 'hosts.hostname', 'incident_id']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -335,11 +335,11 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 def truncate_long_time_str(detections: List[Dict], time_key: str) -> List[Dict]:
     """
     Truncates the time string in each detection to a maximum of 26 characters, to prevent an error when parsing the time.
-    
+
     Args:
         detections (List[Dict]): The list of detections, each represented as a dictionary.
         time_key (str): The key in each detection dictionary that corresponds to the time string.
-        
+
     Returns:
         List[Dict]: The list of detections with the time string truncated.
     """
@@ -365,7 +365,7 @@ def modify_detection_outputs(detection):
     })
     detection["behaviors"] = [behavior]
     return detection
-    
+
 
 def error_handler(res):
     res_json = res.json()
@@ -576,10 +576,11 @@ def build_query_params(query_params: dict) -> str:
 
     return query
 
+
 def modify_detection_summaries_outputs(detection: dict):
     """
     Modifies the detection summaries outputs in the new version (raptor release) to be in the same format as the legacy version.
-    
+
     Args:
         detection: The detection to modify.
     Returns:
@@ -609,7 +610,7 @@ def modify_detection_summaries_outputs(detection: dict):
         "parent_details",
         "md5",
     ]
-    
+
    # rename before adding to a nested dict
     parent_details = detection.get("parent_details", {})
     parent_keys = ["sha256", "cmdline", "md5", "process_graph_id"]
@@ -628,7 +629,7 @@ def modify_detection_summaries_outputs(detection: dict):
 
     # rename without moving to a nested dict
     detection["detection_id"] = detection.pop("composite_id", None)
-    
+
     return detection
 
 
@@ -1493,7 +1494,6 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         return http_request('GET', endpoint_url, params)
 
 
-
 def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: int = 0, last_updated_timestamp=None,
                          has_limit=True, limit: int = INCIDENTS_PER_FETCH):
     """ Sends detection request, based on the created_timestamp field. Used for fetch-incidents
@@ -1517,14 +1517,14 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     elif last_updated_timestamp:
         timestamp_key = 'date_updated' if LEGACY_VERSION else 'updated_timestamp'
         params['filter'] = f"{timestamp_key}:>'{last_updated_timestamp}'"
-    
+
     endpoint_url = '/detects/queries/detects/v1' if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter=product"
-   
+
     if not LEGACY_VERSION:
         endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter', None)}")
 
     response = http_request('GET', endpoint_url, params)
-        
+
     demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
     return response
 
@@ -1592,13 +1592,12 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
     if limit:
         params['limit'] = limit
     endpoint_url = "/alerts/queries/alerts/v1" if LEGACY_VERSION else \
-    "/alerts/queries/alerts/v2?filter="
-    #in the new version we need to add the product type to the filter to the url as encoded string
+        "/alerts/queries/alerts/v2?filter="
+    # in the new version we need to add the product type to the filter to the url as encoded string
     if not LEGACY_VERSION:
         endpoint_url += urllib.parse.quote_plus(params.pop('filter', None))
     response = http_request('GET', endpoint_url, params)
-    
-        
+
     demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}")
 
     return response
@@ -2033,7 +2032,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     else:
         # We do this so show_in_ui value won't contain ""
         data = json.dumps(payload).replace('"show_in_ui": "false"', '"show_in_ui": false').replace('"show_in_ui": "true"',
-                                                                           '"show_in_ui": true')
+                                                                                                   '"show_in_ui": true')
     url = "/alerts/entities/alerts/v3" if not LEGACY_VERSION else "/detects/entities/detects/v2"
     return http_request('PATCH', url, data=data)
 
@@ -2427,7 +2426,7 @@ def get_remote_data_command(args: dict[str, Any]):
 
 
 def find_incident_type(remote_incident_id: str):
-    if  IncidentType.INCIDENT.value in remote_incident_id:
+    if IncidentType.INCIDENT.value in remote_incident_id:
         return IncidentType.INCIDENT
     if IncidentType.DETECTION.value in remote_incident_id:
         return IncidentType.DETECTION
@@ -2662,7 +2661,7 @@ def get_modified_remote_data_command(args: dict[str, Any]):
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_types:
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ods'"
-            
+
         ).get('resources', [])
 
     modified_ids_to_mirror = list(map(str, raw_ids))
@@ -3089,30 +3088,30 @@ def fetch_incidents():
 
         ioa_last_run = {'ioa_next_token': ioa_new_next_token, 'last_date_time_since': new_date_time_since,
                         'last_fetch_query': ioa_fetch_query, 'last_event_ids': ioa_event_ids or last_fetch_event_ids}
-        
+
     if ON_DEMAND_SCANS_DETECTION_TYPE in fetch_incidents_or_detections:
         if LEGACY_VERSION:
             raise DemistoException('On-Demand Scans Detection is not supported in legacy version.')
         demisto.debug('Fetching On-Demand Scans Detection incidents')
         demisto.debug(f'on_demand_detections_last_run= {current_fetch_on_demand_detections}')
-        
+
         on_demand_detections, current_fetch_on_demand_detections = fetch_detections_by_product_type(
             current_fetch_on_demand_detections,
             look_back=look_back,
-            fetch_query = params.get('on_demand_fetch_query', ''),
+            fetch_query=params.get('on_demand_fetch_query', ''),
             detections_type=ON_DEMAND_SCANS_DETECTION,
             product_type='ods',
             detection_name_prefix=ON_DEMAND_SCANS_DETECTION_TYPE,
             start_time_key='created_timestamp')
-        
+
     demisto.setLastRun([current_fetch_info_detections, current_fetch_info_incidents, current_fetch_info_idp_detections,
                         iom_last_run, ioa_last_run, current_fetch_info_mobile_detections, current_fetch_on_demand_detections])
     return incidents + detections + idp_detections + iom_incidents + ioa_incidents + mobile_detections + on_demand_detections
 
 
 def fetch_detections_by_product_type(current_fetch_info: dict, look_back: int, product_type: str,
-                                    fetch_query: str, detections_type: str, detection_name_prefix: str,
-                                    start_time_key: str) -> tuple[List, dict]:
+                                     fetch_query: str, detections_type: str, detection_name_prefix: str,
+                                     start_time_key: str) -> tuple[List, dict]:
     """The fetch logic for idp, ods and mobile detections.
 
     Args:
@@ -4144,7 +4143,7 @@ def search_detections_command():
 
             if not LEGACY_VERSION:
                 detection = modify_detection_outputs(detection)
-                
+
             for path, new_key in (LEGACY_DETECTIONS_BASE_KEY_MAP.items() if LEGACY_VERSION else
                                   DETECTIONS_BASE_KEY_MAP.items()):
                 detection_entry[new_key] = demisto.get(detection, path)
@@ -4156,7 +4155,7 @@ def search_detections_command():
 
             if extended_data:
                 detection_entry['Device'] = demisto.get(detection, 'device')
-                if LEGACY_VERSION:     #The new version (raptor) does not have the 'behaviors_processed' key
+                if LEGACY_VERSION:  # The new version (raptor) does not have the 'behaviors_processed' key
                     detection_entry['BehaviorsProcessed'] = demisto.get(detection, 'behaviors_processed')
 
             entries.append(detection_entry)
@@ -4887,8 +4886,8 @@ def detections_to_human_readable(detections):
     detections_readable_outputs = []
     for detection in detections:
         readable_output = assign_params(status=detection.get('status'),
-                                        max_severity=detection.get('max_severity_displayname') if LEGACY_VERSION else\
-                                            detection.get('severity_name'),
+                                        max_severity=detection.get('max_severity_displayname') if LEGACY_VERSION else
+                                        detection.get('severity_name'),
                                         detection_id=detection.get('detection_id'),
                                         created_time=detection.get('created_timestamp'))
         detections_readable_outputs.append(readable_output)
@@ -6754,7 +6753,7 @@ def resolve_detections_prepare_body_request(ids: list[str],
         if value:
             param = {"name": key, "value": value}
             action_params.append(param)
-    ids_request_key =  'composite_ids' if not LEGACY_VERSION else 'ids'
+    ids_request_key = 'composite_ids' if not LEGACY_VERSION else 'ids'
     return {'action_parameters': action_params, ids_request_key: ids}
 
 
