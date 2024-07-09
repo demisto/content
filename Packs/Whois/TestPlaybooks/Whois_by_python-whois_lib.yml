@@ -425,7 +425,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.Whois_server
+              simple: Domain.WhoisServer
             iscontext: true
       - - operator: isNotExists
           left:
@@ -1079,7 +1079,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.Whois_server
+              simple: Domain.WhoisServer
             iscontext: true
       - - operator: isNotExists
           left:
@@ -1114,7 +1114,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: Domain.Registrant.Postal_code
+              simple: Domain.Registrant.PostalCode
             iscontext: true
       - - operator: isNotExists
           left:
