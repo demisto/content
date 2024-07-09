@@ -59,7 +59,7 @@ For more details about the authentication used in this integration, see [Microso
 
 In order to function as expected, the service account should have:
 
-**Impersonation rights** - Most command require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
+**Impersonation rights** - Most commands require this permission to function correctly. This permission is specified in each relevant command's Permission section. For more information follow the [Microsoft Documentation](https://learn.microsoft.com/en-us/exchange/client-developer/exchange-web-services/impersonation-and-ews-in-exchange). 
 
 Note: In order to perform actions on the target mailbox of other users, the service account must be part of the _ApplicationImpersonation_ role.
 
