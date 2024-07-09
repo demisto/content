@@ -13,7 +13,7 @@ configuration:
   required: true
 - display: API Token
   name: apitoken
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   required: true
 - display: Trust any certificate (not secure)
