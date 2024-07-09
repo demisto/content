@@ -110,8 +110,36 @@ def get_events_command(client: Client, start_date_arg: str, max_fetch: int) -> t
     return [], CommandResults(readable_output='No events found')
 
 
-def fetch_events(client: Client, max_fetch: int, start_date_str: str = DEFAULT_FIRST_FETCH) -> tuple:
+def fetch_events(client: Client, max_fetch: int, start_date_str: str = DEFAULT_FIRST_FETCH) -> tuple[
+    List[Dict[str, Any]], Dict[str, Any]]:
     last_run = demisto.getLastRun()
+    events, continuation_token = get_events(client, max_fetch, start_date_str, last_run)
+    unique_events = get_unique_events(events, last_run)
+    latest_events = filter_events(events=events, latest=True)
+    hash_latest_events = hash_events(latest_events)
+    if continuation_token:
+        demisto.debug(
+            f'Bitwarden - Fetched {len(unique_events)} which is the maximum or greater then the number of events.'
+            f' Will keep the fetching in the next fetch.')
+        created = start_date_str or last_run.get('last_fetch') or (
+            (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT))
+        new_last_run = {'continuationToken': continuation_token, 'last_fetch': created, 'nextTrigger': '0',
+                        'hashed_latest_events': hash_latest_events}
+    else:
+        # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
+        new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get('date'), DATE_FORMAT)
+                                                 for event in unique_events) if dt is not None]).strftime(
+            DATE_FORMAT) if unique_events else get_current_time()
+        new_last_run = {'last_fetch': new_last_fetch_date, 'hashed_latest_events': hash_latest_events}
+        demisto.debug(f'Bitwarden - Fetched {len(unique_events)} events')
+
+    for event in unique_events:
+        event['_time'] = event.get('date')
+
+    return unique_events, new_last_run
+
+
+def get_events(client: Client, max_fetch: int, start_date_str: str, last_run: Dict[str, Any]) -> tuple[List[Dict[str, Any]], str]:
     continuation_token = last_run.get('continuationToken', '')
     events: List[dict] = []
     has_next = True
@@ -124,31 +152,10 @@ def fetch_events(client: Client, max_fetch: int, start_date_str: str = DEFAULT_F
         if continuation_token := response.get('continuationToken'):
             has_next = True
         events.extend(response.get('data'))
-
-    unique_events = get_unique_events(events, last_run)
-
-    if continuation_token:
-        demisto.debug(
-            f'Bitwarden - Fetched {len(unique_events)} which is the maximum or greater then the number of events.'
-            f' Will keep the fetching in the next fetch.')
-        created = start_date_str or last_run.get('last_fetch') or (
-            (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT))
-        new_last_run = {'continuationToken': continuation_token, 'last_fetch': created, 'nextTrigger': '0'}
-    else:
-        # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
-        new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get('date'), DATE_FORMAT)
-                                                 for event in unique_events) if dt is not None]).strftime(
-            DATE_FORMAT) if unique_events else get_current_time()
-        new_last_run = {'last_fetch': new_last_fetch_date}
-        demisto.debug(f'Bitwarden - Fetched {len(unique_events)} events')
-
-    for event in unique_events:
-        event['_time'] = event.get('date')
-
-    return unique_events, new_last_run
+    return events, continuation_token
 
 
-def get_unique_events(events: List[dict], last_run: dict) -> List[dict]:
+def get_unique_events(events: List[Dict[str, Any]], last_run: Dict[str, Any]) -> List[Dict[str, Any]]:
     if hashed_latest_events := last_run.get('hashed_latest_events'):
         recent_events = filter_events(events=events, latest=False)
         hashed_recent_events = hash_events(recent_events)
@@ -163,7 +170,7 @@ def get_unique_events(events: List[dict], last_run: dict) -> List[dict]:
     return events
 
 
-def filter_events(events, latest):
+def filter_events(events: List[Dict[str, Any]], latest: bool) -> List[Dict[str, Any]]:
     sorted_events = sorted(events, key=lambda x: x['date'])
     if latest:
         date = sorted_events[-1]['date']
@@ -174,7 +181,7 @@ def filter_events(events, latest):
     return filtered_events
 
 
-def hash_events(events: list) -> List:
+def hash_events(events: List[Dict[str, Any]]) -> List[Dict[str, Dict[str, Any]]]:
     hashed_events = []
     for event in events:
         for key, value in event.items():
