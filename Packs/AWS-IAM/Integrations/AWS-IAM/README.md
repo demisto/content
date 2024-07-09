@@ -1452,18 +1452,18 @@ There is no context output for this command.
 
 
 ### aws-iam-get-account-password-policy
-***
-Get AWS account's password policy
 
+***
+Get AWS account's password policy.
 
 #### Base Command
 
 `aws-iam-get-account-password-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-
 
 #### Context Output
 
@@ -1471,15 +1471,16 @@ Get AWS account's password policy
 | --- | --- | --- |
 | AWS.IAM.PasswordPolicy | Unknown | Account's password policy. | 
 
-
 ### aws-iam-update-account-password-policy
-***
-Create/update password policy
+### aws-iam-update-account-password-policy
 
+***
+Create/update password policy.
 
 #### Base Command
 
 `aws-iam-update-account-password-policy`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1494,13 +1495,9 @@ Create/update password policy
 | passwordReusePrevention | Specifies the number of previous passwords that IAM users are prevented from reusing. Possible values are: . | Optional | 
 | hardExpiry | Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False". Possible values are: True, False. | Optional | 
 
-
 #### Context Output
 
 There is no context output for this command.
-
-
-### aws-iam-list-role-policies
 ***
 Lists the names of the inline policies that are embedded in the specified IAM role.
 
@@ -1975,3 +1972,25 @@ List all managed policies that are attached to the specified IAM role.
 
 
 Listed 2 attached policies for role test-role
+### aws-iam-list-mfa-devices
+
+***
+
+#### Base Command
+
+`aws-iam-list-mfa-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| name | Lists the MFA devices for an IAM user. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AWS.IAM.MFADevices.UserName | unknown | The user with whom the MFA device is associated. | 
+| AWS.IAM.MFADevices.SerialNumber | string | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | 
+| AWS.IAM.MFADevices.EnableDate | date | The date when the MFA device was enabled for the user. | 
+

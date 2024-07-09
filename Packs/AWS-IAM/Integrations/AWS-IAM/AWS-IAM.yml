@@ -1,7 +1,4 @@
 category: IT Services
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: AWS - IAM
   version: -1
@@ -1228,11 +1225,13 @@ script:
     - contextPath: AWS.IAM.PasswordPolicy
       description: Account's password policy.
       type: Unknown
+    arguments: []
   - arguments:
     - description: The minimum number of characters allowed in an IAM user password.
       name: minimumPasswordLength
       predefined:
       - ''
+      auto: PREDEFINED
     - auto: PREDEFINED
       description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
       name: requireSymbols
@@ -1267,10 +1266,12 @@ script:
       name: maxPasswordAge
       predefined:
       - ''
+      auto: PREDEFINED
     - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
       name: passwordReusePrevention
       predefined:
       - ''
+      auto: PREDEFINED
     - auto: PREDEFINED
       description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
       name: hardExpiry
@@ -1517,37 +1518,22 @@ script:
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
       description: The date when the given access key was last used.
       type: string
-  - name: aws-iam-list-attached-role-policies
+  - name: aws-iam-list-mfa-devices
     arguments:
-    - description: The name (friendly name, not ARN) of the role to list attached policies for.
-      name: roleName
-      required: true
-    - name: pathPrefix
-      description: The path prefix for filtering the results. This parameter is optional. If it is not included, it defaults to a slash (/), listing all policies.
-    - name: maxItems
-      description: The maximum number of items to return in the command's output.
-    - name: marker
-      description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
-    description: List all managed policies that are attached to the specified IAM role.
+    - description: Lists the MFA devices for an IAM user.
+      name: name
     outputs:
-    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.RoleName
-      description: The role name.
+    - contextPath: AWS.IAM.MFADevices.UserName
+      description: The user with whom the MFA device is associated.
+    - contextPath: AWS.IAM.MFADevices.SerialNumber
+      description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
       type: string
-    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyName
-      description: The policy name.
-      type: string
-    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn
-      description: The policy ARN.
-      type: string
-    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.IsTruncated
-      description: Whether there are more items to return. If the results were truncated, make a subsequent pagination request using the Marker request parameter to retrieve more items. Note that IAM might return fewer than the MaxItems number of results even when there are more results available. AWS recommends checking IsTruncated after every call to ensure that all results are received.
-      type: boolean
-    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
-      description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
-      type: string
-  dockerimage: demisto/boto3py3:1.0.0.100468
+    - contextPath: AWS.IAM.MFADevices.EnableDate
+      description: The date when the MFA device was enabled for the user.
+      type: date
+  dockerimage: demisto/boto3py3:1.0.0.102498
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
