@@ -89,6 +89,7 @@ PARENT_OBJECT_ID = Field("parent_object_id")
 TICKET_ID = Field("ticket_id")
 TICKET_STATUS = Field("ticket_status")
 TEXT = Field("text")
+TEXT_HTML = Field("text_html")
 SITE_VISIBLE = Field("site_visible")
 DESCRIPTION = Field("description")
 TICKET_PRIORITY = Field("ticket_priority")
@@ -356,7 +357,7 @@ class Client(BaseClient):
                 TICKET_TYPE_ID,
                 CONTACT_ID,
                 SUBJECT,
-                PROBLEM,
+                PROBLEM_HTML,
                 SITE,
             ),
             **kwargs,
@@ -502,7 +503,7 @@ class Client(BaseClient):
                 "data": json.dumps(
                     {
                         TICKET_ID.hda_name: kwargs[TICKET_ID.demisto_name],
-                        TEXT.hda_name: kwargs["comment"],
+                        TEXT_HTML.hda_name: kwargs["comment"],
                         SITE_VISIBLE.hda_name: argToBoolean(
                             kwargs[SITE_VISIBLE.demisto_name]
                         ),
