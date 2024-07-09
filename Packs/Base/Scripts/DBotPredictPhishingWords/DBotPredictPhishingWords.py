@@ -1,5 +1,4 @@
 # pylint: disable=no-member
-
 from CommonServerPython import *
 from string import punctuation
 import demisto_ml
@@ -9,8 +8,11 @@ import tempfile
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-BERT_TOKENIZER_ERROR = "The tokenizer class you load from this checkpoint is not the same type as the class this function is called from. It may result in unexpected tokenization. \nThe tokenizer class you load from this checkpoint is 'BertTokenizer'. \nThe class this function is called from is 'DistilBertTokenizer'.\n"
-
+BERT_TOKENIZER_ERROR = (
+    "The tokenizer class you load from this checkpoint is not the same type as the class this function is called from."
+    " It may result in unexpected tokenization. \nThe tokenizer class you load from this checkpoint is 'BertTokenizer'. "
+    "\nThe class this function is called from is 'DistilBertTokenizer'.\n"
+)
 
 class StderrRedirect:
     '''Context manager to redirect stderr.'''
