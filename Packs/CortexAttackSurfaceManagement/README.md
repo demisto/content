@@ -47,6 +47,7 @@ Automated remediation is only possible when the right conditions are met.  These
   - Unclaimed S3 Bucket*
 - Asset one of the following:
   - AWS EC2 Instance
+  - AWS Systems manager agent (active) on AWS EC2 Instance*
   - Azure Compute Instance
   - GCP Compute Engine (VM)
   - On-prem asset protected with a Palo Alto Networks Firewall
@@ -72,6 +73,8 @@ Automated remediation is only possible when the right conditions are met.  These
   - Optional: this check can be disabled with the `BypassDevCheck` parent playbook input
 
 \* The `Unclaimed S3 Bucket` attack surface rule ID only requires `AWS-S3` integration to be enabled.
+
+\* Patching using AWS Systems manager requires agent to be installed on the EC2 instance and currently we only support InsecureOpenSSH and OS versions of Linux Ubuntu.
 
 ## What is included in this pack?
 
