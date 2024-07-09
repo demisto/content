@@ -1363,7 +1363,7 @@ script:
     description: Retrieves a list of alerts based on the filter values provided in the command arguments. 
   script: ''
   type: python
-  dockerimage: demisto/python3:3.10.14.101217
+  dockerimage: demisto/python3:3.11.9.101916
   isfetch: true
   runonce: false
   subtype: python3
