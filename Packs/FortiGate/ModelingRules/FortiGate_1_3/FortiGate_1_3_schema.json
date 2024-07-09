@@ -61,7 +61,7 @@
       "is_array": false
     },
     "dpt": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "dst": {
@@ -492,10 +492,6 @@
       "type": "string",
       "is_array": false
     },
-    "FTNTFGTqtypeval": {
-      "type": "string",
-      "is_array": false
-    },
     "FTNTFGTreferralurl": {
       "type": "string",
       "is_array": false
@@ -693,7 +689,7 @@
       "is_array": false
     },
     "spt": {
-      "type": "string",
+      "type": "int",
       "is_array": false
     },
     "src": {
