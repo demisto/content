@@ -1,9 +1,9 @@
 from collections import defaultdict
 
 import pytest
-
+import sys
 from CommonServerPython import *
-from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main
+from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main, BERT_TOKENIZER_ERROR
 
 TOKENIZATION_RESULT = None
 
@@ -19,6 +19,13 @@ class PhishingModelMock:
 
     def explain_model_words(self, a, b, c, d):
         return self.explain_model_words_res
+
+
+def phishing_model_func(return_value):
+    def phishing_model_loads_handler(*_):
+        sys.stderr.write(BERT_TOKENIZER_ERROR)
+        return return_value
+    return phishing_model_loads_handler
 
 
 def get_args():
@@ -58,8 +65,8 @@ def executeCommand(command, args=None):
 
 def test_get_model_data(mocker):
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    assert "ModelDataList" == get_model_data("test", "list", True)[0]
-    assert "ModelDataML" == get_model_data("test", "mlModel", True)[0]
+    assert get_model_data("test", "list", True)[0] == "ModelDataList"
+    assert get_model_data("test", "mlModel", True)[0] == "ModelDataML"
 
 
 def test_predict_phishing_words(mocker):
@@ -71,7 +78,7 @@ def test_predict_phishing_words(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
@@ -106,7 +113,7 @@ def test_predict_phishing_words_low_threshold(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
                         create=True)
@@ -125,7 +132,7 @@ def test_predict_phishing_words_no_words(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("", 0), create=True)
     TOKENIZATION_RESULT = {'originalText': 'word1 word2 word3',
                            'tokenizedText': "word1 word2 word3",
@@ -151,7 +158,7 @@ def test_predict_phishing_words_hashed(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10, 'hashSeed': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
                         create=True)
@@ -176,7 +183,7 @@ def test_predict_phishing_words_tokenization_by_character(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10, 'hashSeed': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     original_text = 'this is a test'
@@ -217,7 +224,7 @@ def test_predict_phishing_words_tokenization_by_character_hashed(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10, 'hashSeed': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     original_text = 'this is a test'
@@ -263,7 +270,7 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
                         create=True)
@@ -303,7 +310,7 @@ def test_no_positive_words(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     phishing_mock = PhishingModelMock(("text", 2))
-    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
