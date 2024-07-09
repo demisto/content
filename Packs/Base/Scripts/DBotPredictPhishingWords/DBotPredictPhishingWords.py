@@ -40,6 +40,7 @@ class StderrRedirect:
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
+
 def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> None | tuple[dict, str]:
 
     def load_from_models(model_name: str) -> None | tuple[dict, str]:
