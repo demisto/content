@@ -305,6 +305,7 @@ tasks:
             value:
               simple: CarbonBlackEEDR.Watchlist.Alerts_enabled
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
