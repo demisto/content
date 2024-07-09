@@ -14,6 +14,7 @@ BERT_TOKENIZER_ERROR = (
     "\nThe class this function is called from is 'DistilBertTokenizer'.\n"
 )
 
+
 class StderrRedirect:
     '''Context manager to redirect stderr.'''
     temp_stderr: Any
@@ -41,7 +42,7 @@ def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
 
-def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> None | tuple[dict, str]:
+def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[dict, str]:
 
     def load_from_models(model_name: str) -> None | tuple[dict, str]:
         res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})
@@ -61,10 +62,10 @@ def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> N
 
     if store_type == "mlModel":
         res = load_from_models(model_name) or load_from_list(model_name)
-    if store_type == "list":
+    elif store_type == "list":
         res = load_from_list(model_name) or load_from_models(model_name)
 
-    return res or handle_error(f"error reading model {model_name} from Demisto", is_return_error)
+    return res or handle_error(f"error reading model {model_name} from Demisto", is_return_error)  # type: ignore
 
 
 def handle_error(message, is_return_error):

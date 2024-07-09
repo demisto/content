@@ -107,8 +107,8 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
     if is_error(incidents_query_res):
         return_error(get_error(incidents_query_res))
     incidents = json.loads(incidents_query_res[0]['Contents'])
-    demisto.results(f'Found {len(incidents)} incidents')
     if incidents:
+        demisto.results(f'Found {len(incidents)} incident(s)')
         y_true = []
         y_pred = []
         y_pred_prob = []
@@ -143,6 +143,8 @@ def main(incident_types, incident_query, y_true_field, y_pred_field, y_pred_prob
                                     context_field='EvaluateMLModllAtProductionNoThresh',
                                     human_readable_title=human_readable)
         return_file_result_with_predictions_on_test_set(incidents, y_true, y_pred, y_pred_prob, additional_fields)
+    else:
+        return_results('No incidents found.')
 
 
 model_target_accuracy = demisto.args().get('modelTargetAccuracy', 0)
