@@ -2050,8 +2050,8 @@ Lists detection summaries.
 | CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output exist only in the legacy version.| 
 | CrowdStrike.Detections.show_in_ui | Boolean | Whether the detection displays in the UI. | 
 | CrowdStrike.Detections.status | String | The status of the detection. | 
-| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned.  Note: This output exist only in the legacy version.| 
-| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned.  Note: This output exist only in the legacy version.| 
+| CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned.  Note: This output exists only in the legacy version.| 
+| CrowdStrike.Detections.assigned_to_name | String | The human-readable name of the user to whom the detection is currently assigned.  Note: This output exists only in the legacy version.| 
 | CrowdStrike.Detections.hostinfo.domain | String | The domain of the Active Directory. | 
 | CrowdStrike.Detections.seconds_to_triaged | Number | The amount of time it took to move a detection from "new" to "in_progress". | 
 | CrowdStrike.Detections.seconds_to_resolved | Number | The amount of time it took to move a detection from new to a resolved state \("true_positive", "false_positive", and "ignored"\). | 
