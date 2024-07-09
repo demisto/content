@@ -39,9 +39,9 @@ MIRROR_DIRECTION = {
 }
 
 SUPPORTED_CLOUD_PROVIDERS = ['AWS', 'AZURE', 'GCP', 'SNOWFLAKE', 'FILE SHARE', 'O365']
-SUPPORTED_AFFECTS = ['SECURITY', 'COMPLIANCE', 'GOVERNANCE', 'SECURITY_AND_COMPLIANCE'
-                     , 'SECURITY_AND_GOVERNANCE', 'COMPLIANCE_AND_GOVERNANCE','SECURITY_AND_COMPLIANCE_AND_GOVERNANCE']
-SUPPORTED_STATUS = ['OPEN','CLOSED','UNIMPORTANT','WRONG','HANDLED','INVESTIGATING']
+SUPPORTED_AFFECTS = ['SECURITY', 'COMPLIANCE', 'GOVERNANCE', 'SECURITY_AND_COMPLIANCE',
+                     'SECURITY_AND_GOVERNANCE', 'COMPLIANCE_AND_GOVERNANCE', 'SECURITY_AND_COMPLIANCE_AND_GOVERNANCE']
+SUPPORTED_STATUS = ['OPEN', 'CLOSED', 'UNIMPORTANT', 'WRONG', 'HANDLED', 'INVESTIGATING']
 SUPPORTED_SERVICES_TYPE = [
     'ATHENA', 'AURORA', 'AWS_BACKUP', 'DOCUMENTDB', 'DYNAMODB', 'DAX', 'EMR',
     'EBS', 'EFS', 'ELASTICACHE', 'FSX', 'KINESIS_DELIVERY_STREAM', 'MEMORYDB',
@@ -65,8 +65,8 @@ SUPPORTED_SERVICES_TYPE = [
     'UNMANAGED_GCP_AEROSPIKE', 'UNMANAGED_GCP_SCYLLA_DB', 'SNOWFLAKE_DB', 'FILE_SHARE',
     'ONE_DRIVE', 'SHARE_POINT', 'AZURE_OPEN_AI_DEPLOYMENT', 'VERTEX_ENDPOINT'
 ]
-SUPPORTED_LIFECYCLE = ['RUNNING','STOPPED','DELETED']
-SORTING_ORDER = ['ASC','DESC']
+SUPPORTED_LIFECYCLE = ['RUNNING', 'STOPPED', 'DELETED']
+SORTING_ORDER = ['ASC', 'DESC']
 
 
 # Define remediation steps for specific findings
@@ -209,29 +209,29 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
     cloud_provider_in = args.get('cloudProviderIn')
     if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
-    
+
     cloud_provider_equal = args.get('cloudProviderEqual')
     if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
-    
+
     # check supported affects
     affects_In = args.get('affectsIn')
     if affects_In and affects_In not in SUPPORTED_AFFECTS:
         raise ValueError(f'This "{affects_In}" Affect does not supported')
-    
+
     affects_Equal = args.get('affectsEqual')
     if affects_Equal and affects_Equal not in SUPPORTED_AFFECTS:
         raise ValueError(f'This "{affects_Equal}" Affect does not supported')
-    
+
     # check supported Status
     status_In = args.get('statusIn')
     if status_In and status_In not in SUPPORTED_STATUS:
         raise ValueError(f'This "{status_In}" Status does not supported')
-    
+
     status_Equal = args.get('statusEqual')
     if status_Equal and status_Equal not in SUPPORTED_STATUS:
         raise ValueError(f'This "{status_Equal}" Status does not supported')
-    
+
     # check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
@@ -339,29 +339,29 @@ def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
     cloud_provider_in = args.get('cloudProviderIn')
     if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
-    
+
     cloud_provider_equal = args.get('cloudProviderEqual')
     if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
-    
+
     # check supported service type
     service_Type_In = args.get('serviceTypeIn')
     if service_Type_In and service_Type_In not in SUPPORTED_SERVICES_TYPE:
         raise ValueError(f'This "{service_Type_In}" service type does not supported')
-    
+
     service_Type_Equal = args.get('serviceTypeEqual')
     if service_Type_Equal and service_Type_Equal not in SUPPORTED_SERVICES_TYPE:
         raise ValueError(f'This "{service_Type_Equal}" service type does not supported')
-    
+
     # check supported lifecycle
     lifecycle_In = args.get('lifecycleIn')
     if lifecycle_In and lifecycle_In not in SUPPORTED_LIFECYCLE:
         raise ValueError(f'This "{lifecycle_In}" lifecycle does not supported')
-    
+
     lifecycle_Equal = args.get('lifecycleEqual')
     if lifecycle_Equal and lifecycle_Equal not in SUPPORTED_LIFECYCLE:
         raise ValueError(f'This "{lifecycle_Equal}" lifecycle does not supported')
-    
+
     # check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
@@ -483,34 +483,34 @@ def get_data_types_command(client: Client, args: dict[str, Any]) -> CommandResul
     cloud_provider_in = args.get('cloudProviderIn')
     if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
-    
+
     cloud_provider_equal = args.get('cloudProviderEqual')
     if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
-    
+
     # check supported service type
     service_Type_In = args.get('serviceTypeIn')
     if service_Type_In and service_Type_In not in SUPPORTED_SERVICES_TYPE:
         raise ValueError(f'This "{service_Type_In}" service type does not supported')
-    
+
     service_Type_Equal = args.get('serviceTypeEqual')
     if service_Type_Equal and service_Type_Equal not in SUPPORTED_SERVICES_TYPE:
         raise ValueError(f'This "{service_Type_Equal}" service type does not supported')
-    
+
     # check supported lifecycle
     lifecycle_In = args.get('lifecycleIn')
     if lifecycle_In and lifecycle_In not in SUPPORTED_LIFECYCLE:
         raise ValueError(f'This "{lifecycle_In}" lifecycle does not supported')
-    
+
     lifecycle_Equal = args.get('lifecycleEqual')
     if lifecycle_Equal and lifecycle_Equal not in SUPPORTED_LIFECYCLE:
         raise ValueError(f'This "{lifecycle_Equal}" lifecycle does not supported')
-    
+
     # check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
         raise ValueError(f'This "{sort_order}" sorting order does not supported')
-    
+
     params = {
         "region.in": args.get('regionIn'),
         "region.equals": args.get('regionEqual'),
@@ -559,34 +559,34 @@ def get_data_type_findings_command(client: Client, args: dict[str, Any]) -> Comm
     cloud_provider_in = args.get('cloudProviderIn')
     if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
-    
+
     cloud_provider_equal = args.get('cloudProviderEqual')
     if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
         raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
-    
+
     # check supported service type
     service_Type_In = args.get('serviceTypeIn')
     if service_Type_In and service_Type_In not in SUPPORTED_SERVICES_TYPE:
         raise ValueError(f'This "{service_Type_In}" service type does not supported')
-    
+
     service_Type_Equal = args.get('serviceTypeEqual')
     if service_Type_Equal and service_Type_Equal not in SUPPORTED_SERVICES_TYPE:
         raise ValueError(f'This "{service_Type_Equal}" service type does not supported')
-    
+
     # check supported lifecycle
     lifecycle_In = args.get('lifecycleIn')
     if lifecycle_In and lifecycle_In not in SUPPORTED_LIFECYCLE:
         raise ValueError(f'This "{lifecycle_In}" lifecycle does not supported')
-    
+
     lifecycle_Equal = args.get('lifecycleEqual')
     if lifecycle_Equal and lifecycle_Equal not in SUPPORTED_LIFECYCLE:
         raise ValueError(f'This "{lifecycle_Equal}" lifecycle does not supported')
-    
+
     # check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
         raise ValueError(f'This "{sort_order}" sorting order does not supported')
-    
+
     params = {
         "region.in": args.get('regionIn'),
         "region.equals": args.get('regionEqual'),
