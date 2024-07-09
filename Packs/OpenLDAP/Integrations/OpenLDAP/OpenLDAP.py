@@ -17,6 +17,22 @@ MAX_PAGE_SIZE = 2000
 ''' LDAP Authentication CLIENT '''
 
 
+def listArgToLdapFilterSyntax(arg: str, prefix: str) -> str:
+    """
+    Converts a list argument to an LDAP filter syntax.
+    Args:
+        arg (str): The argument to convert.
+        prefix (str): The prefix to use in the filter syntax.
+    Returns:
+        str: The LDAP filter syntax.
+    """
+    arg_list = argToList(arg)
+    joined_list = ''.join([f'({prefix}={item})' for item in arg_list])
+    if len(arg_list) > 1:
+        return f'(&{joined_list})'
+    return joined_list if arg_list else ''
+
+
 def create_entries_search_filter(args: dict) -> str:
     """
     Creates the search filter according to the user's selection. Merges all the search filters into one filter.
@@ -25,10 +41,10 @@ def create_entries_search_filter(args: dict) -> str:
     Returns:
         str: The search filter.
     """
-    cn_filter = f"(cn={args.get('cn')})" if args.get('cn') else ''
-    description_filter = f"(description={args.get('description')})" if args.get('description') else ''
-    object_class = f"(objectClass={args.get('object_class')})" if args.get('object_class') else ''
-    uid = f"(uid={args.get('uid')})" if args.get('uid') else ''
+    cn_filter = listArgToLdapFilterSyntax(args.get('cn', ''), 'cn')
+    description_filter = listArgToLdapFilterSyntax(args.get('description', ''), 'description')
+    object_class = listArgToLdapFilterSyntax(args.get('object_class', ''), 'objectClass')
+    uid = listArgToLdapFilterSyntax(args.get('uid', ''), 'uid')
     search_filter = args.get('search_filter', '')
     if not any([cn_filter, description_filter, object_class, uid, search_filter]):
         return '(objectClass=*)'
