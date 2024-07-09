@@ -172,10 +172,7 @@ def get_unique_events(events: List[Dict[str, Any]], last_run: Dict[str, Any]) ->
 
 def filter_events(events: List[Dict[str, Any]], latest: bool) -> List[Dict[str, Any]]:
     sorted_events = sorted(events, key=lambda x: x['date'])
-    if latest:
-        date = sorted_events[0]['date']
-    else:
-        date = sorted_events[-1]['date']
+    date = sorted_events[0]['date'] if latest else sorted_events[-1]['date']
     filtered_events = [event for event in sorted_events if event['date'] == date]
 
     return filtered_events
