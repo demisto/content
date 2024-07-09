@@ -304,7 +304,7 @@ def calculate_affected_docker_images(
         return []
 
 
-def query_used_dockers_per_content_item(tx: Transaction) -> list[tuple[str, str, str, str]]:
+def query_used_dockers_per_content_item(tx: Transaction) -> list[tuple[str, str, str, str, str]]:
     """
     Queries the content graph for the following data:
     1. Docker image.
@@ -324,10 +324,19 @@ def query_used_dockers_per_content_item(tx: Transaction) -> list[tuple[str, str,
             AND NOT pack.object_id = 'ApiModules'
             AND iss.docker_image IS NOT NULL
             AND NOT pack.hidden
-            Return iss.docker_image, iss.path, pack.path, pack.support
+            Return iss.docker_image, iss.path, iss.type, pack.path, pack.support
             """
         )
     )
+
+
+def return_content_item_with_suffix(content_item_yml: str, content_item_type: str) -> Path:
+    if content_item_type == "python":
+        return Path(content_item_yml).with_suffix(".py")
+    elif content_item_type == "powershell":
+        return Path(content_item_yml).with_suffix(".ps1")
+    else:
+        raise Exception(f"Unknown {content_item_type=}")
 
 
 def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
@@ -341,26 +350,22 @@ def get_content_items_by_docker_image() -> dict[str, list[dict[str, Any]]]:
     content_images: dict[str, list[dict[str, Any]]] = defaultdict(list)
     with ContentGraphInterface() as graph, graph.driver.session() as session:
         content_items_info = session.execute_read(query_used_dockers_per_content_item)
-        for docker_image, content_item, full_pack_path, support_level in content_items_info:
-            content_item_py = Path(content_item).with_suffix(".py")
-            if content_item_py.is_file():
-                # Since the full_pack_path is in the format "Packs/{pack path}"
-                pack_path = full_pack_path.split("/")[1]
-
-                # Since the docker image returned will include the tag, we only need the image
-                docker_image_split = docker_image.split(":")
-                docker_image_without_tag = docker_image_split[0]
-                docker_image_tag = docker_image_split[1]
-                content_images[docker_image_without_tag].append(
-                    {
-                        "content_item": content_item_py,
-                        "support_level": support_level,
-                        "pack_path": pack_path,
-                        "docker_image_tag": docker_image_tag,
-                    }
-                )
-            else:
-                logging.warning(f"{content_item_py} was returned from the graph, but not found in repo")
+        # content_item_type holds the type of the script that runs the integration or script, either ps1 or python
+        for docker_image, content_item_yml, content_item_type, full_pack_path, support_level in content_items_info:
+            content_item = return_content_item_with_suffix(content_item_yml=content_item_yml, content_item_type=content_item_type)
+            pack_path = full_pack_path.split("/")[1]
+            # Since the docker image returned will include the tag, we only need the image
+            docker_image_split = docker_image.split(":")
+            docker_image_without_tag = docker_image_split[0]
+            docker_image_tag = docker_image_split[1]
+            content_images[docker_image_without_tag].append(
+                {
+                    "content_item": content_item,
+                    "support_level": support_level,
+                    "pack_path": pack_path,
+                    "docker_image_tag": docker_image_tag,
+                }
+            )
     return content_images
 
 
