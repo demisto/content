@@ -67,9 +67,9 @@ In order to function as expected, the application used to authenticate should ha
 
 **full_access_as_app** - To set this permission follow these steps:
 
-1. Navigate to Home > App registrations.
+1. Navigate to **Home** > **App registrations**.
 2. Search for your app under ‘all applications’.
-3. Click API permissions > Add permission.
+3. Click **API permissions** > **Add permission**.
 4. Search for the `Office 365 Exchange Online` API -> `Application Permission`-> `full_access_as_app` permission. 
 
 for more information on this permission, visit [the Microsoft documentation](https://docs.microsoft.com/en-us/exchange/client-developer/exchange-web-services/how-to-authenticate-an-ews-application-by-using-oauth#configure-for-app-only-authentication).
