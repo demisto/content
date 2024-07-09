@@ -369,7 +369,7 @@ Search for details of specific detections, either using a filter query, or by pr
 | CrowdStrike.Detection.Behavior.SensorID | String | The sensor ID related to the behavior. | 
 | CrowdStrike.Detection.Behavior.ParentProcessID | String | The ID of the parent process. | 
 | CrowdStrike.Detection.Behavior.ProcessID | String | The process ID of the behavior.| 
-| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. Note: This output exist only in the legacy version.| 
+| CrowdStrike.Detection.Behavior.ID | String | The ID of the behavior. Note: This output exists only in the legacy version.| 
 | CrowdStrike.Detection.System | String | The system name of the detection. | 
 | CrowdStrike.Detection.CustomerID | String | The ID of the customer \(CID\). | 
 | CrowdStrike.Detection.MachineDomain | String | The name of the domain of the detection machine. | 
@@ -2015,8 +2015,8 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.confidence | Number | The true positive confidence rating for the behavior. The value can be any integer between 1-100. | 
 | CrowdStrike.Detections.behaviors.ioc_type | String | The type of the triggering IOC. Possible values are: "hash_sha256", "hash_md5", "domain", "filename", "registry_key", "command_line", and "behavior". | 
 | CrowdStrike.Detections.behaviors.ioc_value | String | The IOC value. | 
-| CrowdStrike.Detections.behaviors.ioc_source | String | The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".  Note: This output exist only in the legacy version.| 
-| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description.  Note: This output exist only in the legacy version.| 
+| CrowdStrike.Detections.behaviors.ioc_source | String | The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".  Note: This output exists only in the legacy version.| 
+| CrowdStrike.Detections.behaviors.ioc_description | String | The IOC description.  Note: This output exists only in the legacy version.| 
 | CrowdStrike.Detections.behaviors.user_name | String | The user name. | 
 | CrowdStrike.Detections.behaviors.user_id | String | The Security Identifier \(SID\) of the user in Windows. | 
 | CrowdStrike.Detections.behaviors.control_graph_id | String | The behavior hit key for the Threat Graph API. | 
@@ -2043,11 +2043,11 @@ Lists detection summaries.
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.process_blocked | Boolean | Whether the process is blocked. | 
 | CrowdStrike.Detections.behaviors.pattern_disposition_details.registry_operation_blocked | Boolean | Whether the registry operation is blocked. | 
 | CrowdStrike.Detections.email_sent | Boolean | Whether an email is sent about this detection. | 
-| CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior.  Note: This output exist only in the legacy version.| 
-| CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior.  Note: This output exist only in the legacy version.| 
-| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output exist only in the legacy version.| 
-| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100.  Note: This output exist only in the legacy version.| 
-| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output exist only in the legacy version.| 
+| CrowdStrike.Detections.first_behavior | Date | The datetime of the first behavior.  Note: This output exists only in the legacy version.| 
+| CrowdStrike.Detections.last_behavior | Date | The datetime of the last behavior.  Note: This output exists only in the legacy version.| 
+| CrowdStrike.Detections.max_confidence | Number | The highest confidence value of all behaviors. The value can be any integer between 1-100.  Note: This output exists only in the legacy version.| 
+| CrowdStrike.Detections.max_severity | Number | The highest severity value of all behaviors. Value can be any integer between 1-100.  Note: This output exists only in the legacy version.| 
+| CrowdStrike.Detections.max_severity_displayname | String | The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".  Note: This output exists only in the legacy version.| 
 | CrowdStrike.Detections.show_in_ui | Boolean | Whether the detection displays in the UI. | 
 | CrowdStrike.Detections.status | String | The status of the detection. | 
 | CrowdStrike.Detections.assigned_to_uid | String | The UID of the user for whom the detection is assigned.  Note: This output exists only in the legacy version.| 

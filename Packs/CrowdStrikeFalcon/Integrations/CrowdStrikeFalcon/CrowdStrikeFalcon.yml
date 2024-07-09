@@ -1868,7 +1868,7 @@ script:
       description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.behaviors.behavior_id
-      description: 'The ID of the behavior. Note: This output exist only in the legacy version.'
+      description: 'The ID of the behavior. Note: This output exists only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.filename
       description: The filename of the triggering process.
@@ -1907,7 +1907,7 @@ script:
       description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". Note: This output exist only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_description
-      description: "The IOC description. Note: This output exist only in the legacy version."
+      description: "The IOC description. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.user_name
       description: The user name.
@@ -1988,19 +1988,19 @@ script:
       description: Whether an email is sent about this detection.
       type: Boolean
     - contextPath: CrowdStrike.Detections.first_behavior
-      description: 'The datetime of the first behavior. Note: This output exist only in the legacy version.'
+      description: 'The datetime of the first behavior. Note: This output exists only in the legacy version.'
       type: Date
     - contextPath: CrowdStrike.Detections.last_behavior
-      description: 'The datetime of the last behavior. Note: This output exist only in the legacy version.'
+      description: 'The datetime of the last behavior. Note: This output exists only in the legacy version.'
       type: Date
     - contextPath: CrowdStrike.Detections.max_confidence
-      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100. Note: This output exist only in the legacy version.'
+      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100. Note: This output exists only in the legacy version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity
-      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output exist only in the legacy version.'
+      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output exists only in the legacy version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". Note: This output exist only in the legacy version.'
+      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". Note: This output exists only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
@@ -2009,10 +2009,10 @@ script:
       description: The status of the detection.
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_uid
-      description: "The UID of the user for whom the detection is assigned. Note: This output exist only in the legacy version."
+      description: "The UID of the user for whom the detection is assigned. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: "The human-readable name of the user to whom the detection is currently assigned. Note: This output exist only in the legacy version."
+      description: "The human-readable name of the user to whom the detection is currently assigned. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The domain of the Active Directory.
