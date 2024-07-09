@@ -1155,13 +1155,18 @@ def upload_incident_attachment_command(rs_client: SimpleClient, args: dict) -> C
 
 def list_task_instructions(rs_client: SimpleClient, args: dict) -> CommandResults:
     task_id = args.get('task_id')
-    response = rs_client.get(f'/tasks/{task_id}/instructions_ex')
-    # instructions = process_insturctions
+    try:
+        response = rs_client.get(f'/tasks/{task_id}/instructions_ex?text_content_output_format=objects_convert_text')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve instructions for task ID: {task_id}. Got error {e.response.text}'
+        )
     demisto.debug(f'{response=}')
     return CommandResults(
         outputs_prefix='Resilient.Task',
         outputs=response,
-        readable_output=response
+        readable_output=response.get('content', '')
     )
 
 
