@@ -29,6 +29,8 @@ Follow these steps for [client-credentials configuration:](https://xsoar.pan.dev
 4. Enter your Tenant ID in the **Token (Tenant ID)** parameter.
 5. Click **Test** to validate the URLs, token, and connection.
 
+To use The Azure Resource Graph, you must have appropriate rights in Azure role-based access control (Azure RBAC) with at least read access to the resources you want to query. No results are returned if you don't have at least read permissions to the Azure object or object group.
+
 ## Configure Azure Resource Graph on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
