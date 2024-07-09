@@ -640,10 +640,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: d37195ba-e2cb-48bb-8a05-0e8a6f7506c0
+    taskid: 3680f381-35df-4f13-850f-5f178d4f5499
     type: regular
     task:
-      id: d37195ba-e2cb-48bb-8a05-0e8a6f7506c0
+      id: 3680f381-35df-4f13-850f-5f178d4f5499
       version: -1
       name: Set inputs to indicator fields
       description: commands.local.cmd.set.incident
@@ -674,6 +674,8 @@ tasks:
         simple: ${inputs.EDL Action}
       genericexportindicatorsserviceindicatorslist:
         simple: ${inputs.EDL Indicators List}
+      genericexportindicatorsserviceindicatortype:
+        simple: ${inputs.EDL Indicator Type}
       genericexportindicatorsservicetag:
         simple: ${inputs.EDL Tag}
     separatecontext: false
