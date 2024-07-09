@@ -5,12 +5,9 @@ args:
 - description: Version number to compare against left side
   name: right
   required: true
-comment: 'Tests whether left side version number is equal to right side version number.
-
-
+comment: |-
+  Tests whether left side version number is equal to right side version number.
   Version numbers need to have at least a major and minor version component to be considered valid. E.g. 1.0
-
-  '
 commonfields:
   id: VersionEqualTo
   version: -1

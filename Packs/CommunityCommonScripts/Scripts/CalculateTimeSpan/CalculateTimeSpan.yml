@@ -3,33 +3,22 @@ args:
   name: start_time
 - description: Specifies the end of a time span. If no value supplied the current date and time will be used.
   name: end_time
-comment: 'Calculates the time span between two dates using Powershell''s `New-TimeSpan` command.
-
+comment: |-
+  Calculates the time span between two dates using Powershell's `New-TimeSpan` command.
 
   A timespan with a start date of "2022-04-02T15:42:48" and end date of "2022-04-12T16:55:07" would return the following:
 
-
   Days                          : 10
-
   Hours                        : 1
-
   Minutes                    : 12
-
   Seconds                   : 19
-
   Milliseconds           : 0
-
   Ticks                          : 8683390000000
-
   TotalDays                : 10.0502199074074
-
   TotalHours              : 241.205277777778
-
   TotalMinutes          : 14472.3166666667
-
   TotalSeconds         : 868339
-
-  TotalMilliseconds : 868339000'
+  TotalMilliseconds : 868339000
 commonfields:
   id: CalculateTimeSpan
   version: -1
