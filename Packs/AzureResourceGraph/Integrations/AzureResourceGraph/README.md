@@ -5,14 +5,9 @@ Azure Resource Graph is an Azure service designed to extend Azure Resource Manag
 To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal. To add the registration, see the [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
 
 ## Authentication
-There are two application authentication methods available:
-Follow your preferred method's guide on how to use the admin consent flow in order to receive your authentication information:
-
-* [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
-* [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
+To enable and configure authentication using self deployed app, follow the [Self-Deployed Application Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
-
 
 - After authorizing the Self-Deployed Application, you will get an ID, Token, and Key, which should be inserted in the integration instance configuration's corresponding fields. After giving consent, the application has to have a role assigned so it can access the relevant resources per subscription.
 - In order to assign a role to the application after consent was given:
@@ -26,7 +21,7 @@ For more details about the authentication used in this integration, see [Microso
 ### Client Credentials Flow
 
 ---
-Follow these steps for [client-credentials configuration](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow).
+Follow these steps for [client-credentials configuration:](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#client-credentials-flow).
 
 1. In the instance configuration, select the **Use a self-deployed Azure application - Client Credentials Authorization Flow** checkbox.
 2. Enter your Client ID in the **ID (Client ID)** parameter. 
@@ -46,7 +41,6 @@ Follow these steps for [client-credentials configuration](https://xsoar.pan.dev/
     | Token / Tenant ID |  | False |
     | ID / Client ID | Received from the authorization process or from the self-deployed configuration process. | False |
     | Key / Client Secret |  | False |
-    | Use a self-deployed Azure application | Check when authenticating using the Client Credentials flow. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
