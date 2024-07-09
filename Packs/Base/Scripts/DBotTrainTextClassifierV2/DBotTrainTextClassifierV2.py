@@ -1,11 +1,10 @@
+from CommonServerPython import *
 # pylint: disable=no-member
 import gc
-
+import demisto_ml
 import pandas as pd
 from collections import defaultdict, Counter
 from sklearn.model_selection import StratifiedKFold
-from CommonServerPython import *
-import demisto_ml
 
 ALL_LABELS = "*"
 GENERAL_SCORES = {

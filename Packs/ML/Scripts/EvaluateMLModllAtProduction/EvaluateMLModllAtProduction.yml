@@ -42,7 +42,7 @@ outputs:
 script: '-'
 subtype: python3
 type: python
-dockerimage: demisto/python3:3.11.9.101916
+dockerimage: demisto/pandas:1.0.0.102566
 runas: DBotWeakRole
 fromversion: 5.0.0
 tags:
