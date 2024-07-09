@@ -4,6 +4,7 @@ config case_sensitive = true
 // Jamf computers logs mapping
 | filter source_log_type = "computers"
 | alter 
+event_type = source_log_type,
 check_in = checkin,
 computer_created = created , //first connected 
 host_name = hostName ,
@@ -27,7 +28,8 @@ computer_plan = plan
 | alter last_connection_ipv6 = arrayindex(regextract(lastConnectionIp , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0)
 
 // XDM mapping
-| alter xdm.source.host.boot_time = check_in,
+| alter xdm.event.type = event_type,
+xdm.source.host.boot_time = check_in,
 xdm.source.agent.installation_time = computer_created, 
 xdm.source.host.hostname = host_name , 
 xdm.event.description = insights_status, 
