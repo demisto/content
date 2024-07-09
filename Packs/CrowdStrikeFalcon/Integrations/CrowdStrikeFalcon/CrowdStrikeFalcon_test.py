@@ -6965,8 +6965,8 @@ def test_error_handler():
 
 
 @pytest.mark.parametrize('Legacy_version, url_suffix', [
-    (False, """alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated
-    _timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"""),
+    (False,
+     "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27"),
     (True, '/detects/queries/detects/v1')
 ])
 def test_get_detection___url(mocker, Legacy_version, url_suffix):
@@ -6996,11 +6996,10 @@ Test Scenarios:
 
 @pytest.mark.parametrize('Legacy_version, url_suffix, data', [
     (False, "/alerts/entities/alerts/v3",
-    """{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"},
-    {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}],
-    "composite_ids": ["123"]}"""),
+     '{"action_parameters": [{"name": "show_in_ui", "value": "True"}, {"name": "assign_to_user_id", "value": "123"}, {"name": "update_status", "value": "resolved"}, {"name": "append_comment", "value": "comment"}], "composite_ids": ["123"]}'),  # noqa: E501
     (True, '/detects/entities/detects/v2',
-     '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')])
+     '{"ids": ["123"], "status": "resolved", "assigned_to_uuid": "123", "show_in_ui": "True", "comment": "comment"}')
+                                                             ])
 def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
     """
     Given:
@@ -7022,8 +7021,8 @@ def test_resolve_detection(mocker, Legacy_version, url_suffix, data):
 
 
 @pytest.mark.parametrize('Legacy_version, url_suffix, request_params', [
-    (False, """/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%
-    2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27""",
+    (False,
+     "/alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bupdated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
      {'sort': 'first_behavior.asc', 'offset': 5, 'limit': 3}),
     (True, '/detects/queries/detects/v1', {'sort': 'first_behavior.asc',
      'offset': 5, 'limit': 3, 'filter': "date_updated:>'2024-06-19T15:25:00Z'"})
