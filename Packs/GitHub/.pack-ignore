@@ -1,5 +1,5 @@
 [file:GitHub.yml]
-ignore=IN126,IN135,IN124
+ignore=IN126,IN135
 
 [file:GitHub_IAM.yml]
 ignore=BA108,BA109

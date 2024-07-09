@@ -82,7 +82,7 @@ def main():   # pragma: no cover
 
     # if there are more events than the default size, page through and get them all
     while len(audits) < total:
-        if body.get("page"):  # pagination for xsoar-6
+        if demisto_version.startswith("6"):  # pagination for xsoar-6
             body["page"] = page_num
         else:  # pagination for xsoar-8
             body["request_data"]["search_from"] = page_num  # type: ignore[index]
