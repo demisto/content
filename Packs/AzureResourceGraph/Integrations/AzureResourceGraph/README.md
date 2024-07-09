@@ -41,6 +41,8 @@ Follow these steps for [client-credentials configuration:](https://xsoar.pan.dev
     | Token / Tenant ID |  | False |
     | ID / Client ID | Received from the authorization process or from the self-deployed configuration process. | False |
     | Key / Client Secret |  | False |
+    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 

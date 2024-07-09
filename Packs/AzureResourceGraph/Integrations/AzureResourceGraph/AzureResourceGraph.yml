@@ -55,11 +55,6 @@ configuration:
   name: unsecure
   type: 8
   required: false
-- display: Use a self-deployed Azure Application
-  name: self_deployed
-  type: 8
-  required: false
-  additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
 description: 'Azure Resource Graph integration is designed to allow for executing Azure Resource Graph commands, like querying resource data.'
 display: Azure Resource Graph
 name: Azure Resource Graph

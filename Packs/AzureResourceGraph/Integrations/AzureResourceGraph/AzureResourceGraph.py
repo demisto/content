@@ -201,16 +201,12 @@ def pagination(response, page_size, page_number):
 
 def validate_connection_params(tenant: str = None,
                                auth_and_token_url: str = None,
-                               is_self_deployed: bool = False,
                                enc_key: str = None,
                                certificate_thumbprint: str = None,
                                private_key: str = None) -> None:
     if not tenant or not auth_and_token_url:
         raise DemistoException('Token and ID must be provided.')
 
-    if not is_self_deployed and not enc_key:
-        raise DemistoException('Key must be provided. For further information see '
-                               'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
     elif not enc_key and not (certificate_thumbprint and private_key):
         raise DemistoException('Key or Certificate Thumbprint and Private Key must be providedFor further information see '
                                'https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication')
@@ -228,9 +224,8 @@ def main():
     private_key = params.get('private_key')
     verify = not params.get('unsecure', False)
     proxy: bool = params.get('proxy', False)
-    self_deployed: bool = params.get('self_deployed', False)
 
-    validate_connection_params(tenant, auth_and_token_url, self_deployed, enc_key,
+    validate_connection_params(tenant, auth_and_token_url, enc_key,
                                certificate_thumbprint, private_key)
 
     ok_codes = (200, 201, 202, 204)
@@ -254,7 +249,7 @@ def main():
 
         client = AzureResourceGraphClient(
             base_url=base_url, tenant_id=tenant, auth_id=auth_and_token_url, enc_key=enc_key, app_name=APP_NAME,
-            verify=verify, proxy=proxy, self_deployed=self_deployed, ok_codes=ok_codes, server=server,
+            verify=verify, proxy=proxy, self_deployed=True, ok_codes=ok_codes, server=server,
             certificate_thumbprint=certificate_thumbprint, private_key=private_key)
         if command == 'azure-rg-auth-reset':
             return_results(reset_auth())

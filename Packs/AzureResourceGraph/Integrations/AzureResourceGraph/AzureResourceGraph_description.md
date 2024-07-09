@@ -3,12 +3,7 @@ Azure Resource Graph is an Azure service designed to extend Azure Resource Manag
 Full documentation for this integration is available in the [reference docs](https://xsoar.pan.dev/docs/reference/integrations/azure-resource-graph).
 
 
-
-There are two application authentication methods available.
-Follow your prefered method's guide on how to use the admin consnt flow in order to recieve your authentication information:
-
-* [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
-* [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)
+Follow the [Self-Deployed Application Authentication guide](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application)  to configure and enable authentication.
 
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
