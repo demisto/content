@@ -26,6 +26,7 @@ def test_extract_indicators(mocker):
     results = extract_indicators_from_file(args)
     assert {'Contents': '{"IP": ["1.1.1.1"]}',
             'ContentsFormat': 'text',
+            'EntryContext': {'IP': ['1.1.1.1']},
             'HumanReadable': '### IP\n- 1.1.1.1\n',
             'Type': 1} == results
 
