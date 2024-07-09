@@ -1273,20 +1273,20 @@ reference = "pypi-public"
 
 [[package]]
 name = "google-cloud-compute"
-version = "1.19.0"
+version = "1.19.1"
 description = "Google Cloud Compute API client library"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "google-cloud-compute-1.19.0.tar.gz", hash = "sha256:a07b3408b3f77786dcb196669ff3767bc51080718a7c2d3fd779defc8d817b4d"},
-    {file = "google_cloud_compute-1.19.0-py2.py3-none-any.whl", hash = "sha256:48d5582dd257fc817113556ab40990ec7a50fb6b2e341bc8a55ef90e2e66501d"},
+    {file = "google-cloud-compute-1.19.1.tar.gz", hash = "sha256:6b4a5b86c2cbbcda5dd90f4e338c5103f3e84604ecfb002d4ecb3a0c5d41531b"},
+    {file = "google_cloud_compute-1.19.1-py2.py3-none-any.whl", hash = "sha256:9744c6b393a8b41d972e163d2f780a6c24c8bc706d091dfc60a7b6013de49e87"},
 ]
 
 [package.dependencies]
 google-api-core = {version = ">=1.34.1,<2.0.dev0 || >=2.11.dev0,<3.0.0dev", extras = ["grpc"]}
 google-auth = ">=2.14.1,<2.24.0 || >2.24.0,<2.25.0 || >2.25.0,<3.0.0dev"
 proto-plus = ">=1.22.3,<2.0.0dev"
-protobuf = ">=3.19.5,<3.20.0 || >3.20.0,<3.20.1 || >3.20.1,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<5.0.0dev"
+protobuf = ">=3.20.2,<4.21.0 || >4.21.0,<4.21.1 || >4.21.1,<4.21.2 || >4.21.2,<4.21.3 || >4.21.3,<4.21.4 || >4.21.4,<4.21.5 || >4.21.5,<6.0.0dev"
 
 [package.source]
 type = "legacy"
@@ -5307,4 +5307,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8,<3.11"
-content-hash = "c2a839dc9d312d1f82e74176f71326389d82ce6d77b099d65e3eccf4847c4624"
+content-hash = "15123ac8849bceb7b3579f730442fc00dd99278ed4614a81d526059149d88d3d"
