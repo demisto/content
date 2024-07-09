@@ -2204,14 +2204,16 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
         last_run_time = datetime.fromisoformat(last_run_notable_users).astimezone(timezone.utc)
         difference = current_time - last_run_time
         difference_minutes = difference.total_seconds() / 60
-
         fetch_interval = arg_to_number(args.get("notable_users_fetch_interval")) or 60
+        if fetch_interval % 60 != 0:
+            raise ValueError("The interval must be specified in whole hours, such as 1 hour, 2 hours, etc.")
+
         demisto.debug(f"Difference of {difference_minutes} minutes between the current time and the last run notable users")
         if difference_minutes <= fetch_interval:  # Check if the time interval is past.
             return [], last_run_obj
 
         else:
-            time_period = "1 hours"
+            time_period = f"{fetch_interval/60} hours"
 
     else:  # In the first run
         time_period = args.get("notable_users_first_fetch", "3 months")
