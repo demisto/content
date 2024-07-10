@@ -5489,6 +5489,7 @@ def build_logs_query(address_src: Optional[str], address_dst: Optional[str], ip_
 def panorama_query_logs(log_type: str, number_of_logs: str, query: str, address_src: str, address_dst: str, ip_: str,
                         zone_src: str, zone_dst: str, time_generated: str, time_generated_after: str, action: str,
                         port_dst: str, rule: str, url: str, filedigest: str, show_detail: str = 'no'):
+    demisto.debug(f'In panorama_query_logs')
     params = {
         'type': 'log',
         'log-type': log_type,
@@ -5533,6 +5534,7 @@ def panorama_query_logs_command(args: dict):
     """
     Query logs
     """
+    demisto.debug(f'In panorama_query_logs_command {args=}')
     log_type = args.get('log-type')
     number_of_logs = arg_to_number(args.get('number_of_logs', 100))
     query = args.get('query')
@@ -5555,6 +5557,7 @@ def panorama_query_logs_command(args: dict):
     show_detail = args.get('show-detail', 'no') or 'no'
 
     if not job_id:
+        demisto.debug('In panorama_query_logs_command, not job_id')
         if query and (address_src or address_dst or zone_src or zone_dst
                       or time_generated or time_generated_after or action or port_dst or rule or url or filedigest):
             raise Exception('Use the free query argument or the fixed search parameters arguments to build your query.')
@@ -5581,6 +5584,7 @@ def panorama_query_logs_command(args: dict):
             'LogType': log_type,
             'Message': result.ns.response.result.msg.line
         }
+        demisto.debug(f'{query_logs_output=}')
 
         command_results = CommandResults(
             raw_response=result.raw,
@@ -5590,6 +5594,7 @@ def panorama_query_logs_command(args: dict):
             readable_output=tableToMarkdown('Query Logs:', query_logs_output, ['JobID', 'Status'], removeNull=True)
         )
 
+        demisto.debug('Creating a PollResult continue_to_poll=True')
         poll_result = PollResult(
             response=command_results,
             continue_to_poll=True,
@@ -5609,6 +5614,7 @@ def panorama_query_logs_command(args: dict):
     else:
         # Only used in subsequent polling executions
 
+        demisto.debug(f'In panorama_query_logs_command, {job_id=}')
         parsed: PanosResponse = PanosResponse(
             panorama_get_traffic_logs(job_id),
             illegal_chars=illegal_chars,
@@ -5631,8 +5637,10 @@ def panorama_query_logs_command(args: dict):
             'JobID': job_id,
             'LogType': log_type
         }
+        demisto.debug(f'In else {query_logs_output=}')
         readable_output = None
         if parsed.ns.response.result.job.status.upper() == 'FIN':
+            demisto.debug("parsed.ns.response.result.job.status.upper() == 'FIN'")
             query_logs_output['Status'] = 'Completed'
             if parsed.ns.response.result.log.logs.count == '0':
                 readable_output = f'No {log_type} logs matched the query.'
@@ -5646,6 +5654,8 @@ def panorama_query_logs_command(args: dict):
                     ['TimeGenerated', 'SourceAddress', 'DestinationAddress', 'Application', 'Action', 'Rule', 'URLOrFilename'],
                     removeNull=True
                 )
+            demisto.debug(f'{readable_output=}')
+        demisto.debug(f"parsed.ns.response.result.job.status != 'FIN' = {parsed.ns.response.result.job.status != 'FIN'}")
 
         poll_result = PollResult(
             response=CommandResults(
