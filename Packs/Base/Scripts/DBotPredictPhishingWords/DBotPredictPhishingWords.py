@@ -3,39 +3,15 @@ from CommonServerPython import *
 from string import punctuation
 import demisto_ml
 import numpy as np
-import tempfile
+import logging
+
+# Suppress logging for a specific library
+logging.getLogger('transformers').setLevel(logging.ERROR)
 
 FASTTEXT_MODEL_TYPE = 'FASTTEXT_MODEL_TYPE'
 TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
-BERT_TOKENIZER_ERROR = (
-    "The tokenizer class you load from this checkpoint is not the same type as the class this function is called from."
-    " It may result in unexpected tokenization. \nThe tokenizer class you load from this checkpoint is 'BertTokenizer'. "
-    "\nThe class this function is called from is 'DistilBertTokenizer'.\n"
-)
 
-
-class StderrRedirect:
-    '''Context manager to redirect stderr.'''
-    temp_stderr: Any
-    old_stderr: int
-    error: str
-
-    def __enter__(self):
-        demisto.debug('entering StderrRedirect')
-        self.temp_stderr = tempfile.TemporaryFile()
-        self.old_stderr = os.dup(sys.stderr.fileno())  # make a copy of stderr
-        os.dup2(self.temp_stderr.fileno(), sys.stderr.fileno())  # redirect stderr to the temporary file
-        return self
-
-    def __exit__(self, exc_type, exc_value, exc_traceback):
-        demisto.debug(f'exiting StderrRedirect: {exc_type=}, {exc_value=}, {exc_traceback=}')
-        self.temp_stderr.seek(0)
-        self.error = self.temp_stderr.read().decode()
-        demisto.debug(f'stderr: {self.error}')
-        os.dup2(self.old_stderr, sys.stderr.fileno())  # restore stderr
-        os.close(self.old_stderr)
-        self.temp_stderr.close()
 
 
 def OrderedSet(iterable):
@@ -130,15 +106,6 @@ def predict_phishing_words(model_name, model_store_type, email_subject, email_bo
     if model_type not in [FASTTEXT_MODEL_TYPE, TORCH_TYPE, UNKNOWN_MODEL_TYPE]:
         model_type = UNKNOWN_MODEL_TYPE
 
-    # suppress loading error
-    old_loader = demisto_ml.DistilBertTokenizer.from_pretrained
-    def new_loader(*args):
-        with StderrRedirect() as s:
-            res = old_loader(*args)
-        if s.error and s.error != BERT_TOKENIZER_ERROR:
-            raise DemistoException(f"Error while loading DistilBertTokenizer: {s.error}")
-        return res
-    demisto_ml.DistilBertTokenizer.from_pretrained = new_loader
     phishing_model = demisto_ml.phishing_model_loads_handler(model_data, model_type)
 
     is_model_applied_on_a_single_incidents = isinstance(email_subject, str) and isinstance(email_body, str)
