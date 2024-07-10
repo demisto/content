@@ -7,24 +7,6 @@
     "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment in the \"Cortex XSOAR Administrator Guide\" -> \"Set up Your Use Case with the Deployment Wizard\".",
     "dependency_packs": [
       {
-        "name": "Sandbox",
-        "min_required": 0,
-        "packs": [
-          {
-            "name": "Palo_Alto_Networks_WildFire",
-            "display_name": "Palo Alto Networks WildFire"
-          },
-          {
-            "name": "CrowdStrikeFalconX",
-            "display_name": "CrowdStrike Falcon X"
-          },
-          {
-            "name": "JoeSecurity",
-            "display_name": "Joe Security"
-          }
-        ]
-      },
-      {
         "name": "Messaging",
         "min_required": 0,
         "packs": [
