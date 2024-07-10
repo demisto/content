@@ -1661,7 +1661,7 @@ There is no context output for this command.
 
 #### Description
 
-Rerun the authentication process.
+Run this command if for some reason you need to rerun the authentication process.
 
 #### Permissions
 
@@ -1680,18 +1680,6 @@ There is no input for this command.
 
 There is no context output for this command.
 
-
-#### Examples
-
-
-
-##### Human Readable Output
-
->#### Sent email
-
->|attachments|from|subject|to|
->|---|---|---|---|
->|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
 
 
 
