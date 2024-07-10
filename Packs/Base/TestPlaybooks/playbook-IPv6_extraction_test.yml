@@ -267,10 +267,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "73":
     id: "73"
-    taskid: e1e30599-41bf-4347-87e5-785994b26f55
+    taskid: 24631531-2e39-476f-8ba3-99ad7a897d46
     type: regular
     task:
-      id: e1e30599-41bf-4347-87e5-785994b26f55
+      id: 24631531-2e39-476f-8ba3-99ad7a897d46
       version: -1
       name: Set valid IPv6s
       description: Sets a value into the context with the given context key
@@ -285,7 +285,7 @@ tasks:
       key:
         simple: valid_ipv6s
       value:
-        simple: '"fe80::1","::1","2001:0db8:0000:0000:0000:0000:0000:0001","2001:db8:1:0:0:0:0:1","::ffff:192.0.2.1","ff02::1:ff00:1","ff02:1::ff00:1","ff02:1:ff00::1","fe80::7:8%eth1"'
+        simple: '"fe80::1","::1","2001:0db8:0000:0000:0000:0000:0000:0001","2001:db8:1:0:0:0:0:1","::ffff:192.0.2.1","ff02::1:ff00:1","ff02:1::ff00:1","ff02:1:ff00::1","fe80::7:8%eth0"'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -418,10 +418,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "85":
     id: "85"
-    taskid: 90fe2b3f-7206-4972-820d-7056f58e9884
+    taskid: 70325c9b-121a-45e1-8334-e7044946f672
     type: condition
     task:
-      id: 90fe2b3f-7206-4972-820d-7056f58e9884
+      id: 70325c9b-121a-45e1-8334-e7044946f672
       version: -1
       name: local IPv6 with zone identifier - fe80::7:8%eth0
       type: condition
@@ -441,7 +441,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: fe80::7:8%eth1
+              simple: fe80::7:8%eth0
     continueonerrortype: ""
     view: |-
       {
