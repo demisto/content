@@ -386,11 +386,6 @@ script:
     - auto: PREDEFINED
       description: 'A comma-separated list of threat classifications to search, for example: "Malware", "Network", "Benign".'
       name: classifications
-      predefined:
-      - Engine
-      - Static
-      - Cloud
-      - Behavioral
     - description: Risk level threshold to retrieve (1-10). Relevant for API version 2.0 only.
       name: rank
     - description: 'A comma-separated list of site IDs to search for threats, for example: "225494730938493804,225494730938493915".'
