@@ -4666,10 +4666,10 @@ ARGS_vulnerability = [
                         "impact_score": 1.4}}
          ]
          },
-        '### List Vulnerabilities\n' \
-        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n' \
-        '|---|---|---|---|---|---|---|\n' \
-        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n' \
+        '### List Vulnerabilities\n'
+        '|ID|Severity|Status|Base Score|Published Date|Impact Score|Exploitability Score|\n'
+        '|---|---|---|---|---|---|---|\n'
+        '| cveid1 | LOW | open | 3.3 | 2021-09-15T12:15:00Z |  |  |\n'
         '| idcve4 |  | open |  | 2022-10-11T19:15:00Z | 1.4 | 1.8 |\n'  # args list
 
     )

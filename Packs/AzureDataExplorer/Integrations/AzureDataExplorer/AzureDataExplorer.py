@@ -15,7 +15,9 @@ DEFAULT_PAGE_NUMBER = '1'
 DEFAULT_LIMIT = '50'
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S'
 REQUEST_BASE_TIMEOUT = 20
-GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE, 'Authorization Code': AUTHORIZATION_CODE}
+GRANT_BY_CONNECTION = {'Device Code': DEVICE_CODE,
+                       'Authorization Code': AUTHORIZATION_CODE,
+                       'Client Credentials': CLIENT_CREDENTIALS}
 
 
 class DataExplorerClient:
@@ -40,13 +42,15 @@ class DataExplorerClient:
 
         self.cluster_url = cluster_url
         self.host = cluster_url.split("https://")[1]
-        self.scope = f'{cluster_url}/user_impersonation offline_access user.read' if 'Authorization' not in connection_type \
+
+        self.scope = f'{cluster_url}/user_impersonation offline_access user.read' if 'Device Code' in connection_type \
             else f'{cluster_url}/.default'
         self.client_activity_prefix = client_activity_prefix
         client_args = assign_params(
             self_deployed=True,
             auth_id=client_id,
-            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token',
+            token_retrieval_url='https://login.microsoftonline.com/organizations/oauth2/v2.0/token' if 'Device Code' in
+            connection_type else None,
             grant_type=GRANT_BY_CONNECTION[connection_type],
             base_url=cluster_url,
             verify=verify,
@@ -549,17 +553,17 @@ def test_module(client: DataExplorerClient) -> str:
     """
     # This  should validate all the inputs given in the integration configuration panel,
     # either manually or by using an API that uses them.
-    if 'Authorization' not in client.connection_type:
-        raise DemistoException(
-            "Please enable the integration and run `!azure-data-explorer-auth-start`"
-            "and `!azure-data-explorer-auth-complete` to log in."
-            "You can validate the connection by running `!azure-data-explorer-auth-test`\n"
-            "For more details press the (?) button.")
-
+    if "Device Code" in client.connection_type:
+        raise DemistoException("Please enable the integration and run `!azure-data-explorer-auth-start`"
+                               "and `!azure-data-explorer-auth-complete` to log in."
+                               "You can validate the connection by running `!azure-data-explorer-auth-test`\n"
+                               "For more details press the (?) button.")
+    elif client.connection_type == 'Client Credentials':
+        client.ms_client.get_access_token()
+        return 'ok'
     else:
         raise Exception("When using user auth flow configuration, "
-                        "Please enable the integration and run the "
-                        "!azure-data-explorer-auth-test command in order to test it")
+                        "Please enable the integration and run the !azure-data-explorer-auth-test command in order to test it")
 
 
 def main() -> None:
