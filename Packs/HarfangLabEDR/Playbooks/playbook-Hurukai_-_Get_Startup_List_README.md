@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Hurukai - Get Startup List](./doc_files/Hurukai_-_Get_Startup_List.png)
+![Hurukai - Get Startup List](../doc_files/Hurukai_-_Get_Startup_List.png)
