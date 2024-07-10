@@ -1,0 +1,54 @@
+[
+	{
+		"id": "Sekoia XDR",
+		"version": 4,
+		"cacheVersn": 0,
+		"modified": "2024-07-08T14:03:22.887547824Z",
+		"created": "0001-01-01T00:00:00Z",
+		"sizeInBytes": 0,
+		"packID": "",
+		"packName": "",
+		"itemVersion": "",
+		"fromServerVersion": "",
+		"toServerVersion": "",
+		"definitionId": "",
+		"vcShouldIgnore": false,
+		"vcShouldKeepItemLegacyProdMachine": false,
+		"commitMessage": "",
+		"shouldCommit": false,
+		"locked": false,
+		"name": "Sekoia XDR",
+		"prevName": "Sekoia XDR",
+		"color": "#CFD0D0",
+		"playbookId": "665d55dc-9455-4745-8a9b-e72374b873a5",
+		"hours": 0,
+		"days": 0,
+		"weeks": 0,
+		"hoursR": 0,
+		"daysR": 0,
+		"weeksR": 0,
+		"system": false,
+		"readonly": false,
+		"default": false,
+		"autorun": true,
+		"preProcessingScript": "",
+		"closureScript": "0fa7a002-c00c-45c8-80ab-a7ebcfaa11f7",
+		"disabled": false,
+		"reputationCalc": 2,
+		"onChangeRepAlg": 3,
+		"layout": "75ca5529-cd6c-4f44-8baa-1adbb262efcd",
+		"detached": false,
+		"extractSettings": {
+			"mode": "Specific",
+			"fieldCliNameToExtractSettings": {
+				"sekoiaalerturl": {
+					"extractAsIsIndicatorTypeId": "",
+					"isExtractingAllIndicatorTypes": false,
+					"extractIndicatorTypesIDs": [
+						"urlRep"
+					]
+				}
+			}
+		}
+	}
+]
