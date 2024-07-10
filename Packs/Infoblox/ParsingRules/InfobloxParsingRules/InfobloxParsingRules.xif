@@ -39,7 +39,7 @@ filter // Exclude DNS Queries & Responses events timestamp format
 | alter // Converts the previous year string representation to datetime format 
     tmp_previous_year_timestamp_datetime = if(tmp_previous_year_timestamp_string != null, parse_timestamp("%Y %b %e %H:%M:%S", tmp_previous_year_timestamp_string), null)
 | alter // Set to the relevant timestamp 
-    _time = coalesce(tmp_previous_year_timestamp_datetime, tmp_current_year_timestamp_datetime, _insert_time) 
+    _time = coalesce(tmp_previous_year_timestamp_datetime, tmp_current_year_timestamp_datetime) 
 | fields - tmp*; // Remove all temporary util fields 
 
 /* 

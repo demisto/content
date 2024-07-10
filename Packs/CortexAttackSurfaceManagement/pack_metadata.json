@@ -2,7 +2,7 @@
     "name": "Cortex Attack Surface Management",
     "description": "Content for working with Attack Surface Management (ASM).",
     "support": "xsoar",
-    "currentVersion": "1.7.38",
+    "currentVersion": "1.7.42",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -88,6 +88,10 @@
         "MicrosoftGraphUser": {
             "mandatory": false,
             "display_name": "Microsoft Graph User"
+        },
+        "Venafi": {
+            "mandatory": false,
+            "display_name": "Venafi"
         }
     },
     "marketplaces": [
@@ -110,6 +114,7 @@
         "PAN-OS",
         "Azure-Enrichment-Remediation",
         "Jira",
-        "Tenable_io"
+        "Tenable_io",
+        "Venafi"
     ]
 }

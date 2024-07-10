@@ -1,0 +1,19 @@
+{
+    "id": "team_id",
+    "create_at": 1696486762638,
+    "update_at": 1696486762638,
+    "delete_at": 0,
+    "display_name": "display_name",
+    "name": "team_name",
+    "description": "mock team",
+    "email": "mock email",
+    "type": "O",
+    "company_name": "company_name",
+    "allowed_domains": "",
+    "invite_id": "invite_id",
+    "allow_open_invite": false,
+    "scheme_id": "scheme_id",
+    "group_constrained": false,
+    "policy_id": null,
+    "cloud_limits_archived": false
+}
