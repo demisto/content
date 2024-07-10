@@ -6964,7 +6964,7 @@ def test_error_handler():
         assert e.message == f'Error in API call to CrowdStrike Falcon: code: {status_code} - reason: {reason}'
 
 
-@pytest.mark.parametrize('Legacy_version, url_suffix, excepted_len', [
+@pytest.mark.parametrize('Legacy_version, url_suffix, expected_len', [
     (False,
      "alerts/queries/alerts/v2?filter=product%3A%27epp%27%2Btype%3A%27ldt%27%2Bcreated_timestamp%3A%3E%272024-06-19T15%3A25%3A00Z%27",
      2),
