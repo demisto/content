@@ -1731,7 +1731,7 @@
 	},
 	"fromServerVersion": "",
 	"group": "incident",
-	"id": "75ca5529-cd6c-4f44-8baa-1adbb262efcd",
+	"id": "Sekoia XDR Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",
@@ -1747,5 +1747,6 @@
 	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "",
-	"version": -1
+	"version": -1,
+    "fromVersion": "6.10.0"
 }

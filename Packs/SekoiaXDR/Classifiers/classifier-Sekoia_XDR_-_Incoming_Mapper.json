@@ -6,7 +6,7 @@
 	"description": "Maps incoming Sekoia XDR incidents fields.\n",
 	"feed": false,
 	"fromServerVersion": "6.0.0",
-	"id": "a373b84c-1581-4b69-880b-38c3db4a5672",
+	"id": "Sekoia XDR - Incoming Mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
@@ -382,5 +382,6 @@
 	"transformer": {},
 	"type": "mapping-incoming",
 	"unclassifiedCases": null,
-	"version": -1
+	"version": -1,
+    "fromVersion": "6.10.0"
 }
