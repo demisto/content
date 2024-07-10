@@ -182,33 +182,41 @@ def fetch_events(client: Client,
     Returns:
         Tuple with the next run data and the list of events fetched
     """
+    demisto.debug(f'last_run: {last_run}.')
+    last_fetched_id = last_run.get('prev_id')
+    last_fetched_creation_date = last_run.get('prev_date', DEFAULT_LOOKBACK)
 
     all_events = []
+    
     #formatted_now = datetime.now().strftime(DATE_FORMAT)
     # since we allow the user to set the max_events_per_fetch to 50,000, but the API only allows 10000 events per call
     # we need to make multiple calls to the API to fetch all the events
-    while max_events_per_fetch > 0:
+    while max_events_per_fetch > 0:     #TODO change name
         current_batch_to_fetch = min(max_events_per_fetch, 10000)
         demisto.debug(f'trying to fetch {current_batch_to_fetch} events.')
+        demisto.debug(f'last_fetched_id = {last_fetched_id}.')
+
         events = client.search_events(
-            prev_id=last_run.get('prev_id'),
-            from_date= DEFAULT_LOOKBACK,      #TODO if prev_id is provided, we will ignore the time
+            prev_id=last_fetched_id,       #the first cycle will use the last id from the last run
+            from_date= last_fetched_creation_date,
             limit=current_batch_to_fetch,
         )
         demisto.debug(f'Successfully fetched {len(events)} events in this cycle.')
-        if not events:
-            demisto.debug(f'No more events to fetch, return for next run: {last_run}.')
-            demisto.debug(f'Sum of all events: {len(all_events)}.')
-            return last_run, all_events
-        all_events.extend(events)
-        last_fetched_event = events[-1]
-        last_fetched_id = last_fetched_event['id']
-        last_fetched_creation_date = last_fetched_event['created']
-        demisto.debug(f'creation time of last event per cycle: {last_fetched_creation_date} ')
-        last_run = {'prev_id': last_fetched_id}
-        max_events_per_fetch -= len(events)
-        demisto.debug(f'{max_events_per_fetch} events are left to fetch in the next calls.')
-    return last_run, all_events
+
+        if events:
+            all_events.extend(events)
+            last_fetched_event = events[-1]
+            last_fetched_id = last_fetched_event['id']
+            last_fetched_creation_date = last_fetched_event['created']
+            demisto.debug(f"last event = {last_fetched_event}")
+            demisto.debug(f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
+            max_events_per_fetch -= len(events)
+            demisto.debug(f'{max_events_per_fetch} events are left to fetch in the next calls.')
+
+
+    next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
+    demisto.debug(f'Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.')
+    return next_run, all_events
 
 
 ''' MAIN FUNCTION '''
