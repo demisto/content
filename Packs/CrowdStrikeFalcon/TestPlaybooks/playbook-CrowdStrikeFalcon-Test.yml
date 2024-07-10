@@ -1,7 +1,7 @@
 id: Test - CrowdStrike Falcon
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Test - CrowdStrike Falcon
+fromversion: 5.0.0
 description: Crowd strike test playbook.
 starttaskid: "0"
 tasks:
@@ -15,6 +15,7 @@ tasks:
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "9"
@@ -563,8 +564,7 @@ tasks:
       id: e536c196-fc33-4192-889e-b09d34158767
       version: -1
       name: Get just created test IOC
-      description: Gets the full definition of one or more indicators that you are
-        watching.
+      description: Gets the full definition of one or more indicators that you are watching.
       script: '|||cs-falcon-get-custom-ioc'
       type: regular
       iscommand: true
@@ -1578,6 +1578,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -2143,6 +2144,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "43"
@@ -2389,6 +2391,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "64"
@@ -2416,8 +2419,7 @@ tasks:
       id: dd74d632-9ffb-4fdf-8178-bd7b3106a4f9
       version: -1
       name: RTR Get List Processes
-      description: Executes an RTR active-responder ps command to get a list of active
-        processes across the given host.
+      description: Executes an RTR active-responder ps command to get a list of active processes across the given host.
       script: '|||cs-falcon-rtr-list-processes'
       type: regular
       iscommand: true
@@ -2452,8 +2454,7 @@ tasks:
       id: d77b6f1b-6f85-4c76-88f8-c97c5db428b9
       version: -1
       name: RTR Get List Netstat
-      description: Executes an RTR active-responder netstat command to get a list
-        of network status and protocol statistics across the given host.
+      description: Executes an RTR active-responder netstat command to get a list of network status and protocol statistics across the given host.
       script: '|||cs-falcon-rtr-list-network-stats'
       type: regular
       iscommand: true
@@ -2488,8 +2489,7 @@ tasks:
       id: 761b07cb-5444-4b26-8fcc-4b072681e9f3
       version: -1
       name: RTR Read Registry
-      description: Executes an RTR active-responder read registry keys command across
-        the given hosts. This command is valid only for Windows hosts.
+      description: Executes an RTR active-responder read registry keys command across the given hosts. This command is valid only for Windows hosts.
       script: '|||cs-falcon-rtr-read-registry'
       type: regular
       iscommand: true
@@ -2526,9 +2526,7 @@ tasks:
       id: 7ccc3330-6fec-4288-8c6e-08946d7eedae
       version: -1
       name: RTR Get List Scheduled Tasks
-      description: Executes an RTR active-responder netstat command to get a list
-        of scheduled tasks across the given host. This command is valid only for Windows
-        hosts.
+      description: Executes an RTR active-responder netstat command to get a list of scheduled tasks across the given host. This command is valid only for Windows hosts.
       script: '|||cs-falcon-rtr-list-scheduled-tasks'
       type: regular
       iscommand: true
@@ -2563,9 +2561,7 @@ tasks:
       id: a49fd9bd-f143-4436-81de-c06361f72c80
       version: -1
       name: cs-falcon-spotlight-search-vulnerability
-      description: Retrieve vulnerability details according to the selected filter.
-        Each request requires at least one filter parameter. Supported with CrowdStrike
-        Spotlight license.
+      description: Retrieve vulnerability details according to the selected filter. Each request requires at least one filter parameter. Supported with CrowdStrike Spotlight license.
       script: '|||cs-falcon-spotlight-search-vulnerability'
       type: regular
       iscommand: true
@@ -2642,8 +2638,7 @@ tasks:
       id: 2b658ff1-2912-4861-873c-ddc772c8bf8f
       version: -1
       name: cs-falcon-spotlight-list-host-by-vulnerability
-      description: Retrieve vulnerability details for a specific ID and host. Supported
-        with CrowdStrike Spotlight license.
+      description: Retrieve vulnerability details for a specific ID and host. Supported with CrowdStrike Spotlight license.
       script: '|||cs-falcon-spotlight-list-host-by-vulnerability'
       type: regular
       iscommand: true
@@ -2913,8 +2908,7 @@ tasks:
       id: 5a874662-21cb-4e91-8bc2-7097c7cbcc93
       version: -1
       name: Update ML exclusion
-      description: Updates an ML exclusions. At least one argument is required in
-        addition of the ID argument.
+      description: Updates an ML exclusions. At least one argument is required in addition of the ID argument.
       script: '|||cs-falcon-update-ml-exclusion'
       type: regular
       iscommand: true
@@ -2953,8 +2947,7 @@ tasks:
       id: 1d3826b9-4b89-486f-8771-81a8229aacc5
       version: -1
       name: Search ML exclusion
-      description: Get a list of ML Exclusions by specifying their IDs, value, or
-        a specific filter.
+      description: Get a list of ML Exclusions by specifying their IDs, value, or a specific filter.
       script: '|||cs-falcon-search-ml-exclusion'
       type: regular
       iscommand: true
@@ -3111,8 +3104,7 @@ tasks:
       id: 2cfcf33f-27a2-4dbc-82ba-51a1b5682dda
       version: -1
       name: Update IOA exclusion
-      description: Updates an IOA exclusion. At least one argument is required in
-        addition of the ID argument.
+      description: Updates an IOA exclusion. At least one argument is required in addition of the ID argument.
       script: '|||cs-falcon-update-ioa-exclusion'
       type: regular
       iscommand: true
@@ -3303,6 +3295,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "80"
@@ -3373,6 +3366,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "98"
@@ -4101,6 +4095,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "128"
@@ -4255,6 +4250,7 @@ tasks:
       type: title
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "132"
@@ -4450,8 +4446,7 @@ tasks:
       id: 5eaa7d26-e898-4f1f-8680-1501db00e59a
       version: -1
       name: cs-falcon-cspm-update-policy_settings
-      description: Updates a policy setting - can be used to override policy severity
-        or to disable a policy entirely.
+      description: Updates a policy setting - can be used to override policy severity or to disable a policy entirely.
       script: '|||cs-falcon-cspm-update-policy_settings'
       type: regular
       iscommand: true
