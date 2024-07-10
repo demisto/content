@@ -45,7 +45,7 @@ configuration:
   type: 13
   required: false
 - section: Collect
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  display: First fetch timestamp (<sign + or -><number><time unit>, e.g., -7d, -1h)
   name: first_fetch
   defaultvalue: -7d
   type: 0
@@ -429,7 +429,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     outputs:
     - contextPath: SekoiaXDR.Alert.short_id
       description: Short ID of the alert.
@@ -440,17 +440,16 @@ script:
     - contextPath: SekoiaXDR.Alert.urgency
       description: urgency of the alert.
       type: string
-    description: Command to retrieve a specific Alert by uuid or short_id from Sekoia XDR.
+    description: Command to retrieve a specific alert by uuid or short_id from Sekoia XDR.
   - name: sekoia-xdr-events-execute-query
     arguments:
     - name: earliest_time
       required: true
-      description: "Valid expressions: -3d: from three days ago, -2w: from two weeks before now, -7d: seven days before now."
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z"
     - name: lastest_time
       required: true
-      description: "Valid expressions: +3d: three days in the future, +2w: two weeks in the future, now: current time."
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z"
     - name: query
-      required: true
       defaultValue: ""
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
     - name: max_last_events
@@ -593,7 +592,7 @@ script:
       description: A boolean indicating whether the filter is excluded or not.
     - contextPath: SekoiaXDR.Events.Status.filters.disabled
       description: A boolean indicating whether the filter is disabled or not.
-    description: Command to query the status of the search job "sekoia-xdr-execute-events-query" previously executed on Sekoia XDR.
+    description: Command to query the status of the search job on Sekoia XDR.
   - name: sekoia-xdr-events-results-query
     arguments:
     - name: uuid
@@ -608,12 +607,11 @@ script:
     arguments:
     - name: earliest_time
       required: true
-      description: "Valid expressions: -3d: from three days ago, -2w: from two weeks before now, -7d: seven days before now."
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z"
     - name: lastest_time
       required: true
-      description: "Valid expressions: +3d: three days in the future, +2w: two weeks in the future, now: current time."
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z"
     - name: query
-      required: true
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
       defaultValue: ""
     - name: max_last_events
@@ -685,7 +683,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     - name: status
       auto: PREDEFINED
       predefined:
@@ -696,7 +694,7 @@ script:
       description: The status you want to apply. (Acknowledged, Rejected, Ongoing, Closed)).
       required: true
     - name: comment
-      description: A comment to describe why the alert status has changed.
+      description: Comment to describe why the alert status has changed.
     description: Command to update the status of a specific Alert by uuid or short_id.
   - name: sekoia-xdr-post-comment-alert
     arguments:
@@ -713,7 +711,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     outputs:
     - contextPath: SekoiaXDR.Comments.total
       description: The total number of items in the comments.
@@ -736,7 +734,7 @@ script:
     arguments:
     - name: id
       required: true
-      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
     outputs:
     - contextPath: SekoiaXDR.StatusTransitions.actions.name
       description: The name of the action.
@@ -748,10 +746,10 @@ script:
   - name: sekoia-xdr-get-cases-alert
     arguments:
     - name: alert_id
-      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
+      description: 'The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga".'
       required: true
     - name: case_id
-      description: 'The short_id of the case to retrieve. i.e: "CAQNurTJM8q2".'
+      description: 'The short_id of the case to retrieve from sekoia plateform or from this command without case_is param i.e: "CAQNurTJM8q2".'
     outputs:
     - contextPath: SekoiaXDR.Cases.updated_at
       description: The time at which the case was updated.
@@ -1032,7 +1030,7 @@ script:
     arguments:
     - name: user_uuid
       required: true
-      description: UUID of the user to obtain the information from.
+      description: UUID of the user, you get it from `sekoia-xdr-get-comments` for example. But make sure that `created_by_type` field is `user`.
     outputs:
     - contextPath: SekoiaXDR.User.creator.description
       description: The description of the creator.
