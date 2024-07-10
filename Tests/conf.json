@@ -1898,6 +1898,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "is_mockable": false
         },
         {
