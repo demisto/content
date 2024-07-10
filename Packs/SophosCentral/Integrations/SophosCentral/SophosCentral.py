@@ -448,6 +448,7 @@ class Client(BaseClient):
         ids: Optional[List[str]],
         view: Optional[str],
         limit: Optional[int],
+        ip_addresses: Optional[List[str]],
     ) -> Dict:
         """
         List all endpoints for a tenant.
@@ -462,6 +463,7 @@ class Client(BaseClient):
             ids (list(str)): List of IDs.
             view (str): Type of view to be returned in the response.
             limit (int): Max number of endpoints to return.
+            ip_addresses (list(str)): Find endpoints by IP addresses.
 
         Returns:
             response (Response): API response from Sophos.
@@ -476,6 +478,7 @@ class Client(BaseClient):
             "ids": ids,
             "view": view,
             "pageSize": limit,
+            "ipAddresses": ip_addresses,
         }
         params = remove_empty_elements(params)
         url_suffix = "endpoint/v1/endpoints"
@@ -2006,7 +2009,9 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
         args.get("ids"),
         args.get("view"),
         min(int(args.get("limit", "")), 100),
+        args.get("ip_addresses"),
     )
+    full_match_ip = args.get("full_match_ip") == "true" if args.get("full_match_ip") else None,
     items = results.get("items")
     table_headers = [
         "id",
@@ -2022,6 +2027,13 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
     if items:
         for item in items:
             object_data = {field: item.get(field) for field in table_headers}
+            # The Sophos API does partial string matching, which can be unwanted for IP addresses.
+            if full_match_ip:
+                matching_ips = [
+                    ip for ip in args.get("ip_addresses", []) if ip in object_data.get("ipv4Addresses", []) or ip in object_data.get("ipv6Addresses", [])
+                ]
+                if not matching_ips:
+                    continue
             assigned_products = item.get("assignedProducts")
             if assigned_products:
                 object_data["assignedProductCodes"] = [
