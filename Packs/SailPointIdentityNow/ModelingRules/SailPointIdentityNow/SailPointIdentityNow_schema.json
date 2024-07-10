@@ -13,7 +13,7 @@
             "is_array": false
         },
         "name": {
-            "type": "float",
+            "type": "string",
             "is_array": false
         },
         "objects": {
@@ -41,11 +41,11 @@
             "is_array": false
         },
         "actor": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         },
         "target": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         },
         "status": {
@@ -53,7 +53,7 @@
             "is_array": false
         },
         "attributes": {
-            "type": "json",
+            "type": "string",
             "is_array": false
         }
     }
