@@ -82,6 +82,11 @@ def predict_phishing_words():
     return res
 
 
+
+
+
+
+
 def main():
     res = predict_phishing_words()
     return res
