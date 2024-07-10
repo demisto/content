@@ -476,7 +476,7 @@
                 "SHA256": {
                     "simple": "sha256"
                 },
-                "Detection  type": {
+                "CrowdStrike Falcon Detection Type": {
                     "simple": "type"
                 },
                 "State": {
