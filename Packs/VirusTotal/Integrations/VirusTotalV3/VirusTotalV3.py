@@ -163,14 +163,19 @@ class VTIP(Common.IP):
         context = super().to_context()
         file_context = context[super().CONTEXT_PATH]
 
+        file_context['VTVendors'] = {}
+
         if self.count_vt_vendors_which_flagged_malicious is not None:
-            file_context['Count VT Vendors Which Flagged Malicious'] = self.count_vt_vendors_which_flagged_malicious
+            file_context['VTVendors']['EngineDetections'] = self.count_vt_vendors_which_flagged_malicious
 
         if self.vt_vendors_which_flagged_malicious is not None:
-            file_context['VT Vendors Which Flagged Malicious'] = self.vt_vendors_which_flagged_malicious
+            file_context['VTVendors']['EngineVendors'] = self.vt_vendors_which_flagged_malicious
 
         if self.vt_detection_names is not None:
-            file_context['VT Detection Names'] = self.vt_detection_names
+            file_context['VTVendors']['EngineDetectionNames'] = self.vt_detection_names
+
+        if not file_context['VTVendors']:
+            file_context.pop('VTVendors', None)
 
         return context
 
@@ -201,14 +206,19 @@ class VTURL(Common.URL):
         context = super().to_context()
         file_context = context[super().CONTEXT_PATH]
 
+        file_context['VTVendors'] = {}
+
         if self.count_vt_vendors_which_flagged_malicious is not None:
-            file_context['Count VT Vendors Which Flagged Malicious'] = self.count_vt_vendors_which_flagged_malicious
+            file_context['VTVendors']['EngineDetections'] = self.count_vt_vendors_which_flagged_malicious
 
         if self.vt_vendors_which_flagged_malicious is not None:
-            file_context['VT Vendors Which Flagged Malicious'] = self.vt_vendors_which_flagged_malicious
+            file_context['VTVendors']['EngineVendors'] = self.vt_vendors_which_flagged_malicious
 
         if self.vt_detection_names is not None:
-            file_context['VT Detection Names'] = self.vt_detection_names
+            file_context['VTVendors']['EngineDetectionNames'] = self.vt_detection_names
+
+        if not file_context['VTVendors']:
+            file_context.pop('VTVendors', None)
 
         return context
 
@@ -239,14 +249,19 @@ class VTDomain(Common.Domain):
         context = super().to_context()
         file_context = context[super().CONTEXT_PATH]
 
+        file_context['VTVendors'] = {}
+
         if self.count_vt_vendors_which_flagged_malicious is not None:
-            file_context['Count VT Vendors Which Flagged Malicious'] = self.count_vt_vendors_which_flagged_malicious
+            file_context['VTVendors']['EngineDetections'] = self.count_vt_vendors_which_flagged_malicious
 
         if self.vt_vendors_which_flagged_malicious is not None:
-            file_context['VT Vendors Which Flagged Malicious'] = self.vt_vendors_which_flagged_malicious
+            file_context['VTVendors']['EngineVendors'] = self.vt_vendors_which_flagged_malicious
 
         if self.vt_detection_names is not None:
-            file_context['VT Detection Names'] = self.vt_detection_names
+            file_context['VTVendors']['EngineDetectionNames'] = self.vt_detection_names
+
+        if not file_context['VTVendors']:
+            file_context.pop('VTVendors', None)
 
         return context
 
