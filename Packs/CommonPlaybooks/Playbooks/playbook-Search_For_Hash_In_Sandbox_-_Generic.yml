@@ -57,6 +57,8 @@ tasks:
     scriptarguments:
       brandname:
         simple: CrowdStrike Falcon X
+    results:
+    - brandInstances
     separatecontext: false
     view: |-
       {
@@ -95,6 +97,8 @@ tasks:
     scriptarguments:
       brandname:
         simple: WildFire-v2
+    results:
+    - brandInstances
     separatecontext: false
     view: |-
       {
@@ -568,6 +572,8 @@ tasks:
     scriptarguments:
       brandname:
         simple: JoeSecurityV2
+    results:
+    - brandInstances
     separatecontext: false
     continueonerrortype: ""
     view: |-
