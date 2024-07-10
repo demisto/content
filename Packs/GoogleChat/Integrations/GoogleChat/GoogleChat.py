@@ -203,7 +203,7 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
     expiry = args.get('expiry')
     default_reply = args.get('default_reply')
 
-    result = client.send_notification_request(message_body if not 'no_message' else '',
+    result = client.send_notification_request(message_body if message_body!= 'no_message' else '',
                                               message_to, space_id, thread_id, adaptive_card)
     message_id_hierarchy = result.get('name')
     if result.get('name') and entitlement and expiry and default_reply:
@@ -424,6 +424,8 @@ def main() -> None:
     demisto.debug(f'Command being called is {command}')
     LONG_RUNNING = params.get('longRunning', False)
     if LONG_RUNNING:
+        if not params.get('longRunningPort'):
+            raise DemistoException("The Listen Port field must be populated if the long-running instance is enabled.")
         try:
             port = arg_to_number(params.get('longRunningPort'))
         except ValueError as e:
