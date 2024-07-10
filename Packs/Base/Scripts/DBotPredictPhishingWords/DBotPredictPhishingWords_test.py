@@ -1,9 +1,8 @@
 from collections import defaultdict
 
 import pytest
-import sys
 from CommonServerPython import *
-from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main, BERT_TOKENIZER_ERROR
+from DBotPredictPhishingWords import get_model_data, predict_phishing_words, main
 
 TOKENIZATION_RESULT = None
 
@@ -21,13 +20,6 @@ class PhishingModelMock:
         return self.explain_model_words_res
 
 
-def phishing_model_func(return_value):
-    def phishing_model_loads_handler(*_):
-        sys.stderr.write(BERT_TOKENIZER_ERROR)
-        return return_value
-    return phishing_model_loads_handler
-
-
 def get_args():
     args = defaultdict(lambda: "yes")
     args['encoding'] = 'utf8'
@@ -37,7 +29,7 @@ def get_args():
 
 
 def bold(word):
-    return '**{}**'.format(word)
+    return f'**{word}**'
 
 
 def executeCommand(command, args=None):
@@ -61,6 +53,7 @@ def executeCommand(command, args=None):
             if w in terms:
                 words[i] = bold(w)
         return [{'Contents': ' '.join(words), 'Type': 'note'}]
+    return None
 
 
 def test_get_model_data(mocker):
@@ -78,7 +71,7 @@ def test_predict_phishing_words(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
@@ -94,14 +87,14 @@ def test_predict_phishing_words(mocker):
     res = predict_phishing_words("modelName", "list", email_subject, email_body, 0, 0, 0, 10, True)
     correct_res = {'OriginalText': concatenate_subject_body(email_subject, email_body),
                    'Probability': 0.7, 'NegativeWords': ['word2'],
-                   'TextTokensHighlighted': concatenate_subject_body('**{}**'.format(email_subject), email_body),
+                   'TextTokensHighlighted': concatenate_subject_body(f'**{email_subject}**', email_body),
                    'PositiveWords': ['word1'],
                    'Label': 'Valid'}
     assert res['Contents'] == correct_res
 
 
 def concatenate_subject_body(email_subject, email_body):
-    return '{} \n{}'.format(email_subject, email_body)
+    return f'{email_subject} \n{email_body}'
 
 
 def test_predict_phishing_words_low_threshold(mocker):
@@ -113,7 +106,7 @@ def test_predict_phishing_words_low_threshold(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
                         create=True)
@@ -132,7 +125,7 @@ def test_predict_phishing_words_no_words(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("", 0), create=True)
     TOKENIZATION_RESULT = {'originalText': 'word1 word2 word3',
                            'tokenizedText': "word1 word2 word3",
@@ -158,7 +151,7 @@ def test_predict_phishing_words_hashed(mocker):
 
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10, 'hashSeed': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
                         create=True)
@@ -173,7 +166,7 @@ def test_predict_phishing_words_hashed(mocker):
     res = predict_phishing_words("modelName", "list", email_subject, email_body, 0, 0, 0, 10, True)
     assert res['Contents'] == {'OriginalText': concatenate_subject_body(email_subject, email_body),
                                'Probability': 0.7, 'NegativeWords': ['word2'],
-                               'TextTokensHighlighted': concatenate_subject_body('**{}**'.format(email_subject),
+                               'TextTokensHighlighted': concatenate_subject_body(f'**{email_subject}**',
                                                                                  email_body),
                                'PositiveWords': ['word1'], 'Label': 'Valid'}
 
@@ -183,12 +176,12 @@ def test_predict_phishing_words_tokenization_by_character(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10, 'hashSeed': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     original_text = 'this is a test'
     tokenized_text = ' '.join(c for c in original_text if c != ' ')
-    original_words_to_tokes = {w: [c for c in w] for w in original_text.split()}
+    original_words_to_tokes = {w: list(w) for w in original_text.split()}
     TOKENIZATION_RESULT = {'originalText': original_text,
                            'tokenizedText': tokenized_text,
                            'originalWordsToTokens': original_words_to_tokes,
@@ -224,12 +217,12 @@ def test_predict_phishing_words_tokenization_by_character_hashed(mocker):
     phishing_mock = PhishingModelMock()
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     mocker.patch.object(demisto, 'args', return_value={'topWordsLimit': 10, 'hashSeed': 10})
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     original_text = 'this is a test'
     tokenized_text = ' '.join(c for c in original_text if c != ' ')
-    original_words_to_tokes = {w: [c for c in w] for w in original_text.split()}
+    original_words_to_tokes = {w: list(w) for w in original_text.split()}
     TOKENIZATION_RESULT = {'originalText': original_text,
                            'tokenizedText': tokenized_text,
                            'originalWordsToTokens': original_words_to_tokes,
@@ -270,13 +263,13 @@ def test_main(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
                         create=True)
 
-    TOKENIZATION_RESULT = {'originalText': '%s %s' % (args['emailSubject'], args['emailBody']),
-                           'tokenizedText': '%s %s' % (args['emailSubject'], args['emailBody']),
+    TOKENIZATION_RESULT = {'originalText': '{} {}'.format(args['emailSubject'], args['emailBody']),
+                           'tokenizedText': '{} {}'.format(args['emailSubject'], args['emailBody']),
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            }
 
@@ -310,14 +303,14 @@ def test_no_positive_words(mocker):
     mocker.patch.object(demisto, 'args', return_value=args)
     mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
     phishing_mock = PhishingModelMock(("text", 2))
-    mocker.patch('demisto_ml.phishing_model_loads_handler', side_effect=phishing_model_func(phishing_mock), create=True)
+    mocker.patch('demisto_ml.phishing_model_loads_handler', return_value=phishing_mock, create=True)
     mocker.patch.object(demisto, 'incidents', return_value=[{'isPlayground': True}])
     mocker.patch.object(phishing_mock, 'filter_model_words', return_value=("text", 2), create=True)
     mocker.patch.object(phishing_mock, 'explain_model_words', return_value=d,
                         create=True)
 
-    TOKENIZATION_RESULT = {'originalText': '%s %s' % (args['emailSubject'], args['emailBody']),
-                           'tokenizedText': '%s %s' % (args['emailSubject'], args['emailBody']),
+    TOKENIZATION_RESULT = {'originalText': '{} {}'.format(args['emailSubject'], args['emailBody']),
+                           'tokenizedText': '{} {}'.format(args['emailSubject'], args['emailBody']),
                            'originalWordsToTokens': {'word1': ['word1'], 'word2': ['word2'], 'word3': ['word3']},
                            }
 

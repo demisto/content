@@ -13,7 +13,6 @@ TORCH_TYPE = 'torch'
 UNKNOWN_MODEL_TYPE = 'UNKNOWN_MODEL_TYPE'
 
 
-
 def OrderedSet(iterable):
     return list(dict.fromkeys(iterable))
 
