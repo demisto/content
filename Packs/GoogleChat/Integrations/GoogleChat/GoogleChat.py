@@ -100,14 +100,15 @@ class GoogleChatClient(BaseClient):
 
                 response_data = response.json()
                 if response.status_code != 200:
-                    raise DemistoException("Request was not successful. Please make sure to upload the correct service account json")
+                    raise DemistoException(
+                        "Request was not successful. Please make sure to upload the correct service account json")
                 if access_token := response_data.get("access_token"):
                     expiry_time += (response_data.get('expires_in') * 1000)
                 new_token = {
-                        service_account_access_token: access_token,
-                        service_account_expiry_time: expiry_time
-                    }
-                    # stores received token and expiration time in the integration context
+                    service_account_access_token: access_token,
+                    service_account_expiry_time: expiry_time
+                }
+                # stores received token and expiration time in the integration context
                 set_integration_context(new_token)
                 self._access_token = response_data["access_token"]
             except Exception as e:
@@ -395,7 +396,7 @@ async def handle_googleChat_response(request: Request, credentials: HTTPBasicCre
         JSONResponse: response from Google Chat survey
     """
     request = await request.json()
-    #TODO ensure verifying the response
+    # TODO ensure verifying the response
     event_type = request['type']
     try:
         if event_type == "CARD_CLICKED":

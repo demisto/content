@@ -73,6 +73,23 @@ script:
       type: textArea
       hidden: true
     description: Send messages through google chat
+    outputs:
+    - contextPath: GoogleChat.sender.name
+      description: Display the sender name.
+    - contextPath: GoogleChat.sender.displayName
+      description: Display the sender display name.
+    - contextPath: GoogleChat.sender.type
+      description: Display the sender type.
+    - contextPath: GoogleChat.space.name
+      description: Display the space name.
+    - contextPath: GoogleChat.space.displayName
+      description: Display the space display name.
+    - contextPath: GoogleChat.space.type
+      description: Display the space type.
+    - contextPath: GoogleChat.thread.name
+      description: Display the thread name.
+    - contextPath: GoogleChat.thread.threadKey
+      description: Display the thread key.
   runonce: false
   longRunning: true
   longRunningPort: true

@@ -55,7 +55,7 @@ tags:
 - googleChat
 timeout: '0'
 type: python
-dockerimage: demisto/fastapi:1.0.0.79757
+dockerimage: devdemisto/google-chat:1.0.0.101907
 tests:
 - no test - Untestable
 dependson:
