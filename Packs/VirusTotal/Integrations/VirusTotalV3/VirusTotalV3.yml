@@ -247,6 +247,10 @@ script:
       description: For malicious files, the vendor that made the decision.
     - contextPath: File.Malicious.Description
       description: For malicious files, the reason that the vendor made the decision.
+    - contextPath: File.Malicious.Detections
+      description: For malicious files, the total number of detections.
+    - contextPath: File.Malicious.TotalEngines
+      description: For malicious files, the total number of engines that checked the file hash.
     - contextPath: File.VTVendors.EngineDetections
       description: Number of VT vendors which flagged the file as malicious.
     - contextPath: File.VTVendors.EngineVendors

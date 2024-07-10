@@ -185,6 +185,8 @@ Checks the file reputation of the specified hash.
 | File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
 | File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. |
+| File.Malicious.Detections | Number | For malicious files, the total number of detections. |
+| File.Malicious.TotalEngines | Number | For malicious files, the total number of engines that checked the file hash. |
 | File.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the file as malicious. |
 | File.VTVendors.EngineVendors | Array | VT vendors which flagged the file as malicious. |
 | File.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the file as malicious. |
