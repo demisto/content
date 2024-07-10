@@ -437,6 +437,38 @@ def undot(json_data: dict) -> str:
     return json.dumps(data)
 
 
+def filter_list_by_keys(dicts_list: list, keys_to_keep: list) -> list:
+    """
+    Filters a list of dictionaries by keeping only the specified keys.
+
+    Args:
+        dicts_list (list): A list of dictionaries.
+        keys_to_keep (list): A list of keys to keep in the dictionaries.
+
+    Returns:
+        list: A new list of dictionaries with only the specified keys.
+    """
+    filtered_list = []
+    for d in dicts_list:
+        filtered_dict = {key: value for key, value in d.items() if key in keys_to_keep}
+        filtered_list.append(filtered_dict)
+    return filtered_list
+
+
+def filter_dict_by_keys(input_dict: dict, keys_to_keep: list) -> dict:
+    """
+    Filters a dictionary by keeping only the key-value pairs whose keys are present in the given list.
+
+    Args:
+        input_dict (dict): The dictionary to filter.
+        keys_to_keep (list): The list of keys to keep in the filtered dictionary.
+
+    Returns:
+        dict: The filtered dictionary containing only the key-value pairs whose keys are present in the keys_to_keep list.
+    """
+    return {key: value for key, value in input_dict.items() if key in keys_to_keep}
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -864,7 +896,12 @@ def list_alerts_command(client: Client, args: Dict[str, Any]) -> CommandResults:
         sort_by=args.get("sort_by"),
     )
 
+    header = ["title", "uuid", "short_id", "community_uuid"]
+    command_output = filter_list_by_keys(alerts["items"], header)
+    readable_output = tableToMarkdown("Alerts :", command_output, headers=header)
+
     return CommandResults(
+        readable_output=readable_output,
         outputs_prefix="SekoiaXDR.ListAlerts",
         outputs_key_field="short_id",
         outputs=alerts["items"],
@@ -876,7 +913,18 @@ def get_alert_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     alert_uuid = args["id"]
 
     alert = client.get_alert(alert_uuid=alert_uuid)
-    readable_output = tableToMarkdown(f"Alert {alert_uuid}:", alert)
+    header = [
+        "alert_type",
+        "short_id",
+        "created_by_type",
+        "kill_chain_short_id",
+        "details",
+        "rule",
+    ]
+    command_output = filter_dict_by_keys(alert, header)
+    readable_output = tableToMarkdown(
+        f"Alert {alert_uuid}:", command_output, headers=header
+    )
 
     return CommandResults(
         readable_output=readable_output,
@@ -1069,6 +1117,8 @@ def post_comment_alert_command(client: Client, args: Dict[str, Any]) -> CommandR
     response = client.post_comment_alert(
         alert_uuid=alert_uuid, content=comment, author=author
     )
+    response["date"] = timezone_format(response["date"])
+
     readable_output = tableToMarkdown(
         f"Alert {alert_uuid} updated with the comment: \n {comment}:", response
     )
@@ -1130,8 +1180,17 @@ def get_cases_alert_command(client: Client, args: Dict[str, Any]) -> CommandResu
     alert_uuid, case_id = args["alert_id"], args.get("case_id")
 
     response = client.get_cases_alert(alert_uuid=alert_uuid, case_id=case_id)
+    header = [
+        "title",
+        "description",
+        "priority",
+        "short_id",
+        "status",
+        "community_uuid",
+    ]
+    command_output = filter_list_by_keys(response["items"], header)
     readable_output = tableToMarkdown(
-        f"Alert {alert_uuid} have the following cases:", response["items"]
+        f"Alert {alert_uuid} have the following cases:", command_output, headers=header
     )
 
     return CommandResults(
@@ -1147,8 +1206,10 @@ def get_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     asset_uuid = args["asset_uuid"]
 
     asset = client.get_asset(asset_uuid=asset_uuid)
+    header = ["name", "uuid", "description"]
+    command_output = filter_dict_by_keys(asset, header)
     readable_output = tableToMarkdown(
-        f"Asset {asset_uuid} have the following information:", asset
+        f"Asset {asset_uuid} have the following information:", command_output, headers=header
     )
 
     return CommandResults(
@@ -1164,8 +1225,10 @@ def list_asset_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     limit, assets_type = args.get("limit"), args.get("assets_type")
 
     assets = client.list_asset(limit=limit, assets_type=assets_type)
+    header = ["name", "uuid", "description"]
+    command_output = filter_list_by_keys(assets["items"], header)
     readable_output = tableToMarkdown(
-        f"List of {assets['total']} assets found:", assets["items"]
+        f"List of {assets['total']} assets found:", command_output, headers=header
     )
 
     return CommandResults(
@@ -1285,10 +1348,11 @@ def http_request_command(client: Client, args: Dict[str, Any]) -> CommandResults
         args["url_sufix"],
         args.get("parameters", {}),
     )
+
     request = client.http_request(method=method, params=params, url_suffix=url_sufix)
     readable_output = tableToMarkdown(
         f"The HTTP {method} request with params {params} returned the following information:",
-        request,
+        request["items"] if request["items"] else request,
     )
 
     return CommandResults(

@@ -89,6 +89,49 @@ def test_undot():
     assert "agent.id" not in result
 
 
+def test_filter_list_by_keys():
+    dicts_list = [
+        {"key1": "value1", "key2": "value2", "key3": "value3"},
+        {"key1": "value4", "key2": "value5", "key3": "value6"},
+        {"key1": "value7", "key2": "value8", "key3": "value9"},
+    ]
+    keys_to_keep = ["key1", "key3"]
+    expected_result = [
+        {"key1": "value1", "key3": "value3"},
+        {"key1": "value4", "key3": "value6"},
+        {"key1": "value7", "key3": "value9"},
+    ]
+    assert SekoiaXDR.filter_list_by_keys(dicts_list, keys_to_keep) == expected_result
+
+
+def test_filter_list_by_keys_with_empty_list():
+    dicts_list = []
+    keys_to_keep = ["key1", "key3"]
+    expected_result = []
+    assert SekoiaXDR.filter_list_by_keys(dicts_list, keys_to_keep) == expected_result
+
+
+def test_filter_dict_by_keys():
+    dict = {
+        "key1": "value1",
+        "key2": "value2",
+        "key3": "value3",
+    }
+    keys_to_keep = ["key1", "key3"]
+    expected_result = {
+        "key1": "value1",
+        "key3": "value3",
+    }
+    assert SekoiaXDR.filter_dict_by_keys(dict, keys_to_keep) == expected_result
+
+
+def test_filter_dict_by_keys_with_empty_dict():
+    dict = {}
+    keys_to_keep = ["key1", "key3"]
+    expected_result = {}
+    assert SekoiaXDR.filter_dict_by_keys(dict, keys_to_keep) == expected_result
+
+
 """ TEST COMMANDS FUNCTIONS """
 
 
