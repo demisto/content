@@ -312,6 +312,10 @@
       "type": "string",
       "is_array": false
     },
+    "FTNTFGTdsthwvendor": {
+      "type": "string",
+      "is_array": false
+    },
     "FTNTFGTdsthwversion": {
       "type": "string",
       "is_array": false
