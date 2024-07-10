@@ -93,10 +93,7 @@ class Client(BaseClient):
 
 
 def test_module(client: Client) -> str:
-    event, _ = fetch_events(client, max_fetch=1)
-    if not event:
-        raise ValueError('failed to fetch events')
-
+    fetch_events(client, max_fetch=1)
     return 'ok'
 
 
@@ -113,28 +110,30 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
     return [], CommandResults(readable_output='No events found')
 
 
-def fetch_events(client: Client, max_fetch: int, dates: Dict[str, Any]) -> tuple[List[Dict[str, Any]], Dict[str, Any]]:
+def fetch_events(client: Client, max_fetch: int,
+                 dates: Dict[str, Any] = {'start': DEFAULT_FIRST_FETCH, 'end': DEFAULT_END_DATE}) -> tuple[
+    List[Dict[str, Any]], Dict[str, Any]]:
     last_run = demisto.getLastRun()
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
         return [], last_run
     unique_events = get_unique_events(events, last_run)
-    oldest_events = filter_events(events=events, oldest=True)
-    hashed_oldest_events = hash_events(oldest_events)
+    recent_events = filter_events(events=events, oldest=False)
+    hashed_recent_events = hash_events(recent_events)
     if continuation_token:
         demisto.debug(
             f'Bitwarden - Fetched {len(unique_events)} which is the maximum or greater then the number of events.'
             f' Will keep the fetching in the next fetch.')
-        created = dates.get('start', DEFAULT_FIRST_FETCH) or last_run.get('last_fetch') or (
+        created = dates.get('start') or last_run.get('last_fetch') or (
             (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT))
         new_last_run = {'continuationToken': continuation_token, 'last_fetch': created, 'nextTrigger': '0',
-                        'hashed_oldest_events': hashed_oldest_events}
+                        'hashed_recent_events': hashed_recent_events}
     else:
         # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
         new_last_fetch_date = max([dt for dt in (arg_to_datetime(event.get('date'), DATE_FORMAT)
                                                  for event in unique_events) if dt is not None]).strftime(
             DATE_FORMAT) if unique_events else get_current_time()
-        new_last_run = {'last_fetch': new_last_fetch_date, 'hashed_oldest_events': hashed_oldest_events}
+        new_last_run = {'last_fetch': new_last_fetch_date, 'hashed_recent_events': hashed_recent_events}
         demisto.debug(f'Bitwarden - Fetched {len(unique_events)} events')
 
     for event in unique_events:
@@ -145,8 +144,6 @@ def fetch_events(client: Client, max_fetch: int, dates: Dict[str, Any]) -> tuple
 
 def get_events_with_pagination(client: Client, max_fetch: int, dates: Dict[str, Any], last_run: Dict[str, Any]) -> tuple[
     List[Dict[str, Any]], str]:
-    start_date_str = dates.get('start', DEFAULT_FIRST_FETCH)
-    end_date_str = dates.get('end', DEFAULT_END_DATE)
     continuation_token = last_run.get('continuationToken', '')
     events: List[dict] = []
     has_next = True
@@ -154,23 +151,23 @@ def get_events_with_pagination(client: Client, max_fetch: int, dates: Dict[str, 
         has_next = False
         if len(events) >= max_fetch:
             break
-        start_date = last_run.get('last_fetch', '') if last_run.get('last_fetch', '') else start_date_str
-        response = client.get_events(start_date=start_date, end_date=end_date_str, continuation_token=continuation_token)
+        start_date = last_run.get('last_fetch', '') if last_run.get('last_fetch', '') else dates.get('start', DEFAULT_FIRST_FETCH)
+        response = client.get_events(start_date=start_date, end_date=dates.get('end', DEFAULT_END_DATE),
+                                     continuation_token=continuation_token)
         if continuation_token := response.get('continuationToken'):
             has_next = True
         events.extend(response.get('data'))
-    print("a")
     return events, continuation_token
 
 
 def get_unique_events(events: List[Dict[str, Any]], last_run: Dict[str, Any]) -> List[Dict[str, Any]]:
-    if hashed_oldest_events := last_run.get('hashed_oldest_events'):
-        recent_events = filter_events(events=events, oldest=False)
-        hashed_recent_events = hash_events(recent_events)
+    if last_fetched_hashed_recent_events := last_run.get('hashed_recent_events'):
+        oldest_events = filter_events(events=events, oldest=True)
+        hashed_oldest_events = hash_events(oldest_events)
         should_be_removed_events = []
-        for hashed_recent_event, recent_event in hashed_recent_events.items():
-            if hashed_recent_event in list(hashed_oldest_events.keys()):
-                should_be_removed_events.append(recent_event)
+        for hashed_oldest_event, oldest_event in hashed_oldest_events.items():
+            if hashed_oldest_event in list(last_fetched_hashed_recent_events.keys()):
+                should_be_removed_events.append(oldest_event)
 
         events_to_remove_set = {tuple(event.items()) for event in should_be_removed_events}
         unique_events = [event for event in events if tuple(event.items()) not in events_to_remove_set]
@@ -189,7 +186,6 @@ def filter_events(events: List[Dict[str, Any]], oldest: bool) -> List[Dict[str, 
 def hash_events(events: List[Dict[str, Any]]) -> Dict[str, Dict[str, Any]]:
     hashed_events = {}
     for event in events:
-        # event = {key: "null" if value is None else value for key, value in event.items()}
         event_str = json.dumps(event, sort_keys=True)
         event_hash_object = hashlib.sha256(event_str.encode()).hexdigest()
         hashed_events[event_hash_object] = event
@@ -227,7 +223,7 @@ def main() -> None:  # pragma: no cover
         elif command == 'bitwarden-get-events':
             events, results = get_events_command(client=client, args=args)
             return_results(results)
-            if argToBoolean(args.get('should_push_events')):
+            if argToBoolean(args.get('should_push_events', False)):
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
         elif demisto.command() == 'fetch-events':
             events, new_last_run = fetch_events(client=client, max_fetch=max_events_per_fetch)
