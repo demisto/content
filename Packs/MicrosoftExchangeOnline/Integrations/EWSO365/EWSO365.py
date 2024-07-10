@@ -1935,7 +1935,12 @@ def add_additional_headers(additional_headers):
             Message.register(header_name, TempClass)
             headers[header_name] = header_value
         except ValueError as e:
-            demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
+            Message.deregister(header_name)
+            try:
+                Message.register(header_name, TempClass)
+                headers[header_name] = header_value
+            except ValueError as e:
+                demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
 
     return headers
 
