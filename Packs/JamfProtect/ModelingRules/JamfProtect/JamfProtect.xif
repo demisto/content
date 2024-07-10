@@ -5,8 +5,8 @@ config case_sensitive = true
 |filter source_log_type = "computers"
 | alter 
 event_type = source_log_type,
-check_in = to_timestamp(checkin  , "MILLIS"),
-computer_created = to_timestamp(created , "MILLIS") , //first connected 
+check_in = to_timestamp(to_integer(checkin), "MICROS"),
+computer_created = to_timestamp(to_integer(created) , "MICROS")  , //first connected 
 host_name = hostName ,
 memory_size = to_integer(memorySize) , // Already in bytes
 model_name = modelName ,
