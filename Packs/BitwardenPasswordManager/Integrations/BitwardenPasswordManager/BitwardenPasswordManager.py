@@ -113,6 +113,25 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
 def fetch_events(client: Client, max_fetch: int,
                  dates: Dict[str, Any] = {'start': DEFAULT_FIRST_FETCH, 'end': DEFAULT_END_DATE}) -> tuple[
     List[Dict[str, Any]], Dict[str, Any]]:
+    """ Fetches events from the API using the provided client.
+    Args:
+        - client (Client): The client object used to make API requests.
+        - max_fetch (int): The maximum number of events to fetch.
+        - dates (Dict[str, Any], optional): A dictionary containing the start and end dates for the events.
+            The default values are set to DEFAULT_FIRST_FETCH for the start date and DEFAULT_END_DATE for the end date.
+
+    Returns:
+        - tuple[List[Dict[str, Any]], Dict[str, Any]]: A tuple containing a list of fetched events and a last_run object.
+            - The list of events contains dictionaries with event information.
+            - The last_run object contains the new last fetch date and, if there is a continuationToken, nextTrigger is set to 0.
+
+    Additional Functionality:
+        - The function calls the get_events_with_pagination function, which internally calls client.get_events to fetch events
+            from the API.
+        - The function checks whether the events fetched in the most recent request are identical to the oldest events fetched in
+            the subsequent request. This check is implemented to prevent duplicate events from being included in the fetched
+            results.
+    """
     last_run = demisto.getLastRun()
     events, continuation_token = get_events_with_pagination(client, max_fetch, dates, last_run)
     if not events:
