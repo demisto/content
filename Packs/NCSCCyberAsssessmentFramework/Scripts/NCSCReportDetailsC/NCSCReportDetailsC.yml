@@ -1,13 +1,15 @@
-comment: |-
-  This script generates the report details for the individual CAF Section.
+comment: 'This script generates the report details for the individual CAF Section.
+
 
   This automation runs using the default Limited User role, unless you explicitly change the permissions.
+
   For more information, see the section about permissions here:
-  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations
+
+  https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Automations'
 commonfields:
   id: NCSCReportDetails_C
   version: -1
-dockerimage: demisto/python3:3.10.10.48392
+dockerimage: demisto/python3:3.10.14.100715
 enabled: true
 name: NCSCReportDetails_C
 script: ''
