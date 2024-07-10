@@ -156,7 +156,6 @@ alter // format, validate & regroup relevant raw data
     xdm.observer.unique_identifier = deviceExternalId,
     xdm.observer.version = cefDeviceVersion,
     xdm.session_context_id = externalId,
-    xdm.source.application.name = FTNTFGTapp,
     xdm.source.host.device_category = coalesce(concat(FTNTFGTdevtype, " (", FTNTFGTsrcfamily, ")"), FTNTFGTdevtype, FTNTFGTsrcfamily),
     xdm.source.host.device_id = FTNTFGTsrcuuid,
     xdm.source.host.fqdn = shost,
