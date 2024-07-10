@@ -365,7 +365,6 @@ class Client(BaseClient):
             **kwargs,
         )
 
-
         return self.http_request(
             "WSC/Set",
             "POST",
