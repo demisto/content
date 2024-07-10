@@ -16,9 +16,9 @@ universally_unique_identifier = uuid ,
 agent_version = version ,
 signatures_version = concat("Threat Version ",to_string(signaturesVersion)) ,
 // plan
-computer_plan = plan
+computer_plan = to_string(plan)
 // insights
-| alter insights_status = object_create("Rules Status Failed", insightsStatsFail , "Rules Status Passed", insightsStatsPass , "Rules Status Unknown", insightsStatsUnknown )
+| alter insights_status = object_create("Rules Status Failed", to_string(insightsStatsFail) , "Rules Status Passed", to_string(insightsStatsPass) , "Rules Status Unknown", to_string(insightsStatsUnknown) )
 // discard all rules that passed and keep the failed rules that can be a risk to the asset
 | alter tmp_computer_risks = arrayfilter(scorecard ->[], "@element"->pass="false")
 // Create new array with the relevant information
