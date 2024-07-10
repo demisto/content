@@ -1,29 +1,11 @@
 {
-    "id": "Prisma Compute Compliance Usecase Adoption Wizard",
+    "id": "Prisma Cloud Compute Compliance Use Case",
     "version": -1,
     "modified": "2022-04-10T11:55:54.250933+03:00",
     "fromVersion": "6.9.0",
-    "name": "Prisma Compute Compliance Usecase Adoption Wizard",
+    "name": "Prisma Cloud Compute Compliance Use Case",
     "description": "Welcome to the Deployment Wizard!  These steps will guide you through configuring your content pack so you'll have a working use case when the wizard finishes. Make sure to follow the steps in order, you can always continue the wizard where you left off. Learn more about this pack’s deployment in the \"Cortex XSOAR Administrator Guide\" -> \"Set up Your Use Case with the Deployment Wizard\".",
     "dependency_packs": [
-      {
-        "name": "Messaging",
-        "min_required": 0,
-        "packs": [
-          {
-            "name": "MicrosoftExchangeOnPremise",
-            "display_name": "Microsoft Exchange On-Premise"
-          },
-          {
-            "name": "Gmail",
-            "display_name": "Gmail"
-          },
-          {
-            "name": "MicrosoftGraphMail",
-            "display_name": "Microsoft Graph Mail"
-          }
-        ]
-      },
       {
         "name": "Case Management",
         "min_required": 1,
@@ -35,24 +17,6 @@
           {
             "name": "ServiceNow",
             "display_name": "ServiceNow v2"
-          }
-        ]
-      },
-      {
-        "name": "Data Enrichment & Threat Intelligence",
-        "min_required": 0,
-        "packs": [
-          {
-            "name": "AutoFocus",
-            "display_name": "Palo Alto Networks AutoFocus"
-          },
-          {
-            "name": "VirusTotal",
-            "display_name": "VirusTotal"
-          },
-          {
-            "name": "FeedMitreAttackv2",
-            "display_name": "Mitre Attack v2"
           }
         ]
       }
@@ -77,38 +41,6 @@
       ],
       "supporting_integrations": [
         {
-          "name": "WildFire-v2",
-          "action": {
-            "existing": "Configure 'Wildfire' to enable file detonation to improve investigation.",
-            "new": "Configure 'Wildfire' to enable file detonation to improve investigation."
-          },
-          "description": "Configure Wildfire to enable file detonation to improve investigation."
-        },
-        {
-          "name": "Gmail",
-          "action": {
-            "existing": "Configure 'Gmail' to enable email notifications.",
-            "new": "Configure Gmail to enable email notifications."
-          },
-          "description": "Configure Gmail to enable email notifications."
-        },
-        {
-          "name": "EWSO365",
-          "action": {
-            "existing": "Configure 'EWS O365' to enable email notifications.",
-            "new": "Configure EWSO365 to enable email notifications."
-          },
-          "description": "Configure EWSO365 to enable email notifications."
-        },
-        {
-          "name": "MicrosoftGraphMail",
-          "action": {
-            "existing": "Configure 'Microsoft Graph Mail' to enable email notifications.",
-            "new": "Configure 'Microsoft Graph Mail' to enable email notifications."
-          },
-          "description": "Configure Microsoft Graph Mail to enable email notifications."
-        },
-        {
           "name": "ServiceNow v2",
           "action": {
             "existing": "Configure 'ServiceNow v2' to open a ticket for a true positive incident.",
@@ -123,30 +55,6 @@
           "new": "Configure 'jira-v2' to open a ticket for a true positive incident."
           },
         "description": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
-        },
-        {
-        "name": "AutoFocus V2",
-        "action": {
-          "existing": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation.",
-          "new": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation."
-          },
-        "description": "Configure 'Palo Alto Networks AutoFocus v2' to enrich IOCs as part of the investigation."
-        },
-        {
-        "name": "VirusTotal (API v3)",
-        "action": {
-          "existing": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation.",
-          "new": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
-          },
-        "description": "Configure 'VirusTotal (API v3)' to enrich IOCs as part of the investigation."
-        },
-        {
-        "name": "MITRE ATT&CK v2",
-        "action": {
-          "existing": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation.",
-          "new": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation."
-          },
-        "description": "Configure 'MITRE ATT&CK v2' to enrich IOCs as part of the investigation."
         }
       ],
       "next": [
