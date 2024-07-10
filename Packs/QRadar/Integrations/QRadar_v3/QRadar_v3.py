@@ -641,6 +641,7 @@ class Client(BaseClient):
         )
 
     def search_create(self, query_expression: Optional[str] = None, saved_search_id: Optional[str] = None):
+        demisto.debug("DEGUG QraderV3: search_create function")
         return self.http_request(
             method='POST',
             url_suffix='/ariel/searches',
@@ -3096,13 +3097,16 @@ def qradar_search_create_command(client: Client, params: dict, args: dict) -> Co
     # if this call fails, raise an error and stop command execution
     if query_expression or saved_search_id:
         try:
+            demisto.debug("DEGUG QraderV3: search_create")
             response = client.search_create(query_expression, saved_search_id)
+            demisto.debug("DEGUG QraderV3: search_create after")
         except Exception as e:
             if query_expression:
                 raise DemistoException(f'Could not create search for query: {query_expression}.') from e
             if saved_search_id:
                 raise DemistoException(f'Could not create search for saved_search_id: {saved_search_id}.') from e
     else:
+        demisto.debug("DEGUG QraderV3: create_events_search")
         response = create_events_search(client,
                                         fetch_mode,
                                         events_columns,
@@ -3110,10 +3114,13 @@ def qradar_search_create_command(client: Client, params: dict, args: dict) -> Co
                                         int(offense_id),
                                         start_time,
                                         return_raw_response=True)
+        demisto.debug("DEGUG QraderV3: after create_events_search")
         if response == QueryStatus.ERROR.value:
             raise DemistoException(f'Could not create events search for offense_id: {offense_id}.')
 
+    demisto.debug("DEGUG QraderV3: sanitize_outputs")
     outputs = sanitize_outputs(response, SEARCH_RAW_FORMATTED)
+    demisto.debug("DEGUG QraderV3: after sanitize_outputs")
     return CommandResults(
         readable_output=tableToMarkdown('Create Search', outputs),
         outputs_prefix='QRadar.Search',
@@ -4124,7 +4131,9 @@ def create_events_search(client: Client,
     try:
         # Get all the events starting from one hour after epoch
         if not offense_start_time:
+            demisto.debug("DEGUG QraderV3: offenses_list")
             offense = client.offenses_list(offense_id=offense_id)
+            demisto.debug("DEGUG QraderV3: offenses_list after")
             offense_start_time = offense['start_time']
         query_expression = (
             f'SELECT {events_columns} FROM events WHERE INOFFENSE({offense_id}) {additional_where} limit {events_limit} '  # noqa: S608, E501
@@ -4132,11 +4141,13 @@ def create_events_search(client: Client,
         )
         print_debug_msg(f'Creating search for offense ID: {offense_id}, '
                         f'query_expression: {query_expression}')
+        demisto.debug("DEGUG QraderV3: search_create")
         search_response = client.search_create(query_expression)
         print_debug_msg(f'Created search for offense ID: {offense_id}, '
                         f'Start Time: {offense_start_time}, '
                         f'events_limit: {events_limit}, '
                         f'ret_value: {search_response}.')
+        demisto.debug("DEGUG QraderV3: after search_create")
         if return_raw_response:
             return search_response
         return search_response['search_id'] if search_response['search_id'] else QueryStatus.ERROR.value
@@ -4230,16 +4241,23 @@ def qradar_search_retrieve_events_command(
     Returns:
         CommandResults: The results of the command.
     """
+    demisto.debug("DEGUG QraderV3: qradar_search_retrieve_events_command")
     interval_in_secs = int(args.get('interval_in_seconds', 30))
     search_id = args.get('search_id')
     is_polling = argToBoolean(args.get('polling', True))
+    demisto.debug(f"DEGUG QraderV3: {is_polling=}")
     timeout_in_secs = int(args.get('timeout_in_seconds', 600))
+    demisto.debug(f"DEGUG QraderV3: {timeout_in_secs=}")
     search_command_results = None
     if not search_id:
+        demisto.debug("DEGUG QraderV3: qradar_search_create_command")
         search_command_results = qradar_search_create_command(client, params, args)
+        demisto.debug("DEGUG QraderV3: after qradar_search_create_command")
         search_id = search_command_results.outputs[0].get('ID')  # type: ignore
     calling_context = demisto.callingContext.get('context', {})
+    demisto.debug("DEGUG QraderV3: get_schedule_metadata")
     sm = get_schedule_metadata(context=calling_context)
+    demisto.debug("DEGUG QraderV3: after get_schedule_metadata")
     end_date: datetime | None = dateparser.parse(sm.get('end_date'))
     if not end_date or end_date.year == 1:
         end_date = None
@@ -4247,7 +4265,9 @@ def qradar_search_retrieve_events_command(
     is_last_run = (datetime.now() + timedelta(seconds=interval_in_secs)).timestamp() >= end_date.timestamp() \
         if end_date else False
     try:
+        demisto.debug("DEGUG QraderV3: poll_offense_events")
         events, status = poll_offense_events(client, search_id, should_get_events=True, offense_id=args.get('offense_id'))
+        demisto.debug("DEGUG QraderV3: after poll_offense_events")
     except (DemistoException, requests.Timeout) as e:
         if is_last_run:
             raise e
@@ -4256,7 +4276,9 @@ def qradar_search_retrieve_events_command(
         status = QueryStatus.WAIT.value
     if is_last_run and status == QueryStatus.WAIT.value:
         print_debug_msg("Its the last run of the polling, will cancel the query request. ")
+        demisto.debug("DEGUG QraderV3: search_cancel")
         client.search_cancel(search_id=search_id)
+        demisto.debug("DEGUG QraderV3: after search_cancel")
         return CommandResults(
             readable_output='Got polling timeout. Quary got cancelled.',
         )
