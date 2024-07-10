@@ -123,7 +123,7 @@ sendMultipart = function (uri, entryID, body) {
             'file'
         );
         tries++;
-    } while (tries < 3 && res.Status.startsWith('timeout while waiting for answer'));
+    } while (tries < 3 && res.Status.startsWith('timeout'));
     logDebug("Ran httpMultipart() " + tries + " time(s)")
 
     if (res.StatusCode < 200 || res.StatusCode >= 300) {
