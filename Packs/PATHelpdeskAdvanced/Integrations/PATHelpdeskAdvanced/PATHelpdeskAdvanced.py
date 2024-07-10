@@ -177,6 +177,9 @@ def create_params_dict(
         field.hda_name: kwargs[field.demisto_name]
         for field in optional_fields
         if field.demisto_name in kwargs
+    } | {
+        # an exception to the rule
+        PROBLEM_HTML.hda_name: kwargs["problem"],
     }
 
 
@@ -357,11 +360,11 @@ class Client(BaseClient):
                 TICKET_TYPE_ID,
                 CONTACT_ID,
                 SUBJECT,
-                PROBLEM_HTML,
                 SITE,
             ),
             **kwargs,
         )
+
 
         return self.http_request(
             "WSC/Set",
