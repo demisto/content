@@ -278,7 +278,7 @@ LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tac
                                             'behaviors.technique', 'device.hostname', 'detection_id', 'behaviors.display_name']
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
                                      'technique', 'device.hostname', "composite_id", 'display_name']
-LEGACY_CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
+CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
                                            'tags', 'hosts.hostname', 'incident_id']
 
 MIRROR_DIRECTION_DICT = {
@@ -2456,7 +2456,7 @@ def get_remote_incident_data(remote_incident_id: str):
         mirrored_data['status'] = STATUS_NUM_TO_TEXT.get(int(str(mirrored_data.get('status'))))
 
     updated_object: dict[str, Any] = {'incident_type': 'incident'}
-    set_updated_object(updated_object, mirrored_data, LEGACY_CS_FALCON_INCIDENT_INCOMING_ARGS)
+    set_updated_object(updated_object, mirrored_data, CS_FALCON_INCIDENT_INCOMING_ARGS)
     return mirrored_data, updated_object
 
 
