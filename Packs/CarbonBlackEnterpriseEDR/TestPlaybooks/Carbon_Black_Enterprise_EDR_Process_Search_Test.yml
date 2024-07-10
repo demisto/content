@@ -124,7 +124,7 @@ inputs:
   playbookInputQuery:
 - key: process_name
   value:
-    simple: vmtoolsd.exe
+    simple: chrome.exe
   required: false
   description: Tokenized file path of the process’ main module.
   playbookInputQuery:
