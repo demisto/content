@@ -1,0 +1,40 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "Sekoia XDR",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "1c920299-9d19-4ed6-8994-d4eae30706c1",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {
+		"malware": "Sekoia XDR",
+		"masquerade": "Sekoia XDR",
+		"phishing": "Sekoia XDR",
+		"ransomware": "Sekoia XDR",
+		"system-compromise": "Sekoia XDR"
+	},
+	"locked": false,
+	"logicalVersion": 4,
+	"mapping": null,
+	"name": "Sekoia XDR - Classifier",
+	"nameRaw": "Sekoia XDR - Classifier",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {
+		"simple": "alert_type.value"
+	},
+	"type": "classification",
+	"unclassifiedCases": null,
+	"version": -1
+}

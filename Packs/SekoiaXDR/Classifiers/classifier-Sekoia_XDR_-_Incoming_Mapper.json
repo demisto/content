@@ -1,0 +1,386 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Maps incoming Sekoia XDR incidents fields.\n",
+	"feed": false,
+	"fromServerVersion": "6.0.0",
+	"id": "a373b84c-1581-4b69-880b-38c3db4a5672",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "2.1.26",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 35,
+	"mapping": {
+		"Carbon Black EDR": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Carbon Black EDR IOC Value": {
+					"simple": "ioc_value"
+				},
+				"Carbon Black EDR Segment ID": {
+					"simple": "segment_id"
+				},
+				"Carbon Black EDR Unique ID": {
+					"simple": "unique_id"
+				},
+				"Carbon Black EDR Watchlist Id": {
+					"simple": "watchlist_id"
+				},
+				"Carbon Black EDR Watchlist Name": {
+					"simple": "watchlist_name"
+				},
+				"Device External IP": {
+					"simple": "interface_ip"
+				},
+				"Device Id": {
+					"simple": "sensor_id"
+				},
+				"Device Name": {
+					"simple": "hostname"
+				},
+				"Event Descriptions": {
+					"simple": "description"
+				},
+				"Event Type": {
+					"simple": "alert_type"
+				},
+				"Incident Link": {
+					"simple": "link"
+				},
+				"Log Source": {
+					"simple": "feed_name"
+				},
+				"MD5": {
+					"simple": "md5"
+				},
+				"OS": {
+					"simple": "os_type"
+				},
+				"PID": {
+					"simple": "process_id"
+				},
+				"Process Name": {
+					"simple": "process_name"
+				},
+				"Process Path": {
+					"simple": "process_path"
+				},
+				"Resource Type": {
+					"simple": "ioc_type"
+				},
+				"Username": {
+					"simple": "username"
+				},
+				"severity": {
+					"simple": "alert_severity"
+				}
+			}
+		},
+		"Sekoia XDR": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "alert_type.category"
+				},
+				"Alert ID": {
+					"simple": "short_id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Alert Type ID": {
+					"simple": "alert_type.value"
+				},
+				"Alert UUID": {
+					"simple": "uuid"
+				},
+				"Description": {
+					"simple": "details"
+				},
+				"Sekoia Alert Details": {
+					"simple": "details"
+				},
+				"Sekoia Alert Status": {
+					"simple": "status.name"
+				},
+				"Sekoia Alert URL": {
+					"complex": {
+						"filters": [],
+						"root": "short_id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": "https://app.sekoia.io/operations/alerts/"
+										}
+									},
+									"suffix": {
+										"isContext": false
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"Sekoia Events": {
+					"simple": "events.items"
+				},
+				"Sekoia First Seen": {
+					"simple": "first_seen_at"
+				},
+				"Sekoia Impacted Assets": {
+					"complex": {
+						"filters": [],
+						"root": "assets",
+						"transformers": []
+					}
+				},
+				"Sekoia Kill Chain": {
+					"complex": {
+						"filters": [],
+						"root": "kill_chain",
+						"transformers": []
+					}
+				},
+				"Sekoia Last Seen": {
+					"simple": "last_seen_at"
+				},
+				"Source Create time": {
+					"complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
+				"Source IP": {
+					"simple": "source"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+				"test3": {
+					"complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "created_at"
+										}
+									}
+								},
+								"operator": "append"
+							}
+						]
+					}
+				}
+			}
+		},
+		"Test": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "alert_type.category"
+				},
+				"Alert ID": {
+					"simple": "short_id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Alert Status": {
+					"simple": "status.name"
+				},
+				"Alert Type ID": {
+					"simple": "alert_type.value"
+				},
+				"Description": {
+					"simple": "details"
+				},
+				"Sekoia Alert URL": {
+					"complex": {
+						"filters": [],
+						"root": "short_id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": "https://app.sekoia.io/operations/alerts/"
+										}
+									},
+									"suffix": {
+										"isContext": false
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"Sekoia Events": {
+					"simple": "events.items"
+				},
+				"Source Create time": {
+					"complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
+				"Source IP": {
+					"simple": "source"
+				},
+				"dbotMirrorInstance": {
+					"simple": "\"Sekoia XDR (beta)_copy_readWrite\""
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Alert Category": {
+					"simple": "alert_type.category"
+				},
+				"Alert ID": {
+					"simple": "short_id"
+				},
+				"Alert Name": {
+					"simple": "title"
+				},
+				"Alert Type ID": {
+					"simple": "alert_type.value"
+				},
+				"Alert UUID": {
+					"simple": "uuid"
+				},
+				"Description": {
+					"simple": "details"
+				},
+				"Sekoia Alert Details": {
+					"simple": "details"
+				},
+				"Sekoia Alert Status": {
+					"simple": "status.name"
+				},
+				"Sekoia Alert URL": {
+					"complex": {
+						"filters": [],
+						"root": "short_id",
+						"transformers": [
+							{
+								"args": {
+									"prefix": {
+										"isContext": false,
+										"value": {
+											"simple": "https://app.sekoia.io/operations/alerts/"
+										}
+									},
+									"suffix": {
+										"isContext": false
+									}
+								},
+								"operator": "concat"
+							}
+						]
+					}
+				},
+				"Sekoia CTI URL": {
+					"simple": "target"
+				},
+				"Sekoia Events": {
+					"simple": "events.items"
+				},
+				"Sekoia First Seen": {
+					"simple": "first_seen_at"
+				},
+				"Sekoia Impacted Assets": {
+					"complex": {
+						"filters": [],
+						"root": "assets",
+						"transformers": []
+					}
+				},
+				"Sekoia Kill Chain": {
+					"complex": {
+						"filters": [],
+						"root": "kill_chain",
+						"transformers": []
+					}
+				},
+				"Sekoia Last Seen": {
+					"simple": "last_seen_at"
+				},
+				"Source Create time": {
+					"complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": [
+							{
+								"operator": "TimeStampToDate"
+							}
+						]
+					}
+				},
+				"Source IP": {
+					"simple": "source"
+				},
+				"dbotMirrorInstance": {
+					"simple": "mirror_instance"
+				},
+				"test3": {
+					"complex": {
+						"filters": [],
+						"root": "created_at",
+						"transformers": [
+							{
+								"args": {
+									"item": {
+										"isContext": true,
+										"value": {
+											"simple": "created_at"
+										}
+									}
+								},
+								"operator": "append"
+							}
+						]
+					}
+				}
+			}
+		}
+	},
+	"name": "Sekoia XDR - Incoming Mapper",
+	"nameRaw": "Sekoia XDR - Incoming Mapper",
+	"packID": "",
+	"packName": "Carbon Black Enterprise Response",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "Carbon Black EDR Mapper",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1
+}
