@@ -590,11 +590,14 @@ class ExchangeOnlinePowershellV3Client
         [string]$action_type
     )
     {
+        if (-not $identities -and -not $identity) {
+            return ""
+        }
         try {
             $cmd_params = @{ }
             if ($user) {
                 $cmd_params.User = $user
-            } 
+            }
             if ($release_to_all) {
                 $cmd_params.ReleaseToAll = $null
             }
@@ -1711,9 +1714,11 @@ function EXOReleaseQuarantineMessageCommand
     )
 
     $raw_response = @{}
-    $human_readable = $identities ? 
-    "The following messages have been sent for release from quarantine: $identities" : 
-    "The message with identity $identity has been sent for release from quarantine."
+    $human_readable = $identities ?
+    "The following messages have been sent for release from quarantine: $identities" :
+    ($identity ?
+        "The message with identity $identity has been sent for release from quarantine." :
+        "No identities were provided for release from quarantine.");
     $entry_context = @{}
     Write-Output $human_readable, $entry_context, $raw_response
 }
