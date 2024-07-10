@@ -1,18 +1,14 @@
-from CommonServerPython import *
 import demistomock as demisto
 from test_data.execute_command import execute_command
 
-demisto.args = lambda: {'playbook': 'AwsEC2SyncAccounts'}
-demisto.executeCommand = execute_command
 
-return_results
+def test_main(mocker):
+    import GenerateAsBuiltConfiguration
 
-def test(mocker):
-    from GetIncidentsApiModule import main
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'args', return_value={'playbook': 'AwsEC2SyncAccounts'})
+    return_results_mocked = mocker.patch.object(GenerateAsBuiltConfiguration, 'return_results')
 
-    try:
-        main()
-    except Exception:
-        pass
+    GenerateAsBuiltConfiguration.main()
 
-    assert True
+    return_results_mocked.call_args.args[0]['File'] == 'asbuilt.json'

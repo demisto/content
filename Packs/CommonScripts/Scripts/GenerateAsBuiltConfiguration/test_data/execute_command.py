@@ -1,4 +1,4 @@
-def execute_command(args):
+def execute_command(*args):
     args = list(args)
     if args == ["core-api-get", {"uri": "/incidentfields"}]:
         return [

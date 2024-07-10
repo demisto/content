@@ -740,7 +740,7 @@ def sub_data(playbook: dict) -> tuple:
                         if new is not None and 'scriptId' in new.keys():
                             task_name.add(new.get('scriptId'))
 
-    command_list = playbook.get("commands")
+    command_list = playbook.get("commands", [])
     if configuration is not None:
         for c in command_list:
             for k, v in configuration.items():
