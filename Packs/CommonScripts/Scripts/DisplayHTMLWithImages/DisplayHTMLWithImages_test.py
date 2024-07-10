@@ -118,8 +118,8 @@ def test_main_mt(mocker, email_html, expected):
     main({})
 
     assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']
-    
-    
+
+
 @pytest.mark.parametrize(
     "email_html,expected",
     [
@@ -144,17 +144,17 @@ def test_imgaes_not_attached_to_incident(mocker, email_html, expected):
             'emailbody': email_html
         },
         'attachment': [
-            
+
         ]
     }
     mocked_files = [
         {'Name': 'image_1.png', 'EntryID': '37@119'},
         {'Name': 'image_2.png', 'EntryID': '38@120'}
     ]
-    
+
     mocked_context = {
         'Email': {
-            'AttachmentsData':[
+            'AttachmentsData': [
                 {
                     'Content-Disposition': 'attachment; filename="image_1.png"',
                     'Content-ID': '<ii_lyfigebl1>',
@@ -169,8 +169,6 @@ def test_imgaes_not_attached_to_incident(mocker, email_html, expected):
         },
         'File': mocked_files
     }
-            
-
 
     mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://localhost:8443:/acc_test_tenant'})
     mocker.patch.object(demisto, 'incident', return_value=mocked_incident)
