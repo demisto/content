@@ -1,0 +1,61 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Maps outgoing Sekoia XDR incidents fields.",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "beceb1bd-11eb-4d1d-81a1-3af874963eb5",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 9,
+	"mapping": {
+		"Sekoia XDR": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"short_id": {
+					"simple": "alertid"
+				},
+				"status": {
+					"simple": "sekoiaalertstatus"
+				},
+				"xsoar_id": {
+					"simple": "id"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"short_id": {
+					"simple": "dbotMirrorId"
+				},
+				"status": {
+					"simple": "status"
+				},
+				"xsoar_id": {
+					"simple": "id"
+				}
+			}
+		}
+	},
+	"name": "Sekoia XDR - Outgoing Mapper",
+	"nameRaw": "Sekoia XDR - Outgoing Mapper",
+	"packID": "",
+	"packName": "",
+	"propagationLabels": [
+		"all"
+	],
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-outgoing",
+	"unclassifiedCases": null,
+	"version": -1
+}
