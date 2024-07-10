@@ -14,19 +14,19 @@ This playbook does not use any integrations.
 
 ### Scripts
 
-* SetAndHandleEmpty
 * IsIntegrationAvailable
+* SetAndHandleEmpty
 
 ### Commands
 
-* cs-fx-get-full-report
-* cs-fx-find-reports
-* extractIndicators
 * attack-pattern
 * wildfire-report
-* joe-download-report
+* cs-fx-find-reports
+* extractIndicators
 * rasterize-pdf
+* joe-download-report
 * joe-search
+* cs-fx-get-full-report
 
 ## Playbook Inputs
 
