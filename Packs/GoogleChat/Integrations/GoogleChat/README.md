@@ -96,3 +96,47 @@ Send messages through google chat
 | GoogleChat.space.type | unknown | Display the space type. | 
 | GoogleChat.thread.name | unknown | Display the thread name. | 
 | GoogleChat.thread.threadKey | unknown | Display the thread key. | 
+
+#### Command example
+```!send-notification message=`hi from the test` space_id=AAAAAAAAAA```
+#### Context Example
+```json
+{
+    "GoogleChatWebhook": {
+        "Message": {
+            "argumentText": "hi from the test",
+            "createTime": "2024-07-10T13:13:36.046495Z",
+            "formattedText": "hi from the test",
+            "name": "spaces/AAAAAAAAAA/messages/11111111.11111111",
+            "sender": {
+                "displayName": "mySpace",
+                "name": "users/123456789",
+                "type": "BOT"
+            },
+            "space": {
+                "createTime": "2024-07-10T12:56:33.360356Z",
+                "displayName": "myNewProject",
+                "externalUserAllowed": true,
+                "name": "spaces/AAAAAAAAAA",
+                "spaceHistoryState": "HISTORY_ON",
+                "spaceThreadingState": "THREADED_MESSAGES",
+                "spaceType": "SPACE",
+                "spaceUri": "https://chat.google.com/room/AAAAAAAAAA?cls=**",
+                "type": "ROOM"
+            },
+            "text": "hi from the test",
+            "thread": {
+                "name": "spaces/AAAAAAAAAA/threads/1"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### The Message that was sent:
+>|Message Name|Sender Name|Sender Display Name|Sender Type|Space Display Name|Space Name|Space Type|Thread Name|
+>|---|---|---|---|---|---|---|---|
+>| spaces/AAAAAAAAAA/messages/11111111.11111111 | users/12345678 | mySpace | BOT | myNewProject | spaces/AAAAAAAAAA | ROOM | spaces/AAAAAAAAAA/threads/1 |
+
