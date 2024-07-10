@@ -279,7 +279,7 @@ LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'behaviors.tac
 CS_FALCON_DETECTION_INCOMING_ARGS = ['status', 'severity', 'tactic', 'scenario', 'objective',
                                      'technique', 'device.hostname', "composite_id", 'display_name']
 CS_FALCON_INCIDENT_INCOMING_ARGS = ['state', 'fine_score', 'status', 'tactics', 'techniques', 'objectives',
-                                           'tags', 'hosts.hostname', 'incident_id']
+                                    'tags', 'hosts.hostname', 'incident_id']
 
 MIRROR_DIRECTION_DICT = {
     'None': None,
@@ -1488,7 +1488,7 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         if filter_arg:
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
-        demisto.debug (f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
+        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
         return http_request('GET', endpoint_url)
     else:
         endpoint_url = '/detects/queries/detects/v1'
