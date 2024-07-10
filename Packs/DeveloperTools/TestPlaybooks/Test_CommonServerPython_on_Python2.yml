@@ -133,6 +133,7 @@ tasks:
         }
       }
 version: -1
+fromversion: 5.0.0
 view: |-
   {
     "linkLabelsPosition": {},
