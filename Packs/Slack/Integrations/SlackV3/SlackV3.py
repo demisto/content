@@ -17,7 +17,6 @@ from slack_sdk.socket_mode.response import SocketModeResponse
 from slack_sdk.web.async_client import AsyncWebClient
 from slack_sdk.web.async_slack_response import AsyncSlackResponse
 from slack_sdk.web.slack_response import SlackResponse
-from slack_sdk.http_retry.builtin_handlers import RateLimitErrorRetryHandler
 
 ''' CONSTANTS '''
 
@@ -131,7 +130,6 @@ def test_module():
     """
     Sends a test message to the dedicated slack channel.
     """
-    demisto.debug("SlackV3: test_module")
     if not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) > 0:
         return_error(
             "When 'Types of Notifications to Send' is populated, a dedicated channel is required.")
@@ -142,22 +140,15 @@ def test_module():
     if USER_TOKEN and not USER_TOKEN.startswith("xoxp"):
         return_error("Invalid User Token.")
     elif not DEDICATED_CHANNEL and len(CUSTOM_PERMITTED_NOTIFICATION_TYPES) == 0:
-        demisto.debug("SlackV3: RateLimitErrorRetryHandler")
-        rate_limit_handler = RateLimitErrorRetryHandler(max_retry_count=3)
-        CLIENT.retry_handlers.append(rate_limit_handler)
-        demisto.debug("SlackV3: CLIENT.auth_test()")
         CLIENT.auth_test()  # type: ignore
-        demisto.debug("SlackV3: USER_CLIENT.auth_test()")
         if USER_TOKEN:
             USER_CLIENT.auth_test()
     else:
-        demisto.debug("SlackV3: get_conversation_by_name")
         channel = get_conversation_by_name(DEDICATED_CHANNEL)
-        demisto.debug(f"SlackV3: {channel=}")
         if not channel:
             return_error(CHANNEL_NOT_FOUND_ERROR_MSG)
         message = 'Hi there! This is a test message.'
-        demisto.debug("SlackV3: chat_postMessage")
+
         CLIENT.chat_postMessage(channel=channel.get('id'), text=message)  # type: ignore
 
     # Status of mirroring check
