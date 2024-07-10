@@ -2,7 +2,7 @@ from pathlib import Path
 from urllib.parse import unquote
 import freezegun
 import pytest
-from datetime import datetime, timezone
+from datetime import datetime, UTC
 
 from PATHelpdeskAdvanced import (
     DATETIME_FORMAT,
@@ -61,10 +61,10 @@ def test_converts_date_fields():
     EPOCH_2022_INT = 1641042000000
 
     STR_2023 = (
-        datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=timezone.utc)
+        datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=UTC)
     ).strftime(DATETIME_FORMAT)
     STR_2022 = (
-        datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=timezone.utc)
+        datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=UTC)
     ).strftime(DATETIME_FORMAT)
 
     raw = {
