@@ -1,0 +1,147 @@
+id: 'Test CommonServerPython on Python2'
+inputs: []
+name: Test CommonServerPython on Python2
+outputs: []
+starttaskid: "0"
+tasks:
+  "0":
+    continueonerrortype: ""
+    id: "0"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: be977cd2-a0f1-4f74-838e-79bfe6bcd38b
+      iscommand: false
+      name: ""
+      version: -1
+    taskid: be977cd2-a0f1-4f74-838e-79bfe6bcd38b
+    timertriggers: []
+    type: start
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+  "1":
+    continueonerrortype: ""
+    id: "1"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "3"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      data:
+        simple: test
+      filename:
+        simple: test.txt
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      description: |
+        Creates a file (using the given data input or entry ID) and uploads it to the current investigation War Room.
+      id: 87ce9f31-c0e7-4a82-8945-adac63af34a0
+      iscommand: false
+      name: Create a file
+      script: FileCreateAndUploadV2
+      type: regular
+      version: -1
+    taskid: 87ce9f31-c0e7-4a82-8945-adac63af34a0
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+  "2":
+    continueonerrortype: ""
+    id: "2"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: 67c37279-7653-423f-89bb-1f8e71bd1955
+      iscommand: false
+      name: Done
+      type: title
+      version: -1
+    taskid: 67c37279-7653-423f-89bb-1f8e71bd1955
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+  "3":
+    continueonerrortype: ""
+    id: "3"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "2"
+    note: false
+    quietmode: 0
+    scriptarguments:
+      file_entry_id:
+        simple: ${File.EntryID}
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: a876e2e1-d141-475f-8994-79ab2a679e48
+      iscommand: false
+      name: Sanity Test
+      script: 'Test-CommonServerPython-2_7'
+      type: regular
+      version: -1
+    taskid: a876e2e1-d141-475f-8994-79ab2a679e48
+    timertriggers: []
+    type: regular
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+version: -1
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 560,
+        "width": 380,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
