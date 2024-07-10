@@ -39,3 +39,23 @@
 !nexpose-update-shared-credential
 !nexpose-update-vulnerability-exception-expiration id=12 expiration=2024-10-10T10:00:00Z
 !nexpose-update-vulnerability-exception-status id=1 status=Approve
+!nexpose-create-tag name=test123 type=Custom risk_score_higher_than=8000
+!nexpose-update-tag-search-criteria ip_address_is=3.3.3.3 tag_id=62
+!nexpose-list-tag id=62
+!nexpose-delete-tag id=62
+!nexpose-add-tag-asset-group tag_id=61 asset_group_ids=1,3
+!nexpose-remove-tag-asset-group asset_group_id=1 tag_id=61
+!nexpose-list-tag-asset-group tag_id=2
+!nexpose-list-tag-asset tag_id=33
+!nexpose-add-tag-asset asset_id=25 tag_id=61
+!nexpose-remove-tag-asset asset_id=25 tag_id=61
+!nexpose-add-site-included-asset site_id=848 assets=8.8.8.8
+!nexpose-remove-site-included-asset site_id=848 assets=8.8.8.8
+!nexpose-list-site-included-asset site_id=848
+!nexpose-list-site-included-asset-group site_id=848
+!nexpose-add-site-excluded-asset site_id=848 assets=8.8.8.8
+!nexpose-remove-site-excluded-asset site_id=848 assets=8.8.8.8
+!nexpose-list-site-excluded-asset site_id=848
+!nexpose-list-site-excluded-asset-group site_id=848
+!nexpose-list-asset-group limit=2
+!nexpose-create-asset-group name=test3 type=dynamic ip_address_is=1.1.1.1 risk_score_higher_than=8000 description=test

@@ -3,7 +3,7 @@ from CommonServerPython import *  # noqa: F401
 # type: ignore
 # mypy: ignore-errors
 from copy import deepcopy
-from typing import Callable, Tuple
+from collections.abc import Callable
 
 from datetime import datetime
 
@@ -351,9 +351,8 @@ class Client(BaseClient):
         """
         integration_context = get_integration_context()
         now = int(datetime.now().timestamp())
-        if integration_context.get("token") and integration_context.get("expires_in"):
-            if now < integration_context["expires_in"]:
-                return integration_context["token"]
+        if integration_context.get("token") and integration_context.get("expires_in") and now < integration_context["expires_in"]:
+            return integration_context["token"]
 
         try:
             token = self._http_request(
@@ -2914,7 +2913,7 @@ def get_paginated_records_with_hr(
     limit: Optional[int],
     page: int = None,
     page_size: int = None,
-) -> Tuple[list, str]:
+) -> tuple[list, str]:
     """
     Retrieve the required page either with Automatic or Manual pagination,
     and the matching readable output header.
@@ -2995,7 +2994,7 @@ def validate_related_arguments_provided(**related_args):
 
 
 def extract_args_from_additional_fields_arg(additional_fields: str,
-                                            field_name: str) -> Tuple[Any, List[str]]:
+                                            field_name: str) -> tuple[Any, List[str]]:
     """
     Extract dictionary structure from additional field argument.
 
@@ -3298,7 +3297,7 @@ def fetch_relevant_tickets(
     impact_filter: List[str],
     urgency_filter: List[str],
     custom_query: str,
-) -> Tuple[list, dict]:
+) -> tuple[list, dict]:
     """
     Fetch the relevant tickets according to the provided filter arguments.
     The Tickets are fetched Iteratively, by their ticket type until the capacity
@@ -3340,9 +3339,9 @@ def fetch_relevant_tickets(
         tickets_capacity -= tickets_amount
 
         if fetched_tickets:
-            last_ticket_create_time = total_tickets[-1].get("CreateDate")
-            ticket_type_to_last_epoch[ticket_type] = date_to_epoch_for_fetch(
-                arg_to_datetime(last_ticket_create_time))
+            ticket_type_to_last_epoch[ticket_type] = max(
+                [date_to_epoch_for_fetch(arg_to_datetime(ticket.get("CreateDate")))
+                 for ticket in total_tickets])
         if tickets_capacity <= 0:  # no more tickets to retrieve in the current fetch
             break
 
@@ -3425,10 +3424,7 @@ def all_keys_empty(dict_obj: Dict[str, Any]) -> bool:
     Returns:
         bool: Wheter or not all keys have None value.
     """
-    for value in dict_obj.values():
-        if value:
-            return False
-    return True
+    return all(not value for value in dict_obj.values())
 
 
 def gen_multi_filters_statement(filter_mapper: Dict[str, Any], oper_in_filter: str,
