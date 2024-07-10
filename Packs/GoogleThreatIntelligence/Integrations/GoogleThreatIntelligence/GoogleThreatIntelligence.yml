@@ -1979,6 +1979,50 @@ script:
     - contextPath: GoogleThreatIntelligence.File.links.self
       description: Link to the response.
       type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.date
+      description: Date of the analysis in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.harmless
+      description: Number of engines that found the indicator to be harmless.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.malicious
+      description: Number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.suspicious
+      description: Number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.timeout
+      description: he number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.undetected
+      description: Number of engines the found the indicator to be undetected.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
+      description: Status of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.id
+      description: ID of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.type
+      description: Type of object (analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha256
+      description: SHA-256 hash of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.sha1
+      description: SHA-1 hash of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.md5
+      description: MD5 hash of the file.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.name
+      description: Name of the file.
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.file_info.size
+      description: Size of the file.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.id
+      description: The analysis ID.
+      type: String
   - name: gti-private-file-scan-and-analysis-get
     description: Scan and get the analysis of a private file submitted to GoogleThreatIntelligence.
     polling: true
@@ -2191,6 +2235,42 @@ script:
       type: String
     - contextPath: GoogleThreatIntelligence.URL.links.self
       description: Link to the response.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.date
+      description: Date of the analysis in epoch format.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.harmless
+      description: Number of engines that found the indicator to be harmless.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.malicious
+      description: Number of engines that found the indicator to be malicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.suspicious
+      description: Number of engines that found the indicator to be suspicious.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.timeout
+      description: he number of engines that timed out for the indicator.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.stats.undetected
+      description: Number of engines the found the indicator to be undetected.
+      type: Number
+    - contextPath: GoogleThreatIntelligence.Analysis.data.attributes.status
+      description: Status of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.id
+      description: ID of the analysis.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.data.type
+      description: Type of object (analysis).
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.id
+      description: ID of the URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.meta.url_info.url
+      description: The URL.
+      type: String
+    - contextPath: GoogleThreatIntelligence.Analysis.id
+      description: The analysis ID.
       type: String
   - name: gti-curated-campaigns-get
     description: Retrieves GTI curated campaigns for a given resource.
