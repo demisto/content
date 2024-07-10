@@ -101,7 +101,7 @@ configuration:
   name: token
   type: 4
   required: false
-  additionalinfo: Use the "API Token (Recommended)" parameter instead.
+  additionalinfo: Use the "API Token" parameter instead.
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
