@@ -184,11 +184,10 @@ Checks the file reputation of the specified hash.
 | File.Relationships.EntityAType | String | The type of the source of the relationship. |
 | File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
-| File.Malicious.Detections | Number | For malicious files, the total number of detections. |
-| File.Malicious.TotalEngines | Number | For malicious files, the total number of engines that checked the file hash. |
-| File.Count VT Vendors Which Flagged Malicious | Number | Number of VT vendors which flagged the file as malicious. |
-| File.VT Vendors Which Flagged Malicious | Array | VT vendors which flagged the file as malicious. |
-| File.VT Detection Names | Array | VT detection names which flagged the file as malicious. |
+| File.Malicious.Description | String | For malicious files, the reason that the vendor made the decision. |
+| File.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the file as malicious. |
+| File.VTVendors.EngineVendors | Array | VT vendors which flagged the file as malicious. |
+| File.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the file as malicious. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
@@ -426,12 +425,12 @@ Checks the reputation of an IP address.
 | IP.Relationships.Relationship | string | The name of the relationship. | 
 | IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
 | IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-| IP.Malicious.Vendor | unknown | For malicious IPs, the vendor that made the decision. | 
-| IP.Malicious.Description | unknown | For malicious IPs, the reason that the vendor made the decision. | 
+| IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision. | 
+| IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. | 
+| IP.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the IP as malicious. |
+| IP.VTVendors.EngineVendors | Array | VT vendors which flagged the IP as malicious. |
+| IP.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the IP as malicious. |
 | IP.ASOwner | String | The autonomous system owner of the IP. | 
-| IP.Count VT Vendors Which Flagged Malicious | Number | Number of VT vendors which flagged the IP as malicious. | 
-| IP.VT Vendors Which Flagged Malicious | Array | VT vendors which flagged the IP as malicious. | 
-| IP.VT Detection Names | Array | VT detection names which flagged the IP as malicious. | 
 | DBotScore.Indicator | unknown | The indicator that was tested. | 
 | DBotScore.Type | unknown | The indicator type. | 
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
@@ -660,11 +659,11 @@ Checks the reputation of a URL.
 | URL.Relationships.Relationship | String | The name of the relationship. |
 | URL.Relationships.EntityAType | String | The type of the source of the relationship. |
 | URL.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. |
-| URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. |
-| URL.Count VT Vendors Which Flagged Malicious | Number | Number of VT vendors which flagged the URL as malicious. |
-| URL.VT Vendors Which Flagged Malicious | Array | VT vendors which flagged the URL as malicious. |
-| URL.VT Detection Names | Array | VT detection names which flagged the URL as malicious. |
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. |
+| URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. |
+| URL.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the URL as malicious. |
+| URL.VTVendors.EngineVendors | Array | VT vendors which flagged the URL as malicious. |
+| URL.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the URL as malicious. |
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
@@ -820,11 +819,11 @@ Checks the reputation of a domain.
 | Domain.Relationships.Relationship | String | The name of the relationship. |
 | Domain.Relationships.EntityAType | String | The type of the source of the relationship. |
 | Domain.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| Domain.Malicious.Vendor | unknown | For malicious domains, the vendor that made the decision. |
-| Domain.Malicious.Description | unknown | For malicious domains, the reason that the vendor made the decision. |
-| Domain.Count VT Vendors Which Flagged Malicious | Number | Number of VT vendors which flagged the domain as malicious. |
-| Domain.VT Vendors Which Flagged Malicious | Array | VT vendors which flagged the domain as malicious. |
-| Domain.VT Detection Names | Array | VT detection names which flagged the domain as malicious. |
+| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. |
+| Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. |
+| Domain.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the domain as malicious. |
+| Domain.VTVendors.EngineVendors | Array | VT vendors which flagged the domain as malicious. |
+| Domain.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the domain as malicious. |
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
@@ -2562,10 +2561,10 @@ Get analysis of a private file submitted to VirusTotal.
 ## VT indicator fields
 
 3 indicator fields have been added to all indicator types:
-- **Count VT Vendors Which Flagged Malicious**. Number. Number of VT vendors which flagged the indicator as malicious.
-- **VT Vendors Which Flagged Malicious**. Array. VT vendors which flagged the indicator as malicious.
-- **VT Detection Names. Array**. VT detection names which flagged the indicator as malicious.
+- **VT Engine Detections**. Number. Number of VT vendors which flagged the indicator as malicious.
+- **VT Engine Vendors**. Array. VT vendors which flagged the indicator as malicious.
+- **VT Engine Detection Names**. Array. VT detection names which flagged the indicator as malicious.
 
-To display the new fields in indicators, navigate to `Settings -> Objects Setup -> Indicators -> Types`. Select the desired indicator type, for example, `File`. Click on `Edit` and, under `Custom Fields`, choose the desired field and add the corresponding path. For instance, if you select the `VT Detection Names` field for the `File` indicator type, add the path `File.VT Detection Names`. This will enable the field to be populated in the indicator data.
+To display the new fields in indicators, navigate to `Settings -> Objects Setup -> Indicators -> Types`. Select the desired indicator type, for example, `File`. Click on `Edit` and, under `Custom Fields`, choose the desired field and add the corresponding path. For instance, if you select the `VT Engine Detections` field for the `File` indicator type, add the path `File.VTVendors.EngineDetections`. This will enable the field to be populated in the indicator data.
 
 Note that the field will not automatically appear in the indicator's layout. To make it visible, go to `Settings -> Objects Setup -> Indicators -> Layouts`, select the desired layout (e.g., `File Indicator`), click `Detach` if needed, and then edit the layout to include the new field.
