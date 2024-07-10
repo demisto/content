@@ -28,7 +28,7 @@ API_TOKEN = PARAMS.get('apitoken_creds', {}).get('password') or PARAMS.get('APIT
 BASE_URL = PARAMS.get('baseURL')
 USE_SSL = not PARAMS.get('insecure', False)
 DEFAULT_HEADERS = {
-    'Authorization': 'Bearer {}'.format(API_TOKEN),
+    'Authorization': f'Bearer {API_TOKEN}',
     'Accept': 'application/json'
 }
 SUSPICIOUS_THRESHOLD = arg_to_number(PARAMS.get('suspicious_threshold', 0)) or 0
@@ -130,7 +130,7 @@ def http_request(api_endpoint, params_dict=None, method='GET', data_list=None):
     if params_dict:
         req_params.update(params_dict)
     url = BASE_URL + api_endpoint
-    LOG('running %s request with url=%s\tparams=%s\tdata=%s' % (method, url, json.dumps(req_params), data_list))
+    demisto.debug(f'running {method} request with {url=}\tparams={json.dumps(req_params)}\t={data_list=}')
     try:
         res = requests.request(
             method,
@@ -145,8 +145,7 @@ def http_request(api_endpoint, params_dict=None, method='GET', data_list=None):
         return res.json()
 
     except Exception as e:
-        LOG(e)
-        raise
+        raise Exception(e)
 
 
 def format_string_to_table_header_format(string):
@@ -154,7 +153,8 @@ def format_string_to_table_header_format(string):
     if type(string) in STRING_TYPES:
         return " ".join(word.capitalize() for word in string.replace("_", " ").split())
     else:
-        return_error('The key is not a string: {}'.format(string))
+        return_error(f'The key is not a string: {string}')
+        return None
 
 
 def format_string_to_context_key_format(string):
@@ -162,7 +162,8 @@ def format_string_to_context_key_format(string):
     if type(string) in STRING_TYPES:
         return "".join(word.capitalize() for word in string.split('_'))
     else:
-        return_error('The key is not a string: {}'.format(string))
+        return_error(f'The key is not a string: {string}')
+        return None
 
 
 def date_to_timestamp_func(date):
@@ -278,9 +279,8 @@ def get_domain_categorization_command():
             'Malware Categories': 'No Security Categories Were Found'
         }
 
-        if categorization:
-            if categorization.get('status'):
-                contents['Status'] = categorization['status']  # type: ignore
+        if categorization and categorization.get('status'):
+            contents['Status'] = categorization['status']  # type: ignore
         if categorization.get('content_categories'):
             content_categories = ",".join(categorization['content_categories'])
             contents['Content Categories'] = content_categories  # type: ignore
@@ -708,49 +708,38 @@ def get_ip_dns_history(ip):
     return {'features': features, 'response': response}
 
 
+def create_dbot_Score(domain: dict, reliability: str) -> Common.DBotScore:
+    """
+        Creates DBotScore DOMAIN indicator, for get_ip_malicious_domains_command.
+    """
+    return Common.DBotScore(indicator=domain.get('name'),
+                            indicator_type=DBotScoreType.DOMAIN,
+                            integration_name='Cisco Umbrella Investigate',
+                            score=Common.DBotScore.NONE,
+                            reliability=reliability)
+
+
 def get_ip_malicious_domains_command():
-    # Initialize
-    contents = []
-    context = {}
-    headers = []  # type: ignore
-    results = []
-    context_dbotscore = []
-    # Get vars
-    ip = demisto.args()['ip']
+    args = demisto.args()
+    ip = args.get('ip')
+    reliability = args.get('Reliability', '')
     # Fetch data
-    res = get_ip_malicious_domains(ip)
-    if res:
-        # Process response - build context and markdown table
-        for domain in res:
-            contents.append({
-                'Name': domain['name'],
-                'Malicious': {
-                    'Vendor': 'Cisco Umbrella Investigate',
-                    'Description': 'For IP ' + ip
-                }
-            })
-            context_dbotscore.append({
-                'Indicator': domain['name'],
-                'Type': 'domain',
-                'Vendor': 'Cisco Umbrella Investigate',
-                'Score': 3,
-                'Reliability': reliability
-            })
-
-        if contents:
-            context[outputPaths['domain']] = contents
-            context[outputPaths['dbotscore']] = context_dbotscore
-
-    results.append({
-        'Type': entryTypes['note'],
-        'ContentsFormat': formats['json'],
-        'Contents': contents,
-        'ReadableContentsFormat': formats['markdown'],
-        'HumanReadable': tableToMarkdown('Malicious Domains:', contents, headers),
-        'EntryContext': context
-    })
-
-    return results
+    command_results_list = []
+    ip_malicious_domains = get_ip_malicious_domains(ip)
+    if not ip_malicious_domains:
+        raise DemistoException('not found')
+    for ip_domain in ip_malicious_domains:
+        cve_dbot_score = create_dbot_Score(domain=ip_domain, reliability=reliability)
+        cve_indicator = Common.Domain(domain=ip_domain.get('name'), dbot_score=cve_dbot_score)
+        cve_human_readable = {'ID': ip_domain.get('id'),
+                              'name': ip_domain.get('name')}
+        human_readable = tableToMarkdown('Cisco Umbrella Investigate DOMAIN', cve_human_readable,
+                                         headers=['ID', 'Name'])
+        command_results = CommandResults(raw_response=ip_domain, readable_output=human_readable,
+                                         indicator=cve_indicator).to_context()
+        if command_results not in command_results_list:
+            command_results_list.append(command_results)
+    return command_results
 
 
 def get_ip_malicious_domains(ip):
@@ -1218,9 +1207,8 @@ def get_domains_for_email_registrar_command():
     # user input validation
     if not isinstance(emails, list):
         return_error('Emails list is not formatted correctly, please try again.')
-    if sort:
-        if sort != 'created' and sort != 'updated':
-            return_error('The parameter sort accept only these values: created/updated/expired.')
+    if sort and sort != 'created' and sort != 'updated':
+        return_error('The parameter sort accept only these values: created/updated/expired.')
     for email in emails:
         if not re.match(emailRegex, email):
             return_error('The provided email is not valid: ' + email)
@@ -1334,9 +1322,8 @@ def get_domains_for_nameserver_command():
     # user input validation
     if not isinstance(nameservers, list):
         return_error('Name Servers list is not formatted correctly, please try again.')
-    if sort:
-        if sort != 'created' and sort != 'updated':
-            return_error('The parameter sort accept only these values: created/updated')
+    if sort and sort != 'created' and sort != 'updated':
+        return_error('The parameter sort accept only these values: created/updated')
     for nameserver in nameservers:
         if re.match('^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$',
                     nameserver) is None:
