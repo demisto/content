@@ -3417,7 +3417,7 @@ script:
     - contextPath: PaloAltoNetworksXDR.RiskyHost.score
       description: The score assigned to the host.
       type: Number
-    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date_created
+    - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.date created
       description: Date when the incident was created.
       type: String
     - contextPath: PaloAltoNetworksXDR.RiskyHost.reasons.description
