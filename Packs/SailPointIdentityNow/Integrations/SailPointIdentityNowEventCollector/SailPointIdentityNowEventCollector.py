@@ -212,7 +212,8 @@ def fetch_events(client: Client,
             demisto.debug(f'information of the last event in this cycle: id: {last_fetched_id}, created: {last_fetched_creation_date}.')
             max_events_per_fetch -= len(events)
             demisto.debug(f'{max_events_per_fetch} events are left to fetch in the next calls.')
-
+        else:
+            break
 
     next_run = {'prev_id': last_fetched_id, 'prev_date': last_fetched_creation_date}
     demisto.debug(f'Done fetching. Sum of all events: {len(all_events)}, the next run is {next_run}.')
