@@ -3826,7 +3826,7 @@
             "fromversion": "4.5.0"
         },
         {
-            "playbookID": "Whois A new layout implemented by the python-whois service",
+            "playbookID": "Whois A new layout implemented with python-whois service",
             "integrations": "Whois",
             "instance_names": "New_context_output",
             "fromversion": "6.9.0"

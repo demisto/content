@@ -1,6 +1,6 @@
-id: Whois A new layout implemented by python-whois service
+id: Whois A new layout implemented with python-whois service
 version: -1
-name: Whois A new layout implemented by python-whois service
+name: Whois A new layout implemented with python-whois service
 description: This playbook test compares the new context data layout against the legacy format for "apple.com" and "microsoft.com" to ensure accuracy and consistency in WHOIS information.
 starttaskid: "0"
 tasks:
