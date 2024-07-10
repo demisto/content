@@ -744,6 +744,7 @@ tasks:
       id: 3a0c9e40-5735-4f0e-85f1-f12af401f0d5
       version: -1
       name: Auto Containment Enabled?
+      description: ""
       type: condition
       iscommand: false
       brand: ""
