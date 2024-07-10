@@ -6,7 +6,7 @@ config case_sensitive = true
 | alter 
 event_type = source_log_type,
 check_in = to_timestamp(to_integer(checkin), "MILLIS"),
-computer_created = to_timestamp(to_integer(created) , "MILLIS")  //first connected 
+computer_created = to_timestamp(to_integer(created) , "MILLIS"),  //first connected 
 host_name = hostName ,
 memory_size = to_integer(memorySize) , // Already in bytes
 model_name = modelName ,
