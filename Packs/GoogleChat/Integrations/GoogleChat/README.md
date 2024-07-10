@@ -28,11 +28,11 @@ In the Server Configuration section, verify that the value for the `instance.exe
 
 ## Create Google Chat App
 
-1. Navigate to https://console.cloud.google.com and authenticate with your google user.
+1. Navigate to [here](https://console.cloud.google.com) and authenticate with your google user.
 2. On top left click on the dropdown.
 3. In the popup click on **NEW PROJECT** > fill in the form and click on create.
 4. Select the project which was created.
-5. Navigate to https://console.cloud.google.com/apis/credentials/consent, Select the user type for your app, then click Create.
+5. Navigate to [here](https://console.cloud.google.com/apis/credentials/consent), Select the user type for your app, then click Create.
 6. Navigate to **API's & Services** > **Credentials**.
 7. Click on **+ CREATE CREDENTIALS** and add the following:
     - API key.
@@ -40,7 +40,7 @@ In the Server Configuration section, verify that the value for the `instance.exe
     - Service Account:
         - Under the **Grant this service account** section set the role to owner.
         - After is was created click on **manage service account** > actions > manage keys > ADD KEY > create new key- save the json which is automatically downloaded.
-8. Navigate to https://console.cloud.google.com/apis/api/chat.googleapis.com and enable the Google Chat API.
+8. Navigate to [here](https://console.cloud.google.com/apis/api/chat.googleapis.com) and enable the Google Chat API.
 9. Under the Enabled APIs & service click on the Google Chat API
 10. Click the CONFIGURATION tab:
     - Under **Functionality**, select one or both of the following checkboxes:
@@ -79,7 +79,7 @@ Send messages through google chat
 | to | The recipient of the message. | Optional | 
 | space_id | The ID of the space to which to send the message. | Required | 
 | thread_id | If replying to a thread, use this argument to specify the thread name to reply to. | Optional | 
-| adaptive_card | Card to send. See Card Builder here: https://addons.gsuite.google.com/uikit/builder. | Optional | 
+| adaptive_card | Card to send. See Card Builder [here](https://addons.gsuite.google.com/uikit/builder). | Optional | 
 | entitlement | Full entitlement for GoogleChatAsk script. | Optional | 
 | expiry | Expiry time for waiting to the user response. | Optional | 
 | default_reply | Default reply if the expiration time of the message has exceeded. | Optional | 
