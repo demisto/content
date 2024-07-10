@@ -396,7 +396,6 @@ def fetch_events_command(
         (list[dict], str, int, str): events, new offset, total number of events fetched, and new last_run time to set.
     """
     total_events_count = 0
-    new_from_time = ""
     from_epoch, _ = parse_date_range(date_range=fetch_time, date_format='%s')
     offset = ctx.get("offset")
     while total_events_count < int(fetch_limit):
@@ -421,8 +420,8 @@ def fetch_events_command(
                 policy_id = event.get('attackData', {}).get('policyId', "")
                 demisto.debug(f"Couldn't decode event with {config_id=} and {policy_id=}, reason: {e}")
         total_events_count += len(events)
-        demisto.info(f"Got {len(events)} events, and {offset=}, and {new_from_time=}")
-        yield events, offset, total_events_count, new_from_time
+        demisto.info(f"Got {len(events)} events, and {offset=}")
+        yield events, offset, total_events_count
     yield [], offset, total_events_count
 
 
