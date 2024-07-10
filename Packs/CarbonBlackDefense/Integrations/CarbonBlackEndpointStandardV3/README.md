@@ -1,17 +1,35 @@
 Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
 This integration was integrated and tested with version xx of Carbon Black Endpoint Standard v3.
+### Migration to Carbon Black Endpoint Standard v3
 
-#### Deprecated Commands in Carbon Black Endpoint Standard v1
-The following commands from the Carbon Black Endpoint Standard v2 integration have been deprecated and replaced with the v3 commands as shown.
+#### Deprecated Commands in Carbon Black Endpoint Standard v2
 
-| Deprecated Command | Replaced with v3 Commands | comments |
+The following commands from the Carbon Black Endpoint Standard v2 integration have been deprecated and replaced with v3 commands:
+
+| Deprecated Command | Replaced with v3 Commands | Comments |
 | --- | --- | --- |
-| cbd-find-events <br/> cbd-find-events-results| [cbd-find-observation](#cbd-find-observation) | this command includes cbd-find-events-results step. |
-| cbd-find-events-results | [cbd-find-observation-results](#cbd-find-observation-results) | Using to check the results manually without using polling. |
-| cbd-find-events-details | [cbd-find-observation-details](#cbd-find-observation-details) | this command includes cbd-find-events-details-results step. |
-| cbd-find-events-details-results | [cbd-find-observation-details-results](#cbd-find-observation-details-results) | Using to check the results manually without using polling. |
-| cbd-find-processes-results | [cbd-find-processes](#cbd-find-processes) <br/> [cbd-find-processes-results](#cbd-find-processes-results)| can be retrived by the cbd-find-processes poling command or manually with the cbd-find-processes-result |
-| cbd-get-policies | [cbd-get-policies-summary](#cbd-get-policies-summary)|  |
+| [`cbd-find-events`](https://xsoar.pan.dev/docs/reference#cbd-find-observation) | [`cbd-find-observation`](https://xsoar.pan.dev/docs/reference#cbd-find-observation) | Includes `cbd-find-events-results`. |
+| [`cbd-find-events-results`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-results) | [`cbd-find-observation-results`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-results) | Manually check results without polling. |
+| [`cbd-find-events-details`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-details) | [`cbd-find-observation-details`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-details) | Includes `cbd-find-events-details-results`. |
+| [`cbd-find-events-details-results`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-details-results) | [`cbd-find-observation-details-results`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-details-results) | Manually check details results without polling. |
+| [`cbd-find-processes-results`](https://xsoar.pan.dev/docs/reference#cbd-find-processes) | [`cbd-find-processes`](https://xsoar.pan.dev/docs/reference#cbd-find-processes) <br/> [`cbd-find-processes-results`](https://xsoar.pan.dev/docs/reference#cbd-find-processes-results) | Retrieve results via polling or manually with `cbd-find-processes-results`. |
+| [`cbd-get-policies`](https://xsoar.pan.dev/docs/reference#cbd-get-policies-summary) | [`cbd-get-policies-summary`](https://xsoar.pan.dev/docs/reference#cbd-get-policies-summary) | |
+
+#### Important Changes in Carbon Black Endpoint Standard v3
+
+- **Organization Key:** Updated to be a required field.
+- **cbd-find-processes:** Enhanced to include process results when polling=true.
+- **cbd-find-observation-results:** Added to manually retrieve observation results without polling.
+- **cbd-find-observation-details-results:** Added to manually retrieve observation details results without polling.
+- **cbd-alerts-search:** Updated context output; deprecated **category** arg and updated **tag** arg to **tags**.
+- **policy commands:** Context output updated ; *policy* arg format changed.
+- **rules commands:** Updated context output and operation arg options.
+
+#### Deprecated Playbooks
+
+- **Carbon Black Endpoint Standard Find Event Details:** Use **cbd-find-observation-details** command instead.
+- **Carbon Black Endpoint Standard Find Events:** Use **cbd-find-observation** command instead.
+- **Carbon Black Endpoint Standard Find Processes:** Use **cbd-find-processes** command instead.
 
 
 ### Mapper
