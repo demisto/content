@@ -7125,12 +7125,16 @@ def test_truncate_long_time_str():
 
     detections = [{"time": "2022-01-01T00:00:00.000000000000000000000000000Z"},
                   {"time": "2022-01-01T00:00:00.000000Z"},
-                  {"time": "2022-01-01T00:00:00.000000000000000000000000000Z"}]
+                  {"time": "2022-01-01T00:00:00.000000000000000000000000000Z"},
+                  {"time": "2022-01-01T00:00:00Z"}
+                  ]
     time_key = "time"
 
     assert truncate_long_time_str(detections, time_key) == [{'time': '2022-01-01T00:00:00.000000Z'},
                                                             {'time': '2022-01-01T00:00:00.000000Z'},
-                                                            {'time': '2022-01-01T00:00:00.000000Z'}]
+                                                            {'time': '2022-01-01T00:00:00.000000Z'},
+                                                            {"time": "2022-01-01T00:00:00Z"}
+                                                            ]
 
 
 @pytest.mark.parametrize('Legacy_version, expected_url', [

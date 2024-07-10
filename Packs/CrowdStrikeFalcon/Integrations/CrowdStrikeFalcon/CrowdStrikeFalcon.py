@@ -2468,9 +2468,9 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data['severity'] = severity_string_to_int(severity)
     demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
-    incomming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
+    incoming_args = LEGACY_CS_FALCON_DETECTION_INCOMING_ARGS if LEGACY_VERSION else CS_FALCON_DETECTION_INCOMING_ARGS
     updated_object: dict[str, Any] = {'incident_type': 'detection'}
-    set_updated_object(updated_object, mirrored_data, incomming_args)
+    set_updated_object(updated_object, mirrored_data, incoming_args)
     demisto.debug(f'After set_updated_object {updated_object=}')
     return mirrored_data, updated_object
 
