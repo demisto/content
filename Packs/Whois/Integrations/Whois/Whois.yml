@@ -152,7 +152,7 @@ script:
       description: The email of the registrar.
       type: string
     - contextPath: Domain.Registrar.Id
-      description: The id of the registrar.
+      description: The ID of the registrar.
       type: string
     - contextPath: Domain.Registrar.Phone
       description: The phone of the registrar.
@@ -179,7 +179,7 @@ script:
       description: The phone number of the tech administrator.
       type: string
     - contextPath: Domain.Admin
-      description: Admin information.
+      description: Administrator information.
       type: object
     - contextPath: Domain.Admin.Address
       description: The address of the administrator.
@@ -398,7 +398,7 @@ script:
       description: The phone number of the tech administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin
-      description: Admin information.
+      description: Administrator information.
       type: object
     - contextPath: Domain.WHOIS.Admin.Address
       description: The address of the administrator.
@@ -788,7 +788,7 @@ script:
       description: The phone number of the tech administrator.
       type: string
     - contextPath: Domain.Admin
-      description: Admin information.
+      description: Administrator information.
       type: object
     - contextPath: Domain.Admin.Address
       description: The address of the administrator.
@@ -1019,7 +1019,7 @@ script:
       description: The phone number of the tech administrator.
       type: string
     - contextPath: Domain.WHOIS.Admin
-      description: Admin information.
+      description: Administrator information.
       type: object
     - contextPath: Domain.WHOIS.Admin.Address
       description: The address of the administrator.

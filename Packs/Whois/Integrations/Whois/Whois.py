@@ -10,6 +10,7 @@ from typing import Dict, List, Optional, Type
 import urllib
 import whois
 from whois.parser import PywhoisError
+import dateparser.search
 
 RATE_LIMIT_RETRY_COUNT_DEFAULT: int = 0
 RATE_LIMIT_WAIT_SECONDS_DEFAULT: int = 120
@@ -8835,42 +8836,18 @@ def setup_proxy():
     socket.socket = socks.socksocket  # type: ignore
 
 
-def extract_hard_date(date):
+def extract_hard_date(date: str) -> Optional[str]:
     """
-    Extracts and formats a date from a string using regular expressions and datetime manipulation.
+    Extracts the first date from a given string.
 
     Args:
-        date (str): String potentially containing a date in formats like YYYY/MM/DD, YYYY-MM-DD,
-                    DD/MM/YYYY, or DD-MM-YYYY.
+        date (str): A string containing a date.
 
     Returns:
-        str or None: Formatted date string in DD-MM-YYYY format if a valid date is found in the input string,
-                     or None if no valid date is found.
-
-    Note:
-        This function uses a regular expression to find date patterns in the input string.
-        If a matching date is found, it converts it to a standardized DD-MM-YYYY format.
-        Supported date separators include '/', '-', and ','.
-
-    Example:
-        >>> extract_hard_date("[接続年月日] 2013/09/04")
-        '04-09-2013'
-        >>> extract_hard_date("[接続年月日]  04/09/2013")
-        '04-09-2013'
-        >>> extract_hard_date("Invalid date format")
-        None
+        Optional[str]: The first extracted date as a string if found, otherwise None.
     """
-    match = re.search(r"\d{4}[,/-]\d{2}[,/-]\d{2}|\d{2}[,/-]\d{2}[,/-]\d{4}", date)
-    if not match:
-        return None
-    date_str = match.group()
-    date_str_standardized = date_str.replace(",", "/").replace("-", "/")
-    if len(date_str_standardized.split("/")[0]) == 2:
-        date_format = "%d/%m/%Y"
-    else:
-        date_format = "%Y/%m/%d"
-    date_obj = datetime.strptime(date_str_standardized, date_format)
-    return date_obj.strftime("%d-%m-%Y")
+    date_extracted = dateparser.search.search_dates(date)
+    return date_extracted[0][0] if date_extracted else None
 
 
 def extract_date(date) -> str:

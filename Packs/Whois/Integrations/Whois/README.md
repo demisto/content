@@ -71,7 +71,7 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.Organization | string | The organization domain name. | 
 | Domain.WhoisServer | string | The whois server name. | 
 | Domain.Phone | string | The phone number of the tech administrator. | 
-| Domain.Admin | object | Admin information. | 
+| Domain.Admin | object | Administrator information. | 
 | Domain.Admin.Address | string | The address of the administrator. | 
 | Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.Admin.C | string | The C field of the administrator. | 
@@ -142,7 +142,7 @@ This pack relies on free services for WHOIS information. As with many free servi
 | Domain.WHOIS.Organization | string | The organization domain name. | 
 | Domain.WHOIS.WhoisServer | string | The whois server name. | 
 | Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
-| Domain.WHOIS.Admin | object | Admin information. | 
+| Domain.WHOIS.Admin | object | Administrator information. | 
 | Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
 | Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
@@ -401,7 +401,7 @@ Provides data enrichment for domains.
 | Domain.Address | string | The abuse address. | 
 | Domain.WhoisServer | string | The whois server name. | 
 | Domain.Phone | string | The phone number of the tech administrator. | 
-| Domain.Admin | object | Admin information. | 
+| Domain.Admin | object | Administrator information. | 
 | Domain.Admin.Address | string | The address of the administrator. | 
 | Domain.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.Admin.C | string | The C field of the administrator. | 
@@ -476,7 +476,7 @@ Provides data enrichment for domains.
 | Domain.WHOIS.Organization | string | The organization domain name. | 
 | Domain.WHOIS.WhoisServer | string | The whois server name. | 
 | Domain.WHOIS.Phone | string | The phone number of the tech administrator. | 
-| Domain.WHOIS.Admin | object | Admin information. | 
+| Domain.WHOIS.Admin | object | Administrator information. | 
 | Domain.WHOIS.Admin.Address | string | The address of the administrator. | 
 | Domain.WHOIS.Admin.ApplicationPurpose | string | The application purpose of the administrator. | 
 | Domain.WHOIS.Admin.C | string | The C field of the administrator. | 
