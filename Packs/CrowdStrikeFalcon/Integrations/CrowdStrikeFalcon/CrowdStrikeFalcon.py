@@ -1488,9 +1488,11 @@ def get_detections(last_behavior_time=None, behavior_id=None, filter_arg=None):
         if filter_arg:
             text_to_encode += f"+{filter_arg}"
         endpoint_url += urllib.parse.quote_plus(text_to_encode)
+        demisto.debug (f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=}")
         return http_request('GET', endpoint_url)
     else:
         endpoint_url = '/detects/queries/detects/v1'
+        demisto.debug(f"In get_detections: {LEGACY_VERSION =} and {endpoint_url=} and {params=}")
         return http_request('GET', endpoint_url, params)
 
 
@@ -1522,10 +1524,9 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
 
     if not LEGACY_VERSION:
         endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter', None)}")
-
+    demisto.debug(f"In get_fetch_detections: {LEGACY_VERSION =}, {endpoint_url=}, {params=}")
     response = http_request('GET', endpoint_url, params)
 
-    demisto.debug(f"CrowdStrikeFalconMsg: Getting detections from {endpoint_url} with {params=}. {response=}")
     return response
 
 
@@ -1537,7 +1538,7 @@ def get_detections_entities(detections_ids: list):
     """
     ids_json = {'ids': detections_ids} if LEGACY_VERSION else {"composite_ids": detections_ids}
     url = '/detects/entities/summaries/GET/v1' if LEGACY_VERSION else '/alerts/entities/alerts/v2'
-    demisto.debug(f"Getting detections entities from {url} with {ids_json=}")
+    demisto.debug(f"Getting detections entities from {url} with {ids_json=}. {LEGACY_VERSION=}")
     if detections_ids:
         response = http_request(
             'POST',
@@ -1598,7 +1599,8 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
         endpoint_url += urllib.parse.quote_plus(params.pop('filter', None))
     response = http_request('GET', endpoint_url, params)
 
-    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}")
+    demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
+        {LEGACY_VERSION=}")
 
     return response
 
@@ -1625,6 +1627,8 @@ def get_detection_entities(incidents_ids: list):
     """
     url_endpoint_version = 'v1' if LEGACY_VERSION else 'v2'
     ids_json = {'ids': incidents_ids} if LEGACY_VERSION else {"composite_ids": incidents_ids}
+    demisto.debug(f"In get_detection_entities: Getting detection entities from\
+        {url_endpoint_version} with {ids_json=}. {LEGACY_VERSION=}")
     return http_request(
         'POST',
         f'/alerts/entities/alerts/{url_endpoint_version}',
@@ -2022,6 +2026,7 @@ def resolve_detection(ids, status, assigned_to_uuid, show_in_ui, comment):
     if comment:
         payload['comment'] = comment
     if not LEGACY_VERSION:
+        demisto.debug(f"in resolve_detection: {LEGACY_VERSION =} and {payload=}")
         # modify the payload to match the Raptor API
         ids = payload.pop('ids')
         payload["assign_to_user_id"] = payload.pop("assigned_to_uuid") if "assigned_to_uuid" in payload else None
@@ -2464,7 +2469,7 @@ def get_remote_detection_data(remote_incident_id: str):
     mirrored_data_list = get_detections_entities([remote_incident_id]).get('resources', [])  # a list with one dict in it
     mirrored_data = mirrored_data_list[0]
     # severity key name is different in the raptor version
-    severity = mirrored_data.get('max_severity_displayname') or mirrored_data.get('severity_name')
+    severity = mirrored_data.get('max_severity_displayname') if LEGACY_VERSION else mirrored_data.get('severity_name')
     mirrored_data['severity'] = severity_string_to_int(severity)
     demisto.debug(f'In get_remote_detection_data {remote_incident_id=} {mirrored_data=}')
 
@@ -2920,7 +2925,7 @@ def fetch_incidents():
             for detection in full_detections:
                 detection['incident_type'] = incident_type
                 # detection_id is for the old version of the API, composite_id is for the new version (Raptor)
-                detection_id = detection.get('detection_id') or detection.get('composite_id')
+                detection_id = detection.get('detection_id') if LEGACY_VERSION else detection.get('composite_id')
                 demisto.debug(
                     f"CrowdStrikeFalconMsg: Detection {detection_id} "
                     f"was fetched which was created in {detection['created_timestamp']}")
@@ -6768,6 +6773,7 @@ def resolve_detections_request(ids: list[str], **kwargs) -> dict[str, Any]:
     """
     url_suffix = '/alerts/entities/alerts/v3' if not LEGACY_VERSION else '/alerts/entities/alerts/v2'
     body_payload = resolve_detections_prepare_body_request(ids=ids, action_params_values=kwargs)
+    demisto.debug(f"In resolve_detections: {LEGACY_VERSION=}, {url_suffix=}, {body_payload=} ")
     return http_request(method='PATCH', url_suffix=url_suffix, json=body_payload)
 
 
