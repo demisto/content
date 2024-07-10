@@ -33,37 +33,12 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-    """Client class to interact with the service API
 
-    This Client implements API calls, and does not contain any XSOAR logic.
-    Should only do requests and return data.
-    It inherits from BaseClient defined in CommonServer Python.
-    Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this  implementation, no special attributes defined
-    """
-
-    # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(self, dummy: str) -> Dict[str, str]:
-        """Returns a simple python dict with the information provided
-        in the input (dummy).
-
-        :type dummy: ``str``
-        :param dummy: string to add in the dummy dict that is returned
-
-        :return: dict as {"dummy": dummy}
-        :rtype: ``str``
-        """
-
-        return {"dummy": dummy}
-    # TODO: ADD HERE THE FUNCTIONS TO INTERACT WITH YOUR PRODUCT API
-
-
-''' HELPER FUNCTIONS '''
-
-# TODO: ADD HERE ANY HELPER FUNCTION YOU MIGHT NEED (if any)
-
-''' COMMAND FUNCTIONS '''
-
+    def get_indicators_request(self, query = {}):
+        url_suffix = '/api/v1'
+        body = query
+        return self._http_request('POST', url_suffix=url_suffix, json_data=body)
+        
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
@@ -120,7 +95,6 @@ def main() -> None:
     :return:
     :rtype:
     """
-
     # TODO: make sure you properly handle authentication
     # api_key = demisto.params().get('credentials', {}).get('password')
 
@@ -148,7 +122,7 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
-
+        response = client.get_indicators_request(query={ "query": "ioc", "id": 41 })
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)

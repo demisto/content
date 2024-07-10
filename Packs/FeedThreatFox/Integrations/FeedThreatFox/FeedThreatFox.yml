@@ -1,19 +1,17 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: ThreatFox Feed
   version: -1
 configuration:
-- defaultvalue: https://example.com/
-  display: Your server URL
+- defaultvalue: https://threatfox-api.abuse.ch/
+  display: Server URL
   name: url
   required: true
   type: 0
-- displaypassword: API Key
-  additionalinfo: The API Key to use for connection
-  name: credentials
-  required: true
-  hiddenusername: true
-  type: 9
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -22,6 +20,41 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Feed Fetch Interval
+  name: interval
+  required: false
+  defaultValue: 1
+  section: Collect
+  advanced: true
+  type: 1
+  auto: PREDEFINED
+  predefined:
+  - 1
+  - 2
+  - 3
+  - 4
+  - 5
+  - 6
+  - 7
+- display: Return IOCs with Ports
+  name: with_ports
+  required: false
+  defaultValue: false
+  section: Collect
+  advanced: true
+  type: 8
+- display: Confidence Threshold
+  name: confidence_threshold
+  required: false
+  defaultValue: 75
+  section: Collect
+  advanced: true
+- display: Create relationship
+  name: create_relationship
+  required: false
+  section: Collect
+  advanced: true
+  type: 8
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
 display: ThreatFox Feed
 name: ThreatFox Feed
