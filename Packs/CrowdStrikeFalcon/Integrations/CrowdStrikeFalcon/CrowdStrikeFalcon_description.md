@@ -6,6 +6,7 @@ This integration is enabled by default for the new CrowdStrike Raptor version. F
 
 ### Required API client scope
 In order to use the CrowdStrike Falcon integration, your API client must be provisioned with the following scope and permissions:
+
 - Real Time Response - Read and Write
 - Alerts - Read and Write
 - IOC Manager - Read and Write
