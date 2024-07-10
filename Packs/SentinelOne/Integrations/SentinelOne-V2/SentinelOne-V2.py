@@ -284,7 +284,7 @@ class Client(BaseClient):
             displayName__like=display_name,
             displayName=display_name,
             query=query,
-            ids=argToList(threat_ids),
+            ids=threat_ids,
             limit=int(limit),
             classifications=argToList(classifications),
             siteIds=site_ids,
