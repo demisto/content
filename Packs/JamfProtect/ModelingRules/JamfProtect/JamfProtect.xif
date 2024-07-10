@@ -18,7 +18,10 @@ signatures_version = concat("Threat Version ",to_string(signaturesVersion)) ,
 // plan
 computer_plan = to_string(plan)
 // insights
-| alter insights_status = object_create("Rules Status Failed", to_string(insightsStatsFail) , "Rules Status Passed", to_string(insightsStatsPass) , "Rules Status Unknown", to_string(insightsStatsUnknown) )
+| alter tmp_failed = to_string(insightsStatsFail),
+        tmp_success = to_string(insightsStatsPass),
+        tmp_unknown = to_string(insightsStatsUnknown)
+| alter insights_status = object_create("Rules Status Failed", tmp_failed , "Rules Status Passed", tmp_success , "Rules Status Unknown", tmp_unknown )
 // discard all rules that passed and keep the failed rules that can be a risk to the asset
 | alter tmp_computer_risks = arrayfilter(scorecard ->[], "@element"->pass="false")
 // Create new array with the relevant information
