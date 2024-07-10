@@ -12021,6 +12021,36 @@ def is_time_sensitive():
     return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
 
 
+def parse_json_string(json_string):
+    """
+    Parse a JSON string into a Python dictionary.
+
+    :type json_string: ``str``
+    :param json_string: The JSON string to be parsed.
+
+    :rtype: ``dict``
+    :return: A Python dictionary representing the parsed JSON data.
+    """
+    try:
+        data = json.loads(json_string)
+        return data
+    except json.JSONDecodeError as error: # type: ignore[attr-defined]
+        demisto.error("Error decoding JSON: {error}".format(error=error))
+        return {}
+
+
+def get_server_config():
+    """
+    Retrieves XSOAR server configuration.
+
+    :rtype: ``dict``
+    :return: The XSOAR server configuration.
+    """
+    response = demisto.internalHttpRequest(method='GET', uri='/system/config')
+    body = parse_json_string(response.get('body'))
+    server_config = body.get('sysConf', {})
+    return server_config
+
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
 
