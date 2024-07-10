@@ -1,0 +1,19 @@
+commonfields:
+  id: 13fe424a-a6dd-4b0a-8c60-7701d82a0ebc
+  version: 22
+vcShouldKeepItemLegacyProdMachine: false
+name: SekoiaXDRPrintAssets
+script: ''
+type: python
+tags:
+- dynamic-section
+comment: Print all assets by incident
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.10.14.97374
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

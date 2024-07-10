@@ -1,0 +1,32 @@
+commonfields:
+  id: b4e28711-18ee-4ae4-8ccb-1c5f647b55f1
+  version: 4
+vcShouldKeepItemLegacyProdMachine: false
+name: script-SekoiaXDRChangeStatus
+script: ''
+type: python
+tags:
+- incident-action-button
+comment: This script changes the status of the Sekoia alert.
+enabled: true
+args:
+- name: short_id
+  required: true
+  description: The short ID of the alert.
+- name: status
+  required: true
+  auto: PREDEFINED
+  predefined:
+  - Ongoing
+  - Acknowledged
+  description: Status to change on the Sekoia alert.
+- name: comment
+  description: The comment to add to the alert on the status change.
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.10.9.46032
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

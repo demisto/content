@@ -1,0 +1,19 @@
+commonfields:
+  id: 0fa7a002-c00c-45c8-80ab-a7ebcfaa11f7
+  version: 10
+vcShouldKeepItemLegacyProdMachine: false
+name: postScript-CloseSekoiaAlert
+script: ''
+type: python
+tags:
+- post-processing
+comment: Post-processing script to close Sekoia Alert after the XSOAR incident is closed.
+enabled: true
+scripttarget: 0
+subtype: python3
+pswd: ''
+runonce: false
+dockerimage: demisto/python3:3.10.14.97374
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
