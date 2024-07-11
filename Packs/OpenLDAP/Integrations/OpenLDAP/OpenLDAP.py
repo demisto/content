@@ -80,29 +80,13 @@ def entries_paged_search(connection: Connection, search_params: dict, page: int,
     Returns:
         list[dict]: search results
     """
-    if page_size > MAX_PAGE_SIZE:
-        raise Exception('The page size must be less than or equal to 2000')
     if page == 1:
         return connection.search(**search_params, paged_size=page_size)
+
     results_to_skip = page_size * (page - 1)
     connection.search(**search_params, paged_size=results_to_skip)
     cookie = connection.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
-    connection.search(**search_params, paged_size=page_size, paged_cookie=cookie)
-    return connection.response
-
-
-def entries_search(connection: Connection, search_params: dict, limit: Optional[int]) -> list[dict]:
-    """
-    preforms search on the ldap server with the given limit parameter.
-    Args:
-        connection (Connection): Connection object
-        search_params (dict): search parameters
-        limit (int): limit of search results
-    Returns:
-        list[dict]: search results
-    """
-    connection.search(**search_params, size_limit=limit)
-    return connection.response
+    return connection.search(**search_params, paged_size=page_size, paged_cookie=cookie)
 
 
 class LdapClient:
@@ -731,7 +715,7 @@ class LdapClient:
                                                         mail_attribute=mail_attribute, name_attribute=name_attribute,
                                                         phone_attribute=phone_attribute)
 
-    def entries_search(self, args: dict[str, Any]) -> CommandResults:
+    def entries_search_command(self, args: dict[str, Any]) -> CommandResults:
         """
         Implements entries search command.
         """
@@ -745,14 +729,17 @@ class LdapClient:
         auto_bind = self._get_auto_bind_value()
         with Connection(self._ldap_server, self._username, self._password, auto_bind=auto_bind) as ldap_conn:
             if page := arg_to_number(args.get('page')):
-                entries_paged_search(connection=ldap_conn,
-                                     search_params=search_params,
-                                     page=page,
-                                     page_size=arg_to_number(args.get('page_size', 50)) or 50)
+                page_size = arg_to_number(args.get('page_size', 50)) or 50
+                if page_size > MAX_PAGE_SIZE:
+                    raise Exception('The page size must be less than or equal to 2000')
             else:
-                entries_search(connection=ldap_conn,
-                               search_params=search_params,
-                               limit=arg_to_number(args.get('limit', 50)) or 50)
+                page = 1
+                page_size = arg_to_number(args.get('limit', 50)) or 50
+            entries_paged_search(connection=ldap_conn,
+                                 search_params=search_params,
+                                 page=page,
+                                 page_size=page_size)
+
             outputs = [
                 {**json.loads(entry.entry_to_json()).get('attributes', {}), 'dn': json.loads(entry.entry_to_json()).get('dn')}
                 for entry in ldap_conn.entries
@@ -841,7 +828,7 @@ def main():  # pragma: no coverage
             demisto.info(f'ad-authenticate-and-roles command - entry results: {entry_result}')
             return_results(entry_result)
         elif command == 'ad-entries-search':
-            return_results(client.entries_search(args))
+            return_results(client.entries_search_command(args))
 
         else:
             raise NotImplementedError(f'Command {command} is not implemented')
