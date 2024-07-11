@@ -31,7 +31,7 @@ p
 </div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
 <img size="8023" data-outlook-trace="F:1|T:1" src="cid:6a65eb70-7748-4bba-aaac-fe93235f63bd" style="max-width:100%">
 </div></body></html>
-"""
+"""  # noqa: RUF001
 
 EXPECTED_RESULT_1 = """
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div dir="ltr">image 1:
@@ -74,7 +74,7 @@ p
 </div><div style="font-family:Calibri,Arial,Helvetica,sans-serif; font-size:12pt; color:rgb(0,0,0)">
 <img size="8023" data-outlook-trace="F:1|T:1" src=acc_test_tenant/entry/download/38@120 style="max-width:100%">
 </div></body></html>
-"""
+"""  # noqa: RUF001
 
 
 @pytest.mark.parametrize(
