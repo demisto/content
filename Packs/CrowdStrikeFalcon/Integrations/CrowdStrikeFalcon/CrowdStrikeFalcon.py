@@ -1526,7 +1526,7 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
         if params.get('filter'):
             endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter')}")
         else:
-            endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'")
+            endpoint_url += urllib.parse.quote_plus(":'epp'+type:'ldt'")
     demisto.debug(f"In get_fetch_detections: {LEGACY_VERSION =}, {endpoint_url=}, {params=}")
     response = http_request('GET', endpoint_url, params)
 
