@@ -1043,7 +1043,7 @@ def parse_drilldown_searches(drilldown_searches: list) -> list[dict]:
 
     for drilldown_search in drilldown_searches:
         try:
-            # drilldown_search may be a json list/dict represented as string 
+            # drilldown_search may be a json list/dict represented as string
             search = json.loads(drilldown_search)
             if isinstance(search, list):
                 searches.extend(search)
