@@ -3,7 +3,8 @@ from CommonServerPython import *  # noqa: F401
 from CommonServerUserPython import *  # noqa: F401
 import json
 from datetime import datetime
-from requests.auth import HTTPBasicAuth
+import requests  # type: ignore
+from requests.auth import HTTPBasicAuth  # type: ignore
 
 import urllib3
 from typing import Any
@@ -18,7 +19,7 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 GET_RISK_FINDINGS_ENDPINT = '/v1/risk-findings'
 GET_ASSET_LISTS = "/v1/assets"
 GET_ASSET_DETAILS = "/v1/assets/id?id="
-GET_ASSET_FILES = "/v1/classification/asset-files/id?id="
+GET_ASSET_FILES = "/v1/classification/asset-files/"
 GET_DATA_TYPES_ENDPOINT: str = "/v1/classification/data-types"
 GET_DATA_TYPE_FINDINGS_ENDPOINT: str = "/v1/data-type-findings"
 GET_CURRENT_JIRA_USER_ENDPOINT: str = "/rest/api/2/myself"
@@ -40,7 +41,7 @@ MIRROR_DIRECTION = {
     "Incoming And Outgoing": "Both",
 }
 
-SUPPORTED_CLOUD_PROVIDERS = ['AWS', 'AZURE', 'GCP', 'SNOWFLAKE', 'FILE SHARE', 'O365']
+SUPPORTED_CLOUD_PROVIDERS = ['AWS', 'AZURE', 'GCP', 'SNOWFLAKE', 'FILE_SHARE', 'O365']
 SUPPORTED_AFFECTS = ['SECURITY', 'COMPLIANCE', 'GOVERNANCE', 'SECURITY_AND_COMPLIANCE',
                      'SECURITY_AND_GOVERNANCE', 'COMPLIANCE_AND_GOVERNANCE', 'SECURITY_AND_COMPLIANCE_AND_GOVERNANCE']
 SUPPORTED_STATUS = ['OPEN', 'CLOSED', 'UNIMPORTANT', 'WRONG', 'HANDLED', 'INVESTIGATING']
@@ -69,7 +70,7 @@ SUPPORTED_SERVICES_TYPE = [
 ]
 SUPPORTED_LIFECYCLE = ['RUNNING', 'STOPPED', 'DELETED']
 SORTING_ORDER = ['ASC', 'DESC']
-
+SUPPORTED_STATUS = ['OPEN', 'CLOSED', 'UNIMPORTANT', 'WRONG', 'HANDLED', 'INVESTIGATING']
 
 # Define remediation steps for specific findings
 REMEDIATE_STEPS = {
@@ -90,6 +91,8 @@ REMEDIATE_STEPS = {
         "it also minimizes the attack surface by reducing the amount of potentially exploitable data."
     )
 }
+
+
 ''' CLIENT CLASS '''
 
 
@@ -104,18 +107,18 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, headers=headers, proxy=proxy)
 
     def fetch_risk_findings(self, params: dict[str, Any]):
+        demisto.debug(f"all params : {params}")
         return self._http_request(
             method='GET',
             url_suffix=GET_RISK_FINDINGS_ENDPINT,
             params=params
         )
 
-    def get_asset_files(self, params: dict[str, Any], body: dict[str, Any]):
+    def get_asset_files(self, params: dict[str, Any]):
         return self._http_request(
             method='POST',
             url_suffix=f"{GET_ASSET_FILES}",
-            params=params,
-            body=body
+            params=params
         )
 
     def get_asset_details(self, asset_id: str):
@@ -131,11 +134,10 @@ class Client(BaseClient):
             params=params
         )
 
-    def get_data_types(self, params: dict[str, Any]):
+    def get_data_types(self):
         return self._http_request(
             method='GET',
             url_suffix=GET_DATA_TYPES_ENDPOINT,
-            params=params
         )
 
     def get_data_type_findings(self, params: dict[str, Any]):
@@ -173,10 +175,10 @@ def map_status(status: str):
     return mapped_status
 
 
-def map_to_third_party_status(status: str) -> str:
-    mapped_status = RISK_STATUS.get(status, 'open')  # Default to 'open' if the status is not found
-    demisto.debug(f"Mapping local status '{status}' to third-party status '{mapped_status}'")
-    return mapped_status
+# def map_to_third_party_status(status: str) -> str:
+#     mapped_status = RISK_STATUS.get(status, 'open')  # Default to 'open' if the status is not found
+#     demisto.debug(f"Mapping local status '{status}' to third-party status '{mapped_status}'")
+#     return mapped_status
 
 
 def severity_to_dbot_score(severity):
@@ -192,18 +194,39 @@ def severity_to_dbot_score(severity):
 
 
 def check_jira_credentials():
-    jira_server_url = demisto.params().get('jiraServerUrl', '')
-    jira_getUser_api = f"https://{jira_server_url}{GET_CURRENT_JIRA_USER_ENDPOINT}"
-    jira_email = demisto.params().get('jiraEmail')
-    api_token = demisto.params().get('jiraApiToken')
+    try:
+        jira_server_url = demisto.params().get('jiraServerUrl', '')
+        url = f"https://{jira_server_url}{GET_CURRENT_JIRA_USER_ENDPOINT}"
+        jira_email = demisto.params().get('jiraEmail')
+        api_token = demisto.params().get('jiraApiToken', {}).get('password')
+        auth = HTTPBasicAuth(jira_email, api_token)
+        headers = {
+            "Accept": "application/json"
+        }
 
-    auth = HTTPBasicAuth(jira_email, api_token)
-    headers = {
-        "Accept": "application/json"
-    }
-    response = requests.request("GET", jira_getUser_api, headers=headers, auth=auth)
-    if response.status_code != 200:
-        raise Exception("Invalid Jira credentials")
+        response = requests.request(method="GET", url=url, headers=headers, auth=auth)
+
+        return response
+        demisto.debug("Jira validation response :", response)
+        if response.status_code != 200:
+            raise Exception("Invalid Jira credentials")
+        else:
+            demisto.debug(f"jira validation response : {response}")
+            return None
+    except Exception as e:
+        demisto.debug("Got exception check_jira_credentials")
+        demisto.debug(e)
+
+
+def validate_parameter_list_and_equal(param_name: str, param_in: str, param_equal: str, supported_list: List[str]):
+    if param_in:
+        param_list = [item.strip() for item in param_in.split(',') if item.strip()]
+        for param in param_list:
+            if param not in supported_list:
+                raise ValueError(f'This "{param}" {param_name} does not supported')
+
+    if param_equal and param_equal not in supported_list:
+        raise ValueError(f'This "{param_equal}" {param_name} does not supported')
 
 
 ''' COMMAND FUNCTIONS '''
@@ -212,49 +235,50 @@ def check_jira_credentials():
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication"""
     try:
-        client.fetch_risk_findings({})
-        check_jira_credentials()
-        return 'ok'
+        # validate dspm creds
+        client.get_data_types()
+
+        # validate jira creds
+        response = check_jira_credentials()
+
+        if response.status_code != 200:
+            raise Exception("Invalid Jira credentials")
+        else:
+            return 'ok'
+
     except DemistoException as e:
         if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+            return 'Authorization Error: make sure DSPM API Key is correctly set'
+        elif 'Jira' in str(e):
+            return 'Authorization Error: make sure Jira creds Key is correctly set'
         else:
-            raise e
+            return "Error"
 
 
 def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    # check supported cloud providers
-    cloud_provider_in = args.get('cloudProviderIn')
-    if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
-
-    cloud_provider_equal = args.get('cloudProviderEqual')
-    if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
+    # Validate and process cloudProvider parameters
+    cloudProviderIn = args.get('cloudProviderIn', '')
+    cloudProviderEqual = args.get('cloudProviderEqual', '')
+    validate_parameter_list_and_equal("cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS)
 
     # check supported affects
-    affects_In = args.get('affectsIn')
-    if affects_In and affects_In not in SUPPORTED_AFFECTS:
-        raise ValueError(f'This "{affects_In}" Affect does not supported')
-
-    affects_Equal = args.get('affectsEqual')
-    if affects_Equal and affects_Equal not in SUPPORTED_AFFECTS:
-        raise ValueError(f'This "{affects_Equal}" Affect does not supported')
+    affectsIn = args.get('affectsIn', '')
+    affectsEqual = args.get('affectsEqual', '')
+    validate_parameter_list_and_equal("affects", affectsIn, affectsEqual, SUPPORTED_AFFECTS)
 
     # check supported Status
-    status_In = args.get('statusIn')
-    if status_In and status_In not in SUPPORTED_STATUS:
-        raise ValueError(f'This "{status_In}" Status does not supported')
+    statusIn = args.get('statusIn', '')
+    statusEqual = args.get('statusEqual', '')
+    validate_parameter_list_and_equal("status", statusIn, statusEqual, SUPPORTED_STATUS)
 
-    status_Equal = args.get('statusEqual')
-    if status_Equal and status_Equal not in SUPPORTED_STATUS:
-        raise ValueError(f'This "{status_Equal}" Status does not supported')
+    page = int(args.get('page', 0))
+    if page < 0:
+        raise ValueError('Page parameter value should be greature than 0.')
 
-    # check supported sorting order
-    sort_order = args.get('sort')
-    if sort_order and sort_order.upper() not in SORTING_ORDER:
-        raise ValueError(f'This "{sort_order}" sorting order does not supported')
-    page = 0
+    size = int(args.get('size', 50))
+    if size < 0 or size > 50:
+        raise ValueError('size parameter value should be greature than 0 and less than 50.')
+
     params = {
         "ruleName.in": args.get('ruleNameIn'),
         "ruleName.equals": args.get('ruleNameEqual'),
@@ -276,14 +300,12 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
     }
     # Remove None values from params
     params = {k: v for k, v in params.items() if v is not None}
-
+    demisto.debug(f"params : {params}")
     all_findings: List[dict] = []
 
-    for _ in range(5):  # Limiting to 5 pages to avoid infinite loop
+    while True:
         # Fetch data from client
-        response = client.fetch_risk_findings(params)
-
-        findings = response.get('findings', []) if isinstance(response, dict) else response
+        findings = client.fetch_risk_findings(params)
 
         if not findings:
             break  # No more findings to fetch
@@ -319,9 +341,9 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def get_risk_finding_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    risk_id = args.get('id')
+    risk_id = args.get('finding_id')
     if not risk_id:
-        raise ValueError('id argument is required')
+        raise ValueError('finding_id argument is required')
 
     # Fetch data from client using the get_risk_information method
     response = client.get_risk_information(risk_id)
@@ -353,38 +375,34 @@ def get_risk_finding_by_id_command(client: Client, args: dict[str, Any]) -> Comm
 
 
 def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
-    # check supported cloud providers
-    cloud_provider_in = args.get('cloudProviderIn')
-    if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
+    # Validate and process cloudProvider parameters
+    cloudProviderIn = args.get('cloudProviderIn', '')
+    cloudProviderEqual = args.get('cloudProviderEqual', '')
+    validate_parameter_list_and_equal("cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS)
 
-    cloud_provider_equal = args.get('cloudProviderEqual')
-    if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
+    # Validate and process serviceType parameters
+    service_Type_In = args.get('serviceTypeIn', '')
+    service_Type_Equal = args.get('serviceTypeEqual', '')
+    validate_parameter_list_and_equal("serviceType", service_Type_In, service_Type_Equal, SUPPORTED_SERVICES_TYPE)
 
-    # check supported service type
-    service_Type_In = args.get('serviceTypeIn')
-    if service_Type_In and service_Type_In not in SUPPORTED_SERVICES_TYPE:
-        raise ValueError(f'This "{service_Type_In}" service type does not supported')
-
-    service_Type_Equal = args.get('serviceTypeEqual')
-    if service_Type_Equal and service_Type_Equal not in SUPPORTED_SERVICES_TYPE:
-        raise ValueError(f'This "{service_Type_Equal}" service type does not supported')
-
-    # check supported lifecycle
-    lifecycle_In = args.get('lifecycleIn')
-    if lifecycle_In and lifecycle_In not in SUPPORTED_LIFECYCLE:
-        raise ValueError(f'This "{lifecycle_In}" lifecycle does not supported')
-
-    lifecycle_Equal = args.get('lifecycleEqual')
-    if lifecycle_Equal and lifecycle_Equal not in SUPPORTED_LIFECYCLE:
-        raise ValueError(f'This "{lifecycle_Equal}" lifecycle does not supported')
+    # Validate and process lifecycle parameters
+    lifecycle_In = args.get('lifecycleIn', '')
+    lifecycle_Equal = args.get('lifecycleEqual', '')
+    validate_parameter_list_and_equal("lifecycle", lifecycle_In, lifecycle_Equal, SUPPORTED_LIFECYCLE)
 
     # check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
         raise ValueError(f'This "{sort_order}" sorting order does not supported')
-    page = 0
+
+    page = int(args.get('page', 0))
+    if page < 0:
+        raise ValueError('Page parameter value should be greature than 0.')
+
+    size = int(args.get('size', 50))
+    if size < 0 or size > 50:
+        raise ValueError('size parameter value should be greature than 0 and less than 50.')
+
     params = {
         "region.in": args.get('regionIn'),
         "region.equals": args.get('regionEqual'),
@@ -405,7 +423,7 @@ def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
 
     all_assets: List[dict] = []
 
-    for _ in range(5):  # Limiting to 5 pages to avoid infinite loop
+    while True:
         # Fetch data from client
         response = client.get_asset_lists(params)
 
@@ -463,24 +481,26 @@ def get_asset_details_command(client: Client, args: dict[str, Any]) -> CommandRe
 
 
 def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResults:
-    asset_id = args.get('id', None)
-    types = args.get('types', [])
-    params = {
-        "id": asset_id,
-        "page": args.get('page', 1),
-        "size": args.get('size', 20)
-    }
-
+    asset_id = args.get('asset_id', None)
     if not asset_id:
         raise ValueError("Asset ID not specified")
 
-    request_body = {
-        "type": {
-            "in": types
-        }
+    pageNumber = args.get('page', 0)
+    if pageNumber < 0:
+        raise ValueError('Page parameter value should be greature than 0.')
+
+    pageSize = args.get('size', 50)
+    if pageSize < 0:
+        raise ValueError('Size parameter value should be greature than 0.')
+
+    args.get('types', [])
+    params = {
+        "id": asset_id,
+        "page": pageNumber,
+        "size": pageSize
     }
 
-    response = client.get_asset_files(params, request_body)
+    response = client.get_asset_files(params)
 
     files = response.get('files', [])
     files_count = response.get('filesCount', 0)
@@ -495,56 +515,9 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     )
 
 
-def get_data_types_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_data_types_command(client: Client) -> CommandResults:
     """Command to fetch data types."""
-    # check supported cloud providers
-    cloud_provider_in = args.get('cloudProviderIn')
-    if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
-
-    cloud_provider_equal = args.get('cloudProviderEqual')
-    if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
-
-    # check supported service type
-    service_Type_In = args.get('serviceTypeIn')
-    if service_Type_In and service_Type_In not in SUPPORTED_SERVICES_TYPE:
-        raise ValueError(f'This "{service_Type_In}" service type does not supported')
-
-    service_Type_Equal = args.get('serviceTypeEqual')
-    if service_Type_Equal and service_Type_Equal not in SUPPORTED_SERVICES_TYPE:
-        raise ValueError(f'This "{service_Type_Equal}" service type does not supported')
-
-    # check supported lifecycle
-    lifecycle_In = args.get('lifecycleIn')
-    if lifecycle_In and lifecycle_In not in SUPPORTED_LIFECYCLE:
-        raise ValueError(f'This "{lifecycle_In}" lifecycle does not supported')
-
-    lifecycle_Equal = args.get('lifecycleEqual')
-    if lifecycle_Equal and lifecycle_Equal not in SUPPORTED_LIFECYCLE:
-        raise ValueError(f'This "{lifecycle_Equal}" lifecycle does not supported')
-
-    # check supported sorting order
-    sort_order = args.get('sort')
-    if sort_order and sort_order.upper() not in SORTING_ORDER:
-        raise ValueError(f'This "{sort_order}" sorting order does not supported')
-
-    params = {
-        "region.in": args.get('regionIn'),
-        "region.equals": args.get('regionEqual'),
-        "projectId.in": args.get('projectIdIn'),
-        "projectId.equals": args.get('projectIdEqual'),
-        "cloudProvider.in": args.get('cloudProviderIn'),
-        "cloudProvider.equals": args.get('cloudProviderEqual'),
-        "serviceType.in": args.get('serviceTypeIn'),
-        "serviceType.equals": args.get('serviceTypeEqual'),
-        "lifecycle.in": args.get('lifecycleIn'),
-        "lifecycle.equals": args.get('lifecycleEqual'),
-        "page": args.get('page'),
-        "sort": args.get('sort'),
-        "size": args.get('size')
-    }
-    data_types = client.get_data_types(params)
+    data_types = client.get_data_types()
     data_types_formatted = [{'No': index + 1, 'Key': dt} for index, dt in enumerate(data_types)]
 
     if data_types_formatted:
@@ -574,36 +547,32 @@ def get_data_types_command(client: Client, args: dict[str, Any]) -> CommandResul
 def get_data_type_findings_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Command to fetch data types and format them for the XSOAR command results."""
     # check supported cloud providers
-    cloud_provider_in = args.get('cloudProviderIn')
-    if cloud_provider_in and cloud_provider_in not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_in}" cloud provider does not supported')
-
-    cloud_provider_equal = args.get('cloudProviderEqual')
-    if cloud_provider_equal and cloud_provider_equal not in SUPPORTED_CLOUD_PROVIDERS:
-        raise ValueError(f'This "{cloud_provider_equal}" cloud provider does not supported')
+    cloudProviderIn = args.get('cloudProviderIn', '')
+    cloudProviderEqual = args.get('cloudProviderEqual', '')
+    validate_parameter_list_and_equal("cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS)
 
     # check supported service type
-    service_Type_In = args.get('serviceTypeIn')
-    if service_Type_In and service_Type_In not in SUPPORTED_SERVICES_TYPE:
-        raise ValueError(f'This "{service_Type_In}" service type does not supported')
-
-    service_Type_Equal = args.get('serviceTypeEqual')
-    if service_Type_Equal and service_Type_Equal not in SUPPORTED_SERVICES_TYPE:
-        raise ValueError(f'This "{service_Type_Equal}" service type does not supported')
+    serviceTypeIn = args.get('serviceTypeIn', '')
+    serviceTypeEqual = args.get('serviceTypeEqual', '')
+    validate_parameter_list_and_equal("serviceType", serviceTypeIn, serviceTypeEqual, SUPPORTED_SERVICES_TYPE)
 
     # check supported lifecycle
-    lifecycle_In = args.get('lifecycleIn')
-    if lifecycle_In and lifecycle_In not in SUPPORTED_LIFECYCLE:
-        raise ValueError(f'This "{lifecycle_In}" lifecycle does not supported')
-
-    lifecycle_Equal = args.get('lifecycleEqual')
-    if lifecycle_Equal and lifecycle_Equal not in SUPPORTED_LIFECYCLE:
-        raise ValueError(f'This "{lifecycle_Equal}" lifecycle does not supported')
+    lifecycleIn = args.get('lifecycleIn', '')
+    lifecycleEqual = args.get('lifecycleEqual', '')
+    validate_parameter_list_and_equal("lifecycle", lifecycleIn, lifecycleEqual, SUPPORTED_LIFECYCLE)
 
     # check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
         raise ValueError(f'This "{sort_order}" sorting order does not supported')
+
+    page = int(args.get('page', 0))
+    if page < 0:
+        raise ValueError('Page parameter value should be greature than 0.')
+
+    size = int(args.get('size', 50))
+    if size < 0 or size > 50:
+        raise ValueError('size parameter value should be greature than 0 and less than 50.')
 
     params = {
         "region.in": args.get('regionIn'),
@@ -659,19 +628,33 @@ def get_data_type_findings_command(client: Client, args: dict[str, Any]) -> Comm
 
 
 def update_risk_finding_status_command(client, args):
-    finding_id = args.get('findingId')
+    finding_id = args.get('riskFindingId')
     status = args.get('status')
+    if status and status not in SUPPORTED_STATUS:
+        raise ValueError(f'This "{status}" cloud provider does not supported')
 
     # Validate status
-    if status not in INCIDENT_STATUS:
-        raise ValueError(f"Invalid status. Choose from: {', '.join(INCIDENT_STATUS)}")
+    # if status not in INCIDENT_STATUS:
+    #     raise ValueError(f"Invalid status. Choose from: {', '.join(INCIDENT_STATUS)}")
 
     try:
         response = client.update_risk_status(finding_id, status)
-        if response.get('status') == status:
-            return_results(f'Risk finding {finding_id} updated to status {status}')
-        else:
-            raise Exception(f"Unexpected response: {response}")
+        # Format the response for display
+        headers = ["Risk Finding ID", "Old Status", "New Status"]
+        data = {
+            "Risk Finding ID": response.get('riskFindingId'),
+            "Old Status": response.get('oldStatus'),
+            "New Status": response.get('newStatus')
+        }
+
+        markdown = tableToMarkdown('Risk Status Update', [data], headers=headers)
+
+        return CommandResults(
+            readable_output=markdown,
+            outputs_prefix='DSPM.RiskFindingStatusUpdate',
+            outputs_key_field='riskFindingId',
+            outputs=response
+        )
     except Exception as e:
         return_error(f"Failed to update risk finding {finding_id} to status {status}. Error: {str(e)}")
 
@@ -679,16 +662,16 @@ def update_risk_finding_status_command(client, args):
 ''' FETCH INCIDENTS FUNCTION'''
 
 
-def get_mirroring_fields(mirror_direction):
-    """
-    Get tickets mirroring.
-    """
+# def get_mirroring_fields(mirror_direction):
+#     """
+#     Get tickets mirroring.
+#     """
 
-    return {
-        "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
-        "mirror_instance": demisto.integrationInstance(),
-        "incident_type": "DSPM Risk Findings",
-    }
+#     return {
+#         "mirror_direction": MIRROR_DIRECTION.get(mirror_direction),
+#         "mirror_instance": demisto.integrationInstance(),
+#         "incident_type": "DSPM Risk Findings",
+#     }
 
 
 def fetch_incidents(client: Client, mirror_direction):
@@ -717,7 +700,7 @@ def fetch_incidents(client: Client, mirror_direction):
     for finding in findings:
         finding_id = finding.get('id')
         occurred_time = datetime.utcnow().strftime(DATE_FORMAT)
-        finding.update(get_mirroring_fields(mirror_direction))
+        # finding.update(get_mirroring_fields(mirror_direction))
 
         if finding_id not in processed_ids:
             asset_id = finding.get('asset', {}).get('assetId', '')
@@ -785,286 +768,231 @@ def get_integration_config_command():
         "jiraServerUrl": demisto.params().get('jiraServerUrl'),
         "jiraApiToken": demisto.params().get('jiraApiToken', {}).get('password'),
         "xsoarServerUrl": demisto.params().get('xsoarUrl'),
-        "xsoarApiKey": demisto.params().get('xsoarApiKey', {}).get('password')
+        "xsoarApiKey": demisto.params().get('xsoarApiKey', {}).get('password'),
+        "dspmApiKey": demisto.params().get('dspmApiKey', {}).get('password')
     }
     demisto.debug(f" integration config : ${integration_config}")
 
+    # Prepare data for table format
+    table_data = [{"Key": key, "Value": value} for key, value in integration_config.items()]
+
+    # Convert dictionary to table format
+    markdown = tableToMarkdown("Integration Configuration", table_data, headers=["Key", "Value"])
+
+    # Return CommandResults with the integration config
     return CommandResults(
-        outputs_prefix='DSPM.integration_config',
+        readable_output=markdown,
+        outputs_prefix='DSPM.IntegrationConfig',
         outputs_key_field='config',
-        outputs={'integration_conf': integration_config}
+        outputs={'integration_config': integration_config}
     )
 
-# def find_existing_incident(dbot_mirror_id: str) -> bool:
-#     query = f'dbotMirrorId:"{dbot_mirror_id}"'
-#     result = demisto.execute_command("getIncidents", {"query": query, "limit": 1})
-#     if is_error(result):
-#         return False
-#     incidents = result[0].get('Contents', {}).get('data', [])
-#     return len(incidents) > 0
-
-
-# def fetch_handler(client: Client):
-#     last_run = demisto.getLastRun()
-#     last_fetch = last_run.get('last_fetch')
-
-#     if last_fetch is None:
-#         last_fetch = '1970-01-01T00:00:00Z'
-
-#     incidents = []
-#     page = 0
-#     page_size = 50
-
-#     while True:
-#         findings_response = client.fetch_risk_findings({'page': page, 'size': page_size})
-#         new_findings = findings_response
-
-#         if not new_findings:
-#             break
-
-#         for finding in new_findings:
-#             finding_id = finding.get('id')
-#             occurred_time = datetime.utcnow().strftime(DATE_FORMAT)
-
-#             if not find_existing_incident(finding_id):
-#                 # Fetch asset details for the current finding
-#                 asset_id = finding.get('asset', {}).get('assetId')
-#                 if asset_id:
-#                     asset_details = client.get_asset_details(asset_id)
-#                     finding['asset'].append(asset_details)
-
-#                 incident = {
-#                     'name': finding.get('ruleName'),
-#                     'dbotMirrorId': finding.get('id'),
-#                     'occurred': occurred_time,
-#                     'details': finding.get('asset', {}).get('name', ''),
-#                     'severity': severity_to_dbot_score(finding.get('severity')),
-#                     'status': map_status(finding.get('status')),
-#                     'rawJSON': json.dumps(finding)
-#                 }
-#                 incidents.append(incident)
-
-#         page += 1
-
-#     try:
-#         demisto.incidents(incidents)
-#         demisto.debug("Incidents successfully sent to demisto.incidents()")
-#     except Exception as e:
-#         demisto.error(f"Failed to create incidents: {str(e)}")
-
-#     if incidents:
-#         last_finding_time = incidents[-1]['occurred']
-#         demisto.setLastRun({'last_fetch': last_finding_time})
-#         demisto.debug(f"New last fetch time set: {last_finding_time}")
-#     else:
-#         demisto.setLastRun({'last_fetch': last_fetch})
-#         demisto.debug("No new incidents created")
 
 ''' Mirroring Functions '''
 
 
-def get_remote_incident_data(client: Client, remote_incident_id: str, last_update) -> dict[str, Any]:
-    """
-    Called every time get-remote-data command runs on an incident.
-    Gets the relevant incident entity from the remote system (DSPM). The remote system returns the incident
-    entity as a dictionary. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
+# def get_remote_incident_data(client: Client, remote_incident_id: str, last_update) -> dict[str, Any]:
+#     """
+#     Called every time get-remote-data command runs on an incident.
+#     Gets the relevant incident entity from the remote system (DSPM). The remote system returns the incident
+#     entity as a dictionary. We take from this entity only the relevant incoming mirroring fields, in order to do the mirroring.
 
-    :param client: The client object with an authenticated session.
-    :param remote_incident_id: The ID of the remote incident.
-    :return: The incident data to be mirrored.
-    """
-    mirrored_data = client.get_risk_information(remote_incident_id)
-    mirrored_data["incident_type"] = "DSPM Risk Findings"
-    return mirrored_data
-
-
-def get_remote_data_command(client: Client, args: dict, params: dict) -> GetRemoteDataResponse:
-    """
-    get-remote-data command: Returns an updated remote incident.
-    Args:
-        args:
-            id: incident id to retrieve.
-            lastUpdate: when was the last time we retrieved data.
-
-    Returns:
-        GetRemoteDataResponse object, which contains the incident data to update.
-    """
-    demisto.debug("inside get_remote_data_command")
-    remote_args = GetRemoteDataArgs(args)
-    remote_incident_id = remote_args.remote_incident_id
-    last_update = remote_args.last_update
-    mirrored_data = {}
-    entries: list = []
-    try:
-        demisto.debug(
-            f"Performing get-remote-data command with incident id: {remote_incident_id} "
-            f"and last_update: {remote_args.last_update}"
-        )
-        mirrored_data = get_remote_incident_data(client, remote_incident_id, last_update)
-        demisto.debug("mirror data fetch ")
-        demisto.debug(mirrored_data)
-        if mirrored_data:
-            demisto.debug("Successfully fetched the remote incident data")
-            close_xsoar_incident = params.get("close_xsoar_incident", False)
-            entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id, close_xsoar_incident)
-        else:
-            demisto.debug(f"No delta was found for incident {remote_incident_id}.")
-
-        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
-
-    except Exception as e:
-        demisto.debug(
-            f"Error in DSPM incoming mirror for incident: {remote_incident_id}\n"
-            f"Error message: {str(e)}"
-        )
-
-        if not mirrored_data:
-            mirrored_data = {"id": remote_incident_id}
-        mirrored_data["in_mirror_error"] = str(e)
-
-        return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
+#     :param client: The client object with an authenticated session.
+#     :param remote_incident_id: The ID of the remote incident.
+#     :return: The incident data to be mirrored.
+#     """
+#     mirrored_data = client.get_risk_information(remote_incident_id)
+#     mirrored_data["incident_type"] = "DSPM Risk Findings"
+#     return mirrored_data
 
 
-def set_xsoar_incident_entries(mirrored_data: dict[str, Any], entries: list, incident_id: str, close_incident: bool) -> list:
-    """
-    Process the mirrored data and set XSOAR incident entries accordingly.
+# def get_remote_data_command(client: Client, args: dict, params: dict) -> GetRemoteDataResponse:
+#     """
+#     get-remote-data command: Returns an updated remote incident.
+#     Args:
+#         args:
+#             id: incident id to retrieve.
+#             lastUpdate: when was the last time we retrieved data.
 
-    :param mirrored_data: The data fetched from the remote incident.
-    :param entries: The current list of entries.
-    :param incident_id: The ID of the incident.
-    :param close_incident: Boolean flag to close the incident if needed.
-    :return: Updated list of entries.
-    """
-    demisto.debug(f"Setting XSOAR incident entries for incident ID {incident_id} with mirrored data: {mirrored_data}")
+#     Returns:
+#         GetRemoteDataResponse object, which contains the incident data to update.
+#     """
+#     demisto.debug("inside get_remote_data_command")
+#     remote_args = GetRemoteDataArgs(args)
+#     remote_incident_id = remote_args.remote_incident_id
+#     last_update = remote_args.last_update
+#     mirrored_data = {}
+#     entries: list = []
+#     try:
+#         demisto.debug(
+#             f"Performing get-remote-data command with incident id: {remote_incident_id} "
+#             f"and last_update: {remote_args.last_update}"
+#         )
+#         mirrored_data = get_remote_incident_data(client, remote_incident_id, last_update)
+#         demisto.debug("mirror data fetch ")
+#         demisto.debug(mirrored_data)
+#         if mirrored_data:
+#             demisto.debug("Successfully fetched the remote incident data")
+#             close_xsoar_incident = params.get("close_xsoar_incident", False)
+#             entries = set_xsoar_incident_entries(mirrored_data, entries, remote_incident_id, close_xsoar_incident)
+#         else:
+#             demisto.debug(f"No delta was found for incident {remote_incident_id}.")
 
-    # fields_to_update = {
-    #     'Name': mirrored_data.get('ruleName', ''),
-    #     'Severity': mirrored_data.get('severity', ''),
-    #     'Asset Name': mirrored_data.get('asset', {}).get('name', ''),
-    #     'Asset ID': mirrored_data.get('asset', {}).get('assetId', ''),
-    #     'Status': map_status(mirrored_data.get('status', '')),
-    #     'Project ID': mirrored_data.get('projectId', ''),
-    #     'Cloud Provider': mirrored_data.get('cloudProvider', ''),
-    #     'Cloud Environment': mirrored_data.get('cloudEnvironment', ''),
-    #     'First Discovered': mirrored_data.get('firstDiscovered', ''),
-    #     'Compliance Standards': mirrored_data.get('complianceStandards', {}),
-    #     'dbotMirrorId': mirrored_data.get('id', ''),
-    #     'Details': mirrored_data.get('asset', {}).get('name', '')
-    # }
-    demisto.debug(f"Mirror id {mirrored_data.get('id', '')} and status is : {mirrored_data.get('status', '')}")
-    if (mirrored_data.get('status') == "CLOSED"
-        or mirrored_data.get('status') == "INVESTIGATING"
-            or mirrored_data.get('status') == "HANDLED"):
-        demisto.debug(f"Incident is closed: {incident_id}")
-        entries.append(
-            {
-                "Type": EntryType.NOTE,
-                "Contents": {
-                    "dbotIncidentClose": True,
-                    "closeReason": "Incident was closed on DSPM",
-                },
-                "Tags": ["closed"],
-                "ContentsFormat": EntryFormat.JSON,
-            }
-        )
-        return entries
+#         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=entries)
 
-    entry = {
-        "Type": 1,  # Note type
-        "Contents": f"Mirrored data fetched for incident ID {incident_id}.",
-        "ContentsFormat": "json",
-        "Tags": ["mirrored"],
-        "Note": True
-    }
+#     except Exception as e:
+#         demisto.debug(
+#             f"Error in DSPM incoming mirror for incident: {remote_incident_id}\n"
+#             f"Error message: {str(e)}"
+#         )
 
-    # for key, value in fields_to_update.items():
-    #     entry[key] = value
+#         if not mirrored_data:
+#             mirrored_data = {"id": remote_incident_id}
+#         mirrored_data["in_mirror_error"] = str(e)
 
-    entries.append(entry)
-
-    # if close_incident:
-    #     entries.append({
-    #         "Type": 1,
-    #         "Contents": f"Incident {incident_id} closed as per remote status.",
-    #         "ContentsFormat": "text",
-    #         "Tags": ["closed"],
-    #         "Note": True
-    #     })
-
-    return entries
+#         return GetRemoteDataResponse(mirrored_object=mirrored_data, entries=[])
 
 
-def update_remote_system_command(client: Client, args: dict) -> str:
-    """update-remote-system command: pushes local changes to the remote system
-    :type client: ``Client``
-    :param client: XSOAR client to use
-    :type args: ``Dict[str, Any]``
-    :param args:
-        all command arguments, usually passed from ``demisto.args()``.
-        ``args['data']`` the data to send to the remote system
-        ``args['entries']`` the entries to send to the remote system
-        ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
-        ``args['remoteId']`` the remote incident id
-    :return:
-        ``str`` containing the remote incident id - really important if the incident is newly created remotely
-    :rtype: ``str``
-    """
-    parsed_args = UpdateRemoteSystemArgs(args)
-    delta = parsed_args.delta
-    remote_incident_id = parsed_args.remote_incident_id
-    demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
+# def set_xsoar_incident_entries(mirrored_data: dict[str, Any], entries: list, incident_id: str, close_incident: bool) -> list:
+#     """
+#     Process the mirrored data and set XSOAR incident entries accordingly.
 
-    try:
-        if parsed_args.incident_changed:
-            status = delta.get("status", None)
-            if status:
-                third_party_status = map_to_third_party_status(status)
-                client.update_risk_status(remote_incident_id, third_party_status)
-    except Exception as e:
-        demisto.error(f'Error updating incident {remote_incident_id} on the remote system. '
-                      f'Error message: {str(e)}')
+#     :param mirrored_data: The data fetched from the remote incident.
+#     :param entries: The current list of entries.
+#     :param incident_id: The ID of the incident.
+#     :param close_incident: Boolean flag to close the incident if needed.
+#     :return: Updated list of entries.
+#     """
+#     demisto.debug(f"Setting XSOAR incident entries for incident ID {incident_id} with mirrored data: {mirrored_data}")
 
-    return remote_incident_id
+#     # fields_to_update = {
+#     #     'Name': mirrored_data.get('ruleName', ''),
+#     #     'Severity': mirrored_data.get('severity', ''),
+#     #     'Asset Name': mirrored_data.get('asset', {}).get('name', ''),
+#     #     'Asset ID': mirrored_data.get('asset', {}).get('assetId', ''),
+#     #     'Status': map_status(mirrored_data.get('status', '')),
+#     #     'Project ID': mirrored_data.get('projectId', ''),
+#     #     'Cloud Provider': mirrored_data.get('cloudProvider', ''),
+#     #     'Cloud Environment': mirrored_data.get('cloudEnvironment', ''),
+#     #     'First Discovered': mirrored_data.get('firstDiscovered', ''),
+#     #     'Compliance Standards': mirrored_data.get('complianceStandards', {}),
+#     #     'dbotMirrorId': mirrored_data.get('id', ''),
+#     #     'Details': mirrored_data.get('asset', {}).get('name', '')
+#     # }
+#     demisto.debug(f"Mirror id {mirrored_data.get('id', '')} and status is : {mirrored_data.get('status', '')}")
+#     if (mirrored_data.get('status') == "CLOSED"
+#         or mirrored_data.get('status') == "INVESTIGATING"
+#             or mirrored_data.get('status') == "HANDLED"):
+#         demisto.debug(f"Incident is closed: {incident_id}")
+#         entries.append(
+#             {
+#                 "Type": EntryType.NOTE,
+#                 "Contents": {
+#                     "dbotIncidentClose": True,
+#                     "closeReason": "Incident was closed on DSPM",
+#                 },
+#                 "Tags": ["closed"],
+#                 "ContentsFormat": EntryFormat.JSON,
+#             }
+#         )
+#         return entries
+
+#     entry = {
+#         "Type": 1,  # Note type
+#         "Contents": f"Mirrored data fetched for incident ID {incident_id}.",
+#         "ContentsFormat": "json",
+#         "Tags": ["mirrored"],
+#         "Note": True
+#     }
+
+#     # for key, value in fields_to_update.items():
+#     #     entry[key] = value
+
+#     entries.append(entry)
+
+#     # if close_incident:
+#     #     entries.append({
+#     #         "Type": 1,
+#     #         "Contents": f"Incident {incident_id} closed as per remote status.",
+#     #         "ContentsFormat": "text",
+#     #         "Tags": ["closed"],
+#     #         "Note": True
+#     #     })
+
+#     return entries
 
 
-def get_modified_remote_data_command(client: Client, args: dict) -> GetModifiedRemoteDataResponse:
-    """
-    Gets the modified remote incidents.
-    Args:
-        args:
-            last_update: the last time we retrieved modified incidents.
+# def update_remote_system_command(client: Client, args: dict) -> str:
+#     """update-remote-system command: pushes local changes to the remote system
+#     :type client: ``Client``
+#     :param client: XSOAR client to use
+#     :type args: ``Dict[str, Any]``
+#     :param args:
+#         all command arguments, usually passed from ``demisto.args()``.
+#         ``args['data']`` the data to send to the remote system
+#         ``args['entries']`` the entries to send to the remote system
+#         ``args['incidentChanged']`` boolean telling us if the local incident indeed changed or not
+#         ``args['remoteId']`` the remote incident id
+#     :return:
+#         ``str`` containing the remote incident id - really important if the incident is newly created remotely
+#     :rtype: ``str``
+#     """
+#     parsed_args = UpdateRemoteSystemArgs(args)
+#     delta = parsed_args.delta
+#     remote_incident_id = parsed_args.remote_incident_id
+#     demisto.debug(f'Got the following data {parsed_args.data}, and delta {delta}.')
 
-    Returns:
-        GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
-    """
-    demisto.debug("inside get_modified_remote_data_command :")
-    remote_args = GetModifiedRemoteDataArgs(args)
+#     try:
+#         if parsed_args.incident_changed:
+#             status = delta.get("status", None)
+#             if status:
+#                 third_party_status = map_to_third_party_status(status)
+#                 client.update_risk_status(remote_incident_id, third_party_status)
+#     except Exception as e:
+#         demisto.error(f'Error updating incident {remote_incident_id} on the remote system. '
+#                       f'Error message: {str(e)}')
 
-    last_update_utc = dateparser.parse(
-        remote_args.last_update, settings={"TIMEZONE": "UTC"}
-    )  # convert to utc format
-    assert last_update_utc is not None, f"could not parse {remote_args.last_update}"
-
-    demisto.debug(f"Remote arguments last_update in UTC is {last_update_utc}")
-    modified_ids_to_mirror = []
-    last_update_utc = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-    demisto.debug("On line 582 , last_update_utc :", last_update_utc)
-    raw_risks = client.fetch_risk_findings({})
-
-    for finding in raw_risks:
-        modified_ids_to_mirror.append(finding.get("id"))
-
-    demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
-
-    return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+#     return remote_incident_id
 
 
-def get_mapping_fields() -> dict[str, Any]:
-    mapping_fields: dict[str, Any] = {}
-    # Pull the remote schema for incident types and their fields
-    # Example:
-    # mapping_fields = query_mapping_fields()
-    return mapping_fields
+# def get_modified_remote_data_command(client: Client, args: dict) -> GetModifiedRemoteDataResponse:
+#     """
+#     Gets the modified remote incidents.
+#     Args:
+#         args:
+#             last_update: the last time we retrieved modified incidents.
+
+#     Returns:
+#         GetModifiedRemoteDataResponse object, which contains a list of the retrieved incidents IDs.
+#     """
+#     demisto.debug("inside get_modified_remote_data_command :")
+#     remote_args = GetModifiedRemoteDataArgs(args)
+
+#     last_update_utc = dateparser.parse(
+#         remote_args.last_update, settings={"TIMEZONE": "UTC"}
+#     )  # convert to utc format
+#     assert last_update_utc is not None, f"could not parse {remote_args.last_update}"
+
+#     demisto.debug(f"Remote arguments last_update in UTC is {last_update_utc}")
+#     modified_ids_to_mirror = []
+#     last_update_utc = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+#     demisto.debug("On line 582 , last_update_utc :", last_update_utc)
+#     raw_risks = client.fetch_risk_findings({})
+
+#     for finding in raw_risks:
+#         modified_ids_to_mirror.append(finding.get("id"))
+
+#     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
+
+#     return GetModifiedRemoteDataResponse(modified_ids_to_mirror)
+
+
+# def get_mapping_fields() -> dict[str, Any]:
+#     mapping_fields: dict[str, Any] = {}
+#     # Pull the remote schema for incident types and their fields
+#     # Example:
+#     # mapping_fields = query_mapping_fields()
+#     return mapping_fields
 
 
 ''' MAIN FUNCTION '''
@@ -1078,8 +1006,8 @@ def main() -> None:
     """
 
     # get the service API url
-    base_url = demisto.params().get('url')
-    api_key = demisto.params().get('credentials', {}).get('password')
+    base_url = demisto.params().get('dspmBaseUrl')
+    api_key = demisto.params().get('dspmApiKey', {}).get('password')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     mirror_direction = demisto.params().get('mirror_direction', None)
@@ -1095,7 +1023,7 @@ def main() -> None:
 
         if demisto.command() == 'test-module':
             result = test_module(client)
-            demisto.results(result)
+            return_results(result)
         elif demisto.command() == "dspm-get-integration-cofig":
             return_results(get_integration_config_command())
         elif demisto.command() == 'fetch-incidents':
@@ -1114,22 +1042,22 @@ def main() -> None:
         elif demisto.command() == 'dspm-get-asset-files-by-id':
             return_results(get_asset_files_by_id(client, demisto.args()))
         elif demisto.command() == 'dspm-get-data-types':
-            return_results(get_data_types_command(client, demisto.args()))
+            return_results(get_data_types_command(client))
         elif demisto.command() == 'dspm-get-data-types-findings':
             return_results(get_data_type_findings_command(client, demisto.args()))
         elif demisto.command() == 'dspm-update-risk-finding-status':
             return_results(update_risk_finding_status_command(client, demisto.args()))
-        elif demisto.command() == 'get-modified-remote-data':
-            modified_incidents = get_modified_remote_data_command(client, demisto.args())
-            return_results(modified_incidents)
-        elif demisto.command() == 'get-remote-data':
-            remote_data = get_remote_data_command(client, demisto.args(), demisto.params())
-            return_results(remote_data)
-        elif demisto.command() == 'update-remote-system':
-            update_remote_system_command(client, demisto.args())
-        elif demisto.command() == 'get-mapping-fields':
-            mapping_fields = get_mapping_fields()
-            return_results(mapping_fields)
+        # elif demisto.command() == 'get-modified-remote-data':
+        #     modified_incidents = get_modified_remote_data_command(client, demisto.args())
+        #     return_results(modified_incidents)
+        # elif demisto.command() == 'get-remote-data':
+        #     remote_data = get_remote_data_command(client, demisto.args(), demisto.params())
+        #     return_results(remote_data)
+        # elif demisto.command() == 'update-remote-system':
+        #     update_remote_system_command(client, demisto.args())
+        # elif demisto.command() == 'get-mapping-fields':
+        #     mapping_fields = get_mapping_fields()
+        #     return_results(mapping_fields)
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
