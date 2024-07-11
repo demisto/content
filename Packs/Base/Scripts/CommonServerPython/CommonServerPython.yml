@@ -20,7 +20,7 @@ alt_dockerimages: # used for unit testing
 - demisto/python3:3.10.10.48392
 tests:
 - TestCommonPython
-- Test-CommonServerPython-2_7
+- Test CommonServerPython on Python2
 - Test-debug-mode
 - Test-CreateDBotScore-With-Reliability
 fromversion: 5.0.0
