@@ -1,8 +1,16 @@
 {
-    "cisco_catalyst_raw": {
-        "_raw_log": {
-          "type": "string",
-          "is_array": false
-        }
+  "cisco_catalyst_raw": {
+    "_raw_log": {
+      "type": "string",
+      "is_array": false
+    },
+    "parsed_fields": {
+      "type": "string",
+      "is_array": false
+    },
+    "_final_reporting_device_ip": {
+      "type": "string",
+      "is_array": false
     }
   }
+}

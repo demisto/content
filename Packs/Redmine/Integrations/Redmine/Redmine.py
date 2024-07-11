@@ -165,15 +165,18 @@ def adjust_paging_to_request(page_number, page_size, limit):
 
 
 def format_custom_field_to_request(args: Dict[str, Any]):
-    if custom_fields := args.pop('custom_fields', None):
-        custom_fields = argToList(custom_fields)
+    if custom_fields := args.pop('custom_fields', ''):
         try:
-            args['custom_fields'] = [{'id': field.split(":", 1)[0], 'value': field.split(":", 1)[1]}
-                                     for field in custom_fields if field]
+            custom_fields_for_request = []
+            custom_fields_dict = json.loads(custom_fields)
+            for key, value in custom_fields_dict.items():
+                custom_fields_for_request.append({"id": key, "value": value})
+            args['custom_fields'] = custom_fields_for_request
         except Exception as e:
-            if 'list index out of range' in e.args[0] or 'substring not found' in e.args[0]:
-                raise DemistoException("Custom fields not in format, please follow the instructions")
-            raise
+            raise DemistoException(
+                f"Custom fields not in format, please follow this format:"
+                f" `{{\"customFieldID2\": \"value3\", \"customFieldID1\": [\"value1\",\"value2\"]}}` - Please use an array if "
+                f"the field is of multiselect type. with error: {e}")
 
 
 def get_file_content(entry_id: str) -> bytes:
