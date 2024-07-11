@@ -10,20 +10,7 @@ PRODUCT = 'Password Manager'
 DEFAULT_MAX_FETCH = 500
 SECONDS_BEFORE_TOKEN_EXPIRED = 120
 AUTHENTICATION_FULL_URL = 'https://identity.bitwarden.com/connect/token'
-# DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
-
-default_first_fetch_datetime_object = get_current_time() - timedelta(minutes=1)
-# DEFAULT_FIRST_FETCH = default_first_fetch_datetime_object.strftime(
-#     '%Y-%m-%dT%H:%M:%S.') + f'{default_first_fetch_datetime_object.microsecond // 10000:02d}'
-#
-# end_date_datetime_object = get_current_time() + timedelta(days=1)
-# DEFAULT_END_DATE = end_date_datetime_object.strftime(
-#     '%Y-%m-%dT%H:%M:%S.') + f'{end_date_datetime_object.microsecond // 10000:02d}'
-
-# DEFAULT_FIRST_FETCH = default_first_fetch_datetime_object.strftime(
-#     '%Y-%m-%dT%H:%M:%S.')
-
 DEFAULT_FIRST_FETCH = (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT)
 DEFAULT_END_DATE = (get_current_time() + timedelta(days=1)).strftime(DATE_FORMAT)
 
@@ -150,10 +137,10 @@ def fetch_events(client: Client, max_fetch: int,
         demisto.debug(
             f'Bitwarden - Fetched {len(unique_events)} which is the maximum or greater then the number of events.'
             f' Will keep the fetching in the next fetch.')
-        # created = dates.get('start') or last_run.get('last_fetch') or (
-        #     (get_current_time() - timedelta(minutes=1)).strftime(DATE_FORMAT))
         last_fetch_date = unique_events[0].get('date').split('Z')[0]
-        new_last_run = {'continuationToken': continuation_token, 'last_fetch': last_fetch_date, 'nextTrigger': '0',
+        split_string = last_fetch_date.split('.')
+        formatted_datetime = split_string[0] + '.' + split_string[1][:-4].ljust(3, '0')
+        new_last_run = {'continuationToken': continuation_token, 'last_fetch': formatted_datetime, 'nextTrigger': '0',
                         'hashed_recent_events': hashed_recent_events}
     else:
         # If there is no continuation token, the last fetch date will be the max end date of the fetched events.
