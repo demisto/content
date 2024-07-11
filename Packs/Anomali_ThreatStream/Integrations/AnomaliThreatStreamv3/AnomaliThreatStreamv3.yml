@@ -6431,7 +6431,7 @@ script:
       isArray: true
     description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  dockerimage: demisto/py3-tools:1.0.0.93223
+  dockerimage: demisto/py3-tools:1.0.0.99035
   runonce: false
   script: '-'
   subtype: python3
