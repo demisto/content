@@ -284,13 +284,13 @@ script:
       description: Timestamp when the node was first created in the Synapse Cortex.
       type: String
     - contextPath: Synapse.Nodes.form
-      description: 'The type of node (i.e. "inet:ipv4" for an IP address).'
+      description: The type of node (i.e. "inet:ipv4" for an IP address).
       type: String
     - contextPath: Synapse.Nodes.tags
       description: The tags associated with the resulting node.
       type: String
     - contextPath: Synapse.Nodes.valu
-      description: 'The node primary value (i.e. "1.2.3.4" for an IP).'
+      description: The node primary value (i.e. "1.2.3.4" for an IP).
       type: String
   - description: Lists current users in Synapse Cortex.
     name: synapse-list-users
@@ -421,7 +421,7 @@ script:
     - contextPath: Synapse.Model.Valu
       description: The given value of the Synapse object type.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.99035
+  dockerimage: demisto/py3-tools:1.0.0.102774
   runonce: false
   script: '-'
   subtype: python3
