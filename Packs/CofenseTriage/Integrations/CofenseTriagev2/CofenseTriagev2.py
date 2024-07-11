@@ -536,7 +536,7 @@ def search_reports(
 def search_inbox_reports_command(triage_instance) -> None:
     reported_at = parse_date_range(demisto.args().get("reported_at", "7 days"))[
         0
-    ].replace(tzinfo=timezone.utc)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
 
     try:
         reporters_clause = build_reporters_clause(triage_instance)
