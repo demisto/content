@@ -2274,8 +2274,8 @@ script:
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoint_ip_address
       description: Endpoint IP address.
       type: String
-    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoints_count
-      description: Number of successfully retrieved files.
+    - contextPath: PaloAltoNetworksXDR.ScriptResult.results.endpoints_name
+      description: Name of successfully retrieved files.
       type: String
     - contextPath: PaloAltoNetworksXDR.ScriptResult.results.failed_files
       description: Number of files failed to be retrieved.
