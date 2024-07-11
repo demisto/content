@@ -11,3 +11,9 @@ This integration supports the Armis API 1.8.0 version.
 2. Choose **Settings API Management**.
 3. Click **Create** and copy the generated key. (Do not share this key and do not create a non-encrypted copy of it.)
 4. Refer to [Obtaining an API key from Armis](https://docs.ic.armis.com/docs/introduction_api-keys) for more details.
+
+## General note:
+
+- Activities & Alerts events types are expected to have a lot of logs in a short interval, therefore the default limit is 100k and the interval is 1 minute.
+- Devices event type is expected to have a heavier response but with least events in a longer interval, therefore the default limit is 50k and the interval is 4 hours.
+If you encounter timeout and internal server errors while fetching events, we suggest first trying to separate instances for each event type and change the limits according to the issues - lowering the limit for timeout or raising the limit for internal server errors.

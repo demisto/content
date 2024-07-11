@@ -20,14 +20,14 @@ configuration:
   name: max_fetch
   additionalinfo: Alerts and activity events.
   type: 0
-  defaultvalue: 5000
+  defaultvalue: 100000
   section: Collect
 - display: Maximum number of device events per fetch
   name: devices_max_fetch
   type: 0
   section: Collect
   additionalinfo: Devices events.
-  defaultvalue: 10000
+  defaultvalue: 50000
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -67,7 +67,7 @@ configuration:
   display: Device Fetch Interval
   additionalinfo: Time between fetch of devices (for example 12 hours, 60 minutes, etc.).
   name: deviceFetchInterval
-  defaultvalue: "24 hours"
+  defaultvalue: "4 hours"
   type: 0
   required: false
 description: Collects alerts, devices and activities from Armis resources.
