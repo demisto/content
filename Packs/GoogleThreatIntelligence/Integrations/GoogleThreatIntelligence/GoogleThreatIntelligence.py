@@ -2700,8 +2700,8 @@ def _get_curated_collections_command(client: Client, args: dict, collection_type
     type_title = f'{type_str[:-1]}ies' if type_str.endswith('y') else f'{type_str}s'
 
     return CommandResults(
-        f'{INTEGRATION_ENTRY_CONTEXT}.{type_context}',
-        'id',
+        outputs_prefix=f'{INTEGRATION_ENTRY_CONTEXT}.{type_context}',
+        outputs_key_field='id',
         readable_output=tableToMarkdown(
             f'Curated {type_title} of {resource_type}: "{resource}"',
             collections,
