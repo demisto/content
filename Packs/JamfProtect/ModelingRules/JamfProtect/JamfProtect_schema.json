@@ -41,11 +41,11 @@
         "is_array": false
       },
         "checkin": {
-        "type": "int",
+        "type": "datetime",
         "is_array": false
       },
         "created": {
-        "type": "int",
+        "type": "datetime",
         "is_array": false
       },
         "hostName": {
