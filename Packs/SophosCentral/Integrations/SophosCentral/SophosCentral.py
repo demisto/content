@@ -2009,7 +2009,7 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
         args.get("ids"),
         args.get("view"),
         min(int(args.get("limit", "")), 100),
-        args.get("ip_addresses", []).split(","),
+        argToList(args.get("ip_addresses")),
     )
     full_match_ip = args.get("full_match_ip") == "true" if args.get("full_match_ip") else None,
     items = results.get("items")
@@ -2029,7 +2029,7 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
             object_data = {field: item.get(field) for field in table_headers}
             # The Sophos API does partial string matching, which can be unwanted for IP addresses.
             if full_match_ip:
-                query_ips = args.get("ip_addresses", []).split(",")
+                query_ips = argToList(args.get("ip_addresses"))
                 ips = []
                 if (data := object_data.get("ipv4Addresses", [])) is not None:
                     ips.extend(data)
