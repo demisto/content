@@ -3076,6 +3076,10 @@ def main():
 
         demisto.debug(f'Command being called is {command}')
 
+        if (ROLE_NAME and not IS_ARN_PROVIDED):
+            support_multithreading()
+            demisto.debug('using multiple accounts')
+
         match command:
             case 'test-module':
                 return_results(test_module())

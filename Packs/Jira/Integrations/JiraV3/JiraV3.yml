@@ -1480,7 +1480,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.91405
+  dockerimage: demisto/btfl-soup:1.0.1.101506
   isfetch: true
   ismappable: true
   isremotesyncin: true
