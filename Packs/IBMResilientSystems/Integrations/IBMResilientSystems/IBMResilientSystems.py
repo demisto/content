@@ -1153,7 +1153,47 @@ def upload_incident_attachment_command(rs_client: SimpleClient, args: dict) -> C
     )
 
 
-def list_task_instructions(rs_client: SimpleClient, args: dict) -> CommandResults:
+def delete_incidents_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Deletes multiple incidents.
+    """
+    incident_ids: list = argToList(args.get('incident_ids', ''))
+    demisto.info(f'delete_incidents_command {incident_ids=}')
+    try:
+        response: dict = rs_client.put(f'/incidents/delete', incident_ids)
+        human_readable: str = f'{incident_ids} were deleted successfully.' if response['Success'] else f"{response['message']}"
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not delete incidents {incident_ids}. Got error: {e.response.text} '
+        )
+    return CommandResults(
+        readable_output=human_readable
+    )
+
+
+def delete_task_members_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Deletes the members for a given task.
+    """
+    task_id = args.get('task_id')
+    try:
+        response = rs_client.delete(f'/tasks/{task_id}/members')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve instructions for task ID: {task_id}. Got error {e.response.text}'
+        )
+    demisto.debug(f'{response=}')
+    return CommandResults(
+        readable_output=response.get('content', '')
+    )
+
+
+def list_task_instructions_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Gets the instructions for a specific task.
+    """
     task_id = args.get('task_id')
     try:
         response = rs_client.get(f'/tasks/{task_id}/instructions_ex?text_content_output_format=objects_convert_text')
@@ -1263,8 +1303,12 @@ def main():
             return_results(list_scripts_command(client, args))
         elif command == 'rs-upload-incident-attachment':
             return_results(upload_incident_attachment_command(client, args))
+        elif command == 'rs-delete-incidents':
+            return_results(delete_incidents_command(client, args))
+        elif command == 'rs-delete-task-members':
+            return_results(delete_task_members_command(client, args))
         elif command == 'rs-list-task-instructions':
-            return_results(list_task_instructions(client, args))
+            return_results(list_task_instructions_command(client, args))
     except Exception as e:
         LOG(str(e))
         LOG.print_log()

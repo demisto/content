@@ -830,8 +830,11 @@ script:
 
   - name: rs-delete-incidents
     description: Delete multiple incidents.
-#    arguments: ...
-#    outputs: ...
+    arguments:
+      - name: incident_ids
+        description: A comma-separated list of incident IDs to be deleted.
+        required: true
+        isArray: true
 
   - name: rs-list-incident-notes
     description: Gets all of the top-level comments for an incident.
@@ -865,8 +868,10 @@ script:
 
   - name: rs-delete-task-members
     description: Delete a task's member. This effectively changes the task from a "private" task to a non-private task (to one where any incident member can operate on it).
-#    arguments: ...
-#    outputs: ...
+    arguments:
+    - name: task_id
+      description: ID of the task to list its instructions.
+      required: true
 
   - name: rs-list-task-instructions
     description: Get the task's instructions.
@@ -876,7 +881,7 @@ script:
       required: true
     outputs:
     - contextPath: Resilient.Task
-      description: Task # TODO - Compelte.
+      description: Task instructions.
       type: Dictionary
   dockerimage: demisto/resilient:2.0.0.86430
   isfetch: true
