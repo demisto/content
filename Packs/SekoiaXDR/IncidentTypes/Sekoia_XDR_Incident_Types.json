@@ -16,7 +16,7 @@
     "readonly": false,
     "default": false,
     "autorun": true,
-    "closureScript": "0fa7a002-c00c-45c8-80ab-a7ebcfaa11f7",
+    "closureScript": "CloseSekoiaAlert",
     "disabled": false,
     "reputationCalc": 2,
     "onChangeRepAlg": 3,

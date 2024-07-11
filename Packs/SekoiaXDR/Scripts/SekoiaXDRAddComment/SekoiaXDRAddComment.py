@@ -7,7 +7,7 @@ def main():
     alert_short_id = demisto.args().get("short_id")
     comment = demisto.args().get("comment")
 
-    user = execute_command("getUsers", {"current": "true"})[0]["name"]
+    user = execute_command("getUsers", {"current": "true"})[0]["name"]  # type: ignore
     execute_command(
         "sekoia-xdr-post-comment-alert",
         {"id": alert_short_id, "comment": comment, "author": user},

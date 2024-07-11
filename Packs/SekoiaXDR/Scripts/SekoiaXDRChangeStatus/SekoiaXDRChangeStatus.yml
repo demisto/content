@@ -1,8 +1,7 @@
 commonfields:
-  id: b4e28711-18ee-4ae4-8ccb-1c5f647b55f1
-  version: 4
-vcShouldKeepItemLegacyProdMachine: false
-name: script-SekoiaXDRChangeStatus
+  id: SekoiaXDRChangeStatus
+  version: -1
+name: SekoiaXDRChangeStatus
 script: ''
 type: python
 tags:
@@ -24,9 +23,10 @@ args:
   description: The comment to add to the alert on the status change.
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
-dockerimage: demisto/python3:3.10.9.46032
+dockerimage: demisto/python3:3.10.14.97374
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)

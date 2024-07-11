@@ -1,8 +1,7 @@
 commonfields:
-  id: 146130dc-9f3a-41e9-8a81-fbea9b933d0c
-  version: 12
-vcShouldKeepItemLegacyProdMachine: false
-name: script-SekoiaXDRPrintComments
+  id: SekoiaXDRPrintComments
+  version: -1
+name: SekoiaXDRPrintComments
 script: ''
 type: python
 tags:
@@ -11,9 +10,10 @@ comment: Prints the comments fetched from the Sekoia alert in a table format.
 enabled: true
 scripttarget: 0
 subtype: python3
-pswd: ''
 runonce: false
 dockerimage: demisto/python3:3.10.14.97374
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
