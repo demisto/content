@@ -26,10 +26,6 @@ PREVALENCE_COMMANDS = {
     'core-get-cmd-analytics-prevalence': 'cmd',
 }
 
-EXTERNAL_COMMANDS = {
-    'core-causality-process',
-    'core-terminate-process'
-}
 
 class Client(CoreClient):
 
@@ -175,7 +171,7 @@ def main():  # pragma: no cover
             }
             add_sensitive_log_strs(api_key)
     else:
-        url = "" if command in EXTERNAL_COMMANDS else "/api/webapp/" # internal calls to XDR, i.e. FE/internal apps.
+        url = "/api/webapp/" # internal calls to XDR, i.e. FE/internal apps.
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
