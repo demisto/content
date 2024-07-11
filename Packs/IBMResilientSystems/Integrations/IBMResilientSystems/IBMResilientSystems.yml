@@ -861,16 +861,18 @@ script:
 #    arguments: ...
 #    outputs: ...
 
-  - name: rs-task-delete
+  - name: rs-delete-tasks
     description: Deletes a specified list of tasks. Note that only custom tasks can be deleted.
-#    arguments: ...
-#    outputs: ...
+    arguments:
+    - name: task_id
+      description: A comma-separated list of task IDs to be deleted.
+      required: true
 
   - name: rs-delete-task-members
     description: Delete a task's member. This effectively changes the task from a "private" task to a non-private task (to one where any incident member can operate on it).
     arguments:
     - name: task_id
-      description: ID of the task to list its instructions.
+      description: ID of the task to delete its members.
       required: true
 
   - name: rs-list-task-instructions

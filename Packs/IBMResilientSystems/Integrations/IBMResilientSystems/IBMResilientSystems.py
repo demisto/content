@@ -746,7 +746,7 @@ def set_member_command(client, incident_id, members):
 
 
 def set_member(client, incident_id, data):
-    response = client.put('/incidents/' + incident_id + '/members', data)
+    response = client.put(f'/incidents/{incident_id}/members', payload=data)
     return response
 
 
@@ -1160,7 +1160,7 @@ def delete_incidents_command(rs_client: SimpleClient, args: dict) -> CommandResu
     incident_ids: list = argToList(args.get('incident_ids', ''))
     demisto.info(f'delete_incidents_command {incident_ids=}')
     try:
-        response: dict = rs_client.put(f'/incidents/delete', incident_ids)
+        response: dict = rs_client.put(f'/incidents/delete', payload=incident_ids)
         human_readable: str = f'{incident_ids} were deleted successfully.' if response['Success'] else f"{response['message']}"
     except SimpleHTTPException as e:
         return CommandResults(
@@ -1172,10 +1172,32 @@ def delete_incidents_command(rs_client: SimpleClient, args: dict) -> CommandResu
     )
 
 
+def delete_tasks_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+     Deletes a single or multiple tasks.
+     """
+    task_ids: list = argToList(args.get('task_id'))
+    try:
+        response: dict = rs_client.put(f'/tasks/delete', payload=task_ids)
+        demisto.debug(f'delete_tasks_command {response=}')
+        human_readable = \
+            f'Tasks with IDs {task_ids} were deleted successfully.' if response['success'] else f"{response['message']}"
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not delete tasks with IDs: {task_ids}. Got error {e.response.text}'
+        )
+    demisto.debug(f'{response=}')
+    return CommandResults(
+        readable_output=human_readable
+    )
+
+
 def delete_task_members_command(rs_client: SimpleClient, args: dict) -> CommandResults:
     """
     Deletes the members for a given task.
     """
+
     task_id = args.get('task_id')
     try:
         response = rs_client.delete(f'/tasks/{task_id}/members')
@@ -1305,6 +1327,8 @@ def main():
             return_results(upload_incident_attachment_command(client, args))
         elif command == 'rs-delete-incidents':
             return_results(delete_incidents_command(client, args))
+        elif command == 'rs-delete-tasks':
+            return_results(delete_tasks_command(client, args))
         elif command == 'rs-delete-task-members':
             return_results(delete_task_members_command(client, args))
         elif command == 'rs-list-task-instructions':
