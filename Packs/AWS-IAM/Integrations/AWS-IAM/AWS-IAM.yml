@@ -33,7 +33,7 @@ configuration:
   - us-gov-east-1
   - us-gov-west-1
   type: 15
-  required: false
+  required: true
 - display: Role Session Duration
   name: sessionDuration
   type: 0
@@ -64,14 +64,29 @@ configuration:
   display: Retries
   name: retries
   type: 0
+  section: Connect
+  advanced: true
+  required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
+  section: Connect
+  advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
+  section: Connect
+  advanced: true
   required: false
 description: Amazon Web Services Identity and Access Management (IAM).
 display: AWS - Identity and Access Management
@@ -1492,30 +1507,61 @@ script:
     - contextPath: AWS.IAM.AccessKey.LastUsedDate
       description: The date when the given access key was last used.
       type: string
+  - name: aws-iam-list-attached-role-policies
+    arguments:
+    - description: The name (friendly name, not ARN) of the role to list attached policies for.
+      name: roleName
+      required: true
+    - name: pathPrefix
+      description: The path prefix for filtering the results. This parameter is optional. If it is not included, it defaults to a slash (/), listing all policies.
+    - name: maxItems
+      description: The maximum number of items to return in the command's output.
+    - name: marker
+      description: Use this parameter only when paginating results and only after you receive a response indicating that the results are truncated. Set it to the value of the Marker element in the response that you received to indicate where the next call should start.
+    description: List all managed policies that are attached to the specified IAM role.
+    outputs:
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.RoleName
+      description: The role name.
+      type: string
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyName
+      description: The policy name.
+      type: string
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Policies.PolicyArn
+      description: The policy ARN.
+      type: string
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.IsTruncated
+      description: Whether there are more items to return. If the results were truncated, make a subsequent pagination request using the Marker request parameter to retrieve more items. Note that IAM might return fewer than the MaxItems number of results even when there are more results available. AWS recommends checking IsTruncated after every call to ensure that all results are received.
+      type: boolean
+    - contextPath: AWS.IAM.Roles.AttachedPolicies.Query.Marker
+      description: When IsTruncated is true, this element is present and contains the value to use for the Marker parameter in a subsequent pagination request.
+      type: string
   - name: aws-iam-list-mfa-devices
     arguments:
     - name: userName
     description: Lists the MFA devices for an IAM user.
     outputs:
-    - contextPath: AWS.IAM.MFADevices.UserName
+    - contextPath: AWS.IAM.MFADevices.Devices.UserName
       description: The user with whom the MFA device is associated.
       type: string
-    - contextPath: AWS.IAM.MFADevices.SerialNumber
+    - contextPath: AWS.IAM.MFADevices.Devices.SerialNumber
       description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
       type: string
-    - contextPath: AWS.IAM.MFADevices.EnableDate
+    - contextPath: AWS.IAM.MFADevices.Devices.EnableDate
       description: The date when the MFA device was enabled for the user.
       type: date
   - arguments:
     - description: The name of the user whose MFA device you want to deactivate.
       name: userName
+      required: true
     - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN.
       name: serialNumber
+      required: true
     description: Deactivates the specified MFA device and removes it from association with the user name for which it was originally enabled.
     name: aws-iam-deactivate-mfa-devices
   - arguments:
     - description: The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN.
       name: serialNumber
+      required: true
     description: Deletes a virtual MFA device.
     name: aws-iam-delete-mfa-devices
   dockerimage: demisto/boto3py3:1.0.0.101103
