@@ -874,6 +874,7 @@
         {
             "integrations": "Whois",
             "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
+            "instance_names": "legacy_context_output",
             "fromversion": "6.5.0"
         },
         {
@@ -1898,6 +1899,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "is_mockable": false
         },
         {
@@ -2515,6 +2517,7 @@
         {
             "integrations": "Whois",
             "playbookID": "whois_test",
+            "instance_names": "legacy_context_output",
             "fromversion": "5.0.0",
             "timeout": 2000
         },
@@ -3825,6 +3828,12 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "Whois A new layout implemented with python-whois service",
+            "integrations": "Whois",
+            "instance_names": "New_context_output",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "F5 ASM",
@@ -5488,6 +5497,7 @@
                 "Whois",
                 "Rasterize"
             ],
+            "instance_names": ["legacy_context_output"],
             "memory_threshold": 300,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
