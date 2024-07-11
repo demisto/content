@@ -1,7 +1,7 @@
 {
-    "description": "CrowdStrike Falcon Mapper for incidents and detections",
+    "description": "CrowdStrike Falcon Mapper for incidents and detections - for legacy version of CrowdStrike",
     "feed": false,
-    "id": "CrowdStrike Falcon-Mapper",
+    "id": "Legacy CrowdStrike Falcon-Mapper",
     "mapping": {
         "CrowdStrike Falcon Mobile Detection": {
 			"dontMapEventToLabels": true,
@@ -309,9 +309,6 @@
                 "Display Name": {
                     "simple": "display_name"
                 },
-                "Description": {
-                    "simple": "description"
-                },
                 "End Time": {
                     "simple": "end_time"
                 },
@@ -355,7 +352,7 @@
                     "simple": "product"
                 },
                 "name": {
-                    "simple": "composite_id"
+                    "simple": "id"
                 },
                 "occurred": {
                     "simple": "created_timestamp"
@@ -380,162 +377,44 @@
                 }
             }
         },
-        "CrowdStrike Falcon On-Demand Scans Detection": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Alert ID": {
-                    "simple": "composite_id"
-                },
-                "Behaviour Objective": {
-                    "simple": "objective"
-                },
-                "Behaviour Tactic": {
-                    "simple": "tactic"
-                },
-                "CrowdStrike Falcon Platform Name": {
-                    "simple": "device.platform_name"
-                },
-                "CrowdStrike Falcon Product Type Description": {
-                    "simple": "device.product_type_desc"
-                },
-                "CrowdStrike Falcon System Manufacturer": {
-                    "simple": "device.system_manufacturer"
-                },
-                "CrowdStrike Falcon System Product Name": {
-                    "simple": "device.system_product_name"
-                },
-                "CrowdStrike Falcon Scan Name": {
-                    "simple": "name"
-                },
-                "CrowdStrike Falcon Scan Id": {
-                    "simple": "scan_id"
-                },
-                "CrowdStrike Falcon Pattern ID":{ 
-                    "simple": "pattern_id"
-                },
-                "Tactic ID": {
-                    "simple": "tactic_id"
-                },
-                "Technique": {
-                    "simple": "technique"
-                },
-                "Technique ID": {
-                    "simple": "technique_id"
-                },
-                "Device External IP": {
-                    "simple": "device.external_ip"
-                },
-                "Device Local IP": {
-                    "simple": "device.local_ip"
-                },
-                "MAC Address": {
-                    "simple": "device.mac_address"
-                },
-                "OS": {
-                    "simple": "device.os_version"
-                },
-                "Device Name": {
-					"simple": "device.hostname"
-				},
-                "Cloud Instance ID": {
-                    "simple": "device.instance_id"
-                },
-                "Agent Version": {
-                    "simple": "device.agent_version"
-                },
-                "Cloud Service": {
-                    "simple": "service_provider"
-                },
-                "Cloud Account ID": {
-                    "simple": "service_provider_account_id"
-                },
-                "Last Update Time": {
-                    "simple": "timestamp"
-                },
-                "Display Name":{ 
-                    "simple": "display_name"
-                },
-                "Device Id": {
-                    "simple": "device.device_id"
-                },
-                "Event ID": {
-                    "simple": "event_id"
-                },
-                "File Name": {
-                    "simple": "filename"
-                },
-                "File Path": {
-                    "simple": "filepath"
-                },
-                "Vendor Product": {
-                    "simple": "product"
-                },
-                "severity": {
-                    "simple": "severity"
-                },
-                "SHA256": {
-                    "simple": "sha256"
-                },
-                "CrowdStrike Falcon Detection Type": {
-                    "simple": "type"
-                },
-                "State": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "mirror_direction"
-                },
-                "dbotMirrorId": {
-                    "simple": "composite_id"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "mirror_instance"
-                },
-                "IncomingMirrorError": {
-                    "simple": "in_mirror_error"
-                }
-            }
-        },
         "CrowdStrike Falcon Detection": {
             "dontMapEventToLabels": true,
             "internalMapping": {
                 "Account Name": {
-                    "simple": "user_name"
+                    "simple": "behaviors.user_name"
                 },
                 "Agent Version": {
                     "simple": "device.agent_version"
                 },
                 "Alert ID": {
-                    "simple": "composite_id"
+                    "simple": "detection_id"
                 },
                 "Assigned User": {
                     "simple": "assigned_to_uid"
                 },
                 "CrowdStrike Falcon Behaviour Pattern Disposition Details": {
-					"complex": {
-						"filters": [],
-						"root": "pattern_disposition_details",
-						"transformers": [
-							{
-								"operator": "ConvertKeysToTableFieldFormat"
-							}
-						]
-					}
-				},
+                    "complex": {
+                        "accessor": "pattern_disposition_details",
+                        "filters": [],
+                        "root": "behaviors",
+                        "transformers": [
+                            {
+                                "operator": "ConvertKeysToTableFieldFormat"
+                            }
+                        ]
+                    }
+                },
                 "Behaviour Objective": {
-                    "simple": "objective"
+                    "simple": "behaviors.objective"
                 },
                 "Behaviour Scenario": {
-                    "simple": "scenario"
+                    "simple": "behaviors.scenario"
                 },
                 "Behaviour Tactic": {
-                    "simple": "tactic"
-                },
-                "Technique": {
-                    "simple": "technique"
+                    "simple": "behaviors.tactic"
                 },
                 "CMD line": {
-                    "simple": "cmdline"
+                    "simple": "behaviors.cmdline"
                 },
                 "Cloud Instance ID": {
                     "simple": "device.instance_id"
@@ -544,10 +423,10 @@
                     "simple": "device.service_provider"
                 },
                 "Description": {
-                    "simple": "description"
+                    "simple": "behaviors.description"
                 },
                 "Detected User": {
-                    "simple": "user_name"
+                    "simple": "behaviors.user_name"
                 },
                 "Device External IP": {
                     "simple": "device.external_ip"
@@ -562,43 +441,43 @@
                     "simple": "device.hostname"
                 },
                 "Event Descriptions": {
-                    "simple": "description"
+                    "simple": "behaviors.description"
                 },
                 "Event Names": {
-                    "simple": "display_name"
+                    "simple": "behaviors.display_name"
                 },
                 "File MD5": {
-                    "simple": "md5"
+                    "simple": "behaviors.md5"
                 },
                 "File Name": {
-                    "simple": "filename"
+                    "simple": "behaviors.filename"
                 },
                 "File Paths": {
-                    "simple": "filepath"
+                    "simple": "behaviors.filepath"
                 },
                 "File SHA256": {
-                    "simple": "sha256"
+                    "simple": "behaviors.sha256"
                 },
                 "Hostnames": {
                     "simple": "device.hostname"
                 },
                 "Last Update Time": {
-                    "simple": "timestamp"
+                    "simple": "last_behavior"
                 },
                 "MAC Address": {
                     "simple": "device.mac_address"
                 },
                 "MD5": {
-                    "simple": "md5"
+                    "simple": "behaviors.md5"
                 },
                 "OS": {
                     "simple": "device.os_version"
                 },
                 "Parent CMD line": {
-                    "simple": "parent_details.cmdline"
+                    "simple": "behaviors.parent_details.parent_cmdline"
                 },
                 "SHA256": {
-                    "simple": "sha256"
+                    "simple": "behaviors.sha256"
                 },
                 "Start Time": {
                     "simple": "first_behavior"
@@ -607,26 +486,25 @@
                     "simple": "status"
                 },
                 "name": {
-					"complex": {
-						"filters": [],
-						"root": "display_name",
-						"transformers": [
-							{
-								"args": {
-									"prefix": {
-										"isContext": false,
-										"value": {
-											"simple": "Falcon Detection - "
-										}
-									},
-									"suffix": {
-										"isContext": false,
-										"value": {
-											"simple": " - Detection ID: "
-										}
-									}
-								},
-								"operator": "concat"
+                    "complex": {
+                        "accessor": "display_name",
+                        "filters": [],
+                        "root": "behaviors.[0]",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "value": {
+                                            "simple": "Falcon Detection - "
+                                        }
+                                    },
+                                    "suffix": {
+                                        "value": {
+                                            "simple": " - Detection ID: "
+                                        }
+                                    }
+                                },
+                                "operator": "concat"
                             },
                             {
                                 "args": {
@@ -634,7 +512,7 @@
                                     "suffix": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "composite_id"
+                                            "simple": "detection_id"
                                         }
                                     }
                                 },
@@ -647,7 +525,7 @@
                     "simple": "mirror_direction"
                 },
                 "dbotMirrorId": {
-                    "simple": "composite_id"
+                    "simple": "detection_id"
                 },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
@@ -994,7 +872,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "composite_id"
+                                            "simple": "detection_id"
                                         }
                                     }
                                 },
@@ -1006,7 +884,7 @@
                 "External Link": {
                     "complex": {
                         "filters": [],
-                        "root": "composite_id",
+                        "root": "detection_id",
                         "transformers": [
                             {
                                 "args": {
@@ -1051,7 +929,7 @@
                 "External Severity": {
                     "complex": {
                         "filters": [],
-                        "root": "severity",
+                        "root": "max_severity",
                         "transformers": [
                             {
                                 "args": {
@@ -1073,7 +951,7 @@
                 "External System ID": {
                     "complex": {
                         "filters": [],
-                        "root": "composite_id",
+                        "root": "detection_id",
                         "transformers": [
                             {
                                 "args": {
@@ -1218,7 +1096,7 @@
 								"args": {
 									"conditions": {
 										"value": {
-											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{composite_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{composite_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{composite_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
+											"simple": "[\n  {\n    \"condition\": \"#{incident_type} == 'detection'\",\n    \"return\": \"Falcon Detection - \" + #{behaviors\\.display_name}  + \" - Detection ID: \" + #{detection_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'incident'\",\n    \"return\": \"Falcon Incident - ID: \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'IDP detection'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'iom_configurations'\",\n    \"return\": #{id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'ioa_events'\",\n    \"return\": #{event_id}\n  },\n  {\n    \"condition\": \"#{incident_type} == 'MOBILE detection'\",\n    \"return\": #{mobile_detection_id}\n  },\n  {\n    \"condition\": \"#{device\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id} + \" - \" + #{device\\.hostname}\n  },\n  {\n    \"condition\": \"#{hosts\\.hostname} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id} + \" - \" + #{hosts\\.hostname}\n  },\n  {\n    \"condition\": \"#{incident_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{incident_id}\n  },\n  {\n    \"condition\": \"#{detection_id} != None\",\n    \"return\": #{incident_type} + \" - \" + #{detection_id}\n  },\n  {\n    \"default\": #{incident_type}\n  }\n]"
 										}
 									},
 									"flags": {}
@@ -1238,7 +1116,7 @@
                                     "item": {
                                         "isContext": true,
                                         "value": {
-                                            "simple": "severity"
+                                            "simple": "max_severity"
                                         }
                                     }
                                 },
@@ -1266,7 +1144,7 @@
             }
         }
     },
-    "name": "CrowdStrike Falcon Mapper",
+    "name": "Legacy CrowdStrike Falcon-Mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.5.0"
