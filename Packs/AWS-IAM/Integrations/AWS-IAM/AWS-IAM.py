@@ -388,24 +388,41 @@ def delete_access_key(args, client):  # pragma: no cover
 
 
 def list_mfa_devices(args, client):
-    response = client.list_mfa_devices(UserName=args.get('userName'))
+    user_name = args.get('userName', "")
+    marker = args.get('marker', None)
+    limit, is_manual, page_size = get_limit(args)
+
+    kwargs = {
+	        'UserName': user_name,
+	        'MaxItems': limit
+	    }
+    if marker:
+        kwargs.update({'Marker': marker})
+    response = client.list_mfa_devices(**kwargs)
+    
     mfa_devices = response['MFADevices']
     data = []
+
     for mfa_device in mfa_devices:
         data.append({
             'UserName': mfa_device['UserName'],
             'SerialNumber': mfa_device['SerialNumber'],
             'EnableDate': datetime.strftime(mfa_device['EnableDate'], '%Y-%m-%d %H:%M:%S'),
         })
-        ec = {'AWS.IAM.MFADevices': data}
-        human_readable = tableToMarkdown('AWS IAM Users MFA Devices', data)
-        return_outputs(human_readable, ec)
-
+    if is_manual and page_size and len(data) > page_size:
+       data = data[-1 * page_size:]
+    human_readable = tableToMarkdown('AWS IAM Users MFA Devices', data)
+    return CommandResults(
+        readable_output=human_readable,
+        outputs_key_field= "UserName",
+        outputs_prefix="AWS.IAM.MFADevices",
+        outputs={"Devices": data, "Marker": response["Marker"]},
+    )
 
 def deactivate_mfa_device(args, client):
     response = client.deactivate_mfa_device(
-        UserName=args.get('userName'),
-        SerialNumber=args.get('serialNumber')
+        UserName=args['userName'],
+	    SerialNumber=args['serialNumber']
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('The User {0} mfa device has been deactivated'.format(args.get('userName')))
@@ -413,7 +430,7 @@ def deactivate_mfa_device(args, client):
 
 def delete_virtual_mfa_device(args, client):
     response = client.delete_virtual_mfa_device(
-        SerialNumber=args.get('serialNumber')
+        SerialNumber=args['serialNumber']
     )
     if response['ResponseMetadata']['HTTPStatusCode'] == 200:
         demisto.results('The User {0} mfa device has been deleted'.format(args.get('serialNumber')))
