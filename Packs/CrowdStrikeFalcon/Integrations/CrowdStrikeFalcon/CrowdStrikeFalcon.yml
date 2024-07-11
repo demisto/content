@@ -6,18 +6,25 @@ commonfields:
   id: CrowdstrikeFalcon
   version: -1
 configuration:
-- defaultvalue: https://api.crowdstrike.com
-  display: Server URL (e.g., https://api.crowdstrike.com)
+- defaultvalue: 'false'
+  display: Use legacy API
+  name: legacy_version
+  type: 8
+  section: Connect
+  advanced: true
+  additionalinfo: "Use the legacy version of the API, which refers to versions prior to the 'Next Generation Raptor release.'"
+- display: Server URL (e.g., https://api.crowdstrike.com)
   name: url
-  required: true
   type: 0
   section: Connect
+  required: true
+  defaultvalue: https://api.crowdstrike.com
 - display: Client ID
   name: credentials
   type: 9
-  displaypassword: Secret
   section: Connect
   required: false
+  displaypassword: Secret
 - display: Client ID
   name: client_id
   type: 0
@@ -27,13 +34,15 @@ configuration:
 - display: Secret
   name: secret
   type: 4
-  hidden: true
   section: Connect
   required: false
-- defaultvalue: 'A+ - 3rd party enrichment'
-  display: Source Reliability
+  hidden: true
+- display: Source Reliability
   name: Reliability
   type: 15
+  defaultvalue: 'A+ - 3rd party enrichment'
+  section: Collect
+  required: false
   additionalinfo: Reliability of the source providing the intelligence data. Currently used for “CVE” reputation  command.
   options:
   - A+ - 3rd party enrichment
@@ -43,9 +52,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  section: Collect
   advanced: true
-  required: false
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
@@ -55,10 +62,10 @@ configuration:
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
-  defaultvalue: '15'
   section: Collect
   advanced: true
   required: false
+  defaultvalue: '15'
 - display: Endpoint Detections fetch query
   name: fetch_query
   type: 0
@@ -67,15 +74,15 @@ configuration:
   required: false
 - display: Endpoint Incidents fetch query
   name: incidents_fetch_query
+  required: false
   type: 0
   section: Collect
   advanced: true
-  required: false
 - display: IDP Detections fetch query
   name: idp_detections_fetch_query
-  required: false
   type: 0
   section: Collect
+  required: false
   advanced: true
 - display: Mobile Detections fetch query
   name: mobile_detections_fetch_query
@@ -97,6 +104,12 @@ configuration:
   required: false
   advanced: true
   additionalinfo: "In the format: cloud_provider=aws&aws_account_id=1234. The query must have the argument 'cloud_provider' configured. Multiple values for the same parameter is not supported. For more information, refer to https://falcon.crowdstrike.com/documentation/page/d3c84a1b/falcon-query-language-fql."
+- display: Detections from On-Demand Scans fetch query
+  name: on_demand_fetch_query
+  type: 0
+  section: Collect
+  required: false
+  advanced: true
 - display: Fetch incidents
   name: isFetch
   type: 8
@@ -108,7 +121,7 @@ configuration:
   type: 13
   section: Connect
   required: false
-- display: Mirroring Direction
+- display: 'Mirroring Direction'
   name: mirror_direction
   type: 15
   section: Collect
@@ -120,7 +133,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming And Outgoing
-- display: Trust any certificate (not secure)
+- display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
   section: Connect
@@ -140,14 +153,14 @@ configuration:
   advanced: true
   required: false
   additionalinfo: When selected, closes the CrowdStrike Falcon incident or detection, which is mirrored in the Cortex XSOAR incident.
-- additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
-  defaultvalue: 'false'
+- defaultvalue: 'false'
   display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   name: close_in_cs_falcon
   type: 8
   section: Collect
   advanced: true
   required: false
+  additionalinfo: When selected, closes the Cortex XSOAR incident, which is mirrored in the CrowdStrike Falcon incident or detection, according to the types that were chosen to be fetched and mirrored.
 - defaultvalue: 'Endpoint Detection'
   display: 'Fetch types'
   name: fetch_incidents_or_detections
@@ -155,7 +168,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination.
+  additionalinfo: Choose what to fetch - incidents, detections, IDP detections. You can choose any combination. Note that the "On-Demand Scans Detection" option is not available in the legacy version.
   options:
   - IDP Detection
   - Endpoint Incident
@@ -163,14 +176,15 @@ configuration:
   - Indicator of Misconfiguration
   - Indicator of Attack
   - Mobile Detection
-- defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
-  display: Reopen Statuses
+  - On-Demand Scans Detection
+- additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
+  defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
+  display: 'Reopen Statuses'
   name: reopen_statuses
   type: 16
   section: Collect
   advanced: true
   required: false
-  additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   options:
   - New
   - In progress
@@ -215,7 +229,7 @@ script:
       defaultValue: 0
     - description: 'A comma-separated list of device IDs to limit the results.'
       name: ids
-    - description: The status of the device. 
+    - description: The status of the device.
       name: status
       auto: PREDEFINED
       predefined:
@@ -228,7 +242,7 @@ script:
       auto: PREDEFINED
       predefined:
       - ''
-    - description: The platform name of the device. 
+    - description: The platform name of the device.
       name: platform_name
       auto: PREDEFINED
       predefined:
@@ -303,7 +317,7 @@ script:
     - description: The ID of the behavior. The ID of the behavior can be retrieved by running the cs-falcon-search-detection or cs-falcon-get-detections-for-incident command.
       name: behavior_id
       required: true
-    description: Searches for and fetches the behavior that matches the query.
+    description: Searches for and fetches the behavior that matches the query. Deprecated - No replacement available.
     name: cs-falcon-get-behavior
     outputs:
     - contextPath: CrowdStrike.Behavior.FileName
@@ -342,6 +356,7 @@ script:
     - contextPath: CrowdStrike.Behavior.ID
       description: The ID of the behavior.
       type: String
+    deprecated: true
   - arguments:
     - description: A comma-separated list of IDs of the detections to search. If provided, will override other arguments.
       isArray: true
@@ -448,7 +463,7 @@ script:
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
   - arguments:
-    - description: A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection. 
+    - description: A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection.
       isArray: true
       name: ids
       required: true
@@ -870,7 +885,7 @@ script:
       name: sequence_id
     - auto: PREDEFINED
       defaultValue: read
-      description: The scope to run the command for. 
+      description: The scope to run the command for.
       name: scope
       predefined:
       - read
@@ -988,7 +1003,7 @@ script:
     - description: The maximum number of records to return. The minimum is 1 and the maximum is 500. Default is 100.
       name: limit
     - auto: PREDEFINED
-      description: The order the results are returned in. 
+      description: The order the results are returned in.
       name: sort
       predefined:
       - type.asc
@@ -1045,7 +1060,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The IOC type to retrieve. 
+      description: The IOC type to retrieve.
       name: type
       predefined:
       - sha256
@@ -1100,7 +1115,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The type of the indicator. 
+      description: The type of the indicator.
       name: ioc_type
       predefined:
       - sha256
@@ -1245,7 +1260,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The IOC type to delete. 
+      description: The IOC type to delete.
       name: type
       predefined:
       - sha256
@@ -1263,7 +1278,7 @@ script:
     name: cs-falcon-delete-ioc
   - arguments:
     - auto: PREDEFINED
-      description: A comma-separated list of indicator types. 
+      description: A comma-separated list of indicator types.
       isArray: true
       name: types
       predefined:
@@ -1285,7 +1300,7 @@ script:
       description: The maximum number of records to return. The minimum is 1 and the maximum is 500.
       name: limit
     - auto: PREDEFINED
-      description: The order the results are returned in. 
+      description: The order the results are returned in.
       name: sort
       predefined:
       - type.asc
@@ -1399,7 +1414,7 @@ script:
       type: string
   - arguments:
     - auto: PREDEFINED
-      description: The type of the indicator. 
+      description: The type of the indicator.
       name: ioc_type
       predefined:
       - sha256
@@ -1425,7 +1440,7 @@ script:
       - detect
       required: true
     - auto: PREDEFINED
-      description: A comma-separated list of the platforms that the indicator applies to. 
+      description: A comma-separated list of the platforms that the indicator applies to.
       isArray: true
       name: platforms
       predefined:
@@ -1524,7 +1539,7 @@ script:
       - prevent
       - detect
     - auto: PREDEFINED
-      description: A comma-separated list of the platforms that the indicator applies to. 
+      description: A comma-separated list of the platforms that the indicator applies to.
       name: platforms
       predefined:
       - mac
@@ -1853,7 +1868,7 @@ script:
       description: 'The datetime the behavior detection occurred in ISO time format. For example: 2019-10-17T13:41:48.487520845Z.'
       type: Date
     - contextPath: CrowdStrike.Detections.behaviors.behavior_id
-      description: The ID of the behavior.
+      description: 'The ID of the behavior. Note: This output exists only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.filename
       description: The filename of the triggering process.
@@ -1889,10 +1904,10 @@ script:
       description: The IOC value.
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_source
-      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write".'
+      description: 'The source that triggered an IOC detection. Possible values are: "library_load", "primary_module", "file_read", and "file_write". Note: This output exist only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.ioc_description
-      description: The IOC description.
+      description: "The IOC description. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.behaviors.user_name
       description: The user name.
@@ -1973,19 +1988,19 @@ script:
       description: Whether an email is sent about this detection.
       type: Boolean
     - contextPath: CrowdStrike.Detections.first_behavior
-      description: The datetime of the first behavior.
+      description: 'The datetime of the first behavior. Note: This output exists only in the legacy version.'
       type: Date
     - contextPath: CrowdStrike.Detections.last_behavior
-      description: The datetime of the last behavior.
+      description: 'The datetime of the last behavior. Note: This output exists only in the legacy version.'
       type: Date
     - contextPath: CrowdStrike.Detections.max_confidence
-      description: The highest confidence value of all behaviors. The value can be any integer between 1-100.
+      description: 'The highest confidence value of all behaviors. The value can be any integer between 1-100. Note: This output exists only in the legacy version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity
-      description: The highest severity value of all behaviors. Value can be any integer between 1-100.
+      description: 'The highest severity value of all behaviors. Value can be any integer between 1-100. Note: This output exists only in the legacy version.'
       type: Number
     - contextPath: CrowdStrike.Detections.max_severity_displayname
-      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low".'
+      description: 'The name used in the UI to determine the severity of the detection. Possible values are: "Critical", "High", "Medium", and "Low". Note: This output exists only in the legacy version.'
       type: String
     - contextPath: CrowdStrike.Detections.show_in_ui
       description: Whether the detection displays in the UI.
@@ -1994,10 +2009,10 @@ script:
       description: The status of the detection.
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_uid
-      description: The UID of the user for whom the detection is assigned.
+      description: "The UID of the user for whom the detection is assigned. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.assigned_to_name
-      description: The human-readable name of the user to whom the detection is currently assigned.
+      description: "The human-readable name of the user to whom the detection is currently assigned. Note: This output exists only in the legacy version."
       type: String
     - contextPath: CrowdStrike.Detections.hostinfo.domain
       description: The domain of the Active Directory.
@@ -2411,7 +2426,7 @@ script:
       name: ids
       required: true
     - auto: PREDEFINED
-      description: The new status of the incident. 
+      description: The new status of the incident.
       name: status
       predefined:
       - New
@@ -5033,7 +5048,7 @@ script:
     - contextPath: CrowdStrike.IOARules.version_ids
       description: The IOA rule's version ID.
       type: String
-  dockerimage: demisto/py3-tools:1.0.0.97242
+  dockerimage: demisto/py3-tools:1.0.0.103307
   isfetch: true
   ismappable: true
   isremotesyncin: true
