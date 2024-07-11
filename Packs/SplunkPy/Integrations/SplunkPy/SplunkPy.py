@@ -1078,7 +1078,7 @@ def get_drilldown_searches(notable_data):
             # The drilldown_searches are a list of searches data stored as json strings:
             return parse_drilldown_searches(drilldown_search)
         else:
-            # The drilldown_searches are a json string of dict/list search data.
+            # The drilldown_searches are a dict/list of the search data in a JSON string representation.
             return parse_drilldown_searches([drilldown_search])
     return []
 
