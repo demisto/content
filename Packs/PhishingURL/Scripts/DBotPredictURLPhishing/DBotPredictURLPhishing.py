@@ -509,9 +509,7 @@ def get_whois_verdict(domains: list[dict]) -> list:
     return default
 
 
-def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout):
-
-    rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
+def get_predictions_for_urls(model, urls, force_model, debug, rasterize_outputs):
 
     # Get final url and redirection
     final_urls = [res[KEY_CURRENT_URL_RASTERIZE] for res in rasterize_outputs]
@@ -749,17 +747,21 @@ def main():
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
 
         if urls:
-            # Run the model and get predictions
-            results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
-            # Return outputs
-            general_summary = return_general_summary(results)
-            detailed_summary = return_detailed_summary(results, reliability)
-            if debug:
-                return_results(msg_list)
-            return general_summary, detailed_summary, msg_list
-    except Exception as ex:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute URL Phishing script. Error: {ex}')
+            rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
+
+            if rasterize_outputs:
+                # Run the model and get predictions
+                results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_outputs)
+                # Return outputs
+                general_summary = return_general_summary(results)
+                detailed_summary = return_detailed_summary(results, reliability)
+                if debug:
+                    return_results(msg_list)
+                return general_summary, detailed_summary, msg_list
+            else:
+                return_results('All URLs failed to be rasterized. Skipping prediction.')
+    except Exception as e:
+        return_error(f'Failed to execute URL Phishing script. Error: {e}')
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
