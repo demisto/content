@@ -5,12 +5,12 @@ commonfields:
 configuration:
 - defaultvalue: https://api.dig.security/
   display: Your DSPM server URL
-  name: url
+  name: dspmBaseUrl
   required: true
   type: 0
 - displaypassword: API Key
   additionalinfo: The API Key to use for connection
-  name: credentials
+  name: dspmApiKey
   required: true
   hiddenusername: true
   type: 9
@@ -123,7 +123,7 @@ script:
       required: false
       secret: false
     - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]'
-      isArray: true
+      isArray: false
       isOptional: true
       name: cloudProviderIn
       required: false
@@ -159,11 +159,16 @@ script:
       required: false
       secret: false
     - description: 'Sort order'
-      isArray: true
+      isArray: false
       isOptional: true
       name: sort
       required: false
       secret: false
+    - description: Page
+      isArray: false
+      isOptional: true
+      name: page
+      required: false
     - description: 'Page size'
       isArray: false
       isOptional: true
@@ -225,25 +230,13 @@ script:
       name: serviceTypeEqual
       required: false
       secret: false
-    - description: 'List of project IDs'
-      isArray: true
-      isOptional: true
-      name: projectIdIn
-      required: false
-      secret: false
-    - description: 'Exact project ID'
-      isArray: false
-      isOptional: true
-      name: projectIdEqual
-      required: false
-      secret: false
-    - description: List of Life Cycles (comma separated values)
+    - description: List of Life Cycles egs.['RUNNING', 'STOPPED', 'DELETED'](comma separated values)
       isArray: false
       isOptional: true
       name: lifecycleIn
       required: false
       secret: false
-    - description: Exact Life Cycle
+    - description: Exact Life Cycle ['RUNNING', 'STOPPED', 'DELETED']
       isArray: false
       isOptional: true
       name: lifecycleEqual
@@ -288,6 +281,16 @@ script:
     - description: ID of the asset to retrieve details for.
       name: asset_id
       required: true
+    - description: Page
+      isArray: false
+      isOptional: true
+      name: page
+      required: false
+    - description: size
+      isArray: false
+      isOptional: true
+      name: size
+      required: false
     description: Retrieves asset file details for the provided asset ID.
     name: dspm-get-asset-files-by-id
     outputs:
@@ -295,88 +298,6 @@ script:
       description: File Details of the asset for the provided ID.
       type: String
   - arguments:
-    - description: List of regions (comma separated values)
-      isArray: false
-      isOptional: true
-      name: regionIn
-      required: false
-      secret: false
-    - description: Exact region
-      isArray: false
-      isOptional: true
-      name: regionEqual
-      required: false
-      secret: false
-    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE",
-      "FILE_SHARE", "O365"] (comma separated values)'
-      isArray: false
-      isOptional: true
-      name: cloudProviderIn
-      required: false
-      secret: false
-    - description: 'Exact cloud provider ["AWS", "AZURE", "GCP", "SNOWFLAKE",
-      "FILE_SHARE", "O365"]'
-      isArray: false
-      isOptional: true
-      name: cloudProviderEqual
-      required: false
-      secret: false
-    - description: List of Service Types (comma separated values)
-      isArray: false
-      isOptional: true
-      name: serviceTypeIn
-      required: false
-      secret: false
-    - description: Exact Service Type
-      isArray: false
-      isOptional: true
-      name: serviceTypeEqual
-      required: false
-      secret: false
-    - description: 'List of project IDs'
-      isArray: true
-      isOptional: true
-      name: projectIdIn
-      required: false
-      secret: false
-    - description: 'Exact project ID'
-      isArray: false
-      isOptional: true
-      name: projectIdEqual
-      required: false
-      secret: false
-    - description: List of Life Cycles (comma separated values)
-      isArray: false
-      isOptional: true
-      name: lifecycleIn
-      required: false
-      secret: false
-    - description: Exact Life Cycle
-      isArray: false
-      isOptional: true
-      name: lifecycleEqual
-      required: false
-      secret: false
-    - description: 'Sorting criteria in the format: property,(asc|desc). Default sort
-      order is ascending. Multiple sort criteria are supported.'
-      isArray: false
-      isOptional: true
-      name: sort
-      required: false
-      secret: false
-    - description: Page
-      isArray: false
-      isOptional: true
-      name: page
-      required: false
-      secret: false
-    - description: Page size
-      isArray: false
-      isOptional: true
-      name: size
-      required: false
-      secret: false
-    description: for retrieve list of data types for company.
     name: dspm-get-data-types
     outputs:
     - contextPath: DSPM.DataTypes
@@ -395,8 +316,7 @@ script:
       name: regionEqual
       required: false
       secret: false
-    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE",
-      "FILE_SHARE", "O365"] (comma separated values)'
+    - description: 'List of cloud providers ["AWS", "AZURE", "GCP", "SNOWFLAKE", "FILE_SHARE", "O365"]'
       isArray: false
       isOptional: true
       name: cloudProviderIn
@@ -421,22 +341,22 @@ script:
       name: serviceTypeEqual
       required: false
       secret: false
-    - description: List of Dig Tag Key (comma separated values)
-      isArray: false
-      isOptional: true
-      name: digTagKeyContains
-      required: false
-      secret: false
-    - description: List of Dig Tag Value (comma separated values)
-      isArray: false
-      isOptional: true
-      name: digTagValueContains
-      required: false
-      secret: false
     - description: List of Life Cycles (comma separated values)
       isArray: false
       isOptional: true
       name: lifecycleIn
+      required: false
+      secret: false
+    - description: 'List of project IDs'
+      isArray: true
+      isOptional: true
+      name: projectIdIn
+      required: false
+      secret: false
+    - description: 'Exact project ID'
+      isArray: false
+      isOptional: true
+      name: projectIdEqual
       required: false
       secret: false
     - description: Exact Life Cycle
@@ -470,35 +390,39 @@ script:
     - contextPath: DSPM.DataTypeFindings
       description: List of data type findings for company.
       type: String
-  - arguments: []
-    description: Pushes local changes to the remote system.
-    name: update-remote-system
+  # - arguments: []
+  #   description: Pushes local changes to the remote system.
+  #   name: update-remote-system
   - arguments: []
     description: for testing the fetch-handle method.
     name: fetch-incidents
   - arguments: []
     description: for getting integration config.
     name: dspm-get-integration-cofig
-  - arguments:
-    - description: The incident ID.
-      name: id
-      required: true
-    - description: Retrieve entries that were created after lastUpdate.
-      name: lastUpdate
-      required: true
-    description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
-    name: get-remote-data
-  - arguments:
-    - description: Retrieve entries that were created after lastUpdate.
-      name: last_update
-      required: false
-    description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
-    name: get-modified-remote-data
+    outputs:
+    - contextPath: DSPM.configs
+      description: Integration configuration values.
+      type: String
+  # - arguments:
+  #   - description: The incident ID.
+  #     name: id
+  #     required: true
+  #   - description: Retrieve entries that were created after lastUpdate.
+  #     name: lastUpdate
+  #     required: true
+  #   description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes.
+  #   name: get-remote-data
+  # - arguments:
+  #   - description: Retrieve entries that were created after lastUpdate.
+  #     name: last_update
+  #     required: false
+  #   description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available from version 6.1.
+  #   name: get-modified-remote-data
   - arguments:
     - description: 'Risk Finding ID'
       isArray: false
       isOptional: false
-      name: findingId
+      name: riskFindingId
       required: true
     - description: Updated Status.
       isArray: false
@@ -508,7 +432,7 @@ script:
     description: Updates the status of a risk finding.
     name: dspm-update-risk-finding-status
     outputs:
-      - contextPath: DSPM.RiskFinding
+      - contextPath: DSPM.RiskFindingStatusUpdate
         description: The updated risk finding.
         type: String
   runonce: false
@@ -524,4 +448,4 @@ fromversion: '6.12'
 tests:
 - No tests (auto formatted)
 defaultclassifier: DSPM Classifier
-defaultmapperin: DSPM Incoming Mapper
+# defaultmapperin: DSPM Incoming Mapper
