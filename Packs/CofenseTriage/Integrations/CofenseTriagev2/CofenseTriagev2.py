@@ -3,7 +3,8 @@ from CommonServerPython import *
 
 from io import BytesIO
 from PIL import Image
-import datetime
+from datetime import datetime
+from datetime import timezone
 import functools
 import itertools
 import json
@@ -362,7 +363,7 @@ def parse_triage_date(date: str):
     # See https://discuss.python.org/t/parse-z-timezone-suffix-in-datetime/2220
     if date.endswith('Z'):
         date = date[:-1] + '+00:00'
-    return datetime.datetime.fromisoformat(date)
+    return datetime.fromisoformat(date)
 
 
 def test_function(triage_instance) -> None:
@@ -437,10 +438,10 @@ def search_reports_command(triage_instance) -> None:
     file_hash = demisto.getArg('file_hash')  # type: str
     reported_at = parse_date_range(demisto.args().get('reported_at', '7 days'))[
         0
-    ].replace(tzinfo=datetime.UTC)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
     created_at = parse_date_range(demisto.args().get('created_at', '7 days'))[
         0
-    ].replace(tzinfo=datetime.UTC)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
     try:
         max_matches = int(demisto.getArg('max_matches'))  # type: int
     except ValueError:
@@ -535,7 +536,7 @@ def search_reports(
 def search_inbox_reports_command(triage_instance) -> None:
     reported_at = parse_date_range(demisto.args().get("reported_at", "7 days"))[
         0
-    ].replace(tzinfo=datetime.UTC)
+    ].replace(tzinfo=timezone.utc)
 
     try:
         reporters_clause = build_reporters_clause(triage_instance)
