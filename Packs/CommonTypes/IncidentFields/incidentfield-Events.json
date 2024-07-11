@@ -1,8 +1,6 @@
 {
-    "associatedToAll": false,
-    "associatedTypes": [
-        "Qradar Generic"
-    ],
+    "associatedToAll": true,
+    "associatedTypes": [],
     "breachScript": "",
     "caseInsensitive": true,
     "cliName": "events",
