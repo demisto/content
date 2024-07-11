@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: 'install_packs_algorithm'
+  CURRENT_BRANCH_NAME: 'collect-test-nightly-changes'
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: 'install_packs_algorithm'
+    ref: 'collect-test-nightly-changes'
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
