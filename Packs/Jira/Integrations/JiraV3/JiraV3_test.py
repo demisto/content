@@ -430,7 +430,7 @@ class TestJiraGetIssueCommand:
         assert Path.exists(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
         Path.unlink(Path(f"{demisto.investigation()['id']}_{file_info_res.get('FileID', '')}"))
 
-    @ pytest.mark.parametrize('get_attachments', [
+    @pytest.mark.parametrize('get_attachments', [
         (True), (False)
     ])
     def test_download_issue_attachments_to_war_room(self, mocker, get_attachments):
@@ -999,7 +999,7 @@ class TestJiraGetIDOffsetCommand:
 
 
 class TestJiraListIssueFieldsCommand:
-    @ pytest.mark.parametrize('pagination_args', [
+    @pytest.mark.parametrize('pagination_args', [
         ({'start_at': 0, 'max_results': 2}), ({'start_at': 1, 'max_results': 3})
     ])
     def test_list_fields_command(self, mocker, pagination_args):
@@ -1028,7 +1028,7 @@ class TestJiraListIssueFieldsCommand:
 
 
 class TestJiraIssueToBacklogCommand:
-    @ pytest.mark.parametrize('args', [
+    @pytest.mark.parametrize('args', [
         ({'rank_before_issue': 'key1', 'issues': 'issue1,issue2'}), ({'rank_after_issue': 'key1', 'issues': 'issue1,issue2'})
     ])
     def test_using_rank_without_board_id_error(self, args):
@@ -2025,7 +2025,7 @@ class TestJiraGetRemoteData:
             {"Comment": "Comment 3", "Updated": "2023-05-01", "UpdatedUser": "User 3"}]
         expected_parsed_entries = [
             {"Type": 1, "Contents": "Comment 3\nJira Author: None",
-                "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True}
+             "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True}
         ]
         assert updated_incident.get('extractedComments') == expected_extracted_attachments
         assert parsed_entries == expected_parsed_entries
@@ -2082,12 +2082,41 @@ class TestJiraGetRemoteData:
         close_reason = "Issue was marked as \"Resolved\", or status was changed to \"Done\""
         expected_parsed_entries = [
             {"Type": 1, "Contents": "Comment 3\nJira Author: None",
-                "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True},
+             "ContentsFormat": "text", "Tags": ["comment from jira"], "Note": True},
             {"File": "dummy_file_name", "FileID": "id1", "Tags": ["attachment from jira"]},
             {"Type": 1, "Contents": {"dbotIncidentClose": True,
                                      "closeReason": close_reason}, "ContentsFormat": "json"}
         ]
         mocker.patch('JiraV3.get_updated_remote_data', return_value=expected_parsed_entries)
+        remote_data_response = get_remote_data_command(client=client, args={'id': '1234', 'lastUpdate': '2023-01-01'},
+                                                       attachment_tag_from_jira='',
+                                                       comment_tag_from_jira='', mirror_resolved_issue=True,
+                                                       fetch_comments=True, fetch_attachments=True)
+        assert remote_data_response.entries == expected_parsed_entries
+
+    def test_get_remote_data_comment_updated_time_same_as_issue_updated_time(self, mocker):
+        """
+        Given:
+            - A Jira client with an issue that has a comment with the same updated time as the issue updated time.
+        When
+            - When the mirror in mechanism is called, which calls the get-remote-data command.
+        Then
+            - Validate that the comment is returned, as it is considered as part of the issue update.
+        """
+        from JiraV3 import get_remote_data_command
+        client = jira_base_client_mock()
+        issue_response = {'id': '1234', 'fields': {'summary': 'dummy summary', 'updated': '2023-01-01'}}
+        mocker.patch.object(client, 'get_issue', return_value=issue_response)
+        mocker.patch('JiraV3.get_user_timezone', return_value='Asia/Jerusalem')
+
+        expected_parsed_entries = [
+            {"Type": 1, "Contents": "Comment 3\nJira Author: None",
+             "ContentsFormat": "text", "Tags": [""], "Note": True}
+        ]
+        mocked_get_comments_entries = [{"Comment": "Comment 3", "Updated": "2023-01-01"}]
+        mocker.patch('JiraV3.get_comments_entries_for_fetched_incident',
+                     return_value=mocked_get_comments_entries)
+
         remote_data_response = get_remote_data_command(client=client, args={'id': '1234', 'lastUpdate': '2023-01-01'},
                                                        attachment_tag_from_jira='',
                                                        comment_tag_from_jira='', mirror_resolved_issue=True,
@@ -2632,8 +2661,8 @@ class TestJiraIssueAssign:
         from JiraV3 import update_issue_assignee_command
         get_issue_response = util_load_json('test_data/get_issue_test/raw_response.json')
         args = {
-            'assignee': assignee,           # For Jira OnPrem
-            'assignee_id': assignee_id,     # For Jira Cloud
+            'assignee': assignee,  # For Jira OnPrem
+            'assignee_id': assignee_id,  # For Jira Cloud
             'issue_id': 21487,
         }
         client: JiraBaseClient = jira_base_client_mock()
@@ -2659,8 +2688,8 @@ class TestJiraIssueAssign:
         from JiraV3 import update_issue_assignee_command
 
         args = {
-            'assignee': None,       # For Jira OnPrem
-            'assignee_id': None,    # For Jira Cloud
+            'assignee': None,  # For Jira OnPrem
+            'assignee_id': None,  # For Jira Cloud
             'issue_id': 21487,
         }
 
