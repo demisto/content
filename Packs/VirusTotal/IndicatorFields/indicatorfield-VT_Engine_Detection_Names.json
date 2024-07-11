@@ -19,7 +19,7 @@
     "threshold": 72,
     "type": "tagsSelect",
     "unmapped": false,
-    "unsearchable": false,
+    "unsearchable": true,
     "useAsKpi": true,
     "version": -1,
     "fromVersion": "5.5.0"
