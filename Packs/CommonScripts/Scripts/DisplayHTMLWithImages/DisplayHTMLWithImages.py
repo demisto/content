@@ -58,7 +58,7 @@ def main(args):
     attachments = incident.get('attachment', {})
     files = demisto.context().get('File', [])
 
-    html_body = f'<div style="background-color: white; color: black;"> {html_body} </div>\n'
+    html_body = f'<div style="background-color: white; color:black;"> {html_body} </div>\n'
 
     if 'src="cid' in html_body:
         entry_id_list = get_entry_id_list(attachments, files)
