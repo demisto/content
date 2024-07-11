@@ -158,7 +158,7 @@
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
-            "timeout": 1200,
+            "timeout": 400,
             "integrations": "Cortex XDR - IR",
             "memory_threshold": 120
         },
@@ -168,7 +168,7 @@
                 "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
-            "timeout": 1200,
+            "timeout": 800,
             "memory_threshold": 200
         },
         {
@@ -1898,6 +1898,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "is_mockable": false
         },
         {
@@ -2979,7 +2980,7 @@
                 "Active Directory Query v2",
                 "Cortex XDR - IR"
             ],
-            "memory_threshold": 100,
+            "memory_threshold": 125,
             "instance_names": "active_directory_80k",
             "has_api": false
         },

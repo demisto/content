@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "***Note:*** Breaking Change - The 'cb-eedr-list-alerts' command no longer supports the 'alert_category', 'workflow', and 'group_results' fields. ***Note:*** Breaking Change - The ***cb-eedr-alert-workflow-update*** command  no longer supports free text in *remediation_state* field, it is predefined."
+}
