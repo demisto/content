@@ -1,0 +1,23 @@
+[INGEST:vendor="msft", product="azure", target_dataset="msft_azure_raw", no_hit=keep]
+// Split events by target resource
+filter category = "AuditLogs"
+| alter
+        target_resources = json_extract_array(properties, "$.targetResources"),
+        target_resource = json_extract_array(properties, "$.targetResources")
+| arrayexpand target_resource
+| alter
+        tmp_time = json_extract_scalar(properties, "$.activityDateTime")
+| alter
+        tmp_time = arrayindex(regextract(tmp_time, "(\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}\.?\d{0,3})"), 0)
+| alter
+        _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp_time)
+| fields -tmp_time;
+
+| filter category in("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ProvisioningLogs")
+| alter
+        tmp_time = if(category = "ProvisioningLogs", json_extract_scalar(properties, "$.activityDateTime"), category in("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs"), json_extract_scalar(properties, "$.createdDateTime"), null)
+| alter
+        tmp_time = arrayindex(regextract(tmp_time, "(\d{4}-\d{2}-\d{2}[T\s]\d{2}:\d{2}:\d{2}\.?\d{0,3})"), 0)
+| alter
+        _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp_time)
+| fields -tmp_time;
