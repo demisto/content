@@ -166,7 +166,7 @@ tasks:
           - operator: LastArrayElement
       PathsToGet:
         complex:
-          root: CrowdStrike.Detections.behaviors
+          root: CrowdStrike.Detections.behaviors.parent_details
           accessor: filepath
           transformers:
           - operator: LastArrayElement
