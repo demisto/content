@@ -184,6 +184,9 @@ def fetch_events(
                 demisto.debug("The tracker is invalid,"
                               " catching the error and continuing with the same tracker for the next time.")
                 events, new_tracker = [], tracker
+            # TODO
+            else:
+                raise e
 
         # It means there are no more events to retrieve when there are fewer than 500 events
         last_interation = len(events) < MAX_EVENTS_API_CALL
