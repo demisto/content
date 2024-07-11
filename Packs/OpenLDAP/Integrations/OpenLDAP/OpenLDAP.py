@@ -723,7 +723,7 @@ class LdapClient:
         search_params = {'search_base': args.get('base_dn', self._base_dn),
                          'search_scope': args.get('search_scope', SUBTREE),
                          'search_filter': create_entries_search_filter(args),
-                         'attributes': get_search_attributes(args.get('attributes', '')),
+                         'attributes': get_search_attributes(args.get('attributes', 'all')),
                          }
 
         auto_bind = self._get_auto_bind_value()
