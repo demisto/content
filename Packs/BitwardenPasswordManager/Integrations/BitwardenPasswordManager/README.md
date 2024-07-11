@@ -1,5 +1,5 @@
 This integration collects event logs from Bitwarden Password Manager to Cortex XSIAM.
-This integration was integrated and tested with version xx of Bitwarden Password Manager.
+This integration was integrated and tested with version 2024.6.2 of Bitwarden Password Manager.
 
 ## Configure Bitwarden Password Manager on Cortex XSIAM
 
@@ -20,7 +20,7 @@ This integration was integrated and tested with version xx of Bitwarden Password
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### bitwarden-get-events
@@ -34,9 +34,11 @@ Gets events from Bitwarden.
 
 #### Input
 
-| **Argument Name** | **Description**                                                                                                                                               | **Required** |
-| --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| start | The start date from which to filter events.                                                                                                                   | Optional | 
+| **Argument Name**  | **Description**                                                                                                                                               | **Required** |
+|--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
+| start              | The start date from which to filter events. (e.g. 2024-07-10T08:08:46.76)                                                                                                                   | Optional | 
+| end                | The end date from which to filter events. (e.g. 2024-07-11T08:09:47.08)                                                                                                                   | Optional | 
+| limit              | The number of events to return. Default is 500.                                                                                                                   | Optional | 
 | should_push_events | Set this argument to True in order to save events to XSIAM, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
 
 #### Context Output
