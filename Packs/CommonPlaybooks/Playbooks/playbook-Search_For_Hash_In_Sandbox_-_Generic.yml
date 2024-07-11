@@ -1244,10 +1244,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 834196a2-ca30-4f26-825c-d41abac9ea26
+    taskid: f00bb93e-66f8-41da-86a8-8532905b405c
     type: condition
     task:
-      id: 834196a2-ca30-4f26-825c-d41abac9ea26
+      id: f00bb93e-66f8-41da-86a8-8532905b405c
       version: -1
       name: Any results from the Falcon Intelligence Sandbox search?
       description: Any results from the Falcon Intelligence Sandbox search?
@@ -1267,8 +1267,8 @@ tasks:
           left:
             value:
               complex:
-                root: csfalconx.resource.FindReport
-                accessor: foundIds
+                root: csfalconx.resource
+                accessor: resources
             iscontext: true
           right:
             value: {}
