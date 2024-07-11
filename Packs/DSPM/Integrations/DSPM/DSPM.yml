@@ -50,23 +50,23 @@ configuration:
   name: isFetch
   type: 8
   required: false
-- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
-  defaultvalue: None
-  display: Incident Mirroring Direction
-  name: mirror_direction
-  type: 15
-  required: false
-  options:
-  - None
-  - Incoming
-  - Outgoing
-  - Incoming And Outgoing
-- additionalinfo: When selected, closing the DSPM ticket is mirrored in Cortex XSOAR.
-  defaultvalue: 'false'
-  display: Close Mirrored XSOAR Incident
-  name: close_xsoar_incident
-  type: 8
-  required: false
+# - additionalinfo: 'Choose the direction to mirror the incident: Incoming (from SentinelOne to Cortex XSOAR), Outgoing (from Cortex XSOAR to SentinelOne), or Incoming and Outgoing (from/to Cortex XSOAR and SentinelOne).'
+#   defaultvalue: None
+#   display: Incident Mirroring Direction
+#   name: mirror_direction
+#   type: 15
+#   required: false
+#   options:
+#   - None
+#   - Incoming
+#   - Outgoing
+#   - Incoming And Outgoing
+# - additionalinfo: When selected, closing the DSPM ticket is mirrored in Cortex XSOAR.
+#   defaultvalue: 'false'
+#   display: Close Mirrored XSOAR Incident
+#   name: close_xsoar_incident
+#   type: 8
+#   required: false
 description: |
   This integration fetches risk findings from Dig Security, allowing users to monitor and manage security risks identified by Dig Security in their cloud environments.
 display: DSPM
