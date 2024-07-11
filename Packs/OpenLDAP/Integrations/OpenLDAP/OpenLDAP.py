@@ -85,6 +85,8 @@ def entries_paged_search(connection: Connection, search_params: dict, page: int,
 
     results_to_skip = page_size * (page - 1)
     connection.search(**search_params, paged_size=results_to_skip)
+    # After the first search you must send back the cookie you get with each response in each subsequent search.
+    # https://ldap3.readthedocs.io/en/latest/searches.html#simple-paged-search
     cookie = connection.result['controls']['1.2.840.113556.1.4.319']['value']['cookie']
     return connection.search(**search_params, paged_size=page_size, paged_cookie=cookie)
 
