@@ -54,7 +54,7 @@
           "existing": "Configure 'jira-v2' to open a ticket for a true positive incident.",
           "new": "Configure 'jira-v2' to open a ticket for a true positive incident."
           },
-        "description": "Configure 'ServiceNow v2' to open a ticket for a true positive incident."
+        "description": "Configure 'jira-v2' to open a ticket for a true positive incident."
         }
       ],
       "next": [
