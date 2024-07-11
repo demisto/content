@@ -14,9 +14,10 @@ urllib3.disable_warnings()
 TOKEN_INPUT_IDENTIFIER = '__token'
 DAYS_BACK_FOR_FIRST_QUERY_OF_INCIDENTS = 3
 DATETIME_FORMAT_MILISECONDS = '%Y-%m-%dT%H:%M:%S.%f'
-DEFAULT_LIMIT = "50"
+DEFAULT_LIMIT = 50
 MAX_LENGTH_CONTEXT = 10000
 DEFAULT_FETCH_TYPE = ["Exabeam Incident"]
+MAX_LIMIT_FETCH_USERS = 200
 
 
 class Client(BaseClient):
@@ -1248,6 +1249,25 @@ def test_module(client: Client, args: dict[str, str], params: dict[str, str]):
         ok if successful
     """
     client.test_module_request()
+
+    is_fetch = argToBoolean(params.get("isFetch") or False)
+    if is_fetch:
+        fetch_type = params.get("fetch_type", DEFAULT_FETCH_TYPE)
+        if "Exabeam Notable User" in fetch_type:
+
+            fetch_interval = arg_to_number(params.get("notable_users_fetch_interval")) or 60
+            if fetch_interval % 60 != 0:
+                raise ValueError("The Notable Users Fetch Interval must be specified in whole hours")
+
+            max_fetch_users = arg_to_number(params.get("max_fetch_users")) or DEFAULT_LIMIT
+            if max_fetch_users <= 0 or max_fetch_users > MAX_LIMIT_FETCH_USERS:
+                raise ValueError("The Max Users Per Fetch must be between 1 and 200")
+
+            client.get_notable_users_request("h", "1", 1)
+
+        if "Exabeam Incident" in fetch_type:
+            client.get_incidents({})
+
     demisto.results('ok')
 
 
@@ -2205,8 +2225,9 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
         difference = current_time - last_run_time
         difference_minutes = difference.total_seconds() / 60
         fetch_interval = arg_to_number(args.get("notable_users_fetch_interval")) or 60
-        if fetch_interval % 60 != 0:
-            raise ValueError("The interval must be specified in whole hours, such as 1 hour, 2 hours, etc.")
+
+       # Ensure fetch_interval is at least 60 and rounded to the nearest multiple of 60
+        fetch_interval = max(60, round(fetch_interval / 60) * 60)
 
         demisto.debug(f"Difference of {difference_minutes} minutes between the current time and the last run notable users")
         if difference_minutes <= fetch_interval:  # Check if the time interval is past.
@@ -2218,7 +2239,7 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
     else:  # In the first run
         time_period = args.get("notable_users_first_fetch", "3 months")
 
-    limit = args.get("max_fetch_users") or DEFAULT_LIMIT
+    limit = arg_to_number(args.get("max_fetch_users")) or DEFAULT_LIMIT
     args_notable_users = {"limit": limit, "time_period": time_period}
     demisto.debug(f"Before the request args notable users, limit: {limit}, time period: {time_period}")
     _, _, res = get_notable_users(client, args_notable_users)
