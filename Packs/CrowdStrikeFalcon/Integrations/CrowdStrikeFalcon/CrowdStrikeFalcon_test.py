@@ -4108,7 +4108,8 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
     detection_entity = input_data.response_detection.copy()
     detection_entity['status'] = detection_status
     mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity]})
-    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    reopen_statuses = 'New,In progress,True positive,False positive,Reopened,Ignored'
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident, 'reopen_statuses': reopen_statuses})
 
     result = get_remote_data_command({'id': remote_id, 'lastUpdate': '2022-03-08T08:17:09Z'})
     assert result.mirrored_object == mirrored_object
