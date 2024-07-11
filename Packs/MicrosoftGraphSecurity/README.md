@@ -5,6 +5,7 @@ This pack includes XSIAM content.
 
 <details>
   <summary><b>Collecting Alerts</b></summary>
+
 Use the Microsoft Graph integration to fetch and manage alerts from various Microsoft security sources, such as:
 * Microsoft 365 Defender unified alerts API
 * Microsoft Defender for Endpoint
@@ -13,8 +14,10 @@ Use the Microsoft Graph integration to fetch and manage alerts from various Micr
 * Microsoft Defender for Cloud Apps
 * Microsoft Purview Data Loss Prevention (including any future new signals integrated into M365D).
 </details>
+
 <details>
     <summary><b>Graph Security Log collection</b></summary>
+    
 ## What does this pack do?
 * This content XDM mappings are based on the Office 365 integration, in the Graph API section enable **alertv2** [Doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Office-365).
 * Unify and standardize alert tracking
