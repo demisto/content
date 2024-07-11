@@ -2541,3 +2541,342 @@ Get analysis of a private file submitted to GoogleThreatIntelligence.
 >|Id|Threat Severity Level|Popular Threat Category|Threat Verdict|Status|
 >|---|---|---|---|---|---|---|
 >| example-analysis-id | HIGH | trojan | MALICIOUS | completed |
+### gti-curated-threat-actors-get
+
+***
+Retrieves GTI curated threat actors for a given resource.
+
+#### Base Command
+
+`gti-curated-threat-actors-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource | The file hash (MD5, SHA1, or SHA256), Domain, URL or IP. | Required | 
+| resource_type | The type of the resource. If not supplied, will determine it's a file. Possible values are: ip, url, domain, file, hash. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleThreatIntelligence.Collection.id | String | ID that contains the assessment \(the given hash, domain, url, or ip\). | 
+| GoogleThreatIntelligence.Collection.collections.id | String | ID of the curated threat actors. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.name | String | Name of the curated threat actors. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.description | String | Description of the curated threat actors. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date | String | Last modification date of the curated threat actors. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions | list | Targeted regions of the curated threat actors. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries | list | Targeted industries of the curated threat actors. | 
+### gti-curated-malware-families-get
+
+***
+Retrieves GTI curated malware families for a given resource.
+
+#### Base Command
+
+`gti-curated-malware-families-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource | The file hash (MD5, SHA1, or SHA256), Domain, URL or IP. | Required | 
+| resource_type | The type of the resource. If not supplied, will determine it's a file. Possible values are: ip, url, domain, file, hash. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleThreatIntelligence.Collection.id | String | ID that contains the assessment \(the given hash, domain, url, or ip\). | 
+| GoogleThreatIntelligence.Collection.collections.id | String | ID of the curated malware families. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.name | String | Name of the curated malware families. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.description | String | Description of the curated malware families. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date | String | Last modification date of the curated malware families. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions | list | Targeted regions of the curated malware families. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries | list | Targeted industries of the curated malware families. | 
+### gti-curated-campaigns-get
+
+***
+Retrieves GTI curated campaigns for a given resource.
+
+#### Base Command
+
+`gti-curated-campaigns-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource | The file hash (MD5, SHA1, or SHA256), Domain, URL or IP. | Required | 
+| resource_type | The type of the resource. If not supplied, will determine it's a file. Possible values are: ip, url, domain, file, hash. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleThreatIntelligence.Collection.id | String | ID that contains the assessment \(the given hash, domain, url, or ip\). | 
+| GoogleThreatIntelligence.Collection.collections.id | String | ID of the curated campaign. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.name | String | Name of the curated campaign. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.description | String | Description of the curated campaign. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.last_modification_date | String | Last modification date of the curated campaign. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.targeted_regions | list | Targeted regions of the curated campaign. | 
+| GoogleThreatIntelligence.Collection.collections.attributes.targeted_industries | list | Targeted industries of the curated campaign. | 
+### gti-url-scan-and-analysis-get
+
+***
+Scan and get the analysis of a URL submitted to GoogleThreatIntelligence.
+
+#### Base Command
+
+`gti-url-scan-and-analysis-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | The URL to scan. | Required | 
+| id | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| extended_data | Whether to return extended data. Possible values are: true, false. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. Default is 60. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| URL.Data | unknown | Bad URLs found. | 
+| URL.Malicious.Vendor | unknown | For malicious URLs, the vendor that made the decision. | 
+| URL.Malicious.Description | unknown | For malicious URLs, the reason that the vendor made the decision. | 
+| URL.Relationships.EntityA | string | The source of the relationship. | 
+| URL.Relationships.EntityB | string | The destination of the relationship. | 
+| URL.Relationships.Relationship | string | The name of the relationship. | 
+| URL.Relationships.EntityAType | string | The type of the source of the relationship. | 
+| URL.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| GoogleThreatIntelligence.URL.attributes.favicon.raw_md5 | String | The MD5 hash of the URL. | 
+| GoogleThreatIntelligence.URL.attributes.favicon.dhash | String | Difference hash. | 
+| GoogleThreatIntelligence.URL.attributes.last_modification_date | Number | Last modification date in epoch format. | 
+| GoogleThreatIntelligence.URL.attributes.times_submitted | Number | The number of times the url has been submitted. | 
+| GoogleThreatIntelligence.URL.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| GoogleThreatIntelligence.URL.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| GoogleThreatIntelligence.URL.attributes.threat_names | String | Name of the threats found. | 
+| GoogleThreatIntelligence.URL.attributes.last_submission_date | Number | The last submission date in epoch format. | 
+| GoogleThreatIntelligence.URL.attributes.last_http_response_content_length | Number | The last HTTPS response length. | 
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.date | Date | The last response header date. | 
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.x-sinkhole | String | DNS sinkhole from last response. | 
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-length | String | The content length of the last response. | 
+| GoogleThreatIntelligence.URL.attributes.last_http_response_headers.content-type | String | The content type of the last response. | 
+| GoogleThreatIntelligence.URL.attributes.reputation | Number | Reputation of the indicator. | 
+| GoogleThreatIntelligence.URL.attributes.last_analysis_date | Number | The date of the last analysis in epoch format. | 
+| GoogleThreatIntelligence.URL.attributes.has_content | Boolean | Whether the url has content in it. | 
+| GoogleThreatIntelligence.URL.attributes.first_submission_date | Number | The first submission date in epoch format. | 
+| GoogleThreatIntelligence.URL.attributes.last_http_response_content_sha256 | String | The SHA-256 hash of the content of the last response. | 
+| GoogleThreatIntelligence.URL.attributes.last_http_response_code | Number | Last response status code. | 
+| GoogleThreatIntelligence.URL.attributes.last_final_url | String | Last final URL. | 
+| GoogleThreatIntelligence.URL.attributes.url | String | The URL itself. | 
+| GoogleThreatIntelligence.URL.attributes.title | String | Title of the page. | 
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. | 
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| GoogleThreatIntelligence.URL.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| GoogleThreatIntelligence.URL.attributes.outgoing_links | String | Outgoing links of the URL page. | 
+| GoogleThreatIntelligence.URL.attributes.gti_assessment.threat_score.value | Number | GTI threat score of the URL. | 
+| GoogleThreatIntelligence.URL.attributes.gti_assessment.severity.value | String | GTI severity of the URL. | 
+| GoogleThreatIntelligence.URL.attributes.gti_assessment.verdict.value | String | GTI verdict of the URL. | 
+| GoogleThreatIntelligence.URL.type | String | Type of the indicator \(url\). | 
+| GoogleThreatIntelligence.URL.id | String | ID of the indicator. | 
+| GoogleThreatIntelligence.URL.links.self | String | Link to the response. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.harmless | Number | Number of engines that found the indicator to be harmless. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.malicious | Number | Number of engines that found the indicator to be malicious. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.suspicious | Number | Number of engines that found the indicator to be suspicious. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.timeout | Number | he number of engines that timed out for the indicator. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.undetected | Number | Number of engines the found the indicator to be undetected. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.status | String | Status of the analysis. | 
+| GoogleThreatIntelligence.Analysis.data.id | String | ID of the analysis. | 
+| GoogleThreatIntelligence.Analysis.data.type | String | Type of object \(analysis\). | 
+| GoogleThreatIntelligence.Analysis.meta.url_info.id | String | ID of the URL. | 
+| GoogleThreatIntelligence.Analysis.meta.url_info.url | String | The URL. | 
+| GoogleThreatIntelligence.Analysis.id | String | The analysis ID. | 
+### gti-file-scan-and-analysis-get
+
+***
+Scan and get the analysis of a file submitted to GoogleThreatIntelligence.
+
+#### Base Command
+
+`gti-file-scan-and-analysis-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entryID | The file entry ID to submit. | Required | 
+| uploadURL | Special upload URL for files larger than 32 MB. Can be acquired from the gti-file-scan-upload-url command. | Optional | 
+| id | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| file | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| extended_data | Whether to return extended data. Possible values are: true, false. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. Default is 60. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| File.MD5 | unknown | Bad MD5 hash. | 
+| File.SHA1 | unknown | Bad SHA1 hash. | 
+| File.SHA256 | unknown | Bad SHA256 hash. | 
+| File.Relationships.EntityA | string | The source of the relationship. | 
+| File.Relationships.EntityB | string | The destination of the relationship. | 
+| File.Relationships.Relationship | string | The name of the relationship. | 
+| File.Relationships.EntityAType | string | The type of the source of the relationship. | 
+| File.Relationships.EntityBType | string | The type of the destination of the relationship. | 
+| File.Malicious.Vendor | unknown | For malicious files, the vendor that made the decision. | 
+| File.Malicious.Detections | unknown | For malicious files, the total number of detections. | 
+| File.Malicious.TotalEngines | unknown | For malicious files, the total number of engines that checked the file hash. | 
+| DBotScore.Indicator | unknown | The indicator that was tested. | 
+| DBotScore.Type | unknown | The indicator type. | 
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| GoogleThreatIntelligence.File.attributes.type_description | String | Description of the type of the file. | 
+| GoogleThreatIntelligence.File.attributes.tlsh | String | The locality-sensitive hashing. | 
+| GoogleThreatIntelligence.File.attributes.exiftool.MIMEType | String | MIME type of the file. | 
+| GoogleThreatIntelligence.File.attributes.names | String | Names of the file. | 
+| GoogleThreatIntelligence.File.attributes.javascript_info.tags | String | Tags of the JavaScript. | 
+| GoogleThreatIntelligence.File.attributes.exiftool.FileType | String | The file type. | 
+| GoogleThreatIntelligence.File.attributes.exiftool.WordCount | String | Total number of words in the file. | 
+| GoogleThreatIntelligence.File.attributes.exiftool.LineCount | String | Total number of lines in file. | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.info | Number | Number of IDS that marked the file as "info". | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.high | Number | Number of IDS that marked the file as "high". | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.medium | Number | Number of IDS that marked the file as "medium". | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_ids_stats.low | Number | Number of IDS that marked the file as "low". | 
+| GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.critical | Number | Number of Sigma analysis that marked the file as "critical". | 
+| GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.high | Number | Number of Sigma analysis that marked the file as "high". | 
+| GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.medium | Number | Number of Sigma analysis that marked the file as "medium". | 
+| GoogleThreatIntelligence.File.attributes.sigma_analysis_stats.low | Number | Number of Sigma analysis that marked the file as "low". | 
+| GoogleThreatIntelligence.File.attributes.exiftool.MIMEEncoding | String | The MIME encoding. | 
+| GoogleThreatIntelligence.File.attributes.exiftool.FileTypeExtension | String | The file type extension. | 
+| GoogleThreatIntelligence.File.attributes.exiftool.Newlines | String | Number of newlines signs. | 
+| GoogleThreatIntelligence.File.attributes.trid.file_type | String | The TrID file type. | 
+| GoogleThreatIntelligence.File.attributes.trid.probability | Number | The TrID probability. | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.description | String | Description of the YARA rule. | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.source | String | Source of the YARA rule. | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.author | String | Author of the YARA rule. | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.ruleset_name | String | Rule set name of the YARA rule. | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.rule_name | String | Name of the YARA rule. | 
+| GoogleThreatIntelligence.File.attributes.crowdsourced_yara_results.ruleset_id | String | ID of the YARA rule. | 
+| GoogleThreatIntelligence.File.attributes.names | String | Name of the file. | 
+| GoogleThreatIntelligence.File.attributes.last_modification_date | Number | The last modification date in epoch format. | 
+| GoogleThreatIntelligence.File.attributes.type_tag | String | Tag of the type. | 
+| GoogleThreatIntelligence.File.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
+| GoogleThreatIntelligence.File.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
+| GoogleThreatIntelligence.File.attributes.size | Number | Size of the file. | 
+| GoogleThreatIntelligence.File.attributes.popular_threat_classification.suggested_threat_label | String | Suggested thread label. | 
+| GoogleThreatIntelligence.File.attributes.popular_threat_classification.popular_threat_name | Number | The popular thread name. | 
+| GoogleThreatIntelligence.File.attributes.times_submitted | Number | Number of times the file was submitted. | 
+| GoogleThreatIntelligence.File.attributes.last_submission_date | Number | Last submission date in epoch format. | 
+| GoogleThreatIntelligence.File.attributes.downloadable | Boolean | Whether the file is downloadable. | 
+| GoogleThreatIntelligence.File.attributes.sha256 | String | SHA-256 hash of the file. | 
+| GoogleThreatIntelligence.File.attributes.type_extension | String | Extension of the type. | 
+| GoogleThreatIntelligence.File.attributes.tags | String | File tags. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_date | Number | Last analysis date in epoch format. | 
+| GoogleThreatIntelligence.File.attributes.unique_sources | Number | Unique sources. | 
+| GoogleThreatIntelligence.File.attributes.first_submission_date | Number | First submission date in epoch format. | 
+| GoogleThreatIntelligence.File.attributes.ssdeep | String | SSDeep hash of the file. | 
+| GoogleThreatIntelligence.File.attributes.md5 | String | MD5 hash of the file. | 
+| GoogleThreatIntelligence.File.attributes.sha1 | String | SHA-1 hash of the file. | 
+| GoogleThreatIntelligence.File.attributes.magic | String | Identification of file by the magic number. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.harmless | Number | The number of engines that found the indicator to be harmless. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.type-unsupported | Number | The number of engines that found the indicator to be of type unsupported. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.confirmed-timeout | Number | The number of engines that confirmed the timeout of the indicator. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.failure | Number | The number of failed analysis engines. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
+| GoogleThreatIntelligence.File.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
+| GoogleThreatIntelligence.File.attributes.meaningful_name | String | Meaningful name of the file. | 
+| GoogleThreatIntelligence.File.attributes.reputation | Number | The reputation of the file. | 
+| GoogleThreatIntelligence.File.attributes.gti_assessment.threat_score.value | Number | GTI threat score of the file. | 
+| GoogleThreatIntelligence.File.attributes.gti_assessment.severity.value | String | GTI severity of the file. | 
+| GoogleThreatIntelligence.File.attributes.gti_assessment.verdict.value | String | GTI verdict of the file. | 
+| GoogleThreatIntelligence.File.type | String | Type of the indicator \(file\). | 
+| GoogleThreatIntelligence.File.id | String | Type ID of the indicator. | 
+| GoogleThreatIntelligence.File.links.self | String | Link to the response. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.harmless | Number | Number of engines that found the indicator to be harmless. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.malicious | Number | Number of engines that found the indicator to be malicious. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.suspicious | Number | Number of engines that found the indicator to be suspicious. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.timeout | Number | he number of engines that timed out for the indicator. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.stats.undetected | Number | Number of engines the found the indicator to be undetected. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.status | String | Status of the analysis. | 
+| GoogleThreatIntelligence.Analysis.data.id | String | ID of the analysis. | 
+| GoogleThreatIntelligence.Analysis.data.type | String | Type of object \(analysis\). | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.sha256 | String | SHA-256 hash of the file. | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.sha1 | String | SHA-1 hash of the file. | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.md5 | String | MD5 hash of the file. | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.name | unknown | Name of the file. | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.size | Number | Size of the file. | 
+| GoogleThreatIntelligence.Analysis.id | String | The analysis ID. | 
+### gti-private-file-scan-and-analysis-get
+
+***
+Scan and get the analysis of a private file submitted to GoogleThreatIntelligence.
+
+#### Base Command
+
+`gti-private-file-scan-and-analysis-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| entryID | The file entry ID to submit. | Required | 
+| id | This is an internal argument used for the polling process, not to be used by the user. | Optional | 
+| extended_data | Whether to return extended data. Possible values are: true, false. | Optional | 
+| interval_in_seconds | Interval in seconds between each poll. Default is 60. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleThreatIntelligence.Analysis.data.attributes.date | Number | Date of the analysis in epoch format. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.status | String | Status of the analysis. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.threat_severity_level | String | Threat severity level of the private file. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.popular_threat_category | String | Popular threat category of the private file. | 
+| GoogleThreatIntelligence.Analysis.data.attributes.threat_verdict | String | Threat verdict of the private file. | 
+| GoogleThreatIntelligence.Analysis.data.id | String | ID of the analysis. | 
+| GoogleThreatIntelligence.Analysis.data.type | String | Type of object \(analysis\). | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.sha256 | String | SHA-256 hash of the file. | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.sha1 | String | SHA-1 hash of the file. | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.md5 | String | MD5 hash of the file. | 
+| GoogleThreatIntelligence.Analysis.meta.file_info.size | Number | Size of the file. | 
+| GoogleThreatIntelligence.Analysis.id | String | The analysis ID. | 
+### gti-assessment-get
+
+***
+Retrieves GTI assessment for a given resource.
+
+#### Base Command
+
+`gti-assessment-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| resource | The file hash (MD5, SHA1, or SHA256), Domain, URL or IP. | Required | 
+| resource_type | The type of the resource. If not supplied, will determine it's a file. Possible values are: ip, url, domain, file, hash. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GoogleThreatIntelligence.Assessment.id | String | ID that contains the assessment \(the given hash, domain, url, or ip\). | 
+| GoogleThreatIntelligence.Assessment.attributes.gti_assessment.threat_score.value | Number | The threat score of the assessment. | 
+| GoogleThreatIntelligence.Assessment.attributes.gti_assessment.severity.value | String | The severity of the assessment. | 
+| GoogleThreatIntelligence.Assessment.attributes.gti_assessment.verdict.value | String | The verdict of the assessment. | 
