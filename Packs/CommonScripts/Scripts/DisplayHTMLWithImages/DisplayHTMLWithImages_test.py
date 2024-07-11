@@ -118,3 +118,63 @@ def test_main_mt(mocker, email_html, expected):
     main({})
 
     assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']
+
+
+@pytest.mark.parametrize(
+    "email_html,expected",
+    [
+        (EMAIL_HTML, EXPECTED_RESULT_2),
+        (EMAIL_HTML_NO_ALT, EXPECTED_RESULT_NO_ALT)
+    ]
+)
+def test_imgaes_not_attached_to_incident(mocker, email_html, expected):
+    """
+        Given
+        - Html contained images src but not attached to incident.
+        When
+        - All images were uploaded to the server
+        Then
+        - The images' src attribute would be replaced as expected with account tenant name
+    """
+    import DisplayHTMLWithImages
+    from DisplayHTMLWithImages import main
+
+    mocked_incident = {
+        'CustomFields': {
+            'emailbody': email_html
+        },
+        'attachment': [
+
+        ]
+    }
+    mocked_files = [
+        {'Name': 'image_1.png', 'EntryID': '37@119'},
+        {'Name': 'image_2.png', 'EntryID': '38@120'}
+    ]
+
+    mocked_context = {
+        'Email': {
+            'AttachmentsData': [
+                {
+                    'Content-Disposition': 'attachment; filename="image_1.png"',
+                    'Content-ID': '<ii_lyfigebl1>',
+                    'Name': 'image_1.png'
+                },
+                {
+                    'Content-Disposition': 'attachment; filename="image_2.png"',
+                    'Content-ID': '<ii_lyfigebl1>',
+                    'Name': 'image_2.png'
+                }
+            ]
+        },
+        'File': mocked_files
+    }
+
+    mocker.patch.object(demisto, 'demistoUrls', return_value={'server': 'https://localhost:8443:/acc_test_tenant'})
+    mocker.patch.object(demisto, 'incident', return_value=mocked_incident)
+    mocker.patch.object(demisto, 'context', return_value=mocked_context)
+    mocker.patch.object(DisplayHTMLWithImages, 'return_results')
+
+    main({})
+
+    assert expected in DisplayHTMLWithImages.return_results.call_args[0][0]['Contents']
