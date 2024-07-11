@@ -3,8 +3,7 @@ from CommonServerPython import *
 
 from io import BytesIO
 from PIL import Image
-from datetime import datetime
-from datetime import timezone
+import datetime
 import functools
 import itertools
 import json
@@ -363,7 +362,7 @@ def parse_triage_date(date: str):
     # See https://discuss.python.org/t/parse-z-timezone-suffix-in-datetime/2220
     if date.endswith('Z'):
         date = date[:-1] + '+00:00'
-    return datetime.fromisoformat(date)
+    return datetime.datetime.fromisoformat(date)
 
 
 def test_function(triage_instance) -> None:
