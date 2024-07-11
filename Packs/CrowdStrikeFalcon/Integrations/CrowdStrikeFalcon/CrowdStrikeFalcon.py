@@ -609,6 +609,7 @@ def modify_detection_summaries_outputs(detection: dict):
         "pattern_disposition",
         "parent_details",
         "md5",
+        "filepath"
     ]
 
    # rename before adding to a nested dict
