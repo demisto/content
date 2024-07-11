@@ -106,7 +106,7 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
 
 def fetch_events(client: Client, max_fetch: int,
                  dates: Dict[str, Any] = {'start': DEFAULT_FIRST_FETCH, 'end': DEFAULT_END_DATE}) -> tuple[
-    List[Dict[str, Any]], Dict[str, Any]]:
+        List[Dict[str, Any]], Dict[str, Any]]:
     """ Fetches events from the API using the provided client.
     Args:
         - client (Client): The client object used to make API requests.
@@ -137,7 +137,7 @@ def fetch_events(client: Client, max_fetch: int,
         demisto.debug(
             f'Bitwarden - Fetched {len(unique_events)} which is the maximum or greater then the number of events.'
             f' Will keep the fetching in the next fetch.')
-        last_fetch_date = unique_events[0].get('date').split('Z')[0]
+        last_fetch_date = unique_events[0].get('date', '').split('Z')[0]
         split_string = last_fetch_date.split('.')
         formatted_datetime = split_string[0] + '.' + split_string[1][:-4].ljust(3, '0')
         new_last_run = {'continuationToken': continuation_token, 'last_fetch': formatted_datetime, 'nextTrigger': '0',
@@ -157,7 +157,7 @@ def fetch_events(client: Client, max_fetch: int,
 
 
 def get_events_with_pagination(client: Client, max_fetch: int, dates: Dict[str, Any], last_run: Dict[str, Any]) -> tuple[
-    List[Dict[str, Any]], str]:
+        List[Dict[str, Any]], str]:
     continuation_token = last_run.get('continuationToken', '')
     events: List[dict] = []
     has_next = True
@@ -170,7 +170,7 @@ def get_events_with_pagination(client: Client, max_fetch: int, dates: Dict[str, 
                                      continuation_token=continuation_token)
         if continuation_token := response.get('continuationToken'):
             has_next = True
-        events.extend(response.get('data'))
+        events.extend(response.get('data', []))
     return events, continuation_token
 
 
@@ -244,7 +244,6 @@ def main() -> None:  # pragma: no cover
             if events:
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun({'last_fetch': new_last_run.get('last_fetch')})
-
 
     except Exception as e:
         return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
