@@ -1932,7 +1932,6 @@ Lists the MFA devices for an IAM user.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | The name of the user whose MFA device you want to deactivate. | Required | 
-| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | Required | 
 
 #### Context Output
 
@@ -1955,7 +1954,7 @@ Deletes a virtual MFA device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN. | Optional | 
+| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN. | Required | 
 
 #### Context Output
 
@@ -1973,7 +1972,7 @@ Deactivates the specified MFA device and removes it from association with the us
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | The name of the user whose MFA device you want to deactivate. | Optional | 
+| userName | The name of the user whose MFA device you want to deactivate. | Required | 
 | serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | Required | 
 
 #### Context Output
