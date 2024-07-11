@@ -16,5 +16,5 @@ This integration supports the Armis API 1.8.0 version.
 
 - The **Activities** and **Alerts** event types are expected to have a many logs within a short interval. Therefore, the default limit is 100k and the interval is 1 minute.
 - The **Devices** event type is expected to have a heavier response but with least events in a longer interval, therefore the default limit is 50k and the interval is 4 hours.
-- internal server errors can occur when there's a growing gap between the available events to fetch and the actual number of events being fetched every minute.
-If you encounter timeout or internal server errors while fetching events, separate instances for each event type and tweak the limits according to the issues - lowering the limit for timeout or raising the limit for internal server errors.
+- Internal server errors may occur when there is a significant disparity between the number of events being fetched and the available events within a given time frame. This can happen when the limit set for fetching events is too low, resulting in the retrieval of older events while a substantial number of new events are available.
+- If you encounter timeout or internal server errors while fetching events, separate instances for each event type and tweak the limits according to the issues - lowering the limit for timeout or raising the limit for internal server errors.
