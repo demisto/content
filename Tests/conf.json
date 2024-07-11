@@ -3679,6 +3679,9 @@
             "playbookID": "GetIndicatorsByQuery - Test"
         },
         {
+            "playbookID": "DBotFindSimilarIncidents-test"
+        },
+        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "6.1.0",
@@ -5940,7 +5943,6 @@
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
-        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
         "EWS_O365_test": "Issue CIAC-6753",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
