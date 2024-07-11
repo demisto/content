@@ -741,3 +741,25 @@ def test_fetch_mails__last_run_is_greater(mocker):
     mocker.patch.object(IMAPClient, '_create_IMAP4')
     _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from=4)
     assert next_uid_to_fetch_from == 4
+
+
+def test_fetch_mails__uid_is_str(mocker):
+    """
+    Given:
+        - The email UIDs returend from the client are strings ['1', '2', '3']
+    When:
+        - Fetching incidents
+    Then:
+        - Ensure that the next_uid_to_fetch_from is 4 since it is greater than the greatest email UID
+    """
+    from MailListenerV2 import fetch_mails
+    import demistomock as demisto
+    from imapclient import IMAPClient
+
+    mocker.patch('MailListenerV2.Email')
+    mocker.patch.object(demisto, 'debug')
+    mocker.patch.object(IMAPClient, 'search', return_value=['1', '2', '3'])
+    mocker.patch.object(IMAPClient, 'fetch')
+    mocker.patch.object(IMAPClient, '_create_IMAP4')
+    _, _, next_uid_to_fetch_from = fetch_mails(IMAPClient('http://example_url.com'), uid_to_fetch_from='4')
+    assert next_uid_to_fetch_from == 4

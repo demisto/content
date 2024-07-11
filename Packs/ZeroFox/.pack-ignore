@@ -1,5 +1,5 @@
 [file:ZeroFox.yml]
-ignore=IN126,IN124
+ignore=IN126
 
 [known_words]
 zerofox
