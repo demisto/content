@@ -11253,7 +11253,7 @@ class FirewallCommand:
         will time out.
         :param topology: `Topology` instance.
         :param target: The target serial number to retrieve the device state from.
-        :param ip_address: An ip address to use for service route enabled firewalls
+        :param ip_address: An ip address to use for service route enabled firewalls.
         """
 
         for firewall in topology.firewalls(target=target):
@@ -11911,13 +11911,14 @@ def get_object(
     )
 
 
-def get_device_state(topology: Topology, target: str, filename: str = None) -> dict:
+def get_device_state(topology: Topology, target: str, filename: str = None, ip_address: Optional[str] = None) -> dict:
     """
     Get the device state from the provided device target (serial number). Note that this will attempt to connect directly to the
     firewall as there is no way to get the device state for a firewall via Panorama.
 
     :param topology: `Topology` instance !no-auto-argument
     :param target: String to filter to only show specific hostnames or serial numbers.
+    :param ip_address: Manually determined ip address of a Service Route firewall.
     """
     if not filename:
         file_name = f"{target}_device_state.tar.gz"
@@ -11926,7 +11927,7 @@ def get_device_state(topology: Topology, target: str, filename: str = None) -> d
 
     return fileResult(
         filename=file_name,
-        data=FirewallCommand.get_device_state(topology, target),
+        data=FirewallCommand.get_device_state(topology, target, ip_address),
         file_type=EntryType.ENTRY_INFO_FILE
     )
 
