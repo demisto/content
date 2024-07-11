@@ -60,16 +60,16 @@ class GoogleChatClient(BaseClient):
         self._space_key = space_key
 
     def create_access_token(self, service_account_json):
-        integration_context = get_integration_context()
-        service_account_info = json.loads(service_account_json)
-        service_account_access_token = f'{service_account_info.get("private_key_id")}.access_token'
-        service_account_expiry_time = f'{service_account_info.get("private_key_id")}.expiry_time'
-        previous_token = integration_context.get(service_account_access_token)
-        previous_token_expiry_time = integration_context.get(service_account_expiry_time)
-        if previous_token and previous_token_expiry_time and previous_token_expiry_time > date_to_timestamp(datetime.now()):
-            self._access_token = previous_token
-        else:
-            try:
+        try:
+            integration_context = get_integration_context()
+            service_account_info = json.loads(service_account_json)
+            service_account_access_token = f'{service_account_info.get("private_key_id")}.access_token'
+            service_account_expiry_time = f'{service_account_info.get("private_key_id")}.expiry_time'
+            previous_token = integration_context.get(service_account_access_token)
+            previous_token_expiry_time = integration_context.get(service_account_expiry_time)
+            if previous_token and previous_token_expiry_time and previous_token_expiry_time > date_to_timestamp(datetime.now()):
+                self._access_token = previous_token
+            else:
                 expiry_time = date_to_timestamp(datetime.now(), date_format=DATE_FORMAT)
                 scopes = ["https://www.googleapis.com/auth/chat.bot"]
                 now = int(time.time())
@@ -111,15 +111,15 @@ class GoogleChatClient(BaseClient):
                 # stores received token and expiration time in the integration context
                 set_integration_context(new_token)
                 self._access_token = response_data["access_token"]
-            except Exception as e:
-                raise DemistoException(f"Could not generate an access token. Error: {e}.")
+        except Exception as e:
+            raise DemistoException(f"Could not generate an access token. Error: {e}.")
 
     def send_notification_request(self,
                                   message_body: str | None,
-                                  message_to: str | None,
-                                  space_id: str | None,
-                                  thread_id: str | None,
-                                  adaptive_card: dict[str, Any] | None):
+                                  message_to: str | None = None,
+                                  space_id: str | None = None,
+                                  thread_id: str | None = None,
+                                  adaptive_card: dict[str, Any] | None = None):
         params = {"key": self._space_key}
         headers = {
             'Authorization': f'Bearer {self._access_token}',
@@ -150,8 +150,20 @@ class GoogleChatClient(BaseClient):
                 'Content-Type': 'application/json; charset=UTF-8'
             }
             self._http_request('PATCH', url_suffix=url_suffix, params=params, json_data=body, headers=headers)
-        except DemistoException:
-            raise DemistoException(f"Could not send a chat-reply to the user with {body.get('text')}")
+        except DemistoException as e:
+            raise DemistoException(f"Could not send a chat-reply to the user with {body.get('text')}. Error : {e}.")
+
+    def get_space_for_test_module_request(self):
+        try:
+            headers = {
+                'Authorization': f'Bearer {self._access_token}',
+                'Content-Type': 'application/json; charset=UTF-8'
+            }
+            params = {"key": self._space_key}
+            response = self._http_request('GET', f'spaces/{self._space_id}', params=params, headers=headers)
+            return response
+        except DemistoException as e:
+            raise DemistoException(f"Could not get spaces. Error: {e}.")
 
 
 ''' HELPER FUNCTIONS '''
@@ -178,12 +190,22 @@ def create_hr_response(response: dict[str, Any]):
 
 
 def test_module(client: GoogleChatClient) -> str:
+    # TODO added get space for test-module
     message: str = ''
     try:
+        client.create_access_token(demisto.params().get('service_account_json', {}).get('password'))
+        client.get_space_for_test_module_request()
         message = 'ok'
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if 'Could not generate an access token' in str(e) or 'Expecting value' in str(e):
+            message = ('Authorization Error: Please make sure "Google Chat Service Account JSON" param is correctly set.'
+                       f'Error :{e}')
+        elif 'API key not valid' in str(e):
+            message = ('Authorization Error: Please make sure "Google Chat Space Key" param is correctly set.'
+                       f' Error: {e}')
+        elif 'Forbidden' in str(e) or 'Missing or malformed space resource' in str(e):
+            message = ('Authorization Error: Please make sure "Google Chat Space ID" param is correctly set.'
+                       f' Error: {e}')
         else:
             raise e
     return message
@@ -203,7 +225,7 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
     expiry = args.get('expiry')
     default_reply = args.get('default_reply')
 
-    result = client.send_notification_request(message_body if message_body!= 'no_message' else '',
+    result = client.send_notification_request(message_body if message_body != 'no_message' else '',
                                               message_to, space_id, thread_id, adaptive_card)
     message_id_hierarchy = result.get('name')
     if result.get('name') and entitlement and expiry and default_reply:
@@ -433,15 +455,16 @@ def main() -> None:
     try:
         client = GoogleChatClient(params.get('space_id'),
                                   params.get('space_key', {}).get('password'))
-        client.create_access_token(params.get('service_account_json', {}).get('password'))
         global CLIENT
         CLIENT = client
         if command == 'long-running-execution':
+            client.create_access_token(params.get('service_account_json', {}).get('password'))
             run_long_running(port)
         if command == 'test-module':
             result = test_module(client)
             return_results(result)
         elif command == 'send-notification':
+            client.create_access_token(params.get('service_account_json', {}).get('password'))
             return_results(send_notification_command(client, demisto.args()))
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
