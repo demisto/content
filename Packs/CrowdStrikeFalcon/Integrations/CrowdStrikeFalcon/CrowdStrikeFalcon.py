@@ -1523,7 +1523,10 @@ def get_fetch_detections(last_created_timestamp=None, filter_arg=None, offset: i
     endpoint_url = '/detects/queries/detects/v1' if LEGACY_VERSION else "/alerts/queries/alerts/v2?filter=product"
 
     if not LEGACY_VERSION:
-        endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter', None)}")
+        if params.get('filter'):
+            endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'+{params.pop('filter')}")
+        else:
+            endpoint_url += urllib.parse.quote_plus(f":'epp'+type:'ldt'")
     demisto.debug(f"In get_fetch_detections: {LEGACY_VERSION =}, {endpoint_url=}, {params=}")
     response = http_request('GET', endpoint_url, params)
 
@@ -1595,8 +1598,9 @@ def get_detections_ids(filter_arg=None, offset: int = 0, limit=INCIDENTS_PER_FET
     endpoint_url = "/alerts/queries/alerts/v1" if LEGACY_VERSION else \
         "/alerts/queries/alerts/v2?filter="
     # in the new version we need to add the product type to the filter to the url as encoded string
-    if not LEGACY_VERSION:
-        endpoint_url += urllib.parse.quote_plus(params.pop('filter', None))
+    if not LEGACY_VERSION and params.get('filter'):
+        endpoint_url += urllib.parse.quote_plus(params.pop('filter'))
+
     response = http_request('GET', endpoint_url, params)
 
     demisto.debug(f"CrowdStrikeFalconMsg: Getting {product_type} detections from {endpoint_url} with {params=}. {response=}.\
