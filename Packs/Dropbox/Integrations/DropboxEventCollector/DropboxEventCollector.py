@@ -42,7 +42,7 @@ class DropboxEventsClient(IntegrationEventsClient):
 
     def set_request_filter(self, cursor: str):
         if 'continue' not in str(self.request.url):
-            self.request.url = AnyUrl(f'{str(self.request.url).removesuffix("/")}/continue')
+            self.request.url = parse_obj_as(AnyUrl, f'{str(self.request.url).removesuffix("/")}/continue')
 
         self.request.data = json.dumps({'cursor': cursor})
 
@@ -56,7 +56,7 @@ class DropboxEventsClient(IntegrationEventsClient):
         )
         response = self.call(request)
         self.request.headers['Authorization'] = f'Bearer {response.json()["access_token"]}'
-        self.request.url = AnyUrl(f'{str(self.request.url).removesuffix("/")}/2/team_log/get_events')
+        self.request.url = parse_obj_as(AnyUrl, f'{str(self.request.url).removesuffix("/")}/2/team_log/get_events')
 
 
 class DropboxEventsGetter(IntegrationGetEvents):
