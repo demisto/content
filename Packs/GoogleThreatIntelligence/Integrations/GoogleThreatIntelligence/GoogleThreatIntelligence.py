@@ -2679,8 +2679,6 @@ def _get_curated_collections_command(client: Client, args: dict, collection_type
     """Get Google Threat Intelligence collections for a given resource."""
     resource = args['resource']
     resource_type = args.get('resource_type', 'file').lower()
-    if resource_type not in ('file', 'hash', 'ip', 'url', 'domain'):
-        raise DemistoException(f'Could not find resource type of "{resource_type}"')
     raw_response = client.curated_collections(resource, resource_type, collection_type)
 
     data = raw_response.get('data', [])
