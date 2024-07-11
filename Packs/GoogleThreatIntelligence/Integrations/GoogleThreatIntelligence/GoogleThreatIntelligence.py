@@ -43,7 +43,6 @@ TYPE_TO_ENDPOINT = {
     'domain': 'domains',
     'url': 'urls',
     'ip': 'ip_addresses',
-    'ip_address': 'ip_addresses',
 }
 
 
