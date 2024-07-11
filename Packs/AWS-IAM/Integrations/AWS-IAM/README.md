@@ -1921,7 +1921,7 @@ Listed 2 attached policies for role test-role
 ### aws-iam-list-mfa-devices
 
 ***
-Lists the MFA devices for an IAM user
+Lists the MFA devices for an IAM user.
 
 #### Base Command
 
@@ -1931,15 +1931,16 @@ Lists the MFA devices for an IAM user
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | No description provided. | Optional | 
+| userName | The name of the user whose MFA device you want to deactivate. | Required | 
+| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AWS.IAM.MFADevices.UserName | string | The user with whom the MFA device is associated. | 
-| AWS.IAM.MFADevices.SerialNumber | string | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | 
-| AWS.IAM.MFADevices.EnableDate | date | The date when the MFA device was enabled for the user. | 
+| AWS.IAM.MFADevices.Devices.UserName | string | The user with whom the MFA device is associated. | 
+| AWS.IAM.MFADevices.Devices.SerialNumber | string | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | 
+| AWS.IAM.MFADevices.Devices.EnableDate | date | The date when the MFA device was enabled for the user. | 
 
 ### aws-iam-delete-mfa-devices
 
@@ -1973,7 +1974,7 @@ Deactivates the specified MFA device and removes it from association with the us
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | The name of the user whose MFA device you want to deactivate. | Optional | 
-| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | Optional | 
+| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | Required | 
 
 #### Context Output
 
