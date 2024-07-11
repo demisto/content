@@ -1,0 +1,957 @@
+category: Utilities
+commonfields:
+  id: Impartner
+  version: -1
+configuration:
+- defaultvalue: https://prod.impartner.live
+  display: Your server URL
+  name: url
+  required: true
+  type: 0
+- displaypassword: API Key
+  additionalinfo: The API Key to use for connection
+  name: credentials
+  required: true
+  hiddenusername: true
+  type: 9
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+description: 'Impartner is the fastest-growing, most award-winning channel management solution provider on the market.'
+display: Impartner
+name: Impartner
+script:
+  commands:
+  - arguments:
+    - description: 'query for searching accounts'
+      name: query
+      required: false
+    - description: 'Comma separated list of fields to retrieve'
+      name: fields
+      required: false
+      defaultValue: "name, id, recordLink, tech_BD_Assigned_for_XSOAR__cf"
+    - description: 'Optional where clause (eg, Field1 = Val1 and Field2 > Val2)'
+      name: filter
+      required: false
+    - description: 'Comma separated list of fields to sort by'
+      name: orderby
+      required: false
+    - description: 'Number of results to skip for pagination'
+      name: skip
+      required: false
+    - description: 'Number of results to take for pagination'
+      name: take
+      required: false
+    - auto: PREDEFINED
+      description: "Whether to return all results"
+      name: all_fields
+      predefined:
+        - TRUE
+        - FALSE
+      defaultValue: 'FALSE'
+    description: 'Get account IDs from Impartner'
+    name: impartner-get-account-list
+    outputs:
+    - contextPath: Impartner.Account.list.count
+      description: Number of results returned
+      type: String
+    - contextPath: Impartner.Account.list.entity
+      description: Type of entity returned
+      type: String
+    - contextPath: Impartner.Account.list.results
+      description: Type of entity returned
+      type: Array
+    - contextPath: Impartner.Account.list.results.id
+      description: ID of account
+      type: String
+    - contextPath: Impartner.Account.list.success
+      description: Whether result was successful
+      type: Boolean
+  - arguments:
+    - description: 'id of Impartner account'
+      name: id
+      required: false
+    - description: 'Comma separated list of fields to retrieve'
+      name: fields
+      required: false
+      defaultValue: "name, id, recordLink, tech_BD_Assigned_for_XSOAR__cf"
+    - auto: PREDEFINED
+      description: "Whether to return all results"
+      name: all_fields
+      predefined:
+        - TRUE
+        - FALSE
+      defaultValue: 'FALSE'
+    description: 'Get account details from Impartner'
+    name: impartner-get-account-id
+    outputs:
+    - contextPath: Impartner.Account.accountManagerId
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.site
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.faxAlternate
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.phoneAlternate
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.autoAssignTier
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.autoAssignRegion
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.comments
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.convertedApplicantId
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.created
+      description: 'Test'
+      type: Date
+    - contextPath: Impartner.Account.createdById
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.crmAccountType
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.crmId
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.crmHash
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.crmLastExportedHash
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.currencyConversionRate
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.dealsRegistered
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.partnerLocator
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.solutionLocator
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.evalTierAfterExpired
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.externalId1
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.externalId2
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.fax
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.id
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.isActive
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.isFeatured
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.isTest
+      description: 'Test'
+      type: Boolean
+    - contextPath: Impartner.Account.crmLastKnownDateUpdated
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.crmLastImported
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.crmLastExported
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.updatedById
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.crmLastExportedVersion
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.mailingCity
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.mailingCountry
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.mailingCountryCode
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.mailingLatitude
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.mailingLongitude
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.mailingPostalCode
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.mailingState
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.mailingStreet
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.mailingSuite
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.memberCount
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.name
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.nonDealSales
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.parentAccountId
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.partnerLevelId
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.phone
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.primaryUserId
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.recordLink
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.recordVersion
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.referralUrl
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.referralUrlSegment
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.regionId
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.revenue
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.revenueAttainment
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.revenueGoal
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.tcmaNotificationTriggerType
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tcmaNotificationTriggerValue
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tcmaShowcaseSegment
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tierId
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tierChangeType
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.tierOverrideById
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tierOverrideDate
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tierOverrideExpirationDate
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tierOverrideNote
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.totalSales
+      description: 'Test'
+      type: Number
+    - contextPath: Impartner.Account.updated
+      description: 'Test'
+      type: Date
+    - contextPath: Impartner.Account.website
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.what_is_your_main_product_you_are_looking_to_integrate_with_Palo_Alto_Networks__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_other_please_name__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_yes_please_share_at_least_1_mutual_customer_that_will_use_and_test_the_integration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.other_Product__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_is_the_name_of_your_product_that_you_d_like_to_integrate_with_our_product__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_other_please_explain__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tpA_Product_s__cf
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.status__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.ignite_Sponsorship_Years__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.account_SLUG__cf
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.nfR_CN_Series_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_CN_Series_SFDC_link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_SFDC_link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_SFDC_link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_IoT_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_IoT_SFDC_link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Compute_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Compute_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfire_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfire_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_CN_Series_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_CN_Series_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_CN_Series_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_IoT_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_IoT_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_IoT_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Compute_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Compute_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Compute_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfire_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfie_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfire_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_5G_OT_Eval_Id__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_5G_OT_SFDC_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_5G_OT_Eval_Link__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_5G_OT_License_Type__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.parent_Company_Legal_Name__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.location_of_Parent_Company_Country__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.does_the_Parent_Company_have_an_alternate_legal_name_in_another_language__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.company_Legal_Name__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.does_the_Company_have_other_Trading_Business_Name_or_name_in_another_language__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.legal_Address_street_city_country_postal_code__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.business_Telephone_Number__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.other_Business_address_or_Place_of_Business_street_city_state_country_postal_code__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.date_of_Incorporation_or_Registration_with_local_authorities__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tax_ID_Number__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_country_is_the_integration_work_being_performed_in__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_you_have_multiple_legal_entity_names_which_entity_is_performing_the_integration_work__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.please_provide_the_address_of_the_entity_performing_the_integration_work__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.state_or_Province_of_Registration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.marketplace_Long_Description__cf
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.marketplace_Short_Description__cf
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.what_is_the_use_case_you_are_trying_to_solve_in_the_integration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.how_will_your_integration_with_Palo_Alto_Networks_offer_unique_benefits_to_the_customer__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.who_are_the_target_customers__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_is_the_integration_value_proposition_to_the_customers__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_is_the_integration_value_proposition_to_Palo_Alto_Networks__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_Yes_please_provide_details__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_not_who_is_the_authorized_person_to_sign_this_agreement_on_behalf_of_the_company_please_share_ema__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_so_please_provide_publicly_disclosable_details_Optional_Please_note_the_purpose_of_this_question___cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tell_us_about_your_company__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_are_the_other_use_case_you_are_trying_to_solve_in_the_integration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.notes_from_BD__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.application_Notes__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_are_the_names_of_the_specific_companies_you_are_targeting_with_this_integration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.due_to_the_current_volume_of_applications_the_requirement_is_at_least_2_joint_customers_that_are_wil__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_you_do_have_a_way_please_describe__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.engineer_Tech_BD_Notes__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.please_choose_the_integration_type_for_the_main_integration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_is_the_1st_priority_Palo_Alto_product_you_want_to_integrate_with__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.which_other_Palo_products_you_are_interested_in_integrating_with__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_is_the_2nd_priority_Palo_Alto_product_you_want_to_integrate_with__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.is_there_a_Joint_Customer_or_Prospect_asking_for_integrating_your_product_with_Palo_Alto_products__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.how_many_customers_do_you_expect_will_use_the_integration_in_the_next_2_years__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.is_the_planned_integration_with_Palo_Alto_Networks_budgeted_and_resourced__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.has_an_integration_with_this_product_already_been_done_and_or_has_PoC_of_Integration_been_completed__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.has_an_integration_between_your_product_and_other_Security_Vendors_in_the_same_space_been_done_befor__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.are_you_authorized_to_sign_the_technology_partner_agreement__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.featured__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.number_of__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.integration_Status__cf
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.are_there_other_use_cases_for_this_integration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.validated__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.do_you_have_a_way_to_track_who_will_use_the_integration__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_the_integration_is_approved_can_you_commit_to_completing_it_within_90_day_including_the_Integrati__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_CN_Series_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Iot_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Compute_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfire_Notify__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_5G_OT_Nofity__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tech_BD_Assigned_for_XSOAR__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.does_the_Company_have_other_Business_Address_or_Place_of_Business__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.does_your_company_have_subsidiaries__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.integration_was_expired__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.target_customers__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.which_Region_the_company_is_serving__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.company_Main_Market_Segment__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.what_do_you_need_from_PANW_to_make_this_work_as_part_of_the_partnerships__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.panW_Integration_Product__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.account_Integration_Status__cf
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.panW_Integration_Product_Approved__cf
+      description: 'Test'
+      type: String
+    - contextPath: Impartner.Account.tiers__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.integration_Form_Approved__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.completed_Integration_Form_Approved__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.initial_Integration_Form_Approval_Email_Notification_Sent__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.completed_Integration_Form_Approved_Notification_Sent__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.integration_Demo_Approved__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.integration_Guide_Approved__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.panW_Integration_Product_Expired__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.panW_Integration_Product_Expired_notification_sent__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.if_there_is_a_timeline_to_complete_the_integration_please_enter_the_date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.tpA_Signed__cf
+      description: 'Test'
+      type: Date
+    - contextPath: Impartner.Account.tpA_Expiration_DAte__cf
+      description: 'Test'
+      type: Date
+    - contextPath: Impartner.Account.last_Conversation_Date_with_BD__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.ndA_Signed__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_CN_Series_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_Iss_date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_IoT_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Compute_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfire_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_5G_OT_Iss_Date__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.number_of_Customers__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_CN_Series_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_XDR_email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xpanse_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Cortex_Xsoar_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_DLP_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Global_Protect_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_IoT_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Panorama_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Access_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_Cloud_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Primsa_Cloud_Compute_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_SASE_Security_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Prisma_SD_WAN_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_VM_Series_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_Wildfire_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_5G_OT_Email__cf
+      description: 'Test'
+      type: Unknown
+    - contextPath: Impartner.Account.nfR_NGFW_Promo_Id__cf
+      description: 'Test'
+      type: Unknown
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.10.12.63474
+fromversion: 6.9.0
+tests:
+- No tests (auto formatted)
