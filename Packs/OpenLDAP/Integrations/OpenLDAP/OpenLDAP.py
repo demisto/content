@@ -720,7 +720,7 @@ class LdapClient:
         Implements entries search command.
         """
 
-        search_params = {'search_base': args.get('base_dn', self._base_dn),
+        search_params = {'search_base': args.get('search_base', self._base_dn),
                          'search_scope': args.get('search_scope', SUBTREE),
                          'search_filter': create_entries_search_filter(args),
                          'attributes': get_search_attributes(args.get('attributes', 'all')),
