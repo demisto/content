@@ -8,13 +8,13 @@ inputs:
   playbookInputQuery:
   required: false
   value:
-    simple: paloaltonetworks.com
+    simple: test.com
 - description: The potentially malicious domain to check
   key: InputDomain
   playbookInputQuery:
   required: false
   value:
-    simple: palonetworks.com
+    simple: test.com
 - description: |-
     The csv of known bad nameservers
 
