@@ -25,7 +25,7 @@
       "fetching_integrations": [
         {
           "priority": 1,
-          "name": "PrismaCloudCompute",
+          "name": "PaloAltoNetworks_PrismaCloudCompute",
           "action": {
             "existing": "Update your current instance to work with the new Prisma Cloud Compute Compliance v2 incident type: \n1. Enable fetching. \n2. Set the 'Prisma Cloud Compute - Classifier'.\n3. Set the Incident type field to 'Prisma Cloud Compute Compliance v2' (the Prisma Cloud Compute classifier will keep on routing other incident types).\n4. Set the Mapper field to 'Palo Alto Networks Prisma Cloud Compute - Incoming Mapper'.",
             "new": "Set up new 'Prisma Cloud Compute' instance to work with the Prisma Cloud Compute Compliance v2 incident type: \n1. Turn on fetching. \n2. Choose the 'Prisma Cloud Compute - Classifier .\n3. Set the Incident type field to 'Prisma Cloud Compute Compliance v2' (the Prisma Cloud Compute classifier will keep on routing other incident types).\n4. Set the Mapper field to 'Palo Alto Networks Prisma Cloud Compute - Incoming Mapper'."
