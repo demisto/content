@@ -2838,6 +2838,9 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                                            ticket_type)
                     except Exception as e:
                         demisto.error(f"Could not upload file entry. entry_id={entry.get('id')}\n{e}")
+                        text_for_snow_comment = "Cortex XSOAR failed to upload a file as part of the mirroring to SNOW." \
+                                                f"\nSNOW ERROR: {e}"
+                        client.add_comment(ticket_id, ticket_type, 'comments', text_for_snow_comment)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
