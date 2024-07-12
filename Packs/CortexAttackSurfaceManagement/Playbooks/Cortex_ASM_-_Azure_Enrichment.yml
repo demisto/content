@@ -1306,7 +1306,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: azureAssetHierarchy
+              simple: AzureAssetHierarchy
           operator: isNotEmpty
       label: Yes
     continueonerrortype: ''
@@ -1371,7 +1371,7 @@ tasks:
     quietmode: 0
     scriptarguments:
       asmassethierarchy:
-        simple: ${azureAssetHierarchy}
+        simple: ${AzureAssetHierarchy}
     separatecontext: false
     skipunavailable: false
     task:
