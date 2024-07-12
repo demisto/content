@@ -2329,7 +2329,7 @@ def test_update_remote_data_upload_file_exception(mocker):
 
     def upload_file_mock(*args):
         raise Exception("ERROR!!!")
-    
+
     def add_comment_mock(*args):
         assert "An attempt to mirror a file from Cortex XSOAR was failed." in args[3]
 
@@ -2340,9 +2340,8 @@ def test_update_remote_data_upload_file_exception(mocker):
     demisto_mocker = mocker.patch.object(demisto, 'error')
     res = update_remote_system_command(client, args, params)
 
-    print(demisto_mocker.call_args)
-    print(res)
-    assert demisto_mocker.call_args[0][0] == "Could not upload file entry. entry_id=entry-id\nERROR!!!"
+    assert demisto_mocker.call_args[0][0] == "An attempt to mirror a file has failed. entry_id=entry-id, " \
+                                             "file_name='test'\nERROR!!!"
     assert res == '1234'
 
 
