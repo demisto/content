@@ -27,10 +27,11 @@ def create_html_with_images(email_html='', entry_id_list=None):
     return email_html
 
 
-def get_entry_id_list(attachments, files):
-    """Get the email attachments and create entry id list.
+# for backwards compatible
+def get_entry_id_list_by_incident_attachments(attachments, files):
+    """Get the incident attachments and create entry id list.
     Args:
-        attachments (list): The attachments of the email.
+        attachments (list): The incident attachments.
         files (list): The uploaded files in the context.
     Returns:
         list. Attachments entries ids list.
@@ -39,29 +40,51 @@ def get_entry_id_list(attachments, files):
         return []
 
     entry_id_list = []
-    files = [files] if not isinstance(files, list) else files
     for attachment in attachments:
         attachment_name = attachment.get('name', '')
+        if attachment_name and not attachment_name.endswith('eml'):
+            for file in files:
+                if attachment_name == file.get('Name'):
+                    entry_id_list.append((attachment_name, file.get('EntryID')))
+    demisto.info(f'\n\n idlist by incident attachments \n\n{entry_id_list}')
+    return entry_id_list
+
+
+def get_entry_id_list_by_parsed_email_attachments(attachments, files):
+    """Get the email attachments and create entry id list.
+    Args:
+        attachments (list): The parsed email attachments.
+        files (list): The uploaded files in the context.
+    Returns:
+        list. Attachments entries ids list.
+    """
+    if not (attachments and files):
+        return []
+
+    entry_id_list = []
+    for attachment in attachments:
+        attachment_name = attachment.get('Name', '')
         for file in files:
             if attachment_name == file.get('Name'):
                 entry_id_list.append((attachment_name, file.get('EntryID')))
-    demisto.info(f'\n\n idlist \n\n{entry_id_list}')
+    demisto.info(f'\n\n idlist by parsed email attachments\n\n{entry_id_list}')
     return entry_id_list
 
 
 def main(args):
     incident = demisto.incident()
     custom_fields = incident.get('CustomFields', {})
-    html_body = custom_fields.get('renderedhtml', '') or \
-        custom_fields.get('emailhtml', '') or \
+    html_body = custom_fields.get('emailhtml', '') or \
         custom_fields.get('emailbody', '')
-    attachments = incident.get('attachment', {})
     files = demisto.context().get('File', [])
-
+    files = [files] if not isinstance(files, list) else files
     html_body = f'<div style= "background-color: white;"> {html_body} </div>'
-
     if 'src="cid' in html_body:
-        entry_id_list = get_entry_id_list(attachments, files)
+        attachments = incident.get('attachment', {})
+        entry_id_list = get_entry_id_list_by_incident_attachments(attachments, files)
+        if not entry_id_list:
+            attachments = demisto.get(demisto.context(), 'Email.AttachmentsData', [])
+            entry_id_list = get_entry_id_list_by_parsed_email_attachments(attachments, files)
         html_body = create_html_with_images(html_body, entry_id_list)
 
     return_results({
