@@ -2,11 +2,10 @@
 DomainTools Iris Detect Test Cases
 """
 import hmac
-import io
 import json
 import time
 from hashlib import sha256
-from typing import Any, Dict, Optional, Tuple
+from typing import Any
 
 import pytest
 import requests
@@ -213,7 +212,7 @@ def load_json(path):
         JSONDecodeError: If the file at the specified path contains invalid JSON.
 
     """
-    with io.open(path, mode="r", encoding="utf-8") as file:
+    with open(path, encoding="utf-8") as file:
         return json.loads(file.read())
 
 
@@ -1012,7 +1011,7 @@ def test_validate_first_fetch_parametrized(value, expected):
         (1, 10, 10, (10, 0)),
     ],
 )
-def test_pagination(page: Optional[int], page_size: Optional[int], limit: Optional[int], expected: Tuple[int, int]):
+def test_pagination(page: int | None, page_size: int | None, limit: int | None, expected: tuple[int, int]):
     """
     Test the pagination function with various input cases, including when page, page_size, and limit are None,
     when only page is provided, when page and page_size are provided, and when all parameters are provided.
@@ -1038,7 +1037,7 @@ def test_pagination(page: Optional[int], page_size: Optional[int], limit: Option
         (1, 10, 0, LIMIT_ERROR_MSG),
     ],
 )
-def test_pagination_errors(page: Optional[int], page_size: Optional[int], limit: Optional[int], error_msg: str):
+def test_pagination_errors(page: int | None, page_size: int | None, limit: int | None, error_msg: str):
     """
     Test the pagination function with invalid input cases that should raise exceptions.
 
@@ -1061,7 +1060,7 @@ def test_pagination_errors(page: Optional[int], page_size: Optional[int], limit:
         ("Test Context", 1, 10, 0, "Test Context \nCurrent page size: 10\nShowing page 1 out of 1"),
     ],
 )
-def test_get_command_title_string(sub_context: str, page: Optional[int], page_size: Optional[int], hits: Optional[int],
+def test_get_command_title_string(sub_context: str, page: int | None, page_size: int | None, hits: int | None,
                                   expected_output: str):
     """
     Test the get_command_title_string function with various input cases.
@@ -1086,7 +1085,7 @@ def test_get_command_title_string(sub_context: str, page: Optional[int], page_si
         ("some_other_endpoint", {"include_counts": False, "include_domain_data": False}, DEFAULT_LIMIT),
     ],
 )
-def test_get_max_limit(end_point: str, dt_args: Dict[str, Any], expected_max_limit: int):
+def test_get_max_limit(end_point: str, dt_args: dict[str, Any], expected_max_limit: int):
     """
     Test the get_max_limit function with various input cases, including different endpoints and argument combinations.
 
