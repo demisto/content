@@ -2234,7 +2234,7 @@ def fetch_notable_users(client: Client, args: dict[str, str], last_run_obj: dict
             return [], last_run_obj
 
         else:
-            time_period = f"{fetch_interval/60} hours"
+            time_period = f"{int(fetch_interval/60)} hours"
 
     else:  # In the first run
         time_period = args.get("notable_users_first_fetch", "3 months")
