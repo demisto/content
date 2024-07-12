@@ -13,7 +13,8 @@ def test_no_mapping_no_query():
 def test_no_mapping_with_query():
     args = {'phishingLabels': '*', 'query': QUERY}
     args = build_query_in_reepect_to_phishing_labels(args)
-    assert 'query' in args and args['query'] == QUERY
+    assert 'query' in args
+    assert args['query'] == QUERY
 
 
 def test_mapping_no_query():
@@ -27,6 +28,6 @@ def test_mapping_with_query():
     args = {'phishingLabels': MAPPING, 'tagField': 'closeReason', 'query': QUERY}
     args = build_query_in_reepect_to_phishing_labels(args)
     assert 'query' in args
-    opt1 = args['query'] == '({}) and (closeReason:("spam" "legit"))'.format(QUERY)
-    opt2 = args['query'] == '({}) and (closeReason:("legit" "spam"))'.format(QUERY)
+    opt1 = args['query'] == f'({QUERY}) and (closeReason:("spam" "legit"))'
+    opt2 = args['query'] == f'({QUERY}) and (closeReason:("legit" "spam"))'
     assert opt1 or opt2

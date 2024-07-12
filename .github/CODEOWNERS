@@ -9,7 +9,7 @@
 /Tests/Marketplace/corepacks_override.json @yaakovpraisler
 
 # Docker native image
-/Tests/docker_native_image_config.json @JudahSchwartz @samuelFain
+/Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
 
 # Marketplace & Upload-Flow
 /Tests/scripts/create_artifacts_graph/create_artifacts.py @RosenbergYehuda
