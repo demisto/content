@@ -351,7 +351,6 @@ class Client(BaseClient):
         Constructor to initialize the Commvault client object
         """
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
-        # print('Initialing base url as [{}]'.format(base_url))
         self.qsdk_token = None
         if not base_url.endswith("/"):
             self.ws_url = base_url + "/"
@@ -408,8 +407,6 @@ class Client(BaseClient):
         Function to make http calls
         """
         try:
-            # print('Calling endpoint {}'.format(endpoint))
-            # print('Headers {}'.format(self.headers))
             response = self._http_request(
                 method=method.upper(),
                 url_suffix=endpoint,
@@ -420,7 +417,6 @@ class Client(BaseClient):
                 return_empty_response=ignore_empty_response,
             )
 
-            # print('Response {}'.format(response))
             response.raise_for_status()
         except requests.exceptions.HTTPError as exc:
             error_msg = HTTP_ERRORS.get(exc.response.status_code)
@@ -552,7 +548,7 @@ class Client(BaseClient):
                         break
                     self.perform_long_running_loop(line.strip())
                 except Exception as error:
-                    demisto.error(traceback.format_exc())  # print the traceback
+                    demisto.error(traceback.format_exc())
                     demisto.error(
                         f"Error occurred during long running loop. Error was: {error}"
                     )
@@ -611,7 +607,6 @@ class Client(BaseClient):
         """
         Function to get events
         """
-        # self.validate_session_or_generate_token(self.current_api_token)
         current_date = datetime.utcnow()
         epoch = datetime(1970, 1, 1)
         seconds_since_epoch = int((current_date - epoch).total_seconds())
@@ -640,7 +635,6 @@ class Client(BaseClient):
         :param subclient_id: subclient Id
         :return: string
         """
-        # self.validate_session_or_generate_token(self.current_api_token)
         resp = self.http_request("GET", "/Subclient/" + str(subclient_id), None)
         resp = resp.get("subClientProperties", [{}])[0].get("content")
         return resp
@@ -698,7 +692,6 @@ class Client(BaseClient):
         """
         try:
             syslog_message: syslogmp.Message = parse_no_length_limit(log_message)
-            # self.validate_session_or_generate_token(self.current_api_token)
             message = syslog_message.message.decode("utf-8")
 
             event_time = extract_from_regex(
@@ -862,7 +855,6 @@ class Client(BaseClient):
         :return: string
         """
         out = None
-        # self.validate_session_or_generate_token(self.current_api_token)
         response = self.http_request("GET", "/Job/" + str(job_id), None)
         if ("totalRecordsWithoutPaging" in response) and (
             int(response["totalRecordsWithoutPaging"]) > 0
@@ -879,7 +871,6 @@ class Client(BaseClient):
         self.job_details_body["advOptions"] = {
             "advConfig": {"browseAdvancedConfigBrowseByJob": {"jobId": int(job_id)}}
         }
-        # self.validate_session_or_generate_token(self.current_api_token)
         resp = self.http_request("POST", "/DoBrowse", None, self.job_details_body)
         browse_responses = resp.get("browseResponses", [])
         file_list = []
@@ -962,7 +953,6 @@ class Client(BaseClient):
         """
         not_enable = False
         try:
-            # self.validate_session_or_generate_token(self.current_api_token)
             response = self.http_request("GET", f"/V4/SAML/{identity_server_name}")
             if "error" in response:
                 demisto.debug(
@@ -993,7 +983,6 @@ class Client(BaseClient):
         """
         Fetch SAML Providers and disable them
         """
-        # self.validate_session_or_generate_token(self.current_api_token)
         response = self.http_request("GET", "/IdentityServers")
         if "errorMessage" in response:
             return False
@@ -1014,7 +1003,6 @@ class Client(BaseClient):
         """
         user_id = None
         try:
-            # self.validate_session_or_generate_token(self.current_api_token)
             response = self.http_request("GET", "/User?level=10")
             userslist = response["users"]
             current_user = next(
@@ -1196,7 +1184,6 @@ class Client(BaseClient):
                 },
             }
             response = self.http_request("POST", "/recoverygroup", json_data=data)
-            # print(response)
             if response is not None and "recoveryGroup" in response:
                 recovery_group_id = response["recoveryGroup"]["id"]
         else:
@@ -1241,7 +1228,6 @@ class Client(BaseClient):
             ]
         }
 
-        # body = json.dumps(data, indent=4)
         response = self.http_request(
             "POST", f"/recoverygroup/{recovery_group_id}/entity", json_data=data
         )
@@ -1608,10 +1594,9 @@ def main() -> None:
         is_long_running,
     ) = get_params(params)
     client = Client(base_url=cv_webservice_url + "api", verify=False, proxy=False)
-    is_valid_cv_token = None
+    is_valid_cv_token = True
     # Azure Key Vault Parameters
     client.set_props(params)
-    # is_valid_cv_token = client.validate_session_or_generate_token(cv_api_token)
     client.qsdk_token = f"QSDK {cv_api_token}"
     forwarding_rule_type: str | None = params.get("forwardingRule")
     port: int = 0
