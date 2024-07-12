@@ -1292,8 +1292,8 @@ tasks:
       description: Given an IP address, this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
       id: 552168a5-fe49-4238-8c68-ad255bf6262c
       iscommand: false
-      name: Azure - Enrichment - 7685
-      playbookId: Azure - Enrichment - 7685
+      name: Azure - Enrichment
+      playbookId: Azure - Enrichment
       type: playbook
       version: -1
     taskid: 552168a5-fe49-4238-8c68-ad255bf6262c
