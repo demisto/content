@@ -164,7 +164,24 @@ def execute_command(*args):
                             "description": "ASN Indicator Layout",
                             "detached": False,
                             "details": None,
-                            "detailsV2": None,
+                            "detailsV2": {
+                                "tabs": [
+                                    {
+                                        'sections': [
+                                            {
+                                                'name': 'test-name',
+                                                'items': [
+                                                    {'fieldId': 'asowner'}
+                                                ],
+                                                'columns': [
+                                                    {'key': 'asowner'}
+                                                ],
+                                                'type': 'evidence'
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
                             "edit": {
                                 "sections": [
                                     {
@@ -377,7 +394,7 @@ def execute_command(*args):
                             "layout": "AWS CloudTrail Misconfiguration",
                             "locked": False,
                             "modified": "2024-03-07T16:06:29.680779269Z",
-                            "name": "AWS CloudTrail Misconfiguration",
+                            "name": "test-name",
                             "onChangeRepAlg": 1,
                             "packID": "PrismaCloud",
                             "packName": "Prisma Cloud by Palo Alto Networks",
@@ -491,7 +508,7 @@ def execute_command(*args):
                                 "description": "",
                                 "feed": False,
                                 "fromServerVersion": "",
-                                "id": "4ddf9024-d552-4a80-8b1f-08d1cdf333e5",
+                                "id": "test-name",
                                 "incidentSamples": None,
                                 "indicatorSamples": None,
                                 "instanceIds": None,
@@ -501,10 +518,10 @@ def execute_command(*args):
                                 "logicalVersion": 0,
                                 "mapping": None,
                                 "modified": "2023-09-18T18:35:58.071985304Z",
-                                "name": "any",
+                                "name": "test-name",
                                 "nameRaw": "any",
-                                "packID": "",
-                                "packName": "",
+                                "packID": "test-name",
+                                "packName": "test-name",
                                 "prevName": "any",
                                 "propagationLabels": ["all"],
                                 "shouldCommit": False,
@@ -611,12 +628,12 @@ def execute_command(*args):
                             {
                                 "brands": ["OPSWAT Filescan"],
                                 "cacheVersn": 0,
-                                "commands": ["opswat-filescan-scan-file"],
+                                "commands": ["test-name"],
                                 "comment": "Detonate file through active integrations that support file detonation",
                                 "commitMessage": "",
                                 "definitionId": "",
                                 "fromServerVersion": "5.0.0",
-                                "id": "AwsEC2SyncAccounts",
+                                "id": "test-name",
                                 "inputs": [
                                     {
                                         "description": "Entry ID of file to be detonated",
@@ -633,8 +650,8 @@ def execute_command(*args):
                                 ],
                                 "itemVersion": "2.3.57",
                                 "modified": "2023-05-17T08:32:30.57488926Z",
-                                "name": "AwsEC2SyncAccounts",
-                                "nameRaw": "AwsEC2SyncAccounts",
+                                "name": "test-name",
+                                "nameRaw": "test-name",
                                 "outputs": [
                                     {
                                         "contextPath": "Joe.Analysis.Status",
@@ -1077,7 +1094,7 @@ def execute_command(*args):
                                             "isCommand": True,
                                             "modified": "2023-05-17T07:23:51.462895403Z",
                                             "name": "Detonate File - OPSWAT",
-                                            "scriptId": "OPSWAT Filescan|||opswat-filescan-scan-file",
+                                            "scriptId": "OPSWAT Filescan|||test-name",
                                             "type": "regular",
                                             "version": 1,
                                         },
@@ -1432,7 +1449,7 @@ def execute_command(*args):
         return [
             {
                 "ModuleName": "Core REST API_instance_1",
-                "Brand": "Core REST API",
+                "Brand": "test-name",
                 "Category": "Utilities",
                 "ID": "",
                 "Version": 0,
@@ -1441,7 +1458,7 @@ def execute_command(*args):
                     "response": {
                         "configurations": [
                             {
-                                "brand": "",
+                                "brand": "test-name",
                                 "cacheVersn": 0,
                                 "canGetSamples": False,
                                 "category": "Authentication",
@@ -1455,7 +1472,7 @@ def execute_command(*args):
                                         "hiddenPassword": False,
                                         "hiddenUsername": False,
                                         "info": "",
-                                        "name": "LDAPServer",
+                                        "name": "test-name",
                                         "options": None,
                                         "required": True,
                                         "type": 0,
@@ -1463,17 +1480,21 @@ def execute_command(*args):
                                 ],
                                 "definitionId": "",
                                 "description": "Authenticate using Active Directory",
-                                "detailedDescription": "To use Active Directory Authentication with STARTTLS, please use the generic 'LDAP Authentication' integration instead.",
-                                "display": "Active Directory Authentication",
+                                "detailedDescription": "To use test-name with STARTTLS, please use the generic 'LDAP Authentication' integration instead.",
+                                "display": "test-name",
                                 "fromServerVersion": "",
                                 "hidden": False,
                                 "icon": "activedirectory.png",
-                                "id": "activedir-login",
+                                "id": "test-name",
                                 "image": "",
-                                "integrationScript": None,
+                                "integrationScript": {
+                                    "commands": [
+                                        {"name": "test-name"}
+                                    ]
+                                },
                                 "itemVersion": "",
                                 "modified": "2024-06-06T15:38:50.814677124Z",
-                                "name": "activedir-login",
+                                "name": "test-name",
                                 "packID": "",
                                 "packName": "",
                                 "prevName": "activedir-login",
@@ -1515,7 +1536,7 @@ def execute_command(*args):
                         },
                         "instances": [
                             {
-                                "brand": "Akamai WAF SIEM",
+                                "brand": "test-name",
                                 "cacheVersn": 0,
                                 "canSample": True,
                                 "category": "Analytics & SIEM",
@@ -1552,7 +1573,11 @@ def execute_command(*args):
                                     "hidden": False,
                                     "icon": "",
                                     "id": "",
-                                    "integrationScript": None,
+                                    "integrationScript": {
+                                        "commands": [
+                                            {"name": 'a name'}
+                                        ]
+                                    },
                                     "itemVersion": "",
                                     "modified": "0001-01-01T00:00:00Z",
                                     "name": "",
@@ -1607,7 +1632,7 @@ def execute_command(*args):
                                 "executable": "",
                                 "fromServerVersion": "",
                                 "hidden": False,
-                                "id": "6df1567e-01db-4231-831e-b5539fac4c93",
+                                "id": "test-name",
                                 "incidentFetchInterval": 0,
                                 "incomingMapperId": "",
                                 "integrationLogLevel": "",
@@ -1619,9 +1644,10 @@ def execute_command(*args):
                                 "itemVersion": "",
                                 "longRunningId": "",
                                 "mappable": False,
-                                "mappingId": "",
+                                "mappingId": "test-name",
+                                "incident_type": "incident_type",
                                 "modified": "2024-06-20T15:59:16.770092551Z",
-                                "name": "Akamai WAF SIEM_instance_1",
+                                "name": "test-name_instance_1",
                                 "outgoingMapperId": "",
                                 "packID": "",
                                 "packName": "",
@@ -1691,7 +1717,7 @@ def execute_command(*args):
                     "scheduled": False,
                     "entryTask": None,
                     "taskId": "",
-                    "playbookId": "",
+                    "playbookId": "test-name",
                     "reputationSize": 0,
                     "contentsSize": 0,
                     "brand": "Core REST API",
@@ -1716,7 +1742,7 @@ def execute_command(*args):
         {
             "uri": "/itemsdependencies",
             "body": {
-                "items": [{"id": "AwsEC2SyncAccounts", "type": "playbook"}],
+                "items": [{"id": "test-name", "type": "playbook"}],
                 "dependencyLevel": "optional",
             },
         },
@@ -1733,13 +1759,13 @@ def execute_command(*args):
                     "response": {
                         "existing": {
                             "playbook": {
-                                "AwsEC2SyncAccounts": [
+                                "test-name": [
                                     {
                                         "LastModified": "2024-03-31T08:04:51.820403233Z",
                                         "containsOverridableType": False,
-                                        "id": "AwsEC2SyncAccounts",
+                                        "id": "test-name",
                                         "locked": False,
-                                        "name": "AwsEC2SyncAccounts",
+                                        "name": "test-name",
                                         "overrideTenant": False,
                                         "packID": "",
                                         "system": False,
@@ -1784,7 +1810,7 @@ def execute_command(*args):
                     "parentId": "3363@9dfe60aa-7485-4813-822a-03de171d38cb",
                     "pinned": False,
                     "fileMetadata": None,
-                    "parentContent": '!core-api-post uri="/itemsdependencies" body="{\\"dependencyLevel\\":\\"optional\\",\\"items\\":[{\\"id\\":\\"AwsEC2SyncAccounts\\",\\"type\\":\\"playbook\\"}]}"',
+                    "parentContent": '!core-api-post uri="/itemsdependencies" body="{\\"dependencyLevel\\":\\"optional\\",\\"items\\":[{\\"id\\":\\"test-name\\",\\"type\\":\\"playbook\\"}]}"',
                     "parentEntryTruncated": False,
                     "system": "",
                     "reputations": None,
@@ -1822,7 +1848,7 @@ def execute_command(*args):
                 "APIExecutionMetrics": None,
             }
         ]
-    if args == ["core-api-get", {"uri": "/automation/export/AwsEC2SyncAccounts"}]:
+    if args == ["core-api-get", {"uri": "/automation/export/test-name"}]:
         return [
             {
                 "ModuleName": "Core REST API_instance_1",
@@ -1865,7 +1891,7 @@ def execute_command(*args):
                     "parentId": "3363@9dfe60aa-7485-4813-822a-03de171d38cb",
                     "pinned": False,
                     "fileMetadata": None,
-                    "parentContent": '!core-api-get uri="/automation/export/AwsEC2SyncAccounts"',
+                    "parentContent": '!core-api-get uri="/automation/export/test-name"',
                     "parentEntryTruncated": False,
                     "system": "",
                     "reputations": None,

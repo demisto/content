@@ -1,20 +1,20 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 # Defining global variables
-layouts: List = []
-integrations: List = []
-classifiers: List = []
-incoming_mappers: List = []
-outgoing_mappers: List = []
-incident_types: List = []
-incident_fields: List = []
-playbooks: List = []
-automations: List = []
-ignore_playbook: List = []
-ignore_sub: List = []
-auto_script: Dict = {}
-configuration = None
-autodata = False
+layouts: list = []
+integrations: list = []
+classifiers: list = []
+incoming_mappers: list = []
+outgoing_mappers: list = []
+incident_types: list = []
+incident_fields: list = []
+playbooks: list = []
+automations: list = []
+ignore_playbook: list = []
+ignore_sub: list = []
+auto_script: dict = {}
+configuration: dict = {}
+autodata: bool = False
 
 
 def create_context(data: Any, args: list) -> dict | list:
@@ -133,118 +133,6 @@ def get_api_request(url: str) -> list | str | None:
     return res
 
 
-def get_all_incidents(days: int = 60, size: int = 1000) -> dict:
-    """Get all incidents from API request.
-
-    Args:
-        days (int): number of days. Defaults to 7.
-        size (int): number of incidents. Defaults to 1000.
-
-    Returns:
-        Dict: incidents returned from the API request
-    """
-    body = {
-        "userFilter": False,
-        "filter": {
-            "page": 0,
-            "size": int(size),
-            "query": "-category:job",
-            "sort": [
-                {
-                    "field": "id",
-                    "asc": False
-                }
-            ],
-            "period": {
-                "by": "day",
-                "fromValue": int(days)
-            }
-        }
-    }
-
-    return cast(dict, post_api_request("/incidents/search", body).get("data"))
-
-
-def get_open_incidents(days: int = 7, size: int = 1000) -> dict:
-    """Get open incidents from API.
-
-    Args:
-        days (int): number of days. Defaults to 7.
-        size (int): number of incidents. Defaults to 1000.
-
-    Returns:
-        SingleFieldData: SingleFieldData object representing open incidents
-    """
-    body = {
-        "userFilter": False,
-        "filter": {
-            "page": 0,
-            "size": int(size),
-            "query": "-status:closed -category:job",
-            "sort": [
-                {
-                    "field": "id",
-                    "asc": False
-                }
-            ],
-            "period": {
-                "by": "day",
-                "fromValue": int(days)
-            }
-        }
-    }
-    return post_api_request("/incidents/search", body)
-
-
-def get_closed_incidents(days: int = 7, size: int = 1000) -> dict:
-    """Get closed incidents from API.
-
-    Args:
-        days (int): number of days. Defaults to 7.
-        size (int): number of incidents. Defaults to 1000.
-
-    Returns:
-        SingleFieldData: SingleFieldData object representing closed incidents
-    """
-    body = {
-        "userFilter": False,
-        "filter": {
-            "page": 0,
-            "size": int(size),
-            "query": "status:closed -category:job",
-            "sort": [
-                {
-                    "field": "id",
-                    "asc": False
-                }
-            ],
-            "period": {
-                "by": "day",
-                "fromValue": int(days)
-            }
-        }
-    }
-    return post_api_request("/incidents/search", body)
-
-
-def get_enabled_integrations(max_request_size: int) -> list:
-    """Retrieve all the running instances.
-
-    Args:
-        max_request_size (int): maximum number of instances to retrieve.
-
-    Returns:
-        SortedTableData: TableData object with the enabled instances.
-    """
-    res = post_api_request("/settings/integration/search", {"size": max_request_size})
-    instances: list = res.get("instances", [])
-    enabled_instances = []
-    for instance in instances:
-        if instance.get("enabled"):
-            enabled_instances.append(instance)
-    return enabled_instances
-
-
 def get_custom_playbooks() -> list[str]:
     """Return all the custom playbooks installed in XSOAR
 
@@ -253,18 +141,6 @@ def get_custom_playbooks() -> list[str]:
     """
     res: list = post_api_request("/playbook/search", {"query": "system:F AND hidden:F"}).get("playbooks", [])
     return [pb["name"] for pb in res]
-
-
-def get_all_playbooks() -> list:
-    """Return all the playbooks installed in XSOAR
-
-    Returns:
-        TableData: TableData object with the all playbooks.
-    """
-    res: list = post_api_request("/playbook/search", {"query": "hidden:F"}).get("playbooks", [])
-    for pb in res:
-        pb["TotalTasks"] = len(pb.get("tasks", []))
-    return res
 
 
 def get_layouts() -> list:
@@ -627,14 +503,12 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
     pb_integration : dictionary having complete integration data for a specific playbook, containing classifiers,
     incident types, field types, layout, incident fields, incoming mapper and outgoing mapper.
     """
-    pb_integration = {}
-    # d = []
-    section_data = []
-    items = []
-    # names = []
-    field_t: Dict = {}
-    field_type: Dict = {}
-    field_list = None
+    pb_integration: dict = {}
+    section_data: list = []
+    items: list = []
+    field_t: dict = {}
+    field_type: dict = {}
+    field_list: list = []
     if filter_int:
         int_names = list(filter_int)
         for integration in integrations:
@@ -705,15 +579,6 @@ def get_playbook_integration(playbook: dict, filter_int: list) -> dict:
     return pb_integration
 
 
-def get_custom_automations() -> list:
-    """Return all the custom automations installed in XSOAR
-
-    Returns:
-        SingleFieldData: SingleFieldData object representing custom automations
-    """
-    return cast(list, post_api_request("/automation/search", {"query": "system:F AND hidden:F"}).get("scripts", []))
-
-
 def sub_data(playbook: dict) -> tuple:
     """
     This function accepts the playbook data and fetches the subplaybooks, automations and integrations for that playbook.
@@ -747,9 +612,9 @@ def sub_data(playbook: dict) -> tuple:
 
     command_list = playbook.get("commands", [])
     if configuration is not None:
-        for c in command_list:
+        for command in command_list:
             for k, v in configuration.items():
-                if c in v["commands"]:
+                if command in v["commands"]:
                     int_data.append(k)
     return test_d, task_name, int_data
 
