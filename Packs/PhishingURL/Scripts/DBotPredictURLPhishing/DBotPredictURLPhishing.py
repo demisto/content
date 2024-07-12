@@ -486,12 +486,9 @@ def rasterize_command(urls: Union[list[str], str], rasterize_timeout: int) -> li
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
-    res_rasterize = rasterize_command(urls, rasterize_timeout)
-    if len(res_rasterize) != len(urls):  # check for errors in the response
-        demisto.info(f'Rasterize response is mismatched, running command for each URL\n{res_rasterize=}\n{urls=}')
-        rasterize_runs = map(rasterize_command, urls, [rasterize_timeout] * len(urls))
-        res_rasterize = [run[0] for run in rasterize_runs]
-        demisto.debug(f'after extraction {res_rasterize=}')
+    rasterize_runs = map(rasterize_command, urls, [rasterize_timeout] * len(urls))
+    res_rasterize = [run[0] for run in rasterize_runs]
+    demisto.debug(f'after extraction {res_rasterize=}')
     weed_rasterize_errors(urls, res_rasterize)
     return cast(list[dict], res_rasterize)
 
