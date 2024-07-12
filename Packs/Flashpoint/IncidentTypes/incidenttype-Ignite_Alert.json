@@ -22,7 +22,7 @@
     "layout": "Ignite Alert",
     "detached": false,
     "extractSettings": {
-        "mode": "Specific",
+        "mode": "All",
         "fieldCliNameToExtractSettings": {}
     },
     "fromVersion": "6.10.0"
