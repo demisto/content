@@ -1,5 +1,5 @@
 id: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-version: 59
+version: 6
 vcShouldKeepItemLegacyProdMachine: false
 name: Security Incident JIRA and S3 Management
 description: This playbook automates incident response actions by creating a JIRA
@@ -10,10 +10,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 2adde2a7-864b-44a5-8aaf-7d7574c68740
+    taskid: adb21f2d-be36-457a-88d1-0dfef71103e0
     type: start
     task:
-      id: 2adde2a7-864b-44a5-8aaf-7d7574c68740
+      id: adb21f2d-be36-457a-88d1-0dfef71103e0
       version: -1
       name: ""
       iscommand: false
@@ -39,10 +39,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 45bab92e-7774-4864-8fa6-2c5def306e74
+    taskid: 13cc346c-e5e1-41f6-8fb8-ccba7a0d7faf
     type: condition
     task:
-      id: 45bab92e-7774-4864-8fa6-2c5def306e74
+      id: 13cc346c-e5e1-41f6-8fb8-ccba7a0d7faf
       version: -1
       name: Check if the Action is value
       type: condition
@@ -92,10 +92,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 97098272-1ddb-4def-86b9-c0f782b6e545
+    taskid: 8547d2df-30b8-44e4-8cac-ffa2f36c7361
     type: regular
     task:
-      id: 97098272-1ddb-4def-86b9-c0f782b6e545
+      id: 8547d2df-30b8-44e4-8cac-ffa2f36c7361
       version: -1
       name: Update Slack Incident with JIRA details
       description: commands.local.cmd.set.incident
@@ -105,10 +105,10 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
+      - "15"
     scriptarguments:
       details:
-        simple: 'JIRA Ticket created with ${Ticket.Id}: ${Ticket.Key}'
+        simple: 'JIRA Ticket created with ${Ticket.Id} : ${Ticket.Key}'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -125,47 +125,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "6":
-    id: "6"
-    taskid: 97455db4-83e9-4d31-8312-805fe8bc980a
-    type: regular
-    task:
-      id: 97455db4-83e9-4d31-8312-805fe8bc980a
-      version: -1
-      name: Set parent incident ID  to slack incident
-      description: commands.local.cmd.set.incident
-      script: Builtin|||setIncident
-      type: regular
-      iscommand: true
-      brand: Builtin
-    nexttasks:
-      '#none#':
-      - "15"
-    scriptarguments:
-      parentincident:
-        simple: ${incident.parentIncidentId}
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 265,
-          "y": 895
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d74302a5-566c-4a44-814d-2d07ca11d5da
+    taskid: 22f934cc-3d9f-438d-8f74-19343eebd636
     type: regular
     task:
-      id: d74302a5-566c-4a44-814d-2d07ca11d5da
+      id: 22f934cc-3d9f-438d-8f74-19343eebd636
       version: -1
       name: Closed current  Incident
       description: commands.local.cmd.close.inv
@@ -175,7 +140,9 @@ tasks:
       brand: Builtin
     scriptarguments:
       closeNotes:
-        simple: Remediation has completed.
+        simple: |-
+          Remediation has completed.
+          Risk Finding ID : ${incident.riskFindingId} status updated to${Response.newStatus} on DSPM portal.
       closeReason:
         simple: Resolved
       id:
@@ -186,7 +153,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1420
+          "y": 1550
         }
       }
     note: false
@@ -198,10 +165,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 46b55d7d-c497-4846-8c56-d2d5cac3cc5f
+    taskid: fd45c9a6-f626-4ad6-88a2-e2d4dc76f2f6
     type: regular
     task:
-      id: 46b55d7d-c497-4846-8c56-d2d5cac3cc5f
+      id: fd45c9a6-f626-4ad6-88a2-e2d4dc76f2f6
       version: -1
       name: Create Jira Issue
       description: Creates a new issue in Jira.
@@ -244,10 +211,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 8c9624cd-02cd-4c6c-86e8-cb0032dbaed9
+    taskid: df98fac5-c0c4-4470-8245-a75637c9a5b8
     type: regular
     task:
-      id: 8c9624cd-02cd-4c6c-86e8-cb0032dbaed9
+      id: df98fac5-c0c4-4470-8245-a75637c9a5b8
       version: -1
       name: 'Closing Parent Incident : ${incident.parentincident}'
       description: Close the current incident
@@ -260,7 +227,8 @@ tasks:
       - "9"
     scriptarguments:
       closeNotes:
-        simple: ${incident.details}
+        simple: "${incident.details} \nRisk Finding ID : ${incident.riskFindingId}
+          status updated to ${Response.newStatus} on DSPM portal."
       closeReason:
         simple: ${incident.details}
       id:
@@ -271,7 +239,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1245
+          "y": 1325
         }
       }
     note: false
@@ -283,10 +251,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: e720622d-ef47-4984-8928-285183ab945e
+    taskid: 923a5a31-1728-4513-8d49-9a832732d3f7
     type: regular
     task:
-      id: e720622d-ef47-4984-8928-285183ab945e
+      id: 923a5a31-1728-4513-8d49-9a832732d3f7
       version: -1
       name: Linking slack incident to parent incident
       description: Link incidents together or mark them as duplicate and close them
@@ -296,7 +264,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "14"
+      - "19"
     scriptarguments:
       action:
         simple: link
@@ -308,7 +276,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 1070
+          "y": 910
         }
       }
     note: false
@@ -320,10 +288,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 5da77512-23d9-4978-86ef-eb46289c9805
+    taskid: 09ab0ba5-4d28-49b1-8dce-666e73f7e9f4
     type: regular
     task:
-      id: 5da77512-23d9-4978-86ef-eb46289c9805
+      id: 09ab0ba5-4d28-49b1-8dce-666e73f7e9f4
       version: -1
       name: Get Assignee ID from email
       scriptName: DSPM-Get-Jira-accountId
@@ -354,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: e8d72795-1d13-4580-8837-c8e2bc4fd760
+    taskid: b3285112-7b8e-413e-8e9c-0ed2f7ee4183
     type: regular
     task:
-      id: e8d72795-1d13-4580-8837-c8e2bc4fd760
+      id: b3285112-7b8e-413e-8e9c-0ed2f7ee4183
       version: -1
       name: aws-s3-get-public-access-block
       description: Retrieves the PublicAccessBlock configuration for an Amazon S3
@@ -390,10 +358,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: ab5be25b-dadc-4545-8715-1da8edd33705
+    taskid: 05102cac-552b-4211-8831-d14339c30be3
     type: regular
     task:
-      id: ab5be25b-dadc-4545-8715-1da8edd33705
+      id: 05102cac-552b-4211-8831-d14339c30be3
       version: -1
       name: Update Slack Incident with AWS details
       description: commands.local.cmd.set.incident
@@ -403,7 +371,7 @@ tasks:
       brand: Builtin
     nexttasks:
       '#none#':
-      - "6"
+      - "15"
     scriptarguments:
       details:
         simple: Change the S3 PublicAccessBlock settings to block public access control
@@ -424,12 +392,48 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 2f1f5485-5b79-4ec8-8284-fdbbabf1f2fa
+    type: regular
+    task:
+      id: 2f1f5485-5b79-4ec8-8284-fdbbabf1f2fa
+      version: -1
+      name: DSPM_risk_status_update
+      scriptName: DSPM_risk_status_update
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      riskFindingId:
+        simple: ${incident.riskFindingId}
+      status:
+        simple: INVESTIGATING
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
+        "height": 1595,
         "width": 810,
         "x": 50,
         "y": 50
