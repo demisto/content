@@ -27,7 +27,7 @@ outputs:
 - contextPath: MSGraphUser
   description: Microsoft Graph User objects for found user IDs.
   type: unknown
-- contextPath: azureAssetHierarchy
+- contextPath: AzureAssetHierarchy
   description: Azure Compute Hierarchy Path.
   type: unknown
 starttaskid: "0"
