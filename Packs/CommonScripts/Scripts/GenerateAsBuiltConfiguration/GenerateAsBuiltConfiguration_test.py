@@ -11,4 +11,10 @@ def test_main(mocker):
 
     GenerateAsBuiltConfiguration.main()
 
-    return_results_mocked.call_args.args[0]['File'] == 'asbuilt.json'
+    assert return_results_mocked.call_args.args[0]['File'] == 'asbuilt.json'
+
+    mocker.patch.object(demisto, 'args', return_value={})
+
+    GenerateAsBuiltConfiguration.main()
+
+    assert return_results_mocked.call_args.args[0]['File'] == 'asbuilt.json'

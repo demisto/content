@@ -587,9 +587,15 @@ def execute_command(*args):
                 "APIExecutionMetrics": None,
             }
         ]
-    if args == [
-        "core-api-post",
-        {"uri": "/playbook/search", "body": {"query": "hidden:F"}},
+    if args in [
+        [
+            "core-api-post",
+            {"uri": "/playbook/search", "body": {"query": "hidden:F"}},
+        ],
+        [
+            "core-api-post",
+            {"uri": "/playbook/search", "body": {"query": "system:F AND hidden:F"}},
+        ],
     ]:
         return [
             {
@@ -610,7 +616,7 @@ def execute_command(*args):
                                 "commitMessage": "",
                                 "definitionId": "",
                                 "fromServerVersion": "5.0.0",
-                                "id": "03bb29d7-1d15-4b64-8006-0cc4ce51365d",
+                                "id": "AwsEC2SyncAccounts",
                                 "inputs": [
                                     {
                                         "description": "Entry ID of file to be detonated",
@@ -627,8 +633,8 @@ def execute_command(*args):
                                 ],
                                 "itemVersion": "2.3.57",
                                 "modified": "2023-05-17T08:32:30.57488926Z",
-                                "name": "Detonate File - Generic_copy",
-                                "nameRaw": "Detonate File - Generic_copy",
+                                "name": "AwsEC2SyncAccounts",
+                                "nameRaw": "AwsEC2SyncAccounts",
                                 "outputs": [
                                     {
                                         "contextPath": "Joe.Analysis.Status",
@@ -1710,9 +1716,7 @@ def execute_command(*args):
         {
             "uri": "/itemsdependencies",
             "body": {
-                "items": [
-                    {"id": "46967843-c7e4-4ca2-8102-6d12d17b10a3", "type": "playbook"}
-                ],
+                "items": [{"id": "AwsEC2SyncAccounts", "type": "playbook"}],
                 "dependencyLevel": "optional",
             },
         },
@@ -1729,7 +1733,7 @@ def execute_command(*args):
                     "response": {
                         "existing": {
                             "playbook": {
-                                "46967843-c7e4-4ca2-8102-6d12d17b10a3": [
+                                "AwsEC2SyncAccounts": [
                                     {
                                         "LastModified": "2024-03-31T08:04:51.820403233Z",
                                         "containsOverridableType": False,
@@ -1780,7 +1784,7 @@ def execute_command(*args):
                     "parentId": "3363@9dfe60aa-7485-4813-822a-03de171d38cb",
                     "pinned": False,
                     "fileMetadata": None,
-                    "parentContent": '!core-api-post uri="/itemsdependencies" body="{\\"dependencyLevel\\":\\"optional\\",\\"items\\":[{\\"id\\":\\"46967843-c7e4-4ca2-8102-6d12d17b10a3\\",\\"type\\":\\"playbook\\"}]}"',
+                    "parentContent": '!core-api-post uri="/itemsdependencies" body="{\\"dependencyLevel\\":\\"optional\\",\\"items\\":[{\\"id\\":\\"AwsEC2SyncAccounts\\",\\"type\\":\\"playbook\\"}]}"',
                     "parentEntryTruncated": False,
                     "system": "",
                     "reputations": None,
@@ -1827,9 +1831,7 @@ def execute_command(*args):
                 "ID": "",
                 "Version": 0,
                 "Type": 1,
-                "Contents": {
-                    "response": ""
-                },
+                "Contents": {"response": ""},
                 "HumanReadable": None,
                 "ImportantEntryContext": None,
                 "EntryContext": None,
