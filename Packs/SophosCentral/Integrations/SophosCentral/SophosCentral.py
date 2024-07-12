@@ -2011,7 +2011,7 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
         min(int(args.get("limit", "")), 100),
         argToList(args.get("ip_addresses")),
     )
-    full_match_ip = args.get("full_match_ip") == "true" if args.get("full_match_ip") else None,
+    full_match_ip = argToBoolean(args.get("full_match_ip"))
     items = results.get("items")
     table_headers = [
         "id",
