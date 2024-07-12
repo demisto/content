@@ -1,4 +1,4 @@
-A JSON file is generated that can be downloaded and used to generate the As-Built document for Cortex XSOAR.
+Generate a JSON file that can be downloaded and used to create the As-Built document for Cortex XSOAR.
 
 ## Script Data
 
@@ -14,7 +14,7 @@ A JSON file is generated that can be downloaded and used to generate the As-Buil
 
 | **Argument Name** | **Description** |
 | --- | --- |
-| playbook | Playbook name for which the custom data including automation, integration and subplaybooks needs to be fetched. For multiple playbooks enter comma-separated values. |
+| playbook | A comma-separated list of playbook names for which to fetch custom data including automation, integration and sub-playbooks. |
 
 ## Outputs
 
