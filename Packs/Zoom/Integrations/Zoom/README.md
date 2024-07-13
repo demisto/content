@@ -1,7 +1,7 @@
 Use the Zoom integration manage your Zoom users and meetings
 This integration was integrated and tested with version 2.0.0 of Zoom
 
-## Configure Zoom on Cortex XSOAR
+## Configure Zoom on Cortex XSOAR test
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Zoom.
