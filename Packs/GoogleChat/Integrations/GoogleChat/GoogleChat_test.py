@@ -19,10 +19,9 @@ def test_send_notification_command_called_with(mocker, google_chat_client):
     GoogleChatClient._access_token = '456'  # type: ignore
     args = {'message': 'hi', 'to': 'test', 'space_id': '123', 'adaptive_card': '{"button":"yes"}'}
     send_notification_command(google_chat_client, args)
-    http_request.assert_called_with('POST',
-                                    '/spaces/123/messages',
+    http_request.assert_called_with('POST', '/spaces/123/messages',
                                     params={'key': '456'},
-                                    json_data={'text': '',
+                                    json_data={'text': 'hi',
                                                'privateMessageViewer': {'name': 'test'},
                                                'cardsV2': {'button': 'yes'}},
                                     headers={'Authorization': 'Bearer 456', 'Content-Type': 'application/json; charset=UTF-8'},
