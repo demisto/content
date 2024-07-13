@@ -85,6 +85,7 @@ tabulate = ">=0.8.9,<0.10.0"
 jira = "^3.8.0"
 junitparser = "^3.1.0"
 tenacity = "^8.2.3"
+pendulum = "^2.1.2"
 
 [tool.ruff]
 select = [
