@@ -102,7 +102,7 @@ configuration:
   name: data
   type: 0
   required: false
-- additionalinfo: 'Headers to add to the http request. Specify each header on a single line in the format: ''Name: Value''. For example: ''User-Agent: XSOAR Feed'''
+- additionalinfo: "Headers to add to the http request. Specify each header on a single line in the format: 'Name: Value'. For example: 'User-Agent: XSOAR Feed'"
   display: Headers
   name: headers
   type: 12
