@@ -38,7 +38,8 @@
     "Slack",
     "SplunkPy",
     "Tenable_io",
-    "Venafi"
+    "Venafi",
+    "AWS_SystemManager"
   ],
   "update_core_packs_list": [
     "Active_Directory_Query",
