@@ -36,7 +36,7 @@ def mock_client():
             {"isFetch": True, "min_severity": 2, "policy_id": "policy", "device_username": "user",
              "device_id": "device", "type": "type", "query": "query"},
             {"api_key": None, "api_secret_key": None, "policy_api_key": None, "policy_api_secret_key": None},
-            'To fetch incidents you must fill the following parameters: Custom API key,'
+            'To fetch incidents you must fill the following parameters: Custom API key, '
             'Custom API secret key and Organization key.'
         ),
         (
@@ -48,7 +48,7 @@ def mock_client():
         (
             {"isFetch": False},
             {"api_key": "api_key", "api_secret_key": None, "policy_api_key": None, "policy_api_secret_key": None},
-            'Missing custom API parameters. Please fill all the relevant parameters: Custom API key,'
+            'Missing custom API parameters. Please fill all the relevant parameters: Custom API key, '
             'Custom API secret key and Organization key.'
         ),
         (
