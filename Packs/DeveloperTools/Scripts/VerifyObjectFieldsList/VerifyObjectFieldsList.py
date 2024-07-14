@@ -1,7 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-from typing import Dict, Any, Tuple
+from typing import Any
 
 
 def check_components(components: list, context: Any):
@@ -21,7 +21,7 @@ def check_components(components: list, context: Any):
                 raise KeyError
 
 
-def check_fields(fields_to_search_array: list, context_json) -> Tuple[bool, Any]:
+def check_fields(fields_to_search_array: list, context_json) -> tuple[bool, Any]:
     """
     Args:
         fields_to_search_array(list): list of fields to search
@@ -42,7 +42,7 @@ def check_fields(fields_to_search_array: list, context_json) -> Tuple[bool, Any]
     return True, None
 
 
-def check_fields_command(args: Dict[str, Any]) -> CommandResults:
+def check_fields_command(args: dict[str, Any]) -> CommandResults:
     """
     Args:
         args(dict): args from demisto
