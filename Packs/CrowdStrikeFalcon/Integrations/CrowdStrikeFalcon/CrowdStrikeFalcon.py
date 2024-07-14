@@ -404,7 +404,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
             # try to create a new token
-            if res.status_code in (401, 403, 429) and get_token_flag:
+            if res.status_code in (401, 403, 429):
                 demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
