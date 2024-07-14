@@ -24,8 +24,6 @@ args:
 - name: add_header_row
   description: Extra row, in CSV format, to function as header if original does not contain headers.
 outputs:
-- contextPath: LookupCSV.result
-  description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row).
 - contextPath: LookupCSV.Result
   description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row).
 - contextPath: LookupCSV.FoundResult
