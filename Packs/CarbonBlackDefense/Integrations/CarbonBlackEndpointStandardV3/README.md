@@ -1,5 +1,5 @@
 Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
-This integration was integrated and tested with version xx of Carbon Black Endpoint Standard v3.
+This integration was integrated and tested with version 7 of Carbon Black Endpoint Standard v3.
 ### Migration to Carbon Black Endpoint Standard v3
 
 #### Deprecated Commands in Carbon Black Endpoint Standard v2
@@ -188,7 +188,7 @@ Get details about the events that led to an alert by its ID. This includes retri
         "Alert": {
             "alert_notes_present": true,
             "alert_origin": "ALERT_ORIGIN_UNKNOWN",
-            "alert_url": "the_alert_url",
+            "alert_url": "dummy_alert_url",
             "asset_group": [],
             "backend_timestamp": "2024-03-26T14:05:42.311Z",
             "backend_update_timestamp": "2024-03-26T14:05:42.311Z",
@@ -203,21 +203,21 @@ Get details about the events that led to an alert by its ID. This includes retri
                 "value": "NONE"
             },
             "device_external_ip": "1.1.1.1",
-            "device_id": "the_device_id",
+            "device_id": "dummy_device_id",
             "device_internal_ip": "1.1.1.1",
             "device_location": "UNKNOWN",
             "device_name": "EIP\\WW-20002",
             "device_os": "WINDOWS",
             "device_os_version": "Windows 10 x64",
             "device_policy": "default",
-            "device_policy_id": "the_device_policy_id",
+            "device_policy_id": "dummy_device_policy_id",
             "device_target_value": "MEDIUM",
             "device_uem_id": "",
             "device_username": "EIP\\Administrator",
             "first_event_timestamp": "2024-03-26T14:00:05.730Z",
-            "id": "the_id",
+            "id": "dummy_id",
             "ioc_hit": "(fileless_scriptload_cmdline:Register-ScheduledTask OR fileless_scriptload_cmdline:New-ScheduledTask OR scriptload_content:Register-ScheduledTask OR scriptload_content:New-ScheduledTask) AND NOT (process_cmdline:windows\\\\ccm\\\\systemtemp OR crossproc_name:windows\\\\ccm\\\\ccmexec.exe OR (process_publisher:\"VMware, Inc.\" AND process_publisher_state:FILE_SIGNATURE_STATE_TRUSTED))",
-            "ioc_id": "the_ioc_id",
+            "ioc_id": "dummy_ioc_id",
             "is_updated": false,
             "last_event_timestamp": "2024-03-26T14:00:05.730Z",
             "mdr_alert": false,
@@ -227,37 +227,37 @@ Get details about the events that led to an alert by its ID. This includes retri
             "ml_classification_final_verdict": "NOT_ANOMALOUS",
             "ml_classification_global_prevalence": "LOW",
             "ml_classification_org_prevalence": "LOW",
-            "org_key": "the_org_key",
+            "org_key": "dummy_org_key",
             "parent_cmdline": "C:\\Windows\\system32\\svchost.exe -k netsvcs -p -s Schedule",
             "parent_effective_reputation": "TRUSTED_WHITE_LIST",
-            "parent_guid": "the_parent_guid",
-            "parent_md5": "the_parent_md5",
+            "parent_guid": "dummy_parent_guid",
+            "parent_md5": "dummy_parent_md5",
             "parent_name": "c:\\windows\\system32\\svchost.exe",
-            "parent_pid": "the_parent_pid",
+            "parent_pid": "dummy_parent_pid",
             "parent_reputation": "TRUSTED_WHITE_LIST",
-            "parent_sha256": "the_parent_sha256",
+            "parent_sha256": "dummy_parent_sha256",
             "parent_username": "NT AUTHORITY\\SYSTEM",
             "policy_applied": "NOT_APPLIED",
-            "primary_event_id": "the_primary_event_id",
+            "primary_event_id": "dummy_primary_event_id",
             "process_cmdline": "\"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe\" -EP Bypass \\\\eip.demo\\sysvol\\EIP.DEMO\\scripts\\Luminol.ps1",
             "process_effective_reputation": "TRUSTED_WHITE_LIST",
-            "process_guid": "the_process_guid",
+            "process_guid": "dummy_process_guid",
             "process_issuer": [
                 "Microsoft Windows Production PCA 2011"
             ],
-            "process_md5": "the_parent_md5",
+            "process_md5": "dummy_parent_md5",
             "process_name": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe",
-            "process_pid": "the_process_pid",
+            "process_pid": "dummy_process_pid",
             "process_publisher": [
                 "Microsoft Windows"
             ],
             "process_reputation": "TRUSTED_WHITE_LIST",
-            "process_sha256": "the_process_sha256",
+            "process_sha256": "dummy_process_sha256",
             "process_username": "NT AUTHORITY\\SYSTEM",
             "reason": "Process powershell.exe was detected by the report \"Execution - AMSI - New Fileless Scheduled Task Behavior Detected\" in watchlist \"AMSI Threat Intelligence\"",
-            "reason_code": "the_reason_code",
+            "reason_code": "dummy_reason_code",
             "report_description": "Newer Powershell versions introduced built-in cmdlets to manage scheduled tasks natively without calling out to typical scheduled task processes like at.exe or schtasks.exe. This detection looks for behaviors related to the fileless execution of scheduled tasks. If you are responding to this alert, be sure to correlate the fileless scriptload events with events typically found in your environment Generally, attackers will create scheduled tasks with binaries that are located in user writable directories like AppData, Temp, or public folders.",
-            "report_id": "the_report_id",
+            "report_id": "dummy_report_id",
             "report_link": "https://attack.mitre.org/techniques/T1053/",
             "report_name": "Execution - AMSI - New Fileless Scheduled Task Behavior Detected",
             "report_tags": [
@@ -274,13 +274,13 @@ Get details about the events that led to an alert by its ID. This includes retri
             "sensor_action": "ALLOW",
             "severity": 5,
             "tags": null,
-            "threat_id": "the_threat_id",
+            "threat_id": "dummy_threat_id",
             "threat_notes_present": false,
             "type": "WATCHLIST",
             "user_update_timestamp": "2024-04-07T15:31:33.704Z",
             "watchlists": [
                 {
-                    "id": "the_id",
+                    "id": "dummy_id",
                     "name": "AMSI Threat Intelligence"
                 }
             ],
@@ -301,7 +301,7 @@ Get details about the events that led to an alert by its ID. This includes retri
 >### Carbon Black Defense Get Alert Details
 >|Id|Device Id|Device Name|Device Username|Ioc Hit|Reason|Type|Threat Id|Device Policy|Severity|
 >|---|---|---|---|---|---|---|---|---|---|
->| the_id  | 6612391 | EIP\WW-20002 | EIP\Administrator | (fileless_scriptload_cmdline:Register-ScheduledTask OR fileless_scriptload_cmdline:New-ScheduledTask OR scriptload_content:Register-ScheduledTask OR scriptload_content:New-ScheduledTask) AND NOT (process_cmdline:windows\\ccm\\systemtemp OR crossproc_name:windows\\ccm\\ccmexec.exe OR (process_publisher:"VMware, Inc." AND process_publisher_state:FILE_SIGNATURE_STATE_TRUSTED)) | Process powershell.exe was detected by the report "Execution - AMSI - New Fileless Scheduled Task Behavior Detected" in watchlist "AMSI Threat Intelligence" | WATCHLIST | C21CA826573A8D974C1E93C8471AAB7F | default | 5 |
+>| dummy_id  | 6612391 | EIP\WW-20002 | EIP\Administrator | (fileless_scriptload_cmdline:Register-ScheduledTask OR fileless_scriptload_cmdline:New-ScheduledTask OR scriptload_content:Register-ScheduledTask OR scriptload_content:New-ScheduledTask) AND NOT (process_cmdline:windows\\ccm\\systemtemp OR crossproc_name:windows\\ccm\\ccmexec.exe OR (process_publisher:"VMware, Inc." AND process_publisher_state:FILE_SIGNATURE_STATE_TRUSTED)) | Process powershell.exe was detected by the report "Execution - AMSI - New Fileless Scheduled Task Behavior Detected" in watchlist "AMSI Threat Intelligence" | WATCHLIST | C21CA826573A8D974C1E93C8471AAB7F | default | 5 |
 
 
 ### cbd-alerts-search
@@ -422,7 +422,7 @@ Gets details on the events that led to an alert. This includes retrieving metada
             {
                 "alert_notes_present": false,
                 "alert_origin": "ALERT_ORIGIN_UNKNOWN",
-                "alert_url": "the_alert_url",
+                "alert_url": "dummy_alert_url",
                 "asset_group": [],
                 "backend_timestamp": "2024-07-09T12:22:14.999Z",
                 "backend_update_timestamp": "2024-07-09T12:22:14.999Z",
@@ -437,58 +437,58 @@ Gets details on the events that led to an alert. This includes retrieving metada
                     "value": "NONE"
                 },
                 "device_external_ip": "1.1.1.1",
-                "device_id": "the_device_id",
+                "device_id": "dummy_device_id",
                 "device_internal_ip": "1.1.1.1",
                 "device_location": "UNKNOWN",
                 "device_name": "win1122H2new",
                 "device_os": "WINDOWS",
                 "device_os_version": "Windows 11 x64",
                 "device_policy": "⚠️ Wide Open",
-                "device_policy_id": "the_device_policy_id",
+                "device_policy_id": "dummy_device_policy_id",
                 "device_target_value": "LOW",
                 "device_uem_id": "",
                 "device_username": "Administrator",
                 "first_event_timestamp": "2024-07-09T12:19:01.963Z",
-                "id": "the_id",
+                "id": "dummy_id",
                 "ioc_field": "netconn_ipv4",
                 "ioc_hit": "1.1.1.1",
-                "ioc_id": "the_ioc_id",
+                "ioc_id": "dummy_ioc_id",
                 "is_updated": false,
                 "last_event_timestamp": "2024-07-09T12:19:01.963Z",
                 "mdr_alert": false,
                 "mdr_alert_notes_present": false,
                 "mdr_threat_notes_present": false,
-                "org_key": "the_org_key",
+                "org_key": "dummy_org_key",
                 "parent_cmdline": "C:\\Windows\\system32\\services.exe",
                 "parent_effective_reputation": "TRUSTED_WHITE_LIST",
-                "parent_guid": "the_parent_guid",
-                "parent_md5": "the_parent_md5",
+                "parent_guid": "dummy_parent_guid",
+                "parent_md5": "dummy_parent_md5",
                 "parent_name": "c:\\windows\\system32\\services.exe",
-                "parent_pid": "the_parent_pid",
+                "parent_pid": "dummy_parent_pid",
                 "parent_reputation": "TRUSTED_WHITE_LIST",
-                "parent_sha256": "the_parent_sha256",
+                "parent_sha256": "dummy_parent_sha256",
                 "parent_username": "NT AUTHORITY\\SYSTEM",
                 "policy_applied": "NOT_APPLIED",
-                "primary_event_id": "the_primary_event_id",
+                "primary_event_id": "dummy_primary_event_id",
                 "process_cmdline": "\"C:\\Program Files (x86)\\Netskope\\STAgent\\stAgentSvc.exe\"",
                 "process_effective_reputation": "LOCAL_WHITE",
-                "process_guid": "the_process_guid",
+                "process_guid": "dummy_process_guid",
                 "process_issuer": [
                     ""
                 ],
-                "process_md5": "the_parent_md5",
+                "process_md5": "dummy_parent_md5",
                 "process_name": "c:\\program files (x86)\\netskope\\stagent\\stagentsvc.exe",
-                "process_pid": "the_process_pid",
+                "process_pid": "dummy_process_pid",
                 "process_publisher": [
                     ""
                 ],
                 "process_reputation": "NOT_LISTED",
-                "process_sha256": "the_process_sha256",
+                "process_sha256": "dummy_process_sha256",
                 "process_username": "NT AUTHORITY\\SYSTEM",
                 "reason": "Process stagentsvc.exe was detected by the report \"crest test-netconn_ipv4-1\" in watchlist \"Crest test\"",
-                "reason_code": "the_reason_code",
+                "reason_code": "dummy_reason_code",
                 "report_description": "Service Now Threat Intel",
-                "report_id": "the_report_id",
+                "report_id": "dummy_report_id",
                 "report_link": "https://dev188630.service-now.com/",
                 "report_name": "crest test-netconn_ipv4-1",
                 "report_tags": [],
@@ -496,13 +496,13 @@ Gets details on the events that led to an alert. This includes retrieving metada
                 "sensor_action": "ALLOW",
                 "severity": 5,
                 "tags": null,
-                "threat_id": "the_threat_id",
+                "threat_id": "dummy_threat_id",
                 "threat_notes_present": false,
                 "type": "WATCHLIST",
                 "user_update_timestamp": null,
                 "watchlists": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "name": "Crest test"
                     }
                 ],
@@ -517,7 +517,7 @@ Gets details on the events that led to an alert. This includes retrieving metada
             {
                 "alert_notes_present": false,
                 "alert_origin": "ALERT_ORIGIN_UNKNOWN",
-                "alert_url": "the_alert_url",
+                "alert_url": "dummy_alert_url",
                 "asset_group": [],
                 "backend_timestamp": "2024-07-09T11:55:04.223Z",
                 "backend_update_timestamp": "2024-07-09T11:55:04.223Z",
@@ -532,54 +532,54 @@ Gets details on the events that led to an alert. This includes retrieving metada
                     "value": "NONE"
                 },
                 "device_external_ip": "1.1.1.1",
-                "device_id": "the_device_id",
+                "device_id": "dummy_device_id",
                 "device_internal_ip": "1.1.1.1",
                 "device_location": "UNKNOWN",
                 "device_name": "win1122H2new",
                 "device_os": "WINDOWS",
                 "device_os_version": "Windows 11 x64",
                 "device_policy": "⚠️ Wide Open",
-                "device_policy_id": "the_device_policy_id",
+                "device_policy_id": "dummy_device_policy_id",
                 "device_target_value": "LOW",
                 "device_uem_id": "",
                 "device_username": "Administrator",
                 "first_event_timestamp": "2024-07-09T11:51:44.217Z",
-                "id": "the_id",
+                "id": "dummy_id",
                 "ioc_field": "netconn_ipv4",
                 "ioc_hit": "1.1.1.1",
-                "ioc_id": "the_ioc_id",
+                "ioc_id": "dummy_ioc_id",
                 "is_updated": false,
                 "last_event_timestamp": "2024-07-09T11:51:44.217Z",
                 "mdr_alert": false,
                 "mdr_alert_notes_present": false,
                 "mdr_threat_notes_present": false,
-                "org_key": "the_org_key",
+                "org_key": "dummy_org_key",
                 "parent_cmdline": "",
                 "parent_effective_reputation": "TRUSTED_WHITE_LIST",
-                "parent_guid": "the_parent_guid",
+                "parent_guid": "dummy_parent_guid",
                 "parent_md5": "",
                 "parent_name": "c:\\windows\\system32\\services.exe",
-                "parent_pid": "the_parent_pid",
+                "parent_pid": "dummy_parent_pid",
                 "parent_reputation": "TRUSTED_WHITE_LIST",
-                "parent_sha256": "the_parent_sha256",
+                "parent_sha256": "dummy_parent_sha256",
                 "parent_username": "NT AUTHORITY\\SYSTEM",
                 "policy_applied": "NOT_APPLIED",
-                "primary_event_id": "the_primary_event_id",
+                "primary_event_id": "dummy_primary_event_id",
                 "process_cmdline": "\"C:\\Program Files (x86)\\Netskope\\STAgent\\stAgentSvc.exe\"",
                 "process_effective_reputation": "LOCAL_WHITE",
-                "process_guid": "the_process_guid",
+                "process_guid": "dummy_process_guid",
                 "process_issuer": [],
                 "process_md5": "",
                 "process_name": "c:\\program files (x86)\\netskope\\stagent\\stagentsvc.exe",
-                "process_pid": "the_process_pid",
+                "process_pid": "dummy_process_pid",
                 "process_publisher": [],
                 "process_reputation": "NOT_LISTED",
-                "process_sha256": "the_process_sha256",
+                "process_sha256": "dummy_process_sha256",
                 "process_username": "NT AUTHORITY\\SYSTEM",
                 "reason": "Process stagentsvc.exe was detected by the report \"crest test-netconn_ipv4-1\" in watchlist \"Crest test\"",
-                "reason_code": "the_reason_code",
+                "reason_code": "dummy_reason_code",
                 "report_description": "Service Now Threat Intel",
-                "report_id": "the_report_id",
+                "report_id": "dummy_report_id",
                 "report_link": "https://dev188630.service-now.com/",
                 "report_name": "crest test-netconn_ipv4-1",
                 "report_tags": [],
@@ -587,13 +587,13 @@ Gets details on the events that led to an alert. This includes retrieving metada
                 "sensor_action": "ALLOW",
                 "severity": 5,
                 "tags": null,
-                "threat_id": "the_threat_id",
+                "threat_id": "dummy_threat_id",
                 "threat_notes_present": false,
                 "type": "WATCHLIST",
                 "user_update_timestamp": null,
                 "watchlists": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "name": "Crest test"
                     }
                 ],
@@ -608,7 +608,7 @@ Gets details on the events that led to an alert. This includes retrieving metada
             {
                 "alert_notes_present": false,
                 "alert_origin": "ALERT_ORIGIN_UNKNOWN",
-                "alert_url": "the_alert_url",
+                "alert_url": "dummy_alert_url",
                 "asset_group": [],
                 "backend_timestamp": "2024-07-09T11:54:49.999Z",
                 "backend_update_timestamp": "2024-07-09T11:54:49.999Z",
@@ -623,54 +623,54 @@ Gets details on the events that led to an alert. This includes retrieving metada
                     "value": "NONE"
                 },
                 "device_external_ip": "1.1.1.1",
-                "device_id": "the_device_id",
+                "device_id": "dummy_device_id",
                 "device_internal_ip": "1.1.1.1",
                 "device_location": "UNKNOWN",
                 "device_name": "win1122H2new",
                 "device_os": "WINDOWS",
                 "device_os_version": "Windows 11 x64",
                 "device_policy": "⚠️ Wide Open",
-                "device_policy_id": "the_device_policy_id",
+                "device_policy_id": "dummy_device_policy_id",
                 "device_target_value": "LOW",
                 "device_uem_id": "",
                 "device_username": "Administrator",
                 "first_event_timestamp": "2024-07-09T11:51:44.218Z",
-                "id": "the_id",
+                "id": "dummy_id",
                 "ioc_field": "netconn_ipv4",
                 "ioc_hit": "1.1.1.1",
-                "ioc_id": "the_ioc_id",
+                "ioc_id": "dummy_ioc_id",
                 "is_updated": false,
                 "last_event_timestamp": "2024-07-09T11:51:44.218Z",
                 "mdr_alert": false,
                 "mdr_alert_notes_present": false,
                 "mdr_threat_notes_present": false,
-                "org_key": "the_org_key",
+                "org_key": "dummy_org_key",
                 "parent_cmdline": "",
                 "parent_effective_reputation": "TRUSTED_WHITE_LIST",
-                "parent_guid": "the_parent_guid",
+                "parent_guid": "dummy_parent_guid",
                 "parent_md5": "",
                 "parent_name": "c:\\windows\\system32\\services.exe",
-                "parent_pid": "the_parent_pid",
+                "parent_pid": "dummy_parent_pid",
                 "parent_reputation": "TRUSTED_WHITE_LIST",
-                "parent_sha256": "the_parent_sha256",
+                "parent_sha256": "dummy_parent_sha256",
                 "parent_username": "NT AUTHORITY\\SYSTEM",
                 "policy_applied": "NOT_APPLIED",
-                "primary_event_id": "the_primary_event_id",
+                "primary_event_id": "dummy_primary_event_id",
                 "process_cmdline": "\"C:\\Program Files (x86)\\Netskope\\STAgent\\stAgentSvc.exe\"",
                 "process_effective_reputation": "LOCAL_WHITE",
-                "process_guid": "the_process_guid",
+                "process_guid": "dummy_process_guid",
                 "process_issuer": [],
                 "process_md5": "",
                 "process_name": "c:\\program files (x86)\\netskope\\stagent\\stagentsvc.exe",
-                "process_pid": "the_process_pid",
+                "process_pid": "dummy_process_pid",
                 "process_publisher": [],
                 "process_reputation": "NOT_LISTED",
-                "process_sha256": "the_process_sha256",
+                "process_sha256": "dummy_process_sha256",
                 "process_username": "NT AUTHORITY\\SYSTEM",
                 "reason": "Process stagentsvc.exe was detected by the report \"crest test-netconn_ipv4-1\" in watchlist \"Crest test\"",
-                "reason_code": "the_reason_code",
+                "reason_code": "dummy_reason_code",
                 "report_description": "Service Now Threat Intel",
-                "report_id": "the_report_id",
+                "report_id": "dummy_report_id",
                 "report_link": "https://dev188630.service-now.com/",
                 "report_name": "crest test-netconn_ipv4-1",
                 "report_tags": [],
@@ -678,13 +678,13 @@ Gets details on the events that led to an alert. This includes retrieving metada
                 "sensor_action": "ALLOW",
                 "severity": 5,
                 "tags": null,
-                "threat_id": "the_threat_id",
+                "threat_id": "dummy_threat_id",
                 "threat_notes_present": false,
                 "type": "WATCHLIST",
                 "user_update_timestamp": null,
                 "watchlists": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "name": "Crest test"
                     }
                 ],
@@ -706,9 +706,9 @@ Gets details on the events that led to an alert. This includes retrieving metada
 >### Carbon Black Defense Alerts List Results
 >|Id|Device Id|Device Name|Device Username|Backend Timestamp|
 >|---|---|---|---|---|
->| the_id | 8213794 | win1122H2new | Administrator | 2024-07-09T12:22:14.999Z |
->| the_id | 8213794 | win1122H2new | Administrator | 2024-07-09T11:55:04.223Z |
->| the_id | 8213794 | win1122H2new | Administrator | 2024-07-09T11:54:49.999Z |
+>| dummy_id | 8213794 | win1122H2new | Administrator | 2024-07-09T12:22:14.999Z |
+>| dummy_id | 8213794 | win1122H2new | Administrator | 2024-07-09T11:55:04.223Z |
+>| dummy_id | 8213794 | win1122H2new | Administrator | 2024-07-09T11:54:49.999Z |
 
 
 ### cbd-get-policy
@@ -822,7 +822,7 @@ Retrieves a policy object by ID.
     "CarbonBlackDefense": {
         "Policy": {
             "description": "aaaaaaaa",
-            "id": "the_id",
+            "id": "dummy_id",
             "name": "AWN BAS",
             "policy": {
                 "auto_deregister_inactive_vdi_interval_ms": 0,
@@ -878,13 +878,13 @@ Retrieves a policy object by ID.
                     }
                 ],
                 "is_system": false,
-                "org_key": "the_org_key",
+                "org_key": "dummy_org_key",
                 "position": 1,
                 "rule_configs": [
                     {
                         "category": "data_collection",
                         "description": "Turns on XDR network data collection at the sensor",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "XDR",
                         "parameters": {
@@ -894,7 +894,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "data_collection",
                         "description": "Turns on Windows authentication events at the sensor",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Authentication Events",
                         "parameters": {
@@ -904,7 +904,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "core_prevention",
                         "description": "Addresses malicious fileless and file-backed scripts that leverage native programs and common scripting languages.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Advanced Scripting Prevention",
                         "parameters": {
@@ -914,7 +914,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "core_prevention",
                         "description": "Addresses threat actors obtaining credentials and relies on detecting the malicious use of TTPs/behaviors that indicate such activity.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Credential Theft",
                         "parameters": {
@@ -924,7 +924,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "core_prevention",
                         "description": "Addresses common and pervasive TTPs used for malicious activity as well as living off the land TTPs/behaviors detected by Carbon Black’s Threat Analysis Unit.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Carbon Black Threat Intel",
                         "parameters": {
@@ -934,7 +934,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "core_prevention",
                         "description": "Addresses behaviors that indicate a threat actor has gained elevated access via a bug or misconfiguration within an operating system, and leverages the detection of TTPs/behaviors to prevent such activity.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Privilege Escalation",
                         "parameters": {
@@ -944,7 +944,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "core_prevention",
                         "description": "Addresses common TTPs/behaviors that threat actors use to avoid detection such as uninstalling or disabling security software, obfuscating or encrypting data/scripts and abusing trusted processes to hide and disguise their malicious activity.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Defense Evasion",
                         "parameters": {
@@ -954,7 +954,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "core_prevention",
                         "description": "Addresses common TTPs/behaviors that threat actors use to retain access to systems across restarts, changed credentials, and other interruptions that could cut off their access.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Persistence",
                         "parameters": {
@@ -964,7 +964,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "bypass",
                         "description": "Allows customers to exclude specific processes and process events from reporting to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting and Sensor Operation Exclusions",
                         "parameters": {}
@@ -972,7 +972,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "bypass",
                         "description": "Allows customers to exclude specific processes from reporting events to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting Exclusions",
                         "parameters": {}
@@ -980,15 +980,15 @@ Retrieves a policy object by ID.
                     {
                         "category": "host_based_firewall",
                         "description": "These are the Host based Firewall Rules which will be executed by the sensor. The Definition will be part of Main Policies.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Host Based Firewall",
                         "parameters": {
                             "default_rule": {
                                 "action": "ALLOW",
-                                "default_rule_access_check_guid": "the_default_rule_access_check_guid",
-                                "default_rule_inbound_event_check_guid": "the_default_rule_inbound_event_check_guid",
-                                "default_rule_outbound_event_check_guid": "the_default_rule_outbound_event_check_guid"
+                                "default_rule_access_check_guid": "dummy_default_rule_access_check_guid",
+                                "default_rule_inbound_event_check_guid": "dummy_default_rule_inbound_event_check_guid",
+                                "default_rule_outbound_event_check_guid": "dummy_default_rule_outbound_event_check_guid"
                             },
                             "enable_host_based_firewall": true,
                             "rule_groups": [
@@ -1012,14 +1012,14 @@ Retrieves a policy object by ID.
                                             "protocol": "TCP",
                                             "remote_ip_address": "1.1.1.1/22",
                                             "remote_port_ranges": "443",
-                                            "rule_access_check_guid": "the_rule_access_check_guid",
-                                            "rule_inbound_event_check_guid": "the_rule_inbound_event_check_guid",
-                                            "rule_outbound_event_check_guid": "the_rule_outbound_event_check_guid",
+                                            "rule_access_check_guid": "dummy_rule_access_check_guid",
+                                            "rule_inbound_event_check_guid": "dummy_rule_inbound_event_check_guid",
+                                            "rule_outbound_event_check_guid": "dummy_rule_outbound_event_check_guid",
                                             "test_mode": false,
                                             "threat_score": 8
                                         }
                                     ],
-                                    "ruleset_id": "the_ruleset_id"
+                                    "ruleset_id": "dummy_ruleset_id"
                                 }
                             ]
                         }
@@ -1027,7 +1027,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "data_collection",
                         "description": "Enterprise EDR Event Collection",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Enterprise EDR Event Collection",
                         "parameters": {
@@ -1037,7 +1037,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "data_collection",
                         "description": "Collects events created when a process loads a common library. Enabling this will increase the number of events reported for expected process behavior.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Prevalent Module Exclusions",
                         "parameters": {
@@ -1052,7 +1052,7 @@ Retrieves a policy object by ID.
                             "type": "NAME_PATH",
                             "value": "COMMON_WHITE_LIST"
                         },
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "operation": "RANSOM",
                         "required": false
                     }
@@ -1061,7 +1061,7 @@ Retrieves a policy object by ID.
                     {
                         "category": "sensor_settings",
                         "description": "Manages sensor settings specific to endpoint standard product",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Endpoint standard sensor settings at policy scope",
                         "parameters": {
@@ -1100,7 +1100,7 @@ Retrieves a policy object by ID.
 >### Carbon Black Defense Policy
 >|Id|Name|Priority Level|Is System|Description|
 >|---|---|---|---|---|
->| the_id | AWN BAS | MEDIUM | false | aaaaaaaa |
+>| dummy_id | AWN BAS | MEDIUM | false | aaaaaaaa |
 
 
 ### cbd-get-policies-summary
@@ -1138,7 +1138,7 @@ There are no input arguments for this command.
         "PolicySummary": [
             {
                 "description": "aaaaaaaa",
-                "id": "the_id",
+                "id": "dummy_id",
                 "is_system": false,
                 "name": "AWN BAS",
                 "num_devices": 2,
@@ -1148,7 +1148,7 @@ There are no input arguments for this command.
             },
             {
                 "description": "",
-                "id": "the_id",
+                "id": "dummy_id",
                 "is_system": false,
                 "name": "Abhi-CB-policy",
                 "num_devices": 1,
@@ -1158,7 +1158,7 @@ There are no input arguments for this command.
             },
             {
                 "description": "Don't worry about this. It won't be here long.",
-                "id": "the_id",
+                "id": "dummy_id",
                 "is_system": false,
                 "name": "Splunk Policy To_be_deleted_1652997758",
                 "num_devices": 0,
@@ -1167,7 +1167,7 @@ There are no input arguments for this command.
             },
             {
                 "description": "Splunk Policy invalid value",
-                "id": "the_id",
+                "id": "dummy_id",
                 "is_system": false,
                 "name": "Splunk Policy invalid value1652962163",
                 "num_devices": 0,
@@ -1176,7 +1176,7 @@ There are no input arguments for this command.
             },
             {
                 "description": "aaaaaaaa",
-                "id": "the_id",
+                "id": "dummy_id",
                 "is_system": false,
                 "name": "test42",
                 "num_devices": 0,
@@ -1214,92 +1214,6 @@ There are no input arguments for this command.
 >| 104163 | Lumu | MEDIUM | false |
 >| 65120 | Lumu Policy | LOW | false |
 >| 96535 | Moja Skopska polisa | LOW | false |
->| 97036 | Nucleus Policy 1 | MEDIUM | false |
->| 7691 | OPSWAT Policy 2 | MEDIUM | false |
->| 103887 | Policy 12345 | LOW | false |
->| 98583 | RR-LAB-POLICY | MEDIUM | false |
->| 78483 | Remediant AC Policy | LOW | false |
->| 88513 | Remediant Dev LR Off Policy | MEDIUM | false |
->| 88514 | Remediant Dev LR On Policy | MEDIUM | false |
->| 88510 | Remediant Strict LR Off Policy | MEDIUM | false |
->| 88509 | Remediant Strict LR On Policy | MEDIUM | false |
->| 112221 | SSQ_Policy | MISSION_CRITICAL | false |
->| 115305 | Samsung Policy USB allowed | MEDIUM | false |
->| 91703 | ServiceNow Sample Policy | LOW | false |
->| 103464 | Servicenow Intergration Crest | MEDIUM | false |
->| 12229 | Siemplify Policy 1 | MISSION_CRITICAL | false |
->| 94258 | Splunk Policy To_be_deleted_1652961774 | MEDIUM | false |
->| 94259 | Splunk Policy To_be_deleted_1652961906 | MEDIUM | false |
->| 94260 | Splunk Policy To_be_deleted_1652962001 | MEDIUM | false |
->| 94268 | Splunk Policy To_be_deleted_1652997758 | MEDIUM | false |
->| 94269 | Splunk Policy To_be_deleted_1652998565 | MEDIUM | false |
->| 94270 | Splunk Policy To_be_deleted_1652999354 | MEDIUM | false |
->| 94265 | Splunk Policy invalid value1652962163 | HIGH | false |
->| 94266 | Splunk Policy invalid value1652962219 | HIGH | false |
->| 101958 | Splunk Threat Research  | MEDIUM | false |
->| 130979 | Test- event.volume | MEDIUM | false |
->| 129938 | TestKeshav | MISSION_CRITICAL | false |
->| 99205 | Tines-Policy | LOW | false |
->| 93660 | Torq Policy | MEDIUM | false |
->| 93661 | VMRay_AV | HIGH | false |
->| 97624 | ajit-cb-policy | MEDIUM | false |
->| 91849 | default - S1 | MEDIUM | false |
->| 91921 | default - S1 - 1650149819 | MEDIUM | false |
->| 91922 | default - S1 - 1650150634 | MEDIUM | false |
->| 92064 | default - S1 - 1650299660 | MEDIUM | false |
->| 92139 | default - S1 - 1650388389 | MEDIUM | false |
->| 94262 | demo policy | HIGH | false |
->| 103873 | documentation CB5 | LOW | false |
->| 115762 | documentation CB5789 | LOW | false |
->| 103874 | documentation CB6 | LOW | false |
->| 115763 | documentation test new 65645874 | LOW | false |
->| 115943 | j.penna | MEDIUM | false |
->| 144728 | kylie dev rel testing | MEDIUM | false |
->| 133518 | sb policy | MEDIUM | false |
->| 94314 | smokescreen-policy | MEDIUM | false |
->| 102842 | test | MEDIUM | false |
->| 130799 | test xdr disabled | MEDIUM | false |
->| 130800 | test xdr never on | MEDIUM | false |
->| 103888 | test12345 | LOW | false |
->| 109471 | test123457896565676 | LOW | false |
->| 145463 | testHBFW20231121 | MEDIUM | false |
->| 145313 | test_hbfw_20231120_01 | MEDIUM | false |
->| 102278 | testmarko | MEDIUM | false |
->| 110024 | testprad_policy | MEDIUM | false |
->| 107281 | xps test | HIGH | false |
->| 65066 | ⚠️ Wide Open | LOW | false |
->| 67372 | 🚩 Highly Restrictive Policy | MEDIUM | false |
->| 6527 | Detection_Servers | HIGH | true |
->| 6528 | Restrictive_Mac_Workstation | MEDIUM | true |
->| 6529 | Restrictive_Windows_Workstation | MEDIUM | true |
->| 6531 | Standard_Mac_Workstation | MEDIUM | true |
->| 6530 | Standard_Windows_Workstation | MEDIUM | true |
->| 6525 | default | MEDIUM | true |
->| 148443 | ilay_test_to_delete | MEDIUM | false |
->| 163573 | Standard test policy 1 | MEDIUM | false |
->| 164020 | Standard test policy 2 | LOW | false |
->| 164021 | Standard test policy 3 | MEDIUM | false |
->| 164081 | Standard test policy  updated by XSOAR | LOW | false |
->| 164082 | test policy XSOAR | LOW | false |
->| 164096 | demisto test1 | HIGH | false |
->| 164097 | 164097 | MEDIUM | false |
->| 169240 | Standard | MEDIUM | false |
->| 169241 | test123 | MEDIUM | false |
->| 169307 | Standar45d | MEDIUM | false |
->| 169849 | Standar4hu5d | MEDIUM | false |
->| 169865 | Standar4hul5d | MEDIUM | false |
->| 169866 | Standar4houl5d | MEDIUM | false |
->| 169867 | Standar4yhoul5d | MEDIUM | false |
->| 169869 | Stakjljlndar4ul5d | MEDIUM | false |
->| 169870 | testttt | HIGH | false |
->| 169871 | testttoo | HIGH | false |
->| 169938 | Copy - Crest-Test2 | MEDIUM | false |
->| 169977 | testtsts | MEDIUM | false |
->| 169978 | testtsss | MEDIUM | false |
->| 169985 | tefgfgsttsss | MEDIUM | false |
->| 169988 | tefgfgstdftsss | MEDIUM | false |
->| 169994 | tesssttsss | MEDIUM | false |
->| 170002 | test42 | MEDIUM | false |
 
 
 ### cbd-create-policy
@@ -1396,7 +1310,7 @@ Creates a new policy on the CB Defense backend.
     "CarbonBlackDefense": {
         "Policy": {
             "description": "aaaaaaaa",
-            "id": "the_id",
+            "id": "dummy_id",
             "name": "test4",
             "policy": {
                 "auto_deregister_inactive_vdi_interval_ms": 0,
@@ -1452,12 +1366,12 @@ Creates a new policy on the CB Defense backend.
                     }
                 ],
                 "is_system": false,
-                "org_key": "the_org_key",
+                "org_key": "dummy_org_key",
                 "position": 108,
                 "rapid_configs": [
                     {
                         "description": "Turns on XDR network data collection at the sensor",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "XDR",
                         "parameters": {
@@ -1466,7 +1380,7 @@ Creates a new policy on the CB Defense backend.
                     },
                     {
                         "description": "Turns on Windows authentication events at the sensor",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Authentication Events",
                         "parameters": {
@@ -1475,7 +1389,7 @@ Creates a new policy on the CB Defense backend.
                     },
                     {
                         "description": "Manages sensor settings specific to endpoint standard product",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Endpoint standard sensor settings at policy scope",
                         "parameters": {
@@ -1485,7 +1399,7 @@ Creates a new policy on the CB Defense backend.
                     {
                         "category": "data_collection",
                         "description": "Collects events created when a process loads a common library. Enabling this will increase the number of events reported for expected process behavior.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Prevalent Module Exclusions",
                         "parameters": {
@@ -1498,7 +1412,7 @@ Creates a new policy on the CB Defense backend.
                     {
                         "category": "sensor_settings",
                         "description": "Manages sensor settings specific to endpoint standard product",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Endpoint standard sensor settings at policy scope",
                         "parameters": {
@@ -1631,7 +1545,7 @@ Update an existing policy on the CB Defense backend.
     "CarbonBlackDefense": {
         "Policy": {
             "description": "aaaaaaaa",
-            "id": "the_id",
+            "id": "dummy_id",
             "name": "AWN BAS",
             "policy": {
                 "auto_deregister_inactive_vdi_interval_ms": 0,
@@ -1687,12 +1601,12 @@ Update an existing policy on the CB Defense backend.
                     }
                 ],
                 "is_system": false,
-                "org_key": "the_org_key",
+                "org_key": "dummy_org_key",
                 "position": 1,
                 "rapid_configs": [
                     {
                         "description": "Turns on XDR network data collection at the sensor",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "XDR",
                         "parameters": {
@@ -1701,7 +1615,7 @@ Update an existing policy on the CB Defense backend.
                     },
                     {
                         "description": "Addresses common TTPs/behaviors that threat actors use to avoid detection such as uninstalling or disabling security software, obfuscating or encrypting data/scripts and abusing trusted processes to hide and disguise their malicious activity.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Defense Evasion",
                         "parameters": {
@@ -1710,7 +1624,7 @@ Update an existing policy on the CB Defense backend.
                     },
                     {
                         "description": "Addresses common TTPs/behaviors that threat actors use to retain access to systems across restarts, changed credentials, and other interruptions that could cut off their access.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Persistence",
                         "parameters": {
@@ -1719,29 +1633,29 @@ Update an existing policy on the CB Defense backend.
                     },
                     {
                         "description": "Allows customers to exclude specific processes and process events from reporting to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting and Sensor Operation Exclusions",
                         "parameters": {}
                     },
                     {
                         "description": "Allows customers to exclude specific processes from reporting events to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting Exclusions",
                         "parameters": {}
                     },
                     {
                         "description": "These are the Host based Firewall Rules which will be executed by the sensor. The Definition will be part of Main Policies.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Host Based Firewall",
                         "parameters": {
                             "default_rule": {
                                 "action": "ALLOW",
-                                "default_rule_access_check_guid": "the_default_rule_access_check_guid",
-                                "default_rule_inbound_event_check_guid": "the_default_rule_inbound_event_check_guid",
-                                "default_rule_outbound_event_check_guid": "the_default_rule_outbound_event_check_guid"
+                                "default_rule_access_check_guid": "dummy_default_rule_access_check_guid",
+                                "default_rule_inbound_event_check_guid": "dummy_default_rule_inbound_event_check_guid",
+                                "default_rule_outbound_event_check_guid": "dummy_default_rule_outbound_event_check_guid"
                             },
                             "enable_host_based_firewall": true,
                             "rule_groups": [
@@ -1765,21 +1679,21 @@ Update an existing policy on the CB Defense backend.
                                             "protocol": "TCP",
                                             "remote_ip_address": "1.1.1.1/22",
                                             "remote_port_ranges": "443",
-                                            "rule_access_check_guid": "the_rule_access_check_guid",
-                                            "rule_inbound_event_check_guid": "the_rule_inbound_event_check_guid",
-                                            "rule_outbound_event_check_guid": "the_rule_outbound_event_check_guid",
+                                            "rule_access_check_guid": "dummy_rule_access_check_guid",
+                                            "rule_inbound_event_check_guid": "dummy_rule_inbound_event_check_guid",
+                                            "rule_outbound_event_check_guid": "dummy_rule_outbound_event_check_guid",
                                             "test_mode": false,
                                             "threat_score": 8
                                         }
                                     ],
-                                    "ruleset_id": "the_ruleset_id"
+                                    "ruleset_id": "dummy_ruleset_id"
                                 }
                             ]
                         }
                     },
                     {
                         "description": "Enterprise EDR Event Collection",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Enterprise EDR Event Collection",
                         "parameters": {
@@ -1788,7 +1702,7 @@ Update an existing policy on the CB Defense backend.
                     },
                     {
                         "description": "Collects events created when a process loads a common library. Enabling this will increase the number of events reported for expected process behavior.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Prevalent Module Exclusions",
                         "parameters": {
@@ -1800,7 +1714,7 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "data_collection",
                         "description": "Turns on XDR network data collection at the sensor",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "XDR",
                         "parameters": {
@@ -1810,7 +1724,7 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "core_prevention",
                         "description": "Addresses common TTPs/behaviors that threat actors use to retain access to systems across restarts, changed credentials, and other interruptions that could cut off their access.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Persistence",
                         "parameters": {
@@ -1820,7 +1734,7 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "bypass",
                         "description": "Allows customers to exclude specific processes and process events from reporting to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting and Sensor Operation Exclusions",
                         "parameters": {}
@@ -1828,7 +1742,7 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "bypass",
                         "description": "Allows customers to exclude specific processes from reporting events to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting Exclusions",
                         "parameters": {}
@@ -1836,15 +1750,15 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "host_based_firewall",
                         "description": "These are the Host based Firewall Rules which will be executed by the sensor. The Definition will be part of Main Policies.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Host Based Firewall",
                         "parameters": {
                             "default_rule": {
                                 "action": "ALLOW",
-                                "default_rule_access_check_guid": "the_default_rule_access_check_guid",
-                                "default_rule_inbound_event_check_guid": "the_default_rule_inbound_event_check_guid",
-                                "default_rule_outbound_event_check_guid": "the_default_rule_outbound_event_check_guid"
+                                "default_rule_access_check_guid": "dummy_default_rule_access_check_guid",
+                                "default_rule_inbound_event_check_guid": "dummy_default_rule_inbound_event_check_guid",
+                                "default_rule_outbound_event_check_guid": "dummy_default_rule_outbound_event_check_guid"
                             },
                             "enable_host_based_firewall": true,
                             "rule_groups": [
@@ -1868,14 +1782,14 @@ Update an existing policy on the CB Defense backend.
                                             "protocol": "TCP",
                                             "remote_ip_address": "1.1.1.1/22",
                                             "remote_port_ranges": "443",
-                                            "rule_access_check_guid": "the_rule_access_check_guid",
-                                            "rule_inbound_event_check_guid": "the_rule_inbound_event_check_guid",
-                                            "rule_outbound_event_check_guid": "the_rule_outbound_event_check_guid",
+                                            "rule_access_check_guid": "dummy_rule_access_check_guid",
+                                            "rule_inbound_event_check_guid": "dummy_rule_inbound_event_check_guid",
+                                            "rule_outbound_event_check_guid": "dummy_rule_outbound_event_check_guid",
                                             "test_mode": false,
                                             "threat_score": 8
                                         }
                                     ],
-                                    "ruleset_id": "the_ruleset_id"
+                                    "ruleset_id": "dummy_ruleset_id"
                                 }
                             ]
                         }
@@ -1883,7 +1797,7 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "data_collection",
                         "description": "Enterprise EDR Event Collection",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Enterprise EDR Event Collection",
                         "parameters": {
@@ -1893,7 +1807,7 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "data_collection",
                         "description": "Collects events created when a process loads a common library. Enabling this will increase the number of events reported for expected process behavior.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Prevalent Module Exclusions",
                         "parameters": {
@@ -1906,7 +1820,7 @@ Update an existing policy on the CB Defense backend.
                     {
                         "category": "sensor_settings",
                         "description": "Manages sensor settings specific to endpoint standard product",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Endpoint standard sensor settings at policy scope",
                         "parameters": {
@@ -2246,7 +2160,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
     "CarbonBlackDefense": {
         "Policy": {
             "description": "aaaaaaaa",
-            "id": "the_id",
+            "id": "dummy_id",
             "name": "tesssttsss",
             "policy": {
                 "auto_deregister_inactive_vdi_interval_ms": 0,
@@ -2302,13 +2216,13 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                     }
                 ],
                 "is_system": false,
-                "org_key": "the_org_key",
+                "org_key": "dummy_org_key",
                 "position": 105,
                 "rule_configs": [
                     {
                         "category": "data_collection",
                         "description": "Turns on XDR network data collection at the sensor",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "XDR",
                         "parameters": {
@@ -2318,7 +2232,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                     {
                         "category": "core_prevention",
                         "description": "Addresses common TTPs/behaviors that threat actors use to retain access to systems across restarts, changed credentials, and other interruptions that could cut off their access.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Persistence",
                         "parameters": {
@@ -2328,7 +2242,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                     {
                         "category": "bypass",
                         "description": "Allows customers to exclude specific processes and process events from reporting to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting and Sensor Operation Exclusions",
                         "parameters": {}
@@ -2336,7 +2250,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                     {
                         "category": "bypass",
                         "description": "Allows customers to exclude specific processes from reporting events to CBC",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Event Reporting Exclusions",
                         "parameters": {}
@@ -2344,7 +2258,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                     {
                         "category": "data_collection",
                         "description": "Enterprise EDR Event Collection",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Enterprise EDR Event Collection",
                         "parameters": {
@@ -2354,7 +2268,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                     {
                         "category": "data_collection",
                         "description": "Collects events created when a process loads a common library. Enabling this will increase the number of events reported for expected process behavior.",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "psc:region",
                         "name": "Prevalent Module Exclusions",
                         "parameters": {
@@ -2369,7 +2283,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                             "type": "REPUTATION",
                             "value": "COMMON_WHITE_LIST"
                         },
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "operation": "MEMORY_SCRAPE",
                         "required": true
                     }
@@ -2378,7 +2292,7 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
                     {
                         "category": "sensor_settings",
                         "description": "Manages sensor settings specific to endpoint standard product",
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "inherited_from": "",
                         "name": "Endpoint standard sensor settings at policy scope",
                         "parameters": {
@@ -2519,9 +2433,101 @@ Creates a process search job and retrieves the search results. At least one of t
 #### Command example
 ```!cbd-find-processes device_id=5217044```
 
+#### Context Example
+```json
+{
+    "CarbonBlackDefense": {
+        "Process": {
+            "Results": [
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "49becb5d-8cca-4b39-b7f4-d94401533dab",
+                        "6038e242-2c44-470c-92e3-bf3a0c32dc26",
+                        "a7056445-388b-46d8-9d8e-3885bfe28fc0"
+                    ],
+                    "backend_timestamp": "2024-07-11T14:51:29.069Z",
+                    "childproc_count": 1,
+                    "crossproc_count": 7,
+                    "device_group_id": 0,
+                    "device_id": 12345,
+                    "device_name": "r7betalab\\r7betalab-arw04",
+                    "device_policy_id": 80947,
+                    "device_timestamp": "2024-07-11T14:44:11.754Z",
+                    "filemod_count": 11,
+                    "ingress_time": 1720709467661,
+                    "modload_count": 40,
+                    "netconn_count": 0,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 4380,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [
+                        "dummy_process_hash",
+                    ],
+                    "process_name": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe",
+                    "process_pid": [
+                        2192
+                    ],
+                    "process_username": [
+                        "R7BETALAB\\svc_idr"
+                    ],
+                    "regmod_count": 4,
+                    "scriptload_count": 1,
+                    "watchlist_hit": []
+                },
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "dummy_alert_id"
+                    ],
+                    "backend_timestamp": "2024-07-11T14:34:13.616Z",
+                    "childproc_count": 0,
+                    "crossproc_count": 0,
+                    "device_group_id": 0,
+                    "device_id": 12345,
+                    "device_name": "cb-markotest",
+                    "device_policy_id": 6525,
+                    "device_timestamp": "2024-07-11T14:30:39.203Z",
+                    "filemod_count": 0,
+                    "ingress_time": 1720708414089,
+                    "modload_count": 0,
+                    "netconn_count": 1,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 688,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [],
+                    "process_name": "c:\\windows\\system32\\svchost.exe",
+                    "process_pid": [
+                        2264
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\NETWORK SERVICE"
+                    ],
+                    "regmod_count": 0,
+                    "scriptload_count": 0,
+                    "watchlist_hit": [
+                        "abcd123"
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->search jobs in process
+>### The Results For The Process Search
+>|Device Id|Device Name|Process Name|Device Policy Id|
+>|---|---|---|---|
+>| 1234 | r7betalab\r7betalab-arw04 | c:\windows\system32\windowspowershell\v1.0\powershell.exe | 80947 |
+>| 1111 | cb-markotest | c:\windows\system32\svchost.exe | 6525 |
 
 ### cbd-find-observation-details
 
@@ -2619,10 +2625,134 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 #### Command example
 ```!cbd-find-observation-details process_hash=abc1234```
 #### Context Example
+```json
+{
+    "CarbonBlackDefense": {
+        "EventDetails": {
+            "Results": {
+                "alert_category": [
+                    "THREAT"
+                ],
+                "alert_id": [
+                    "dummy_alert_id"
+                ],
+                "backend_timestamp": "2024-04-17T01:52:29.056Z",
+                "blocked_effective_reputation": "TRUSTED_WHITE_LIST",
+                "blocked_hash": [
+                    "dummy_blocked_hash"
+                ],
+                "blocked_name": "c:\windows\system32\windowspowershell\v1.0\powershell.exe",
+                "childproc_cmdline": "\"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe\" (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow() ",
+                "childproc_cmdline_length": 124,
+                "childproc_effective_reputation": "TRUSTED_WHITE_LIST",
+                "childproc_effective_reputation_source": "CLOUD",
+                "childproc_guid": "dummy_childproc_guid",
+                "childproc_hash": [
+                    "dummy_chidproc_hash"
+                ],
+                "childproc_issuer": [
+                    "Microsoft Windows Production PCA 2011"
+                ],
+                "childproc_name": "c:\windows\system32\windowspowershell\v1.0\powershell.exe",
+                "childproc_pid": 1020,
+                "childproc_publisher": [
+                    "Microsoft Windows"
+                ],
+                "childproc_publisher_state": [
+                    "FILE_SIGNATURE_STATE_VERIFIED",
+                    "FILE_SIGNATURE_STATE_SIGNED"
+                ],
+                "childproc_reputation": "TRUSTED_WHITE_LIST",
+                "childproc_username": "NT AUTHORITY\SYSTEM",
+                "device_external_ip": "1.1.1.1",
+                "device_group_id": 0,
+                "device_id": 12345,
+                "device_installed_by": "sfinn@tines.io",
+                "device_internal_ip": "1.1.1.1",
+                "device_location": "OFFSITE",
+                "device_name": "corp\wsamzn-lshqdrdc",
+                "device_os": "WINDOWS",
+                "device_os_version": "Windows Server 2019 x64",
+                "device_policy": "tines-policy",
+                "device_policy_id": 1234,
+                "device_sensor_version": "1.1.1.1",
+                "device_target_priority": "LOW",
+                "device_timestamp": "2024-04-17T01:50:54.057Z",
+                "document_guid": "dummy_document_guid",
+                "enriched": true,
+                "enriched_event_type": "CREATE_PROCESS",
+                "event_attack_stage": [
+                    "INSTALL_RUN"
+                ],
+                "event_description": "The script \"<share><link hash=\"dummy_hash\">C:\program files\amazon\skylight\scripts\windows_update_status.ps1</link></share>\" invoked the application \"<share><link hash=\"dummy_hash\">C:\windows\system32\windowspowershell\v1.0\powershell.exe</link></share>\". The operation was <accent>blocked</accent> and the application <accent>terminated by Carbon Black</accent>.",
+                "event_id": "dummy_event_id",
+                "event_type": "childproc",
+                "ingress_time": 1713318735609,
+                "legacy": true,
+                "observation_description": "The application windows_update_status.ps1 invoked another application (powershell.exe). A Deny Policy Action was applied.",
+                "observation_id": "dummy_observation_id",
+                "observation_type": "CB_ANALYTICS",
+                "org_id": "abc123",
+                "parent_effective_reputation": "LOCAL_WHITE",
+                "parent_effective_reputation_source": "PRE_EXISTING",
+                "parent_guid": "dummy_parent_guid",
+                "parent_hash": [
+                    "dummy_parent_hash"
+                ],
+                "parent_name": "c:\program files\amazon\skylight\skylightworkspaceconfigservice.exe",
+                "parent_pid": 1234,
+                "parent_reputation": "NOT_LISTED",
+                "parent_username": "NT AUTHORITY\SYSTEM",
+                "process_cmdline": [
+                    "\"powershell.exe\" -NonInteractive -ExecutionPolicy AllSigned -File \"C:\Program files\Amazon\SkyLight\scripts\windows_update_status.ps1\" -scriptId windows_update_status.ps1 CheckStatus"
+                ],
+                "process_cmdline_length": [
+                    182
+                ],
+                "process_effective_reputation": "ADAPTIVE_WHITE_LIST",
+                "process_effective_reputation_source": "CLOUD",
+                "process_guid": "dummy_process_guid",
+                "process_hash": [
+                    "dummy_process_hash",
+                ],
+                "process_loaded_script_hash": [
+                    "dummy_process_loaded_script_hash"
+                ],
+                "process_loaded_script_name": [
+                    "c:\program files\amazon\skylight\scripts\windows_update_status.ps1"
+                ],
+                "process_name": "c:\program files\amazon\skylight\scripts\windows_update_status.ps1",
+                "process_pid": [
+                    1234
+                ],
+                "process_reputation": "NOT_LISTED",
+                "process_sha256": "dummy_process_sha256",
+                "process_start_time": "2024-04-17T01:50:48.244Z",
+                "process_user_id": "S-1-5-18",
+                "process_username": [
+                    "NT AUTHORITY\SYSTEM"
+                ],
+                "sensor_action": [
+                    "TERMINATE"
+                ],
+                "ttp": [
+                    "MITRE_T1059_CMD_LINE_OR_SCRIPT_INTER",
+                    "POLICY_DENY",
+                    "MITRE_T1059_001_POWERSHELL"
+                ]
+            }
+        }
+    }
+}
+```
 
 #### Human Readable Output
 
->search jobs in process
+>### Defense Event Details Results
+>|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
+>|---|---|---|---|---|
+>| dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
+
 
 ### cbd-find-observation
 
@@ -2747,9 +2877,126 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 #### Command example
 ```!cbd-find-observation device_id=12345```
 
+#### Context Example
+```json
+{
+    "CarbonBlackDefense": {
+        "Events": {
+            "Results": [
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "dummy_alert_id"
+                    ],
+                    "backend_timestamp": "2024-07-05T09:42:06.625Z",
+                    "blocked_effective_reputation": "COMPANY_BLACK_LIST",
+                    "blocked_hash": [
+                        "dummy_bloched_hash"
+                    ],
+                    "blocked_name": "c:\windows\system32\sdiagnhost.exe",
+                    "device_group_id": 0,
+                    "device_id": 1234,
+                    "device_name": "desktop-ua4omu0",
+                    "device_policy_id": 1234,
+                    "device_timestamp": "2024-07-05T09:39:07.695Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "CREATE_PROCESS"
+                    ],
+                    "event_description": "The application \"<share><link hash=\"add683a6910abbbf0e28b557fad0ba998166394932ae2aca069d9aa19ea8fe88\">C:\Windows\system32\svchost.exe -k DcomLaunch -p</link></share>\" invoked the application \"<share><link hash=\"e5ec6b5b20a16383cc953ad5e478dcdf95ba46281f4fe971673c954d4145c0c4\">c:\windows\system32\sdiagnhost.exe</link></share>\". The operation was <accent>blocked by Carbon Black</accent>.",
+                    "event_id": "dummy_event_id",
+                    "event_type": "childproc",
+                    "ingress_time": 1720172480035,
+                    "legacy": true,
+                    "observation_description": " sdiagnhost.exe on the Company Black List was detected running. A Deny Policy Action was applied.",
+                    "observation_id": "dummy_observation_id",
+                    "observation_type": "CB_ANALYTICS",
+                    "org_id": "dummy_org_id",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 616,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [
+                        "dummy_process_gash",
+                        "dummy_process_hash"
+                    ],
+                    "process_name": "c:\windows\system32\svchost.exe",
+                    "process_pid": [
+                        768
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\SYSTEM"
+                    ],
+                    "sensor_action": [
+                        "DENY",
+                        "BLOCK"
+                    ]
+                },
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "dummy_alert_id"
+                    ],
+                    "backend_timestamp": "2024-07-03T16:27:53.810Z",
+                    "blocked_effective_reputation": "COMPANY_BLACK_LIST",
+                    "blocked_hash": [
+                        "dummy_blocked_hash"
+                    ],
+                    "blocked_name": "c:\windows\system32\windowspowershell\v1.0\powershell.exe",
+                    "device_group_id": 0,
+                    "device_id": 1234,
+                    "device_name": "desktop-ua4omu0",
+                    "device_policy_id": 1234,
+                    "device_timestamp": "2024-07-03T16:25:21.686Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "CREATE_PROCESS"
+                    ],
+                    "event_description": "The application \"<share><link hash=\"20330d3ca71d58f4aeb432676cb6a3d5b97005954e45132fb083e90782efdd50\">c:\windows\system32\backgroundtaskhost.exe</link></share>\" was prevented from accessing the file \"<share><link hash=\"9f914d42706fe215501044acd85a32d58aaef1419d404fddfa5d3b48f66ccd9f\">c:\windows\system32\windowspowershell\v1.0\powershell.exe</link></share>\" due to a <accent>Deny operation or Terminate process</accent> policy action.",
+                    "event_id": "dummy_event_id",
+                    "event_type": "childproc",
+                    "ingress_time": 1720024053609,
+                    "legacy": true,
+                    "observation_description": "The application backgroundtaskhost.exe invoked another application (powershell.exe). A Deny Policy Action was applied.",
+                    "observation_id": "f82a46c4395811efab18238ba409ec8f:d13802a2-e8a1-180d-8359-fdc0a8c9f007",
+                    "observation_type": "CB_ANALYTICS",
+                    "org_id": "dummy_org_id",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 768,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [
+                        "dummy_process_hash",
+                        "dummy_process_hash"
+                    ],
+                    "process_name": "c:\windows\system32\backgroundtaskhost.exe",
+                    "process_pid": [
+                        1234
+                    ],
+                    "process_username": [
+                        "DESKTOP-UA4OMU0\qe-admin"
+                    ],
+                    "sensor_action": [
+                        "DENY",
+                        "BLOCK"
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
 #### Human Readable Output
 
->search jobs in process
+>### Defense Event Results
+>|Event Id|Device Id|Enriched Event Type|
+>|---|---|---|
+>| 8d815dc93ab211efb74fe9e3b00b3b6a | 6685063 | CREATE_PROCESS |
+>| f82a46c4395811efab18238ba409ec8f | 6685063 | CREATE_PROCESS |
+
 
 ### cbd-device-search
 
@@ -2873,12 +3120,12 @@ Searches devices in your organization.
                 "appliance_uuid": null,
                 "asset_group": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     }
@@ -2924,7 +3171,7 @@ Searches devices in your organization.
                         "position": 0
                     }
                 ],
-                "device_owner_id": "the_device_owner_id",
+                "device_owner_id": "dummy_device_owner_id",
                 "email": "CB-H10\\Admin",
                 "esx_host_name": null,
                 "esx_host_uuid": null,
@@ -2933,19 +3180,19 @@ Searches devices in your organization.
                 "golden_device_id": null,
                 "groups": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     }
                 ],
                 "host_based_firewall_reasons": [],
                 "host_based_firewall_status": null,
-                "id": "the_id",
+                "id": "dummy_id",
                 "infrastructure_provider": "NONE",
                 "last_contact_time": "2024-07-09T15:30:29.175Z",
                 "last_device_policy_changed_time": "2024-02-01T10:30:40.624Z",
@@ -2965,13 +3212,13 @@ Searches devices in your organization.
                 "name": "CB-H10",
                 "nsx_distributed_firewall_policy": null,
                 "nsx_enabled": null,
-                "organization_id": "the_organization_id",
+                "organization_id": "dummy_organization_id",
                 "organization_name": "cb-internal-alliances.com",
                 "os": "WINDOWS",
                 "os_version": "Windows 10 x64",
                 "passive_mode": false,
                 "policy_assignment_type": "MANUAL",
-                "policy_id": "the_policy_id",
+                "policy_id": "dummy_policy_id",
                 "policy_name": "default",
                 "policy_override": true,
                 "quarantined": false,
@@ -2993,7 +3240,7 @@ Searches devices in your organization.
                 "sensor_version": "1.1.1.1",
                 "status": "REGISTERED",
                 "target_priority": "MEDIUM",
-                "uninstall_code": "the_uninstall_code",
+                "uninstall_code": "dummy_uninstall_code",
                 "vcenter_host_url": null,
                 "vcenter_name": null,
                 "vcenter_uuid": null,
@@ -3054,7 +3301,7 @@ Searches devices in your organization.
                         "position": 0
                     }
                 ],
-                "device_owner_id": "the_device_owner_id",
+                "device_owner_id": "dummy_device_owner_id",
                 "email": "localhost.localdomain",
                 "esx_host_name": null,
                 "esx_host_uuid": null,
@@ -3064,7 +3311,7 @@ Searches devices in your organization.
                 "groups": null,
                 "host_based_firewall_reasons": [],
                 "host_based_firewall_status": null,
-                "id": "the_id",
+                "id": "dummy_id",
                 "infrastructure_provider": "NONE",
                 "last_contact_time": "2024-07-09T15:29:27.472Z",
                 "last_device_policy_changed_time": "2024-05-24T09:24:52.884Z",
@@ -3084,13 +3331,13 @@ Searches devices in your organization.
                 "name": "localhost.localdomain",
                 "nsx_distributed_firewall_policy": null,
                 "nsx_enabled": null,
-                "organization_id": "the_organization_id",
+                "organization_id": "dummy_organization_id",
                 "organization_name": "cb-internal-alliances.com",
                 "os": "LINUX",
                 "os_version": "CentOS 7.9-2009 x64",
                 "passive_mode": false,
                 "policy_assignment_type": "MANUAL",
-                "policy_id": "the_policy_id",
+                "policy_id": "dummy_policy_id",
                 "policy_name": "default",
                 "policy_override": true,
                 "quarantined": false,
@@ -3111,7 +3358,7 @@ Searches devices in your organization.
                 "sensor_version": "1.1.1.10133",
                 "status": "REGISTERED",
                 "target_priority": "MEDIUM",
-                "uninstall_code": "the_uninstall_code",
+                "uninstall_code": "dummy_uninstall_code",
                 "vcenter_host_url": null,
                 "vcenter_name": null,
                 "vcenter_uuid": null,
@@ -3128,7 +3375,7 @@ Searches devices in your organization.
                 "windows_platform": null
             },
             {
-                "activation_code": "the_activation_code",
+                "activation_code": "dummy_activation_code",
                 "activation_code_expiry_time": "2021-03-08T22:36:37.549Z",
                 "ad_domain": [
                     "SDE.LOGRHYTHM.COM"
@@ -3142,12 +3389,12 @@ Searches devices in your organization.
                 "appliance_uuid": null,
                 "asset_group": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     }
@@ -3197,9 +3444,9 @@ Searches devices in your organization.
                         "position": 0
                     }
                 ],
-                "device_owner_id": "the_device_owner_id",
+                "device_owner_id": "dummy_device_owner_id",
                 "email": "jake.haldeman@logrhythm.com",
-                "encoded_activation_code": "the_encoded_activation_code",
+                "encoded_activation_code": "dummy_encoded_activation_code",
                 "esx_host_name": null,
                 "esx_host_uuid": null,
                 "first_name": "Jake",
@@ -3207,19 +3454,19 @@ Searches devices in your organization.
                 "golden_device_id": null,
                 "groups": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     }
                 ],
                 "host_based_firewall_reasons": [],
                 "host_based_firewall_status": null,
-                "id": "the_id",
+                "id": "dummy_id",
                 "infrastructure_provider": null,
                 "last_contact_time": "2024-07-09T15:29:23.630Z",
                 "last_device_policy_changed_time": "2024-05-24T09:23:08.184Z",
@@ -3239,13 +3486,13 @@ Searches devices in your organization.
                 "name": "SDE\\USBO1SEFS-01",
                 "nsx_distributed_firewall_policy": null,
                 "nsx_enabled": null,
-                "organization_id": "the_organization_id",
+                "organization_id": "dummy_organization_id",
                 "organization_name": "cb-internal-alliances.com",
                 "os": "WINDOWS",
                 "os_version": "Server 2012 R2 x64",
                 "passive_mode": true,
                 "policy_assignment_type": "MANUAL",
-                "policy_id": "the_policy_id",
+                "policy_id": "dummy_policy_id",
                 "policy_name": "default",
                 "policy_override": true,
                 "quarantined": false,
@@ -3267,7 +3514,7 @@ Searches devices in your organization.
                 "sensor_version": "1.1.1.19",
                 "status": "BYPASS",
                 "target_priority": "MEDIUM",
-                "uninstall_code": "the_uninstall_code",
+                "uninstall_code": "dummy_uninstall_code",
                 "vcenter_host_url": null,
                 "vcenter_name": null,
                 "vcenter_uuid": null,
@@ -3295,12 +3542,12 @@ Searches devices in your organization.
                 "appliance_uuid": null,
                 "asset_group": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     }
@@ -3350,7 +3597,7 @@ Searches devices in your organization.
                         "position": 0
                     }
                 ],
-                "device_owner_id": "the_device_owner_id",
+                "device_owner_id": "dummy_device_owner_id",
                 "email": "bvanpelt",
                 "esx_host_name": null,
                 "esx_host_uuid": null,
@@ -3359,19 +3606,19 @@ Searches devices in your organization.
                 "golden_device_id": null,
                 "groups": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     }
                 ],
                 "host_based_firewall_reasons": [],
                 "host_based_firewall_status": "NOT_ENABLED",
-                "id": "the_id",
+                "id": "dummy_id",
                 "infrastructure_provider": "NONE",
                 "last_contact_time": "2024-07-09T15:29:05.974Z",
                 "last_device_policy_changed_time": "2023-12-05T10:14:32.584Z",
@@ -3391,13 +3638,13 @@ Searches devices in your organization.
                 "name": "RTEST\\bvp-carbonblack",
                 "nsx_distributed_firewall_policy": null,
                 "nsx_enabled": null,
-                "organization_id": "the_organization_id",
+                "organization_id": "dummy_organization_id",
                 "organization_name": "cb-internal-alliances.com",
                 "os": "WINDOWS",
                 "os_version": "Windows 10 x64",
                 "passive_mode": false,
                 "policy_assignment_type": "MANUAL",
-                "policy_id": "the_policy_id",
+                "policy_id": "dummy_policy_id",
                 "policy_name": "default",
                 "policy_override": true,
                 "quarantined": false,
@@ -3420,7 +3667,7 @@ Searches devices in your organization.
                 "sensor_version": "1.1.1.18",
                 "status": "REGISTERED",
                 "target_priority": "MEDIUM",
-                "uninstall_code": "the_uninstall_code",
+                "uninstall_code": "dummy_uninstall_code",
                 "vcenter_host_url": null,
                 "vcenter_name": null,
                 "vcenter_uuid": null,
@@ -3446,12 +3693,12 @@ Searches devices in your organization.
                 "appliance_uuid": null,
                 "asset_group": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     }
@@ -3496,7 +3743,7 @@ Searches devices in your organization.
                         "position": 0
                     }
                 ],
-                "device_owner_id": "the_device_owner_id",
+                "device_owner_id": "dummy_device_owner_id",
                 "email": "microsoftwindowsserver2022datacenterfe8013b5d1a8b08636a7",
                 "esx_host_name": null,
                 "esx_host_uuid": null,
@@ -3505,19 +3752,19 @@ Searches devices in your organization.
                 "golden_device_id": null,
                 "groups": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     }
                 ],
                 "host_based_firewall_reasons": [],
                 "host_based_firewall_status": "NOT_ENABLED",
-                "id": "the_id",
+                "id": "dummy_id",
                 "infrastructure_provider": "NONE",
                 "last_contact_time": "2024-07-09T15:28:45.119Z",
                 "last_device_policy_changed_time": "2024-02-01T10:28:55.298Z",
@@ -3537,13 +3784,13 @@ Searches devices in your organization.
                 "name": "int01-carbonblack",
                 "nsx_distributed_firewall_policy": null,
                 "nsx_enabled": null,
-                "organization_id": "the_organization_id",
+                "organization_id": "dummy_organization_id",
                 "organization_name": "cb-internal-alliances.com",
                 "os": "WINDOWS",
                 "os_version": "Windows Server 2022 x64",
                 "passive_mode": true,
                 "policy_assignment_type": "MANUAL",
-                "policy_id": "the_policy_id",
+                "policy_id": "dummy_policy_id",
                 "policy_name": "default",
                 "policy_override": true,
                 "quarantined": true,
@@ -3566,7 +3813,7 @@ Searches devices in your organization.
                 "sensor_version": "1.1.1.18",
                 "status": "BYPASS",
                 "target_priority": "MEDIUM",
-                "uninstall_code": "the_uninstall_code",
+                "uninstall_code": "dummy_uninstall_code",
                 "vcenter_host_url": null,
                 "vcenter_name": null,
                 "vcenter_uuid": null,
@@ -3592,12 +3839,12 @@ Searches devices in your organization.
                 "appliance_uuid": null,
                 "asset_group": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     }
@@ -3642,7 +3889,7 @@ Searches devices in your organization.
                         "position": 0
                     }
                 ],
-                "device_owner_id": "the_device_owner_id",
+                "device_owner_id": "dummy_device_owner_id",
                 "email": "EPO-AGENT-PC\\EPO",
                 "esx_host_name": null,
                 "esx_host_uuid": null,
@@ -3651,19 +3898,19 @@ Searches devices in your organization.
                 "golden_device_id": null,
                 "groups": [
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "My Example Asset Group"
                     },
                     {
-                        "id": "the_id",
+                        "id": "dummy_id",
                         "membership_type": "DYNAMIC",
                         "name": "Windows No Policy"
                     }
                 ],
                 "host_based_firewall_reasons": [],
                 "host_based_firewall_status": null,
-                "id": "the_id",
+                "id": "dummy_id",
                 "infrastructure_provider": null,
                 "last_contact_time": "2024-07-09T15:28:44.460Z",
                 "last_device_policy_changed_time": "2024-01-05T20:26:17.411Z",
@@ -3683,13 +3930,13 @@ Searches devices in your organization.
                 "name": "EPO-AGENT-PC",
                 "nsx_distributed_firewall_policy": null,
                 "nsx_enabled": null,
-                "organization_id": "the_organization_id",
+                "organization_id": "dummy_organization_id",
                 "organization_name": "cb-internal-alliances.com",
                 "os": "WINDOWS",
                 "os_version": "Windows 7 x64 SP: 1",
                 "passive_mode": true,
                 "policy_assignment_type": "MANUAL",
-                "policy_id": "the_policy_id",
+                "policy_id": "dummy_policy_id",
                 "policy_name": "default",
                 "policy_override": true,
                 "quarantined": false,
@@ -3711,7 +3958,7 @@ Searches devices in your organization.
                 "sensor_version": "1.1.1.1",
                 "status": "BYPASS",
                 "target_priority": "MEDIUM",
-                "uninstall_code": "the_uninstall_code",
+                "uninstall_code": "dummy_uninstall_code",
                 "vcenter_host_url": null,
                 "vcenter_name": null,
                 "vcenter_uuid": null,
@@ -3905,48 +4152,6 @@ Updates the version of a sensor.
 #### Context Output
 
 There is no context output for this command.
-### cbd-find-processes-results
-
-***
-Retrieves the search results using the specified job ID.
-
-#### Base Command
-
-`cbd-find-processes-results`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| job_id | The unique identifier for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud. | Required | 
-| rows | The number of rows to request. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CarbonBlackDefense.Process.Results.backend_timestamp | Date | The timestamp when the process data was collected from the backend. | 
-| CarbonBlackDefense.Process.Results.childproc_count | Number | The number of child processes spawned by the process. | 
-| CarbonBlackDefense.Process.Results.crossproc_count | Number | The number of cross-process interactions involving the process. | 
-| CarbonBlackDefense.Process.Results.device_id | Number | The unique identifier of the device where the process is running. | 
-| CarbonBlackDefense.Process.Results.device_name | String | The name of the device where the process is running. | 
-| CarbonBlackDefense.Process.Results.device_policy_id | Number | The policy ID associated with the device. | 
-| CarbonBlackDefense.Process.Results.device_timestamp | Date | The timestamp when the process data was collected from the device. | 
-| CarbonBlackDefense.Process.Results.filemod_count | Number | The number of file modifications made by the process. | 
-| CarbonBlackDefense.Process.Results.index_class | String | The classification of the process based on indexing. | 
-| CarbonBlackDefense.Process.Results.modload_count | Number | The number of modules loaded by the process. | 
-| CarbonBlackDefense.Process.Results.netconn_count | Number | The number of network connections established by the process. | 
-| CarbonBlackDefense.Process.Results.org_id | String | The organization ID associated with the process. | 
-| CarbonBlackDefense.Process.Results.parent_guid | String | The GUID of the parent process. | 
-| CarbonBlackDefense.Process.Results.parent_pid | Number | The PID of the parent process. | 
-| CarbonBlackDefense.Process.Results.partition_id | Number | The partition ID associated with the process. | 
-| CarbonBlackDefense.Process.Results.process_guid | String | The GUID of the process. | 
-| CarbonBlackDefense.Process.Results.process_hash | String | The hash of the process. | 
-| CarbonBlackDefense.Process.Results.process_name | String | The name of the process. | 
-| CarbonBlackDefense.Process.Results.process_pid | Number | The PID of the process. | 
-| CarbonBlackDefense.Process.Results.process_username | String | The username under which the process is running. | 
-| CarbonBlackDefense.Process.Results.regmod_count | Number | The number of registry modifications made by the process. | 
-| CarbonBlackDefense.Process.Results.scriptload_count | Number | The number of scripts loaded by the process. | 
 
 ### cbd-find-observation-details-results
 
@@ -4033,6 +4238,138 @@ Retrieves the search results using the specified job ID.
 | CarbonBlackDefense.EventDetails.Results.process_reputation | String | The reputation of the observed process. | 
 | CarbonBlackDefense.EventDetails.Results.process_service_name | String | The service name associated with the observed process. | 
 | CarbonBlackDefense.EventDetails.Results.process_sha256 | unknown | The SHA-256 hash | 
+
+#### Command example
+```!cbd-find-observation-details-results job_id=abc-1234 rows=2```
+#### Context Example
+```json
+{
+    "CarbonBlackDefense": {
+        "EventDetails": {
+            "Results": {
+                "alert_category": [
+                    "THREAT"
+                ],
+                "alert_id": [
+                    "dummy_alert_id"
+                ],
+                "backend_timestamp": "2024-04-17T01:52:29.056Z",
+                "blocked_effective_reputation": "TRUSTED_WHITE_LIST",
+                "blocked_hash": [
+                    "dummy_blocked_hash"
+                ],
+                "blocked_name": "c:\windows\system32\windowspowershell\v1.0\powershell.exe",
+                "childproc_cmdline": "\"C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe\" (New-Object -ComObject Microsoft.Update.AutoUpdate).DetectNow() ",
+                "childproc_cmdline_length": 124,
+                "childproc_effective_reputation": "TRUSTED_WHITE_LIST",
+                "childproc_effective_reputation_source": "CLOUD",
+                "childproc_guid": "dummy_childproc_guid",
+                "childproc_hash": [
+                    "dummy_chidproc_hash"
+                ],
+                "childproc_issuer": [
+                    "Microsoft Windows Production PCA 2011"
+                ],
+                "childproc_name": "c:\windows\system32\windowspowershell\v1.0\powershell.exe",
+                "childproc_pid": 1020,
+                "childproc_publisher": [
+                    "Microsoft Windows"
+                ],
+                "childproc_publisher_state": [
+                    "FILE_SIGNATURE_STATE_VERIFIED",
+                    "FILE_SIGNATURE_STATE_SIGNED"
+                ],
+                "childproc_reputation": "TRUSTED_WHITE_LIST",
+                "childproc_username": "NT AUTHORITY\SYSTEM",
+                "device_external_ip": "1.1.1.1",
+                "device_group_id": 0,
+                "device_id": 12345,
+                "device_installed_by": "sfinn@tines.io",
+                "device_internal_ip": "1.1.1.1",
+                "device_location": "OFFSITE",
+                "device_name": "corp\wsamzn-lshqdrdc",
+                "device_os": "WINDOWS",
+                "device_os_version": "Windows Server 2019 x64",
+                "device_policy": "tines-policy",
+                "device_policy_id": 1234,
+                "device_sensor_version": "1.1.1.1",
+                "device_target_priority": "LOW",
+                "device_timestamp": "2024-04-17T01:50:54.057Z",
+                "document_guid": "dummy_document_guid",
+                "enriched": true,
+                "enriched_event_type": "CREATE_PROCESS",
+                "event_attack_stage": [
+                    "INSTALL_RUN"
+                ],
+                "event_description": "The script \"<share><link hash=\"dummy_hash\">C:\program files\amazon\skylight\scripts\windows_update_status.ps1</link></share>\" invoked the application \"<share><link hash=\"dummy_hash\">C:\windows\system32\windowspowershell\v1.0\powershell.exe</link></share>\". The operation was <accent>blocked</accent> and the application <accent>terminated by Carbon Black</accent>.",
+                "event_id": "dummy_event_id",
+                "event_type": "childproc",
+                "ingress_time": 1713318735609,
+                "legacy": true,
+                "observation_description": "The application windows_update_status.ps1 invoked another application (powershell.exe). A Deny Policy Action was applied.",
+                "observation_id": "dummy_observation_id",
+                "observation_type": "CB_ANALYTICS",
+                "org_id": "abc123",
+                "parent_effective_reputation": "LOCAL_WHITE",
+                "parent_effective_reputation_source": "PRE_EXISTING",
+                "parent_guid": "dummy_parent_guid",
+                "parent_hash": [
+                    "dummy_parent_hash"
+                ],
+                "parent_name": "c:\program files\amazon\skylight\skylightworkspaceconfigservice.exe",
+                "parent_pid": 1234,
+                "parent_reputation": "NOT_LISTED",
+                "parent_username": "NT AUTHORITY\SYSTEM",
+                "process_cmdline": [
+                    "\"powershell.exe\" -NonInteractive -ExecutionPolicy AllSigned -File \"C:\Program files\Amazon\SkyLight\scripts\windows_update_status.ps1\" -scriptId windows_update_status.ps1 CheckStatus"
+                ],
+                "process_cmdline_length": [
+                    182
+                ],
+                "process_effective_reputation": "ADAPTIVE_WHITE_LIST",
+                "process_effective_reputation_source": "CLOUD",
+                "process_guid": "dummy_process_guid",
+                "process_hash": [
+                    "dummy_process_hash",
+                ],
+                "process_loaded_script_hash": [
+                    "dummy_process_loaded_script_hash"
+                ],
+                "process_loaded_script_name": [
+                    "c:\program files\amazon\skylight\scripts\windows_update_status.ps1"
+                ],
+                "process_name": "c:\program files\amazon\skylight\scripts\windows_update_status.ps1",
+                "process_pid": [
+                    1234
+                ],
+                "process_reputation": "NOT_LISTED",
+                "process_sha256": "dummy_process_sha256",
+                "process_start_time": "2024-04-17T01:50:48.244Z",
+                "process_user_id": "S-1-5-18",
+                "process_username": [
+                    "NT AUTHORITY\SYSTEM"
+                ],
+                "sensor_action": [
+                    "TERMINATE"
+                ],
+                "ttp": [
+                    "MITRE_T1059_CMD_LINE_OR_SCRIPT_INTER",
+                    "POLICY_DENY",
+                    "MITRE_T1059_001_POWERSHELL"
+                ]
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Defense Event Details Results
+>|Event Id|Device Id|Device External Ip|Device Internal Ip|Enriched Event Type|
+>|---|---|---|---|---|
+>| dummy_event_id | 1234 | 1.1.1.1 | 1.1.1.1 | CREATE_PROCESS |
+
 
 ### cbd-find-observation-results
 
@@ -4126,3 +4463,268 @@ Retrieves the search results using the specified job ID.
 | CarbonBlackDefense.Events.sensor_action | String | Action taken by the sensor for the event. | 
 | CarbonBlackDefense.Events.ttp | String | Tactics, techniques, and procedures associated with the event. | 
 | CarbonBlackDefense.Events.watchlist_hit | String | Indicates if the event matches a watchlist entry. | 
+
+#### Command example
+```!cbd-find-observation-results job_id=abc-1234 rows=2```
+#### Context Example
+```json
+{
+    "CarbonBlackDefense": {
+        "Events": {
+            "Results": [
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "dummy_alert_id"
+                    ],
+                    "backend_timestamp": "2024-07-05T09:42:06.625Z",
+                    "blocked_effective_reputation": "COMPANY_BLACK_LIST",
+                    "blocked_hash": [
+                        "dummy_bloched_hash"
+                    ],
+                    "blocked_name": "c:\windows\system32\sdiagnhost.exe",
+                    "device_group_id": 0,
+                    "device_id": 1234,
+                    "device_name": "desktop-ua4omu0",
+                    "device_policy_id": 1234,
+                    "device_timestamp": "2024-07-05T09:39:07.695Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "CREATE_PROCESS"
+                    ],
+                    "event_description": "The application \"<share><link hash=\"add683a6910abbbf0e28b557fad0ba998166394932ae2aca069d9aa19ea8fe88\">C:\Windows\system32\svchost.exe -k DcomLaunch -p</link></share>\" invoked the application \"<share><link hash=\"e5ec6b5b20a16383cc953ad5e478dcdf95ba46281f4fe971673c954d4145c0c4\">c:\windows\system32\sdiagnhost.exe</link></share>\". The operation was <accent>blocked by Carbon Black</accent>.",
+                    "event_id": "dummy_event_id",
+                    "event_type": "childproc",
+                    "ingress_time": 1720172480035,
+                    "legacy": true,
+                    "observation_description": " sdiagnhost.exe on the Company Black List was detected running. A Deny Policy Action was applied.",
+                    "observation_id": "dummy_observation_id",
+                    "observation_type": "CB_ANALYTICS",
+                    "org_id": "dummy_org_id",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 616,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [
+                        "dummy_process_gash",
+                        "dummy_process_hash"
+                    ],
+                    "process_name": "c:\windows\system32\svchost.exe",
+                    "process_pid": [
+                        768
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\SYSTEM"
+                    ],
+                    "sensor_action": [
+                        "DENY",
+                        "BLOCK"
+                    ]
+                },
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "dummy_alert_id"
+                    ],
+                    "backend_timestamp": "2024-07-03T16:27:53.810Z",
+                    "blocked_effective_reputation": "COMPANY_BLACK_LIST",
+                    "blocked_hash": [
+                        "dummy_blocked_hash"
+                    ],
+                    "blocked_name": "c:\windows\system32\windowspowershell\v1.0\powershell.exe",
+                    "device_group_id": 0,
+                    "device_id": 1234,
+                    "device_name": "desktop-ua4omu0",
+                    "device_policy_id": 1234,
+                    "device_timestamp": "2024-07-03T16:25:21.686Z",
+                    "enriched": true,
+                    "enriched_event_type": [
+                        "CREATE_PROCESS"
+                    ],
+                    "event_description": "The application \"<share><link hash=\"20330d3ca71d58f4aeb432676cb6a3d5b97005954e45132fb083e90782efdd50\">c:\windows\system32\backgroundtaskhost.exe</link></share>\" was prevented from accessing the file \"<share><link hash=\"9f914d42706fe215501044acd85a32d58aaef1419d404fddfa5d3b48f66ccd9f\">c:\windows\system32\windowspowershell\v1.0\powershell.exe</link></share>\" due to a <accent>Deny operation or Terminate process</accent> policy action.",
+                    "event_id": "dummy_event_id",
+                    "event_type": "childproc",
+                    "ingress_time": 1720024053609,
+                    "legacy": true,
+                    "observation_description": "The application backgroundtaskhost.exe invoked another application (powershell.exe). A Deny Policy Action was applied.",
+                    "observation_id": "f82a46c4395811efab18238ba409ec8f:d13802a2-e8a1-180d-8359-fdc0a8c9f007",
+                    "observation_type": "CB_ANALYTICS",
+                    "org_id": "dummy_org_id",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 768,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [
+                        "dummy_process_hash",
+                        "dummy_process_hash"
+                    ],
+                    "process_name": "c:\windows\system32\backgroundtaskhost.exe",
+                    "process_pid": [
+                        1234
+                    ],
+                    "process_username": [
+                        "DESKTOP-UA4OMU0\qe-admin"
+                    ],
+                    "sensor_action": [
+                        "DENY",
+                        "BLOCK"
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Defense Event Results
+>|Event Id|Device Id|Enriched Event Type|
+>|---|---|---|
+>| 8d815dc93ab211efb74fe9e3b00b3b6a | 6685063 | CREATE_PROCESS |
+>| f82a46c4395811efab18238ba409ec8f | 6685063 | CREATE_PROCESS |
+
+
+### cbd-find-processes-results
+
+***
+Retrieves the search results using the specified job ID.
+
+#### Base Command
+
+`cbd-find-processes-results`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | The unique identifier for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud. | Required | 
+| rows | The number of rows to request. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| CarbonBlackDefense.Process.Results.backend_timestamp | Date | The timestamp when the process data was collected from the backend. | 
+| CarbonBlackDefense.Process.Results.childproc_count | Number | The number of child processes spawned by the process. | 
+| CarbonBlackDefense.Process.Results.crossproc_count | Number | The number of cross-process interactions involving the process. | 
+| CarbonBlackDefense.Process.Results.device_id | Number | The unique identifier of the device where the process is running. | 
+| CarbonBlackDefense.Process.Results.device_name | String | The name of the device where the process is running. | 
+| CarbonBlackDefense.Process.Results.device_policy_id | Number | The policy ID associated with the device. | 
+| CarbonBlackDefense.Process.Results.device_timestamp | Date | The timestamp when the process data was collected from the device. | 
+| CarbonBlackDefense.Process.Results.filemod_count | Number | The number of file modifications made by the process. | 
+| CarbonBlackDefense.Process.Results.index_class | String | The classification of the process based on indexing. | 
+| CarbonBlackDefense.Process.Results.modload_count | Number | The number of modules loaded by the process. | 
+| CarbonBlackDefense.Process.Results.netconn_count | Number | The number of network connections established by the process. | 
+| CarbonBlackDefense.Process.Results.org_id | String | The organization ID associated with the process. | 
+| CarbonBlackDefense.Process.Results.parent_guid | String | The GUID of the parent process. | 
+| CarbonBlackDefense.Process.Results.parent_pid | Number | The PID of the parent process. | 
+| CarbonBlackDefense.Process.Results.partition_id | Number | The partition ID associated with the process. | 
+| CarbonBlackDefense.Process.Results.process_guid | String | The GUID of the process. | 
+| CarbonBlackDefense.Process.Results.process_hash | String | The hash of the process. | 
+| CarbonBlackDefense.Process.Results.process_name | String | The name of the process. | 
+| CarbonBlackDefense.Process.Results.process_pid | Number | The PID of the process. | 
+| CarbonBlackDefense.Process.Results.process_username | String | The username under which the process is running. | 
+| CarbonBlackDefense.Process.Results.regmod_count | Number | The number of registry modifications made by the process. | 
+| CarbonBlackDefense.Process.Results.scriptload_count | Number | The number of scripts loaded by the process. | 
+
+#### Command example
+```!cbd-find-processes-results job_id=abc-123 rows=2```
+#### Context Example
+```json
+{
+    "CarbonBlackDefense": {
+        "Process": {
+            "Results": [
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "49becb5d-8cca-4b39-b7f4-d94401533dab",
+                        "6038e242-2c44-470c-92e3-bf3a0c32dc26",
+                        "a7056445-388b-46d8-9d8e-3885bfe28fc0"
+                    ],
+                    "backend_timestamp": "2024-07-11T14:51:29.069Z",
+                    "childproc_count": 1,
+                    "crossproc_count": 7,
+                    "device_group_id": 0,
+                    "device_id": 12345,
+                    "device_name": "r7betalab\\r7betalab-arw04",
+                    "device_policy_id": 80947,
+                    "device_timestamp": "2024-07-11T14:44:11.754Z",
+                    "filemod_count": 11,
+                    "ingress_time": 1720709467661,
+                    "modload_count": 40,
+                    "netconn_count": 0,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 4380,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [
+                        "dummy_process_hash",
+                    ],
+                    "process_name": "c:\\windows\\system32\\windowspowershell\\v1.0\\powershell.exe",
+                    "process_pid": [
+                        2192
+                    ],
+                    "process_username": [
+                        "R7BETALAB\\svc_idr"
+                    ],
+                    "regmod_count": 4,
+                    "scriptload_count": 1,
+                    "watchlist_hit": []
+                },
+                {
+                    "alert_category": [
+                        "THREAT"
+                    ],
+                    "alert_id": [
+                        "dummy_alert_id"
+                    ],
+                    "backend_timestamp": "2024-07-11T14:34:13.616Z",
+                    "childproc_count": 0,
+                    "crossproc_count": 0,
+                    "device_group_id": 0,
+                    "device_id": 12345,
+                    "device_name": "cb-markotest",
+                    "device_policy_id": 6525,
+                    "device_timestamp": "2024-07-11T14:30:39.203Z",
+                    "filemod_count": 0,
+                    "ingress_time": 1720708414089,
+                    "modload_count": 0,
+                    "netconn_count": 1,
+                    "org_id": "7DESJ9GN",
+                    "parent_guid": "dummy_parent_guid",
+                    "parent_pid": 688,
+                    "process_guid": "dummy_process_guid",
+                    "process_hash": [],
+                    "process_name": "c:\\windows\\system32\\svchost.exe",
+                    "process_pid": [
+                        2264
+                    ],
+                    "process_username": [
+                        "NT AUTHORITY\\NETWORK SERVICE"
+                    ],
+                    "regmod_count": 0,
+                    "scriptload_count": 0,
+                    "watchlist_hit": [
+                        "abcd123"
+                    ]
+                }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### The Results For The Process Search
+>|Device Id|Device Name|Process Name|Device Policy Id|
+>|---|---|---|---|
+>| 1234 | r7betalab\r7betalab-arw04 | c:\windows\system32\windowspowershell\v1.0\powershell.exe | 80947 |
+>| 1111 | cb-markotest | c:\windows\system32\svchost.exe | 6525 |
+
