@@ -28,27 +28,33 @@ def mock_client():
         organization_key=ORGANIZATION_KEY
     )
 
+
 @pytest.mark.parametrize(
     "params, client_setup, expected",
     [
         (
-            {"isFetch": True, "min_severity": 2, "policy_id": "policy", "device_username": "user", "device_id": "device", "type": "type", "query": "query"},
+            {"isFetch": True, "min_severity": 2, "policy_id": "policy", "device_username": "user",
+                "device_id": "device", "type": "type", "query": "query"},
             {"api_key": None, "api_secret_key": None, "policy_api_key": None, "policy_api_secret_key": None},
-            'To fetch incidents you must fill the following parameters: Custom API key, Custom API secret key and Organization key.'
+            'To fetch incidents you must fill the following parameters: Custom API key,\
+                Custom API secret key and Organization key.'
         ),
         (
-            {"isFetch": True, "min_severity": 2, "policy_id": "policy", "device_username": "user", "device_id": "device", "type": "type", "query": "query"},
+            {"isFetch": True, "min_severity": 2, "policy_id": "policy", "device_username": "user",
+                "device_id": "device", "type": "type", "query": "query"},
             {"api_key": "api_key", "api_secret_key": "api_secret_key", "policy_api_key": None, "policy_api_secret_key": None},
             'ok'
         ),
         (
             {"isFetch": False},
             {"api_key": "api_key", "api_secret_key": None, "policy_api_key": None, "policy_api_secret_key": None},
-            'Missing custom API parameters. Please fill all the relevant parameters: Custom API key, Custom API secret key and Organization key.'
+            'Missing custom API parameters. Please fill all the relevant parameters: Custom API key,\
+                Custom API secret key and Organization key.'
         ),
         (
             {"isFetch": False},
-            {"api_key": None, "api_secret_key": None, "policy_api_key": "policy_api_key", "policy_api_secret_key": "policy_api_secret_key"},
+            {"api_key": None, "api_secret_key": None, "policy_api_key": "policy_api_key",
+                "policy_api_secret_key": "policy_api_secret_key"},
             'ok'
         ),
         (
@@ -114,7 +120,7 @@ def test_alerts_search_command(mocker, mock_client, args):
 @freeze_time("2024-07-14 16:35:39")
 def test_fetch_incidents(mocker, mock_client, args):
     http_request = mocker.patch.object(Client, "_http_request", return_value={})
-    
+
     now = datetime.utcnow()
     start_time = (now - timedelta(days=7)).strftime('%Y-%m-%dT%H:%M:%S.000Z')
     end_time = now.strftime('%Y-%m-%dT%H:%M:%S.000Z')
