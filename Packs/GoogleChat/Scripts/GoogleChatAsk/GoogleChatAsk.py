@@ -5,6 +5,7 @@ import dateparser
 
 DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 
+
 def parse_option_text(option):
     parts = option.split("#", 1)
     if len(parts) == 2:
@@ -17,6 +18,7 @@ def parse_option_text(option):
         style = None
     return text, style
 
+
 def create_adaptive_card(message, user_options, response_type):
     select_buttons = []
     for _i, option in enumerate(user_options):
@@ -25,79 +27,74 @@ def create_adaptive_card(message, user_options, response_type):
             select_button = {
                 "text": option_text,
                 "color": {
-                        "red": "1" if option_style == "red" else "0",
-                        "green": "1" if option_style == "green" else "0",
-                        "blue": "1" if option_style == "blue" else "0",
-                        },
+                    "red": "1" if option_style == "red" else "0",
+                    "green": "1" if option_style == "green" else "0",
+                    "blue": "1" if option_style == "blue" else "0",
+                },
                 "onClick": {
-                    "action":{
+                    "action": {
                         "function": option_text}}
             }
         else:
-            select_button= {
-                            "text": option_text,
-                            "value": option_text
-                        }
+            select_button = {
+                "text": option_text,
+                "value": option_text
+            }
         select_buttons.append(select_button)
     card = {
-    "cardId": "survey-card",
-    "card": {
-        "header": {
-            "title": "Feedback request",
-            "subtitle": message
-        },
-        "sections": [
-            {
-                "header": "Choose one option:",
-                "collapsible": "false",
-                "uncollapsibleWidgetsCount": 1,
-                "widgets": [
-                    {
-                        "selectionInput": {
-                            "name": "survey",
-                            "label": "",
-                            "type": 'RADIO_BUTTON' if response_type == 'button' else 'DROPDOWN'
+        "cardId": "survey-card",
+        "card": {
+            "header": {
+                "title": "Feedback request",
+                "subtitle": message
+            },
+            "sections": [
+                {
+                    "header": "Choose one option:",
+                    "collapsible": "false",
+                    "uncollapsibleWidgetsCount": 1,
+                    "widgets": [
+                        {
+                            "selectionInput": {
+                                "name": "survey",
+                                "label": "",
+                                "type": 'RADIO_BUTTON' if response_type == 'button' else 'DROPDOWN'
+                            }
                         }
-                    },
-                    {
-                        "buttonList": {
-                            "buttons": select_buttons
-                        }
-                    }
-                ]
-            }
-        ]
+                    ]
+                }
+            ]
+        }
     }
-}
     if response_type == 'button':
-        card["card"]["sections"]["widgets"].append({"buttonList":{"buttons": select_buttons}})
+        card["card"]["sections"][0]["widgets"].append({"buttonList": {"buttons": select_buttons}})
     else:
-        card["card"]["sections"]["widgets"][0]["selectionInput"]["items"] = select_buttons
-        card["card"]["sections"]["widgets"].append({"buttonList":{"buttons": [
-                                {
-                                    "text": "Submit",
-                                    "onClick": {
-                                        "action": {
-                                            "function": "handleSurveyResponse",
-                                            "parameters": [
-                                                {
+        card["card"]["sections"][0]["widgets"][0]["selectionInput"]["items"] = select_buttons
+        card["card"]["sections"][0]["widgets"].append({"buttonList": {"buttons": [
+            {
+                "text": "Submit",
+                "onClick": {
+                    "action": {
+                        "function": "handleSurveyResponse",
+                        "parameters": [
+                            {
                                                     "key": "response",
                                                     "value": "${survey}"
-                                                }
-                                            ]
-                                        }
-                                    }
-                                }
-                            ]}})
+                                                    }
+                        ]
+                    }
+                }
+            }
+        ]}})
     return card
 
 
 def main():
     demisto_args = demisto.args()
     res = demisto.executeCommand('addEntitlement', {'persistent': demisto_args.get('persistent')})
-    if isError(res[0]): # type: ignore
+    if isError(res[0]):  # type: ignore
         return_results(res)
-    entitlement = demisto.get(res[0], 'Contents') # type: ignore
+    entitlement = demisto.get(res[0], 'Contents')  # type: ignore
     option1 = demisto_args.get('option1')
     option2 = demisto_args.get('option2')
     message = demisto_args.get('message')
@@ -116,9 +113,9 @@ def main():
         expiry = datetime.strftime(parsed_date,
                                    DATE_FORMAT)
 
-    formatted_entitlement = entitlement + '@' + demisto.investigation()['id'] # type: ignore
+    formatted_entitlement = entitlement + '@' + demisto.investigation()['id']  # type: ignore
     if demisto_args.get('task_id'):
-        formatted_entitlement += '|' + demisto_args.get('task_id') # type: ignore
+        formatted_entitlement += '|' + demisto_args.get('task_id')  # type: ignore
     args = {}
 
     user_options = [option1, option2]
@@ -148,7 +145,7 @@ def main():
             return_error(f'The command is unsupported by this script. {e}')
         else:
             return_error('An error has occurred while executing the send-notification command',
-                         error=e) # type: ignore
+                         error=e)  # type: ignore
 
 
 if __name__ in ('__builtin__', 'builtins', '__main__'):

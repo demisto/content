@@ -213,7 +213,7 @@ async def test_answer_survey():
     mock_handle_entitlement.assert_called_once_with('12', '1234567', '', 'yes', '1')
     mock_send_reply.assert_called_once_with('spaces/12345/messages/098765',
                                             {'updateMask': '*'},
-                                            {'text': 'Thank you for your response: yes.'})
+                                            {'text': 'Thank you for your default response: yes.'})
 
 
 @pytest.mark.asyncio
