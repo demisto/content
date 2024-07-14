@@ -159,11 +159,13 @@ configuration:
   - Comments
   - Relations
   required: false
-  additionalinfo: |
-    Choose what additional info to fetch for each incident.
+  additionalinfo: 'Choose what additional info to fetch for each incident.
+
     Note that this will increase the number of API calls.
+
+    '
   advanced: true
-- defaultvalue: 'None'
+- defaultvalue: None
   display: Mirroring Direction
   name: mirror_direction
   type: 15
@@ -196,7 +198,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
-description: "Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR)."
+description: 'Microsoft Sentinel is a scalable, cloud-native solution that provides: Security information and event management (SIEM) Security orchestration, automation, and response (SOAR).'
 display: Microsoft Sentinel
 name: Azure Sentinel
 script:
@@ -746,9 +748,9 @@ script:
       name: limit
     - description: A link that specifies a starting point to use for subsequent calls. Using this argument overrides all of the other command arguments.
       name: next_link
-    - description: |-
-        A comma-separated list of entity kinds to filter by. By default, the results won't be filtered by kind.
-        The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark.
+    - description: 'A comma-separated list of entity kinds to filter by. By default, the results won''t be filtered by kind.
+
+        The optional kinds are: Account, Host, File, AzureResource, CloudApplication, DnsResolution, FileHash, Ip, Malware, Process, RegistryKey, RegistryValue, SecurityGroup, Url, IoTDevice, SecurityAlert, Bookmark.'
       isArray: true
       name: entity_kinds
       predefined:
@@ -937,10 +939,11 @@ script:
     - defaultValue: '50'
       description: The maximum number of indicators to return.
       name: limit
-    - description: |-
-        A link that specifies a starting point to use for subsequent calls.
+    - description: 'A link that specifies a starting point to use for subsequent calls.
+
         This argument overrides all of the other command arguments.
-        There may be no support for pagination.
+
+        There may be no support for pagination.'
       name: next_link
     - description: The subscription ID.
       name: subscription_id
@@ -1034,10 +1037,11 @@ script:
     - defaultValue: '50'
       description: The maximum number of indicators to return.
       name: limit
-    - description: |-
-        A link that specifies a starting point to use for subsequent calls.
+    - description: 'A link that specifies a starting point to use for subsequent calls.
+
         This argument overrides all of the other command arguments.
-        There may be no support for pagination.
+
+        There may be no support for pagination.'
       name: next_link
     - description: The minimum confidence number for a threat indicator.
       name: min_confidence
@@ -1906,36 +1910,46 @@ script:
       name: rule_name
       required: true
     - auto: PREDEFINED
-      description: |
-        The alert rule kind to create.
+      description: 'The alert rule kind to create.
+
         Required for all types.
+
+        '
       name: kind
       predefined:
       - fusion
       - microsoft_security_incident_creation
       - scheduled
-    - description: |
-        The name of the alert rule template used to create this rule.
+    - description: 'The name of the alert rule template used to create this rule.
+
         Required for Fusion, optional for Scheduled rules.
+
+        '
       name: template_name
     - auto: PREDEFINED
-      description: |
-        Determines whether this alert rule is enabled or disabled.
+      description: 'Determines whether this alert rule is enabled or disabled.
+
         Required for all types.
+
+        '
       name: enabled
       predefined:
-      - yes
-      - no
+      - true
+      - false
     - description: ETag of the Azure resource.
       name: etag
-    - description: |
-        The display name for alerts created by this alert rule.
+    - description: 'The display name for alerts created by this alert rule.
+
         Required for MicrosoftSecurityIncidentCreation and scheduled rules.
+
+        '
       name: displayName
     - auto: PREDEFINED
-      description: |
-        The alerts' productName on which the cases will be generated.
+      description: 'The alerts'' productName on which the cases will be generated.
+
         Required for MicrosoftSecurityIncidentCreation rules.
+
+        '
       name: product_filter
       predefined:
       - azure_active_directory_identity_protection
@@ -1943,85 +1957,114 @@ script:
       - azure_security_center
       - azure_security_center_for_iot
       - microsoft_cloud_app_security
-    - description: |
-        The description of the alert rule.
+    - description: 'The description of the alert rule.
+
         Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.
+
+        '
       name: description
-    - description: |
-        Alerts' displayNames on which the cases will not be generated.
+    - description: 'Alerts'' displayNames on which the cases will not be generated.
+
         Relevant for MicrosoftSecurityIncidentCreation rules.
+
+        '
       isArray: true
       name: name_exclude_filter
-    - description: |
-        Alerts' displayNames on which the cases will be generated.
+    - description: 'Alerts'' displayNames on which the cases will be generated.
+
         Relevant for MicrosoftSecurityIncidentCreation rules.
+
+        '
       isArray: true
       name: name_include_filter
-    - description: |
-        Alerts' severities on which the cases will be generated.
+    - description: 'Alerts'' severities on which the cases will be generated.
+
         Relevant for MicrosoftSecurityIncidentCreation rules.
+
+        '
       isArray: true
       name: severity_filter
-    - description: |
-        The query that creates alerts for this rule.
+    - description: 'The query that creates alerts for this rule.
+
         Required for scheduled rules.
+
+        '
       name: query
-    - description: |
-        The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
+    - description: 'The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
+
         Required for scheduled rules.
+
+        '
       name: query_frequency
-    - description: |
-        The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
+    - description: 'The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
+
         Required for scheduled rules.
+
+        '
       name: query_period
     - auto: PREDEFINED
-      description: |
-        The severity for alerts created by this alert rule.
+      description: 'The severity for alerts created by this alert rule.
+
         Required for scheduled rules.
+
+        '
       name: severity
       predefined:
       - informational
       - low
       - medium
       - high
-    - description: |
-        The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
+    - description: 'The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
+
         Required for scheduled rules.
+
+        '
       name: suppression_duration
     - auto: PREDEFINED
-      description: |
-        Determines whether the suppression for this alert rule is enabled or disabled.
+      description: 'Determines whether the suppression for this alert rule is enabled or disabled.
+
         Required for scheduled rules.
+
+        '
       name: suppression_enabled
       predefined:
-      - yes
-      - no
+      - true
+      - false
     - auto: PREDEFINED
-      description: |
-        The operation against the threshold that triggers the alert rule.
+      description: 'The operation against the threshold that triggers the alert rule.
+
         Required for scheduled rules.
+
+        '
       name: trigger_operator
       predefined:
       - equal
       - greater_than
       - less_than
       - not_equal
-    - description: |
-        The threshold that triggers this alert rule.
+    - description: 'The threshold that triggers this alert rule.
+
         Required for scheduled rules.
+
+        '
       name: trigger_threshold
-    - description: |
-        The tactics of the alert rule.
+    - description: 'The tactics of the alert rule.
+
         Relevant for scheduled rules.
+
+        '
       isArray: true
       name: tactics
-    - description: |
-        The techniques of the alert rule.
+    - description: 'The techniques of the alert rule.
+
         Relevant for scheduled rules.
+
+        '
       isArray: true
       name: techniques
-    - description: |
-        Option to insert a configured rule JSON instead of using the arguments.
+    - description: 'Option to insert a configured rule JSON instead of using the arguments.
+
+        '
       name: rule_json
     - description: The subscription ID.
       name: subscription_id
@@ -2116,36 +2159,46 @@ script:
       name: rule_name
       required: true
     - auto: PREDEFINED
-      description: |
-        The alert rule kind to update.
+      description: 'The alert rule kind to update.
+
         Required for all types.
+
+        '
       name: kind
       predefined:
       - fusion
       - microsoft_security_incident_creation
       - scheduled
-    - description: |
-        The name of the alert rule template used to update this rule.
+    - description: 'The name of the alert rule template used to update this rule.
+
         Required for Fusion, optional for Scheduled rules.
+
+        '
       name: template_name
     - auto: PREDEFINED
-      description: |
-        Determines whether this alert rule is enabled or disabled.
+      description: 'Determines whether this alert rule is enabled or disabled.
+
         Required for all types.
+
+        '
       name: enabled
       predefined:
-      - yes
-      - no
+      - true
+      - false
     - description: ETag of the Azure resource.
       name: etag
-    - description: |
-        The display name for alerts created by this alert rule.
+    - description: 'The display name for alerts created by this alert rule.
+
         Required for MicrosoftSecurityIncidentCreation and scheduled rules.
+
+        '
       name: displayName
     - auto: PREDEFINED
-      description: |
-        The alerts' productName on which the cases will be generated.
+      description: 'The alerts'' productName on which the cases will be generated.
+
         Required for MicrosoftSecurityIncidentCreation rules.
+
+        '
       name: product_filter
       predefined:
       - azure_active_directory_identity_protection
@@ -2153,85 +2206,114 @@ script:
       - azure_security_center
       - azure_security_center_for_iot
       - microsoft_cloud_app_security
-    - description: |
-        The description of the alert rule.
+    - description: 'The description of the alert rule.
+
         Relevant for MicrosoftSecurityIncidentCreation and scheduled rules.
+
+        '
       name: description
-    - description: |
-        Alerts' displayNames on which the cases will not be generated.
+    - description: 'Alerts'' displayNames on which the cases will not be generated.
+
         Relevant for MicrosoftSecurityIncidentCreation rules.
+
+        '
       isArray: true
       name: name_exclude_filter
-    - description: |
-        Alerts' displayNames on which the cases will be generated.
+    - description: 'Alerts'' displayNames on which the cases will be generated.
+
         Relevant for MicrosoftSecurityIncidentCreation rules.
+
+        '
       isArray: true
       name: name_include_filter
-    - description: |
-        Alerts' severities on which the cases will be generated.
+    - description: 'Alerts'' severities on which the cases will be generated.
+
         Relevant for MicrosoftSecurityIncidentCreation rules.
+
+        '
       isArray: true
       name: severity_filter
-    - description: |
-        The query that creates alerts for this rule.
+    - description: 'The query that creates alerts for this rule.
+
         Required for scheduled rules.
+
+        '
       name: query
-    - description: |
-        The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
+    - description: 'The frequency (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) for this alert rule to run.
+
         Required for scheduled rules.
+
+        '
       name: query_frequency
-    - description: |
-        The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
+    - description: 'The period (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) that this alert rule looks at.
+
         Required for scheduled rules.
+
+        '
       name: query_period
     - auto: PREDEFINED
-      description: |
-        The severity for alerts created by this alert rule.
+      description: 'The severity for alerts created by this alert rule.
+
         Required for scheduled rules.
+
+        '
       name: severity
       predefined:
       - informational
       - low
       - medium
       - high
-    - description: |
-        The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
+    - description: 'The suppression (in ISO 8601 duration format: PnYnMnDTnHnMnS or PnW) to wait since the last time this alert rule was triggered.
+
         Required for scheduled rules.
+
+        '
       name: suppression_duration
     - auto: PREDEFINED
-      description: |
-        Determines whether the suppression for this alert rule is enabled or disabled.
+      description: 'Determines whether the suppression for this alert rule is enabled or disabled.
+
         Required for scheduled rules.
+
+        '
       name: suppression_enabled
       predefined:
-      - yes
-      - no
+      - true
+      - false
     - auto: PREDEFINED
-      description: |
-        The operation against the threshold that triggers the alert rule.
+      description: 'The operation against the threshold that triggers the alert rule.
+
         Required for scheduled rules.
+
+        '
       name: trigger_operator
       predefined:
       - equal
       - greater_than
       - less_than
       - not_equal
-    - description: |
-        The threshold that triggers this alert rule.
+    - description: 'The threshold that triggers this alert rule.
+
         Required for scheduled rules.
+
+        '
       name: trigger_threshold
-    - description: |
-        The tactics of the alert rule.
+    - description: 'The tactics of the alert rule.
+
         Relevant for scheduled rules.
+
+        '
       isArray: true
       name: tactics
-    - description: |
-        The techniques of the alert rule.
+    - description: 'The techniques of the alert rule.
+
         Relevant for scheduled rules.
+
+        '
       isArray: true
       name: techniques
-    - description: |
-        Option to insert a configured rule JSON instead of using the arguments.
+    - description: 'Option to insert a configured rule JSON instead of using the arguments.
+
+        '
       name: rule_json
     - description: The subscription ID.
       name: subscription_id
@@ -2349,7 +2431,7 @@ script:
     description: List all resource groups for a subscription.
     arguments:
     - name: subscription_id
-      description: "The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided."
+      description: 'The subscription ID. Note: The integration default Subscription ID will be used unless this argument is provided.'
       type: String
     - name: tag
       description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
@@ -2381,7 +2463,7 @@ script:
     execution: false
     name: azure-sentinel-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.94037
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   runonce: false
   script: '-'

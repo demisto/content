@@ -49,31 +49,31 @@ configuration:
   section: Connect
 - name: tenant_id
   display: Tenant ID
-  defaultvalue:
+  defaultvalue: null
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   required: false
 - name: credentials
   display: Client Secret
-  defaultvalue:
+  defaultvalue: null
   type: 9
-  additionalinfo: ""
+  additionalinfo: ''
   displaypassword: Client Secret
   hiddenusername: true
   section: Connect
   required: false
 - name: redirect_uri
   display: Application redirect URI
-  defaultvalue:
+  defaultvalue: null
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   advanced: true
   required: false
 - name: auth_code
   display: Authorization code
-  defaultvalue:
+  defaultvalue: null
   type: 9
   additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions section.
   displaypassword: Authorization code
@@ -106,13 +106,13 @@ script:
       required: false
       secret: false
     - default: false
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       required: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -260,13 +260,13 @@ script:
       type: String
     deprecated: false
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       isArray: false
       secret: false
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       default: false
@@ -371,8 +371,8 @@ script:
       description: The access tier for the account. Required where kind = BlobStorage.
       name: access_tier
       predefined:
-      - 'Hot'
-      - 'Cool'
+      - Hot
+      - Cool
     - auto: PREDEFINED
       description: Allows https traffic only to storage service if sets to true.
       name: supports_https_traffic_only
@@ -419,9 +419,9 @@ script:
       name: network_ruleset_ipRules
     - description: Sets the virtual network rules.
       name: virtual_network_rules
-    description: |-
-      Run this command to create or update a specific
-      account storage.
+    description: 'Run this command to create or update a specific
+
+      account storage.'
     name: azure-storage-account-create-update
     outputs:
     - contextPath: AzureStorage.StorageAccount.id
@@ -563,14 +563,14 @@ script:
       description: The type of the resource.
       type: String
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       isArray: false
       secret: false
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -605,13 +605,13 @@ script:
       description: An array of predefined supported blob types. Only blockBlob is the supported value.
       type: String
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       isArray: false
       secret: false
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       default: false
       isArray: false
@@ -673,9 +673,9 @@ script:
       name: restore_policy_min_restore_time
     - description: how long this blob can be restored.
       name: restore_policy_days
-    description: |-
-      Run this command to set properties for
-      the blob service in a specific account storage.
+    description: 'Run this command to set properties for
+
+      the blob service in a specific account storage.'
     name: azure-storage-blob-service-properties-set
     outputs:
     - contextPath: AzureStorage.BlobServiceProperties.id
@@ -727,13 +727,13 @@ script:
       description: The SKU tier.
       type: String
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       isArray: false
       secret: false
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       default: false
@@ -775,13 +775,13 @@ script:
       description: The type of the resource.
       type: String
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       isArray: false
       secret: false
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       default: false
@@ -810,9 +810,9 @@ script:
       - Blob
       - Container
       - None
-    description: |-
-      Run this command to update an specific
-      blob container.
+    description: 'Run this command to update an specific
+
+      blob container.'
     name: azure-storage-blob-containers-update
     outputs:
     - contextPath: AzureStorage.BlobContainer.id
@@ -837,13 +837,13 @@ script:
       description: The hasLegalHold public property is set to true by SRP if there are at least one existing tag. The hasLegalHold public property is set to false by SRP if all existing legal hold tags are cleared out.
       type: Boolean
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       isArray: false
       secret: false
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       default: false
       isArray: false
@@ -895,13 +895,13 @@ script:
       description: The hasLegalHold public property is set to true by SRP if there are at least one existing tag. The hasLegalHold public property is set to false by SRP if all existing legal hold tags are cleared out.
       type: Boolean
   - arguments:
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       isArray: false
       secret: false
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       default: false
@@ -921,46 +921,46 @@ script:
     name: azure-storage-subscriptions-list
     outputs:
     - contextPath: AzureStorage.Subscription.id
-      description: 'The unique identifier of the Azure storage subscription.'
+      description: The unique identifier of the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.authorizationSource
-      description: 'The source of authorization for the Azure storage subscription.'
+      description: The source of authorization for the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.managedByTenants
-      description: 'The tenants that have access to manage the Azure storage subscription.'
+      description: The tenants that have access to manage the Azure storage subscription.
       type: Unknown
     - contextPath: AzureStorage.Subscription.subscriptionId
-      description: 'The ID of the Azure storage subscription.'
+      description: The ID of the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.tenantId
-      description: 'The ID of the tenant associated with the Azure storage subscription.'
+      description: The ID of the tenant associated with the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.displayName
-      description: 'The display name of the Azure storage subscription.'
+      description: The display name of the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.state
-      description: 'The current state of the Azure storage subscription.'
+      description: The current state of the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.subscriptionPolicies.locationPlacementId
-      description: 'The ID of the location placement policy for the Azure storage subscription.'
+      description: The ID of the location placement policy for the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.subscriptionPolicies.quotaId
-      description: 'The ID of the quota policy for the Azure storage subscription.'
+      description: The ID of the quota policy for the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.subscriptionPolicies.spendingLimit
-      description: 'The spending limit policy for the Azure storage subscription.'
+      description: The spending limit policy for the Azure storage subscription.
       type: String
     - contextPath: AzureStorage.Subscription.count.type
-      description: 'The type of the Azure storage subscription count.'
+      description: The type of the Azure storage subscription count.
       type: String
     - contextPath: AzureStorage.Subscription.count.value
-      description: 'The value of the Azure storage subscription count.'
+      description: The value of the Azure storage subscription count.
       type: Number
   - description: Gets all resource groups for a subscription.
     name: azure-storage-resource-group-list
     arguments:
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -975,45 +975,45 @@ script:
       required: false
     outputs:
     - contextPath: AzureStorage.ResourceGroup.id
-      description: 'The unique identifier of the Azure storage resource group.'
+      description: The unique identifier of the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.name
-      description: 'The name of the Azure storage resource group.'
+      description: The name of the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.type
-      description: 'The type of the Azure storage resource group.'
+      description: The type of the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.location
-      description: 'The location of the Azure storage resource group.'
+      description: The location of the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.properties.provisioningState
-      description: 'The provisioning state of the Azure storage resource group.'
+      description: The provisioning state of the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.tags.Owner
-      description: 'The owner tag of the Azure storage resource group.'
+      description: The owner tag of the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.tags
-      description: 'The tags associated with the Azure storage resource group.'
+      description: The tags associated with the Azure storage resource group.
       type: Unknown
     - contextPath: AzureStorage.ResourceGroup.tags.Name
-      description: 'The name tag of the Azure storage resource group.'
+      description: The name tag of the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.managedBy
-      description: 'The entity that manages the Azure storage resource group.'
+      description: The entity that manages the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-name
-      description: 'The AKS managed cluster name tag associated with the Azure storage resource group.'
+      description: The AKS managed cluster name tag associated with the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.tags.aks-managed-cluster-rg
-      description: 'The AKS managed cluster resource group tag associated with the Azure storage resource group.'
+      description: The AKS managed cluster resource group tag associated with the Azure storage resource group.
       type: String
     - contextPath: AzureStorage.ResourceGroup.tags.type
-      description: 'The type tag associated with the Azure storage resource group.'
+      description: The type tag associated with the Azure storage resource group.
       type: String
   - description: Generate the login url used for Authorization code flow.
     name: azure-storage-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   subtype: python3

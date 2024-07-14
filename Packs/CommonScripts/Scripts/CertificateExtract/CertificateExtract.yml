@@ -13,8 +13,7 @@ outputs:
   description: Name (CN or SAN) that appears in the certificate.
   type: String
 - contextPath: Certificate.SubjectDN
-  description: |-
-    The Subject Distinguished Name of the certificate. This field includes the Common Name of the certificate.
+  description: The Subject Distinguished Name of the certificate. This field includes the Common Name of the certificate.
   type: String
 - contextPath: Certificate.PEM
   description: Certificate in PEM format.
@@ -126,7 +125,7 @@ tags: []
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/crypto:1.0.0.88857
+dockerimage: demisto/crypto:1.0.0.103269
 fromversion: 6.0.0
 tests:
 - X509Certificate Test Playbook
