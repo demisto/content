@@ -1931,7 +1931,11 @@ Lists the MFA devices for an IAM user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| userName | The name of the user whose MFA device you want to deactivate. | Required | 
+| userName | The name of the user whose MFA devices you want to list. | Required |
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
+
 
 #### Context Output
 
@@ -1939,7 +1943,10 @@ Lists the MFA devices for an IAM user.
 | --- | --- | --- |
 | AWS.IAM.MFADevices.Devices.UserName | string | The user with whom the MFA device is associated. | 
 | AWS.IAM.MFADevices.Devices.SerialNumber | string | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | 
-| AWS.IAM.MFADevices.Devices.EnableDate | date | The date when the MFA device was enabled for the user. | 
+| AWS.IAM.MFADevices.Devices.EnableDate | date | The date when the MFA device was enabled for the user. |
+
+#### Command Example
+```!aws-iam-list-mfa-devices userName=Test```
 
 ### aws-iam-delete-mfa-devices
 
@@ -1954,11 +1961,19 @@ Deletes a virtual MFA device.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN. | Required | 
+| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the same as the ARN. | Required |
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!aws-iam-delete-mfa-devices serialNumber=123456789```
+
+
 ### aws-iam-deactivate-mfa-devices
 
 ***
@@ -1973,8 +1988,14 @@ Deactivates the specified MFA device and removes it from association with the us
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | userName | The name of the user whose MFA device you want to deactivate. | Required | 
-| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | Required | 
+| serialNumber | The serial number that uniquely identifies the MFA device. For virtual MFA devices, the serial number is the device ARN. | Required |
+| roleArn | The Amazon Resource Name (ARN) of the role to assume. | Optional | 
+| roleSessionName | An identifier for the assumed role session. | Optional | 
+| roleSessionDuration | The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
+
+#### Command Example
+```!aws-iam-delete-mfa-devices userName=test serialNumber=123456789```
