@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Carbon Black Endpoint Standard v3 
+  id: Carbon Black Endpoint Standard v3
   version: -1
 configuration:
 - name: url
@@ -49,13 +49,13 @@ configuration:
   display: The type of the alert
   defaultvalue: all
   options:
-    - cbanalytics
-    - containerruntime
-    - devicecontrol
-    - hostnasedfirewall
-    - intrusiondetectionsystem
-    - watchlist
-    - all
+  - cbanalytics
+  - containerruntime
+  - devicecontrol
+  - hostnasedfirewall
+  - intrusiondetectionsystem
+  - watchlist
+  - all
   type: 15
   required: false
   additionalinfo: Type of alert to be fetched.
@@ -114,8 +114,8 @@ configuration:
   defaultvalue: '50'
   section: collect
 description: Endpoint Standard is an industry-leading next-generation antivirus (NGAV) and behavioral endpoint detection and response (EDR) solution. Endpoint Standard is delivered through the Carbon Black Cloud, an endpoint protection platform that consolidates security in the cloud using a single agent, console and data set.
-display: Carbon Black Endpoint Standard v3 
-name: Carbon Black Endpoint Standard v3 
+display: Carbon Black Endpoint Standard v3
+name: Carbon Black Endpoint Standard v3
 script:
   commands:
   - name: cbd-get-alert-details
@@ -1633,7 +1633,7 @@ script:
       - HEURISTIC,
       - IGNORE,
       - KNOWN_MALWARE,
-      - LOCAL_WHITE, 
+      - LOCAL_WHITE,
       - NOT_LISTED,
       - PUP,
       - RESOLVING,
@@ -1894,7 +1894,7 @@ script:
       - HEURISTIC,
       - IGNORE,
       - KNOWN_MALWARE,
-      - LOCAL_WHITE, 
+      - LOCAL_WHITE,
       - NOT_LISTED,
       - PUP,
       - RESOLVING,
@@ -3170,56 +3170,56 @@ script:
     description: Unquarantines the device. Not supported for devices in a Linux operating system.
   - name: cbd-device-background-scan
     arguments:
-      - name: device_id
-        description: The ID of the device.
-        required: true
+    - name: device_id
+      description: The ID of the device.
+      required: true
     description: Starts a background scan on the device. Not supported for devices in a Linux operating system.
   - name: cbd-device-background-scan-stop
     arguments:
-      - name: device_id
-        description: The ID of the device.
-        required: true
+    - name: device_id
+      description: The ID of the device.
+      required: true
     description: Stops a background scan on the device. Not supported for devices in a Linux operating system.
   - name: cbd-device-bypass
     arguments:
-      - name: device_id
-        description: The ID of the device.
-        required: true
+    - name: device_id
+      description: The ID of the device.
+      required: true
     description: Bypasses a device.
   - name: cbd-device-unbypass
     arguments:
-      - name: device_id
-        description: The ID of the device.
-        required: true
+    - name: device_id
+      description: The ID of the device.
+      required: true
     description: Unbypasses a device.
   - name: cbd-device-policy-update
     arguments:
-      - name: device_id
-        description: The ID of the device.
-        required: true
-      - name: policy_id
-        description: The ID of the policy.
-        required: true
+    - name: device_id
+      description: The ID of the device.
+      required: true
+    - name: policy_id
+      description: The ID of the policy.
+      required: true
     description: Updates the devices to the specified policy ID.
   - name: cbd-device-update-sensor-version
     arguments:
-      - name: device_id
-        description: The ID of the device.
-        required: true
-      - name: sensor_version
-        description: 'The new version of the sensor. For example: { "MAC": "1.2.3.4" }. Supported types: XP, WINDOWS, MAC, AV_SIG, OTHER, RHEL, UBUNTU, SUSE, AMAZON_LINUX, MAC_OSX.'
-        predefined:
-          - '{"XP":}'
-          - '{"WINDOWS":}'
-          - '{"MAC":}'
-          - '{"AV_SIG":}'
-          - '{"OTHER":}'
-          - '{"RHEL":}'
-          - '{"UBUNTU":}'
-          - '{"SUSE":}'
-          - '{"AMAZON_LINUX":}'
-          - '{"MAC_OSX":}'
-        required: true
+    - name: device_id
+      description: The ID of the device.
+      required: true
+    - name: sensor_version
+      description: 'The new version of the sensor. For example: { "MAC": "1.2.3.4" }. Supported types: XP, WINDOWS, MAC, AV_SIG, OTHER, RHEL, UBUNTU, SUSE, AMAZON_LINUX, MAC_OSX.'
+      predefined:
+      - '{"XP":}'
+      - '{"WINDOWS":}'
+      - '{"MAC":}'
+      - '{"AV_SIG":}'
+      - '{"OTHER":}'
+      - '{"RHEL":}'
+      - '{"UBUNTU":}'
+      - '{"SUSE":}'
+      - '{"AMAZON_LINUX":}'
+      - '{"MAC_OSX":}'
+      required: true
     description: Updates the version of a sensor.
   - name: cbd-find-processes-results
     arguments:
@@ -3301,7 +3301,7 @@ script:
     - contextPath: CarbonBlackDefense.Process.Results.scriptload_count
       description: The number of scripts loaded by the process.
       type: Number
-  - name: cbd-find-observation-details-results    
+  - name: cbd-find-observation-details-results
     arguments:
     - name: polling
       defaultValue: false
@@ -3739,7 +3739,7 @@ script:
     - contextPath: CarbonBlackDefense.Events.watchlist_hit
       description: 'Indicates if the event matches a watchlist entry.'
       type: String
-  dockerimage: demisto/python3:3.10.14.97608
+  dockerimage: demisto/python3:3.11.9.103066
   isfetch: true
   runonce: false
   script: '-'
