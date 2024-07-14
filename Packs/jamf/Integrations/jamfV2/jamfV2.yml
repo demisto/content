@@ -7,7 +7,7 @@ configuration:
   name: url
   required: true
   type: 0
-  additionalinfo: 'Your server URL (e.g., https://yourdomain.jamfcloud.com)'
+  additionalinfo: Your server URL (e.g., https://yourdomain.jamfcloud.com)
 - display: Username
   name: credentials
   required: false
@@ -62,7 +62,7 @@ script:
     - defaultValue: '0'
       description: The number of the requested page.
       name: page
-    description: 'Returns the “basic” subset for all of the computers. The “basic” subset includes: MAC address, model, UDID, name, department, building, serial number, username, ID.'
+    description: "Returns the \u201Cbasic\u201D subset for all of the computers. The \u201Cbasic\u201D subset includes: MAC address, model, UDID, name, department, building, serial number, username, ID."
     name: jamf-get-computers-basic-subset
     outputs:
     - contextPath: JAMF.Computer.id
@@ -102,9 +102,9 @@ script:
       description: The computer report date in epoch format.
       type: Number
   - arguments:
-    - description: |-
-        The computer ID.
-        To get the computer ID, run the `jamf-get-computers` command to get all computers names and IDs.
+    - description: 'The computer ID.
+
+        To get the computer ID, run the `jamf-get-computers` command to get all computers names and IDs.'
       name: id
       required: true
     description: 'Returns the "general" subset of a specific computer, e.g.: name, MAC address, IP, serial number, UDID, etc.'
@@ -240,7 +240,7 @@ script:
     - defaultValue: '0'
       description: The number of the requested page.
       name: page
-    - description: 'Match computers by specific characteristics (supports wildcards) such as: name, UDID, serial_number, mac_address, username, realname, email. e.g.: “match=john*”, “match=C52F72FACB9T”.'
+    - description: "Match computers by specific characteristics (supports wildcards) such as: name, UDID, serial_number, mac_address, username, realname, email. e.g.: \u201Cmatch=john*\u201D, \u201Cmatch=C52F72FACB9T\u201D."
       name: match
       required: true
     description: Matches computers by specific characteristics and returns general data on each of the computers.
@@ -323,7 +323,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the general subset for a specific computer according to the given arguments.
@@ -472,7 +472,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the location subset for a specific computer according to the given arguments.
@@ -522,7 +522,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the purchasing subset for a specific computer according to the given arguments.
@@ -602,7 +602,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the peripherals subset for a specific computer according to the given arguments.
@@ -625,7 +625,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the hardware subset for a specific computer according to the given arguments.
@@ -813,7 +813,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the certificates subset for a specific computer according to the given arguments.
@@ -848,7 +848,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the security subset for a specific computer according to the given arguments.
@@ -877,7 +877,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the software subset for a specific computer according to the given arguments.
@@ -957,7 +957,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the extension attributes subset for a specific computer according to the given arguments.
@@ -992,7 +992,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the groups accounts subset for a specific computer according to the given arguments.
@@ -1060,7 +1060,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the iPhones subset for a specific computer according to the given arguments.
@@ -1083,7 +1083,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the configuration profiles subset for a specific computer according to the given arguments.
@@ -1134,7 +1134,7 @@ script:
     - description: The ID of the computer that you want to erase.
       name: id
       required: true
-    description: Deprecated. Sends the “EraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type.
+    description: "Deprecated. Sends the \u201CEraseDevice'' command to a computer. Permanently erases all the data on the computer and sets a passcode when required by the computer hardware type."
     name: jamf-computer-erase
     outputs:
     - contextPath: JAMF.ComputerCommand.name
@@ -1173,9 +1173,9 @@ script:
       description: The number of requested page.
       type: Number
   - arguments:
-    - description: |-
-        The user ID.
-        To get the user ID, run the `jamf-get-users` command to get all user names and IDs.
+    - description: 'The user ID.
+
+        To get the user ID, run the `jamf-get-users` command to get all user names and IDs.'
       name: id
       required: true
     description: Returns a specific user with general data about the user according to the given ID.
@@ -1536,9 +1536,7 @@ script:
       description: The number of the requested page.
       type: Number
   - arguments:
-    - description: |-
-        Gets the “general” subset of a specific device.
-        To get the mobile device ID, run the `jamf-get-mobile-devices` command to get all mobile devices names and IDs.
+    - description: "Gets the \u201Cgeneral\u201D subset of a specific device.\nTo get the mobile device ID, run the `jamf-get-mobile-devices` command to get all mobile devices names and IDs."
       name: id
       required: true
     description: 'Returns the "general" subset of a specific mobile device, e.g.: name, MAC address, IP, serial number, UDID. etc.'
@@ -1713,7 +1711,7 @@ script:
       description: The mobile device site name.
       type: String
   - arguments:
-    - description: 'The specific characteristics by which to match devices such as: name, udid, serial_number, mac_address, username, email. e.g: “match=john*”, “match=C52F72FACB9T”. (Supports wildcards).'
+    - description: "The specific characteristics by which to match devices such as: name, udid, serial_number, mac_address, username, email. e.g: \u201Cmatch=john*\u201D, \u201Cmatch=C52F72FACB9T\u201D. (Supports wildcards)."
       name: match
       predefined:
       - ''
@@ -1795,7 +1793,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the general subset for a specific mobile device according to the given arguments.
@@ -1983,7 +1981,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the location subset for a specific mobile device according to the given arguments.
@@ -2033,7 +2031,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the purchasing subset for a specific mobile device according to the given arguments.
@@ -2107,7 +2105,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the applications subset for a specific mobile device according to the given arguments.
@@ -2139,7 +2137,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the security subset for a specific mobile device according to the given arguments.
@@ -2237,7 +2235,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the network subset for a specific mobile device according to the given arguments.
@@ -2302,7 +2300,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the certificates subset for a specific mobile device according to the given arguments.
@@ -2331,7 +2329,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the provisioning profiles subset for a specific mobile device according to the given arguments.
@@ -2369,7 +2367,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the configuration profiles subset for a specific mobile device according to the given arguments.
@@ -2404,7 +2402,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the mobile device groups subset for a specific mobile device according to the given arguments.
@@ -2430,7 +2428,7 @@ script:
       - serialnumber
       - macaddress
       required: true
-    - description: The value of the "identifier". For example, if you choose the "id" identifier, a computer ID should be passed. If you choose "macaddress" as the identifier, a computer’s MAC address should be passed, etc.
+    - description: "The value of the \"identifier\". For example, if you choose the \"id\" identifier, a computer ID should be passed. If you choose \"macaddress\" as the identifier, a computer\u2019s MAC address should be passed, etc."
       name: identifier_value
       required: true
     description: Returns the extension attributes subset for a specific mobile device according to the given arguments.
@@ -2455,10 +2453,10 @@ script:
       description: The mobile device extension attribute value.
       type: String
   - arguments:
-    - description: The application’s name (supports wildcards).
+    - description: "The application\u2019s name (supports wildcards)."
       name: application
       required: true
-    - description: The application’s version (supports wildcards). Applicable only when “application” parameter value is set.
+    - description: "The application\u2019s version (supports wildcards). Applicable only when \u201Capplication\u201D parameter value is set."
       name: version
     - defaultValue: '50'
       description: Maximum number of devices to retrieve. (Maximal value is 200).
@@ -2497,14 +2495,12 @@ script:
       description: The number of the requested page.
       type: Number
   - arguments:
-    - description: The mobile device’s ID.
+    - description: "The mobile device\u2019s ID."
       name: id
       required: true
-    - description: A message that is displayed on the device’s lock screen.
+    - description: "A message that is displayed on the device\u2019s lock screen."
       name: lost_mode_message
-    description: |-
-      This is a beta command - couldn't be tested due to technical limitations.
-      Enables “lost mode” on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen.
+    description: "This is a beta command - couldn't be tested due to technical limitations.\nEnables \u201Clost mode\u201D on a specific device. Lost Mode is a feature that allows you to lock a mobile device and track the device's location. The device reports the GPS coordinates of the point where the device received the command. This feature adds additional protection to mobile devices and their data in the event that a device is lost or stolen."
     name: jamf-mobile-device-lost-mode
     outputs:
     - contextPath: JAMF.MobileDeviceCommands.name
@@ -2520,7 +2516,7 @@ script:
       description: The mobile device command ID.
       type: String
   - arguments:
-    - description: The device’s ID.
+    - description: "The device\u2019s ID."
       name: id
       required: true
     - auto: PREDEFINED
@@ -2537,9 +2533,9 @@ script:
       predefined:
       - 'True'
       - 'False'
-    description: |-
-      This is a beta command - couldn't be tested due to technical limitations.
-      Permanently erases all data on the device and deactivates the device.
+    description: 'This is a beta command - couldn''t be tested due to technical limitations.
+
+      Permanently erases all data on the device and deactivates the device.'
     name: jamf-mobile-device-erase
     outputs:
     - contextPath: JAMF.MobileDeviceCommands.name
@@ -2592,7 +2588,7 @@ script:
     - contextPath: Endpoint.Vendor
       description: The integration name of the endpoint vendor.
       type: String
-  dockerimage: demisto/btfl-soup:1.0.1.86352
+  dockerimage: demisto/btfl-soup:1.0.1.103265
   runonce: false
   script: '-'
   subtype: python3

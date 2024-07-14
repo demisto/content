@@ -45,7 +45,7 @@ configuration:
   - created date
   - updated date
   type: 15
-  additionalinfo: "This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC"
+  additionalinfo: 'This is how the field (e.g, created date) is applied to the query: created >= {created date in last run} ORDER BY created ASC'
   required: false
 - display: Issue index to start fetching incidents from
   additionalinfo: This parameter is dismissed if "id" is not chosen in "Issue Field to Fetch by". This will only fetch Jira issues that are part of the same project as the issue that is configured in this parameter. If this value is 0, then the fetch mechanism will automatically start the fetch from the smallest ID with respect to the fetch query.
@@ -55,7 +55,7 @@ configuration:
   required: false
 - defaultvalue: 3 days
   display: Time range for initial data fetch
-  additionalinfo: "The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years"
+  additionalinfo: 'The time range to consider for the initial data fetch in format: <number> <unit>. This parameter is only relevant when selecting to fetch by created time, or updated time. Default is 3 days. For example: 2 minutes, 2 hours, 2 days, 2 months, 2 years'
   name: first_fetch
   type: 0
   required: false
@@ -145,7 +145,7 @@ configuration:
 - defaultvalue: '50'
   display: Max incidents per fetch
   name: max_fetch
-  additionalinfo: "The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50"
+  additionalinfo: The maximum allowed value is dictated by the Jira property 'jira.search.views.default.max'. If you specify a value that is higher than this number, your search results will be truncated. Default value is 50
   type: 0
   required: false
 script:
@@ -200,8 +200,7 @@ script:
     - description: The fields to retrieve from the issue. For example field="customfield_164,labels".
       isArray: true
       name: fields
-    description: |-
-      Gets specific fields from a Jira issue and adds it to context dynamically.
+    description: Gets specific fields from a Jira issue and adds it to context dynamically.
     name: jira-get-specific-field
     outputs:
     - contextPath: Ticket.Id
@@ -290,7 +289,7 @@ script:
       hidden: true
     - description: Displays the headers in human readable format.
       name: headers
-    - description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
+    - description: A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command.
       isArray: true
       name: fields
     - description: Deprecated. Please use fields.
@@ -418,12 +417,12 @@ script:
     - description: The parent issue ID (if you're editing a sub-task). This argument is only relevant for Jira Cloud.
       name: parent_issue_id
     - auto: PREDEFINED
-      description: "Whether to append or rewrite the values. Only issue fields of type string or array support appending. If the field is of type string, then the new appended value will be: 'old value, new value', where they will be separated by a comma."
+      description: 'Whether to append or rewrite the values. Only issue fields of type string or array support appending. If the field is of type string, then the new appended value will be: ''old value, new value'', where they will be separated by a comma.'
       name: action
-      defaultValue: 'rewrite'
+      defaultValue: rewrite
       predefined:
-      - 'append'
-      - 'rewrite'
+      - append
+      - rewrite
     - description: Deprecated. Please use issue_id or issue_key.
       name: issueId
       hidden: true
@@ -643,7 +642,7 @@ script:
       description: The ticket key.
       type: String
   - arguments:
-    - description: "A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command."
+    - description: A CSV list of fields to return (Using the name or ID of the fields) to context data. Supplying `all` will return all the issue fields (which will include nested values), except for the comments, which can be retrieved using the !jira-get-comments command.
       isArray: true
       name: fields
     - description: Deprecated. Please use issue_id or issue_key.
@@ -800,9 +799,9 @@ script:
     - description: The authorization code retrieved from the callback URL according to the documentation.
       name: code
       required: true
-    description: "Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process."
+    description: Use this command to complete the authorization process. After copying the authorization code found in the query parameter `code` of the callback URL, paste the value in the command as an argument to finish the process.
     name: jira-oauth-complete
-  - description: "Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process."
+  - description: Use this command to start the authorization process. In order to authorize the instance, first run the command, and complete the process in the URL that is returned. You will then be redirected to the callback URL where you will copy the authorization code found in the query parameter `code`, and paste that value in the command `!jira-ouath-complete` as an argument to finish the process.
     name: jira-oauth-start
     arguments: []
   - description: Use this command to test the connectivity of the Jira instance.
@@ -991,12 +990,12 @@ script:
     - description: The project key or ID.
       name: project_key_id
     - auto: PREDEFINED
-      description: "The type of the board. Allowed values are: scrum, kanban, simple."
+      description: 'The type of the board. Allowed values are: scrum, kanban, simple.'
       name: type
       predefined:
-      - 'scrum'
-      - 'kanban'
-      - 'simple'
+      - scrum
+      - kanban
+      - simple
     - description: The maximum number of results to return. This argument will be ignored if page or page_size arguments were given. Default value is 50.
       name: limit
     - description: The page number. Default value is 0.
@@ -1028,7 +1027,7 @@ script:
       description: The URL of the user.
       type: String
     - contextPath: Jira.Board.admins.users.displayName
-      description: The display name of the user. Depending on the user’s privacy setting, this may return an alternative value.
+      description: "The display name of the user. Depending on the user\u2019s privacy setting, this may return an alternative value."
       type: String
     - contextPath: Jira.Board.admins.users.active
       description: Whether the user is active.
@@ -1480,7 +1479,7 @@ script:
   - description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
     name: update-remote-system
     arguments: []
-  dockerimage: demisto/btfl-soup:1.0.1.101506
+  dockerimage: demisto/btfl-soup:1.0.1.103265
   isfetch: true
   ismappable: true
   isremotesyncin: true
