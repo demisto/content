@@ -172,7 +172,6 @@ def get_events_with_pagination(client: Client, max_fetch: int, dates: Dict[str, 
             has_next = True
         events.extend(response.get('data', []))
 
-    demisto.debug(f'Bitwarden - {len(events)} events fetched')
     return events, continuation_token
 
 
