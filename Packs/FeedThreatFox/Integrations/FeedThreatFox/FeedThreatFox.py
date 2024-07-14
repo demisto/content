@@ -33,12 +33,37 @@ DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 
 
 class Client(BaseClient):
-
-    def get_indicators_request(self, query = {}):
+    def get_indicators_request(self, query):
         url_suffix = '/api/v1'
         body = query
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
         
+def check_params(args: dict):
+        
+    args_lst = list({ele for ele in args if args[ele]})
+    if 'limit' in args_lst:
+        args_lst.remove('limit')
+    if len(args_lst) != 1:
+        return False, None
+    else:
+        return True, args_lst[0]
+
+
+def create_query(query_arg: str, **kwargs):
+    
+    query_dict = {'search_term': 'search_ioc', 'id': 'ioc', 'hash': 'search_hash',
+            'tag': 'taginfo', 'malware': 'malwareinfo', 'days': 'get_iocs'}
+    
+    query = assign_params(
+        query = query_dict[query_arg],
+        limit = 50,
+        **kwargs
+    )
+    
+    if query_arg != 'tag' and query_arg != 'malware':
+       del query['limit']
+       
+    return query
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
@@ -122,7 +147,9 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
-        response = client.get_indicators_request(query={ "query": "ioc", "id": 41 })
+        #is_okay, query_type  = check_params({'days': 7, 'limit': 10})
+        #query = create_query(query_type, days=7)
+        create_query('days', days = 1)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
