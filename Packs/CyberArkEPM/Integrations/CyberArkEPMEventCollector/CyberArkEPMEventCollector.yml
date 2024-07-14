@@ -23,7 +23,7 @@ configuration:
   required: true
   type: 0
   section: Connect
-- additionalinfo: 'Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID'
+- additionalinfo: Required for local(EPM) authentication only. See how to get the application ID https://docs.cyberark.com/Idaptive/Latest/en/Content/Applications/AppsOvw/SpecifyAppID.htm#%23SpecifytheApplicationID
   display: Application ID
   name: application_id
   required: false
@@ -170,7 +170,7 @@ script:
     description: Gets events from Cyber Ark EPM.
     execution: false
     name: cyberarkepm-get-events
-  dockerimage: demisto/btfl-soup:1.0.1.92713
+  dockerimage: demisto/btfl-soup:1.0.1.103265
   isfetchevents: true
   runonce: false
   script: ''

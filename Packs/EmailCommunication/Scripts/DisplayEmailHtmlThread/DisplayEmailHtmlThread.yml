@@ -6,13 +6,13 @@ script: ''
 type: python
 tags:
 - dynamic-section
-comment: |-
-  Dynamic-section script for 'Email Threads' layout.
-  This script renders all email messages with the thread number specified in the "Email Selected Thread" field and outputs them as a single HTML output.
+comment: 'Dynamic-section script for ''Email Threads'' layout.
+
+  This script renders all email messages with the thread number specified in the "Email Selected Thread" field and outputs them as a single HTML output.'
 enabled: true
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/btfl-soup:1.0.1.87353
+dockerimage: demisto/btfl-soup:1.0.1.103265
 runas: DBotWeakRole
 fromversion: 6.2.0
 tests:

@@ -3,7 +3,7 @@ commonfields:
   id: Cisco WebEx Feed
   version: -1
 configuration:
-- defaultvalue: "true"
+- defaultvalue: 'true'
   display: Fetch indicators
   name: feed
   type: 8
@@ -43,7 +43,7 @@ configuration:
   type: 15
   required: false
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -52,12 +52,12 @@ configuration:
   - suddenDeath
   type: 17
   required: false
-- defaultvalue: "20160"
-  display: ""
+- defaultvalue: '20160'
+  display: ''
   name: feedExpirationInterval
   type: 1
   required: false
-- defaultvalue: "30"
+- defaultvalue: '30'
   display: Feed Fetch Interval
   name: feedFetchInterval
   type: 19
@@ -69,7 +69,7 @@ configuration:
   type: 0
   required: false
 - additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
-  defaultvalue: "true"
+  defaultvalue: 'true'
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
@@ -88,7 +88,7 @@ name: Cisco WebEx Feed
 script:
   commands:
   - arguments:
-    - defaultValue: "30"
+    - defaultValue: '30'
       description: The maximum number of results to return.
       name: limit
     - auto: PREDEFINED
@@ -101,7 +101,7 @@ script:
       - Both
     description: Gets indicators from the feed.
     name: webex-get-indicators
-  dockerimage: demisto/btfl-soup:1.0.1.87353
+  dockerimage: demisto/btfl-soup:1.0.1.103265
   feed: true
   script: ''
   subtype: python3
