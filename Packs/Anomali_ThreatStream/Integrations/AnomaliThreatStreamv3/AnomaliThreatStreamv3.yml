@@ -862,14 +862,14 @@ script:
       description: The IP addresses resolved by the DNS.
       type: String
     - contextPath: Domain.WHOIS.CreationDate
-      description: |-
-        The date the domain was created. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
-        for time in UTC time.
+      description: 'The date the domain was created. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+
+        for time in UTC time.'
       type: Date
     - contextPath: Domain.WHOIS.UpdatedDate
-      description: |-
-        The date the domain was last updated. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
-        for time in UTC time.
+      description: 'The date the domain was last updated. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+
+        for time in UTC time.'
       type: Date
     - contextPath: Domain.WHOIS.Registrant.Name
       description: The registrant name.
@@ -893,9 +893,9 @@ script:
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.Domain.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: 'The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time in UTC time.'
       type: String
     - contextPath: ThreatStream.Domain.Severity
       description: The indicator severity ("very-high", "high", "medium", "low").
@@ -1639,9 +1639,9 @@ script:
       description: The SHA512 hash of the indicator.
       type: String
     - contextPath: ThreatStream.File.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: 'The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time in UTC time.'
       type: String
     - contextPath: ThreatStream.File.Source
       description: The indicator source.
@@ -2328,9 +2328,9 @@ script:
       description: The indicator source.
       type: String
     - contextPath: ThreatStream.EmailReputation.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: 'The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time in UTC time.'
       type: String
     - contextPath: ThreatStream.EmailReputation.Tags
       description: Tags assigned to the email.
@@ -2352,7 +2352,7 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: 'Whether to retrieve all results. The "limit" argument will be ignored.'
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
       name: all_results
       predefined:
       - 'false'
@@ -2373,14 +2373,14 @@ script:
       description: The source value.
       type: String
     - contextPath: ThreatStream.PassiveDNS.FirstSeen
-      description: |-
-        The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time, in UTC time.
+      description: 'The first seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time, in UTC time.'
       type: String
     - contextPath: ThreatStream.PassiveDNS.LastSeen
-      description: |-
-        The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: 'The last seen date. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time in UTC time.'
       type: String
   - arguments:
     - defaultValue: '50'
@@ -2471,7 +2471,7 @@ script:
     - description: The timestamp when intelligence will expire on ThreatStream, in ISO format. For example, 2020-12-24T00:00:00. By default, the expiration_ts is set to 90 days from the current date.
       name: expiration_ts
     - auto: PREDEFINED
-      defaultValue: 'inactive'
+      defaultValue: inactive
       description: Whether the import job must be approved from the ThreatStream user interface before observables become active. When default_state is set to active, observables become active upon submission, without requiring approval. In these cases, an import job is created on ThreatStream which is automatically approved.
       name: default_state
       predefined:
@@ -2520,7 +2520,7 @@ script:
       - 'no'
     - description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
       name: file_id
-    - description: The “meta” section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
+    - description: "The \u201Cmeta\u201D section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the \"ThreatstreamBuildIocImportJson\" script to build a valid JSON file if possible."
       name: indicators_json
     - auto: PREDEFINED
       description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
@@ -2822,17 +2822,19 @@ script:
       name: query
     - description: The Autonomous System (AS) number associated with the indicator.
       name: asn
-    - description: |-
-        The observable certainty level
-        of a reported indicator type. Confidence scores range from 0-100 in increasing order of confidence, and are assigned by ThreatStream based on several factors.
+    - description: 'The observable certainty level
+
+        of a reported indicator type. Confidence scores range from 0-100 in increasing order of confidence, and are assigned by ThreatStream based on several factors.'
       name: confidence
     - description: The country associated with the indicator.
       name: country
-    - description: |-
-        The date the indicator was first seen on
+    - description: 'The date the indicator was first seen on
+
         the ThreatStream cloud platform. The date must be specified in this format:
+
         YYYYMMDDThhmmss, where "T" denotes the start of the value for time, in UTC time.
-        For example, 2014-10-02T20:44:35.
+
+        For example, 2014-10-02T20:44:35.'
       name: created_ts
     - description: The unique ID for the indicator.
       name: id
@@ -2865,7 +2867,7 @@ script:
       - md5
       - string
       - url
-    - description: 'The value of the indicator. .'
+    - description: The value of the indicator. .
       name: indicator_value
     - description: The maximum number of results to return from ThreatStream. Default value is 20.
       name: limit
@@ -2880,9 +2882,9 @@ script:
       description: The indicator type.
       type: String
     - contextPath: ThreatStream.Indicators.Modified
-      description: |-
-        The date and time the indicator was last updated in ThreatStream. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
-        for time in UTC time.
+      description: 'The date and time the indicator was last updated in ThreatStream. The date format is: YYYYMMDDThhmmss, where T denotes the start of the value
+
+        for time in UTC time.'
       type: String
     - contextPath: ThreatStream.Indicators.Confidence
       description: The observable certainty level of a reported indicator type.
@@ -2928,7 +2930,7 @@ script:
       - tipreport
       - ttp
       - vulnerability
-    - description: 'A comma-separated list of tags applied to the specified threat model entities or observables. .'
+    - description: A comma-separated list of tags applied to the specified threat model entities or observables. .
       isArray: true
       name: tags
       required: true
@@ -3122,7 +3124,7 @@ script:
       name: limit
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: 'Whether to retrieve all results. The "limit" argument will be ignored.'
+      description: Whether to retrieve all results. The "limit" argument will be ignored.
       name: all_results
       predefined:
       - 'false'
@@ -3192,9 +3194,9 @@ script:
       description: The vendor that reported the indicator as malicious.
       type: String
     - contextPath: ThreatStream.URL.Modified
-      description: |-
-        The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
-        for time in UTC time.
+      description: 'The date and time the indicator was last updated. The date format is: YYYYMMDDThhmmss, where "T" denotes the start of the value
+
+        for time in UTC time.'
       type: String
     - contextPath: ThreatStream.URL.Confidence
       description: The observable certainty level of a reported indicator type. Confidence score ranges from 0-100, in increasing order of confidence.
@@ -3859,7 +3861,7 @@ script:
   - arguments:
     - description: The value of an intelligence.
       name: value
-    - description: The UUID of an intelligence. When several UUIDs stated, an “OR” operator is used.
+    - description: "The UUID of an intelligence. When several UUIDs stated, an \u201COR\u201D operator is used."
       isArray: true
       name: uuid
     - auto: PREDEFINED
@@ -3881,12 +3883,12 @@ script:
       - active
       - inactive
       - falsepos
-    - description: The tags of an intelligence. Comma-separated list. When several tags are stated, an “OR” operator is used.
+    - description: "The tags of an intelligence. Comma-separated list. When several tags are stated, an \u201COR\u201D operator is used."
       isArray: true
       name: tags
     - description: The ASN of an intelligence.
       name: asn
-    - description: The confidence of an intelligence. Input will be operator then value, i.e., “gt 65” or “lt 85”. If only a value is stated, then it must match exactly.
+    - description: "The confidence of an intelligence. Input will be operator then value, i.e., \u201Cgt 65\u201D or \u201Clt 85\u201D. If only a value is stated, then it must match exactly."
       name: confidence
     - description: The threat type of an intelligence.
       name: threat_type
@@ -5381,7 +5383,7 @@ script:
       description: Tasks associated with the investigation.
       type: Unknown
     - contextPath: ThreatStream.Investigation.tlp
-      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
+      description: "Traffic Light Protocol designation for the investigation\u2014red, amber, green, white."
       type: String
     - contextPath: ThreatStream.Investigation.users
       description: List of users associated with the investigation.
@@ -5399,19 +5401,19 @@ script:
       description: The priority of the investigation.
       name: priority
       predefined:
-      - 'Very Low'
-      - 'Low'
-      - 'Medium'
-      - 'High'
-      - 'Very High'
+      - Very Low
+      - Low
+      - Medium
+      - High
+      - Very High
     - auto: PREDEFINED
       description: The status of the investigation.
       name: status
       predefined:
-      - 'Completed'
-      - 'In-Progress'
-      - 'Pending'
-      - 'Unassigned'
+      - Completed
+      - In-Progress
+      - Pending
+      - Unassigned
     - description: A comma-separated list of tags. For example, tag1,tag2.
       isArray: true
       name: tags
@@ -5419,10 +5421,10 @@ script:
       description: tlp.
       name: tlp
       predefined:
-      - 'White'
-      - 'Green'
-      - 'Amber'
-      - 'Red'
+      - White
+      - Green
+      - Amber
+      - Red
     - description: Assignee ID. Use the threatstream-list-user command to get the user ID value.
       name: assignee_id
     - auto: PREDEFINED
@@ -5588,7 +5590,7 @@ script:
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.Investigation.elements.entity.tlp
-      description: Traffic Light Protocol designation for the entity—red, amber, green, white.
+      description: "Traffic Light Protocol designation for the entity\u2014red, amber, green, white."
       type: String
     - contextPath: ThreatStream.Investigation.elements.entity.uuid
       description: UUID assigned to the entity.
@@ -5810,7 +5812,7 @@ script:
       description: The tags associated with the investigation.
       type: String
     - contextPath: ThreatStream.Investigation.tlp
-      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
+      description: "Traffic Light Protocol designation for the investigation\u2014red, amber, green, white."
       type: String
     - contextPath: ThreatStream.Investigation.users
       description: List of users associated with the investigation.
@@ -5826,19 +5828,19 @@ script:
       description: The priority of the investigation.
       name: priority
       predefined:
-      - 'Very Low'
-      - 'Low'
-      - 'Medium'
-      - 'High'
-      - 'Very High'
+      - Very Low
+      - Low
+      - Medium
+      - High
+      - Very High
     - auto: PREDEFINED
       description: The status of the investigation.
       name: status
       predefined:
-      - 'Completed'
-      - 'In-Progress'
-      - 'Pending'
-      - 'Unassigned'
+      - Completed
+      - In-Progress
+      - Pending
+      - Unassigned
     - description: A comma-separated list of tags. For example, tag1,tag2.
       isArray: true
       name: tags
@@ -5846,10 +5848,10 @@ script:
       description: The tlp (Traffic Light Protocol designation) of the investigation.
       name: tlp
       predefined:
-      - 'White'
-      - 'Green'
-      - 'Amber'
-      - 'Red'
+      - White
+      - Green
+      - Amber
+      - Red
     - description: Assignee ID. Use the threatstream-list-user command to get the user ID.
       name: assignee_id
     name: threatstream-update-investigation
@@ -5970,7 +5972,7 @@ script:
       description: The tags associated with the investigation.
       type: String
     - contextPath: ThreatStream.Investigation.tlp
-      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
+      description: "Traffic Light Protocol designation for the investigation\u2014red, amber, green, white."
       type: String
   - arguments:
     - description: The ID of the investigation.
@@ -6017,12 +6019,12 @@ script:
   - arguments:
     - auto: PREDEFINED
       default: true
-      defaultValue: 'JSON'
+      defaultValue: JSON
       description: Defines the format of the response.
       name: format
       predefined:
-      - 'CSV'
-      - 'JSON'
+      - CSV
+      - JSON
     - defaultValue: '50'
       description: The maximum number of results to return.
       name: limit
@@ -6104,7 +6106,7 @@ script:
     - description: A note that will be associated with all the indicator types that are provided in the command arguments.
       name: note
       required: true
-    description: "Modify contextual notes associated with existing whitelist entries."
+    description: Modify contextual notes associated with existing whitelist entries.
     name: threatstream-update-whitelist-entry-note
   - arguments:
     - description: The ID of the entry you want to update. Use the threatstream-list-whitelist-entry command to get the entry ID.
@@ -6119,11 +6121,11 @@ script:
       description: When specified, the results returned in the list are limited to the selected status.
       name: status_in
       predefined:
-      - 'Processing'
-      - 'Errors'
-      - 'Ready To Review'
-      - 'Rejected'
-      - 'Approved'
+      - Processing
+      - Errors
+      - Ready To Review
+      - Rejected
+      - Approved
     - description: The maximum number of results to return. Default is 50.
       name: limit
     - description: Page number to get result from. Needs to be used with the page_size argument.
@@ -6263,7 +6265,7 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: 'Whether the entity is public or private. True—if the entity is public, False—if the entity is private or belongs to a Trusted Circle.'
+      description: "Whether the entity is public or private. True\u2014if the entity is public, False\u2014if the entity is private or belongs to a Trusted Circle."
       name: is_public
       predefined:
       - 'True'
@@ -6274,7 +6276,7 @@ script:
     - description: 'A comma-separated list of signature types. Supported values are: Bro, Carbon Black Query, ClamAV, Custom, CybOX, OpenIOC, RSA NetWitness, Snort, Splunk Query, Suricata, YARA.'
       isArray: true
       name: signature_type
-    - description: 'A comma-separated list of additional comments and context associated with the entity when it was imported from its original threat feed.'
+    - description: A comma-separated list of additional comments and context associated with the entity when it was imported from its original threat feed.
       isArray: true
       name: tags
     - description: Used for querying entities associated with specified trusted circles.
@@ -6366,25 +6368,25 @@ script:
       description: The type of threat model entity to which you are adding the association.
       name: entity_type
       predefined:
-      - 'Actor'
-      - 'Attack Pattern'
-      - 'Campaign'
-      - 'Course Of Action'
-      - 'Identity'
-      - 'Infrastructure'
-      - 'Intrusion Set'
-      - 'Incident'
-      - 'Malware'
-      - 'Signature'
-      - 'Threat Bulletin'
-      - 'Tool'
-      - 'Ttp'
-      - 'Vulnerability'
+      - Actor
+      - Attack Pattern
+      - Campaign
+      - Course Of Action
+      - Identity
+      - Infrastructure
+      - Intrusion Set
+      - Incident
+      - Malware
+      - Signature
+      - Threat Bulletin
+      - Tool
+      - Ttp
+      - Vulnerability
       required: true
     - description: The ID of the threat model entity to which you are adding the association.
       name: entity_id
       required: true
-    - description: 'The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the “associated_entity_type” argument.'
+    - description: "The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the \u201Cassociated_entity_type\u201D argument."
       isArray: true
       name: associated_entity_ids
       required: true
@@ -6392,20 +6394,20 @@ script:
       description: The type of threat model entity to which you are adding the association.
       name: associated_entity_type
       predefined:
-      - 'Actor'
-      - 'Attack Pattern'
-      - 'Campaign'
-      - 'Course Of Action'
-      - 'Identity'
-      - 'Infrastructure'
-      - 'Intrusion Set'
-      - 'Incident'
-      - 'Malware'
-      - 'Signature'
-      - 'Threat Bulletin'
-      - 'Tool'
-      - 'Ttp'
-      - 'Vulnerability'
+      - Actor
+      - Attack Pattern
+      - Campaign
+      - Course Of Action
+      - Identity
+      - Infrastructure
+      - Intrusion Set
+      - Incident
+      - Malware
+      - Signature
+      - Threat Bulletin
+      - Tool
+      - Ttp
+      - Vulnerability
       required: true
     description: Creates associations between threat model entities on the ThreatStream platform.
     name: threatstream-add-threat-model-association
@@ -6431,7 +6433,7 @@ script:
       isArray: true
     description: Remove tags from the indicators.
     name: threatstream-remove-indicator-tag
-  dockerimage: demisto/py3-tools:1.0.0.99035
+  dockerimage: demisto/py3-tools:1.0.0.103307
   runonce: false
   script: '-'
   subtype: python3
