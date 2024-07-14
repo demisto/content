@@ -513,7 +513,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
                               f'{res.json()=}')
                 return res if no_json else res.json()
             elif safe:
+                demisto.debug(f'In http_request {safe=}')
                 return None
+        demisto.debug('In http_request end')
         return res if no_json else res.json()
     except ValueError as exception:
         raise ValueError(
