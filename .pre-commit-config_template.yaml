@@ -334,6 +334,13 @@ repos:
     needs:
     - pytest-in-docker
 
+  - id: prevent-mypy-global-ignore
+    name: prevent-mypy-global-ignore
+    description: Prevent Python files from setting global mypy ignore
+    entry: prevent-mypy-global-ignore
+    language: python
+    files: .*Packs/.*/(?:Integrations|Scripts)/.*.py$
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
