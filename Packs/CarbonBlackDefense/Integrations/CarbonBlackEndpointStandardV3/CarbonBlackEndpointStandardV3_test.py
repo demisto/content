@@ -540,8 +540,10 @@ def test_fixe_winds_path(args, expected):
 
 
 @pytest.mark.parametrize("response, expected", [
-    ({'id': 1, 'name': 'Policy1', 'description': 'Test policy', 'priority_level': 'high', 'version': 'v1', 'extra': 'extra_field'},
-     {'id': 1, 'name': 'Policy1', 'description': 'Test policy', 'priorityLevel': 'high', 'version': 'v1', 'policy': {'extra': 'extra_field'}}),
+    ({'id': 1, 'name': 'Policy1', 'description': 'Test policy',
+      'priority_level': 'high', 'version': 'v1', 'extra': 'extra_field'},
+     {'id': 1, 'name': 'Policy1', 'description': 'Test policy',
+      'priorityLevel': 'high', 'version': 'v1', 'policy': {'extra': 'extra_field'}}),
     ({'id': 2, 'priority_level': 'medium', 'extra': 'extra_field'},
      {'id': 2, 'priorityLevel': 'medium', 'policy': {'extra': 'extra_field'}}),
     ({'id': 3, 'name': 'Policy3'},

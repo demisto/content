@@ -317,7 +317,7 @@ class Client(BaseClient):
 ''' COMMAND FUNCTIONS '''
 
 
-def test_module(client: Client, params: dict) -> str:
+def module_test_command(client: Client, params: dict) -> str:
     """Tests API connectivity and authentication.
 
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -1619,7 +1619,7 @@ def main() -> None:
             organization_key=organization_key
         )
         if command == 'test-module':
-            results = test_module(client, params)
+            results = module_test_command(client, params)
         elif command == 'fetch-incidents':
             fetch_incidents(client=client, params=params)
         elif command == 'cbd-get-alert-details':
