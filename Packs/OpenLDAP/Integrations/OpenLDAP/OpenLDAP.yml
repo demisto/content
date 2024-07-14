@@ -231,7 +231,7 @@ script:
     - name: page_size
       description: Number of entries per page. Defaults to 50 (in case only page was provided). Maximum entries per page is 2000.
     - name: limit
-      description: The maximum number of entries to return. Defaults to 50.
+      description: The maximum number of entries to return.
       defaultValue: 50
     description: A generic LDAP search command.
     name: ad-entries-search
