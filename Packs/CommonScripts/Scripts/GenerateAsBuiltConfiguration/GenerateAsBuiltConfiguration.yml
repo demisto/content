@@ -21,5 +21,8 @@ subtype: python3
 tags: []
 type: python
 fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
 tests:
 - No tests (auto formatted)
