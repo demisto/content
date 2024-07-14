@@ -68,8 +68,8 @@ script:
       description: Expiry time for waiting to the user response.
       type: textArea
       hidden: true
-    - name: default_reply
-      description: Default reply if the expiration time of the message has exceeded.
+    - name: default_response
+      description: Default response if the expiration time of the message has exceeded.
       type: textArea
       hidden: true
     description: Send messages through google chat

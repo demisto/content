@@ -21,19 +21,25 @@ def create_adaptive_card(message, user_options, response_type):
     select_buttons = []
     for _i, option in enumerate(user_options):
         option_text, option_style = parse_option_text(option)
-        select_button = {
-            "text": option_text,
-            "color": {
-                    "red": "1" if option_style == "red" else "0",
-                    "green": "1" if option_style == "green" else "0",
-                    "blue": "1" if option_style == "blue" else "0",
-                    },
-            "onClick": {
-                "action":{
-                    "function": option_text}}
-        }
+        if response_type == 'button':
+            select_button = {
+                "text": option_text,
+                "color": {
+                        "red": "1" if option_style == "red" else "0",
+                        "green": "1" if option_style == "green" else "0",
+                        "blue": "1" if option_style == "blue" else "0",
+                        },
+                "onClick": {
+                    "action":{
+                        "function": option_text}}
+            }
+        else:
+            select_button= {
+                            "text": option_text,
+                            "value": option_text
+                        }
         select_buttons.append(select_button)
-    return {
+    card = {
     "cardId": "survey-card",
     "card": {
         "header": {
@@ -63,6 +69,27 @@ def create_adaptive_card(message, user_options, response_type):
         ]
     }
 }
+    if response_type == 'button':
+        card["card"]["sections"]["widgets"].append({"buttonList":{"buttons": select_buttons}})
+    else:
+        card["card"]["sections"]["widgets"][0]["selectionInput"]["items"] = select_buttons
+        card["card"]["sections"]["widgets"].append({"buttonList":{"buttons": [
+                                {
+                                    "text": "Submit",
+                                    "onClick": {
+                                        "action": {
+                                            "function": "handleSurveyResponse",
+                                            "parameters": [
+                                                {
+                                                    "key": "response",
+                                                    "value": "${survey}"
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]}})
+    return card
 
 
 def main():
@@ -102,7 +129,7 @@ def main():
         'entitlement': formatted_entitlement,
         'expiry': expiry,
         'adaptive_card': adaptive_card,
-        'default_reply': default_reply,
+        'default_response': default_reply,
         'message': 'no_message'
     }
     user = demisto_args.get('user')

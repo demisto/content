@@ -128,7 +128,7 @@ class GoogleChatClient(BaseClient):
         body = {}
         body['text'] = message_body
         if message_to:
-            body['privateMessageViewer'] = {'name': message_to}
+            body['privateMessageViewer'] = {'name': f'users/{message_to}'}
         if thread_id:
             body['thread'] = {"threadKey": thread_id}
         if adaptive_card:
@@ -174,14 +174,14 @@ def create_hr_response(response: dict[str, Any]):
     space = response.get('space', {})
     thread = response.get('thread', {})
     return {
-        'Message name': response.get('name'),
-        'Sender Name': sender.get('name'),
+        'Message name': response.get('name','').split('messages/')[1],
+        'Sender Name': sender.get('name','').split('users/')[1],
         'Sender display Name': sender.get('displayName'),
         'Sender Type': sender.get('type'),
         'Space Display Name': space.get('displayName'),
-        'Space Name': space.get('name'),
+        'Space Name': space.get('name','').split('spaces/')[1],
         'Space Type': space.get('type'),
-        'Thread Name': thread.get('name'),
+        'Thread Name': thread.get('name','').split('threads/')[1],
         'Thread Key': thread.get('threadKey')
     }
 
@@ -223,13 +223,13 @@ def send_notification_command(client: GoogleChatClient, args: dict[str, Any]) ->
         raise DemistoException(f"Could not parse the adaptive card which was uploaded. Error: {e}")
     entitlement = args.get('entitlement')
     expiry = args.get('expiry')
-    default_reply = args.get('default_reply')
+    default_response = args.get('default_response')
 
     result = client.send_notification_request(message_body if message_body != 'no_message' else '',
                                               message_to, space_id, thread_id, adaptive_card)
     message_id_hierarchy = result.get('name')
-    if result.get('name') and entitlement and expiry and default_reply:
-        save_entitlement(entitlement, message_id_hierarchy, space_id, expiry, message_to, thread_id, default_reply)
+    if result.get('name') and entitlement and expiry and default_response:
+        save_entitlement(entitlement, message_id_hierarchy, space_id, expiry, message_to, thread_id, default_response)
     headers = ['Message name', 'Sender Name', 'Sender display Name', 'Sender Type', 'Space Display Name', 'Space Name',
                'Space Type', 'Thread Name', 'Thread Key']
     adjusted_response = create_hr_response(result)
@@ -327,7 +327,7 @@ async def answer_survey(message: dict):
     guid, incident_id, task_id = extract_entitlement(entitlement)
     try:
         demisto.handleEntitlementForUser(incident_id, guid, '', default_reply, task_id)
-        entitlement_reply = f'Thank you for your response: {default_reply}.'
+        entitlement_reply = f'Thank you for your default response: {default_reply}.'
         await process_entitlement_reply(entitlement_reply, message_id_hierarchy)
     except Exception as e:
         demisto.error(f'Failed handling entitlement {entitlement}: {str(e)}')
@@ -424,6 +424,8 @@ async def handle_googleChat_response(request: Request, credentials: HTTPBasicCre
         if event_type == "CARD_CLICKED":
             message_id_hierarchy = request.get('message', {}).get('name')
             action_selected = request.get('action', {}).get('actionMethodName')
+            if action_selected == 'handleSurveyResponse':
+                action_selected = request.get('common',{}).get('formInputs', {}).get('survey', {}).get('stringInputs', {}).get('value', [])[0]
             user_name = request.get('user', {}).get('displayName')
             entitlement_reply = await check_and_handle_entitlement(user_name, action_selected, message_id_hierarchy)
             demisto.debug(f"{entitlement_reply=}")
