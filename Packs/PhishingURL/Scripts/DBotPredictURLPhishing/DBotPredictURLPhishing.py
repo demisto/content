@@ -457,6 +457,13 @@ def extract_created_date(entry: dict):
     return None
 
 
+def return_and_remove_additional_results(results: list, from_index):
+    '''Return and remove the extra unneeded results returned from a command call.'''
+    if results[from_index:]:
+        return_results(results[from_index:])
+        del results[from_index:]
+
+
 def weed_rasterize_errors(urls: list[str], res_rasterize: list[Union[dict, str]]):
     '''Remove the URLs that failed rasterization and return them.'''
     error_idx = [
@@ -482,7 +489,8 @@ def rasterize_command(urls: list[str], rasterize_timeout: int) -> list[Union[dic
         }
     )
     demisto.debug(f'Rasterize Data: {res_rasterize}')
-    return [res['Contents'] for res in res_rasterize[:len(urls)]]
+    return_and_remove_additional_results(res_rasterize, len(urls))
+    return [res['Contents'] for res in res_rasterize]
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
@@ -490,7 +498,7 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
     if len(res_rasterize) < len(urls):  # check for errors in the response
         demisto.info(f'Rasterize response is too short, running command for each URL\n{res_rasterize=}\n{urls=}')
         rasterize_runs = map(rasterize_command, urls, [rasterize_timeout] * len(urls))
-        res_rasterize = [run[0] for run in rasterize_runs]
+        res_rasterize = sum(rasterize_runs, [])
     weed_rasterize_errors(urls, res_rasterize)
     return cast(list[dict], res_rasterize)
 
@@ -500,7 +508,9 @@ def get_whois_verdict(domains: list[dict]) -> list:
     default = [None] * len(domains)
     if isCommandAvailable('whois'):
         try:
-            return demisto.executeCommand('whois', {'query': domains, 'execution-timeout': 5}) or default
+            res = demisto.executeCommand('whois', {'query': domains, 'execution-timeout': 5})
+            return_and_remove_additional_results(res, len(domains))
+            return res or default
         except Exception as e:
             demisto.debug(str(e))
     else:
