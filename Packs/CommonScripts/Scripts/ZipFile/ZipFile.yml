@@ -42,7 +42,7 @@ outputs:
   description: The ssdeep hash of the file (same as displayed in file entries).
   type: String
 - contextPath: File.Extension
-  description: 'The file extension, for example: ''xls''.'
+  description: "The file extension, for example: 'xls'."
   type: String
 - contextPath: File.Type
   description: The file type, as determined by libmagic (same as displayed in file entries).
