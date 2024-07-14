@@ -103,6 +103,7 @@ def iter_job_results(
             scroll_token = r.json()["page"].get("pageCursor")
             if scroll_token is not None:
                 params["pageCursor"] = scroll_token
+                # params.pop("pageNumber", None)
                 yield r
             else:
                 yield r
@@ -288,12 +289,14 @@ class Client(BaseClient):
 
         demisto.setIntegrationContext(integration_context)
 
-    def query_loggings(self, query: str) -> tuple[list[dict], list]:
+    def query_loggings(self, query: str, page: Optional[int] = None, page_size: Optional[int] = None) -> tuple[list[dict], list]:
         """
         This function handles all the querying of Cortex Logging service
 
         Args:
             query: The sql string query.
+            page: The page number to query.
+            page_size: The page size to query.
 
         Returns:
             A list of records according to the query
@@ -318,9 +321,29 @@ class Client(BaseClient):
             raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
 
         try:
+            if page:
+                page = arg_to_number(page)
+                page_size = arg_to_number(page_size) or 50
+            #     r = query_service.get_job_results(
+            #         job_id=query_result.get('jobId'),
+            #         params={
+            #             "maxWait": 2000,
+            #             "pageNumber": page,
+            #             "pageSize": page_size or 50,
+            #             "resultFormat": 'valuesDictionary'
+            #         },
+            #         enforce_json=True,
+            #     )
+            #     if not r.ok:
+            #         raise HTTPError("%s" % r.text)
+            #     raw_results = [r.json()]
+            # else:
             raw_results = [r.json() for r in iter_job_results(query_service, job_id=query_result.get('jobId'),
                                                               result_format='valuesDictionary',
-                                                              max_wait=2000)]
+                                                              max_wait=2000,
+                                                              page_number = page,
+                                                              page_size=page_size
+                                                              )]
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
@@ -1166,7 +1189,7 @@ def query_table_logs(args: dict,
         table_context_path: the context path where the parsed data should be located
     """
     fields, query = build_query(args, table_name)
-    results, raw_results = client.query_loggings(query)
+    results, raw_results = client.query_loggings(query, page=args.get('page'), page_size=args.get('page_size'))
     outputs = [context_transformer_function(record) for record in results]
     human_readable = records_to_human_readable_output(fields, table_name, results)
 
@@ -1181,9 +1204,13 @@ def build_query(args, table_name):
     query_start_time, query_end_time = query_timestamp(args)
     timestamp_limitation = f'time_generated BETWEEN TIMESTAMP("{query_start_time}") AND ' \
                            f'TIMESTAMP("{query_end_time}") '
-    limit = args.get('limit') or '5'
     where += f' AND {timestamp_limitation}' if where else timestamp_limitation
-    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where} LIMIT {limit}'  # noqa: S608
+    query = f'SELECT {fields} FROM `firewall.{table_name}` WHERE {where}'  # noqa: S608
+    if args.get('page'):
+        limit = args.get('page_size') or '50'
+    else:
+        limit = args.get('limit', '5')
+    query += f' LIMIT {limit}'
     return fields, query
 
 
