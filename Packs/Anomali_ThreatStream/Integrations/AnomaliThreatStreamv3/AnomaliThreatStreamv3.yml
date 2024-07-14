@@ -2520,7 +2520,7 @@ script:
       - 'no'
     - description: The entry ID of a file (containing a JSON with an "objects" array and "meta" maps) that is uploaded to the War Room. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
       name: file_id
-    - description: "The \u201Cmeta\u201D section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the \"ThreatstreamBuildIocImportJson\" script to build a valid JSON file if possible."
+    - description: The "meta" section will be added to this json, and we will send this json to the api endpoint. It is recommended to use the "ThreatstreamBuildIocImportJson" script to build a valid JSON file if possible.
       name: indicators_json
     - auto: PREDEFINED
       description: You can add tags that are private to your organization by setting the tlp attribute for the tag to red. If you do not specify a tlp setting, the tag is visible to any ThreatStream user with access to the observable.
@@ -3861,7 +3861,7 @@ script:
   - arguments:
     - description: The value of an intelligence.
       name: value
-    - description: "The UUID of an intelligence. When several UUIDs stated, an \u201COR\u201D operator is used."
+    - description: The UUID of an intelligence. When several UUIDs stated, an "OR" operator is used.
       isArray: true
       name: uuid
     - auto: PREDEFINED
@@ -3883,12 +3883,12 @@ script:
       - active
       - inactive
       - falsepos
-    - description: "The tags of an intelligence. Comma-separated list. When several tags are stated, an \u201COR\u201D operator is used."
+    - description: The tags of an intelligence. Comma-separated list. When several tags are stated, an "OR" operator is used.
       isArray: true
       name: tags
     - description: The ASN of an intelligence.
       name: asn
-    - description: "The confidence of an intelligence. Input will be operator then value, i.e., \u201Cgt 65\u201D or \u201Clt 85\u201D. If only a value is stated, then it must match exactly."
+    - description: The confidence of an intelligence. Input will be operator then value, i.e., "gt 65" or "lt 85". If only a value is stated, then it must match exactly.
       name: confidence
     - description: The threat type of an intelligence.
       name: threat_type
@@ -5383,7 +5383,7 @@ script:
       description: Tasks associated with the investigation.
       type: Unknown
     - contextPath: ThreatStream.Investigation.tlp
-      description: "Traffic Light Protocol designation for the investigation\u2014red, amber, green, white."
+      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
       type: String
     - contextPath: ThreatStream.Investigation.users
       description: List of users associated with the investigation.
@@ -5590,7 +5590,7 @@ script:
       description: The start date.
       type: Unknown
     - contextPath: ThreatStream.Investigation.elements.entity.tlp
-      description: "Traffic Light Protocol designation for the entity\u2014red, amber, green, white."
+      description: Traffic Light Protocol designation for the entity—red, amber, green, white.
       type: String
     - contextPath: ThreatStream.Investigation.elements.entity.uuid
       description: UUID assigned to the entity.
@@ -5812,7 +5812,7 @@ script:
       description: The tags associated with the investigation.
       type: String
     - contextPath: ThreatStream.Investigation.tlp
-      description: "Traffic Light Protocol designation for the investigation\u2014red, amber, green, white."
+      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
       type: String
     - contextPath: ThreatStream.Investigation.users
       description: List of users associated with the investigation.
@@ -5972,7 +5972,7 @@ script:
       description: The tags associated with the investigation.
       type: String
     - contextPath: ThreatStream.Investigation.tlp
-      description: "Traffic Light Protocol designation for the investigation\u2014red, amber, green, white."
+      description: Traffic Light Protocol designation for the investigation—red, amber, green, white.
       type: String
   - arguments:
     - description: The ID of the investigation.
@@ -6265,7 +6265,7 @@ script:
       - 'True'
       - 'False'
     - auto: PREDEFINED
-      description: "Whether the entity is public or private. True\u2014if the entity is public, False\u2014if the entity is private or belongs to a Trusted Circle."
+      description: 'Whether the entity is public or private. True—if the entity is public, False—if the entity is private or belongs to a Trusted Circle.'
       name: is_public
       predefined:
       - 'True'
@@ -6386,7 +6386,7 @@ script:
     - description: The ID of the threat model entity to which you are adding the association.
       name: entity_id
       required: true
-    - description: "The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the \u201Cassociated_entity_type\u201D argument."
+    - description: 'The entities IDs to associate with the primary entity. Note: The model type of all the IDs must be equal to the type in the "associated_entity_type" argument.'
       isArray: true
       name: associated_entity_ids
       required: true
