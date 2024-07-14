@@ -42,7 +42,7 @@ outputs:
   description: The ssdeep hash of the file (same as displayed in file entries).
   type: String
 - contextPath: File.Extension
-  description: "The file extension, for example: 'xls'."
+  description: 'The file extension, for example: ''xls''.'
   type: String
 - contextPath: File.Type
   description: The file type, as determined by libmagic (same as displayed in file entries).
@@ -54,7 +54,7 @@ tags:
 timeout: '0'
 type: python
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.95440
+dockerimage: demisto/py3-tools:1.0.0.103307
 fromversion: 5.0.0
 tests:
 - ZipFile-Test
