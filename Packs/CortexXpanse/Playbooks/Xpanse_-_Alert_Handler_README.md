@@ -1,4 +1,4 @@
-This playbook is the default handler for Cortex Xpanse alerts that focuses primarily on enrichment.
+Default alert handling for Cortex Xpanse alerts.
 
 ## Dependencies
 
@@ -10,10 +10,25 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 * Xpanse - Alert Self-Enrichment
 * Xpanse - Alert Enrichment
 
+### Integrations
+
+Cortex Xpanse
+
+### Scripts
+
+This playbook does not use any scripts.
+
+### Commands
+
+asm-tag-asset-assign
+
 ## Playbook Inputs
 
 ---
-There are no inputs for this playbook
+
+| **Name** | **Description** | **Default Value** | **Required** |
+| --- | --- | --- | --- |
+| WriteToXpanse | Whether to write data back to Cortex Expanse. | False | Optional |
 
 ## Playbook Outputs
 

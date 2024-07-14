@@ -1,0 +1,31 @@
+{
+    "id": "incident_recordedfutureidentityexposedhint",
+    "version": -1,
+    "modified": "2024-04-16T17:05:17.670372853Z",
+    "name": "Recorded Future Identity Exposed Hint",
+    "ownerOnly": false,
+    "cliName": "recordedfutureidentityexposedhint",
+    "type": "shortText",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "Recorded Future Identity Exposure"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72,
+    "fromVersion": "6.10.0"
+}

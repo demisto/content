@@ -3,6 +3,7 @@ from CommonServerPython import *  # noqa: F401
 import openpyxl
 from docx import Document
 from pptx import Presentation
+from pptx.enum.shapes import MSO_SHAPE_TYPE
 import zipfile
 import pandas as pd
 from docx.opc.constants import RELATIONSHIP_TYPE as RT
@@ -52,7 +53,12 @@ def extract_hyperlinks_from_pptx(file_path: str) -> Set:
                     for run in paragraph.runs:
                         if run.hyperlink and run.hyperlink.address:
                             links.add(run.hyperlink.address)
-            if shape.click_action and shape.click_action.hyperlink.address:
+            if shape.shape_type == MSO_SHAPE_TYPE.GROUP:    # pylint: disable=E1101
+                group_shape = shape
+                for s in group_shape.shapes:
+                    if s.click_action and s.click_action.hyperlink.address:
+                        links.add(s.click_action.hyperlink.address)
+            elif shape.click_action and shape.click_action.hyperlink.address:
                 links.add(shape.click_action.hyperlink.address)
 
     return links

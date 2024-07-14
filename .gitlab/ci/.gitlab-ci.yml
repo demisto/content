@@ -5,3 +5,12 @@ include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
     ref: $INFRA_BRANCH
     project: "${CI_PROJECT_NAMESPACE}/infra"
+
+default:
+  image: ${DOCKER_IO}/devdemisto/gitlab-content-ci:1.0.0.64455
+  artifacts:
+    expire_in: 30 days
+    paths:
+      - ${CI_PROJECT_DIR}/artifacts/*
+      - ${CI_PROJECT_DIR}/pipeline_jobs_folder/*
+    when: always
