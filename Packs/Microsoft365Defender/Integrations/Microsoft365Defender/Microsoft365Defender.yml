@@ -6,10 +6,11 @@ commonfields:
   id: Microsoft 365 Defender
   version: -1
 configuration:
-- additionalinfo: |-
-    The United States: api-us.security.microsoft.com
+- additionalinfo: 'The United States: api-us.security.microsoft.com
+
     Europe: api-eu.security.microsoft.com
-    The United Kingdom: api-uk.security.microsoft.co
+
+    The United Kingdom: api-uk.security.microsoft.co'
   defaultvalue: https://api.security.microsoft.com
   display: Endpoint URI
   name: base_url
@@ -382,7 +383,7 @@ script:
       type: string
     - contextPath: Microsoft365Defender.Incident.alerts
       description: List of alerts relevant for the incidents.
-  dockerimage: demisto/crypto:1.0.0.100307
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   script: ''
   subtype: python3

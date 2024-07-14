@@ -627,7 +627,7 @@ script:
     - description: A comma-separated list of subscription ID.s This value will override the instance param 'subscription_id'.
       isArray: true
       name: subscription_id
-    - description: The tag and value that is attached to the resource group. Input should be “Tag Name:Tag Value”.
+    - description: "The tag and value that is attached to the resource group. Input should be \u201CTag Name:Tag Value\u201D."
       name: tag
     - description: The number of results to return. Default value is 50.
       name: limit
@@ -652,7 +652,7 @@ script:
     - contextPath: AzureSQL.ResourceGroup.tags
       description: The tags attached to the resource group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.100307
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   subtype: python3

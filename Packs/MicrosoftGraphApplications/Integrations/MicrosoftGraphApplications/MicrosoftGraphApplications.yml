@@ -10,7 +10,7 @@ configuration:
   display: Application ID
   name: app_id
   type: 0
-  additionalinfo:
+  additionalinfo: null
   section: Connect
   required: false
 - defaultvalue: https://login.microsoftonline.com
@@ -30,15 +30,15 @@ configuration:
   name: insecure
   type: 8
   defaultvalue: 'false'
-  additionalinfo:
+  additionalinfo: null
   section: Connect
   advanced: true
   required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
-  defaultvalue: "false"
-  additionalinfo:
+  defaultvalue: 'false'
+  additionalinfo: null
   section: Connect
   advanced: true
   required: false
@@ -56,9 +56,9 @@ configuration:
   required: false
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)
-  defaultvalue:
+  defaultvalue: null
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   advanced: true
   required: false
@@ -66,9 +66,9 @@ configuration:
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
   display: Client Secret (for Client Credentials mode)
-  defaultvalue:
+  defaultvalue: null
   type: 9
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
@@ -116,19 +116,19 @@ script:
       description: Friendly name for the key. Optional.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.type
-      description: The type of key credential; for example, “Symmetric”.
+      description: "The type of key credential; for example, \u201CSymmetric\u201D."
       type: String
     - contextPath: MSGraphApplication.keyCredentials.key
       description: The certificate's raw data in byte array converted to Base64 string.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.usage
-      description: A string that describes the purpose for which the key can be used; for example, “Verify”.
+      description: "A string that describes the purpose for which the key can be used; for example, \u201CVerify\u201D."
       type: String
     - contextPath: MSGraphApplication.keyCredentials.startDateTime
-      description: "The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
+      description: 'The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
       type: Date
     - contextPath: MSGraphApplication.keyCredentials.endDateTime
-      description: "The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
+      description: 'The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
       type: Date
     - contextPath: MSGraphApplication.accountEnabled
       description: true if the application account is enabled; otherwise, false.
@@ -280,19 +280,19 @@ script:
       description: Friendly name for the key. Optional.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.type
-      description: The type of key credential; for example, “Symmetric”.
+      description: "The type of key credential; for example, \u201CSymmetric\u201D."
       type: String
     - contextPath: MSGraphApplication.keyCredentials.key
       description: The certificate's raw data in byte array converted to Base64 string.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.usage
-      description: A string that describes the purpose for which the key can be used; for example, “Verify”.
+      description: "A string that describes the purpose for which the key can be used; for example, \u201CVerify\u201D."
       type: String
     - contextPath: MSGraphApplication.keyCredentials.startDateTime
-      description: "The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
+      description: 'The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
       type: Date
     - contextPath: MSGraphApplication.keyCredentials.endDateTime
-      description: "The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
+      description: 'The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
       type: Date
     - contextPath: MSGraphApplication.accountEnabled
       description: whether the application account is enabled.
@@ -428,15 +428,15 @@ script:
       required: false
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: app_role_assignment_required
       description: Specifies whether an appRoleAssignment to a user or group is required before Azure AD will issue a user or access token to the application. Not nullable.
       required: false
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: display_name
       description: The display name for the service principal.
       required: false
@@ -475,13 +475,13 @@ script:
       description: Custom key identifier.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.endDateTime
-      description: "The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
+      description: 'The date and time at which the credential becomes valid.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
       type: Date
     - contextPath: MSGraphApplication.keyCredentials.keyId
       description: The unique identifier (GUID) for the key.
       type: String
     - contextPath: MSGraphApplication.keyCredentials.startDateTime
-      description: "The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: '2014-01-01T00:00:00Z'."
+      description: 'The date and time at which the credential expires.The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 would look like this: ''2014-01-01T00:00:00Z''.'
       type: Date
     - contextPath: MSGraphApplication.keyCredentials.displayName
       description: Friendly name for the key. Optional.
@@ -515,15 +515,15 @@ script:
   - description: Lock configuration of a service principal.
     name: msgraph-apps-service-principal-lock-configuration
     arguments:
-      - name: id
-        description: The application object id (not the app id).
-        required: true
-    outputs: [ ]
+    - name: id
+      description: The application object id (not the app id).
+      required: true
+    outputs: []
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.87358
+  dockerimage: demisto/crypto:1.0.0.103269
 fromversion: 5.0.0
 tests:
 - MSGraph Applications Test

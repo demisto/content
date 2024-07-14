@@ -22,8 +22,7 @@ configuration:
   required: false
   type: 15
   section: Connect
-  additionalinfo: |-
-    More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-cloud-app-security
+  additionalinfo: More information can be found on the integration page - https://xsoar.pan.dev/docs/reference/integrations/microsoft-cloud-app-security
   defaultvalue: Worldwide
   options:
   - Worldwide
@@ -48,13 +47,13 @@ configuration:
   required: false
   hidden: true
   advanced: true
-- display: 'Application ID'
+- display: Application ID
   name: app_id
   type: 0
   section: Connect
   required: false
   additionalinfo: The API key to use to connect (for Client Credentials & device code flow mode).
-- display: 'Tenant ID (for Client Credentials mode)'
+- display: Tenant ID (for Client Credentials mode)
   name: tenant_id
   type: 0
   section: Connect
@@ -108,7 +107,7 @@ configuration:
   section: Collect
   required: false
   additionalinfo: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-- display: 'Incident resolution status'
+- display: Incident resolution status
   name: resolution_status
   type: 16
   section: Collect
@@ -120,7 +119,7 @@ configuration:
   - Resolved
   - All
 - additionalinfo: 'A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters from the integration instance configuration. An example of a Custom Filter is: {"severity":{"eq":2}}. Note that for filtering by "entity.policy", you should use the ID of the policy. For example, for retrieving the policy: {"policyType": "ANOMALY_DETECTION", "id": "1234", "label": "Impossible travel", "type": "policyRule"}" please query on {"entity.policy":{"eq":1234}}. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.'
-  display: 'Custom Filter'
+  display: Custom Filter
   name: custom_filter
   type: 0
   section: Collect
@@ -148,10 +147,11 @@ script:
   - description: Tests the connectivity to the Microsoft 365 Defender.
     name: microsoft-cas-auth-test
   - arguments:
-    - description: |-
-        A comma-separated list of alerts matching the specified filters.
+    - description: 'A comma-separated list of alerts matching the specified filters.
+
         The alert_id should appear similar to "55af7415f8a0a7a29eef2e1f".
-        Mandatory, unless you use a custom filter.
+
+        Mandatory, unless you use a custom filter.'
       isArray: true
       name: alert_ids
     - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
@@ -312,10 +312,11 @@ script:
       description: The date/time that the alert was resolved.
       type: Date
   - arguments:
-    - description: |-
-        A comma-separated list of alerts matching the specified filters.
+    - description: 'A comma-separated list of alerts matching the specified filters.
+
         Alert_id should appear similar to - "1234567890abcdefg".
-        Mandatory, unless you use a custom filter.
+
+        Mandatory, unless you use a custom filter.'
       isArray: true
       name: alert_ids
     - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-alerts#filters.
@@ -326,10 +327,11 @@ script:
     description: Deprecated. Use one of the alert-close commands instead. Resolves multiple alerts (bulk resolve) that match the specified filters. Filters include origin IP address, IP subnet category, action taken on the activity, source type, or a custom filter.
     name: microsoft-cas-alert-resolve-bulk
   - arguments:
-    - description: |-
-        A comma-separated list of alerts matching the specified filters.
+    - description: 'A comma-separated list of alerts matching the specified filters.
+
         Alert_id should appear similar to - "1234567890abcdefg".
-        Mandatory, unless you use a custom filter.
+
+        Mandatory, unless you use a custom filter.'
       isArray: true
       name: alert_ids
     - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
@@ -337,12 +339,15 @@ script:
     - description: Comment describing why the alerts were dismissed.
       name: comment
     - auto: PREDEFINED
-      description: |-
-        The reason for closing the alerts as benign. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
+      description: 'The reason for closing the alerts as benign. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
+
         * Actual severity is lower
+
         * Other
+
         * Confirmed with end user
-        * Triggered by test.
+
+        * Triggered by test.'
       name: reason
       predefined:
       - Actual severity is lower
@@ -370,10 +375,11 @@ script:
     description: An alert on a suspicious but not malicious activity, such as a penetration test or other authorized suspicious action.
     name: microsoft-cas-alert-close-benign
   - arguments:
-    - description: |-
-        A comma-separated list of alerts matching the specified filters.
+    - description: 'A comma-separated list of alerts matching the specified filters.
+
         Alert_id should appear similar to - "1234567890abcdefg".
-        Mandatory, unless you use a custom filter.
+
+        Mandatory, unless you use a custom filter.'
       isArray: true
       name: alert_ids
     - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
@@ -401,10 +407,11 @@ script:
     description: Close multiple alerts matching the specified filters as true positive (an alert on a confirmed malicious activity.
     name: microsoft-cas-alert-close-true-positive
   - arguments:
-    - description: |-
-        A comma-separated list of alerts matching the specified filters.
+    - description: 'A comma-separated list of alerts matching the specified filters.
+
         Alert_id should appear similar to - "1234567890abcdefg".
-        Mandatory, unless you use a custom filter.
+
+        Mandatory, unless you use a custom filter.'
       isArray: true
       name: alert_ids
     - description: A custom filter by which to filter the returned files. If you pass the custom_filter argument it will override the other filters in this command. For more information about filter syntax, refer to https://docs.microsoft.com/en-us/cloud-app-security/api-activities#filters.
@@ -413,12 +420,15 @@ script:
       description: Comment describing why the alerts were dismissed.
       name: comment
     - auto: PREDEFINED
-      description: |-
-        The reason for closing the alerts as false positive. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
+      description: 'The reason for closing the alerts as false positive. Providing a reason helps improve the accuracy of the detection over time. Possible values include:
+
         * Not of interest
+
         * Too many similar alerts
+
         * Alert is not accurate
-        * Other.
+
+        * Other.'
       name: reason
       predefined:
       - Not of interest
@@ -888,7 +898,7 @@ script:
     - contextPath: MicrosoftCloudAppSecurity.UsersAccounts.userGroups.usersCount
       description: The number of users in the user group.
       type: Number
-  dockerimage: demisto/crypto:1.0.0.91402
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   runonce: false
   script: '-'
