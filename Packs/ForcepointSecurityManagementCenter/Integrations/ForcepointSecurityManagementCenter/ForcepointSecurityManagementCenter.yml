@@ -26,8 +26,8 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.
-display: 'Forcepoint Security Management Center'
+description: "Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud\u2014across large, geographically distributed enterprise environments."
+display: Forcepoint Security Management Center
 name: Forcepoint Security Management Center
 script:
   commands:
@@ -90,7 +90,7 @@ script:
       description: The name of the IP list.
       type: String
     - contextPath: ForcepointSMC.IPList.Addresses
-      description: 'The list of addresses in the IPList'
+      description: The list of addresses in the IPList
       type: Unknown
     - contextPath: ForcepointSMC.IPList.Comment
       description: The comment for the IP list.
@@ -242,7 +242,7 @@ script:
       name: ipv6_address
       required: false
     - default: false
-      description:  comma-separated list of secondary addresses of the host. 
+      description: comma-separated list of secondary addresses of the host.
       isArray: true
       name: secondary_address
       required: false
@@ -451,8 +451,8 @@ script:
       name: ip_version
       required: true
       predefined:
-      - "V4"
-      - "V6"
+      - V4
+      - V6
     - default: false
       description: A comma-separated list of source ip-list names to use to create the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
       isArray: true
@@ -550,8 +550,8 @@ script:
       name: ip_version
       required: true
       predefined:
-      - 'V4'
-      - 'V6'
+      - V4
+      - V6
     - default: false
       description: A comma-separated list of source ip-list names to use to update the rule. Run the forcepoint-ip-list-list command to get the list of ip lists.
       isArray: true
@@ -603,7 +603,7 @@ script:
       isArray: false
       name: comment
       required: false
-    description: 'Updates a rule.'
+    description: Updates a rule.
     execution: false
     name: forcepoint-smc-rule-update
   - arguments:
@@ -612,33 +612,33 @@ script:
       isArray: false
       name: policy_name
       required: true
-    description: 'Lists the rules in a specific policy.'
+    description: Lists the rules in a specific policy.
     execution: false
     name: forcepoint-smc-rule-list
     outputs:
     - contextPath: ForcepointSMC.Rule.Name
-      description: 'The name of the rule.'
+      description: The name of the rule.
       type: String
     - contextPath: ForcepointSMC.Rule.ID
-      description: 'The ID of the rule.'
+      description: The ID of the rule.
       type: String
     - contextPath: ForcepointSMC.Rule.IP_version
-      description: 'The IP version of the rule.'
+      description: The IP version of the rule.
       type: String
     - contextPath: ForcepointSMC.Rule.Sources
-      description: 'The sources of the rule.'
+      description: The sources of the rule.
       type: Unknown
     - contextPath: ForcepointSMC.Rule.Destinations
-      description: 'The destinations of the rule.'
+      description: The destinations of the rule.
       type: Unknown
     - contextPath: ForcepointSMC.Rule.Services
-      description: 'The services of the rule.'
+      description: The services of the rule.
       type: Unknown
     - contextPath: ForcepointSMC.Rule.Actions
-      description: 'The actions of the rule.'
+      description: The actions of the rule.
       type: Unknown
     - contextPath: ForcepointSMC.Rule.Comment
-      description: 'The comment of the rule.'
+      description: The comment of the rule.
       type: String
   - arguments:
     - default: false
@@ -658,8 +658,8 @@ script:
       name: ip_version
       required: true
       predefined:
-      - 'V4'
-      - 'V6'
+      - V4
+      - V6
     description: Deletes a rule.
     execution: false
     name: forcepoint-smc-rule-delete
@@ -696,7 +696,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.74116
+  dockerimage: demisto/vendors-sdk:1.0.0.103334
 fromversion: 6.8.0
 tests:
 - ForcepointSecurityManagementCenter_test
