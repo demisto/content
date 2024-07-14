@@ -78,7 +78,7 @@ def main(args):
         custom_fields.get('emailbody', '')
     files = demisto.context().get('File', [])
     files = [files] if not isinstance(files, list) else files
-    html_body = f'<div style= "background-color: white;"> {html_body} </div>'
+    html_body = f'<div style="background-color: white; color:black;"> {html_body} </div>\n'
     if 'src="cid' in html_body:
         attachments = incident.get('attachment', {})
         entry_id_list = get_entry_id_list_by_incident_attachments(attachments, files)
