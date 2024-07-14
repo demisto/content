@@ -1369,7 +1369,7 @@ script:
       default: false
     - name: chained
       isArray: false
-      description: "When set to \u2018true\u2019 the full CA chain is returned with the certificate. Must be used with the local CA ID."
+      description: When set to "true" the full CA chain is returned with the certificate. Must be used with the local CA ID.
       required: false
       secret: false
       default: false
@@ -2209,13 +2209,13 @@ script:
       default: false
     - name: username
       isArray: false
-      description: "The user\u2019s username."
+      description: The user's username.
       required: false
       secret: false
       default: false
     - name: email
       isArray: false
-      description: "The user\u2019s email."
+      description: The user's email.
       required: false
       secret: false
       default: false
@@ -2233,7 +2233,7 @@ script:
       default: false
     - name: auth_domain_name
       isArray: false
-      description: "The user\u2019s auth domain."
+      description: The user's auth domain.
       required: false
       secret: false
       default: false
