@@ -158,7 +158,7 @@
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
-            "timeout": 1200,
+            "timeout": 400,
             "integrations": "Cortex XDR - IR",
             "memory_threshold": 120
         },
@@ -168,7 +168,7 @@
                 "Core REST API"
             ],
             "playbookID": "Test Playbook - Cortex XDR - Retrieve File by sha256",
-            "timeout": 1200,
+            "timeout": 800,
             "memory_threshold": 200
         },
         {
@@ -874,6 +874,7 @@
         {
             "integrations": "Whois",
             "playbookID": "Sanity Test - Playbook with Unmockable Whois Integration",
+            "instance_names": "legacy_context_output",
             "fromversion": "6.5.0"
         },
         {
@@ -1898,6 +1899,7 @@
             "integrations": "EWS v2",
             "playbookID": "EWS Public Folders Test",
             "instance_names": "ewv2_regular",
+            "memory_threshold": 100,
             "is_mockable": false
         },
         {
@@ -2515,6 +2517,7 @@
         {
             "integrations": "Whois",
             "playbookID": "whois_test",
+            "instance_names": "legacy_context_output",
             "fromversion": "5.0.0",
             "timeout": 2000
         },
@@ -2979,7 +2982,7 @@
                 "Active Directory Query v2",
                 "Cortex XDR - IR"
             ],
-            "memory_threshold": 100,
+            "memory_threshold": 125,
             "instance_names": "active_directory_80k",
             "has_api": false
         },
@@ -3676,6 +3679,9 @@
             "playbookID": "GetIndicatorsByQuery - Test"
         },
         {
+            "playbookID": "DBotFindSimilarIncidents-test"
+        },
+        {
             "playbookID": "DBotCreatePhishingClassifierV2FromFile-Test",
             "timeout": 60000,
             "fromversion": "6.1.0",
@@ -3822,6 +3828,12 @@
             "playbookID": "FailedInstances - Test",
             "integrations": "Whois",
             "fromversion": "4.5.0"
+        },
+        {
+            "playbookID": "Whois A new layout implemented with python-whois service",
+            "integrations": "Whois",
+            "instance_names": "New_context_output",
+            "fromversion": "6.9.0"
         },
         {
             "integrations": "F5 ASM",
@@ -5485,6 +5497,7 @@
                 "Whois",
                 "Rasterize"
             ],
+            "instance_names": ["legacy_context_output"],
             "memory_threshold": 300,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
@@ -5930,7 +5943,6 @@
         "ThreatGrid_v2_Test": "No instance, developed by Qmasters",
         "Test-Detonate URL - ThreatGrid": "No instance, developed by Qmasters",
         "awake_security_test_pb": "No instance, CRTX-77572",
-        "Create Phishing Classifier V2 ML Test": "Updated docker image lacks data for the ml model. Once data issue is solved for ml module can un skip. ",
         "SumoLogic-Test": "401 unauthorized, CIAC-6334",
         "EWS_O365_test": "Issue CIAC-6753",
         "Microsoft Defender Advanced Threat Protection - Test dev": "Issue CIAC-7514",
