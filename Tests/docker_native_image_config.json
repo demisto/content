@@ -104,7 +104,6 @@
             "reason":"Issue: CIAC-10245 - Microsoft broke their API, and it was fixed in a newer version of the exchangelib package.",
             "ignored_native_images":[
                 "native:8.6",
-                "native:dev",
                 "native:candidate"
             ]
         },
