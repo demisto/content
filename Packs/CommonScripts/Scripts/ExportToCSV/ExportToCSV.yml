@@ -30,11 +30,5 @@ args:
   - UTF-16-BOM
 scripttarget: 0
 fromversion: 5.0.0
-contentitemexportablefields:
-  contentitemfields:
-    fromServerVersion: ''
-engineinfo: {}
-runas: DBotWeakRole
-runonce: false
 tests:
-- No tests (auto formatted)
+- ExportToCSV-Test
