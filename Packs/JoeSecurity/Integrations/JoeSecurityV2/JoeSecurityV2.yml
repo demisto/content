@@ -41,12 +41,12 @@ configuration:
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
-  additionalinfo: null
+  additionalinfo:
   required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
-  additionalinfo: null
+  additionalinfo:
   required: false
 description: Access the full set of possibilities the JoeSandbox Cloud provides via the RESTful Web API v2.
 display: Joe Security v2
@@ -579,7 +579,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  - name: "joe-list\u2013lia-countries"
+  - name: joe-list-lia-countries
     arguments: []
     description: Retrieve a list of localized internet anonymization countries.
     outputs:

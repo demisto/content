@@ -26,7 +26,7 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: "Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud\u2014across large, geographically distributed enterprise environments."
+description: Forcepoint SMC provides unified, centralized management of all models of Forcepoint engines whether physical, virtual or cloud—across large, geographically distributed enterprise environments.
 display: Forcepoint Security Management Center
 name: Forcepoint Security Management Center
 script:
