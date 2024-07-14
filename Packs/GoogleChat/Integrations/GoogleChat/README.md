@@ -24,7 +24,8 @@ This integration was integrated and tested with version xx of GoogleChat.
 In the Server Configuration section, verify that the value for the `instance.execute.external.INTEGRATION-INSTANCE-NAME` key is set to true. If this key does not exist:
 
 1. Click **+ Add Server Configuration**.
-2. Add **instance.execute.external.integration-instance-name** and set the value to true.
+2. Add **instance.execute.external.integration-instance-name** and set the value to true. <br/>
+See the [following refernce](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for more information.
 
 ## Create Google Chat App
 
@@ -48,7 +49,7 @@ In the Server Configuration section, verify that the value for the `instance.exe
         - Join spaces and group conversations: Lets users add and remove your Chat app to spaces with more than one person. Your Chat app receives interaction events whenever it's added or removed from the space, and whenever users @mention or use a slash command in the space.
     - Under **Connection settings** select the App URL button and insert your XSOAR URL according to the guide bellow:
         - For Cortex XSOAR 6.x: `<CORTEX-XSOAR-URL\>/instance/execute/<INTEGRATION-INSTANCE-NAME\>`. For example, `https://my.xsoar6.server/instance/execute/google-chat-instance-1`.<br/> Note that the string instance does not refer to the name of your XSOAR instance, but rather is part of the URL.
-        - For Cortex XSOAR 8.x / XSIAM: you need to run using external engine: `https://<Engine URL\>:<port\>`. For example, `https://my-engine-url:7001`.
+        - For Cortex XSOAR 8.x / XSIAM: `https://ext-<CORTEXT-XSOAR-SERVER-ADDRESSS>/xsoar/instance/execute/<INTEGRATION-INSTANCE-NAME>`, e.g., https://ext-my.demisto.live/xsoar/instance/execute/google-chat-instance-1.
     - Under **Visibility** - choose your desired option.
 
 ## Add the Google Chat App to your Google Chat
