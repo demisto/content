@@ -5,6 +5,6 @@ Bitwarden is the best password manager for securely storing, managing, and shari
 
 ## What does this pack do?
 - **Fetch Events**: When you select this option on the Configuration page, Cortex XSIAM will fetch events every minute without duplicating events.
-- **Get Events**: Utilize 'bitwarden-get-events' in the Playground to retrieve events, where you have the flexibility to customize the time frame, apply limits, and integrate the results into the XSIAM dataset.
+- **Get Events**: Utilize 'bitwarden-get-events' in the Playground to retrieve events, where you have the flexibility to customize the time frame, apply limits, and integrate the results into the Cortex XSIAM dataset.
 
 For more information, see the integration documentation.
