@@ -13,7 +13,7 @@ filter category = "AuditLogs"
         _time = parse_timestamp("%Y-%m-%dT%H:%M:%E*S", tmp_time)
 | fields -tmp_time;
 
-| filter category in("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ProvisioningLogs")
+| filter category in("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs", "ProvisioningLogs")
 | alter
         tmp_time = if(category = "ProvisioningLogs", json_extract_scalar(properties, "$.activityDateTime"), category in("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs"), json_extract_scalar(properties, "$.createdDateTime"), null)
 | alter
