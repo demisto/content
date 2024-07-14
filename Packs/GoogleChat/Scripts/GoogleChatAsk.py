@@ -74,7 +74,7 @@ def main():
     option1 = demisto_args.get('option1')
     option2 = demisto_args.get('option2')
     message = demisto_args.get('message')
-    default_reply = demisto_args.get('default_reply', option1)
+    default_reply = demisto_args.get('default_reply', parse_option_text(option1)[0])
     response_type = demisto_args.get('response_type', 'buttons')
     additional_options = argToList(demisto_args.get('additional_options', ''))
     lifetime = demisto_args.get('lifetime', '1 day')
