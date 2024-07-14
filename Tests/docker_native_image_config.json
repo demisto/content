@@ -149,7 +149,7 @@
         },
         {
             "id": "ThreatConnect v3",
-            "reason": "",
+            "reason": "CIAC-11146",
             "ignored_native_images": [
                 "native:8.6",
                 "native:dev",
