@@ -106,7 +106,7 @@ def get_events_command(client: Client, args: Dict[str, Any]) -> tuple:
 
 def fetch_events(client: Client, max_fetch: int,
                  dates: Dict[str, Any] = {'start': DEFAULT_FIRST_FETCH, 'end': DEFAULT_END_DATE}) -> tuple[
-        List[Dict[str, Any]], Dict[str, Any]]:
+    List[Dict[str, Any]], Dict[str, Any]]:
     """ Fetches events from the API using the provided client.
     Args:
         - client (Client): The client object used to make API requests.
@@ -157,7 +157,7 @@ def fetch_events(client: Client, max_fetch: int,
 
 
 def get_events_with_pagination(client: Client, max_fetch: int, dates: Dict[str, Any], last_run: Dict[str, Any]) -> tuple[
-        List[Dict[str, Any]], str]:
+    List[Dict[str, Any]], str]:
     continuation_token = last_run.get('continuationToken', '')
     events: List[dict] = []
     has_next = True
@@ -171,6 +171,8 @@ def get_events_with_pagination(client: Client, max_fetch: int, dates: Dict[str, 
         if continuation_token := response.get('continuationToken'):
             has_next = True
         events.extend(response.get('data', []))
+
+    demisto.debug(f'Bitwarden - {len(events)} events fetched')
     return events, continuation_token
 
 
