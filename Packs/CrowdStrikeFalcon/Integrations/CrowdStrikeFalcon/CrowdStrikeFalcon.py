@@ -435,6 +435,14 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
     if get_token_flag:
         token = get_token()
         headers['Authorization'] = f'Bearer {token}'
+        retries = 0
+        status_list_to_retry = []
+    else:  # get_token_flag=False means that get_token_request() called http_request() with /oauth2/token, and we want to retry
+        # to create the token in case of 429 in the first call to generic_http_request and not in the second call to avoid a
+        # loop of calls to get_token_request().
+        retries = 5
+        status_list_to_retry = [429]
+        demisto.debug(f'In http_request {get_token_flag=} updated retries and status_list_to_retry')
 
     headers['User-Agent'] = 'PANW-XSOAR'
     int_timeout = int(timeout) if timeout else 10  # 10 is the default in generic_http_request
@@ -464,7 +472,9 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
             error_handler=error_handler,
             json_data=json,
             timeout=int_timeout,
-            ok_codes=valid_status_codes
+            ok_codes=valid_status_codes,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry
         )
         demisto.debug(f'In http_request after the first call to generic_http_request {res=} {res.status_code=} {res.json()=}')
     except requests.exceptions.RequestException as e:
@@ -477,7 +487,7 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         valid_status_codes.remove(429)
         if res.status_code not in valid_status_codes:
             # try to create a new token
-            if res.status_code in (401, 403, 429):
+            if res.status_code in (401, 403, 429) and get_token_flag:
                 demisto.debug(f'Try to create a new token because {res.status_code=}')
                 token = get_token(new_token=True)
                 headers['Authorization'] = f'Bearer {token}'
