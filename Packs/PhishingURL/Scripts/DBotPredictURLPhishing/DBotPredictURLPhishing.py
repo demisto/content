@@ -482,7 +482,7 @@ def rasterize_command(urls: list[str], rasterize_timeout: int) -> list[Union[dic
         }
     )
     demisto.debug(f'Rasterize Data: {res_rasterize}')
-    return [res['Contents'] for res in res_rasterize[:len(urls)]]
+    return [res['Contents'] for res in res_rasterize][:len(urls)]
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
