@@ -42,6 +42,7 @@ repos:
     args:ci:
     - --config=nightly_ruff.toml
     skip:docker_autoupdate: true
+    log_file: ruff.log
 - repo: https://github.com/hhatto/autopep8
   rev: v2.3.1
   hooks:
@@ -106,6 +107,7 @@ repos:
     
   - id: pytest-in-docker
     name: pytest-in-docker
+    log_file: pytest.log
     description: Run pytest on the code in content packs
     docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
