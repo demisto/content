@@ -39,7 +39,7 @@ class Client(BaseClient):
                                'Content-Type': 'application/json'}
         super().__init__(base_url, verify, proxies)
 
-    def test_module_request(self) -> dict:
+    def module_test_request(self) -> dict:
         """Tests connectivity with the application for some APIs.
 
         :return: A dictionary containing the response.
@@ -357,7 +357,7 @@ def module_test_command(client: Client, params: dict) -> str:
     # if all of the custom API key's is provided
     if client.api_key and client.api_secret_key:
         try:
-            client.test_module_request()
+            client.module_test_request()
 
             # if is_fetch = true, try to fetch
             if is_fetch:
@@ -1591,7 +1591,7 @@ def format_policy_response(response: dict) -> dict:
 ''' MAIN FUNCTION '''
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     command = demisto.command()
     args = demisto.args()
 

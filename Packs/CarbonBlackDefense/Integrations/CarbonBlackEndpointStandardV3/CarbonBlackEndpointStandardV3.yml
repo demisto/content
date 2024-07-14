@@ -2526,7 +2526,7 @@ script:
       description: The service name associated with the observed process.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.process_sha256
-      description: The SHA-256 hash
+      description: The SHA-256 hash.
   - name: cbd-find-observation
     arguments:
     - name: polling
@@ -3508,7 +3508,7 @@ script:
       description: The service name associated with the observed process.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.process_sha256
-      description: The SHA-256 hash
+      description: The SHA-256 hash.
   - name: cbd-find-observation-results
     arguments:
     - name: polling
