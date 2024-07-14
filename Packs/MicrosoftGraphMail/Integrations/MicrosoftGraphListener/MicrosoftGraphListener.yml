@@ -126,7 +126,7 @@ configuration:
   required: true
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
-  defaultvalue: '15 minutes'
+  defaultvalue: 15 minutes
   type: 0
   section: Collect
   required: false
@@ -928,7 +928,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.98336
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   script: ''
   type: python

@@ -538,7 +538,9 @@ script:
       name: limit
     - description: A link that specifies a starting point to use for subsequent calls.
       name: next_link
-    - description: "Number of results to return per page.\nNote:  This parameter is intended for pagination purposes and will surpass the specified limit."
+    - description: 'Number of results to return per page.
+
+        Note:  This parameter is intended for pagination purposes and will surpass the specified limit.'
       name: page_size
     description: List of managed devices.
     name: msgraph-list-managed-devices
@@ -983,7 +985,7 @@ script:
     execution: false
     name: msgraph-device-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.87358
+  dockerimage: demisto/crypto:1.0.0.103269
   script: ''
   subtype: python3
   type: python

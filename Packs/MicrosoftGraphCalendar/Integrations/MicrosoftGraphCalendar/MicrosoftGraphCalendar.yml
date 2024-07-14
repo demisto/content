@@ -104,16 +104,16 @@ script:
       description: The calendar name.
       type: String
     - contextPath: MSGraphCalendar.Calendar.CanShare
-      description: "Whether the user has the permission to share the calendar. Only the user who created the calendar can share."
+      description: Whether the user has the permission to share the calendar. Only the user who created the calendar can share.
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.CanEdit
-      description: "Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access)."
+      description: Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access).
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.ChangeKey
-      description: "Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the exchange to apply changes to the correct version of the object. Read-only."
+      description: Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the exchange to apply changes to the correct version of the object. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Calendar.Owner
-      description: "The user who created or added the calendar."
+      description: The user who created or added the calendar.
       type: Unknown
     - contextPath: MSGraphCalendar.Calendar.ID
       description: The unique ID of the calendar. Read-only.
@@ -133,16 +133,16 @@ script:
       description: The name of the calendar.
       type: String
     - contextPath: MSGraphCalendar.Calendar.CanShare
-      description: "Whether the user has the permission to share the calendar. Only the user who created the calendar can share it."
+      description: Whether the user has the permission to share the calendar. Only the user who created the calendar can share it.
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.CanEdit
-      description: "Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access)."
+      description: Whether the user can write to the calendar (true for the user who created the calendar and for a user who has been shared a calendar and granted write access).
       type: Boolean
     - contextPath: MSGraphCalendar.Calendar.ChangeKey
-      description: "Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the Exchange to apply changes to the correct version of the object. Read-only."
+      description: Identifies the version of the calendar object. Every time the calendar is changed, the changeKey changes as well, which allows the Exchange to apply changes to the correct version of the object. Read-only.
       type: String
     - contextPath: MSGraphCalendar.Calendar.Owner
-      description: "The user who created or added the calendar."
+      description: The user who created or added the calendar.
       type: Unknown
     - contextPath: MSGraphCalendar.Calendar.ID
       description: The unique ID of the calendar. Read-only.
@@ -256,16 +256,16 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The last time the event was modified, using ISO 8601 format in in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The last time the event was modified, using ISO 8601 format in in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 would be: '2014-01-01T00:00:00Z'."
+      description: 'The date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 would be: ''2014-01-01T00:00:00Z''.'
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
+      description: Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object.
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: The ID of the event.
@@ -274,7 +274,7 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitivity of the event. Possible values are: normal, personal, private, confidential."
+      description: 'The sensitivity of the event. Possible values are: normal, personal, private, confidential.'
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -286,7 +286,7 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, which is used when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: A URL for an online meeting, which is used when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.
       type: Unknown
   - name: msgraph-calendar-create-event
     description: Creates a new event.
@@ -304,15 +304,15 @@ script:
     - name: location
       description: The location of the event for an online meeting, such as a Skype meeting. Read-only.
     - name: end
-      description: "The date and time the event ends. For example, '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: The date and time the event ends. For example, '2017-05-28T12:00:00'. By default, the start time is in UTC.
     - name: original_end_time_zone
       description: The end time zone when the event was created.
     - name: original_start
-      description: "The original start time of the calendar item using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The original start time of the calendar item using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
     - name: start
-      description: "The date and time the event starts at, for example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: The date and time the event starts at, for example '2017-05-28T12:00:00'. By default, the start time is in UTC.
     - name: time_zone
-      description: "Represents a time zone. For example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
+      description: Represents a time zone. For example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0
     - name: original_start_time_zone
       description: The start time zone when the event was created.
     outputs:
@@ -365,16 +365,16 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "Last modified time and date of the event using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: Last modified time and date of the event using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The time and date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The time and date the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
+      description: Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object.
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: Event's ID.
@@ -383,7 +383,7 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitivity of the event. Possible values are: normal, personal, private, confidential."
+      description: 'The sensitivity of the event. Possible values are: normal, personal, private, confidential.'
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -395,7 +395,7 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, which is used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: A URL for an online meeting, which is used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.
       type: Unknown
   - name: msgraph-calendar-update-event
     description: Updates an existing event.
@@ -414,15 +414,15 @@ script:
     - name: location
       description: The location of the event for an online meeting, such as a Skype meeting. Read-only.
     - name: end
-      description: "The date and time the event ends. For example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: The date and time the event ends. For example '2017-05-28T12:00:00'. By default, the start time is in UTC.
     - name: original_end_time_zone
       description: The end time zone when the event was created.
     - name: start
-      description: "The date and time the event starts. For example '2017-05-28T12:00:00'. By default, the start time is in UTC."
+      description: The date and time the event starts. For example '2017-05-28T12:00:00'. By default, the start time is in UTC.
     - name: time_zone
-      description: "Represents a time zone, for example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0"
+      description: Represents a time zone, for example, 'Pacific Standard Time'. For more information, see https://docs.microsoft.com/en-us/graph/api/resources/datetimetimezone?view=graph-rest-1.0
     - name: original_start
-      description: "The original start time of the calendar item, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The original start time of the calendar item, using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
     - name: original_start_time_zone
       description: The start time zone when the event was created.
     outputs:
@@ -475,16 +475,16 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The last time and date the event was modified using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The last time and date the event was modified using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone that was set when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The date and time the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The date and time the event was created using ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows Exchange to apply changes to the correct version of the object."
+      description: Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows Exchange to apply changes to the correct version of the object.
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: The ID of the event.
@@ -493,7 +493,7 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitvity of the event. Possible values are: normal, personal, private, confidential."
+      description: 'The sensitvity of the event. Possible values are: normal, personal, private, confidential.'
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -505,7 +505,7 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.
       type: Unknown
   - name: msgraph-calendar-delete-event
     description: Updates an existing event.
@@ -565,16 +565,16 @@ script:
       description: The number of minutes before the event start time of the reminder alert.
       type: Number
     - contextPath: MSGraphCalendar.Event.LastModifiedDateTime
-      description: "The time and date the event was last modified using the ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The time and date the event was last modified using the ISO 8601 format in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
       type: String
     - contextPath: MSGraphCalendar.Event.OriginalEndTimeZone
       description: The end time zone that was set when the event was created.
       type: String
     - contextPath: MSGraphCalendar.Event.CreatedDateTime
-      description: "The time and date the event was created using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'."
+      description: The time and date the event was created using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is '2014-01-01T00:00:00Z'.
       type: String
     - contextPath: MSGraphCalendar.Event.ChangeKey
-      description: "Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object."
+      description: Identifies the version of the event object. Every time the event is changed, the ChangeKey changes as well, which allows the Exchange to apply changes to the correct version of the object.
       type: String
     - contextPath: MSGraphCalendar.Event.ID
       description: The ID of the Event.
@@ -583,7 +583,7 @@ script:
       description: Whether the message sender is also the organizer.
       type: Boolean
     - contextPath: MSGraphCalendar.Event.Sensitivity
-      description: "The sensitivity of the event. Possible values are: normal, personal, private, confidential."
+      description: 'The sensitivity of the event. Possible values are: normal, personal, private, confidential.'
       type: String
     - contextPath: MSGraphCalendar.Event.IsReminderOn
       description: Whether an alert is set to remind the user of the event.
@@ -595,13 +595,13 @@ script:
       description: The text of the event's subject line.
       type: String
     - contextPath: MSGraphCalendar.Event.OnlineMeetingUrl
-      description: "A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only."
+      description: A URL for an online meeting, used only when an organizer specifies an event as an online meeting, such as a Skype meeting. Read-only.
       type: Unknown
   - description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: msgraph-calendar-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.100307
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   type: python
