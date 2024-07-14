@@ -468,10 +468,10 @@ def main():  # pragma: no cover
             return_outputs(*get_incidents_command(client, args))
         
         elif command == 'core-terminate-process':
-            return_outputs(terminate_process_command(client, args))
+            return_results(terminate_process_command(client, args))
         
         elif command == 'core-causality-process':
-            return_outputs(terminate_causality_command(client, args))
+            return_results(terminate_causality_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
