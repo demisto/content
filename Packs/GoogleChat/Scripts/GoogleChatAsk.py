@@ -48,8 +48,8 @@ def create_adaptive_card(message, user_options, response_type):
                 "widgets": [
                     {
                         "selectionInput": {
-                            "name": "a",
-                            "label": "a",
+                            "name": "survey",
+                            "label": "",
                             "type": 'RADIO_BUTTON' if response_type == 'button' else 'DROPDOWN'
                         }
                     },
