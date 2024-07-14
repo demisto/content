@@ -6,7 +6,7 @@ configuration:
 - name: service_account_credentials
   display: null
   required: true
-  defaultvalue: null
+  defaultvalue: 
   type: 9
   additionalinfo: A service account key from Google.
   displaypassword: Service Account Key
@@ -23,7 +23,7 @@ configuration:
   required: false
 - name: user_id
   display: Email - Associate to Google Drive
-  defaultvalue: null
+  defaultvalue: 
   type: 0
   additionalinfo: 'Used to impersonate a Google workspace user, so the spreadsheets is created in the associated Google Drive and is easily accessible from a UI. This parameter is used during the authentication process.
 
