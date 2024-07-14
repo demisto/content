@@ -1172,6 +1172,110 @@ def delete_incidents_command(rs_client: SimpleClient, args: dict) -> CommandResu
     )
 
 
+def list_incident_notes_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Lists an array of open tasks to which the current user is assigned.
+    """
+    incident_id = args.get('incident_id')
+    demisto.debug(f'list_incident_notes_command {incident_id=}')
+    try:
+        response = rs_client.get(f'/incidents/{incident_id}/comments')
+        human_readable: str = tableToMarkdown(f'Incident {incident_id} Notes', t=response)
+        demisto.debug(f'{response=}')
+        return CommandResults(
+            outputs_prefix='Resilient.IncidentNotes',
+            outputs=response,
+            readable_output=human_readable
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve incident nots for incident ID: {incident_id}. Got error {e.response.text}'
+        )
+
+
+def update_incident_note_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Updates an incident's comment.
+    """
+    incident_id, note_id, note_text = args.get('incident_id'), args.get('note_id'), args.get('note')
+    demisto.debug(f'update_incident_note_command {incident_id=}, {note_id=}, {note_text=}')
+    try:
+        response = rs_client.put(f'/incidents/{incident_id}/comments/{note_id}', payload={"text": note_text})
+        demisto.debug(f'{response=}')
+        return CommandResults(
+            readable_output=f'Successfully updated note ID {note_id} for incident ID {incident_id}'
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not update note ID {note_id} for incident ID: {incident_id}. Got error {e.response.text}'
+        )
+
+
+def add_custom_incident_task_command(rs_client: SimpleClient, args: dict):
+    """
+    Creates a new task for the given incident.
+    """
+    incident_id, task_instructions = args.get('incident_id'), args.get('instructions')
+    demisto.debug(f'add_custom_incident_task_command {incident_id=}')
+    try:
+        response = rs_client.post(f'/incidents/{incident_id}/tasks', payload={"text": "SHISHI"})
+        demisto.debug(f'{response=}')
+        return CommandResults(
+            readable_output=f'Successfully created task for incident ID {incident_id}'
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not create a task for incident ID: {incident_id}. Got error {e.response.text}'
+        )
+
+
+def list_tasks_command(rs_client: SimpleClient) -> CommandResults:
+    """
+    Lists an array of open tasks to which the current user is assigned.
+    """
+    try:
+        response: list = rs_client.get(f'/tasks')
+        demisto.debug(f'{response=}')
+        tasks_list = []
+        for incident_tasks_obj in response:
+            tasks_list.extend(incident_tasks_obj.get('tasks'))
+        # TODO - Figure out what human readable table to produce here
+        # human_readable: str = tableToMarkdown(name="Open Tasks", t=tasks_list)
+        return CommandResults(
+            outputs_prefix='Resilient.Tasks',
+            outputs=response,
+            # readable_output=human_readable
+        )
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve tasks. Got error {e.response.text}'
+        )
+
+
+def get_task_members_command(rs_client: SimpleClient, args: dict) -> CommandResults:
+    """
+    Gets the members of a given task by its ID.
+    """
+    task_id = args.get('task_id')
+    try:
+        response = rs_client.get(f'/tasks/{task_id}/members')
+        demisto.debug(f'{response=}')
+    except SimpleHTTPException as e:
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f'Could not retrieve members of task ID: {task_id}. Got error {e.response.text}'
+        )
+    return CommandResults(
+        outputs_prefix='Resilient.Task',
+        outputs=response,
+        readable_output=response.get('content', '')
+    )
+
+
 def delete_tasks_command(rs_client: SimpleClient, args: dict) -> CommandResults:
     """
      Deletes a single or multiple tasks.
@@ -1327,6 +1431,16 @@ def main():
             return_results(upload_incident_attachment_command(client, args))
         elif command == 'rs-delete-incidents':
             return_results(delete_incidents_command(client, args))
+        elif command == 'rs-list-incident-notes':
+            return_results(list_incident_notes_command(client, args))
+        elif command == 'rs-update-incident-note':
+            return_results(update_incident_note_command(client, args))
+        elif command == 'rs-add-custom-incident-task':
+            return_results(add_custom_incident_task_command(client, args))
+        elif command == 'rs-list-tasks':
+            return_results(list_tasks_command(client))
+        elif command == 'rs-get-task-members':
+            return_results(get_task_members_command(client, args))
         elif command == 'rs-delete-tasks':
             return_results(delete_tasks_command(client, args))
         elif command == 'rs-delete-task-members':

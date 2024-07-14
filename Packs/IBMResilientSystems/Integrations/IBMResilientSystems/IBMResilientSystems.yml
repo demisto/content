@@ -821,50 +821,77 @@ script:
   - name: rs-upload-incident-attachment
     description: Upload an attachment for an incident.
     arguments:
-      - name: incident_id
-        description: Incident id to update.
-        required: true
-      - name: entry_id
-        description: EntryID of the file to upload.
-        required: true
+    - name: incident_id
+      description: Incident ID to update.
+      required: true
+    - name: entry_id
+      description: EntryID of the file to upload.
+      required: true
 
   - name: rs-delete-incidents
     description: Delete multiple incidents.
     arguments:
-      - name: incident_ids
-        description: A comma-separated list of incident IDs to be deleted.
-        required: true
-        isArray: true
+    - name: incident_ids
+      description: A comma-separated list of incident IDs to be deleted.
+      required: true
+      isArray: true
 
   - name: rs-list-incident-notes
     description: Gets all of the top-level comments for an incident.
-#    arguments: ...
-#    outputs: ...
+    arguments:
+    - name: incident_id
+      description: Incident ID to update.
+      required: true
+    outputs:
+    - contextPath: Resilient.IncidentNotes
+      description: Top-level comments for incident.
+      type: Dictionary
 
   - name: rs-update-incident-note
-    description: Updates an incident comment (“notes” in the UI).
-#    arguments: ...
-#    outputs: ...
+    description: Updates an incident's comment (“notes” in the UI).
+    arguments:
+    - name: incident_id
+      description: Incident ID to update its note.
+      required: true
+    - name: note_id
+      description: Note ID to update.
+      required: true
+    - name: note
+      description: Text of the note.
+      required: true
 
   - name: rs-add-custom-incident-task
     description: Add a custom task to the incident.
-#    arguments: ...
-#    outputs: ...
+    arguments:
+    - name: incident_id
+      description: Incident ID to add a custom task to.
+      required: true
+    - name: Instructions
+      description: Task instructions text.
+      required: true
 
   - name: rs-list-tasks
-#    description: ...
-#    arguments: ...
-#    outputs: ...
+    description: Gets an array of open tasks to which the current user is assigned.
+    outputs:
+    - contextPath: Resilient.Tasks
+      description: List of open tasks.
+      type: Dictionary
 
   - name: rs-get-task-members
     description: Get the members of a task. Private tasks will have the returned "members" property set. Non-private tasks will have a null "members" property.
-#    arguments: ...
-#    outputs: ...
+    arguments:
+    - name: task_id
+      description: A comma-separated list of task IDs to be deleted.
+      required: true
+    outputs:
+    - contextPath: Resilient.Task
+      description: Task members.
+      type: Dictionary
 
   - name: rs-delete-tasks
     description: Deletes a specified list of tasks. Note that only custom tasks can be deleted.
     arguments:
-    - name: task_id
+    - name: task_ids
       description: A comma-separated list of task IDs to be deleted.
       required: true
 
