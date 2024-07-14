@@ -117,7 +117,7 @@ name: Azure Security Center v2
 script:
   commands:
   - arguments:
-    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -151,7 +151,7 @@ script:
       description: The alert ID.
       type: string
   - arguments:
-    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -221,7 +221,7 @@ script:
       description: Objects that are related to the alert.
       type: string
   - arguments:
-    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the ascLocation. This command requires the resourceGroupName argument.
       name: asc_location
@@ -237,7 +237,6 @@ script:
       auto: PREDEFINED
       predefined:
       - activate
-#        - reactivate
       - dismiss
       - in_progress
       - resolve
@@ -251,7 +250,7 @@ script:
       description: The alert ID.
       type: string
   - arguments:
-    - description: "Resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "Resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
     - default: true
       defaultValue: current
@@ -278,7 +277,7 @@ script:
       description: Indicates whether the Advanced Threat Protection is enabled.
       type: string
   - arguments:
-    - description: "Name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "Name of the resource group. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
     - defaultValue: current
       description: Name of the Advanced Threat Detection setting. The default setting's name is 'current'.
@@ -360,7 +359,7 @@ script:
   - arguments:
     - description: The location where Azure Security Center stores the data of the subscription. Run the 'azure-sc-list-location' command to get the asc_location.
       name: asc_location
-    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group within the user's subscription. The name is case insensitive. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
     - description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
       name: subscription_id
@@ -418,15 +417,15 @@ script:
       description: description.
       defaultValue: ascScore
       predefined:
-      - ""
+      - ''
     - name: subscription_id
       description: The subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. If not specified, the default subscription ID is used.
-      defaultValue: ""
+      defaultValue: ''
       predefined:
-      - ""
+      - ''
     outputs:
     - contextPath: Azure.Securescore.displayName
-      description: The initiative’s name.
+      description: "The initiative\u2019s name."
       type: String
     - contextPath: Azure.Securescore.score.max
       description: The max score of the Securescore.
@@ -466,7 +465,7 @@ script:
       type: Unknown
     - contextPath: Azure.ResourceGroupName.properties.provisioningState
       description: Resource group provisioning state.
-  dockerimage: demisto/crypto:1.0.0.98977
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   type: python

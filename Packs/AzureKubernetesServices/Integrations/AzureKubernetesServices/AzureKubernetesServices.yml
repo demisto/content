@@ -36,7 +36,7 @@ configuration:
   - Azure Managed Identities
   - Client Credentials
   section: Connect
-- display: Tenant ID 
+- display: Tenant ID
   name: tenant_id
   type: 0
   required: false
@@ -214,30 +214,30 @@ script:
     arguments:
     - default: false
       isArray: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       type: String
       isArray: false
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       type: String
       isArray: false
-    - description: 'The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.'
+    - description: The name of the managed cluster resource. Can be retrieved using the azure-ks-clusters-list command.
       name: resource_name
       default: false
       isArray: false
       required: true
     - auto: PREDEFINED
-      description: 'Resource location, Can be retrieved using the azure-ks-clusters-list command.'
+      description: Resource location, Can be retrieved using the azure-ks-clusters-list command.
       name: location
       predefined:
-      - 'australiacentral'
-      - 'australiacentral2'
+      - australiacentral
+      - australiacentral2
       - australiaeast
       - australiasoutheast
       - brazilse
@@ -305,46 +305,46 @@ script:
     name: azure-ks-subscriptions-list
     outputs:
     - contextPath: AzureKS.Subscription.id
-      description: 'The unique identifier of the Azure Kubernetes subscription.'
+      description: The unique identifier of the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.authorizationSource
-      description: 'The source of authorization for the Azure Kubernetes subscription.'
+      description: The source of authorization for the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.managedByTenants
-      description: 'The tenants that have access to manage the Azure Kubernetes subscription.'
+      description: The tenants that have access to manage the Azure Kubernetes subscription.
       type: Unknown
     - contextPath: AzureKS.Subscription.subscriptionId
-      description: 'The ID of the Azure Kubernetes subscription.'
+      description: The ID of the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.tenantId
-      description: 'The ID of the tenant associated with the Azure Kubernetes subscription.'
+      description: The ID of the tenant associated with the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.displayName
-      description: 'The display name of the Azure Kubernetes subscription.'
+      description: The display name of the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.state
-      description: 'The current state of the Azure Kubernetes subscription.'
+      description: The current state of the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.subscriptionPolicies.locationPlacementId
-      description: 'The ID of the location placement policy for the Azure Kubernetes subscription.'
+      description: The ID of the location placement policy for the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.subscriptionPolicies.quotaId
-      description: 'The ID of the quota policy for the Azure Kubernetes subscription.'
+      description: The ID of the quota policy for the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.subscriptionPolicies.spendingLimit
-      description: 'The spending limit policy for the Azure Kubernetes subscription.'
+      description: The spending limit policy for the Azure Kubernetes subscription.
       type: String
     - contextPath: AzureKS.Subscription.count.type
-      description: 'The type of the Azure Kubernetes subscription count.'
+      description: The type of the Azure Kubernetes subscription count.
       type: String
     - contextPath: AzureKS.Subscription.count.value
-      description: 'The value of the Azure Kubernetes subscription count.'
+      description: The value of the Azure Kubernetes subscription count.
       type: Number
   - description: Gets all resource groups for a subscription.
     name: azure-ks-resource-group-list
     arguments:
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -359,42 +359,42 @@ script:
       required: false
     outputs:
     - contextPath: AzureKS.ResourceGroup.id
-      description: 'The unique identifier of the Azure Kubernetes resource group.'
+      description: The unique identifier of the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.name
-      description: 'The name of the Azure Kubernetes resource group.'
+      description: The name of the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.type
-      description: 'The type of the Azure Kubernetes resource group.'
+      description: The type of the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.location
-      description: 'The location of the Azure Kubernetes resource group.'
+      description: The location of the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.properties.provisioningState
-      description: 'The provisioning state of the Azure Kubernetes resource group.'
+      description: The provisioning state of the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.tags.Owner
-      description: 'The owner tag of the Azure Kubernetes resource group.'
+      description: The owner tag of the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.tags
-      description: 'The tags associated with the Azure Kubernetes resource group.'
+      description: The tags associated with the Azure Kubernetes resource group.
       type: Unknown
     - contextPath: AzureKS.ResourceGroup.tags.Name
-      description: 'The name tag of the Azure Kubernetes resource group.'
+      description: The name tag of the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.managedBy
-      description: 'The entity that manages the Azure Kubernetes resource group.'
+      description: The entity that manages the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-name
-      description: 'The AKS managed cluster name tag associated with the Azure Kubernetes resource group.'
+      description: The AKS managed cluster name tag associated with the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.tags.aks-managed-cluster-rg
-      description: 'The AKS managed cluster resource group tag associated with the Azure Kubernetes resource group.'
+      description: The AKS managed cluster resource group tag associated with the Azure Kubernetes resource group.
       type: String
     - contextPath: AzureKS.ResourceGroup.tags.type
-      description: 'The type tag associated with the Azure Kubernetes resource group.'
+      description: The type tag associated with the Azure Kubernetes resource group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.101635
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   subtype: python3

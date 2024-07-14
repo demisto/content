@@ -62,31 +62,31 @@ configuration:
   section: Connect
 - name: tenant_id
   display: Tenant ID
-  defaultvalue:
+  defaultvalue: null
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   required: false
 - name: credentials
   display: Client Secret
-  defaultvalue:
+  defaultvalue: null
   type: 9
-  additionalinfo: ""
+  additionalinfo: ''
   displaypassword: Client Secret
   hiddenusername: true
   section: Connect
   required: false
 - name: redirect_uri
   display: Application redirect URI
-  defaultvalue:
+  defaultvalue: null
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   advanced: true
   required: false
 - name: auth_code
   display: Authorization code
-  defaultvalue:
+  defaultvalue: null
   type: 9
   additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
   displaypassword: Authorization code
@@ -130,24 +130,24 @@ script:
     arguments:
     - default: false
       name: subscription_id
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       type: String
       isArray: false
       required: false
     - default: false
       name: resource_group_name
-      description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+      description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       type: String
       isArray: false
       required: false
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
       default: false
       type: String
-    - description: "The resource group name. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The resource group name. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       default: false
       type: String
@@ -218,13 +218,13 @@ script:
   - description: Tests the connectivity to the Azure Network Security Groups.
     name: azure-nsg-auth-test
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       default: false
       type: String
       isArray: false
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
@@ -241,24 +241,24 @@ script:
     description: Delete a security rule.
     name: azure-nsg-security-rule-delete
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       default: false
       type: String
       isArray: false
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       type: String
       isArray: false
-    - description: 'The name of the security group.'
+    - description: The name of the security group.
       name: security_group_name
       required: true
       default: false
       isArray: false
-    - description: 'The name of the rule to be created.'
+    - description: The name of the rule to be created.
       name: security_rule_name
       required: true
     - auto: PREDEFINED
@@ -343,19 +343,19 @@ script:
       description: The rule's direction. Can be "Inbound" or "Outbound".
       type: String
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       required: false
       default: false
       type: String
       isArray: false
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       name: resource_group_name
       required: false
       default: false
       type: String
       isArray: false
-    - description: 'The name of the security group.'
+    - description: The name of the security group.
       name: security_group_name
       default: false
       isArray: false
@@ -444,13 +444,13 @@ script:
       description: The rule's direction. Can be "Inbound" or "Outbound".
       type: String
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
       default: false
       type: String
       isArray: false
       required: false
-    - description: "The name of the resource group. Note: This argument will override the instance parameter ‘Default Resource Group Name'."
+    - description: "The name of the resource group. Note: This argument will override the instance parameter \u2018Default Resource Group Name'."
       isArray: false
       name: resource_group_name
       default: false
@@ -524,46 +524,46 @@ script:
     name: azure-nsg-subscriptions-list
     outputs:
     - contextPath: AzureNSG.Subscription.id
-      description: 'The unique identifier of the Azure Network Security Groups subscription.'
+      description: The unique identifier of the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.authorizationSource
-      description: 'The source of authorization for the Azure Network Security Groups subscription.'
+      description: The source of authorization for the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.managedByTenants
-      description: 'The tenants that have access to manage the Azure Network Security Groups subscription.'
+      description: The tenants that have access to manage the Azure Network Security Groups subscription.
       type: Unknown
     - contextPath: AzureNSG.Subscription.subscriptionId
-      description: 'The ID of the Azure Network Security Groups subscription.'
+      description: The ID of the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.tenantId
-      description: 'The ID of the tenant associated with the Azure Network Security Groups subscription.'
+      description: The ID of the tenant associated with the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.displayName
-      description: 'The display name of the Azure Network Security Groups subscription.'
+      description: The display name of the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.state
-      description: 'The current state of the Azure Network Security Groups subscription.'
+      description: The current state of the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.subscriptionPolicies.locationPlacementId
-      description: 'The ID of the location placement policy for the Azure Network Security Groups subscription.'
+      description: The ID of the location placement policy for the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.subscriptionPolicies.quotaId
-      description: 'The ID of the quota policy for the Azure Network Security Groups subscription.'
+      description: The ID of the quota policy for the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.subscriptionPolicies.spendingLimit
-      description: 'The spending limit policy for the Azure Network Security Groups subscription.'
+      description: The spending limit policy for the Azure Network Security Groups subscription.
       type: String
     - contextPath: AzureNSG.Subscription.count.type
-      description: 'The type of the Azure Network Security Groups subscription count.'
+      description: The type of the Azure Network Security Groups subscription count.
       type: String
     - contextPath: AzureNSG.Subscription.count.value
-      description: 'The value of the Azure Network Security Groups subscription count.'
+      description: The value of the Azure Network Security Groups subscription count.
       type: Number
   - description: Gets all resource groups for a subscription.
     name: azure-nsg-resource-group-list
     arguments:
     - default: false
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       isArray: false
       name: subscription_id
       required: false
@@ -578,42 +578,42 @@ script:
       required: false
     outputs:
     - contextPath: AzureNSG.ResourceGroup.id
-      description: 'The unique identifier of the Azure Network Security Groups resource group.'
+      description: The unique identifier of the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.name
-      description: 'The name of the Azure Network Security Groups resource group.'
+      description: The name of the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.type
-      description: 'The type of the Azure Network Security Groups resource group.'
+      description: The type of the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.location
-      description: 'The location of the Azure Network Security Groups resource group.'
+      description: The location of the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.properties.provisioningState
-      description: 'The provisioning state of the Azure Network Security Groups resource group.'
+      description: The provisioning state of the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.tags.Owner
-      description: 'The owner tag of the Azure Network Security Groups resource group.'
+      description: The owner tag of the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.tags
-      description: 'The tags associated with the Azure Network Security Groups resource group.'
+      description: The tags associated with the Azure Network Security Groups resource group.
       type: Unknown
     - contextPath: AzureNSG.ResourceGroup.tags.Name
-      description: 'The name tag of the Azure Network Security Groups resource group.'
+      description: The name tag of the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.managedBy
-      description: 'The entity that manages the Azure Network Security Groups resource group.'
+      description: The entity that manages the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-name
-      description: 'The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group.'
+      description: The ANSG managed cluster name tag associated with the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.tags.aNSG-managed-cluster-rg
-      description: 'The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group.'
+      description: The ANSG managed cluster resource group tag associated with the Azure Network Security Groups resource group.
       type: String
     - contextPath: AzureNSG.ResourceGroup.tags.type
-      description: 'The type tag associated with the Azure Network Security Groups resource group.'
+      description: The type tag associated with the Azure Network Security Groups resource group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.91402
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   subtype: python3

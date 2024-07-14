@@ -84,11 +84,11 @@ script:
       - high
     - description: The method used to order the retrieved results.
       name: order_by
-      defaultValue: 'riskLastUpdatedDateTime desc'
+      defaultValue: riskLastUpdatedDateTime desc
       auto: PREDEFINED
       predefined:
-        - 'riskLastUpdatedDateTime desc'
-        - 'riskLastUpdatedDateTime asc'
+      - riskLastUpdatedDateTime desc
+      - riskLastUpdatedDateTime asc
     - description: Displays all RiskyUsers before a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
       name: updated_before
     - description: Displays all RiskyUsers after a specific datetime. For Example "2024-02-27T04:49:26.257525Z", "10 days", "5 months", "2 hours".
@@ -191,11 +191,11 @@ script:
       name: detected_date_time_after
     - description: The method used to order the retrieved results.
       name: order_by
-      defaultValue: 'detectedDateTime desc'
+      defaultValue: detectedDateTime desc
       auto: PREDEFINED
       predefined:
-      - 'detectedDateTime desc'
-      - 'detectedDateTime asc'
+      - detectedDateTime desc
+      - detectedDateTime asc
     description: Returns a comma-separated list of the Risk Detection objects and their properties.
     name: azure-risky-users-risk-detections-list
     outputs:
@@ -326,7 +326,7 @@ script:
     - contextPath: AzureRiskyUsers.RiskDetection.tokenIssuerType
       description: 'Indicates the type of token issuer for the detected sign-in risk. Possible values are: AzureAD, ADFederationServices, UnknownFutureValue.'
       type: String
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   subtype: python3
