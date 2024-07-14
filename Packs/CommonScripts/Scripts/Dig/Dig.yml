@@ -6,17 +6,17 @@ args:
   required: true
 - auto: PREDEFINED
   default: true
-  defaultValue: "False"
+  defaultValue: 'False'
   description: Perform reverse lookup
   name: reverseLookup
   predefined:
-  - "False"
-  - "True"
+  - 'False'
+  - 'True'
 comment: 'DNS lookup utility to provide ''A'' and ''PTR'' record '
 commonfields:
   id: Dig
   version: -1
-dockerimage: demisto/netutils:1.0.0.86390
+dockerimage: demisto/netutils:1.0.0.103292
 enabled: true
 name: Dig
 script: ''

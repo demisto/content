@@ -42,10 +42,10 @@ configuration:
   required: false
   section: Collect
 script:
-  script: ""
+  script: ''
   type: python
   commands: []
-  dockerimage: demisto/netutils:1.0.0.99804
+  dockerimage: demisto/netutils:1.0.0.103292
   longRunning: true
   subtype: python3
 marketplaces:

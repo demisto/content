@@ -448,12 +448,12 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      defaultValue: 'group'
+      defaultValue: group
       description: Mirrors the investigation to a group (private channel) or a public channel. Default is group.
       name: mirrorTo
       predefined:
-      - 'group'
-      - 'channel'
+      - group
+      - channel
     description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
     name: mirror-investigation
   - arguments:
@@ -491,12 +491,12 @@ script:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      defaultValue: 'group'
+      defaultValue: group
       description: Mirrors the investigation to a group (private channel) or a public channel.
       name: mirrorTo
       predefined:
-      - 'group'
-      - 'channel'
+      - group
+      - channel
     description: Mirrors the investigation between Mattermost and the Cortex XSOAR War Room.
     name: mattermost-mirror-investigation
   longRunning: true
@@ -504,7 +504,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/netutils:1.0.0.99310
+  dockerimage: demisto/netutils:1.0.0.103292
 fromversion: 6.10.0
 tests:
 - MattermostV2 - testplaybook
