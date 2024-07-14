@@ -103,12 +103,9 @@ name: Azure Compute v2
 script:
   commands:
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group of the virtual machines.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group of the virtual machines.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     description: Lists the virtual machine instances in the given resource group.
     name: azure-vm-list-instances
@@ -135,12 +132,9 @@ script:
       description: The OS running on the virtual machine.
       type: string
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        Resource Group to which the virtual machine belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "Resource Group to which the virtual machine belongs.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: Name of the virtual machine to power on. To see all virtual machines and their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
@@ -159,12 +153,9 @@ script:
       description: Whether the VM instance is powered on or off.
       type: string
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group to which the virtual machine belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group to which the virtual machine belongs.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: The name of the virtual machine to power off. To see all virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
@@ -190,12 +181,9 @@ script:
       description: Whether the virtual machine instance is powered on or off.
       type: string
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group to which the virtual machine belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group to which the virtual machine belongs.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: The name of the virtual machine you want to view the details of. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
@@ -206,7 +194,7 @@ script:
       name: expand
       predefined:
       - instanceView
-      - 'userData'
+      - userData
     description: Gets the properties of a given virtual machine.
     name: azure-vm-get-instance-details
     outputs:
@@ -241,12 +229,9 @@ script:
       description: UserData for the VM.
       type: string
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group to which the new virtual machine will belong.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group to which the new virtual machine will belong.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: The name of the virtual machine to create.
       name: virtual_machine_name
@@ -365,7 +350,7 @@ script:
       description: The region in which the virtual machine is hosted.
       type: string
   - arguments:
-    - description: "Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "Subscription ID to use. Can be retrieved from the azure-sc-list-subscriptions command. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
     - description: A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by.
       name: tag
@@ -388,12 +373,9 @@ script:
       description: The provisioning state of the resource group.
       type: string
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group to which the virtual machine belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group to which the virtual machine belongs.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: The name of the virtual machine to delete. To see all the virtual machines with their associated names for a specific resource group, run the `azure-vm-list-instances` command.
       name: virtual_machine_name
@@ -412,12 +394,9 @@ script:
       description: The state of the subscription.
       type: String
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group to which the network interface belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group to which the network interface belongs.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: The name of the network interface you want to view the details of.
       name: nic_name
@@ -465,12 +444,9 @@ script:
       description: The interface ID.
       type: String
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group to which the IP address belongs.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group to which the IP address belongs.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: The IP address name.
       name: address_name
@@ -509,12 +485,9 @@ script:
       description: The address ID.
       type: String
   - arguments:
-    - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+    - description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
       name: subscription_id
-    - description: |
-        The resource group to which the new network interface will belong.
-        To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
-        Note: This argument will override the instance parameter ‘Default Resource Group Name'.
+    - description: "The resource group to which the new network interface will belong.\nTo see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.\nNote: This argument will override the instance parameter \u2018Default Resource Group Name'.\n"
       name: resource_group
     - description: The network interface name.
       name: nic_name
@@ -607,7 +580,7 @@ script:
       type: String
   - arguments:
     - name: subscription_id
-      description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
+      description: "The subscription ID. Note: This argument will override the instance parameter \u2018Default Subscription ID'."
     description: Gets the properties of all public ip address in a subscription.
     name: azure-vm-get-all-public-ip-details
     outputs:
@@ -645,7 +618,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-vm-auth-reset
-  dockerimage: demisto/crypto:1.0.0.83343
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   subtype: python3
