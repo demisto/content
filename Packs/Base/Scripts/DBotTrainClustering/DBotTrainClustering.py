@@ -15,12 +15,12 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
 import hdbscan
 from datetime import datetime
-from typing import Type, Tuple, Dict, List, Union
+from typing import Type, Tuple, Dict, Union
 import math
 
-GENERAL_MESSAGE_RESULTS = "#### - We succeeded to group **%s incidents into %s groups**.\n #### - The grouping was based on " \
+GENERAL_MESSAGE_RESULTS = "#### - Successfully grouped **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
-                          "the group.\n #### - For %s incidents, we didn’t find any matching.\n" \
+                          "the group.\n #### - For %s incidents, no matches were found.\n" \
                           " #### - Model was trained on **%s**.\n"
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
@@ -32,7 +32,6 @@ MESSAGE_INVALID_FIELD = "- %s field(s) has/have too many missing values and won'
 MESSAGE_NO_FIELD_NAME_OR_CLUSTERING = "- Empty or incorrect fieldsForClustering " \
                                       "for training OR fieldForClusterName is incorrect."
 
-PREFIXES_TO_REMOVE = ['incident.']
 REGEX_DATE_PATTERN = [re.compile(r"^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2})Z"),  # guardrails-disable-line
                       re.compile(r"(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2}:\d{2}).*")]  # guardrails-disable-line
 REPLACE_COMMAND_LINE = {"=": " = ", "\\": "/", "[": "", "]": "", '"': "", "'": "", }
@@ -260,28 +259,24 @@ class PostProcessing(object):
         self.selected_clusters = dist_total
 
 
-def extract_fields_from_args(arg: List[str]) -> List[str]:
+def extract_fields_from_args(arg: list[str]) -> list[str]:
     """
     Extract field from field with prefixe (like incident.commandline)
     :param arg: List of field
     :return: List of field without prefix
     """
-    fields_list = [preprocess_incidents_field(x.strip(), PREFIXES_TO_REMOVE) for x in arg if x]
+    fields_list = [preprocess_incidents_field(x.strip(), 'incident.') for x in arg if x]
     return list(dict.fromkeys(fields_list))
 
 
-def preprocess_incidents_field(incidents_field: str, prefix_to_remove: List[str]) -> str:
+def preprocess_incidents_field(incidents_field: str, prefix_to_remove: list[str]) -> str:
     """
     Remove prefixe from incident fields
     :param incidents_field: field
     :param prefix_to_remove: prefix_to_remove
     :return: field without prefix
     """
-    incidents_field = incidents_field.strip()
-    for prefix in prefix_to_remove:
-        if incidents_field.startswith(prefix):
-            incidents_field = incidents_field[len(prefix):]
-    return incidents_field
+    return incidents_field.strip().removeprefix(prefix_to_remove)
 
 
 def get_args():  # type: ignore
@@ -326,7 +321,7 @@ def get_args():  # type: ignore
         number_feature_per_field, analyzer
 
 
-def get_all_incidents_for_time_window_and_type(populate_fields: List[str], from_date: str, to_date: str,
+def get_all_incidents_for_time_window_and_type(populate_fields: list[str], from_date: str, to_date: str,
                                                query_sup: str, limit: int, incident_type: str):  # type: ignore
     """
     Get incidents with given parameters and return list of incidents
@@ -389,7 +384,7 @@ def match_one_regex(string: str, patterns) -> bool:  # type: ignore
         return match_one_regex(string, patterns[1:]) or bool(patterns[0].match(string))
 
 
-def recursive_filter(item, regex_patterns: List, *fieldsToRemove):  # type: ignore
+def recursive_filter(item, regex_patterns: list, *fieldsToRemove):  # type: ignore
     """
 
     :param item: Dict of list of Dict
@@ -543,7 +538,7 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
 
 
 def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str,
-                         display_fields: List[str], fields_for_clustering: List[str]) -> str:
+                         display_fields: list[str], fields_for_clustering: list[str]) -> str:
     """
 
     :param model_processed: Postprocessing
@@ -587,7 +582,7 @@ def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd
     return pretty_json
 
 
-def find_incorrect_field(populate_fields: List[str], incidents_df: pd.DataFrame, global_msg: str):
+def find_incorrect_field(populate_fields: list[str], incidents_df: pd.DataFrame, global_msg: str):
     """
     Check Field that appear in populate_fields but are not in the incidents_df and return message
     :param populate_fields: List of fields
@@ -602,7 +597,7 @@ def find_incorrect_field(populate_fields: List[str], incidents_df: pd.DataFrame,
     return global_msg, incorrect_fields
 
 
-def remove_fields_not_in_incident(*args, incorrect_fields: List[str]) -> List[str]:
+def remove_fields_not_in_incident(*args, incorrect_fields: list[str]) -> list[str]:
     """
     Return list without field in incorrect_fields
     :param args: *List of fields
@@ -619,8 +614,8 @@ def get_results(model_processed: Type[PostProcessing]):
     return number_of_sample, number_clusters_selected, number_of_outliers
 
 
-def create_summary(model_processed: Type[PostProcessing], fields_for_clustering: List[str],
-                   field_for_cluster_name: List[str]) -> dict:
+def create_summary(model_processed: Type[PostProcessing], fields_for_clustering: list[str],
+                   field_for_cluster_name: list[str]) -> dict:
     """
     Create json with summary of the training
     :param model_processed: Postprocessing
@@ -672,11 +667,11 @@ def return_entry_clustering(output_clustering: Dict, tag: str = None) -> None:
         "EntryContext": {'DBotTrainClustering': output_clustering},
     }
     if tag is not None:
-        return_entry["Tags"] = ['Clustering_{}'.format(tag)]
+        return_entry["Tags"] = [f'Clustering_{tag}']
     demisto.results(return_entry)
 
 
-def wrapped_list(obj: List) -> List:
+def wrapped_list(obj: list) -> list:
     """
     Wrapped object into a list if not list
     :param obj:
@@ -687,9 +682,9 @@ def wrapped_list(obj: List) -> List:
     return obj
 
 
-def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_field_list: List[str],
-                       keep_unique_value=False) -> \
-        pd.DataFrame:
+def fill_nested_fields(
+    incidents_df: pd.DataFrame, incidents: list | str, *list_of_field_list: list[str], keep_unique_value=False
+) -> pd.DataFrame:
     """
     Handle nested fields by concatening values for each sub list of the field
     :param incidents_df: DataFrame of incidents
@@ -703,39 +698,28 @@ def fill_nested_fields(incidents_df: pd.DataFrame, incidents: List, *list_of_fie
                 if isinstance(incidents, list):
                     value_list = [wrapped_list(demisto.dt(incident, field)) for incident in incidents]
                     if not keep_unique_value:
-                        value_list = [' '.join(  # type: ignore
-                            set(
-                                list(
-                                    filter(lambda x: x not in ['None', None, 'N/A'], x)
-                                )
-                            )
-                        )
-                            for x in value_list]
+                        value_list = [' '.join(set(filter(lambda x: x not in ['None', None, 'N/A'], x))) for x in value_list]
                     else:
                         value_list = [most_frequent(list(filter(lambda x: x not in ['None', None, 'N/A'], x)))
                                       for x in value_list]
                 else:
                     value_list = wrapped_list(demisto.dt(incidents, field))
-                    value_list = ' '.join(  # type: ignore
-                        set(list(filter(lambda x: x not in ['None', None, 'N/A'], value_list))))  # type: ignore
+                    value_list = ' '.join(set(filter(lambda x: x not in ['None', None, 'N/A'], value_list)))  # type: ignore
                 incidents_df[field] = value_list
     return incidents_df
 
 
-def most_frequent(list_: List):
+def most_frequent(values: list):
     """
-    Return most frequent element of a list if not empty elase return empty string
+    Return most frequent element of a list if not empty else return empty string
     :param l: list with element
     :return: item in list with most occurrence
     """
-    if not list_:
-        return ""
-    else:
-        return max(set(list_), key=list_.count)
+    return max(set(values), key=values.count) if values else ''
 
 
-def remove_not_valid_field(fields_for_clustering: List[str], incidents_df: pd.DataFrame, global_msg: str,
-                           max_ratio_of_missing_value: float) -> Tuple[List[str], str]:
+def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.DataFrame, global_msg: str,
+                           max_ratio_of_missing_value: float) -> Tuple[list[str], str]:
     """
     Remove fields that are not valid (like too small number of sample)
     :param fields_for_clustering: List of field to use for the clustering
@@ -761,15 +745,11 @@ def get_model_data(model_name):
     :return:
     """
     res_model = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]
-    if not is_error(res_model):
-        model_data = res_model['Contents']['modelData']
-        try:
-            model_type = res_model['Contents']['model']["type"]["type"]
-            return model_data, model_type
-        except Exception:
-            return model_data, UNKNOWN_MODEL_TYPE
-    else:
+    if is_error(res_model):
         return None, MESSAGE_ERROR_MESSAGE
+    model_data = res_model['Contents']['modelData']
+    model_type = dict_safe_get(res_model, ['Contents', 'model', "type", "type"], UNKNOWN_MODEL_TYPE)
+    return model_data, model_type
 
 
 def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
@@ -782,13 +762,12 @@ def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_n
     """
     if force_retrain:
         return None, True
-    model_data, model_type = get_model_data(model_name)
+    model_data, _ = get_model_data(model_name)
     if not model_data:
         return None, True
-    else:
-        model = load_model64(model_data)
-        model_training_time = pd.to_datetime(model.date_training)
-        return model, model_training_time < datetime.now() - timedelta(hours=model_expiration)
+    model = load_model64(model_data)
+    model_training_time = pd.to_datetime(model.date_training)
+    return model, model_training_time < datetime.now() - timedelta(hours=model_expiration)
 
 
 def load_model64(model_base64: str):
@@ -833,7 +812,7 @@ def transform_names_if_list(incidents_df, field_for_cluster_name):
     return incidents_df
 
 
-def keep_high_level_field(incidents_field: List[str]) -> List[str]:
+def keep_high_level_field(incidents_field: list[str]) -> list[str]:
     """
     Return list of fields if they are in the first level of the argument - xdralert.commandline will return xdralert
     :param incidents_field: list of incident fields
@@ -843,15 +822,18 @@ def keep_high_level_field(incidents_field: List[str]) -> List[str]:
 
 
 def calculate_range(data):
-    all_data_size = list(map(lambda x: x['data'][0], data['data']))
-    all_x = list(map(lambda x: x['x'], data['data']))
-    all_y = list(map(lambda x: x['y'], data['data']))
+    all_data_size = [x['data'][0] for x in data['data']]
+    all_x = [x['x'] for x in data['data']]
+    all_y = [x['y'] for x in data['data']]
     max_size = max(all_data_size)
     min_size = min(all_data_size)
     min_range = max(30, min_size)
     max_range = min_range + max(300, max_size - min_size)
-    return [min_range, max_range], [int(math.ceil(min(all_x))), int(math.ceil(max(all_x)))], \
-           [int(math.ceil(min(all_y))), int(math.ceil(max(all_y)))]
+    return (
+        [min_range, max_range],
+        [int(math.ceil(min(all_x))), int(math.ceil(max(all_x)))],
+        [int(math.ceil(min(all_y))), int(math.ceil(max(all_y)))],
+    )
 
 
 def main():
@@ -870,7 +852,6 @@ def main():
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
-
     TFIDF_PARAMS.update({'max_features': number_feature_per_field})
     TFIDF_PARAMS.update({'analyzer': analyzer})
 
@@ -910,7 +891,7 @@ def main():
                                                                     query,
                                                                     # type: ignore
                                                                     limit, incident_type)  # type: ignore
-        global_msg += "%s \n" % msg
+        global_msg += f"{msg} \n"
         # If no incidents found with those criteria
         if not incidents:
             demisto.results(global_msg)
