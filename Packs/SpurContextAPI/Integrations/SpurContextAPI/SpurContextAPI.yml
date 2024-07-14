@@ -3,12 +3,21 @@ commonfields:
   id: SpurContextAPI
   version: -1
 configuration:
-- display: ""
-  displaypassword: API Token
-  name: credentials
-  type: 9
-  required: true
+- display: "Server URL (e.g. https://api.spur.us/)"
+  name: base_url
+  type: 0
+  required: false
+  defaultvalue: https://api.spur.us/
+- displaypassword: API Token
   hiddenusername: true
+  name: credentials
+  required: true
+  type: 9
+- defaultvalue: 'false'
+  display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
 description: 'Enrich indicators using the Spur Context API.'
 display: SpurContextAPI
 name: SpurContextAPI
@@ -67,10 +76,10 @@ script:
       type: array
       description: The different type of client devices that we have observed on this IP address.
   runonce: false
-  script: '-'
+  script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.13.89873
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

@@ -22,6 +22,7 @@ configuration:
   required: true
   type: 0
   section: Connect
+  additionalinfo: The port in Splunk server which is open to the REST API calls.
 - additionalinfo: The Splunk search query by which to fetch events. The default query fetches ES notable events. You can edit this query to fetch other types of events. Note, that to fetch ES notable events, make sure to include the \`notable\` macro in your query.
   defaultvalue: search `notable` | eval rule_name=if(isnull(rule_name),source,rule_name) | eval rule_title=if(isnull(rule_title),rule_name,rule_title) | `get_urgency` | `risk_correlation` | eval rule_description=if(isnull(rule_description),source,rule_description) | eval security_domain=if(isnull(security_domain),source,security_domain) | expandtoken
   display: Fetch events query
@@ -51,6 +52,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Whether to use the Splunk clock time from the Splunk server for fetch, or not.
 - defaultvalue: 'false'
   display: Parse Raw Part of Notable Events
   name: parseNotableEventsRaw
@@ -58,6 +60,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Whether to parse the raw part of the Notables, or not.
 - defaultvalue: 'false'
   display: Replace with Underscore in Incident Fields
   name: replaceKeys
@@ -65,6 +68,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Whether to replace special characters to underscore when parsing the raw data of the Notables, or not.
 - display: Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled.
   name: timezone
   type: 0
@@ -191,7 +195,7 @@ configuration:
   type: 16
   section: Collect
   advanced: true
-  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). For more info about enrichment types see the integration additional info.
+  additionalinfo: Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual (without enrichment). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see the integration additional info.
   options:
   - Drilldown
   - Asset
@@ -219,7 +223,7 @@ configuration:
   additionalinfo: When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment.
   defaultvalue: '5'
   required: false
-- additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). To retrieve all events, enter "0" (not recommended).
+- additionalinfo: The limit of how many events to retrieve per each one of the enrichment types (Drilldown, Asset, and Identity). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" (not recommended).
   display: 'Number of Events Per Enrichment Type'
   name: num_enrichment_events
   type: 0
@@ -255,6 +259,7 @@ configuration:
   section: Collect
   advanced: true
   required: false
+  additionalinfo: Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py#configure-user-mapping-between-splunk-and-cortex-xsoar
 - defaultvalue: 'splunk_xsoar_users'
   display: Users Lookup table name
   name: user_map_lookup_name
@@ -668,7 +673,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.89431
+  dockerimage: demisto/splunksdk-py3:1.0.0.100380
   isfetch: true
   ismappable: true
   isremotesyncin: true

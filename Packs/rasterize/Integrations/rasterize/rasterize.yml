@@ -3,54 +3,53 @@ commonfields:
   id: Rasterize
   version: -1
 configuration:
-  - name: with_error
-    display: Return Errors
-    required: false
-    defaultvalue: "false"
-    type: 8
-    additionalinfo: null
-  - name: wait_time
-    display: Time to wait before taking a screenshot (in seconds)
-    required: false
-    defaultvalue: "0"
-    type: 0
-    additionalinfo: null
-  - name: max_page_load_time
-    display: Maximum time to wait for a page to load (in seconds)
-    required: false
-    defaultvalue: "180"
-    type: 0
-    additionalinfo: null
-  - name: chrome_options
-    display: Chrome options (Advanced. See [?])
-    required: false
-    defaultvalue: null
-    type: 0
-    additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced
-      troubleshooting. See Help.
-  - name: max_chromes_count
-    display: Number of maximum Chrome instances to keep running simultaneously.
-    required: false
-    defaultvalue: "64"
-    type: 0
-    additionalinfo: null
-  - name: max_chrome_tabs_count
-    display: Number of maximum tabs each Chrome will be allowed to open.
-    required: false
-    defaultvalue: "10"
-    type: 0
-    additionalinfo: null
-  - name: rasterize_mode
-    display: Rasterize Mode
-    required: false
-    defaultvalue: null
-    type: 0
-    additionalinfo: Deprecated.
-  - name: proxy
-    display: Use system proxy settings
-    required: false
-    type: 8
-    additionalinfo: null
+- name: with_error
+  display: Return Errors
+  required: false
+  defaultvalue: "false"
+  type: 8
+  additionalinfo:
+- name: wait_time
+  display: Time to wait before taking a screenshot (in seconds)
+  required: false
+  defaultvalue: "0"
+  type: 0
+  additionalinfo:
+- name: max_page_load_time
+  display: Maximum time to wait for a page to load (in seconds)
+  required: false
+  defaultvalue: "180"
+  type: 0
+  additionalinfo:
+- name: chrome_options
+  display: Chrome options (Advanced. See [?])
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: Add or remove Chrome options used to rasterize. Use for advanced troubleshooting. See Help.
+- name: max_chromes_count
+  display: Number of maximum Chrome instances to keep running simultaneously.
+  required: false
+  defaultvalue: "64"
+  type: 0
+  additionalinfo:
+- name: max_chrome_tabs_count
+  display: Number of maximum tabs each Chrome will be allowed to open.
+  required: false
+  defaultvalue: "10"
+  type: 0
+  additionalinfo:
+- name: rasterize_mode
+  display: Rasterize Mode
+  required: false
+  defaultvalue:
+  type: 0
+  additionalinfo: Deprecated.
+- name: proxy
+  display: Use system proxy settings
+  required: false
+  type: 8
+  additionalinfo:
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize
@@ -95,6 +94,7 @@ script:
         - defaultValue: url
           description: The name the file will be saved as.
           name: file_name
+          isArray: true
         - auto: PREDEFINED
           defaultValue: "False"
           description: Get the full page. The actual page width and height will be auto
@@ -355,12 +355,12 @@ script:
         - contextPath: InfoFile.Type
           description: The type of the image/pdf file.
           type: string
-  dockerimage: demisto/chromium:122.0.6261.89236
+  dockerimage: demisto/chromium:126.0.6478.100456
   runonce: false
   script: "-"
   subtype: python3
   type: python
 defaultEnabled: true
 tests:
-  - Rasterize Test
+- Rasterize Test
 fromversion: 5.0.0

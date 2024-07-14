@@ -3,6 +3,7 @@ import pytest
 from freezegun import freeze_time
 from CommonServerPython import *
 import json
+
 # mypy: disable-error-code="operator"
 
 MOCK_PARAMS = {
@@ -10,7 +11,8 @@ MOCK_PARAMS = {
     'secret-key': 'fake_access_key',
     'url': 'http://123-fake-api.com/',
     'unsecure': True,
-    'proxy': True
+    'proxy': True,
+    'assetsFetchInterval': '1440'
 }
 
 MOCK_RAW_VULN_BY_ASSET = {
@@ -52,9 +54,18 @@ MOCK_CLIENT_ARGS = {
 }
 
 
-def load_json(filename):
-    with open(f'test_data/{filename}.json') as f:
-        return json.load(f)
+def util_load_json(file_path):
+    with open(file_path, encoding='utf-8') as f:
+        return json.loads(f.read())
+
+
+MOCK_AUDIT_LOGS = util_load_json('test_data/mock_events.json')
+MOCK_CHUNKS_STATUS = util_load_json('test_data/mock_chunks_status.json')
+MOCK_CHUNKS_STATUS_PROCESSING = util_load_json('test_data/mock_chunks_status_processing.json')
+MOCK_CHUNKS_STATUS_ERROR = util_load_json('test_data/mock_chunks_status_error.json')
+MOCK_UUID = util_load_json('test_data/mock_export_uuid.json')
+MOCK_CHUNK_CONTENT = util_load_json('test_data/mock_chunk_content.json')
+BASE_URL = 'https://cloud.tenable.com'
 
 
 def mock_demisto(mocker, mock_args=None):
@@ -91,7 +102,7 @@ def test_get_vuln_by_asset(mocker, requests_mock):
 
     actual_result = results['EntryContext']['TenableIO.Vulnerabilities']
 
-    for k in actual_result[0].keys():
+    for k in actual_result[0]:
         assert EXPECTED_VULN_BY_ASSET_RESULTS[0][k] == actual_result[0][k]
 
 
@@ -520,7 +531,7 @@ def test_list_scan_filters_command(mocker):
     '''
     from Tenable_io import list_scan_filters_command, Client
 
-    test_data = load_json('list_scan_filters')
+    test_data = util_load_json('test_data/list_scan_filters.json')
 
     request = mocker.patch.object(BaseClient, '_http_request', return_value=test_data['response_json'])
     mock_demisto(mocker)
@@ -548,7 +559,7 @@ def test_get_scan_history_command(mocker):
     '''
     from Tenable_io import get_scan_history_command, Client
 
-    test_data = load_json('get_scan_history')
+    test_data = util_load_json('test_data/get_scan_history.json')
 
     request = mocker.patch.object(
         BaseClient, '_http_request', return_value=test_data['response_json'])
@@ -580,7 +591,7 @@ def test_initiate_export_scan(mocker):
 
     from Tenable_io import initiate_export_scan, Client
 
-    test_data = load_json('initiate_export_scan')
+    test_data = util_load_json('test_data/initiate_export_scan.json')
     mock_demisto(mocker)
     request = mocker.patch.object(
         BaseClient, '_http_request', return_value=test_data['response_json'])
@@ -690,3 +701,191 @@ def test_scan_history_pagination_params(args, expected_result):
     result = scan_history_pagination_params(args)
 
     assert result == expected_result
+
+
+def test_get_audit_logs_command(mocker, requests_mock):
+    """
+    Given:
+        - get-audit-logs command arguments.
+    When:
+        - Running the command tenable-get-audit-logs
+    Then:
+        - Verify that when a list of events exists, it will take the last timestamp
+        - Verify that when there are no events yet (first fetch) the timestamp for all will be as the first fetch
+    """
+    from Tenable_io import get_audit_logs_command, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?limit=2', json=MOCK_AUDIT_LOGS)
+
+    results, audit_logs = get_audit_logs_command(client, limit=2)
+
+    assert len(audit_logs) == 3
+
+
+def test_vulnerabilities_process(mocker, requests_mock):
+    """
+    Given:
+        - vulnerabilities fetch interval.
+    When:
+        - Running the fetch vulnerabilities process running.
+    Then:
+        - Verify that fetch should run
+        - Verify export uuid being updated in the integration context
+        - Verify vulnerabilities returned and finished flag is up.
+    """
+
+    from Tenable_io import generate_export_uuid, handle_vulns_chunks, get_vulnerabilities_export_status, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.post(f'{BASE_URL}/vulns/export', json=MOCK_UUID)
+    requests_mock.get(f'{BASE_URL}/vulns/export/123/status', json=MOCK_CHUNKS_STATUS)
+    requests_mock.get(f'{BASE_URL}/vulns/export/123/chunks/1', json=MOCK_CHUNK_CONTENT)
+    last_run = {}
+
+    generate_export_uuid(client, last_run=last_run)
+    assert last_run.get('vuln_export_uuid') == '123'
+
+    status = get_vulnerabilities_export_status(client, last_run)
+    assert status == "FINISHED"
+    assert last_run.get("vulns_available_chunks")
+
+    vulnerabilities, last_run = handle_vulns_chunks(client, last_run)
+
+    assert len(vulnerabilities) == 1
+
+
+def test_fetch_audit_logs_no_duplications(mocker, requests_mock):
+    """
+
+    Given:
+        - last run object and audit log response from API.
+    When:
+        - Running the fetch events process.
+    Then:
+        - Verify no duplicated audit logs are returned from the API.
+
+    """
+    from Tenable_io import fetch_events_command, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/audit-log/v1/events?f=date.gt:2022-09-20&limit=5000', json=MOCK_AUDIT_LOGS)
+    last_run = {'last_fetch_time': '2022-09-20'}
+    first_fetch = arg_to_datetime('3 days')
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '1234'
+
+    last_run.update({'index_audit_logs': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '12345'
+    assert new_last_run.get('index_audit_logs') == 2
+
+    last_run.update({'last_id': new_last_run.get('index_audit_logs'), 'last_fetch_time': '2022-09-20'})
+    audit_logs, new_last_run = fetch_events_command(client, first_fetch, last_run, 1)
+
+    assert len(audit_logs) == 1
+    assert audit_logs[0].get('id') == '123456'
+    assert new_last_run.get('index_audit_logs') == 3
+
+
+def test_test_module(requests_mock, mocker):
+    """
+    Given:
+        - The client object.
+    When:
+        - Running the test_module function.
+    Then:
+        - Verify the result is ok as expected.
+    """
+    from Tenable_io import test_module, Client
+    mock_demisto(mocker)
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/filters/scans/reports', json={})
+    result = test_module(client, demisto.params())
+
+    assert result == 'ok'
+
+
+def test_fetch_assets(requests_mock):
+    """
+    Given:
+        - assets fetch interval.
+    When:
+        - Running the fetch assets process running.
+    Then:
+        - Verify that fetch should run
+        - Verify export uuid being updated in the integration context
+        - Verify assets returned and finished flag is up.
+    """
+    from Tenable_io import generate_assets_export_uuid, handle_assets_chunks, get_asset_export_job_status, Client
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.post(f'{BASE_URL}/assets/export', json={"export_uuid": "123"})
+    requests_mock.get(f'{BASE_URL}/assets/export/123/status', json={"status": "FINISHED", "chunks_available": [1]})
+    requests_mock.get(f'{BASE_URL}/assets/export/123/chunks/1', json=util_load_json('test_data/mock_assets_chunk.json'))
+    last_run = {}
+
+    generate_assets_export_uuid(client, last_run)
+    assert last_run.get('assets_export_uuid') == '123'
+    status = get_asset_export_job_status(client, last_run)
+    assert status == "FINISHED"
+    assert last_run.get("assets_available_chunks")
+    assets, last_run = handle_assets_chunks(client, last_run)
+
+    assert len(assets) == 2
+
+
+FETCH_ASSETS_EXAMPLES = [
+    # export uuid 111 is valid, assets are returned.
+    (
+        [{"id": "asset_id_one", "name": "asset_name_one"}],
+        [{"id": "asset_id_one", "name": "asset_name_one"}],
+        {}
+    ),
+    # export uuid 111 is not valid, so new export uuid 222 is generated
+    (
+        {'status': 404, 'message': 'Export expired or not found'},
+        [],
+        {'assets_export_uuid': '222', 'nextTrigger': '30', 'type': 1}
+    ),
+    # # export uuid is valid, but chunk is not valid.
+    (
+        {'status': 404, 'message': 'invalid chunk'},
+        [],
+        {'assets_export_uuid': '222', 'nextTrigger': '30', 'type': 1}
+    )
+]
+
+
+@pytest.mark.parametrize('api_response, expected_assets, expected_last_run', FETCH_ASSETS_EXAMPLES)
+def test_handle_assets_chunks(requests_mock, api_response, expected_assets, expected_last_run):
+    """
+    Given:
+        - assets last run object, containing an expired export uuid.
+    When:
+        - Calling handle_assets_chunks method.
+    Then:
+        - Verify that new export uuid was generated.
+        - lastrun object was updated.
+    """
+    from Tenable_io import handle_assets_chunks, Client
+    client = Client(base_url=BASE_URL, verify=False, headers={}, proxy=False)
+    requests_mock.get(f'{BASE_URL}/assets/export/111/chunks/1', json=api_response)
+    requests_mock.post(f'{BASE_URL}/assets/export', json={"export_uuid": "222"})
+
+    assets_last_run = {
+        'assets_export_uuid': '111',
+        'assets_available_chunks': [1],
+
+    }
+
+    assets, new_last_run = handle_assets_chunks(client, assets_last_run)
+
+    assert assets == expected_assets
+    assert new_last_run.get('assets_export_uuid') == expected_last_run.get('assets_export_uuid')
+    assert new_last_run.get('assets_available_chunks') == expected_last_run.get('assets_available_chunks')
+    assert new_last_run.get('nextTrigger') == expected_last_run.get('nextTrigger')
+    assert new_last_run.get('type') == expected_last_run.get('type')

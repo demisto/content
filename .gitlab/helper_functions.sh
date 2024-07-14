@@ -75,3 +75,4 @@ sleep-with-progress() {
   local sleep_step=$((sleep_time / sleep_interval))
   for ((i=0; i< sleep_step;i++)); do echo "${sleep_interval}";sleep "${sleep_interval}"; done | tqdm --total ${sleep_time} --unit seconds --leave --update --colour green -ncols ${columns} --desc "${sleep_message}" 1> /dev/null
 }
+

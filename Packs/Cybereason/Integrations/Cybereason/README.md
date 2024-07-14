@@ -1611,3 +1611,82 @@ Get the results related to machines.
     "GroupName": "example-group-name"
 }
 ```
+
+#### Base Command
+
+`cybereason-query-malop-management`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | malopGuid of the Cybereason Malop. | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Cybereason.Malops.GUID | string | The unique globally unique identifier \(guid\) for the Malop. | 
+| Cybereason.Malops.CreationTime | string | The time reported as when the malicious behavior began on the system. This is not the time that the Malop was first detected by Cybereason. |
+| Cybereason.Malops.Link | string | Link to the Malop on Cybereason. | 
+| Cybereason.Malops.LastUpdatedTime | string | Last updated time of malop | 
+| Cybereason.Malops.InvolvedHash | string | List of file hashes involved in this Malop | 
+| Cybereason.Malops.Status | string | Malop managemant status | 
+
+#### Command example
+
+```!cybereason-query-malop-management malopGuid=<malop-guid>```
+
+#### Context Example
+
+```json
+{
+    "GUID": "malop-guid",
+    "Link": "malop-url",
+    "CreationTime": 1686720403740,
+    "LastUpdateTime": 1686720403743,
+    "Status": "Pending",
+    "InvolvedHash": "involed-hash"
+}
+```
+
+#### Base Command
+
+`cybereason_process_attack_tree_command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| malopGuid | malopGuid of the Cybereason Malop | Required | 
+
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+|Cybereason.Process.ProcessID | string | Cybereason Process ID |
+|Cybereason.Process.URL | string | Attack tree url for a given Process |
+
+#### Command example
+
+```!cybereason-process-attack-tree processGuid=<process-guid>```
+
+#### Context Example
+
+```json
+{
+    "Process": [
+        {
+        "ProcessID": "<process-id>",
+        "URL": "<url>"
+        },
+        {
+        "ProcessID": "<process-id>",
+        "URL": "<url>"
+        } 
+    ]
+}
+```
+

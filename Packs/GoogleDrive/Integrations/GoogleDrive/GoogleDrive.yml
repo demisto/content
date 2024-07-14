@@ -2113,6 +2113,8 @@ script:
       description: The name of the file to upload.
     - name: entry_id
       description: The file's Entry ID.
+    - name: user_id
+      description: The user's primary email address. Must be used when uploading to shared drive, if not, will use the user id from the instance configuration.
     - name: parent
       description: The ID of the parent folder which contains the file. If not specified as part of a create request, the file will be placed directly in the user's My Drive folder.
     - auto: PREDEFINED

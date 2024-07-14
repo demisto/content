@@ -1,0 +1,52 @@
+commonfields:
+  id: ArcSight XML
+  version: -1
+name: ArcSight XML
+display: ArcSight XML (Deprecated)
+category: Analytics & SIEM
+description: Deprecated. Use the ArcSight ESM v2 integration instead.
+deprecated: true
+configuration:
+- display: Fetch incidents
+  name: isFetch
+  type: 8
+  required: false
+- display: Incident type
+  name: incidentType
+  type: 13
+  required: false
+- display: Directory from which to get XML files and create incidents.
+  name: inputDirPath
+  defaultvalue: ''
+  type: 0
+  required: true
+- display: Directory to which put command XML files.
+  name: commandsDirPath
+  defaultvalue: ''
+  type: 0
+  required: true
+script:
+  script: ''
+  type: python
+  subtype: python2
+  commands:
+  - name: arcsight-update-case
+    arguments:
+    - name: caseId
+      required: true
+      description: ID of the case.
+    - name: name
+      required: true
+      description: Name of the case.
+    - name: stage
+      required: true
+      description: The stage of the case.
+    description: Create an XML to update a case.
+  - name: arcsight-fetch-xml
+    arguments: []
+    description: Used for testing. Should fetch XML file and return an XSOAR incident object.
+  isfetch: true
+  dockerimage: demisto/python:2.7.18.27799
+tests:
+- No test
+fromversion: 5.0.0

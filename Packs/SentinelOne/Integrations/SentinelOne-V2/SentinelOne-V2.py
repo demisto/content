@@ -284,7 +284,7 @@ class Client(BaseClient):
             displayName__like=display_name,
             displayName=display_name,
             query=query,
-            ids=argToList(threat_ids),
+            ids=threat_ids,
             limit=int(limit),
             classifications=argToList(classifications),
             siteIds=site_ids,
@@ -518,7 +518,15 @@ class Client(BaseClient):
         return response.get('data', {})
 
     def get_hash_reputation_request(self, hash_):
+        """
+        [DEPRECATED by S1] IN 2.1
+        """
         endpoint_url = f'hashes/{hash_}/reputation'
+        response = self._http_request(method='GET', url_suffix=endpoint_url)
+        return response
+
+    def get_hash_verdict_request(self, hash_):
+        endpoint_url = f'hashes/{hash_}/verdict'
         response = self._http_request(method='GET', url_suffix=endpoint_url)
         return response
 
@@ -1146,7 +1154,8 @@ def get_threats_command(client: Client, args: dict) -> CommandResults:
 
 def get_hash_command(client: Client, args: dict) -> CommandResults:
     """
-    Get hash reputation.
+    Get hash verdict.
+    Removed hash reputation since SentinelOne has deprecated it - Breaking BC.
     Removed hash classification since SentinelOne has deprecated it - Breaking BC.
     """
     hash_ = args.get('hash')
@@ -1154,20 +1163,20 @@ def get_hash_command(client: Client, args: dict) -> CommandResults:
     if type_ == 'Unknown':
         raise DemistoException('Enter a valid hash format.')
 
-    hash_reputation = client.get_hash_reputation_request(hash_)
-    reputation = hash_reputation.get('data', {})
+    hash_verdict = client.get_hash_verdict_request(hash_)
+    reputation = hash_verdict.get('data', {})
     contents = {
-        'Rank': reputation.get('rank'),
+        'Verdict': reputation.get('verdict'),
         'Hash': hash_,
     }
 
     return CommandResults(
-        readable_output=tableToMarkdown('Sentinel One - Hash Reputation\nProvides hash reputation (rank from 0 to 10):',
+        readable_output=tableToMarkdown('SentinelOne - Hash Reputation Verdict\nProvides hash reputation verdict:',
                                         contents, removeNull=True),
         outputs_prefix='SentinelOne.Hash',
         outputs_key_field='Hash',
         outputs=contents,
-        raw_response=hash_reputation)
+        raw_response=hash_verdict)
 
 
 def mark_as_threat_command(client: Client, args: dict) -> CommandResults:
@@ -2615,21 +2624,19 @@ def connect_agent_to_network(client: Client, args: dict) -> Union[CommandResults
     agents_affected = raw_response.get('affected', 0)
 
     # Parse response into context & content entries
-    if agents_affected > 0:
-        agents = client.list_agents_request({'ids': agent_ids})
-        contents = [{
-            'NetworkStatus': agent.get('networkStatus'),
-            'ID': agent.get('id')
-        } for agent in agents]
+    agents = client.list_agents_request({'ids': ','.join(agent_ids)})
+    contents = [{
+        'NetworkStatus': agent.get('networkStatus'),
+        'ID': agent.get('id')
+    } for agent in agents]
+    contents.append({'AgentsAffected': agents_affected})
 
-        return CommandResults(
-            readable_output=f'{agents_affected} agent(s) successfully connected to the network.',
-            outputs_prefix='SentinelOne.Agent',
-            outputs_key_field='ID',
-            outputs=contents,
-            raw_response=raw_response)
-
-    return 'No agents were connected to the network.'
+    return CommandResults(
+        readable_output=f'{agents_affected} agent(s) successfully connected to the network.',
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='ID',
+        outputs=contents,
+        raw_response=raw_response)
 
 
 def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandResults, str]:
@@ -2642,21 +2649,18 @@ def disconnect_agent_from_network(client: Client, args: dict) -> Union[CommandRe
     raw_response = client.disconnect_from_network_request(agent_ids)
     agents_affected = raw_response.get('affected', 0)
 
-    if agents_affected > 0:
-        agents = client.list_agents_request({'ids': agent_ids})
-        contents = [{
-            'NetworkStatus': agent.get('networkStatus'),
-            'ID': agent.get('id')
-        } for agent in agents]
+    agents = client.list_agents_request({'ids': ','.join(agent_ids)})
+    contents = [{
+        'NetworkStatus': agent.get('networkStatus'),
+        'ID': agent.get('id')
+    } for agent in agents]
 
-        return CommandResults(
-            readable_output=f'{agents_affected} agent(s) successfully disconnected from the network.',
-            outputs_prefix='SentinelOne.Agent',
-            outputs_key_field='ID',
-            outputs=contents,
-            raw_response=raw_response)
-
-    return 'No agents were disconnected from the network.'
+    return CommandResults(
+        readable_output=f'{agents_affected} agent(s) successfully disconnected from the network.',
+        outputs_prefix='SentinelOne.Agent',
+        outputs_key_field='ID',
+        outputs=contents,
+        raw_response=raw_response)
 
 
 def broadcast_message(client: Client, args: dict) -> CommandResults:

@@ -7,6 +7,8 @@ Collect events from Box's logs.
 The command is using the [events endpoint](https://developer.box.com/reference/get-events/) with enterprise login.
 The user making the API call will need to have admin privileges, and the application will need to have the scope manage enterprise properties checked.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Box Event Collector on Cortex XSOAR
 
 To acquire the "Credential JSON", you need to get a JWT token and an app from Box.

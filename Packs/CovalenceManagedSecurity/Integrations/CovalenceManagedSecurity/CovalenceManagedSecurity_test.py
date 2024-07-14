@@ -1,14 +1,16 @@
-import pytest
 import importlib
 import json
-import io
 import os
+
 import demistomock as demisto
+import pytest
+
+BROKER_HOST = "https://example.com"
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
-        return json.loads(f.read())
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
 
 
 @pytest.fixture(autouse=True)
@@ -16,7 +18,8 @@ def init_tests(mocker):
     mocker.patch.object(demisto, 'params', return_value={
         'credentials': {'identifier': 'foo', 'password': 'bar'},
         'first_run_time_range': '2',
-        'proxy': False
+        'proxy': False,
+        "insecure": True
     })
 
     mocker.patch.dict(os.environ, {
@@ -25,6 +28,12 @@ def init_tests(mocker):
         'http_proxy': '',
         'https_proxy': ''
     })
+
+
+@pytest.fixture()
+def broker_client_instance():
+    from CovalenceManagedSecurity import BrokerClient
+    return BrokerClient(host=BROKER_HOST, api_key="test_api_key")
 
 
 def test_get_aros(mocker):
@@ -85,6 +94,19 @@ def test_get_aros_details(mocker):
     assert 'type' in r[0]
 
 
+def test_comment_aro(mocker):
+    mock_comment_aro = util_load_json('test_data/comment_aro.json')
+
+    import CovalenceManagedSecurity
+    mock_p = CovalenceManagedSecurity.Portal(bearer='gan ceann')
+    mocker.patch.object(CovalenceManagedSecurity, 'Portal', return_value=mock_p)
+    mocker.patch.object(mock_p, 'comment_aro', return_value=mock_comment_aro)
+
+    r = CovalenceManagedSecurity.comment_aro_command()
+
+    assert r == mock_comment_aro
+
+
 def test_list_org(mocker):
     mock_list_org = util_load_json('test_data/get_org.json')
 
@@ -96,3 +118,65 @@ def test_list_org(mocker):
     r = CovalenceManagedSecurity.list_organizations()
 
     assert r == mock_list_org
+
+
+def test_ping_broker_command(requests_mock, broker_client_instance):
+    from CovalenceManagedSecurity import ping_broker_command
+
+    requests_mock.get(f'{BROKER_HOST}/ping', json="pong")
+
+    results = ping_broker_command(broker_client_instance)
+    assert results.readable_output == "## Success"
+    assert results.outputs_prefix == "FESBroker.APIStatus"
+
+
+def test_list_organizations_broker_command(requests_mock, broker_client_instance):
+    from CovalenceManagedSecurity import list_organizations_broker_command
+
+    mock_broker_list_org = util_load_json('test_data/broker_list_org.json')
+    requests_mock.get(f'{BROKER_HOST}/organizations', json=mock_broker_list_org)
+
+    results = list_organizations_broker_command(broker_client_instance)
+    assert results.outputs == mock_broker_list_org
+    assert results.outputs_prefix == "FESBroker.Org"
+    assert results.outputs_key_field == "ID"
+
+
+def test_endpoint_action_by_host_broker_command(requests_mock, broker_client_instance):
+    from CovalenceManagedSecurity import endpoint_action_by_host_broker_command
+
+    mock_endpoint_action_response = util_load_json('test_data/broker_endpoint_action.json')
+    requests_mock.post(f'{BROKER_HOST}/endpoint/host/defender_quick_scan', json=mock_endpoint_action_response)
+    args = {"action_type": "DEFENDER_QUICK_SCAN", "org_id": "00000000-1111-2222-3333-444444444444",
+            "host_identifier": "test-host-identifier-string"}
+
+    results = endpoint_action_by_host_broker_command(broker_client_instance, args)
+    assert results.outputs == mock_endpoint_action_response
+    assert results.outputs_prefix == "FESBroker.Action"
+    assert results.outputs_key_field == "agent_uuid"
+
+
+def test_endpoint_action_by_aro_broker_command(requests_mock, broker_client_instance):
+    from CovalenceManagedSecurity import endpoint_action_by_aro_broker_command
+
+    mock_endpoint_action_response = util_load_json('test_data/broker_endpoint_action.json')
+    requests_mock.post(f'{BROKER_HOST}/endpoint/aro/isolate', json=mock_endpoint_action_response)
+    args = {"action_type": "ISOLATE", "aro_id": "00000000-1111-2222-3333-444444444444"}
+
+    results = endpoint_action_by_aro_broker_command(broker_client_instance, args)
+    assert results.outputs == mock_endpoint_action_response
+    assert results.outputs_prefix == "FESBroker.Action"
+    assert results.outputs_key_field == "agent_uuid"
+
+
+def test_cloud_action_by_aro_broker_command(requests_mock, broker_client_instance):
+    from CovalenceManagedSecurity import cloud_action_by_aro_broker_command
+
+    mock_endpoint_action_response = util_load_json('test_data/broker_cloud_action.json')
+    requests_mock.post(f'{BROKER_HOST}/cloud/aro/revoke_sessions', json=mock_endpoint_action_response)
+    args = {"action_type": "REVOKE_SESSIONS", "aro_id": "00000000-1111-2222-3333-444444444444"}
+
+    results = cloud_action_by_aro_broker_command(broker_client_instance, args)
+    assert results.outputs == mock_endpoint_action_response
+    assert results.outputs_prefix == "FESBroker.Action"
+    assert results.outputs_key_field == "action_id"

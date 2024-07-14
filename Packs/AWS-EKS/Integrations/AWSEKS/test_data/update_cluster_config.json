@@ -1,0 +1,17 @@
+{
+    "logging_expected_output": {
+        "createdAt": "2024-01-01 00:00:00",
+        "error": [],
+        "id": "11111111-1111-1111-1111-111111111111",
+        "params": [
+            {
+                "type": "ClusterLogging",
+                "value": "{\"clusterLogging\":[{\"types\":[\"api\",\"audit\",\"authenticator\"],\"enabled\":true}]}"
+            }
+        ],
+        "status": "InProgress",
+        "type": "LoggingUpdate",
+        "clusterName": "cluster_name"
+    },
+    "logging_expected_readable_output": "### Updated Cluster Config Information\n|Cluster Name|Id|Status|Type|Params|\n|---|---|---|---|---|\n| cluster_name | 11111111-1111-1111-1111-111111111111 | InProgress | LoggingUpdate | {'type': 'ClusterLogging', 'value': '{\"clusterLogging\":[{\"types\":[\"api\",\"audit\",\"authenticator\"],\"enabled\":true}]}'} |\n"
+}

@@ -1,0 +1,76 @@
+{
+    "data": {
+        "pageSize": 100,
+        "pages": 0,
+        "offset": 0,
+        "totalHits": 1,
+        "token": "",
+        "data": [
+            {
+                "guid": "AAAA0w7GERjl3oae",
+                "displayName": "aasiapp.pdf.exe",
+                "creationTime": 1686720403740,
+                "lastUpdateTime": 1686720403743,
+                "metadataUpdateTime": 1686720403743,
+                "decisionStatuses": [],
+                "detectionEngines": [
+                    "EDR"
+                ],
+                "mitreTactics": [],
+                "mitreTechniques": [],
+                "mitreSubTechniques": [],
+                "rootCauseElementHashes": [
+                    "a541fb35b0b750501717df708f1ccade7c176e1d"
+                ],
+                "iocs": [
+                    "File"
+                ],
+                "detectionTypes": [
+                    "Malicious by Obscured Extension"
+                ],
+                "labels": [
+                    {
+                        "id": 108,
+                        "labelText": "IT-Closed",
+                        "count": 47,
+                        "empty": false
+                    }
+                ],
+                "investigationStatus": "Pending",
+                "closerName": "<email>",
+                "priority": "MEDIUM",
+                "status": "Active",
+                "severity": "High",
+                "detectionType": "EXTENSION_MANIPULATION",
+                "escalated": false,
+                "iconBase64": "",
+                "isEdr": true,
+                "groups": [
+                    "<group-ids>"
+                ],
+                "rootCauseElementType": "File",
+                "machines": [
+                    {
+                        "guid": "<machine-guid>",
+                        "displayName": "<machine-display-name>",
+                        "connected": false,
+                        "isolated": false,
+                        "osType": "WINDOWS",
+                        "lastConnected": 1698818040437,
+                        "pylumId": "<pylum-id>"
+                    }
+                ],
+                "users": [
+                    {
+                        "guid": "<user-guid>",
+                        "displayName": "<user-display-name>",
+                        "admin": true,
+                        "domainUser": false,
+                        "localSystem": false
+                    }
+                ]
+            }
+        ]
+    },
+    "status": "SUCCESS"
+}

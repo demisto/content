@@ -55,6 +55,15 @@ configuration:
   defaultvalue: 5
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -2376,10 +2385,11 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.75596
+  dockerimage: demisto/boto3py3:1.0.0.100294
 fromversion: 6.9.0
 marketplaces:
 - xsoar
 - marketplacev2
+- xpanse
 tests:
 - No tests (auto formatted)

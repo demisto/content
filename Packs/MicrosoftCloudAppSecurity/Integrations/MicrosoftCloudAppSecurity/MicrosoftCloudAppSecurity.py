@@ -959,9 +959,9 @@ def main():  # pragma: no cover
         elif command == 'fetch-incidents':
             first_fetch = params.get('first_fetch')
             max_results = params.get('max_fetch')
-            severity = params.get('severity')
+            severity = params.get('severity') or []
             look_back = arg_to_number(params.get('look_back')) or 0
-            resolution_status = params.get('resolution_status')
+            resolution_status = params.get('resolution_status') or []
             if params.get('custom_filter'):
                 filters = json.loads(str(params.get('custom_filter')))
             else:

@@ -673,7 +673,6 @@ def transform_network_info_context(network_info: list[dict[str, Any]]) -> list[d
                 n[NETWORK_INFO_MAPPING[k]] = get_extended_attributes_context(v)
             elif k in NETWORK_INFO_MAPPING:
                 n[NETWORK_INFO_MAPPING[k]] = v
-            # TODO take this out to a new function as it's used twice
             else:
                 additional_options.append(v)
         if additional_options:
@@ -700,7 +699,8 @@ def transform_ip_context(ip_list: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for ip in ip_list:
         i: dict[str, Any] = {}
         for k, v in ip.items():
-            i[IP_MAPPING[k]] = v
+            key_transform = IP_MAPPING[k] if IP_MAPPING.get(k) else string_to_context_key(k)
+            i[key_transform] = v
         output.append(i)
 
     return output

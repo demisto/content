@@ -1,0 +1,40 @@
+{
+    "data": [
+        {
+            "rrn": "rrn",
+            "organization_id": "123-123-123",
+            "title": "Suspicious Process - Renamed WinRAR",
+            "source": "ALERT",
+            "status": "OPEN",
+            "priority": "LOW",
+            "last_accessed": "2022-08-18T12:07:51.87Z",
+            "created_time": "2022-08-18T12:06:46.212Z",
+            "disposition": "UNDECIDED",
+            "assignee": null,
+            "first_alert_time": "2022-08-18T12:06:46.207Z",
+            "latest_alert_time": "2022-11-14T15:36:08.066Z",
+            "responsibility": null
+        },
+        {
+            "rrn": "rrn",
+            "organization_id": "123-123-123",
+            "title": "Password reset for account yishais by yishais",
+            "source": "ALERT",
+            "status": "OPEN",
+            "priority": "MEDIUM",
+            "last_accessed": "2022-10-18T14:52:40.746Z",
+            "created_time": "2022-10-18T14:52:40.746Z",
+            "disposition": "UNDECIDED",
+            "assignee": null,
+            "first_alert_time": "2022-10-18T14:52:40.745Z",
+            "latest_alert_time": "2022-12-06T12:57:30.359Z",
+            "responsibility": null
+        }
+    ],
+    "metadata": {
+        "index": 0,
+        "size": 2,
+        "total_pages": 14,
+        "total_data": 27
+    }
+}

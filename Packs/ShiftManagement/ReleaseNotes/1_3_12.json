@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Fixing a typo in outofftheoffice incident field, forces a manual adjust of all custom items references to the new incident field: outoftheoffice"
+}

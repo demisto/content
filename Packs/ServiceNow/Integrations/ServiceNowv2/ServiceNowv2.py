@@ -529,6 +529,7 @@ def split_notes(raw_notes, note_type, time_info):
         # convert note creation time to UTC
         try:
             display_date_format = time_info.get('display_date_format')
+            created_on = (created_on.replace('AM', '').replace('PM', '')).strip()
             created_on_UTC = datetime.strptime(created_on, display_date_format) + time_info.get('timezone_offset')
         except ValueError as e:
             raise Exception(f'Failed to convert {created_on} to a datetime object. Error: {e}')
@@ -1018,6 +1019,17 @@ class Client(BaseClient):
         return self.send_request('attachment/upload', 'POST', headers={'Accept': 'application/json'},
                                  body=body, file={'id': file_id, 'name': file_name})
 
+    def delete_attachment(self, attachment_file_id: str) -> dict:
+        """Deletes an attachment file by sending a DELETE request.
+
+        Args:
+        attachment_file_id: ID of the attachment file.
+
+        Returns:
+            Response from API.
+        """
+        return self.send_request(f'attachment/{attachment_file_id}', 'DELETE')
+
     def add_tag(self, ticket_id: str, tag_id: str, title: str, ticket_type: str) -> dict:
         """Adds a tag to a ticket by sending a POST request.
 
@@ -1208,8 +1220,10 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     fields_delimiter = args.get('fields_delimiter', ';')
     custom_fields = split_fields(str(args.get('custom_fields', '')), fields_delimiter)
     ticket_type_value = args.get('ticket_type')
+    demisto.debug(f'args(ticket_type): {ticket_type_value}')
     if not ticket_type_value:
         ticket_type_value = demisto.params().get('ticket_type')
+        demisto.debug(f'Empty args(ticket_type), params(ticket_type): {ticket_type_value}')
     ticket_type = client.get_table_name(str(ticket_type_value))
     demisto.debug(f'Using ticket_type: {ticket_type}, from {ticket_type_value}')
     ticket_id = str(args.get('id', ''))
@@ -1461,6 +1475,31 @@ def upload_file_command(client: Client, args: dict) -> tuple[str, dict, dict, bo
     }
 
     return human_readable, entry_context, result, True
+
+
+def delete_attachment_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+    """Deletes an attachment file.
+    Note: This function exclusively returns 404 error responses,
+    while all other types of errors are managed within the send_request function.
+
+    Args:
+        client: Client object used to make requests.
+        args: The command arguments provided by user.
+
+    return: a tuple for CommandResults containing:
+        - Human readable message.
+        - Entry context data.
+        - The raw response.
+        - Ignore auto extract flag.
+
+    :raises DemistoException: Raised if no record is found for the provided attachment file ID.
+    """
+    attachment_file_id = str(args.get('file_sys_id', ''))
+
+    result = client.delete_attachment(attachment_file_id)
+    if not result:  # successful response is 204 (empty response)
+        return f'Attachment with Sys ID {attachment_file_id} was successfully deleted.', {}, result, True
+    raise DemistoException("Error: No record found. Record doesn't exist or ACL restricts the record retrieval.")
 
 
 def add_tag_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
@@ -2353,8 +2392,25 @@ def fetch_incidents(client: Client) -> list:
         occurred = datetime.strptime(ticket.get('occurred'), DATE_FORMAT).isoformat()  # type: ignore[arg-type]
         ticket['occurred'] = f"{occurred}Z"
 
+    if demisto.params().get("mirror_notes_for_new_incidents", False):
+        store_ids_for_first_mirroring(incidents)
+
     demisto.setLastRun(last_run)
     return incidents
+
+
+def store_ids_for_first_mirroring(incidents: list):
+    """
+    Stores the fetched incident IDs in the integration context to trigger mirroring.
+    We're triggering mirroring for new incidents to mirror existing comments and notes.
+
+    Args:
+        incidents (list): List of fetched incidents.
+    """
+    int_context = get_integration_context()
+    int_context.setdefault("last_fetched_incident_ids", []).extend([incident["sys_id"] for incident in incidents])
+    demisto.debug(f"ServiceNowV2 - Saving the following incident ids in the integration context: {int_context=}")
+    set_integration_context(int_context)
 
 
 def test_instance(client: Client):
@@ -2490,8 +2546,10 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
         datetime.timedelta: The timezone offset between the SNOW instance and UTC.
     """
     try:
-        local_time = ticket.get('sys_created_on', {}).get('display_value', '')
-        local_time = datetime.strptime(local_time, display_date_format)
+        local_time: str = ticket.get('sys_created_on', {}).get('display_value', '')
+        # With %H hour format, AM/PM is redundant info.
+        local_time = (local_time.replace('AM', '').replace('PM', '')).strip()
+        local_time_dt = datetime.strptime(local_time, display_date_format)
     except Exception as e:
         raise Exception(f'Failed to get the display value offset time. ERROR: {e}')
     try:
@@ -2499,7 +2557,7 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
         utc_time = datetime.strptime(utc_time, DATE_FORMAT)
     except ValueError as e:
         raise Exception(f'Failed to convert {utc_time} to datetime object. ERROR: {e}')
-    offset = utc_time - local_time
+    offset = utc_time - local_time_dt
     return offset
 
 
@@ -2528,6 +2586,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
     ticket_type = client.ticket_type
     result = client.get(ticket_type, ticket_id, use_display_value=client.use_display_value)
 
+    is_new_ticket_id = is_new_incident(ticket_id)
     if not result or 'result' not in result:
         return f'Ticket {ticket_id=} was not found.'
 
@@ -2552,7 +2611,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     demisto.debug(f'ticket_last_update of {ticket_id=} is {ticket_last_update}')
     is_fetch = demisto.params().get('isFetch')
-    if is_fetch and last_update > ticket_last_update:
+    if is_fetch and last_update > ticket_last_update and not is_new_ticket_id:
         demisto.debug(f'Nothing new in the ticket {ticket_id=}')
         ticket = {}
 
@@ -2574,9 +2633,11 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
 
     if client.use_display_value:
         try:
-            comments_result = convert_to_notes_result(ticket, time_info={'display_date_format': client.display_date_format,
-                                                                         'filter': datetime.fromtimestamp(last_update),
-                                                                         'timezone_offset': timezone_offset})
+            time_info = {'display_date_format': client.display_date_format, 'timezone_offset': timezone_offset}
+            if not is_new_ticket_id:
+                time_info.update({'filter': datetime.fromtimestamp(last_update)})
+            comments_result = convert_to_notes_result(ticket, time_info)
+
         except Exception as e:
             demisto.debug(f'Failed to retrieve notes using display value. Continuing without retrieving notes.\n Error: {e}')
             comments_result = {'result': []}
@@ -2584,14 +2645,15 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
         sys_param_limit = args.get('limit', client.sys_param_limit)
         sys_param_offset = args.get('offset', client.sys_param_offset)
 
-        sys_param_query = f'element_id={ticket_id}^sys_created_on>' \
-                          f'{datetime.fromtimestamp(last_update)}^element=comments^ORelement=work_notes'
+        sys_param_query = f'element_id={ticket_id}^element=comments^ORelement=work_notes'
+        if not is_new_ticket_id:  # for latest fetch run incidents do not filter by last_update
+            sys_param_query += f'^sys_created_on>{datetime.fromtimestamp(last_update)}'
 
         comments_result = client.query('sys_journal_field', sys_param_limit, sys_param_offset, sys_param_query)
     demisto.debug(f'Comments result is {comments_result}')
 
     if not comments_result or 'result' not in comments_result:
-        demisto.debug(f'Pull result is {ticket}')
+        demisto.debug(f'ServiceNowV2 - Pull result is {ticket}')
         return [ticket] + entries
 
     entries.extend(get_entries_for_notes(comments_result.get('result', []), params))
@@ -2623,8 +2685,26 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) 
                 'ContentsFormat': EntryFormat.JSON
             })
 
-    demisto.debug(f'Pull result is {ticket}')
+    demisto.debug(f'ServiceNowV2 - Pull result is {ticket=}, {entries=}')
     return [ticket] + entries
+
+
+def is_new_incident(ticket_id: str) -> bool:
+    """
+    Returns whether the ticket id is a new fetched incident in XSOAR which should mirror existing notes.
+
+    Args:
+        ticket_id (str): The ticket ID.
+
+    Returns:
+        bool: Whether its a new incident in XSOAR.
+    """
+    last_fetched_ids = get_integration_context().get("last_fetched_incident_ids") or []
+    demisto.debug(f"ServiceNowV2 - Last fetched incident ids are: {last_fetched_ids}")
+    if ticket_id_in_last_fetch := ticket_id in last_fetched_ids:
+        last_fetched_ids.remove(ticket_id)
+        set_integration_context({"last_fetched_incident_ids": last_fetched_ids})
+    return ticket_id_in_last_fetch
 
 
 def converts_close_code_or_state_to_close_reason(ticket_state: str, ticket_close_code: str, server_close_custom_state: str,
@@ -2753,8 +2833,14 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
                 if not file_extension:
                     file_extension = ''
                 if params.get('file_tag_from_service_now') not in entry.get('tags', []):
-                    client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
-                                       ticket_type)
+                    try:
+                        client.upload_file(ticket_id, entry.get('id'), file_name + '_mirrored_from_xsoar' + file_extension,
+                                           ticket_type)
+                    except Exception as e:
+                        demisto.error(f"An attempt to mirror a file has failed. entry_id={entry.get('id')}, {file_name=}\n{e}")
+                        text_for_snow_comment = "An attempt to mirror a file from Cortex XSOAR was failed." \
+                                                f"\nFile name: {file_name}\nError from integration: {e}"
+                        client.add_comment(ticket_id, ticket_type, 'comments', text_for_snow_comment)
             else:
                 # Mirroring comment and work notes as entries
                 tags = entry.get('tags', [])
@@ -2853,7 +2939,28 @@ def get_modified_remote_data_command(
     if result and (modified_records := result.get('result')):
         modified_records_ids = [record.get('sys_id') for record in modified_records if 'sys_id' in record]
 
-    return GetModifiedRemoteDataResponse(modified_records_ids)
+    modified_records_ids = extend_with_new_incidents(modified_records_ids)
+    demisto.debug(f'ServiceNowV2 - returning the following incident ids: {modified_records_ids}')
+    return GetModifiedRemoteDataResponse(
+        modified_records_ids
+    )
+
+
+def extend_with_new_incidents(modified_records_ids: list) -> list:
+    """
+    Extend list of modified incidents with new fetched incidents to trigger mirroring.
+    We're triggering mirroring for new incidents to mirror existing comments and notes.
+
+    Args:
+        modified_records_ids (list): List of modified incidents.
+
+    Returns:
+        list: Extended list of incidents to trigger mirroring.
+    """
+    int_context = get_integration_context()
+    modified_records_ids.extend(int_context.get("last_fetched_incident_ids") or [])
+    modified_records_ids = list(set(modified_records_ids))  # remove duplicates
+    return modified_records_ids
 
 
 def add_custom_fields(params):
@@ -3208,6 +3315,7 @@ def main():
             'servicenow-get-item-details': get_item_details_command,
             'servicenow-create-item-order': create_order_item_command,
             'servicenow-document-route-to-queue': document_route_to_table,
+            'servicenow-delete-file': delete_attachment_command,
         }
         if command == 'fetch-incidents':
             raise_exception = True

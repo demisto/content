@@ -79,10 +79,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 64f17c95-4126-441f-8e9f-c15bdb612756
+    taskid: 2a97257f-f9bb-40f2-8d6f-b476961da61f
     type: regular
     task:
-      id: 64f17c95-4126-441f-8e9f-c15bdb612756
+      id: 2a97257f-f9bb-40f2-8d6f-b476961da61f
       version: -1
       name: Save input list of indicators as array (Split transformer)
       description: Set a value in context under the key you entered.
@@ -99,7 +99,7 @@ tasks:
       value:
         complex:
           root: incident
-          accessor: edlindicatorslist
+          accessor: genericexportindicatorsserviceindicatorslist
           transformers:
           - operator: StripChars
             args:
@@ -182,9 +182,9 @@ tasks:
       - "26"
     scriptarguments:
       tags:
-        simple: ${incident.edltag}
+        simple: ${incident.genericexportindicatorsservicetag}
       type:
-        simple: ${incident.edlindicatortype}
+        simple: ${incident.genericexportindicatorsserviceindicatortype}
       value:
         complex:
           root: InputIndicatorsArray
@@ -263,7 +263,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        simple: ${incident.edltag}
+        simple: ${incident.genericexportindicatorsservicetag}
       indicatorsValues:
         complex:
           root: InputIndicatorsArray
@@ -299,7 +299,8 @@ tasks:
       id: 0c815fb4-5ee4-4f72-8c83-6e559d73928a
       version: -1
       name: Are there new indicators to create?
-      description: Check if there are new indicators to create, which do not already exist in the Cortex XSOAR database.
+      description: Check if there are new indicators to create, which do not already
+        exist in the Cortex XSOAR database.
       type: condition
       iscommand: false
       brand: ""
@@ -351,7 +352,8 @@ tasks:
       id: 63c89c44-1914-427f-8590-328c861ba7ae
       version: -1
       name: Are there pre-existing indicators to update?
-      description: Check if there are indicators that already exist in the Cortex XSOAR database. IF so, the tag needs to be added to add them to the EDL.
+      description: Check if there are indicators that already exist in the Cortex
+        XSOAR database. IF so, the tag needs to be added to add them to the EDL.
       type: condition
       iscommand: false
       brand: ""
@@ -397,10 +399,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: b61606d4-3222-422c-8d5e-c05416c729bb
+    taskid: e58007a8-290f-43b3-85f2-280a16526440
     type: regular
     task:
-      id: b61606d4-3222-422c-8d5e-c05416c729bb
+      id: e58007a8-290f-43b3-85f2-280a16526440
       version: -1
       name: Close incident
       description: commands.local.cmd.close.inv
@@ -428,13 +430,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 2b108cd4-dd69-4f2f-8e94-fa56238d6791
+    taskid: 8ff5b7b0-f350-47dc-85ae-a8674691f6d0
     type: condition
     task:
-      id: 2b108cd4-dd69-4f2f-8e94-fa56238d6791
+      id: 8ff5b7b0-f350-47dc-85ae-a8674691f6d0
       version: -1
       name: Adding or removing indicators?
-      description: Check whether to add or remove indicators from the EDL, according to the value of the `EDL Action`input field.
+      description: Check whether to add or remove indicators from the EDL, according
+        to the value of the `EDL Action`input field.
       type: condition
       iscommand: false
       brand: ""
@@ -450,7 +453,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.edlaction
+              simple: incident.genericexportindicatorsserviceaction
             iscontext: true
           right:
             value:
@@ -460,7 +463,7 @@ tasks:
       - - operator: isEqualString
           left:
             value:
-              simple: incident.edlaction
+              simple: incident.genericexportindicatorsserviceaction
             iscontext: true
           right:
             value:
@@ -511,10 +514,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: de93e06f-1ebe-48e2-84a2-2637ede4f7c5
+    taskid: ffc0eb39-23e0-48ba-87be-37c73242c37e
     type: regular
     task:
-      id: de93e06f-1ebe-48e2-84a2-2637ede4f7c5
+      id: ffc0eb39-23e0-48ba-87be-37c73242c37e
       version: -1
       name: Remove EDL tag from indicators
       description: commands.local.cmd.remove.values.to.indicator.multi.select.field
@@ -529,9 +532,7 @@ tasks:
       field:
         simple: tags
       fieldValue:
-        complex:
-          root: incident
-          accessor: edltag
+        simple: ${incident.genericexportindicatorsservicetag}
       indicatorsValues:
         simple: ${InputIndicatorsArray}
     separatecontext: false
@@ -551,13 +552,14 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: cb238dc6-b905-4e82-844b-42c29320cf24
+    taskid: b4dc98ea-e45d-412a-899a-b4f454ff33bc
     type: condition
     task:
-      id: cb238dc6-b905-4e82-844b-42c29320cf24
+      id: b4dc98ea-e45d-412a-899a-b4f454ff33bc
       version: -1
       name: Playbook inputs provided instead of incident fields?
-      description: Check if playbook is being run as a sub-playbook. (Check if values were passed as playbook inputs instead of incident fields.)
+      description: Check if playbook is being run as a sub-playbook. (Check if values
+        were passed as playbook inputs instead of incident fields.)
       type: condition
       iscommand: false
       brand: ""
@@ -590,17 +592,17 @@ tasks:
       - - operator: isEmpty
           left:
             value:
-              simple: incident.edlaction
+              simple: incident.genericexportindicatorsserviceaction
             iscontext: true
       - - operator: isEmpty
           left:
             value:
-              simple: incident.edltag
+              simple: incident.genericexportindicatorsservicetag
             iscontext: true
       - - operator: isEmpty
           left:
             value:
-              simple: incident.edlindicatorslist
+              simple: incident.genericexportindicatorsserviceindicatorslist
             iscontext: true
     view: |-
       {
@@ -618,10 +620,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 4dccfd34-d082-419b-86df-5ffd31660d0d
+    taskid: 3680f381-35df-4f13-850f-5f178d4f5499
     type: regular
     task:
-      id: 4dccfd34-d082-419b-86df-5ffd31660d0d
+      id: 3680f381-35df-4f13-850f-5f178d4f5499
       version: -1
       name: Set inputs to indicator fields
       description: commands.local.cmd.set.incident
@@ -633,9 +635,10 @@ tasks:
       '#none#':
       - "4"
     scriptarguments:
-      edlaction:
+        
+      genericexportindicatorsserviceaction:
         simple: ${inputs.EDL Action}
-      edlindicatorslist:
+      genericexportindicatorsserviceindicatorslist:
         complex:
           root: inputs.EDL Indicators List
           transformers:
@@ -644,9 +647,9 @@ tasks:
               separator:
                 value:
                   simple: ','
-      edlindicatortype:
+      genericexportindicatorsserviceindicatortype:
         simple: ${inputs.EDL Indicator Type}
-      edltag:
+      genericexportindicatorsservicetag:
         simple: ${inputs.EDL Tag}
     separatecontext: false
     view: |-
@@ -663,6 +666,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
     "linkLabelsPosition": {},
@@ -680,22 +684,24 @@ inputs:
   value: {}
   required: true
   description: 'Action to perform on EDL. Possible values: "Add", "Remove".'
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EDL Tag
   value: {}
   required: true
-  description: Tag that adds indicators to EDL. Must match tag value used in EDL query in the instance configuration.
-  playbookInputQuery:
+  description: Tag that adds indicators to EDL. Must match tag value used in EDL query
+    in the instance configuration.
+  playbookInputQuery: null
 - key: EDL Indicator Type
   value: {}
   required: false
   description: Required only if adding to EDL. Type of indicators to add to EDL.
-  playbookInputQuery:
+  playbookInputQuery: null
 - key: EDL Indicators List
   value: {}
   required: true
-  description: List of IOCs to add to or remove from EDL (according to value of EDL Action). May be newline or comma-delimited.
-  playbookInputQuery:
+  description: List of IOCs to add to or remove from EDL (according to value of EDL
+    Action). May be newline or comma-delimited.
+  playbookInputQuery: null
 outputs: []
 tests:
 - No tests (auto formatted)

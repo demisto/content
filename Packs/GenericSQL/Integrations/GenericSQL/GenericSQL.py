@@ -31,6 +31,7 @@ except Exception:  # noqa: S110
 pymysql.install_as_MySQLdb()
 
 GLOBAL_CACHE_ATTR = '_generic_sql_engine_cache'
+GLOBAL_ENGINE_CACHE_ATTR = '_generic_sql_engines'
 DEFAULT_POOL_TTL = 600
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
@@ -116,6 +117,7 @@ class Client:
         if cache is None:
             cache = ExpiringDict(100, max_age_seconds=self.pool_ttl)
             setattr(sqlalchemy, GLOBAL_CACHE_ATTR, cache)
+            setattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
         return cache
 
     def _generate_db_url(self, module):
@@ -165,8 +167,18 @@ class Client:
             cache_key = self._get_cache_string(str(db_url), ssl_connection)
             engine = cache.get(cache_key, None)
             if engine is None:  # (first time or expired) need to initialize
+
+                cached_engines = getattr(sqlalchemy, GLOBAL_ENGINE_CACHE_ATTR, {})
+
+                if cache_key in cached_engines:
+                    # engine is None, but cache_key in cached_engines, so the ttl must have passed.
+                    # let's dispose the engine to make sure the connection is closed.
+                    cached_engines[cache_key].dispose()
+                    cached_engines.pop(cache_key)
+
                 engine = sqlalchemy.create_engine(db_url, connect_args=ssl_connection)
                 cache[cache_key] = engine
+                cached_engines[cache_key] = engine  # Keep in cache to allow disposing later
 
         else:
             demisto.debug('Initializing engine with no pool (NullPool)')
@@ -347,16 +359,13 @@ def test_module(client: Client, *_) -> tuple[str, dict[Any, Any], list[Any]]:
     return msg if msg else 'ok', {}, []
 
 
-def result_to_list_of_dicts(client: Client, result: list[dict], headers: list[str]) -> list[dict]:
+def result_to_list_of_dicts(result: list[dict]) -> list[dict]:
     """
     This function pre-processes the query's result to a list of dictionaries.
     """
-    if client.dialect == TERADATA:
-        # binding the headers with the columns
-        converted_table = [dict(zip(headers, row)) for row in result]
-    else:
-        # converting a sqlalchemy object to a table
-        converted_table = [dict(row) for row in result]
+
+    # converting a sqlalchemy object to a table
+    converted_table = [dict(row) for row in result]
 
     # converting b'' and datetime objects to readable ones
     table = [{str(key): str(value) for key, value in dictionary.items()} for dictionary in converted_table]
@@ -381,7 +390,7 @@ def sql_query_execute(client: Client, args: dict, *_) -> tuple[str, dict[str, An
 
         result, headers = client.sql_query_execute_request(sql_query, bind_variables, limit)
 
-        table = result_to_list_of_dicts(client, result, headers)
+        table = result_to_list_of_dicts(result)
         table = table[skip:skip + limit]
 
         human_readable = tableToMarkdown(name="Query result:", t=table, headers=headers,

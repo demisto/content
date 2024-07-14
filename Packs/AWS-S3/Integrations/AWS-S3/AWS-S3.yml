@@ -93,6 +93,15 @@ configuration:
   section: Connect
   advanced: true
   required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -388,7 +397,7 @@ script:
       required: true
     description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
     name: aws-s3-put-public-access-block
-  dockerimage: demisto/boto3py3:1.0.0.87582
+  dockerimage: demisto/boto3py3:1.0.0.100496
   runonce: false
   script: ''
   type: python

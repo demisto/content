@@ -1,6 +1,5 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *   # noqa: F401 # pylint: disable=unused-wildcard-import
+from CommonServerPython import *  # noqa: F401
 
 import ipaddress
 import urllib3
@@ -82,6 +81,7 @@ def test_module(client: Client) -> str:
     try:
         full_url = urljoin(client._base_url, 'status')
         demisto.debug(f'SpurContextAPI full_url: {full_url}')
+
         client._http_request(
             method='GET',
             full_url=full_url,
@@ -128,10 +128,9 @@ def main() -> None:
     """
 
     api_key = demisto.params().get('credentials', {}).get('password')
-    base_url = "https://api.spur.us/"
+    base_url = demisto.params().get('base_url')
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
-
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 

@@ -1,7 +1,6 @@
 import demistomock as demisto
 from CommonServerPython import *
 
-from typing import List, Dict
 from io import BytesIO
 from PIL import Image
 from datetime import datetime
@@ -59,7 +58,6 @@ class TriageRequestEmptyResponse(Exception):
 
 class TriageNoReportersFoundError(Exception):
     """Triage returned empty results, but the integration expected at least one"""
-    pass
 
 
 class TriageInstance:
@@ -184,7 +182,7 @@ class TriageReport:
         ]
 
     @property  # type: ignore
-    @functools.lru_cache()
+    @functools.lru_cache
     def reporter(self):
         return TriageReporter(self.triage_instance, self.attrs["reporter_id"])
 
@@ -203,7 +201,7 @@ class TriageReport:
         return json.dumps(self.to_dict())
 
     @property  # type: ignore
-    @functools.lru_cache()
+    @functools.lru_cache
     def attachment(self):
         if "HTML" in self.report_body:
             html_attachment = fileResult(
@@ -224,6 +222,7 @@ class TriageReport:
 
 class TriageInboxReports:
     """Represents a set of Triage reports from the `inbox` mailbox"""
+
     def __init__(
         self,
         triage_instance,
@@ -266,6 +265,7 @@ class TriageInboxReports:
 
 class TriageInboxReportFilter:
     """Performs filtering for Triage Reports"""
+
     def __init__(self, filter_params):
         self.subject = filter_params.get("subject")
         self.url = filter_params.get("url")
@@ -342,7 +342,7 @@ class TriageReporter:
         return bool(self.attrs)
 
 
-def snake_to_camel_keys(snake_list: List[Dict]) -> List[Dict]:
+def snake_to_camel_keys(snake_list: list[dict]) -> list[dict]:
     def snake_to_camel(snake_str) -> str:
         if snake_str == 'id':
             return 'ID'
@@ -438,10 +438,10 @@ def search_reports_command(triage_instance) -> None:
     file_hash = demisto.getArg('file_hash')  # type: str
     reported_at = parse_date_range(demisto.args().get('reported_at', '7 days'))[
         0
-    ].replace(tzinfo=timezone.utc)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
     created_at = parse_date_range(demisto.args().get('created_at', '7 days'))[
         0
-    ].replace(tzinfo=timezone.utc)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
     try:
         max_matches = int(demisto.getArg('max_matches'))  # type: int
     except ValueError:
@@ -536,7 +536,7 @@ def search_reports(
 def search_inbox_reports_command(triage_instance) -> None:
     reported_at = parse_date_range(demisto.args().get("reported_at", "7 days"))[
         0
-    ].replace(tzinfo=timezone.utc)
+    ].replace(tzinfo=timezone.utc)  # noqa: UP017
 
     try:
         reporters_clause = build_reporters_clause(triage_instance)
@@ -592,8 +592,8 @@ def build_reporters_clause(triage_instance):
         triage_instance, email=reporter_address_or_id
     ).reporters()
 
-    if len(reporters) == 0 or not any([reporter.exists() for reporter in reporters]):
-        raise TriageNoReportersFoundError()
+    if len(reporters) == 0 or not any(reporter.exists() for reporter in reporters):
+        raise TriageNoReportersFoundError
 
     return {"reporter_ids": [reporter.id for reporter in reporters]}
 
@@ -630,6 +630,7 @@ def get_reporter_command(triage_instance) -> None:
         ),
         raw_response=json.dumps(reporter.attrs)
     )
+    return None
 
 
 def get_attachment_command(triage_instance) -> None:
@@ -712,6 +713,7 @@ def get_threat_indicators_command(triage_instance) -> None:
             },
         }
     )
+    return None
 
 
 def get_report_png_by_id_command(triage_instance) -> None:
@@ -742,13 +744,13 @@ def get_report_png_by_id_command(triage_instance) -> None:
         image_data = orig_png
 
     cf_file = fileResult(
-        "cofense_report_{}.png".format(report_id), image_data, entryTypes["image"]
+        f"cofense_report_{report_id}.png", image_data, entryTypes["image"]
     )
     demisto.results(
         {
             "Type": entryTypes["image"],
             "ContentsFormat": formats["text"],
-            "Contents": "Cofense: PNG of Report {}".format(report_id),
+            "Contents": f"Cofense: PNG of Report {report_id}",
             "File": cf_file.get("File"),
             "FileID": cf_file.get("FileID"),
         }

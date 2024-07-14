@@ -1,7 +1,7 @@
 name: Add PR link to Related Jira Issue
 on:
   pull_request:
-    types: [ opened, edited ]
+    types: [opened, edited]
 
 permissions:
   pull-requests: read
@@ -14,11 +14,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup Python
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Setup Poetry
-        uses: Gr1N/setup-poetry@v8
+        uses: Gr1N/setup-poetry@v9
       - uses: actions/cache@v2
         with:
           path: .venv
@@ -37,6 +37,6 @@ jobs:
           INSTANCE_URL: ${{ secrets.GOLD_SERVER_URL_NG }}
         run: |
           echo "Checking for related Jira issues to PR: $PR_NUMBER"
-          cd Utils/github_workflow_scripts/jira_integration_scripts
+          cd .github/github_workflow_scripts/jira_integration_scripts
           echo --pr_num $PR_NUMBER --pr_link $PR_LINK --pr_title $PR_TITLE --pr_body $PR_BODY --no-is_merged
           poetry run python ./link_pr_to_jira_issue.py --url "$INSTANCE_URL" --pr_num "$PR_NUMBER" --pr_link "$PR_LINK" --pr_title "$PR_TITLE" --pr_body "$PR_BODY" --no-is_merged --username $USERNAME --password $PASSWORD

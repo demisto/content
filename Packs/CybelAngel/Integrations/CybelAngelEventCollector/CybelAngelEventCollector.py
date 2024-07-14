@@ -46,7 +46,7 @@ class Client(BaseClient):
         demisto.debug(f'Running http-request with URL {url_suffix} and {params=}')
 
         response = self._http_request(
-            method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response", ok_codes=(401, 200)
+            method, url_suffix=url_suffix, headers=headers, params=params, resp_type="response", ok_codes=(401, 403, 200)
         )
         if response.status_code == 200:
             return response.json()
@@ -224,13 +224,13 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get events from Cybel Angel, used mainly for debugging purposes
     """
-    if end := args.get("end-date"):
+    if end := args.get("end_date"):
         end_date = dateparser.parse(end).strftime(DATE_FORMAT)  # type: ignore[union-attr]
     else:
         end_date = datetime.now().strftime(DATE_FORMAT)
 
     reports = client.get_reports(
-        dateparser.parse(args["start-date"]).strftime(DATE_FORMAT),  # type: ignore[union-attr]
+        dateparser.parse(args["start_date"]).strftime(DATE_FORMAT),  # type: ignore[union-attr]
         end_date=end_date,
         limit=arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
     )

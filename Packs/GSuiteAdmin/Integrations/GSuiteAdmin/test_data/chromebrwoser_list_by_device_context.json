@@ -1,0 +1,46 @@
+{
+    "entry_type": "1",
+    "ignore_auto_extract": "False",
+    "mark_as_note": "False",
+    "outputs":
+    {
+        "GSuite.ChromeBrowserDevices(val.deviceId && val.deviceId == obj.deviceId)":
+        [
+            {
+                "deviceId": "1111111111",
+                "kind": "admin#directory#browserdevice",
+                "osPlatform": "Windows",
+                "osVersion": "10.0.19045.4046",
+                "machineName": "WIN10-test",
+                "lastRegistrationTime": "2024-02-20T21:16:00.902Z",
+                "lastActivityTime": "2024-02-20T21:16:00.902Z",
+                "osPlatformVersion": "Windows 10",
+                "serialNumber": "1111",
+                "virtualDeviceId": "1111111111",
+                "orgUnitPath": "/testing",
+                "deviceIdentifiersHistory":
+                {}
+            }
+        ],
+        "GSuite(true)":
+        {
+            "ChromeBrowserNextToken": ""
+        }
+    },
+    "raw_response": {
+        "deviceId": "1111111111",
+        "kind": "admin#directory#browserdevice", 
+        "osPlatform": "Windows", 
+        "osVersion": "10.0.19045.4046", 
+        "machineName": "WIN10-test",
+        "lastRegistrationTime": "2024-02-20T21:16:00.902Z",
+        "lastActivityTime": "2024-02-20T21:16:00.902Z", 
+        "osPlatformVersion": "Windows 10",
+        "serialNumber": "1111",
+        "virtualDeviceId": "1111111111",
+        "orgUnitPath": "/testing", 
+        "deviceIdentifiersHistory": {}
+    },
+    "readable_output": "### Chrome Browser Device List\n|Device Id|Os Platform|Os Version|Machine Name|Serial Number|Org Unit Path|\n|---|---|---|---|---|---|\n| 1111111111 | Windows | 10.0.19045.4046 | WIN10-test | 1111 | /testing |\n",
+    "replace_existing": "False"
+}

@@ -33,6 +33,15 @@ configuration:
   type: 0
   required: true
   defaultvalue: ""
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
+  required: false
 - display: Use system proxy settings
   name: proxy
   type: 8
@@ -54,7 +63,7 @@ script:
       description: The predication probability (range 0-1).
       type: number
     description: Classify input text (usually email content).
-  dockerimage: demisto/boto3py3:1.0.0.75596
+  dockerimage: demisto/boto3py3:1.0.0.100496
 tests:
 - Test Sagemaker
 fromversion: 5.0.0

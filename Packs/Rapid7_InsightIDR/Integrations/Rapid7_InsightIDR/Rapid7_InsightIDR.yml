@@ -1,435 +1,1085 @@
 category: Analytics & SIEM
 sectionOrder:
-- Connect
-- Collect
+  - Connect
+  - Collect
 commonfields:
   id: Rapid7 InsightIDR
   version: -1
 configuration:
-- display: Insight cloud server region
-  name: region
-  options:
-  - US
-  - EU
-  - CA
-  - AU
-  - AP
-  required: true
-  type: 15
-  section: Connect
-- display: InsightIDR API key
-  name: apiKey
-  type: 4
-  section: Connect
-  hidden: true
-  required: false
-- name: apikey_creds
-  type: 9
-  section: Connect
-  displaypassword: InsightIDR API key
-  hiddenusername: true
-  required: false
-- display: Fetch incidents
-  name: isFetch
-  type: 8
-  section: Collect
-  required: false
-- display: Incident type
-  name: incidentType
-  type: 13
-  section: Connect
-  required: false
-- defaultvalue: '7 days'
-  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
-  name: first_fetch
-  type: 0
-  section: Collect
-  required: false
-- display: Fetch Limit
-  name: max_fetch
-  type: 0
-  section: Collect
-  additionalinfo: Max number of alerts per fetch. Default is 50.
-  defaultvalue: '50'
-  required: false
-- display: Trust any certificate (not secure)
-  name: insecure
-  type: 8
-  section: Connect
-  advanced: true
-  required: false
-- advanced: true
-  display: Use system proxy settings
-  name: proxy
-  section: Connect
-  type: 8
-
-  required: false
-description: 'Rapid7 InsightIDR is a Cloud-Based SIEM that detect and respond to security incidents.'
+  - display: Insight cloud server region
+    name: region
+    options:
+      - US
+      - EU
+      - CA
+      - AU
+      - AP
+    required: true
+    type: 15
+    section: Connect
+  - display: InsightIDR API key
+    name: apiKey
+    type: 4
+    section: Connect
+    hidden: true
+    required: false
+  - name: apikey_creds
+    type: 9
+    section: Connect
+    displaypassword: InsightIDR API key
+    hiddenusername: true
+    required: false
+  - display: Fetch incidents
+    name: isFetch
+    type: 8
+    section: Collect
+    required: false
+  - display: Incident type
+    name: incidentType
+    type: 13
+    section: Connect
+    required: false
+  - defaultvalue: "7 days"
+    display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+    name: first_fetch
+    type: 0
+    section: Collect
+    required: false
+  - display: Fetch Limit
+    name: max_fetch
+    type: 0
+    section: Collect
+    additionalinfo: Max number of alerts per fetch. Default is 50.
+    defaultvalue: "50"
+    required: false
+  - display: Multi customer
+    name: is_multi_customer
+    type: 8
+    required: false
+    additionalinfo: Indicates whether the requester has multi-customer access.
+  - display: Use API Version 2 by default
+    name: is_v2
+    type: 8
+    required: false
+    additionalinfo: Whether to use API version 2 by default for investigation commands (Can be overriden by passing the api_version argument).
+  - display: Trust any certificate (not secure)
+    name: insecure
+    type: 8
+    section: Connect
+    advanced: true
+    required: false
+  - advanced: true
+    display: Use system proxy settings
+    name: proxy
+    section: Connect
+    type: 8
+    required: false
+description: "Rapid7’s InsightIDR is your security center for incident detection and response, authentication monitoring, and endpoint visibility. Together, these form Extended Detection and Response (XDR). InsightIDR identifies unauthorized access from external and internal threats and highlights suspicious activity so you don’t have to weed through thousands of data streams."
 display: Rapid7 InsightIDR
 name: Rapid7 InsightIDR
 script:
   commands:
-  - arguments:
-    - description: An optional time range string (i.e 1 week, 1 day).
-      name: time_range
-    - description: "Only investigations whose createTime is after this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      name: start_time
-    - description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      name: end_time
-    - auto: PREDEFINED
-      description: Only investigations whose status matches one of the entries in the list will be returned. If this argument is omitted, all investigations will be returned.
-      name: statuses
-      predefined:
-      - open
-      - closed
-    - description: The optional 0-based index of the page to retrieve. Must be an integer greater than or equal to 0.
-      name: index
-    - description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
-      name: page_size
-    description: List all open/closed investigations. You can filter results by time range and investigation status.
-    name: rapid7-insight-idr-list-investigations
-    outputs:
-    - contextPath: Rapid7InsightIDR.Investigation.title
-      description: Title of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.id
-      description: ID of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.status
-      description: Status of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.created_time
-      description: Time the investigation was created.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.source
-      description: Source of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee.email
-      description: Email address of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee.name
-      description: Name of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.type
-      description: Type of alert in the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
-      description: Description of the type of the alert in the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
-      description: First event time of the alert in the investigation.
-      type: String
-  - arguments:
-    - description: ID of the investigation to get.
-      name: investigation_id
-      required: true
-    description: Gets a single investigation (open or closed).
-    name: rapid7-insight-idr-get-investigation
-    outputs:
-    - contextPath: Rapid7InsightIDR.Investigation.title
-      description: Title of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.id
-      description: ID of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.status
-      description: Status of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.created_time
-      description: Time the investigation was created.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.source
-      description: Source of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee.email
-      description: Email address of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee.name
-      description: Name of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.type
-      description: Type of alert in the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
-      description: Description of the type of the alert in the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
-      description: First event time of the alert in the investigation.
-      type: String
-  - arguments:
-    - description: "Only investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned - Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      name: start_time
-      required: true
-    - description: "AOnly investigations whose createTime is before this date will be returned. If this argument is omitted, investigations with any create_time may be returned. Use ISO time format (e.g., 2018-07-01T00:00:00Z)."
-      name: end_time
-      required: true
-    - auto: PREDEFINED
-      description: The name of an investigation source. Only investigations from this source will be closed. If the source is ALERT, an alert type must be specified as well. Can be "ALERT", "MANUAL", or "HUNT""The LEQL query to match desired log events. Do not use a calculation.more
-      name: source
-      predefined:
-      - ALERT
-      - MANUAL
-      - HUNT
-      required: true
-    - description: The category of alerts to closed. This argument is required if the source is ALERT and ignored for other sources. This value must be an exact match of the alert type returned by the List Investigations response.
-      isArray: true
-      name: alert_type
-    - description: The maximum number of alerts to close with this request. If this argument is not specified then there is no maximum. If this limit is exceeded, then a 400 error response is returned. The minimum value is 0.
-      name: max_investigations_to_close
-    description: Bulk closes investigations according to the specified investigation create-time date range. You can specify the maximum number of alerts to close per call. If that maximum is exceeded a 400 error response is returned.
-    name: rapid7-insight-idr-close-investigations
-    outputs:
-    - contextPath: Rapid7InsightIDR.Investigation.id
-      description: ID of the investigation.
-      type: String
-  - arguments:
-    - description: ID of the investigation to assign the user to.
-      isArray: true
-      name: investigation_id
-      required: true
-    - description: The email address of the user to assign to this investigation. This must be the same email address used to log in to the Insight platform.
-      name: user_email_address
-      required: true
-    description: Assigns a user to an investigation according to the specified user email  address.
-    name: rapid7-insight-idr-assign-user
-    outputs:
-    - contextPath: Rapid7InsightIDR.Investigation.title
-      description: Title of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.id
-      description: ID of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.status
-      description: Status of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.created_time
-      description: Time the investigation was created.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.source
-      description: Source of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee.email
-      description: Email address of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee.name
-      description: Name of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.type
-      description: Type of alert in the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
-      description: Description of the type of the alert in the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
-      description: First event time of the alert in the investigation.
-      type: String
-  - arguments:
-    - description: ID of the investigation to set the status of.
-      isArray: true
-      name: investigation_id
-      required: true
-    - auto: PREDEFINED
-      description: The new status for the investigation. Can be "open" or "closed".
-      name: status
-      predefined:
-      - open
-      - closed
-      required: true
-    description: Sets the investigation status to either open or closed.
-    name: rapid7-insight-idr-set-status
-    outputs:
-    - contextPath: Rapid7InsightIDR.Investigation.title
-      description: Title of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.id
-      description: ID of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.status
-      description: Status of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.created_time
-      description: Time the investigation was created.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.source
-      description: Source of the investigation.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee_email
-      description: Email address of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.assignee_name
-      description: Name of the investigation assignee.
-      type: String
-    - contextPath: Rapid7InsightIDR.Investigation.alert_type
-      description: Type of alert in the investigation.
-      type: String
-  - arguments:
-    - description: Key of the threat (or threats) to add indicators to.
-      isArray: true
-      name: key
-      required: true
-    - description: IP address indicators to add.
-      isArray: true
-      name: ip_addresses
-    - description: "Hash indicators to add."
-      isArray: true
-      name: hashes
-    - description: Domain indicators to add.
-      isArray: true
-      name: domain_names
-    - description: URL indicators to add.
-      isArray: true
-      name: url
-    description: Adds new indicators to a threat (IP addresses, hashes, domains, and URLs).
-    name: rapid7-insight-idr-add-threat-indicators
-    outputs:
-    - contextPath: Rapid7InsightIDR.Threat.name
-      description: Name of the threat.
-      type: String
-    - contextPath: Rapid7InsightIDR.Threat.note
-      description: Notes for the threat.
-      type: String
-    - contextPath: Rapid7InsightIDR.Threat.indicator_count
-      description: How many indicators the threat has.
-      type: Number
-    - contextPath: Rapid7InsightIDR.Threat.published
-      description: Whether or not the threat is published.
-      type: Boolean
-  - arguments:
-    - description: Key of the threat (or threats) to replace indicators for.
-      isArray: true
-      name: key
-      required: true
-    - description: IP address indicators to add.
-      isArray: true
-      name: ip_addresses
-    - description: "Hash indicators to add."
-      isArray: true
-      name: hashes
-    - description: Domain indicators to add.
-      isArray: true
-      name: domain_names
-    - description: URL indicators to add.
-      isArray: true
-      name: url
-    description: Deletes existing indicators from a threat and adds new indicators to the threat.
-    name: rapid7-insight-idr-replace-threat-indicators
-    outputs:
-    - contextPath: Rapid7InsightIDR.Threat.name
-      description: Name of the threat.
-      type: String
-    - contextPath: Rapid7InsightIDR.Threat.note
-      description: Notes for the threat.
-      type: String
-    - contextPath: Rapid7InsightIDR.Threat.indicator_count
-      description: How many indicators the threat has.
-      type: Number
-    - contextPath: Rapid7InsightIDR.Threat.published
-      description: Whether or not the threat is published.
-      type: Boolean
-  - arguments: []
-    description: Lists all existing logs for an account.
-    name: rapid7-insight-idr-list-logs
-    outputs:
-    - contextPath: Rapid7InsightIDR.Log.name
-      description: Log name.
-      type: String
-    - contextPath: Rapid7InsightIDR.Log.id
-      description: Log ID.
-      type: String
-  - arguments: []
-    description: Lists all existing log sets for your InsightsIDR instance.
-    name: rapid7-insight-idr-list-log-sets
-    outputs:
-    - contextPath: Rapid7InsightIDR.LogSet.name
-      description: Log name.
-      type: String
-    - contextPath: Rapid7InsightIDR.LogSet.id
-      description: Log ID.
-      type: String
-  - arguments:
-    - description: IDs of the logs to download - up to 10 logs allowed.
-      isArray: true
-      name: log_ids
-      required: true
-    - description: "Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied."
-      name: start_time
-    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds.'
-      name: end_time
-    - description: 'The relative time range in a readable format. Optional if "from" \ is supplied. For example: Last 4 Days. Note that if start_time, end_time and\ \ time_range is not provided the default will be Last 3 days.'
-      name: time_range
-    - description: "The LEQL query to match desired log events. Do not use a calculation.more info: https://docs.rapid7.com/insightidr/build-a-query/"
-      name: query
-    - description: 'The maximum number of log events to download; cannot exceed 20 million. The default is 20 million. The argument value should be written like this: "10 thousand" or "2 million").'
-      name: limit
-    description: Downloads logs for from your InsightsIDR instance. The maximum number of logs per call is 10.
-    name: rapid7-insight-idr-download-logs
-    outputs: []
-  - arguments:
-    - description: Logentries log key.
-      name: log_id
-      required: true
-    - description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
-      name: query
-      required: true
-    - description: A time range string (i.e 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed.
-      name: time_range
-    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000.'
-      name: start_time
-    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000.'
-      name: end_time
-    - description: The maximum number of log entries to return per page. Default of 50.
-      name: logs_per_page
-    - description: The earlier sequence number of a log entry to start searching from.
-      name: sequence_number
-    description: Queries within a log for certain values.
-    name: rapid7-insight-idr-query-log
-    outputs:
-    - contextPath: Rapid7InsightIDR.Event.log_id
-      description: ID of the log the event appears in.
-      type: String
-    - contextPath: Rapid7InsightIDR.Event.message
-      description: Event message.
-      type: String
-    - contextPath: Rapid7InsightIDR.Event.timestamp
-      description: Time when the event was triggered.
-      type: Number
-  - arguments:
-    - description: ID of the log set.
-      isArray: true
-      name: log_set_id
-      required: true
-    - description: "A valid LEQL query to run against the logmore info: https://docs.rapid7.com/insightidr/build-a-query/"
-      name: query
-      required: true
-    - description: A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed.
-      name: time_range
-    - description: 'Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000.'
-      name: start_time
-    - description: 'Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000.'
-      name: end_time
-    - description: The maximum number of log entries to return per page. Default of 50.
-      name: logs_per_page
-    - description: The earlier sequence number of a log entry to start searching from.
-      name: sequence_number
-    description: Queries within a log set for certain values.
-    name: rapid7-insight-idr-query-log-set
-    outputs:
-    - contextPath: Rapid7InsightIDR.Event.log_id
-      description: ID of the log the event appears in.
-      type: String
-    - contextPath: Rapid7InsightIDR.Event.message
-      description: Event message.
-      type: String
-    - contextPath: Rapid7InsightIDR.Event.timestamp
-      description: Time when the event was triggered.
-      type: Number
-  dockerimage: demisto/python3:3.10.13.87159
+    - arguments:
+        - description: The InsightIDR API version to request to.
+          name: api_version
+          defaultValue: Default
+          auto: PREDEFINED
+          predefined:
+            - V1
+            - V2
+            - Default
+          required: false
+        - description: "The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0."
+          name: index
+          defaultValue: "0"
+        - description: "The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000."
+          name: page_size
+        - description: The maximum number of records to retrieve.
+          name: limit
+          defaultValue: "50"
+        - description: A comma-separated list of investigation statuses to include in the result. For example, Open,Closed.
+          name: statuses
+          auto: PREDEFINED
+          predefined:
+            - open
+            - investigating
+            - closed
+          isArray: true
+        - description: A comma-separated list of investigation sources to include in the result. For example, User,Alert. Relevant when api_version is V2 only.
+          name: sources
+          auto: PREDEFINED
+          predefined:
+            - User
+            - Alert
+          isArray: true
+        - name: priorities
+          description: A comma-separated list of investigation priorities to include in the result. For example, Low,Medium. Relevant when api_version is V2 only.
+          auto: PREDEFINED
+          predefined:
+            - Unspecified
+            - Low
+            - Medium
+            - High
+            - Critical
+          isArray: true
+        - name: assignee_email
+          description: A user's email address. Only investigations assigned to that user will be included. For example, test@test.com.
+        - name: time_range
+          description: An optional time range string (i.e., 1 week, 1 day).
+        - name: start_time
+          description: The time an investigation is opened. Only investigations whose created_time is after this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-01T00:00:00Z. Default is 28 days prior. Relevant when api_version is V2 only.
+        - name: end_time
+          description: The time an investigation is closed. Only investigations whose created_time is before this date will be returned by the API. Must be an ISO-formatted timestamp. For example, 2018-07-28T23:59:00Z. Default is the current time. Relevant when api_version is V2 only.
+        - name: sort_field
+          description: A field for investigations to be sorted by. Relevant when api_version is V2 only.
+          defaultValue: Created time
+          auto: PREDEFINED
+          predefined:
+            - Created time
+            - Priority
+            - RRN Last Created Alert
+            - Last Detection Alert
+        - name: sort_direction
+          description: The sorting direction. Relevant when api_version is V2 only.
+          defaultValue: DESC
+          auto: PREDEFINED
+          predefined:
+            - ASC
+            - DESC
+        - name: tags
+          description: A comma-separated list of tags to include in the result. Only investigations who have all specified tags will be included. For example, my_teg,test_tag. Relevant when api_version is V2 only.
+          isArray: true
+      description: List all investigations. Retrieve a list of investigations matching the given request parameters. The investigations are sorted by investigation created_time in descending order. Investigations are an aggregate of the applicable alert data in a single place and are closely tied to Alerts and Detection Rules.
+      name: rapid7-insight-idr-list-investigations
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.responsibility
+          description: The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection & Response customers.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.first_alert_time
+          description: The create time of the first alert belonging to this investigation (if any). Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.latest_alert_time
+          description: The create time of the most recent alert belonging to this investigation (if any). Relevant when api_version is V2 only.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.email
+          description: The email of the assigned user (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.name
+          description: The name of the assigned user (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.disposition
+          description: The disposition of this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.created_time
+          description: The time this investigation was created.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.last_accessed
+          description: The time this investigation was last viewed or modified. Relevant when api_version is V2 only.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.priority
+          description: The priority of the investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The status of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.source
+          description: How this investigation was generated.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.title
+          description: The name of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.organization_id
+          description: The ID of the organization that owns this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.id
+          description: The ID of the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type
+          description: Type of alert in the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
+          description: First event time of the alert in the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
+          description: First event time of the alert in the investigation. Relevant when api_version is V1 only.
+          type: String
+    - arguments:
+        - description: The InsightIDR API version to request to.
+          name: api_version
+          defaultValue: Default
+          auto: PREDEFINED
+          predefined:
+            - V1
+            - V2
+            - Default
+        - name: investigation_id
+          description: The ID or Rapid7 Resource Names (RRN) of the investigation to retrieve. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+          required: false
+          default: true
+      description: Get a specific investigation. This investigation is specified by either ID or Rapid7 Resource Names (RRN). (If multi-customer is set to true, the investigation_id must be in the RRN format).
+      name: rapid7-insight-idr-get-investigation
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.responsibility
+          description: The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection & Response customers.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.first_alert_time
+          description: The create time of the first alert belonging to this investigation (if any). Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.latest_alert_time
+          description: The create time of the most recent alert belonging to this investigation (if any). Relevant when api_version is V2 only.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.email
+          description: The email of the assigned user (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.name
+          description: The name of the assigned user (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.disposition
+          description: The disposition of this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.created_time
+          description: The time this investigation was created.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.last_accessed
+          description: The time this investigation was last viewed or modified. Relevant when api_version is V2 only.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.priority
+          description: The priority of the investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The status of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.source
+          description: How this investigation was generated.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.title
+          description: The name of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.organization_id
+          description: The ID of the organization that owns this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.id
+          description: The ID of the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type
+          description: Type of alert in the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
+          description: The description of the alert type in the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
+          description: First event time of alert in the investigation. Relevant when api_version is V1 only.
+          type: String
+    - arguments:
+        - description: "The name of an investigation source. Only investigations from this source will be closed. If the source is ALERT, an alert type or a detection rule RRN must be specified as well."
+          name: source
+          required: true
+          auto: PREDEFINED
+          predefined:
+            - ALERT
+            - MANUAL
+            - HUNT
+        - description: "An ISO formatted timestamp. Only investigations whose createTime is before this date will be returned by the API. For example, 2018-07-28T23:59:00Z. Default is the current time."
+          name: end_time
+          required: true
+        - description: An ISO formatted timestamp. Only investigations whose createTime is after this date will be returned by the API. For example, 2018-07-01T00:00:00Z.
+          name: start_time
+          required: true
+        - description: The category of types of alerts that should be closed. Use rapid7-insight-idr-list-investigations or rapid7-insight-idr-list-investigation-alerts to get the alert types. Required when sourceis ALERT.
+          name: alert_type
+        - description: A disposition to set the investigation to.
+          name: disposition
+          defaultValue: Not Applicable
+          auto: PREDEFINED
+          predefined:
+            - Undecided
+            - Benign
+            - Malicious
+            - Not Applicable
+        - name: detection_rule_rrn
+          description: The Rapid7 Resource Names (RRN) of the detection rule. Only investigations that are associated with this detection rule will be closed. If a detection rule RRN is given, the alert_type is required to be 'Attacker Behavior Detected'. Use rapid7-insight-idr-get-investigation to retrieve the investigation detection_rule_rrn.
+        - name: max_investigations_to_close
+          description: The maximum number of alerts to close. If this parameter is not specified then there is no maximum. The minimum description is 0.
+      description: Close all investigations that match the provided request parameters. If there are any investigations found associated with Threat Command alerts within the given request parameters, they will be closed in Threat Command with the close reason, "Other".
+      name: rapid7-insight-idr-close-investigations
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.id
+          description: The ID of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The new status (Closed) of the investigation.
+          type: String
+    - arguments:
+        - description: The InsightIDR API version to request to.
+          name: api_version
+          defaultValue: Default
+          auto: PREDEFINED
+          predefined:
+            - V1
+            - V2
+            - Default
+        - description: Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to assign the user to. (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+          name: investigation_id
+          required: false
+          default: true
+        - name: user_email_address
+          required: true
+          description: The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. For example, test@test.com.
+      description: Assign a user by email to an investigation. Users will receive an email whenever they are assigned to a new investigation.
+      name: rapid7-insight-idr-assign-user
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.responsibility
+          description: The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection & Response customers. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.latest_alert_time
+          description: The create time of the most recent alert belonging to this investigation (if any). Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.email
+          description: The email of the assigned user.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.name
+          description: The name of the assigned user.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.disposition
+          description: The disposition of this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.created_time
+          description: The time this investigation was created.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.last_accessed
+          description: The time this investigation was last viewed or modified. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.priority
+          description: The investigations priority. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The status of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.source
+          description: How this investigation was generated.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.title
+          description: The name of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.organization_id
+          description: The ID of the organization that owns this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.id
+          description: The ID of the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
+          description: The description of this type of alert (if any). Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type
+          description: The alert's type. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
+          description: The create time of the first alert belonging to this investigation (if any). Relevant when api_version is V1 only.
+          type: String
+    - arguments:
+        - description: The InsightIDR API version to request to.
+          name: api_version
+          defaultValue: Default
+          auto: PREDEFINED
+          predefined:
+            - V1
+            - V2
+            - Default
+        - description: Comma-separated list of the ID or Rapid7 Resource Names (RRN) of the investigation to be changed.  (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+          name: investigation_id
+          required: false
+          default: true
+        - name: status
+          description: The new status for the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Waiting - Progress on the investigation has paused while more information is gathered. Closed - The investigation has ended. A disposition must be selected to set this status.
+          auto: PREDEFINED
+          predefined:
+            - open
+            - closed
+            - investigating
+            - waiting
+          required: true
+        - name: threat_command_free_text
+          description: Additional information provided by the user when closing a Threat Command alert. Relevant when status=closed and api_version is V2 only.
+        - name: threat_command_close_reason
+          description: The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type. Relevant when status=closed and api_version is V2 only.
+          auto: PREDEFINED
+          predefined:
+            - Problem Solved
+            - Informational Only
+            - Problem We Are Already Aware Of
+            - Not Related To My Company
+            - False Positive
+            - Legitimate Application/ Profile
+            - Company Owned Domain
+            - Other
+        - name: disposition
+          description: A disposition to set the investigation to. Relevant when status=closed and api_version is V2 only.
+          auto: PREDEFINED
+          predefined:
+            - benign
+            - malicious
+            - not_applicable
+      description: Set the status of the investigation, which is specified by ID or Rapid7 Resource Names.
+      name: rapid7-insight-idr-set-status
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.responsibility
+          description: The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection & Response customers. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.latest_alert_time
+          description: The create time of the most recent alert belonging to this investigation (if any). Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.email
+          description: The email of the assigned user. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee_email
+          description: Email address of the investigation assignee Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee_name
+          description: Name of the investigation assignee Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert_type
+          description: Type of alert in the investigation Relevant when api_version is V1 only.
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.name
+          description: The name of the assigned user. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.disposition
+          description: The disposition of this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.created_time
+          description: The time this investigation was created.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.last_accessed
+          description: The time this investigation was last viewed or modified. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.priority
+          description: The investigations priority. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The status of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.source
+          description: How this investigation was generated.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.title
+          description: The name of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.organization_id
+          description: The ID of the organization that owns this investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The Rapid7 Resource Names of the investigation. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.id
+          description: The ID of the investigation. Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type_description
+          description: The description of this type of alert (if any). Relevant when api_version is V1 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.type
+          description: The alert's type. Relevant when api_version is V2 only.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
+          description: The create time of the first alert belonging to this investigation (if any). Relevant when api_version is V1 only.
+          type: String
+    - arguments:
+        - description: Key of the threat (or threats) to add indicators to.
+          isArray: true
+          name: key
+          required: true
+        - description: IP address indicators to add.
+          isArray: true
+          name: ip_addresses
+        - description: "Hash indicators to add."
+          isArray: true
+          name: hashes
+        - description: Domain indicators to add.
+          isArray: true
+          name: domain_names
+        - description: URL indicators to add.
+          isArray: true
+          name: url
+      description: Adds new indicators to a threat (IP addresses, hashes, domains, and URLs).
+      name: rapid7-insight-idr-add-threat-indicators
+      outputs:
+        - contextPath: Rapid7InsightIDR.Threat.name
+          description: Name of the threat.
+          type: String
+        - contextPath: Rapid7InsightIDR.Threat.note
+          description: Notes for the threat.
+          type: String
+        - contextPath: Rapid7InsightIDR.Threat.indicator_count
+          description: How many indicators the threat has.
+          type: Number
+        - contextPath: Rapid7InsightIDR.Threat.published
+          description: Whether or not the threat is published.
+          type: Boolean
+    - arguments:
+        - description: Key of the threat (or threats) to replace indicators for.
+          isArray: true
+          name: key
+          required: true
+        - description: IP address indicators to add.
+          isArray: true
+          name: ip_addresses
+        - description: "Hash indicators to add."
+          isArray: true
+          name: hashes
+        - description: Domain indicators to add.
+          isArray: true
+          name: domain_names
+        - description: URL indicators to add.
+          isArray: true
+          name: url
+      description: Deletes existing indicators from a threat and adds new indicators to the threat.
+      name: rapid7-insight-idr-replace-threat-indicators
+      outputs:
+        - contextPath: Rapid7InsightIDR.Threat.name
+          description: Name of the threat.
+          type: String
+        - contextPath: Rapid7InsightIDR.Threat.note
+          description: Notes for the threat.
+          type: String
+        - contextPath: Rapid7InsightIDR.Threat.indicator_count
+          description: How many indicators the threat has.
+          type: Number
+        - contextPath: Rapid7InsightIDR.Threat.published
+          description: Whether or not the threat is published.
+          type: Boolean
+    - arguments: []
+      description: Lists all existing logs for an account.
+      name: rapid7-insight-idr-list-logs
+      outputs:
+        - contextPath: Rapid7InsightIDR.Log.name
+          description: Log name.
+          type: String
+        - contextPath: Rapid7InsightIDR.Log.id
+          description: Log ID.
+          type: String
+    - arguments: []
+      description: Lists all existing log sets for your InsightsIDR instance.
+      name: rapid7-insight-idr-list-log-sets
+      outputs:
+        - contextPath: Rapid7InsightIDR.LogSet.name
+          description: Log name.
+          type: String
+        - contextPath: Rapid7InsightIDR.LogSet.id
+          description: Log ID.
+          type: String
+    - arguments:
+        - description: IDs of the logs to download - up to 10 logs allowed.
+          isArray: true
+          name: log_ids
+          required: true
+        - description: "Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. This is optional if time_range is supplied."
+          name: start_time
+        - description: "Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds."
+          name: end_time
+        - description: 'The relative time range in a readable format. Optional if "from" \ is supplied. For example: Last 4 Days. Note that if start_time, end_time and\ \ time_range is not provided the default will be Last 3 days.'
+          name: time_range
+        - description: "The LEQL query to match desired log events. Do not use a calculation. For more information: https://docs.rapid7.com/insightidr/build-a-query/"
+          name: query
+        - description: 'The maximum number of log events to download; cannot exceed 20 million. The default is 20 million. The argument value should be written like this: "10 thousand" or "2 million").'
+          name: limit
+      description: Downloads logs from your InsightsIDR instance. The maximum number of logs per call is 10.
+      name: rapid7-insight-idr-download-logs
+      outputs: []
+    - arguments:
+        - description: Log entries log key.
+          name: log_id
+          required: true
+        - description: "A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/"
+          name: query
+          required: true
+        - description: A time range string (i.e., 1 week, 1 day). When using this parameter, start_time and end_time isn't needed.
+          name: time_range
+        - description: "Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000."
+          name: start_time
+        - description: "Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000."
+          name: end_time
+        - description: The maximum number of log entries to return per page. Default of 50.
+          name: logs_per_page
+        - description: The earlier sequence number of a log entry to start searching from.
+          name: sequence_number
+      description: Queries within a log for certain values.
+      name: rapid7-insight-idr-query-log
+      outputs:
+        - contextPath: Rapid7InsightIDR.Event.log_id
+          description: ID of the log the event appears in.
+          type: String
+        - contextPath: Rapid7InsightIDR.Event.message
+          description: Event message.
+          type: String
+        - contextPath: Rapid7InsightIDR.Event.timestamp
+          description: Time when the event was triggered.
+          type: Number
+    - arguments:
+        - description: ID of the log set.
+          isArray: true
+          name: log_set_id
+          required: true
+        - description: "A valid LEQL query to run against the log. For more information: https://docs.rapid7.com/insightidr/build-a-query/"
+          name: query
+          required: true
+        - description: A time range string (e.g., 1 week, 1 day) - While using this parameter, start_time and end_time isn't needed.
+          name: time_range
+        - description: "Lower bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1450557004000."
+          name: start_time
+        - description: "Upper bound of the time range you want to query against. Format: UNIX timestamp in milliseconds. Example:1460557604000."
+          name: end_time
+        - description: The maximum number of log entries to return per page. Default of 50.
+          name: logs_per_page
+        - description: The earlier sequence number of a log entry to start searching from.
+          name: sequence_number
+      description: Queries within a log set for certain values.
+      name: rapid7-insight-idr-query-log-set
+      outputs:
+        - contextPath: Rapid7InsightIDR.Event.log_id
+          description: ID of the log the event appears in.
+          type: String
+        - contextPath: Rapid7InsightIDR.Event.message
+          description: Event message.
+          type: String
+        - contextPath: Rapid7InsightIDR.Event.timestamp
+          description: Time when the event was triggered.
+          type: Number
+    - name: rapid7-insight-idr-create-investigation
+      description: Create a new investigation manually.
+      arguments:
+        - name: title
+          description: The name of the investigation.
+          required: true
+        - name: status
+          description: The status of the investigation. Open - The default status for all new investigations. Investigating - The investigation is in progress. Closed - The investigation has ended. A disposition must be selected to set this status.
+          defaultValue: Open
+          auto: PREDEFINED
+          predefined:
+            - Open
+            - Investigating
+            - Closed
+        - name: priority
+          description: The priority for the investigation. Investigation priority is the scale given to an investigation based on the impact and urgency of the detections and assets associated with it.
+          defaultValue: Unspecified
+          auto: PREDEFINED
+          predefined:
+            - Unspecified
+            - Low
+            - Medium
+            - High
+            - Critical
+        - name: disposition
+          description: The disposition for the investigation. Select a disposition to indicate whether the investigation represented a legitimate threat.
+          defaultValue: Undecided
+          auto: PREDEFINED
+          predefined:
+            - Undecided
+            - Benign
+            - Malicious
+            - Not Applicable
+        - name: user_email_address
+          description: The email address of the user to assign to this investigation. This is the same email used to log into the insight platform. Use rapid7-insight-idr-list-users to retrieve the user email list.
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.responsibility
+          description: The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection & Response customers.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.latest_alert_time
+          description: The create time of the most recent alert belonging to this investigation (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.first_alert_time
+          description: The create time of the first alert belonging to this investigation (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.email
+          description: The email of the assigned user (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.name
+          description: The name of the assigned user (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.disposition
+          description: The disposition of this investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.created_time
+          description: The time this investigation was created.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.last_accessed
+          description: The time this investigation was last viewed or modified.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.priority
+          description: The priority of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The status of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.source
+          description: How this investigation was generated.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.title
+          description: The name of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.organization_id
+          description: The ID of the organization that owns this investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The Rapid7 Resource Names of the investigation.
+          type: String
+    - name: rapid7-insight-idr-update-investigation
+      description: Updates multiple fields in a single operation for an investigation, specified by ID or Rapid7 Resource Names (RRN). (If multi-customer set to true, the investigation_id must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+      arguments:
+        - name: investigation_id
+          description: The ID or Rapid7 Resource Names (RRN) of the investigation to to update. (If api_version=V2, the ID of the investigation must be in the RRN format).
+          required: true
+          default: true
+        - name: title
+          description: The name of the investigation.
+        - name: status
+          description: The status of the investigation.  Open - The default status for all new investigations. Investigating - The investigation is in progress. Closed - The investigation has ended. A disposition must be selected to set this status.
+          auto: PREDEFINED
+          predefined:
+            - Open
+            - Investigating
+            - Closed
+        - name: priority
+          description: The priority for the investigation. Investigation priority is the scale given to an investigation based on the impact and urgency of the detections and assets associated with it.
+          auto: PREDEFINED
+          predefined:
+            - Unspecified
+            - Low
+            - Medium
+            - High
+            - Critical
+        - name: disposition
+          description: The disposition for the investigation. Select a disposition to indicate whether the investigation represented a legitimate threat.
+          auto: PREDEFINED
+          predefined:
+            - Undecided
+            - Benign
+            - Malicious
+            - Not Applicable
+        - name: user_email_address
+          description: The email address of the user to assign to this investigation. This is the same email used to log into the insight platform.
+        - name: threat_command_free_text
+          description: Additional information provided by the user when closing a Threat Command alert. Relevant when status=Closed.
+        - name: threat_command_close_reason
+          description: The Threat Command reason for closing, applicable only if the investigation being closed has an associated alert in Threat Command. The Close Reason description depends on the Threat Command alert type. Relevant when status=Closed.
+          auto: PREDEFINED
+          predefined:
+            - Problem Solved
+            - Informational Only
+            - Problem We Are Already Aware Of
+            - Not Related To My Company
+            - False Positive
+            - Legitimate Application/ Profile
+            - Company Owned Domain
+            - Other
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.responsibility
+          description: The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection & Response customers.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.latest_alert_time
+          description: The create time of the most recent alert belonging to this investigation (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.first_alert_time
+          description: The create time of the first alert belonging to this investigation (if any).
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee_email
+          description: The email of the assigned user.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.assignee_name
+          description: The name of the assigned user.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.disposition
+          description: The disposition of this investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.created_time
+          description: The time this investigation was created.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.last_accessed
+          description: The time this investigation was last viewed or modified.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.priority
+          description: The priority of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The status of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.source
+          description: How this investigation was generated.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.title
+          description: The name of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.organization_id
+          description: The ID of the organization that owns this investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The Rapid7 Resource Names of the investigation.
+          type: String
+    - name: rapid7-insight-idr-search-investigation
+      description: Search for investigations matching the given search/sort criteria.
+      arguments:
+        - name: start_time
+          description: An optional ISO formatted timestamp for the start of the time period to search for matching investigations. Only investigations whose created_time is after this date will be returned. For example, 2018-07-01T00:00:00Z. Default is 28 days ago.
+        - name: end_time
+          description: An optional ISO formatted timestamp for the end of the time period to search for matching investigations. Only investigations whose created_time is before this date will be returned. For example, 2018-07-28T23:59:00Z. Default is the current time.
+        - name: actor_asset_hostname
+          description: Filter investigations by comma-separated values to include only those containing the specified values in the 'actor_asset_hostname' field.
+          isArray: true
+        - name: actor_user_name
+          description: Filter investigations by comma-separated values to include only those containing the specified values in the 'actor_user_name' field.
+          isArray: true
+        - name: alert_mitre_t_codes
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'alert_mitre_t_codes' field.
+          isArray: true
+        - name: alert_rule_rrn
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'alert_rule_rrn' field.
+          isArray: true
+        - name: assignee_id
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'assignee_id' field.
+          isArray: true
+        - name: organization_id
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'organization_id' field.
+          isArray: true
+        - name: priority
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'priority' field. Valid values - UNSPECIFIED, LOW, MEDIUM, HIGH, CRITICAL.
+          isArray: true
+        - name: rrn
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'rrn' field.
+          isArray: true
+        - name: source
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'source' field. Valid values - USER, ALERT.
+          isArray: true
+        - name: status
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'status' field. Valid values - OPEN, CLOSED, INVESTIGATING, WAITING.
+          isArray: true
+        - name: title
+          description: Filter investigations by comma-separated values to include only those containing the specified values in the 'title' field.
+          isArray: true
+        - name: sort
+          description: Comma-separated list of fields to sort by.
+          auto: PREDEFINED
+          predefined:
+            - Created time
+            - Priority
+            - RRN
+            - Alert created time
+            - Alert detection created time
+          isArray: true
+        - name: sort_direction
+          description: The sorting direction. Relevant when sort is chosen.
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+            - asc,desc
+          defaultValue: asc
+        - name: index
+          description: The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0.
+          defaultValue: "0"
+        - name: page_size
+          description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: "50"
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.responsibility
+          description: The responsibility of the investigation, which denotes who is responsible for performing the investigation. This field will only appear for Managed Detection & Response customers.
+          type: Unknown
+        - contextPath: Rapid7InsightIDR.Investigation.latest_alert_time
+          description: The create time of the most recent alert belonging to this investigation (if any).
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.first_alert_time
+          description: The create time of the first alert belonging to this investigation (if any).
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.email
+          description: The email of the assigned user.
+          type: Unknown
+        - contextPath: Rapid7InsightIDR.Investigation.assignee.name
+          description: The name of the assigned user.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.disposition
+          description: The disposition of this investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.created_time
+          description: The time this investigation was created.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.last_accessed
+          description: The time this investigation was last viewed or modified.
+          type: Date
+        - contextPath: Rapid7InsightIDR.Investigation.priority
+          description: The priority of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.status
+          description: The status of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.source
+          description: How this investigation was generated.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.title
+          description: The name of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.organization_id
+          description: The ID of the organization that owns this investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The Rapid7 Resource Names of the investigation.
+          type: String
+    - name: rapid7-insight-idr-list-investigation-alerts
+      description: Retrieve and list all alerts associated with an investigation, with the given ID or Rapid7 Resource Names (RRN). The listed alerts are sorted in descending order by alert create time. Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+      arguments:
+        - name: investigation_id
+          description: The ID of the investigation (If api_version=V2, the ID of the investigation must be in the RRN format).
+          required: true
+          default: true
+        - name: all_results
+          description: Whether to retrieve all results by overriding the default limit.
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: "50"
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.alert.rule_rrn
+          description: The Rapid7 Resource Names of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.rule_name
+          description: The name of the detection rule.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.alert_source
+          description: The source of the alert.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.latest_event_time
+          description: The time the most recent event involved in this alert occurred.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.first_event_time
+          description: The time the first event involved in this alert occurred.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.created_time
+          description: The time the alert was created.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.alert_type_description
+          description: A description of this type of alert.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.alert_type
+          description: The alert's type.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.title
+          description: The alert's title.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.alert.id
+          description: The alert's ID.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The ID of the investigation.
+          type: String
+    - name: rapid7-insight-idr-list-investigation-product-alerts
+      description: Retrieve and list all Rapid7 product alerts associated with an investigation, with the given ID or the Rapid7 Resource Names. These alerts are generated by Rapid7 products other than InsightIDR that you have an active license for.
+      arguments:
+        - name: investigation_id
+          description: The ID of the investigation (If api_version=V2, the ID of the investigation must be in the RRN format). Use rapid7-insight-idr-list-investigations to retrieve all investigation IDs.
+          required: true
+          default: true
+        - name: all_results
+          description: Whether to retrieve all results by overriding the default limit.
+          defaultValue: "false"
+          auto: PREDEFINED
+          predefined:
+            - "true"
+            - "false"
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: "50"
+      outputs:
+        - contextPath: Rapid7InsightIDR.Investigation.rrn
+          description: The ID of the investigation.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.ProductAlert.name
+          description: The investigation product name.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.ProductAlert.Alert.name
+          description: The investigation product alert name.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.ProductAlert.Alert.alert_id
+          description: The investigation product alert ID.
+          type: String
+        - contextPath: Rapid7InsightIDR.Investigation.ProductAlert.Alert.alert_type
+          description: The investigation product alert type.
+          type: String
+    - name: rapid7-insight-idr-list-users
+      description: List all users matching the given search/sort criteria or retrieve a user with the given RRN.
+      arguments:
+        - name: rrn
+          description: The Rapid7 Resource Names (unique identifier for user) of the user to retrieve. When using this argument, all the other irrelevant.
+        - name: first_name
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'first_name' field. Choose search operator to define the operator type.
+          isArray: true
+        - name: last_name
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'last_name' field. Choose search operator to define the operator type.
+          isArray: true
+        - name: name
+          description: Filter investigations by comma-separated values to include only those equals the specified values in the 'name' field. Choose search operator to define the operator type.
+          isArray: true
+        - name: search_operator
+          description: The filtering operator. Relevant when first_name / last_name / is name / domain chosen.
+          auto: PREDEFINED
+          predefined:
+            - contains
+            - equals
+        - name: sort
+          description: Comma-separated list of fields to sort by.
+          auto: PREDEFINED
+          predefined:
+            - first_name
+            - last_name
+            - name
+          isArray: true
+        - name: sort_direction
+          description: The sorting direction. Relevant when sort is chosen.
+          auto: PREDEFINED
+          predefined:
+            - asc
+            - desc
+            - asc,desc
+          defaultValue: asc
+        - name: index
+          description: The optional 0 based index of the page to retrieve. Must be an integer greater than or equal to 0.
+          defaultValue: "0"
+        - name: page_size
+          description: The optional size of the page to retrieve. Must be an integer greater than 0 or less than or equal to 1000.
+        - name: limit
+          description: The maximum number of records to retrieve.
+          defaultValue: "50"
+      outputs:
+        - contextPath: Rapid7InsightIDR.User.domain
+          description: The domain this user is associated with.
+          type: String
+        - contextPath: Rapid7InsightIDR.User.name
+          description: The name of this user.
+          type: String
+        - contextPath: Rapid7InsightIDR.User.first_name
+          description: The first name of this user, if known.
+          type: String
+        - contextPath: Rapid7InsightIDR.User.last_name
+          description: The last name of this user, if known.
+          type: String
+        - contextPath: Rapid7InsightIDR.User.rrn
+          description: The unique identifier for this user.
+          type: String
+  dockerimage: demisto/python3:3.10.13.89873
   isfetch: true
   runonce: false
-  script: '-'
+  script: "-"
   subtype: python3
   type: python
 tests:
-- No tests
+  - No tests
 fromversion: 5.0.0

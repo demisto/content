@@ -1,0 +1,66 @@
+{
+    "data": [
+        {
+            "id": "rrn0",
+            "title": "title0",
+            "alert_type": "Suspicious Process - Execution From Root of ProgramData",
+            "alert_type_description": "Activity that resembles attacker behavior has been observed in the network.",
+            "created_time": "2024-01-09T12:28:26.820Z",
+            "first_event_time": null,
+            "latest_event_time": null,
+            "alert_source": "Attacker Behavior Analytics",
+            "detection_rule_rrn": {
+                "rule_name": "Suspicious Process - Execution From Root of ProgramData",
+                "rule_rrn": "rrn"
+            }
+        },
+        {
+            "id": "rrn1",
+            "title": "title1",
+            "alert_type": "Suspicious Process - Execution From Root of ProgramData",
+            "alert_type_description": "Activity that resembles attacker behavior has been observed in the network.",
+            "created_time": "2024-01-09T09:20:05.793Z",
+            "first_event_time": null,
+            "latest_event_time": null,
+            "alert_source": "Attacker Behavior Analytics",
+            "detection_rule_rrn": {
+                "rule_name": "Suspicious Process - Execution From Root of ProgramData",
+                "rule_rrn": "rrn"
+            }
+        },
+        {
+            "id": "rrn2",
+            "title": "title2",
+            "alert_type": "Suspicious Process - Execution From Root of ProgramData",
+            "alert_type_description": "Activity that resembles attacker behavior has been observed in the network.",
+            "created_time": "2024-01-09T09:20:05.793Z",
+            "first_event_time": null,
+            "latest_event_time": null,
+            "alert_source": "Attacker Behavior Analytics",
+            "detection_rule_rrn": {
+                "rule_name": "Suspicious Process - Execution From Root of ProgramData",
+                "rule_rrn": "rrn"
+            }
+        },
+        {
+            "id": "rrn3",
+            "title": "title3",
+            "alert_type": "Suspicious Process - Execution From Root of ProgramData",
+            "alert_type_description": "Activity that resembles attacker behavior has been observed in the network.",
+            "created_time": "2024-01-09T09:20:05.793Z",
+            "first_event_time": null,
+            "latest_event_time": null,
+            "alert_source": "Attacker Behavior Analytics",
+            "detection_rule_rrn": {
+                "rule_name": "Suspicious Process - Execution From Root of ProgramData",
+                "rule_rrn": "rrn"
+            }
+        }
+    ],
+    "metadata": {
+        "index": 0,
+        "size": 20,
+        "total_pages": 1,
+        "total_data": 4
+    }
+}

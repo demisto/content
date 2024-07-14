@@ -880,6 +880,18 @@ script:
     - name: range
       description: 'Range of events to return. (e.g.: 0-20, 3-5, 3-3).'
       defaultValue: 0-49
+  - name: qradar-search-delete
+    description: Deletes the search from Qradar.
+    arguments:
+    - name: search_id
+      required: true
+      description: The identifier for an Ariel search.
+  - name: qradar-search-cancel
+    description: Cancels the search in QRadar.
+    arguments:
+    - name: search_id
+      required: true
+      description: The identifier for an Ariel search.
   - name: qradar-reference-sets-list
     description: Retrieves a list of reference sets.
     outputs:
@@ -1343,6 +1355,8 @@ script:
     - name: fields
       description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_14.0/14.0--config-event_sources-log_source_management-log_sources-GET.html.'
       isArray: true
+    - name: id
+      description: 'ID of a specific log source.'
   - name: qradar-get-custom-properties
     description: Retrieves a list of event regex properties.
     outputs:
@@ -1418,16 +1432,515 @@ script:
     name: get-modified-remote-data
 #    Deprecated commands, to support backward compatibility for QRadar v2.
   - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - description: 'Query by which to filter event collectors, e.g., "auto_discovered=false". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      name: filter
+    - description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,status". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-event_collectors-GET.html.'
+      name: fields
+      isArray: true
+    - description: 'ID of a specific event collector.'
+      name: id
+    description: Retrieves a list of event collectors.
+    name: qradar-event-collectors-list
+    outputs:
+    - contextPath: QRadar.EventCollector.Name
+      description: 'The display name of the event collector. Not localized because it is derived from a process/component name and the hostname of the managed host it runs on, neither of which are translatable.'
+      type: String
+    - contextPath: QRadar.EventCollector.HostID
+      description: 'The ID of the host on which this event collector process runs.'
+      type: Number
+    - contextPath: QRadar.EventCollector.ComponentName
+      description: 'The name of the component backing this event collector process. Also contained in the "name" field.'
+      type: String
+    - contextPath: QRadar.EventCollector.ID
+      description: 'The unique ID of the event collector.'
+      type: Number
+  - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - description: 'Query by which to filter wincollect destinations, e.g., "internal=true". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      name: filter
+    - description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,host". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-wincollect-wincollect_destinations-GET.html.'
+      name: fields
+      isArray: true
+    - description: ID of a specific WinCollect destination.
+      name: id
+    description: |-
+      Retrieves a list of WinCollect destinations. 
+      In order to get wincollect_internal_destination_ids - filter internal=true needs to be used
+      In order to get wincollect_external_destination_ids - filter internal=false needs to be used.
+    name: qradar-wincollect-destinations-list
+    outputs:
+    - contextPath: QRadar.WinCollectDestination.ID
+      description: 'The ID of the WinCollect destination.'
+      type: Number
+    - contextPath: QRadar.WinCollectDestination.Name
+      description: 'The name of the WinCollect destination.'
+      type: String
+    - contextPath: QRadar.WinCollectDestination.Host
+      description: 'The IP or hostname of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this host.'
+      type: String
+    - contextPath: QRadar.WinCollectDestination.TlsCertificate
+      description: 'The TLS Certificate of the WinCollect destination.'
+      type: String
+    - contextPath: QRadar.WinCollectDestination.Port
+      description: 'The listen port of the WinCollect destination. WinCollect agents that use this destination send syslog event data to this port.'
+      type: Number
+    - contextPath: QRadar.WinCollectDestination.TransportProtocol
+      description: 'The protocol that is used to send event data to this WinCollect destination. Possible values are TCP or UDP.'
+      type: String
+    - contextPath: QRadar.WinCollectDestination.IsInternal
+      description: 'Set to "true" if the destination corresponds to a QRadar event collector process from this deployment; otherwise, it is set to false if it is any other host.'
+      type: Boolean
+    - contextPath: QRadar.WinCollectDestination.EventRateThrottle
+      description: 'The events-per-second rate that is used to throttle the event flow to this destination.'
+      type: Number
+  - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      name: filter
+    - description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-disconnected_log_collectors-GET.html.'
+      name: fields
+      isArray: true
+    - description: 'ID of a specific disconnected log collector.'
+      name: id
+    description: Retrieves a list of disconnected log collectors.
+    name: qradar-disconnected-log-collectors-list
+    outputs:
+    - contextPath: QRadar.DisconnectedLogCollector.ID
+      description: 'The ID of the disconnected log collector.'
+      type: Number
+    - contextPath: QRadar.DisconnectedLogCollector.Name
+      description: 'The name of the disconnected log Collector.'
+      type: String
+    - contextPath: QRadar.DisconnectedLogCollector.Description
+      description: 'The description of the disconnected log collector.'
+      type: String
+    - contextPath: QRadar.DisconnectedLogCollector.Protocol
+      description: 'The transport protocol used by the disconnected log collector to send events to QRadar. Possible values are TLS and UDP.'
+      type: String
+    - contextPath: QRadar.DisconnectedLogCollector.UUID
+      description: 'The UUID of the disconnected log collector.'
+      type: String
+    - contextPath: QRadar.DisconnectedLogCollector.Version
+      description: 'The version of the disconnected log collector.'
+      type: String
+  - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      name: filter
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_types-GET.html.'
+      isArray: true
+    - name: id
+      description: 'ID of a specific disconnected log collector.'
+    description: Retrieves a list of log sources types.
+    name: qradar-log-source-types-list
+    outputs:
+    - contextPath: QRadar.LogSourceTypesList.Custom
+      description: 'The condition is set to true if this is a custom log source type; otherwise, the condition is set to false.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceTypesList.DefaultProtocolID
+      description: 'The ID of the default protocol type for this log source type. The ID must correspond to an existing protocol type. See the Protocol Type API (/api/config/event_sources/log_source_management/protocol_types/).'
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.ID
+      description: 'The ID of the log source type.'
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.Internal
+      description: 'The condition is set to true if the log source type is an internal log source type (for example, System Notification, SIM Audit, Asset Profiler, and so on) for which log sources cannot be created, edited, or deleted. If this is a user configurable log source type, the condition is set to false.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceTypesList.LatestVersion
+      description: 'The latest available version of the log source type component.'
+      type: String
+    - contextPath: QRadar.LogSourceTypesList.LogSourceExtensionID
+      description: 'The log source extension that is associated with the log source type. The ID must correspond to an existing log source extension or be set to null. See the Log Source Extension API (/api/config/event_sources/log_source_management/log_source_extensions/).'
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.Name
+      description: 'The unique name of the log source type. The name is not localized.'
+      type: String
+    - contextPath: QRadar.LogSourceTypesList.protocol_types.documented
+      description: 'Indicates whether the protocol is documented/fully supported for this log source type.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceTypesList.protocol_types.protocol_id
+      description: 'ID of the protocol type.'
+      type: Number
+    - contextPath: QRadar.LogSourceTypesList.supported_language_ids
+      description: 'The IDs of the languages supported by this log source type. Each ID must correspond to an existing log source language. See the Log Source Language API: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-id-GET.html'
+      type: List
+    - contextPath: QRadar.LogSourceTypesList.uuid
+      description: 'A UUID string of the log source type.'
+      type: String
+    - contextPath: QRadar.LogSourceTypesList.version
+      description: 'The log source type plugin version.'
+      type: String
+  - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      name: filter
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_extensions-GET.html.'
+      isArray: true
+    - name: id
+      description: 'ID of a specific disconnected log collector.'
+    description: Retrieves a list of log source extensions.
+    name: qradar-log-source-extensions-list
+    outputs:
+    - contextPath: QRadar.LogSourceExtension.Name
+      description: 'The name of the log source extension.'
+      type: String
+    - contextPath: QRadar.LogSourceExtension.Description
+      description: 'The description of the log source extension.'
+      type: String
+    - contextPath: QRadar.LogSourceExtension.ID
+      description: 'The ID of the extension.'
+      type: Number
+    - contextPath: QRadar.LogSourceExtension.UUID
+      description: 'The UUID string of the log source extension.'
+      type: String
+  - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      name: filter
+    - description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_languages-GET.html.'
+      name: fields
+      isArray: true
+    - description: 'ID of a specific disconnected log collector.'
+      name: id
+    description: Retrieves a list of log source languages.
+    name: qradar-log-source-languages-list
+    outputs:
+    - contextPath: QRadar.LogSourceLanguage.ID
+      description: 'The ID of the language. This ID does not change across deployments.'
+      type: Number
+    - contextPath: QRadar.LogSourceLanguage.Name
+      description: 'The display name of the language.'
+      type: String
+  - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+      name: filter
+    - description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-GET.html.'
+      name: fields
+      isArray: true
+    - description: 'ID of a specific disconnected log collector.'
+      name: id
+    description: Retrieves a list of log source languages.
+    name: qradar-log-source-groups-list
+    outputs:
+    - contextPath: QRadar.LogSourceGroup.Assignable
+      description: 'If log sources can be assigned to this group, the condition is set to true; otherwise, the condition is set to false. Log sources cannot be assigned directly to the "Other" group or to the root log source group node.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceGroup.ChildGroupIDs
+      description: 'The list of IDs of any child log source groups that belong to this group.'
+      type: List
+    - contextPath: QRadar.LogSourceGroup.Description
+      description: 'The description of the group.'
+      type: String
+    - contextPath: QRadar.LogSourceGroup.ID
+      description: 'The ID of the group.'
+      type: Number
+    - contextPath: QRadar.LogSourceGroup.ModificationDate
+      description: 'The date and time (expressed as milliseconds since epoch) that the group was last modified.'
+      type: Number
+    - contextPath: QRadar.LogSourceGroup.Name
+      description: 'The name of the group.'
+      type: String
+    - contextPath: QRadar.LogSourceGroup.Owner
+      description: 'The name of the user who owns the group.'
+      type: String
+    - contextPath: QRadar.LogSourceGroup.ParentID
+      description: "The ID of the group's parent group. The root node group has a null parent_ID."
+      type: Number
+  - arguments:
+    - description: 'Range of results to return (e.g.: 0-20, 3-5, 3-3).'
+      name: range
+      defaultValue: 0-49
+    - name: filter
+      description: 'Query by which to filter disconnected log collectors, e.g., "protocol=udp". For reference, see: https://www.ibm.com/support/knowledgecenter/SS42VS_SHR/com.ibm.qradarapi.doc/c_rest_api_filtering.html'
+    - name: fields
+      description: 'Comma-separated list of fields to retrieve in the response. Fields that are not explicitly named are excluded. E.g., "id,name,protocol_parameters". Specify subfields in brackets and multiple fields in the same object separated by commas. For a full list of available fields, see:  https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html.'
+      isArray: true
+    - name: id
+      description: 'ID of a specific disconnected log collector.'
+    description: Retrieves the list of protocol types.
+    name: qradar-log-source-protocol-types-list
+    outputs:
+    - contextPath: QRadar.LogSourceProtocolType.GatewaySupported
+      description: "If this protocol type can be configured for a gateway log source, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a standalone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a 'gateway' for events from multiple systems to enter the event pipeline. Not all protocol types can be used as a gateway if they don't support collecting event data from multiple sources."
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolType.ID
+      description: 'The ID of the protocol type.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.Inbound
+      description: 'Indicates whether this is an inbound protocol.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolType.LatestVersion
+      description: 'The latest version available of the protocol type component.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Name
+      description: 'The unique name of the protocol type.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.ParameterGroups.id
+      description: 'The ID of the protocol parameter group.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.ParameterGroups.name
+      description: 'The name of the protocol parameter group.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.ParameterGroups.required
+      description: 'If at least one parameter in this group must be set, the condition is set to true; otherwise, the condition is set to false.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.allowed_values.name
+      description: 'An allowed value for the name of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.allowed_values.value
+      description: 'An allowed value for the value of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.default_value
+      description: 'The optional default parameter value.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.description
+      description: 'The description of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.group_id
+      description: 'The ID of the protocol parameter group that this parameter belongs to. The group_id is optional.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.id
+      description: 'The ID of the parameter.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.label
+      description: 'The label of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.max_length
+      description: 'The maximum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.max_value
+      description: 'The maximum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.min_length
+      description: 'The minimum length of the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD, REGEX. The max_length is optional.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.min_value
+      description: 'The minimum of the parameter value for the following parameter types: INTEGER, REAL, DATE, TIME, DATETIME, INTERVAL. The max_value is optional.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.name
+      description: 'The name of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.pattern
+      description: 'An optional Java regex pattern restriction on the parameter value for the following parameter types: STRING, TEXT, HOST, PASSWORD.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.pattern_description
+      description: 'The description of the pattern of the parameter.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.required
+      description: 'If the parameter is mandatory, the condition is set to true; otherwise, the condition is set to false.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.rules.affected_property
+      description: 'The affected property. For possible values visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.rules.affected_property_value
+      description: 'The value to be applied to the affected parameter when the rule is triggered. For further info visit: https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-protocol_types-GET.html'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.rules.parameter_id
+      description: 'The ID of the parameter affected by the rule.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.rules.trigger_parameter_id
+      description: 'The ID of the trigger parameter.'
+      type: Number
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.rules.trigger_pattern
+      description: 'The pattern that triggers the rule. For example, if the value of trigger_parameter_id matches the regular expression of this field, the rule triggers.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.Parameters.type
+      description: 'The type of the parameter. Possible values are: STRING, TEXT, INTEGER, REAL, BOOLEAN, DATE, TIME, DATETIME, INTERVAL, HOST, PASSWORD, REGEX.'
+      type: String
+    - contextPath: QRadar.LogSourceProtocolType.TestingCapabilities.can_accept_sample_events
+      description: 'Indicates whether the protocol type can accept sample events (only applicable to inbound protocol types).'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolType.TestingCapabilities.can_collect_events
+      description: 'Indicates whether the protocol type can collect test events.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolType.TestingCapabilities.testable
+      description: 'Indicates whether the protocol type is testable.'
+      type: Boolean
+    - contextPath: QRadar.LogSourceProtocolType.Version
+      description: 'The version of the protocol type component.'
+      type: String
+  - arguments:
+    - description: 'The ID of the log source to be deleted. If this argument is not provided, name must be provided.'
+      name: 'id'
+    - description: 'The unique name of the log source to be deleted. If this argument is not provided, the ID must be provided.'
+      name: 'name'
+    description: 'Deletes a log source by ID or name. One of the arguments must be provided.'
+    name: qradar-log-source-delete
+  - arguments:
+    - description: The unique name of the log source.
+      name: name
+      required: true
+    - description: The type of protocol that is used by the log source. Must correspond to an existing protocol type.
+      name: protocol_type_id
+      required: true
+    - description: "The type of the log source. Must correspond to an existing log source type."
+      name: type_id
+      required: true
+    - description: 'The list of protocol parameters corresponding with the selected protocol type ID. The syntax for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the protocol parameter. The command qradar-log-source-protocol-types-list can be used to list all available protocol types.'
+      name: protocol_parameters
+      required: true
+    - name: target_event_collector_id
+      description: The ID of the event collector where the log source sends its data. The ID must correspond to an existing event collector.
+      required: true
+    - name: sending_ip
+      description: The IP of the system which the log source is associated to, or fed by.
+    - name: description
+      description: The description of the log source.
+    - name: coalesce_events
+      description: Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true.
+    - name: enabled
+      description: Determines if the log source is enabled. Defaults to true.
+    - name: parsing_order
+      description: The order in which log sources will parse if multiples exist with a common identifier.
+    - name: group_ids
+      description: The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html).
+    - name: credibility
+      description: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source.
+    - name: store_event_payload
+      description: If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'.
+    - name: disconnected_log_collector_id
+      description: The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector.
+    - name: language_id
+      description: The language of the events that are being processed by this log source. Must correspond to an existing log source language.
+    - name: requires_deploy
+      description: Set to 'true' if you need to deploy changes to enable the log source for use; otherwise, set to 'false' if the log source is already active.
+    - name: wincollect_internal_destination_id
+      description: The internal WinCollect destination for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination.
+    - name: wincollect_external_destination_ids
+      description: The set of external WinCollect destinations for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Each ID must correspond to an existing WinCollect destination.
+    - name: gateway
+      description: If the log source is configured as a gateway, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a standalone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
+    description: 'Creates a new log source.'
+    name: qradar-log-source-create
+    outputs:
+    - contextPath: QRadar.LogSource.SendingIP
+      description: IP of the system which the log source is associated with, or fed by.
+      type: String
+    - contextPath: QRadar.LogSource.Internal
+      description: Whether log source is internal.
+      type: Boolean
+    - contextPath: QRadar.LogSource.ProtocolParameters
+      description: Protocol parameters.
+      type: Unknown
+    - contextPath: QRadar.LogSource.Description
+      description: Description of the log source.
+      type: String
+    - contextPath: QRadar.LogSource.Enabled
+      description: Whether log source is enabled.
+      type: Boolean
+    - contextPath: QRadar.LogSource.GroupIDs
+      description: Log source group IDs.
+      type: Number
+    - contextPath: QRadar.LogSource.Credibility
+      description: Credibility of the log source.
+      type: Number
+    - contextPath: QRadar.LogSource.ID
+      description: ID of the log source.
+      type: Number
+    - contextPath: QRadar.LogSource.ProtocolTypeID
+      description: Protocol type used by log source.
+      type: Number
+    - contextPath: QRadar.LogSource.CreationDate
+      description: Date when log source was created.
+      type: Date
+    - contextPath: QRadar.LogSource.Name
+      description: Name of the log source.
+      type: String
+    - contextPath: QRadar.LogSource.AutoDiscovered
+      description: Whether log source was auto discovered.
+      type: Boolean
+    - contextPath: QRadar.LogSource.ModifiedDate
+      description: Date when log source was last modified.
+      type: Date
+    - contextPath: QRadar.LogSource.TypeID
+      description: The log source type.
+      type: Number
+    - contextPath: QRadar.LogSource.LastEventTime
+      description: Date when the last event was received by the log source.
+      type: Date
+    - contextPath: QRadar.LogSource.Gateway
+      description: Whether log source is configured as a gateway.
+      type: Boolean
+    - contextPath: QRadar.LogSource.Status
+      description: Status of the log source.
+    - contextPath: QRadar.LogSource.TargetEventCollectorID
+      description: The ID of the event collector where the log source sends its data.
+      type: Number
+  - arguments:
+    - description: The ID of the log source.
+      name: id
+      required: true
+    - description: The unique name of the log source.
+      name: name
+    - description: "The type of protocol that is used by the log source. Must correspond to an existing protocol type."
+      name: protocol_type_id
+    - description: The type of the log source. Must correspond to an existing log source type.
+      name: type_id
+    - name: protocol_parameters
+      description: 'The list of protocol parameters corresponding with the selected protocol type ID. The syntax for this argument should follow: protocol_parameters="name_1=value_1,name_2=value_2,...,name_n=value_n" where each name should correspond to a name of a protocol parameter from the protocol type and each value should fit the type of the protocol parameter. The command qradar-log-source-protocol-types-list can be used to list all available protocol types.'
+    - name: target_event_collector_id
+      description: The ID of the event collector where the log source sends its data. The ID must correspond to an existing event collector.
+    - name: sending_ip
+      description: The IP of the system which the log source is associated to, or fed by.
+    - name: description
+      description: The description of the log source.
+    - name: coalesce_events
+      description: Determines if events collected by this log source are coalesced based on common properties. If each individual event is stored, then the condition is set to false. Defaults to true.
+    - name: enabled
+      description: Determines if the log source is enabled. Defaults to true.
+    - name: parsing_order
+      description: The order in which log sources will parse if multiples exist with a common identifier.
+    - name: group_ids
+      description: The set of log source group IDs this log source is a member of. Each ID must correspond to an existing log source group. The command qradar-log-sources-groups-list can be used to list all available groups. See the Log Source Group API (https://ibmsecuritydocs.github.io/qradar_api_20.0/20.0--config-event_sources-log_source_management-log_source_groups-id-GET.html).
+    - name: credibility
+      description: On a scale of 0-10, the amount of credibility that the QRadar administrator places on this log source.
+    - name: store_event_payload
+      description: If the payloads of events that are collected by this log source are stored, the condition is set to 'true'. If only the normalized event records are stored, then the condition is set to 'false'.
+    - name: disconnected_log_collector_id
+      description: The ID of the disconnected log collector where this log source will run. The ID must correspond to an existing disconnected log collector.
+    - name: language_id
+      description: The language of the events that are being processed by this log source. Must correspond to an existing log source language.
+    - name: requires_deploy
+      description: Set to 'true' if you need to deploy changes to enable the log source for use; otherwise, set to 'false' if the log source is already active.
+    - name: wincollect_internal_destination_id
+      description: The internal WinCollect destination for this log source, if applicable. Log sources without an associated WinCollect agent have a null value. Must correspond to an existing WinCollect destination.
+    - name: wincollect_external_destination_ids
+      description: The set of external WinCollect destinations for this log source, if applicable. Log Sources without an associated WinCollect agent have a null value. Each ID must correspond to an existing WinCollect destination.
+    - name: gateway
+      description: If the log source is configured as a gateway, the condition is set to 'true'; otherwise, the condition is set to 'false'. A gateway log source is a standalone protocol configuration. The log source receives no events itself, and serves as a host for a protocol configuration that retrieves event data to feed other log sources. It acts as a "gateway" for events from multiple systems to enter the event pipeline.
+#    Deprecated commands, to support backward compatibility for QRadar v2.
+    description: 'Updates an exising log source.'
+    name: qradar-log-source-update
+  - arguments:
     - description: 'Query by which to filter offenses. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       name: filter
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named, are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-GET.html"
       name: fields
     - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+    - description: Table headers to use in the human readable output (if none provided, will show all table headers).
       name: headers
+    description: Gets offenses from QRadar. Deprecated, Use qradar-offenses-list instead.
     hidden: true
-    description: Gets offenses from QRadar.
+    deprecated: true
     name: qradar-offenses
     outputs:
     - contextPath: QRadar.Offense.Followup
@@ -1446,7 +1959,7 @@ script:
       description: The source addresses that are associated with the offense.
       type: Unknown
     - contextPath: QRadar.Offense.DestinationAddress
-      description: The destination addresses that are associated with the offense.
+      description: 'The destination addresses that are associated with the offense.'
       type: Unknown
     - contextPath: QRadar.Offense.AssignedTo
       description: The user the offense is assigned to.
@@ -1506,25 +2019,26 @@ script:
       description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
   - arguments:
-    - default: true
-      description: Offense ID.
+    - description: Offense ID.
       name: offense_id
       required: true
+      default: true
     - description: 'Query to filter offense. For reference please consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       name: filter
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names, for reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-GET.html"
       name: fields
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+    - description: 'Table headers to use in the human readable output (if none provided, will show all table headers).'
       name: headers
-    description: Gets offense with matching offense ID from qradar.
+    description: Gets offense with matching offense ID from qradar.Deprecated, Use qradar-offense-list instead.
     hidden: true
+    deprecated: true
     name: qradar-offense-by-id
     outputs:
     - contextPath: QRadar.Offense.Followup
       description: Offense followup.
       type: boolean
     - contextPath: QRadar.Offense.Credibility
-      description: The credibility of the offense.
+      description: 'The credibility of the offense.'
       type: number
     - contextPath: QRadar.Offense.Relevance
       description: The relevance of the offense.
@@ -1627,8 +2141,9 @@ script:
       name: assigned_to
     - description: Use this parameter to specify which fields you would like to get back in the response. Fields that are not named are excluded. Specify subfields in brackets and multiple fields in the same object  separated by commas. Please consult - https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-POST.html
       name: fields
-    description: Update an offense.
+    description: Update an offense. Deprecated, Use qradar-offense-update instead.
     hidden: true
+    deprecated: true
     name: qradar-update-offense
     outputs:
     - contextPath: QRadar.Offense.Followup
@@ -1707,15 +2222,18 @@ script:
       description: The remote destinations that are associated with the offesne. If this value is greater than 0 that means your offense has a remote destination, you will need to use QRadarFullSearch playbook with the following query - SELECT destinationip FROM events WHERE inOffense(<offenseID>) GROUP BY destinationip.
       type: Unknown
   - arguments:
-    - default: true
-      description: The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html").
+    - description: The query expressions in AQL (for more information about Ariel Query Language, review "https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.0/com.ibm.qradar.doc/c_aql_intro.html").
       name: query_expression
       required: true
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+      default: true
+    - description: "Table headers to use in the human readable output (if none provided, will show all table headers)."
       name: headers
-    description: Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
-    name: qradar-searches
     hidden: true
+    deprecated: true
+    description: |
+      Searches in QRadar using AQL. It is highly recommended to use the playbook 'QRadarFullSearch' instead of this command - it will execute the search, and will return the result.
+      Deprecated, Use qradar-search-create instead.
+    name: qradar-searches
     outputs:
     - contextPath: QRadar.Search.ID
       description: Search ID.
@@ -1724,14 +2242,15 @@ script:
       description: The status of the search.
       type: string
   - arguments:
-    - default: true
-      description: The search id.
+    - description: The search ID.
       name: search_id
       required: true
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+      default: true
+    - description: Table headers to use in the human readable output (if none provided, will show all table headers).
       name: headers
-    description: Gets a specific search id and status.
     hidden: true
+    deprecated: true
+    description: Gets a specific search ID and status. Deprecated, Use qradar-search-status-get instead.
     name: qradar-get-search
     outputs:
     - contextPath: QRadar.Search.ID
@@ -1741,18 +2260,19 @@ script:
       description: The status of the search.
       type: string
   - arguments:
-    - default: true
-      description: The search id.
+    - description: The search id.
       name: search_id
       required: true
+      default: true
     - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+    - description: "Table headers to use in the human readable output (if none provided, will show all table headers)."
       name: headers
     - description: Replaces the default context output path for the query result (QRadar.Search.Result). e.g. for output_path=QRadar.Correlations the result will be under the key "QRadar.Correlations" in the context data.
       name: output_path
-    description: Gets search results.
     hidden: true
+    deprecated: true
+    description: Gets search results. Deprecated, Use qradar-search-results-get instead.
     name: qradar-get-search-results
     outputs:
     - contextPath: QRadar.Search.Result
@@ -1765,10 +2285,11 @@ script:
       name: fields
     - description: 'Range of results to return. e.g.: 0-20.'
       name: range
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+    - description: Table headers to use in the human readable output (if none provided, will show all table headers).
       name: headers
-    description: List all assets found in the model.
+    description: List all assets found in the model. Deprecated, Use qradar-assets-list instead.
     hidden: true
+    deprecated: true
     name: qradar-get-assets
     outputs:
     - contextPath: QRadar.Asset.ID
@@ -1799,12 +2320,13 @@ script:
       description: Last user who updated the name.
       type: string
   - arguments:
-    - default: true
-      description: The ID of the requested asset.
+    - description: The ID of the requested asset.
       name: asset_id
       required: true
-    description: Retrieves the asset by id.
+      default: true
+    description: Retrieves the asset by id. Deprecated, Use qradar-assets-list instead.
     hidden: true
+    deprecated: true
     name: qradar-get-asset-by-id
     outputs:
     - contextPath: QRadar.Asset.ID
@@ -1880,28 +2402,29 @@ script:
       description: Last user who updated the vulnerabilities.
       type: string
   - arguments:
-    - auto: PREDEFINED
-      defaultValue: 'true'
-      description: If true, reserved closing reasons are included in the response.
+    - description: If true, reserved closing reasons are included in the response.
       name: include_reserved
+      auto: PREDEFINED
+      defaultValue: 'true'
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
-      defaultValue: 'true'
-      description: If true, deleted closing reasons are included in the response.
+      description: 'If true, deleted closing reasons are included in the response.'
       name: include_deleted
       predefined:
       - 'true'
       - 'false'
+      defaultValue: 'true'
     - description: 'Query to filter results. For reference, consult: https://www.ibm.com/support/knowledgecenter/en/SS42VS_7.3.1/com.ibm.qradar.doc/c_rest_api_filtering.html'
       name: filter
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offense_closing_reasons-GET.html"
       name: fields
     - description: 'Range of results to return. e.g.: 0-20.'
       name: range
+    description: Get closing reasons. Deprecated, Use qradar-closing-reasons instead.
     hidden: true
-    description: Get closing reasons.
+    deprecated: true
     name: qradar-get-closing-reasons
     outputs:
     - contextPath: QRadar.Offense.ClosingReasons.ID
@@ -1911,18 +2434,18 @@ script:
       description: Closing reason name.
       type: string
   - arguments:
-    - default: true
-      description: The offense ID to retrieve the note from.
+    - description: The offense ID to retrieve the note from.
       name: offense_id
+      default: true
       required: true
-    - description: The note ID.
+    - description: 'The note ID.'
       name: note_id
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
       name: fields
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+    - description: 'Table headers to use in the human readable output (if none provided, will show all table headers).'
       name: headers
-    description: Retrieve a note for an offense.
-    hidden: true
+
+    description: Retrieve a note for an offense. Deprecated, Use qradar-offense-notes-list instead.
     name: qradar-get-note
     outputs:
     - contextPath: QRadar.Note.ID
@@ -1937,20 +2460,21 @@ script:
     - contextPath: QRadar.Note.CreatedBy
       description: The user who created the note.
       type: string
+    hidden: true
+    deprecated: true
   - arguments:
-    - default: true
-      description: The offense ID to add the note to.
+    - description: The offense ID to add the note to.
       name: offense_id
+      default: true
       required: true
-    - description: The note text.
+    - description: 'The note text.'
       name: note_text
       required: true
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object separated by commas. The filter uses QRadar's field names. For reference, consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-POST.html"
       name: fields
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
+    - description: 'Table headers to use in the human readable output (if none provided, will show all table headers).'
       name: headers
-    description: Create a note on an offense.
-    hidden: true
+    description: Create a note on an offense. Deprecated, Use qradar-offense-note-create instead.
     name: qradar-create-note
     outputs:
     - contextPath: QRadar.Note.ID
@@ -1965,22 +2489,25 @@ script:
     - contextPath: QRadar.Note.CreatedBy
       description: The user who created the note.
       type: string
+    hidden: true
+    deprecated: true
   - arguments:
-    - default: true
+    - name: ref_name
       description: The name of the requestered reference.
-      name: ref_name
+      default: true
       required: true
-    - description: Table headers to use the human readable output (if none provided, will show all table headers).
-      name: headers
-    - auto: PREDEFINED
-      defaultValue: 'False'
+    - name: headers
+      description: Table headers to use in the human readable output (if none provided, will show all table headers).
+    - name: date_value
       description: If set to true will try to convert the data values to ISO-8601 string.
-      name: date_value
+      auto: PREDEFINED
+      defaultValue: 'False'
       predefined:
       - 'True'
       - 'False'
-    description: Information about the reference set that had data added or updated. This returns the information set, but not the contained data. This feature is supported from version 8.1 and upward.
-    hidden: true
+    description: |
+      Information about the reference set that had data added or updated. This returns the information set, but not the contained data. This feature is supported from version 8.1 and upward.
+      Deprecated, Use qradar-reference-sets-list instead.
     name: qradar-get-reference-by-name
     outputs:
     - contextPath: QRadar.Reference.Name
@@ -2004,13 +2531,16 @@ script:
     - contextPath: QRadar.Reference.Data
       description: Reference set items.
       type: Unknown
-  - arguments:
-    - description: Reference name to be created.
-      name: ref_name
+    hidden: true
+    deprecated: true
+  - name: qradar-create-reference-set
+    arguments:
+    - name: ref_name
+      description: Reference name to be created.
       required: true
-    - auto: PREDEFINED
+    - name: element_type
       description: 'The element type for the values allowed in the reference set. The allowed values are: ALN (alphanumeric), ALNIC (alphanumeric ignore case), IP (IP address), NUM (numeric), PORT (port number) or DATE. Note that date values need to be represented in milliseconds since the Unix Epoch January 1st 1970.'
-      name: element_type
+      auto: PREDEFINED
       predefined:
       - ALN
       - ALNIC
@@ -2019,18 +2549,20 @@ script:
       - PORT
       - DATE
       required: true
-    - auto: PREDEFINED
+    - name: timeout_type
       description: The allowed values are "FIRST_SEEN", LAST_SEEN and UNKNOWN. The default value is UNKNOWN.
-      name: timeout_type
+      auto: PREDEFINED
       predefined:
       - FIRST_SEEN
       - LAST_SEEN
       - UNKNOWN
-    - description: 'The time to live interval, for example: "1 month" or "5 minutes".'
-      name: time_to_live
-    description: Creates a new reference set. If the provided name is already in use, this command will fail.
+    - name: time_to_live
+      description: 'The time to live interval, for example: "1 month" or "5 minutes".'
+    description: | 
+      Creates a new reference set. If the provided name is already in use, this command will fail.
+      Deprecated, Use qradar-reference-set-create instead.
     hidden: true
-    name: qradar-create-reference-set
+    deprecated: true
     outputs:
     - contextPath: QRadar.Reference.CreationTime
       description: Creation time of the reference set.
@@ -2047,18 +2579,20 @@ script:
     - contextPath: QRadar.Reference.TimeoutType
       description: Timeout type of the reference. The allowed values are FIRST_SEEN, LAST_SEEN and UNKNOWN.
       type: string
-  - arguments:
-    - default: true
+  - name: qradar-delete-reference-set
+    arguments:
+    - name: ref_name
       description: The name of reference set to delete.
-      name: ref_name
+      default: true
       required: true
-    description: Deletes a reference set corresponding to the name provided.
+    description: Deletes a reference set corresponding to the name provided. Deprecated, Use qradar-reference-set-delete instead.
     hidden: true
-    name: qradar-delete-reference-set
-  - arguments:
-    - description: The name of the reference set to add or update a value in.
-      name: ref_name
+    deprecated: true
+  - name: qradar-create-reference-set-value
+    arguments:
+    - name: ref_name
       required: true
+      description: The name of the reference set to add or update a value in.
     - description: "The value/s to add or update in the reference set. Note: Date values must be represented in epoch in reference sets (milliseconds since the Unix Epoch January 1st 1970). If 'date_value' is set to 'True', then the argument will be converted from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
       isArray: true
       name: value
@@ -2072,9 +2606,9 @@ script:
       predefined:
       - 'True'
       - 'False'
+    description: Add or update a value in a reference set. Deprecated, Use qradar-reference-set-value-upsert instead.
     hidden: true
-    description: Add or update a value in a reference set.
-    name: qradar-create-reference-set-value
+    deprecated: true
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference set.
@@ -2091,59 +2625,24 @@ script:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
-  - arguments:
-    - description: The name of the reference set to add or update a value in.
-      name: ref_name
+  - name: qradar-update-reference-set-value
+    arguments:
+    - name: ref_name
+      description: The name of the reference set to add or update a value in.
       required: true
-    - description: A comma-separated list of values to add or update in the reference set. Date values must be represented in milliseconds since the Unix Epoch January 1st 1970.
+    - name: value
+      description: A comma-separated list of values to add or update in the reference set. Date values must be represented in milliseconds since the Unix Epoch January 1st 1970.
+      required: true
       isArray: true
-      name: value
-      required: true
-    - description: An indication of where the data originated. The default value is 'reference data api'.
-      name: source
-    - auto: PREDEFINED
-      defaultValue: 'False'
+    - name: source
+      description: An indication of where the data originated. The default value is 'reference data api'.
+    - name: date_value
       description: "If set to True, will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
-      name: date_value
-      predefined:
-      - 'True'
-      - 'False'
-    hidden: true
-    description: Adds or updates a value in a reference set.
-    name: qradar-update-reference-set-value
-    outputs:
-    - contextPath: QRadar.Reference.Name
-      description: The name of the reference set.
-      type: string
-    - contextPath: QRadar.Reference.CreationTime
-      description: The creation time (ISO) of the reference.
-      type: date
-    - contextPath: QRadar.Reference.ElementType
-      description: Reference element type.
-      type: string
-    - contextPath: QRadar.Reference.NumberOfElements
-      description: Number of elements.
-      type: number
-    - contextPath: QRadar.Reference.TimeoutType
-      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
-      type: string
-  - arguments:
-    - description: The name of the reference set to remove a value from.
-      name: ref_name
-      required: true
-    - description: The value to remove from the reference set.
-      name: value
-      required: true
-    - auto: PREDEFINED
+      auto: PREDEFINED
       defaultValue: 'False'
-      description: "If set to True will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g. '2018-11-06T08:56:41.000000Z') to epoch."
-      name: date_value
       predefined:
       - 'True'
       - 'False'
-    hidden: true
-    description: Deletes a value in a reference set.
-    name: qradar-delete-reference-set-value
     outputs:
     - contextPath: QRadar.Reference.Name
       description: The name of the reference set.
@@ -2160,6 +2659,45 @@ script:
     - contextPath: QRadar.Reference.TimeoutType
       description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
       type: string
+    description: Adds or updates a value in a reference set. Deprecated, Use qradar-reference-set-value-upsert instead.
+    hidden: true
+    deprecated: true
+  - name: qradar-delete-reference-set-value
+    arguments:
+    - name: ref_name
+      description: The name of the reference set to remove a value from.
+      required: true
+    - name: value
+      description: The value to remove from the reference set.
+      required: true
+    - name: date_value
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      description: "If set to True will convert 'value' argument from date in format: '%Y-%m-%dT%H:%M:%S.%f000Z' (e.g.,  '2018-11-06T08:56:41.000000Z') to epoch."
+      defaultValue: 'False'
+    outputs:
+    - contextPath: QRadar.Reference.Name
+      description: The name of the reference set.
+      type: string
+    - contextPath: QRadar.Reference.CreationTime
+      description: The creation time (ISO) of the reference.
+      type: date
+    - contextPath: QRadar.Reference.ElementType
+      description: Reference element type.
+      type: string
+    - contextPath: QRadar.Reference.NumberOfElements
+      description: Number of elements.
+      type: number
+    - contextPath: QRadar.Reference.TimeoutType
+      description: 'Reference timeout type. One of: UNKNOWN, FIRST_SEEN, LAST_SEEN.'
+      type: string
+    description: |-
+      Deletes a value in a reference set.
+      Deprecated, Use qradar-reference-set-value-delete instead.
+    hidden: true
+    deprecated: true
   - arguments:
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
       name: fields
@@ -2167,8 +2705,9 @@ script:
       name: range
     - description: Query to filter offenses.
       name: filter
-    description: Retrieve all Domains.
+    description: Retrieve all Domains. Deprecated, Use qradar-domains-list instead.
     hidden: true
+    deprecated: true
     name: qradar-get-domains
     outputs:
     - contextPath: QRadar.Domains.AssetScannerIDs
@@ -2216,8 +2755,9 @@ script:
       required: true
     - description: "If used, will filter all fields except for the specified ones. Use this parameter to specify which fields you would like to get back in the response. Fields that are not explicitly named are excluded. Specify subfields in brackets and multiple fields in the same object are separated by commas. The filter uses QRadar's field names, for reference please consult: https://www.ibm.com/support/knowledgecenter/SSKMKU/com.ibm.qradar.doc_cloud/9.1--siem-offenses-offense_id-notes-note_id-GET.html"
       name: fields
-    description: Retrieves Domain information By ID.
+    description: Retrieves Domain information By ID. Deprecated, Use qradar-domains-list instead.
     hidden: true
+    deprecated: true
     name: qradar-get-domain-by-id
     outputs:
     - contextPath: QRadar.Domains.AssetScannerIDs
@@ -2425,6 +2965,9 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - name: timeout_in_seconds
+      type: Number
+      description: The timeout in seconds to use when polling events.
     description: Polling command to search for events of a specific offense.
     name: qradar-search-retrieve-events
     polling: true
@@ -2559,10 +3102,11 @@ script:
     description: |
       Executes a deployment.
       Potentially harmful: This API command executes any waiting system deployments in QRadar within the same deployment type and hosts defined.
+
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.96411
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

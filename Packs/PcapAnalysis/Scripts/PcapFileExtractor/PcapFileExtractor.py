@@ -175,7 +175,7 @@ def upload_files(
 
     """
     assert not (types and extensions), 'Provide only types or extensions, not both.'
-    command = ['tshark', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
+    command = ['tshark', '-2', '-r', f'{file_path}', '--export-objects', f'http,{dir_path}',
                '--export-objects', f'smb,{dir_path}', '--export-objects', f'imf,{dir_path}',
                '--export-objects', f'tftp,{dir_path}', '--export-objects', f'dicom,{dir_path}']
     # If WPA-PWD protected

@@ -46,15 +46,16 @@ name: CybelAngel Event Collector
 script:
   commands:
   - arguments:
-    - description: 'Get reports from a specific start date.'
+    - description: 'Get reports from a specific start date formatted with ISO 8601.'
       name: start_date
       required: true
-    - description: 'Get reports until a specific end date. If not provided, uses current date.'
+    - description: 'Get reports until a specific end date formatted with ISO 8601.'
       name: end_date
       required: true
-    - description: 'The maximum number of events to return.'
+    - description: 'The maximum number of reports to return.'
       name: limit
       required: true
+      defaultValue: 50
     description: 'Send events from CybelAngel to XSIAM. Used mainly for debugging.'
     name: cybelangel-get-events
     outputs: []

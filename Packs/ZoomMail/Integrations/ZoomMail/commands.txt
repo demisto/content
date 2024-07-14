@@ -1,0 +1,5 @@
+!zoom-mail-list-emails email=xsoar_test@zmail.com
+!zoom-mail-get-email-message email=xsoar_test@zmail.com message_id=d9e0967700000000_e834f97c75a1d074_002
+!zoom-mail-get-mailbox-profile email=xsoar_test@zmail.com
+!zoom-mail-list-users
+!zoom-mail-send-email from=xsoar_test@zmail.com to=xsoar_test@demisto.com subject="Testing the ZMail Integration for XSOAR" body="This should be the body of the email"

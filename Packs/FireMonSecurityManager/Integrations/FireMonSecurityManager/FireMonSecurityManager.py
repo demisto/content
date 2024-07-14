@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 """ IMPORTS """
 from typing import Any, Dict
 
@@ -12,6 +13,7 @@ CREATE_PP_TICKET_URL = "/policyplanner/api/domain/{0}/workflow/{1}/packet"
 PCA_URL_SUFFIX = "/orchestration/api/domain/{}/change/device/{}/pca"
 RULE_REC_URL = "orchestration/api/domain/{}/change/rulerec"
 PAGED_SEARCH_URL = "securitymanager/api/siql/secrule/paged-search"
+COLLECTOR_URL = "securitymanager/api/collector"
 
 create_pp_payload = {
     "sources": [""],
@@ -225,6 +227,48 @@ class Client(BaseClient):
         )
         return secrule_page_search_response
 
+    def get_paged_all_collectors(self, auth_token: str, payload: Dict[str, Any]):
+        """Calling get paged search api for collector
+
+        Args:
+            auth_token (str): authentication token
+            payload (Dict[str, Any]): payload to be used for making request
+        """
+        parameters: Dict[str, Any] = {
+            "pageSize": payload["pageSize"],
+            "page": payload["page"],
+        }
+
+        paged_all_collectors_response = self._http_request(
+            method="GET",
+            url_suffix=COLLECTOR_URL,
+            params=parameters,
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-FM-Auth-Token": auth_token,
+            },
+        )
+        return paged_all_collectors_response
+
+    def get_collector_status_byid(self, auth_token: str, collector_id: int):
+        """Calling get collector status api by collector id
+
+        Args:
+            auth_token (str): authentication token
+            payload (Dict[str, Any]): payload to be used for making request
+        """
+        collector_status_response = self._http_request(
+            method="GET",
+            url_suffix=f'{COLLECTOR_URL}/status/{collector_id}',
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "X-FM-Auth-Token": auth_token,
+            },
+        )
+        return collector_status_response
+
 
 def test_module(client):
     response = client.authenticate_user()
@@ -413,6 +457,89 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
     )
 
 
+def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+    """Make subsequent requests using client and other arguments
+
+    Args:
+        client (Client): `Client` class object
+        auth_token (str): authentication token to use
+        payload (Dict[str, Any]): parameter payload to use
+
+    Returns:
+        (List[Dict[str, Any]]): results list
+    """
+    result = list()
+    response = client.get_paged_all_collectors(auth_token, payload)
+    total_pages = response.get("total", 0) // payload.get("pageSize")
+
+    result.extend(response.get("results", list()))
+
+    while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
+        payload["page"] += 1
+        response = client.get_paged_all_collectors(auth_token, payload)
+        result.extend(response.get("results", list()))
+
+    return result
+
+
+def collector_get_all_command(client: Client, args: Dict[str, Any]):
+    """List all the collectors in the inventory
+
+    Args:
+        client (Client): `Client` class object
+        args (Dict[str, Any]): demisto arguments passed
+    """
+    auth_token_cmd_result = authenticate_command(client)
+    auth_token = auth_token_cmd_result.outputs
+
+    page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
+    payload = dict(
+        pageSize=page_size,
+        page=int(args.get("page", 0)),
+    )
+    results = get_paged_all_collectors(client, auth_token, payload)
+
+    return CommandResults(
+        outputs_prefix="FireMonSecurityManager.Collector",
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=tableToMarkdown(
+            name="FireMon Collector:",
+            t=results,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
+        raw_response=results,
+    )
+
+
+def collector_get_status_byid_command(client: Client, args: Dict[str, Any]):
+    """Get collector status by ID
+
+    Args:
+        client (Client): `Client` class object
+        args (Dict[str, Any]): demisto arguments passed
+    """
+    auth_token_cmd_result = authenticate_command(client)
+    auth_token = auth_token_cmd_result.outputs
+
+    collector_id = int(args.get("id", 0))
+    results = client.get_collector_status_byid(auth_token, collector_id)
+
+    return CommandResults(
+        outputs_prefix="FireMonSecurityManager.CollectorStatus",
+        outputs_key_field="id",
+        outputs=results,
+        readable_output=tableToMarkdown(
+            name="FireMon Collector:",
+            t=results,
+            removeNull=True,
+            headerTransform=pascalToSpace,
+        ),
+        raw_response=results,
+    )
+
+
 def main():
     username = demisto.params().get("credentials").get("identifier")
     password = demisto.params().get("credentials").get("password")
@@ -434,6 +561,10 @@ def main():
             return_results(pca_command(client, demisto.args()))
         elif demisto.command() == "firemon-secmgr-secrule-search":
             return_results(secmgr_secrule_search_command(client, demisto.args()))
+        elif demisto.command() == "firemon-collector-get-all":
+            return_results(collector_get_all_command(client, demisto.args()))
+        elif demisto.command() == "firemon-collector-get-status-byid":
+            return_results(collector_get_status_byid_command(client, demisto.args()))
     except Exception as e:
         return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
 

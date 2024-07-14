@@ -31,6 +31,12 @@ args:
   - 'false'
   description: use server preformatted time string in time section.
   name: forceServerFormattedTimeString
+- defaultValue: 'false'
+  predefined:
+  - 'true'
+  - 'false'
+  description: add utf8 BOM to csv report.
+  name: addUtf8Bom
 comment: Parse Sane-json-reports and export them as pdf files (used internally).
 commonfields:
   id: SanePdfReports
@@ -45,7 +51,7 @@ tags:
 - pdf
 timeout: '0'
 type: python
-dockerimage: demisto/sane-pdf-reports:1.0.0.90542
+dockerimage: demisto/sane-pdf-reports:1.0.0.99838
 runas: DBotWeakRole
 tests:
 - No Test

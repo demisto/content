@@ -19,7 +19,7 @@ from ServiceNowv2 import get_server_url, get_ticket_context, get_ticket_human_re
     ServiceNowClient, oauth_test_module, login_command, get_modified_remote_data_command, \
     get_ticket_fields, check_assigned_to_field, generic_api_call_command, get_closure_case, get_timezone_offset, \
     converts_close_code_or_state_to_close_reason, split_notes, DATE_FORMAT, convert_to_notes_result, DATE_FORMAT_OPTIONS, \
-    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field
+    format_incidents_response_with_display_values, get_entries_for_notes, is_time_field, delete_attachment_command
 from ServiceNowv2 import test_module as module
 from test_data.response_constants import RESPONSE_TICKET, RESPONSE_MULTIPLE_TICKET, RESPONSE_UPDATE_TICKET, \
     RESPONSE_UPDATE_TICKET_SC_REQ, RESPONSE_CREATE_TICKET, RESPONSE_CREATE_TICKET_WITH_OUT_JSON, RESPONSE_QUERY_TICKETS, \
@@ -335,11 +335,23 @@ def test_get_timezone_offset():
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
     assert offset == timedelta(minutes=600)
 
+    full_response = {'sys_created_on': {'display_value': '06/12/2022 23:38:52 PM', 'value': '2022-12-07 09:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd/MM/yyyy'))
+    assert offset == timedelta(minutes=600)
+
     full_response = {'sys_created_on': {'display_value': '07.12.2022 0:38:52', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('dd.MM.yyyy'))
     assert offset == timedelta(minutes=-300)
 
     full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52 AM', 'value': '2022-12-06 19:38:52'}}
+    offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
+    assert offset == timedelta(minutes=-300)
+
+    full_response = {'sys_created_on': {'display_value': 'Dec-07-2022 00:38:52 AM    ', 'value': '2022-12-06 19:38:52'}}
     offset = get_timezone_offset(full_response, display_date_format=DATE_FORMAT_OPTIONS.get('mmm-dd-yyyy'))
     assert offset == timedelta(minutes=-300)
 
@@ -567,6 +579,27 @@ def test_no_ec_commands(command, args, response, expected_hr, expected_auto_extr
     assert expected_auto_extract == result[3]  # ignore_auto_extract is in the 4th place in the result of the command
 
 
+def test_delete_attachment_command(mocker):
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'delete_attachment', return_value=None)
+    result = delete_attachment_command(client=client, args={"file_sys_id": "1234"})
+    assert 'Attachment with Sys ID 1234 was successfully deleted.' in result[0]
+
+
+def test_delete_attachment_command_failed(mocker):
+    client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
+                    'verify', 'fetch_time', 'sysparm_query', 'sysparm_limit', 'timestamp_field',
+                    'ticket_type', 'get_attachments', 'incident_name')
+
+    mocker.patch.object(client, 'delete_attachment', return_value="Error")
+    with pytest.raises(DemistoException) as e:
+        delete_attachment_command(client=client, args={"file_sys_id": "1234"})
+    assert "Error: No record found. Record doesn't exist or ACL restricts the record retrieval." in str(e)
+
+
 @freeze_time('2022-05-01 12:52:29')
 def test_fetch_incidents(mocker):
     """Unit test
@@ -578,8 +611,9 @@ def test_fetch_incidents(mocker):
     - mock the parse_date_range.
     - mock the Client's send_request.
     Then
-    - run the fetch incidents command using the Client
-    Validate The length of the results.
+    - run the fetch incidents command using the Client.
+    - Validate The length of the results.
+    - Ensure the incident sys IDs are stored in integration context for the first mirroring.
     """
     RESPONSE_FETCH['result'][0]['opened_at'] = (datetime.utcnow() - timedelta(minutes=15)).strftime('%Y-%m-%d %H:%M:%S')
     RESPONSE_FETCH['result'][1]['opened_at'] = (datetime.utcnow() - timedelta(minutes=8)).strftime('%Y-%m-%d %H:%M:%S')
@@ -587,6 +621,7 @@ def test_fetch_incidents(mocker):
         'CommonServerPython.get_fetch_run_time_range', return_value=('2022-05-01 01:05:07', '2022-05-01 12:08:29')
     )
     mocker.patch('ServiceNowv2.parse_dict_ticket_fields', return_value=RESPONSE_FETCH['result'])
+    mocker.patch.object(demisto, 'params', return_value={"mirror_notes_for_new_incidents": True})
     client = Client('server_url', 'sc_server_url', 'cr_server_url', 'username', 'password',
                     'verify', '2 days', 'sysparm_query', sysparm_limit=10,
                     timestamp_field='opened_at', ticket_type='incident', get_attachments=False, incident_name='number')
@@ -594,6 +629,7 @@ def test_fetch_incidents(mocker):
     incidents = fetch_incidents(client)
     assert len(incidents) == 2
     assert incidents[0].get('name') == 'ServiceNow Incident INC0000040'
+    assert ["sys_id1", "sys_id2"] == demisto.getIntegrationContext()["last_fetched_incident_ids"]
 
 
 @freeze_time('2022-05-01 12:52:29')
@@ -1450,6 +1486,99 @@ def test_get_remote_data(mocker):
     assert res[2]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
 
 
+def test_get_remote_data_last_fetched_incidents_entries(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context containing the last fetched ids to get their entries.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries even the lastUpdate is higher than modification time.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": ["sys_id"]})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_TICKET_MIRROR, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(client, 'query', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'sys_created_on' not in client_query_mocker.call_args[0][3]
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
+    assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
+
+
+def test_get_remote_data_no_last_fetched_incidents(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context does not containing the last fetched ids to get their entries.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket is not updated with the entries.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": []})
+    mocker.patch.object(demisto, 'params', return_value={"isFetch": True})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_TICKET_MIRROR, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(client, 'query', return_value={'result': []})
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'sys_created_on' in client_query_mocker.call_args[0][3]
+    assert len(res) == 1
+    assert not res[0]
+
+
+def test_get_remote_data_last_fetched_incidents_use_display_value(mocker):
+    """
+    Given:
+        -  LastUpdate argument set to higher then the modification time.
+        -  Integration context containing the last fetched ids to get their entries.
+        -  Using display value.
+    When
+        - running get_remote_data_command.
+    Then
+        - The ticket was updated with the entries even the lastUpdate is higher than modification time.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description',
+                    use_display_value=True, display_date_format='yyyy-MM-dd')
+
+    args = {'id': 'sys_id', 'lastUpdate': 9999999999}
+    params = {"file_tag_from_service_now": "FromServiceNow"}
+    demisto.setIntegrationContext({"last_fetched_incident_ids": ["sys_id"]})
+    mocker.patch.object(client, 'get', side_effect=[RESPONSE_QUERY_TABLE_SYS_PARAMS, RESPONSE_ASSIGNMENT_GROUP])
+    mocker.patch.object(client, 'get_ticket_attachment_entries', return_value=[])
+    client_query_mocker = mocker.patch.object(ServiceNowv2, 'convert_to_notes_result', return_value=MIRROR_COMMENTS_RESPONSE)
+
+    res = get_remote_data_command(client, args, params)
+
+    assert 'filter' not in client_query_mocker.call_args[0][1]
+    assert res[1]['Contents'] == 'Type: comments\nCreated By: admin\nCreated On: 2020-08-17 06:31:49\nThis is a comment'
+    assert not demisto.getIntegrationContext()["last_fetched_incident_ids"]
+
+
 def test_assigned_to_field_no_user():
     """
     Given:
@@ -1784,9 +1913,9 @@ def test_get_modified_remote_data(requests_mock, mocker, api_response):
     )
     result = get_modified_remote_data_command(client, {'lastUpdate': last_update})
 
-    assert result.modified_incident_ids == [
+    assert sorted(result.modified_incident_ids) == sorted([
         record.get('sys_id') for record in api_response.get('result') if 'sys_id' in record
-    ]
+    ])
 
 
 @pytest.mark.parametrize('sys_created_on, expected', [
@@ -2177,6 +2306,43 @@ def test_update_remote_data_custom_state(mocker, ticket_type, ticket_state, clos
     # assert the state argument in the last call to client.update
     assert mocker_update.call_args[0][2]['state'] == result_close_state
     assert mocker_update.call_count == update_call_count
+
+
+def test_update_remote_data_upload_file_exception(mocker):
+    """
+    Given:
+        -  ServiceNow client
+        -  Two file entries to sent from XSOAR which one of them is invalid.
+    When
+        - running update_remote_system_command.
+    Then
+        - The invalid entry raised an exception and function has continued.
+    """
+    client = Client(server_url='https://server_url.com/', sc_server_url='sc_server_url',
+                    cr_server_url='cr_server_url', username='username',
+                    password='password', verify=False, fetch_time='fetch_time',
+                    sysparm_query='sysparm_query', sysparm_limit=10, timestamp_field='opened_at',
+                    ticket_type='incident', get_attachments=False, incident_name='description')
+    params = {}
+    args = {'remoteId': '1234', 'data': {}, 'entries': [MIRROR_ENTRIES[0], MIRROR_ENTRIES[0]], 'incidentChanged': True,
+            'delta': {}, 'status': 2}
+
+    def upload_file_mock(*args):
+        raise Exception("ERROR!!!")
+
+    def add_comment_mock(*args):
+        assert "An attempt to mirror a file from Cortex XSOAR was failed." in args[3]
+
+    mocker.patch.object(client, 'update', side_effect=update_ticket)
+    mocker.patch.object(client, 'upload_file', side_effect=upload_file_mock)
+    mocker.patch.object(client, 'add_comment', side_effect=add_comment_mock)
+
+    demisto_mocker = mocker.patch.object(demisto, 'error')
+    res = update_remote_system_command(client, args, params)
+
+    assert demisto_mocker.call_args[0][0] == "An attempt to mirror a file has failed. entry_id=entry-id, " \
+                                             "file_name='test'\nERROR!!!"
+    assert res == '1234'
 
 
 @pytest.mark.parametrize('mock_json, expected_results',

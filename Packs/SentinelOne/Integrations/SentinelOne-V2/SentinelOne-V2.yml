@@ -337,6 +337,9 @@ script:
     - contextPath: SentinelOne.Hash.Rank
       description: The hash reputation (1-10).
       type: Number
+    - contextPath: SentinelOne.Hash.Verdict
+      description: The verdict of a hash.
+      type: String
     - contextPath: SentinelOne.Hash.Hash
       description: The content hash.
       type: String
@@ -988,8 +991,11 @@ script:
     - contextPath: SentinelOne.Agent.AgentsAffected
       description: The number of affected agents.
       type: Number
+    - contextPath: SentinelOne.Agent.NetworkStatus
+      description: Agent network status.
+      type: String
     - contextPath: SentinelOne.Agent.ID
-      description: The IDs of the affected agents.
+      description: Input agents' IDs.
       type: String
   - arguments:
     - description: A comma-separated list of agent IDs to disconnect from the network. Run the list-agents command to get a list of agent IDs.
@@ -1003,7 +1009,7 @@ script:
       description: Agent network status.
       type: String
     - contextPath: SentinelOne.Agent.ID
-      description: The IDs of the affected agents.
+      description: Input agents' IDs.
       type: String
   - arguments:
     - description: The message to broadcast to agents.
@@ -2385,7 +2391,7 @@ script:
     - contextPath: SentinelOne.Notes.UpdatedAt
       description: The note updated time.
       type: string
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.99144
   isfetch: true
   ismappable: true
   isremotesyncin: true

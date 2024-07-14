@@ -1,0 +1,32 @@
+{
+    "id": "15",
+    "ver": "2.0",
+    "result": {
+        "url": "/scan/result/job",
+        "status": {
+            "code": 0,
+            "message": "OK"
+        },
+        "data": {
+            "jid": "000",
+            "start_ts": 1706075110,
+            "finish_ts": 1706075110,
+            "untrusted": 1,
+            "now": 1706090522,
+            "rating": "Clean",
+            "score": 0,
+            "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+            "sha1": "0000000000000000000000000000000000000000",
+            "malware_name": "N/A",
+            "vid": 0,
+            "infected_os": "",
+            "detection_os": "",
+            "rating_source": "FortiGuard Allowlist/Blocklist",
+            "category": "NotApplicable",
+            "detail_url": "https://pikachu/job-detail/?sid=456&jid=123&req_type=url-csearch",
+            "download_url": "d3d3LnBva2Vtb24uY29t",
+            "false_positive_negative": 0,
+            "file_name": "456.123"
+        }
+    }
+}

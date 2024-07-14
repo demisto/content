@@ -1361,7 +1361,16 @@ script:
       required: true
     - description: "The absolute path of the file to be downloaded. A list of files can be downloaded as a zip folder. Multiple file paths can be separated with comma(,).\n\nNote: Users can retrieve the list of the files with absolute path by executing the \"rubrik-gps-snapshot-files-list\" command.\n\nFormat accepted: \"/<directory name>/<sub directory name or file name>\"\n\nExample: \"/C:/PerfLogs/Admin\", \"/C:/Windows/Microsoft.NET\"."
       name: file_path
+      isArray: true
       required: true
+    - description: "The type of object for which the file to be downloaded.\n\nPossible values are: \"WindowsFileset\", \"LinuxFileset\", \"VolumeGroup\", \"VmwareVm\"."
+      defaultValue: 'VmwareVm'
+      name: object_type
+      predefined:
+      - 'WindowsFileset'
+      - 'LinuxFileset'
+      - 'VolumeGroup'
+      - 'VmwareVm'
     description: "Request to download the snapshot file from the backup.\n\nNote: To know about the file information and which file can be downloaded, use the \"rubrik-gps-snapshot-files-list\" command. To know about the status of the downloadable files, use the \"rubrik-gps-async-result\" command."
     name: rubrik-gps-snapshot-files-download
     outputs:
@@ -2939,7 +2948,119 @@ script:
     - contextPath: RubrikPolaris.PageToken.FileContext.hasNextPage
       description: Whether the result has the next page or not.
       type: Boolean
-  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.86433
+  - arguments:
+    - description: "The Snapshot ID of the object or Activity Series ID.\n\nNote: Users can get the list of the snapshot IDs by executing the \"rubrik-polaris-object-snapshot-list\" command. For the Activity Series ID, the users can execute the \"rubrik-event-list\" command with the \"activity_type\" argument set to \"ANOMALY\"."
+      name: snapshot_id
+      required: true
+    description: Retrieve the suspicious list of files for a snapshot ID with detected file anomalies.
+    name: rubrik-radar-suspicious-file-list
+    outputs:
+    - contextPath: RubrikPolaris.SuspiciousFile.id
+      description: 'The anomaly result ID.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.snapshotFid
+      description: 'The snapshot ID.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cluster.id
+      description: 'The cluster ID.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cluster.defaultAddress
+      description: 'The default address of the cluster.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cluster.systemStatusAffectedNodes.ipAddress
+      description: 'The IP address of the affected node.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cluster.name
+      description: 'The cluster name.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cluster.version
+      description: 'The cluster version.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cluster.status
+      description: 'The cluster status.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cluster.__typename
+      description: 'The type name of the cluster response.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.cdmId
+      description: 'The snapshot CDM ID.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.managedId
+      description: 'The managed object ID.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyProbability
+      description: 'The probability of the anomaly.'
+      type: Number
+    - contextPath: RubrikPolaris.SuspiciousFile.workloadId
+      description: 'The workload ID.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.location
+      description: 'The location of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.isAnomaly
+      description: 'Indicates if the file is an anomaly.'
+      type: Boolean
+    - contextPath: RubrikPolaris.SuspiciousFile.objectType
+      description: 'The object type.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.snappableNew.objectType
+      description: 'The object type of the snapshot.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.severity
+      description: 'The severity of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.detectionTime
+      description: 'The detection time of the anomaly.'
+      type: Date
+    - contextPath: RubrikPolaris.SuspiciousFile.snapshotDate
+      description: 'The snapshot date of the anomaly.'
+      type: Date
+    - contextPath: RubrikPolaris.SuspiciousFile.encryption
+      description: 'The encryption standard of the anomaly.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.strainId
+      description: 'The ID of the Ransomware Strain.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalAffectedFiles
+      description: 'The total number of affected files.'
+      type: Number
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.totalRansomwareNotes
+      description: 'The total number of ransomware notes.'
+      type: Number
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.filePath
+      description: 'The path of the affected file.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.lastModified
+      description: 'The last modified time of the affected file.'
+      type: Date
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.fileSizeBytes
+      description: 'The size of the affected file in bytes.'
+      type: Number
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleAffectedFilesInfo.__typename
+      description: 'The type name of the affected file response.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.filePath
+      description: 'The path of the ransomware note file.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.lastModified
+      description: 'The last modified time of the ransomware note file.'
+      type: Date
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.fileSizeBytes
+      description: 'The size of the ransomware note file in bytes.'
+      type: Number
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.sampleRansomwareNoteFilesInfo.__typename
+      description: 'The type name of the ransomware note file response.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.strainAnalysisInfo.__typename
+      description: 'The type name of the strain analysis response.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.anomalyInfo.__typename
+      description: 'The type name of the anomaly response.'
+      type: String
+    - contextPath: RubrikPolaris.SuspiciousFile.__typename
+      description: 'The type name of the suspicious file response.'
+      type: String
+  dockerimage: demisto/rubrik-polaris-sdk-py3:1.0.0.92981
   isfetch: true
   runonce: false
   script: '-'

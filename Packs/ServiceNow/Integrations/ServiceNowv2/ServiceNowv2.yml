@@ -83,7 +83,7 @@ configuration:
   name: use_display_value
   type: 8
   required: false
-- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration.'
+- additionalinfo: 'Select the date format of your ServiceNow instance. Mandatory when using the `Use Display Value` option. More details under the troubleshooting section in the documentation of the integration. The integration supports the ServiceNow default time format (full form) `HH:mm:ss` with support to `a` notation for AM/PM.'
   defaultvalue: None
   display: Instance Date Format
   name: display_date_format
@@ -216,6 +216,12 @@ configuration:
   hidden: true
   required: false
 - defaultvalue: 'false'
+  additionalinfo: 'When enabled, comments and work notes are mirrored as note entries for each newly fetched incident. Note: This setting triggers an API call for each incident during the first mirroring, potentially causing overload if numerous incidents are present.'
+  display: Mirror Existing Notes For New Fetched Incidents
+  name: mirror_notes_for_new_incidents
+  type: 8
+  required: false
+- defaultvalue: 'false'
   display: 'Use system proxy settings'
   name: proxy
   type: 8
@@ -345,7 +351,7 @@ script:
       name: short_description
     - auto: PREDEFINED
       defaultValue: incident
-      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
+      description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item", "sn_si_incident" or "std_change_template". Default is "incident".
       name: ticket_type
       predefined:
       - incident
@@ -355,6 +361,7 @@ script:
       - sc_task
       - sc_req_item
       - sn_si_incident
+      - std_change_template
     - auto: PREDEFINED
       description: Ticket urgency. You can either select from the predefined options or enter another value. For example, "Urgent" or "5".
       name: urgency
@@ -605,7 +612,6 @@ script:
     - description: Short description of the ticket.
       name: short_description
     - auto: PREDEFINED
-      defaultValue: incident
       description: Ticket type. Can be "incident", "problem", "change_request", "sc_request", "sc_task", "sc_req_item" or "sn_si_incident". Default is "incident".
       name: ticket_type
       predefined:
@@ -841,6 +847,12 @@ script:
       - sn_si_incident
     description: Deletes a ticket from ServiceNow.
     name: servicenow-delete-ticket
+  - arguments:
+    - description: Attachment File ID.
+      name: file_sys_id
+      required: true
+    description: Delete an attachment from a ticket.
+    name: servicenow-delete-file
   - arguments:
     - defaultValue: '10'
       description: The maximum number of tickets to retrieve.
@@ -1618,7 +1630,7 @@ script:
     - contextPath: ServiceNow.Generic.Response
       description: Generic response to servicenow api.
       type: string
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.11.9.103066
   isfetch: true
   ismappable: true
   isremotesyncin: true

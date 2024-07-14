@@ -7,7 +7,7 @@ from CommonServerUserPython import *  # noqa
 import urllib.parse
 import requests
 import urllib3
-from typing import Dict, Any
+from typing import Any
 import hmac
 
 # Disable insecure warnings
@@ -274,7 +274,7 @@ class Client(BaseClient):
         Signature: The fully calculated resulting signature from the signing key and the signature
         """
         credential_scope = self.create_credential_scope()
-        canonical_headers = ";".join([header.lower() for header in self._headers.keys()])
+        canonical_headers = ";".join([header.lower() for header in self._headers])
         # There is a space after each comma in the authorization header
         return f'{STRING_TO_SIGN_ALGORITHM} Credential={self._token_id}/{credential_scope}, ' \
                f'SignedHeaders={canonical_headers}, Signature={signing_signature}'
@@ -315,12 +315,14 @@ class Client(BaseClient):
             res = requests.put(full_url, data=body, headers=self._headers, verify=self._verify)
             if res.status_code not in success_status_code:
                 raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
+            return None
 
         elif method == 'POST':
             res = requests.post(full_url, data=body, headers=self._headers, verify=self._verify)
             if res.status_code not in success_status_code:
                 raise DemistoException(f'{INTEGRATION} error: the operation was failed due to: {res.json()}')
             return res.json()
+        return None
 
 
 def sign(key, msg):
@@ -348,7 +350,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def parse_device_field_list_response(response: dict) -> Dict[str, Any]:
+def parse_device_field_list_response(response: dict) -> dict[str, Any]:
     parsed_data = {'DeviceUID': response.get('deviceUid'), 'ESN': response.get('esn'), 'CDFValues': []}  # type: ignore
     for cdf_item in response.get('cdfValues', []):
         parsed_data['CDFValues'].append({  # type: ignore
@@ -427,10 +429,10 @@ def validate_passcode_type_args(passcode_type, passcode, passcode_length, payloa
                 'when setting passcode_type to be UserDefined, you must specify the passcode arg.')
         payload["passcodeDefinition"].update({"passcode": passcode})
 
-    elif passcode_type == "RandomForEach" or passcode_type == "RandomForAl":
+    elif passcode_type == "RandomForEach" or passcode_type == "RandomForAll":
         not_valid_passcode_length = not passcode_length or passcode_length > 8 or passcode_length < 4
         if not_valid_passcode_length:
-            raise_demisto_exception('when setting passcode_type to be RandomForEach or RandomForAl, '
+            raise_demisto_exception('when setting passcode_type to be RandomForEach or RandomForAll, '
                                     'you must specify the passcode_length arg to be between 4 to 8.')
         payload["passcodeDefinition"].update({"length": passcode_length})
 
@@ -906,7 +908,7 @@ def main() -> None:  # pragma: no cover
         demisto.debug(f'Command being called is {demisto.command()}')
         host = base_url.split('https://')[-1]
         x_abs_date = datetime.utcnow().strftime(DATE_FORMAT)
-        headers: Dict = {"host": host, "content-type": "application/json", "x-abs-date": x_abs_date}
+        headers: dict = {"host": host, "content-type": "application/json", "x-abs-date": x_abs_date}
 
         client = Client(
             base_url=base_url,

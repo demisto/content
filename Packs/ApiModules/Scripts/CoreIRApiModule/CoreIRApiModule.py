@@ -4,7 +4,7 @@ import urllib3
 import copy
 import re
 from operator import itemgetter
-
+import json
 from typing import Tuple, Callable
 
 # Disable insecure warnings
@@ -13,7 +13,7 @@ TIME_FORMAT = "%Y-%m-%dT%H:%M:%S"
 
 XSOAR_RESOLVED_STATUS_TO_XDR = {
     'Other': 'resolved_other',
-    'Duplicate': 'resolved_duplicate_incident',
+    'Duplicate': 'resolved_duplicate',
     'False Positive': 'resolved_false_positive',
     'Resolved': 'resolved_true_positive',
     'Security Testing': 'resolved_security_testing',
@@ -22,6 +22,7 @@ XSOAR_RESOLVED_STATUS_TO_XDR = {
 XDR_RESOLVED_STATUS_TO_XSOAR = {
     'resolved_known_issue': 'Other',
     'resolved_duplicate_incident': 'Duplicate',
+    'resolved_duplicate': 'Duplicate',
     'resolved_false_positive': 'False Positive',
     'resolved_true_positive': 'Resolved',
     'resolved_security_testing': 'Security Testing',
@@ -141,6 +142,10 @@ ALERT_EVENT_AZURE_FIELDS = {
     "resourceType",
     "tenantId",
 }
+RBAC_VALIDATIONS_VERSION = '8.6.0'
+RBAC_VALIDATIONS_BUILD_NUMBER = '992980'
+FORWARD_USER_RUN_RBAC = is_xsiam() and is_demisto_version_ge(version=RBAC_VALIDATIONS_VERSION,
+                                                             build_number=RBAC_VALIDATIONS_BUILD_NUMBER) and not is_using_engine()
 
 
 class CoreClient(BaseClient):
@@ -148,6 +153,84 @@ class CoreClient(BaseClient):
     def __init__(self, base_url: str, headers: dict, timeout: int = 120, proxy: bool = False, verify: bool = False):
         super().__init__(base_url=base_url, headers=headers, proxy=proxy, verify=verify)
         self.timeout = timeout
+        # For Xpanse tenants requiring direct use of the base client HTTP request instead of the _apiCall,
+
+    def _http_request(self, method, url_suffix='', full_url=None, headers=None, json_data=None,
+                      params=None, data=None, timeout=None, raise_on_status=False, ok_codes=None,
+                      error_handler=None, with_metrics=False, resp_type='json'):
+        '''
+        """A wrapper for requests lib to send our requests and handle requests and responses better.
+
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+
+            :type full_url: ``str``
+            :param full_url:
+                Bypasses the use of self._base_url + url_suffix. This is useful if you need to
+                make a request to an address outside of the scope of the integration
+                API.
+
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+
+            :type raise_on_status ``bool``
+                :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                    whether we should raise an exception, or return a response,
+                    if status falls in ``status_forcelist`` range and retries have
+                    been exhausted.
+
+
+            :type timeout: ``float`` or ``tuple``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+        '''
+        if (not FORWARD_USER_RUN_RBAC):
+            return BaseClient._http_request(self,  # we use the standard base_client http_request without overriding it
+                                            method=method,
+                                            url_suffix=url_suffix,
+                                            full_url=full_url,
+                                            headers=headers,
+                                            json_data=json_data, params=params, data=data,
+                                            timeout=timeout,
+                                            raise_on_status=raise_on_status,
+                                            ok_codes=ok_codes,
+                                            error_handler=error_handler,
+                                            with_metrics=with_metrics,
+                                            resp_type=resp_type)
+        headers = headers if headers else self._headers
+        data = json.dumps(json_data) if json_data else data
+        address = full_url if full_url else urljoin(self._base_url, url_suffix)
+        response = demisto._apiCall(
+            method=method,
+            path=address,
+            data=data,
+            headers=headers,
+            timeout=timeout
+        )
+        if ok_codes and response.get('status') not in ok_codes:
+            self._handle_error(error_handler, response, with_metrics)
+        try:
+            return json.loads(response['data'])
+        except json.JSONDecodeError:
+            demisto.debug(f"Converting data to json was failed. Return it as is. The data's type is {type(response['data'])}")
+            return response['data']
 
     def get_incidents(self, incident_id_list=None, lte_modification_time=None, gte_modification_time=None,
                       lte_creation_time=None, gte_creation_time=None, status=None, starred=None,
@@ -208,7 +291,7 @@ class CoreClient(BaseClient):
                 'value': status
             })
 
-        if starred and starred_incidents_fetch_window:
+        if starred and starred_incidents_fetch_window and demisto.command() == 'fetch-incidents':
             filters.append({
                 'field': 'starred',
                 'operator': 'eq',
@@ -219,47 +302,60 @@ class CoreClient(BaseClient):
                 'operator': 'gte',
                 'value': starred_incidents_fetch_window
             })
-            if demisto.command() == 'fetch-incidents':
-                if len(filters) > 0:
-                    request_data['filters'] = filters
-                incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
-                return incidents
 
-        else:
-            if lte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
-                })
+            if len(filters) > 0:
+                request_data['filters'] = filters
+            incidents = self.handle_fetch_starred_incidents(limit, page_number, request_data)
+            return incidents
 
-            if gte_creation_time:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
-                })
+        if starred is not None and demisto.command() != 'fetch-incidents':
+            filters.append({
+                'field': 'starred',
+                'operator': 'eq',
+                'value': starred
+            })
 
-            if lte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'lte',
-                    'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
-                })
+        if lte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_creation_time, TIME_FORMAT)
+            })
 
-            if gte_modification_time:
-                filters.append({
-                    'field': 'modification_time',
-                    'operator': 'gte',
-                    'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
-                })
+        if gte_creation_time:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_creation_time, TIME_FORMAT)
+            })
+        elif starred and starred_incidents_fetch_window and demisto.command() != 'fetch-incidents':
+            # backwards compatibility of starred_incidents_fetch_window
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': starred_incidents_fetch_window
+            })
 
-            if gte_creation_time_milliseconds > 0:
-                filters.append({
-                    'field': 'creation_time',
-                    'operator': 'gte',
-                    'value': gte_creation_time_milliseconds
-                })
+        if lte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'lte',
+                'value': date_to_timestamp(lte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_modification_time:
+            filters.append({
+                'field': 'modification_time',
+                'operator': 'gte',
+                'value': date_to_timestamp(gte_modification_time, TIME_FORMAT)
+            })
+
+        if gte_creation_time_milliseconds > 0:
+            filters.append({
+                'field': 'creation_time',
+                'operator': 'gte',
+                'value': gte_creation_time_milliseconds
+            })
 
         if len(filters) > 0:
             request_data['filters'] = filters
@@ -335,15 +431,13 @@ class CoreClient(BaseClient):
 
         request_data['filters'] = filters
 
-        reply = self._http_request(
+        response = self._http_request(
             method='POST',
             url_suffix='/endpoints/get_endpoint/',
             json_data={'request_data': request_data},
             timeout=self.timeout
         )
-        demisto.debug(f"get_endpoints response = {reply}")
-
-        endpoints = reply.get('reply').get('endpoints', [])
+        endpoints = response.get('reply', {}).get('endpoints', [])
         return endpoints
 
     def set_endpoints_alias(self, filters: list[dict[str, str]], new_alias_name: str | None) -> dict:  # pragma: no cover
@@ -456,7 +550,6 @@ class CoreClient(BaseClient):
             json_data={},
             timeout=self.timeout
         )
-
         return reply.get('reply')
 
     def create_distribution(self, name, platform, package_type, agent_version, description):
@@ -645,7 +738,7 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/',
             json_data={'request_data': request_data},
-            ok_codes=(200, 201, 500,),
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
         return reply.get('reply')
@@ -662,9 +755,13 @@ class CoreClient(BaseClient):
             method='POST',
             url_suffix='/hash_exceptions/blocklist/remove/',
             json_data={'request_data': request_data},
+            ok_codes=(200, 201, 500),
             timeout=self.timeout
         )
-        return reply.get('reply')
+        res = reply.get('reply')
+        if isinstance(res, dict) and res.get('err_code') == 500:
+            raise DemistoException(f"{res.get('err_msg')}\nThe requested hash might not be in the blocklist.")
+        return res
 
     def allowlist_files(self, hash_list, comment=None, incident_id=None, detailed_response=False):
         request_data: Dict[str, Any] = {"hash_list": hash_list}
@@ -2298,8 +2395,15 @@ def restore_file_command(client, args):
     )
 
 
+def validate_sha256_hashes(hash_list):
+    for hash_value in hash_list:
+        if detect_file_indicator_type(hash_value) != 'sha256':
+            raise DemistoException(f'The provided hash {hash_value} is not a valid sha256.')
+
+
 def blocklist_files_command(client, args):
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
     detailed_response = argToBoolean(args.get('detailed_response', False))
@@ -2332,6 +2436,7 @@ def blocklist_files_command(client, args):
 
 def remove_blocklist_files_command(client: CoreClient, args: Dict) -> CommandResults:
     hash_list = argToList(args.get('hash_list'))
+    validate_sha256_hashes(hash_list)
     comment = args.get('comment')
     incident_id = arg_to_number(args.get('incident_id'))
 
@@ -2862,7 +2967,8 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
     :return: XDR close-reason in snake_case format e.g. 'resolved_false_positive'.
     """
     # Initially setting the close reason according to the default mapping.
-    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'Other')
+    xdr_close_reason = XSOAR_RESOLVED_STATUS_TO_XDR.get(xsoar_close_reason, 'resolved_other')
+
     # Reading custom XSOAR->XDR close-reason mapping.
     custom_xsoar_to_xdr_close_reason_mapping = comma_separated_mapping_to_dict(
         demisto.params().get("custom_xsoar_to_xdr_close_reason_mapping")
@@ -2870,16 +2976,15 @@ def resolve_xdr_close_reason(xsoar_close_reason: str) -> str:
 
     # Overriding default close-reason mapping if there exists a custom one.
     if xsoar_close_reason in custom_xsoar_to_xdr_close_reason_mapping:
-        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping[xsoar_close_reason]
+        xdr_close_reason_candidate = custom_xsoar_to_xdr_close_reason_mapping.get(xsoar_close_reason)
         # Transforming resolved close-reason into snake_case format with known prefix to match XDR status format.
-        demisto.debug(
-            f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
         xdr_close_reason_candidate = "resolved_" + "_".join(xdr_close_reason_candidate.lower().split(" "))
-
         if xdr_close_reason_candidate not in XDR_RESOLVED_STATUS_TO_XSOAR:
             demisto.debug("Warning: Provided XDR close-reason does not exist. Using default XDR close-reason mapping. ")
         else:
             xdr_close_reason = xdr_close_reason_candidate
+            demisto.debug(
+                f"resolve_xdr_close_reason XSOAR->XDR custom close-reason exists, using {xsoar_close_reason}={xdr_close_reason}")
     else:
         demisto.debug(f"resolve_xdr_close_reason using default mapping {xsoar_close_reason}={xdr_close_reason}")
 
@@ -4171,7 +4276,7 @@ def get_incidents_command(client, args):
 
     statuses = argToList(args.get('status', ''))
 
-    starred = args.get('starred')
+    starred = argToBoolean(args.get('starred')) if args.get('starred', None) not in ('', None) else None
     starred_incidents_fetch_window = args.get('starred_incidents_fetch_window', '3 days')
     starred_incidents_fetch_window, _ = parse_date_range(starred_incidents_fetch_window, to_timestamp=True)
 

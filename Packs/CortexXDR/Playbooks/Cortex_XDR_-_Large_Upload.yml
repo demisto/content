@@ -67,10 +67,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 2864f683-d804-43bb-8946-4d90039fc751
+    taskid: f8019971-848d-42ea-8092-41468c83a05c
     type: condition
     task:
-      id: 2864f683-d804-43bb-8946-4d90039fc751
+      id: f8019971-848d-42ea-8092-41468c83a05c
       version: -1
       name: Found Results?
       description: Determine if previous false positive incidents have been detected with similar characteristics.
@@ -86,15 +86,13 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualString
+      - - operator: isTrue
           left:
             value:
               complex:
                 root: DBotFindSimilarIncidents
+                accessor: isSimilarIncidentFound
             iscontext: true
-          right:
-            value:
-              simple: "True"
           ignorecase: true
       - - operator: containsGeneral
           left:
@@ -1824,10 +1822,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "56":
     id: "56"
-    taskid: 6171569a-753b-4669-840f-1929e5f5ad53
+    taskid: f48d9fbb-df56-480b-81a9-83d55cc474a5
     type: playbook
     task:
-      id: 6171569a-753b-4669-840f-1929e5f5ad53
+      id: f48d9fbb-df56-480b-81a9-83d55cc474a5
       version: -1
       name: Cortex XDR - Isolate Endpoint
       description: This playbook accepts an XDR endpoint ID and isolates it using the 'Palo Alto Networks Cortex XDR - Investigation and Response' integration.
@@ -1845,25 +1843,24 @@ tasks:
           accessor: agent_id
           transformers:
           - operator: uniq
-          - operator: SetIfEmpty
-            args:
-              applyIfEmpty:
-                value:
-                  simple: "true"
-              defaultValue:
-                value:
-                  simple: Missing endpoint ID.Answers.0
-                iscontext: true
       hostname:
         complex:
-          root: inputs.SrcHostname
+          root: PaloAltoNetworksXDR.Incident.alerts
           transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
+                iscontext: true
           - operator: uniq
+          accessor: host_name
       ip_list:
         complex:
-          root: inputs.SrcIPAddress
+          root: PaloAltoNetworksXDR.OriginalAlert._all_events
           transformers:
           - operator: uniq
+          accessor: action_local_ip
     separatecontext: true
     continueonerrortype: ""
     loop:
@@ -2367,10 +2364,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "78":
     id: "78"
-    taskid: aeec3291-f750-4743-8442-77286d075ff8
+    taskid: f70c3820-f3f8-47d0-89c4-12976b23af85
     type: condition
     task:
-      id: aeec3291-f750-4743-8442-77286d075ff8
+      id: f70c3820-f3f8-47d0-89c4-12976b23af85
       version: -1
       name: Check Uploaded Data Volume
       description: Determines if the amount of data uploaded to an external host exceeds the defined threshold amount.
@@ -2398,7 +2395,7 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "2"
+                        simple: "1"
                     keys: {}
                     regex:
                       value:
@@ -2408,7 +2405,7 @@ tasks:
             value:
               simple: GB
           ignorecase: true
-        - operator: greaterThanOrEqual
+        - operator: isEqualString
           left:
             value:
               complex:
@@ -2425,19 +2422,12 @@ tasks:
                     regex:
                       value:
                         simple: uploaded\s(.*(MB|GB|TB))
-                - operator: StripChars
-                  args:
-                    chars:
-                      value:
-                        simple: MB
-                - operator: SumList
             iscontext: true
           right:
             value:
-              complex:
-                root: inputs.Transferred_Data _Threshold
-            iscontext: true
-        - operator: isEqualString
+              simple: TB
+          ignorecase: true
+        - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -2449,16 +2439,32 @@ tasks:
                     flags: {}
                     groups:
                       value:
-                        simple: "2"
+                        simple: "0"
                     keys: {}
                     regex:
                       value:
                         simple: uploaded\s(.*(MB|GB|TB))
+                - operator: StripChars
+                  args:
+                    chars:
+                      value:
+                        simple: MB
+                - operator: RegexGroups
+                  args:
+                    flags: {}
+                    groups:
+                      value:
+                        simple: "0"
+                    keys: {}
+                    regex:
+                      value:
+                        simple: (\d+)\.
             iscontext: true
           right:
             value:
-              simple: TB
-          ignorecase: true
+              complex:
+                root: inputs.Transferred_Data _Threshold
+            iscontext: true
     continueonerrortype: ""
     view: |-
       {
@@ -2978,10 +2984,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "112":
     id: "112"
-    taskid: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
+    taskid: 95e865d5-ec80-49d2-8982-b1db90c547a6
     type: condition
     task:
-      id: 2e32afa9-757a-4aa0-83b1-2736da8d3bc0
+      id: 95e865d5-ec80-49d2-8982-b1db90c547a6
       version: -1
       name: Calculate Verdict
       description: Estimate the verdict for the 'large upload HTTPS' Cortex XDR alerts.
@@ -3162,7 +3168,7 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: inputs.Username
+                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user.username
                       iscontext: true
                     ignorecase: true
                 accessor: risk_level
@@ -3184,7 +3190,17 @@ tasks:
                       iscontext: true
                     right:
                       value:
-                        simple: inputs.SrcHostname
+                        simple: PaloAltoNetworksXDR.Incident.alerts.host_name
+                      iscontext: true
+                    ignorecase: true
+                  - operator: isEqualString
+                    left:
+                      value:
+                        simple: PaloAltoNetworksXDR.RiskyHost.id
+                      iscontext: true
+                    right:
+                      value:
+                        simple: PaloAltoNetworksXDR.OriginalAlert._all_events.agent_hostname
                       iscontext: true
                     ignorecase: true
                 accessor: 'risk_level '
@@ -3695,10 +3711,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "114":
     id: "114"
-    taskid: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
+    taskid: 422ddc12-44eb-4b4b-8508-cd59c892834f
     type: playbook
     task:
-      id: 1a69ce4f-fcbe-40e7-8164-c4d8dc304ac4
+      id: 422ddc12-44eb-4b4b-8508-cd59c892834f
       version: -1
       name: Entity Enrichment - Generic v3
       description: Enrich entities using one or more integrations.
@@ -3807,6 +3823,34 @@ tasks:
         complex:
           root: PaloAltoNetworksXDR.OriginalAlert._all_events.causality_actor_primary_normalized_user
           accessor: username
+          transformers:
+          - operator: uniq
+      CVE:
+        complex:
+          root: CVE
+          accessor: ID
+      Email:
+        complex:
+          root: Account
+          accessor: Email.Address
+          transformers:
+          - operator: uniq
+      MD5:
+        complex:
+          root: File
+          accessor: MD5
+          transformers:
+          - operator: uniq
+      SHA1:
+        complex:
+          root: File
+          accessor: SHA1
+          transformers:
+          - operator: uniq
+      URL:
+        complex:
+          root: URL
+          accessor: Data
           transformers:
           - operator: uniq
     separatecontext: true

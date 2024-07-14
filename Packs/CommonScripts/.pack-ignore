@@ -107,6 +107,8 @@ ignore=RN114
 ignore=SC106,BA124
 
 [known_words]
+pyminizip
+pyzipper
 unzipfile
 zipstrings
 extractinbetween
@@ -171,6 +173,10 @@ indexerror
 gTLD
 qr
 cv
+unescape_url
+unescape
+hyperlinks
+Auth
 
 [file:ScheduleGenericPolling.yml]
 ignore=BA124

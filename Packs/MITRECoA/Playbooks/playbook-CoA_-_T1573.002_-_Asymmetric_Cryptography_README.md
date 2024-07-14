@@ -54,4 +54,4 @@ This playbook does not use any commands.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1573.002 - Asymmetric Cryptography](../doc_files/MITRE_ATT&CK_CoA_-_T1573.002_-_Asymmetric_Cryptography.png)
+![MITRE ATT&CK CoA - T1573.002 - Asymmetric Cryptography](../doc_files/MITRE_ATTandCK_CoA_-_T1573_002_-_Asymmetric_Cryptography.png)

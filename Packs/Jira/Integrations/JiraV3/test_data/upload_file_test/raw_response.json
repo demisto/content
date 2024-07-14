@@ -20,7 +20,7 @@
         },
         "created": "2023-04-30T20:19:42.760+0300",
         "size": 13,
-        "mimeType": "application-type",
+        "mimeType": "application/pdf",
         "content": "https://api.atlassian.com/ex/jira/dummy_cloud_id/rest/api/3/attachment/content/16467"
     }
 ]

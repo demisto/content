@@ -7,6 +7,8 @@ from IllusiveNetworks import Client, is_deceptive_user_command, is_deceptive_ser
     get_forensics_analyzers_command, get_forensics_triggering_process_info_command, get_forensics_artifacts_command
 
 from CommonServerPython import parse_date_range
+from freezegun import freeze_time
+
 
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.000Z'
 
@@ -181,6 +183,7 @@ def test_get_deceptive_servers_command(requests_mock):
                        {'data': [], 'hostname': 'bbb', 'machineTagAndSubTags': {'tag': 'tag', 'subTag': 'sub'}}}
 
 
+@freeze_time("2024-04-10T11:00:00")
 def test_get_forensics_timeline_command(requests_mock):
     mock_response = [{'IncidentId': "aaa", 'Status': 'Done', 'details': {'date': 'aaa'}}]
     client = Client(base_url='https://server', verify=False)
@@ -322,7 +325,7 @@ def test_fetch_incidents_first_fetch(requests_mock):
     mock_response = []
     first_fetch_time = "7 days"
     last_fetch, _ = parse_date_range(first_fetch_time, date_format=DATE_FORMAT, utc=True)
-    requests_mock.get('https://server/api/v1/incidents?limit=10&offset=0&start_date={}'.format(last_fetch),
+    requests_mock.get(f'https://server/api/v1/incidents?limit=10&offset=0&start_date={last_fetch}',
                       json=mock_response)
     nextcheck, incidents = fetch_incidents(client, {'last_run': None}, first_fetch_time, None)
 
@@ -383,7 +386,7 @@ def test_get_forensics_triggering_process_info_command(requests_mock):
 
 
 def test_get_forensics_artifacts_command(requests_mock):
-    mock_response = bytes()
+    mock_response = b''
     mock_response2 = 3
     requests_mock.get('https://server/api/v1/incidents/id?event_id=3', json=mock_response2)
     requests_mock.get('https://server/api/v1/forensics/artifacts?event_id=3&artifacts_type=DESKTOP_SCREENSHOT',

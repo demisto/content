@@ -2,6 +2,7 @@ category: Forensics & Malware Analysis
 commonfields:
   id: FortiSandbox
   version: -1
+deprecated: true
 configuration:
 - additionalinfo: URL of the Fortisandbox server.
   display: Server URL
@@ -18,8 +19,8 @@ configuration:
   name: secure
   type: 8
   required: false
-description: FortiSandbox integration is used to submit files to FortiSandbox for malware analysis and retrieving the report of the analysis. It can also provide file rating based on hashes for already scanned files.
-display: FortiSandbox
+description: FortiSandbox integration is used to submit files to FortiSandbox for malware analysis and retrieving the report of the analysis. It can also provide file rating based on hashes for already scanned files. Deprecated. Use FortiSandboxv2 instead.
+display: FortiSandbox (Deprecated)
 name: FortiSandbox
 script:
   commands:

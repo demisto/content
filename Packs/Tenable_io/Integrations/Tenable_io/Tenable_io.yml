@@ -1,43 +1,91 @@
 category: Vulnerability Management
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Tenable.io
   version: -1
 configuration:
 - defaultvalue: https://cloud.tenable.com/
-  display: URL
+  display: Server URL
   name: url
   required: true
   type: 0
+  section: Connect
 - display: Access key
   name: access-key
   type: 4
   hidden: true
   required: false
-- displaypassword: Access key
+  section: Connect
+- displaypassword: Access Key
   name: credentials_access_key
   hiddenusername: true
   type: 9
-  required: false
+  required: true
+  section: Connect
 - display: Secret key
   name: secret-key
   type: 4
   hidden: true
   required: false
-- displaypassword: secret key
+  section: Connect
+- displaypassword: Secret Key
   name: credentials_secret_key
   hiddenusername: true
   type: 9
-  required: false
+  required: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  advanced: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  advanced: true
+  section: Connect
+- defaultvalue: 7 days
+  display: Events first fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: first_fetch
+  type: 0
+  required: false
+  section: Collect
+  hidden:
+  - xsoar
+- additionalinfo: The maximum number of audit logs to retrieve for each event type. For more information about event types see the help section.
+  defaultvalue: '1000'
+  display: Events max fetch
+  name: max_fetch
+  type: 0
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+- defaultvalue: '1'
+  display: Events Fetch Interval
+  name: eventFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
+- defaultvalue: '720'
+  display: Assets and vulnerabilities fetch interval
+  name: assetsFetchInterval
+  type: 19
+  required: false
+  advanced: true
+  section: Collect
+  hidden:
+  - xsoar
 description: A comprehensive asset-centric solution to accurately track resources while accommodating dynamic assets such as cloud, mobile devices, containers, and web applications.
-display: Tenable.io
+display: Tenable Vulnerability Management (formerly Tenable.io)
 name: Tenable.io
 script:
   commands:
@@ -739,6 +787,14 @@ script:
     - name: exportUuid
       description: The export UUID.
       hidden: true
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Set this argument to True in order to create vulnerabilities, otherwise the command will only display the vulnerabilities.
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: false
     polling: true
     description: Retrieves details for the specified asset to include custom attributes.
     name: tenable-io-export-vulnerabilities
@@ -1265,11 +1321,34 @@ script:
       type: string
     - contextPath: InfoFile.Extension
       description: The file extension of the file.
+  - arguments:
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: Set this argument to True in order to create events, otherwise the command will only display the events.
+        name: should_push_events
+        predefined:
+          - 'true'
+          - 'false'
+        required: true
+      - description: The maximum number of alerts to return (maximum value - 5000).
+        name: limit
+      - description: Return events that occurred after the specified date.
+        name: from_date
+      - description: Return events that occurred before the specified date.
+        name: to_date
+      - description: Return events that contain the specified actor UUID.
+        name: actor_id
+      - description: Return events matching the specified target UUID.
+        name: target_id
+    description: Returns audit logs extracted from Tenable io.
+    name: tenable-io-get-audit-logs
   runonce: false
   script: '-'
+  isfetchevents: true
+  isfetchassets: true
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.10.14.100715
 tests:
 - Tenable.io test
 fromversion: 5.0.0

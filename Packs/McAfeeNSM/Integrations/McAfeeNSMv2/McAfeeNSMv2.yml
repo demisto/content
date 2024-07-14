@@ -47,7 +47,7 @@ script:
       required: true
       description: The ID of the domain. To get the domain_id, use the !nsm-get-domains command.
     - name: limit
-      description: The maximum number of projects to return.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: page
       description: The specific result page to display.
@@ -404,7 +404,7 @@ script:
       - All
       defaultValue: All
     - name: limit
-      description: The maximum number of projects to return.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: page
       description: The specific result page to display.
@@ -696,7 +696,7 @@ script:
     description: Retrieves the alerts.
     arguments:
     - name: limit
-      description: The maximum number of projects to return.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: page
       description: The specific result page to display.
@@ -1300,7 +1300,7 @@ script:
     - name: domain_id
       description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
     - name: limit
-      description: The maximum number of projects to return.
+      description: The maximum number of records to return.
       defaultValue: 50.
     - name: page
       description: The specific result page to display.
@@ -1322,7 +1322,7 @@ script:
     - name: domain_id
       description: Specific domain ID. Leave blank for all domains. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
     - name: limit
-      description: The maximum number of projects to return.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: page
       description: The specific result page to display.
@@ -1393,7 +1393,7 @@ script:
       description: Specific domain ID. To get the domain_id use !nsm-get-domains command and leave the parameter blank.
       required: true
     - name: limit
-      description: The maximum number of projects to return.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: page
       description: The specific result page to display.
@@ -1692,7 +1692,7 @@ script:
       required: true
       description: The ID of the sensor. To get the sensor_id, use the !nsm-get-sensors command.
     - name: limit
-      description: The maximum number of projects to return.
+      description: The maximum number of records to return.
       defaultValue: 50
     - name: page
       description: The specific result page to display. The default is 1.
@@ -2045,7 +2045,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.13.87159
+  dockerimage: demisto/python3:3.10.14.99474
 fromversion: 6.5.0
 tests:
 - Test_McAfeeNSMv2_using_v9

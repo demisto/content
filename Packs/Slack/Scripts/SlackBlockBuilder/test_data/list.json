@@ -53,7 +53,8 @@
 						"text": "Deny"
 					},
 					"style": "danger",
-					"value": "click_me_123"
+					"value": "click_me_123",
+					"url": "https://google.com/#/Details/incident.id"
 				}
 			]
 		},

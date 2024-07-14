@@ -1,6 +1,8 @@
 This integration fetches alerts from Recorded Future.
 This integration was integrated and tested with version 2 of the Recorded Future API.
 
+This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
+
 ## Configure Recorded Future Event Collector on Cortex XSOAR
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.

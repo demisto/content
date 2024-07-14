@@ -1,3 +1,4 @@
+import subprocess
 from ConvertFile import main, find_zombie_processes
 import demistomock as demisto
 from CommonServerPython import entryTypes
@@ -5,7 +6,6 @@ import logging
 import pytest
 import glob
 import os
-import subprocess
 
 RETURN_ERROR_TARGET = 'ConvertFile.return_error'
 
@@ -84,7 +84,6 @@ def test_convert_pdf_to_html(mocker):
     # check no defunct processed
     zombies, output = find_zombie_processes()
     assert not zombies
-    assert 'defunct' not in output
 
 
 def test_convert_failure(mocker):

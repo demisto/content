@@ -39,6 +39,20 @@ configuration:
   - eu-west-3
   - us-gov-east-1
   - us-gov-west-1
+  - af-south-1
+  - ap-east-1
+  - ap-east-2
+  - ap-northeast-3
+  - ap-south-2
+  - ap-southeast-3
+  - ap-southeast-4
+  - cn-north-1
+  - cn-northwest-1
+  - eu-central-2
+  - eu-south-1
+  - eu-south-2
+  - me-south-1
+  - me-central-1
   section: Connect
 - display: Role Session Duration
   name: sessionDuration
@@ -73,6 +87,15 @@ configuration:
   additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
   section: Connect
   advanced: true
+  required: false
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
+  section: Connect
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
@@ -136,6 +159,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: tag_key
       description: A comma-separated list of the keys of the tags to associate with the IP set.
       isArray: true
@@ -196,6 +233,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Get a specific IP set.
     name: aws-waf-ip-set-get
     outputs:
@@ -259,6 +310,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to overwrite the existing addresses.
@@ -303,6 +368,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Lists IP sets.
     name: aws-waf-ip-set-list
     outputs:
@@ -359,6 +438,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Delete a specific IP set.
     name: aws-waf-ip-set-delete
   - arguments:
@@ -400,6 +493,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: tag_key
       description: A comma-separated list of the keys of the tags to associate with the regex set.
       isArray: true
@@ -460,6 +567,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Get a specific regex set.
     name: aws-waf-regex-set-get
     outputs:
@@ -520,6 +641,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Whether to overwrite the existing regex patterns.
@@ -564,6 +699,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Lists regex sets.
     name: aws-waf-regex-set-list
     outputs:
@@ -620,6 +769,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Delete a specific regex set.
     name: aws-waf-regex-set-delete
   - arguments:
@@ -657,6 +820,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Lists rule groups.
     name: aws-waf-rule-group-list
     outputs:
@@ -713,6 +890,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Get a specific rule group.
     name: aws-waf-rule-group-get
     outputs:
@@ -767,6 +958,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Delete a specific rule group.
     name: aws-waf-rule-group-delete
   - arguments:
@@ -823,6 +1028,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: tag_key
       description: A comma-separated list of the keys of the tags to associate with the rule group.
       isArray: true
@@ -886,6 +1105,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: priority
       description: The rule priority.
       required: true
@@ -951,6 +1184,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: priority
       description: The rule priority.
       required: true
@@ -1009,6 +1256,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: priority
       description: The rule priority.
       required: true
@@ -1123,6 +1384,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     description: Delete a specific rule from a rule group.
     name: aws-waf-rule-delete
   - arguments:
@@ -1164,6 +1439,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: ip_set_arn
       description: The IP set ARN. You can get this value by running the aws-waf-ip-set-list command.
       isArray: true
@@ -1215,6 +1504,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: country_codes
       description: A comma-separated list of two-character country codes.
       isArray: true
@@ -1266,6 +1569,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: match_type
       description: The string match type.
       required: true
@@ -1373,6 +1690,20 @@ script:
       - eu-west-3
       - us-gov-east-1
       - us-gov-west-1
+      - af-south-1
+      - ap-east-1
+      - ap-east-2
+      - ap-northeast-3
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-4
+      - cn-north-1
+      - cn-northwest-1
+      - eu-central-2
+      - eu-south-1
+      - eu-south-2
+      - me-south-1
+      - me-central-1
     - name: statement_json
       description: A generic JSON statement to add to the rule. You can get the templates by running the aws-waf-statement-json-template-get command.
       isArray: true
@@ -1412,7 +1743,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/boto3py3:1.0.0.87902
+  dockerimage: demisto/boto3py3:1.0.0.101500
 fromversion: 6.5.0
 tests:
 - No tests (auto formatted)

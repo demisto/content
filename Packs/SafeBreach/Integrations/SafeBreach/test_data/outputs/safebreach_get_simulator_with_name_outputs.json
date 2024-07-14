@@ -1,0 +1,230 @@
+{
+    "outputs": {
+        "success": {
+            "data": {
+                "isEnabled": false,
+                "isProxySupported": true,
+                "id": "0000000-0000-0000-0000-00000000",
+                "name": "DesktopXWindowsCrowd",
+                "accountId": 1234567890,
+                "isCritical": false,
+                "isExfiltration": true,
+                "isInfiltration": true,
+                "isMailTarget": false,
+                "isMailAttacker": false,
+                "isPreExecutor": false,
+                "isAWSAttacker": false,
+                "isAzureAttacker": false,
+                "isWebApplicationAttacker": false,
+                "useSystemUser": true,
+                "externalIp": "111.111.111.111",
+                "internalIp": "111.111.111.111",
+                "preferredInterface": "111.111.111.111",
+                "preferredIp": "111.111.111.111",
+                "hostname": "DesktopSatishWindowsCrowd",
+                "labels": null,
+                "connectionType": "MANUAL",
+                "status": "APPROVED",
+                "isConnected": false,
+                "frameworkVersion": "3.58.0",
+                "nodeInfo": {
+                    "MACHINE_INFO": {
+                        "OS": {
+                            "TYPE": "LINUX",
+                            "VERSION": "18.04",
+                            "RELEASE": "5.4.0-1080-aws",
+                            "ARCH": "64",
+                            "SIMULATOR_TYPE": "VA",
+                            "SIMULATOR_SUB_TYPE": "CLOUD",
+                            "OTHER": {
+                                "DIST": "Ubuntu 18.04 ubuntu"
+                            },
+                            "DOMAIN": null,
+                            "PROCESSOR": "x86_64"
+                        },
+                        "TYPE": "LINUX",
+                        "PLATFORM": {
+                            "PRETTY_NAME": "Ubuntu 18.04.6 LTS",
+                            "VERSION": "18.04",
+                            "BUILD": "5.4.0-1080-aws",
+                            "ARCH": "64",
+                            "DIST": "Ubuntu 18.04 ubuntu",
+                            "SIMULATOR_TYPE": "VA",
+                            "SIMULATOR_SUB_TYPE": "CLOUD",
+                            "DOMAIN": null,
+                            "PROCESSOR": "x86_64"
+                        },
+                        "SYSTEM": {
+                            "MEMORY": {
+                                "TOTAL": 4072865792,
+                                "AVAILABLE": 3522674688,
+                                "USED": 267104256,
+                                "FREE": 1120342016
+                            },
+                            "DISKS": [
+                                {
+                                    "MOUNT": "/",
+                                    "DEVICE": "/dev/nvme0n1p1",
+                                    "TOTAL": 51976810496,
+                                    "FREE": 47814131712,
+                                    "USED": 4145901568
+                                },
+                                {
+                                    "MOUNT": "/dummy/path//495",
+                                    "DEVICE": "/dev/loop0",
+                                    "TOTAL": 13369344,
+                                    "FREE": 0,
+                                    "USED": 13369344
+                                },
+                                {
+                                    "MOUNT": "/dummy/path/core/13425",
+                                    "DEVICE": "/dev/loop4",
+                                    "TOTAL": 119537664,
+                                    "FREE": 0,
+                                    "USED": 119537664
+                                },
+                                {
+                                    "MOUNT": "/dummy/path//5656",
+                                    "DEVICE": "/dev/loop5",
+                                    "TOTAL": 26345472,
+                                    "FREE": 0,
+                                    "USED": 26345472
+                                },
+                                {
+                                    "MOUNT": "/dummy/path/core18/2560",
+                                    "DEVICE": "/dev/loop1",
+                                    "TOTAL": 58327040,
+                                    "FREE": 0,
+                                    "USED": 58327040
+                                },
+                                {
+                                    "MOUNT": "/dummy/path/core/13741",
+                                    "DEVICE": "/dev/loop2",
+                                    "TOTAL": 120586240,
+                                    "FREE": 0,
+                                    "USED": 120586240
+                                },
+                                {
+                                    "MOUNT": "/dummy/path/core18/2566",
+                                    "DEVICE": "/dev/loop6",
+                                    "TOTAL": 58327040,
+                                    "FREE": 0,
+                                    "USED": 58327040
+                                }
+                            ],
+                            "UPTIME": "14 days, 21 hours, 12 minutes and 32 seconds",
+                            "CPU": {
+                                "PERCENT": 1.8,
+                                "LOGICAL": 2,
+                                "PHYSICAL": 1
+                            },
+                            "PCAP_DRIVERS": true,
+                            "CURRENT_PROCESS": {
+                                "PID": 16443,
+                                "CPU": 0.9,
+                                "CREATE_TIME": "2022-09-18T14:37:29.370000",
+                                "THREADS": 6,
+                                "MEMORY": {
+                                    "rss": 62152704,
+                                    "vms": 665092096,
+                                    "shared": 18132992,
+                                    "text": 45056,
+                                    "lib": 0,
+                                    "data": 86315008,
+                                    "dirty": 0,
+                                    "uss": 58822656,
+                                    "pss": 59184128,
+                                    "swap": 0
+                                }
+                            },
+                            "TIMESTAMP": "2022-09-19T06:23:33.247659Z",
+                            "TIMEDELTA_SECONDS": 0
+                        },
+                        "PYTHON_VERSION": {
+                            "SIMULATOR": "3.8.10",
+                            "SIMULATION": "3.8.10"
+                        },
+                        "SYSTEM_CHECKS": {
+                            "PRE_EXECUTION": {
+                                "RESULT": false
+                            }
+                        },
+                        "FRAMEWORK_MODULES": {},
+                        "CLOUD": {},
+                        "ANTIVIRUS": []
+                    },
+                    "NETWORK_INFO": {
+                        "INTERFACES": [
+                            {
+                                "NAME": "ens5",
+                                "IPv4": [
+                                    {
+                                        "IP": "111.111.111.111",
+                                        "NETMASK": "255.255.240.0"
+                                    }
+                                ],
+                                "IPv6": [
+                                    {
+                                        "IP": "fe80::402:37ff:fe31:9ef2%ens5",
+                                        "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                                    }
+                                ],
+                                "MAC": "06:02:37:31:9e:f2",
+                                "TX_BYTES": 16006698,
+                                "RX_PACKETS": 3086606691,
+                                "TX_PACKETS": 16858990
+                            }
+                        ],
+                        "CONNECTED_INTERFACE": {
+                            "NAME": "ens5",
+                            "IPv4": [
+                                {
+                                    "IP": "111.111.111.111",
+                                    "NETMASK": "255.255.240.0"
+                                }
+                            ],
+                            "IPv6": [
+                                {
+                                    "IP": "fe80::402:37ff:fe31:9ef2%ens5",
+                                    "NETMASK": "ffff:ffff:ffff:ffff::/64"
+                                }
+                            ],
+                            "MAC": "06:02:37:31:9e:f2",
+                            "TX_BYTES": 16006698,
+                            "RX_PACKETS": 3086606691,
+                            "TX_PACKETS": 16858990
+                        },
+                        "ROUTES": [
+                            {
+                                "NAME": "0.0.0.0",
+                                "GATEWAY": "111.111.111.111",
+                                "INTERFACE": "ens5",
+                                "NETMASK": "0.0.0.0"
+                            }
+                        ],
+                        "HOSTNAME": "ip-172-31-25-165",
+                        "PROXY_CONFIG": {
+                            "USE_PROXY": false,
+                            "PROXY_HOSTNAME": null,
+                            "PROXY_PORT": null,
+                            "PROXY_PROTOCOL": null,
+                            "PROXY_USERNAME": null
+                        }
+                    },
+                    "CURRENT_CONFIGURATION": {}
+                },
+                "tunnel": "",
+                "connectionUrl": "testconnectionurl",
+                "lastHealthcheck": {},
+                "cloudProxyUrl": "test.com",
+                "version": "Orion.2022Q3.8 v20220908_083801",
+                "simulatorVersion": "3.150.0",
+                "additionalData": null,
+                "group": "randomenumber",
+                "createdAt": "2022-09-04T09:30:09.587Z",
+                "updatedAt": "2023-09-07T07:26:36.475Z",
+                "deletedAt": "2022-10-31T11:53:26.780Z"
+            }
+        }
+    }
+}

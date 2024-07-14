@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import timezone
 import hashlib
 from copy import deepcopy
+from mimetypes import guess_type
 # Note: time.time_ns() is used instead of time.time() to avoid the precision loss caused by the float type.
 # Source: https://docs.python.org/3/library/time.html#time.time_ns
 
@@ -761,6 +762,21 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             method='GET', url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}'
         )
 
+    def delete_attachment_file(self, attachment_id: str):
+        """This method is in charge of deleting an attached file.
+
+        Args:
+            attachment_id (str): The id of the attachment file.
+
+        Returns:
+            requests.Response: The raw response of the endpoint.
+        """
+        return self.http_request(
+            method='DELETE',
+            url_suffix=f'rest/api/{self.api_version}/attachment/{attachment_id}',
+            resp_type='response',
+        )
+
     @abstractmethod
     def get_attachment_content(self, attachment_id: str = '', attachment_content_url: str = '') -> str:
         """This method is in charge of returning the content for an attachment.
@@ -1408,6 +1424,26 @@ def get_current_time_in_seconds() -> float:
         float: Number of nanoseconds since the epoch
     """
     return time.time_ns() / (10 ** 9)
+
+
+def create_files_to_upload(file_mime_type: str, file_name: str, file_bytes: bytes, attachment_name: str | None = None) -> tuple:
+    """ Creates the file object to upload to Jira
+        Args:
+            file_mime_type (str): The mime type of the file.
+            file_name (str): The name of the file.
+            file_bytes(bytes): The bytes of the file.
+            attachment_name (str | None): A custom attachment name, if it is empty or None then the attachment's name will be the
+            same one as in XSOAR. Default is None
+
+        Returns:
+            tuple([Dict[tuple(str, bytes, str)]], str): The dift is The file object of new attachment (file name, content in
+            bytes, mime type), and the str is the mime type to upload with the file.
+        """
+    # guess_type can return a None mime type if the type can’t be guessed (missing or unknown suffix). In this case, we should use
+    # a default mime type
+    mime_type_to_upload = file_mime_type if file_mime_type else guess_type(file_name)[0] or 'application-type'
+    demisto.debug(f'In create_files_to_upload {mime_type_to_upload=}')
+    return {'file': (attachment_name or file_name, file_bytes, mime_type_to_upload)}, mime_type_to_upload
 
 
 def create_file_info_from_attachment(client: JiraBaseClient, attachment_id: str, file_name: str = '') -> Dict[str, Any]:
@@ -2076,6 +2112,21 @@ def delete_issue_command(client: JiraBaseClient, args: Dict[str, str]) -> Comman
     return CommandResults(readable_output='Issue deleted successfully.')
 
 
+def delete_attachment_file_command(client: JiraBaseClient, args: Dict[str, str]) -> CommandResults:
+    """This command is in charge of deleting an attachment file.
+
+    Args:
+        client (JiraBaseClient): The jira client.
+        args (Dict[str, str]): The argument supplied by the user.
+
+    Returns:
+        CommandResults: CommandResults to return to XSOAR.
+    """
+    attachment_id = args['attachment_id']
+    client.delete_attachment_file(attachment_id=attachment_id)
+    return CommandResults(readable_output=f'Attachment id {attachment_id} was deleted successfully.')
+
+
 def update_issue_assignee_command(client: JiraBaseClient, args: Dict) -> CommandResults:
     """This command is in charge of assigning an assignee to an issue.
 
@@ -2413,8 +2464,21 @@ def upload_XSOAR_attachment_to_jira(client: JiraBaseClient, entry_id: str,
         List[Dict[str, Any]]: The results of the API, which will hold the newly added attachment.
     """
     file_name, file_bytes = get_file_name_and_content(entry_id=entry_id)
-    files = {'file': (attachment_name or file_name, file_bytes, 'application-type')}
-    return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
+    files, chosen_file_mime_type = create_files_to_upload('', file_name, file_bytes, attachment_name)
+    # try upload the attachment with the specific mime type
+    try:
+        return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
+    except Exception as e:
+        # in case the first call to upload_attachment() failed, check if file_mime_type is the default value,
+        # if yes, we should raise exception
+        if chosen_file_mime_type == 'application-type':
+            raise e
+        # if we used a specific mime type, try upload_attachment() again, with the default type.
+        else:
+            demisto.debug(f'The first call to upload_attachment() with {chosen_file_mime_type=} failed. '
+                          f'Trying again with file_mime_type=application-type')
+            files, _ = create_files_to_upload('application-type', file_name, file_bytes, attachment_name)
+            return client.upload_attachment(issue_id_or_key=issue_id_or_key, files=files)
 
 
 def issue_get_attachment_command(client: JiraBaseClient, args: Dict[str, str]) -> List[Dict[str, Any]]:
@@ -3759,9 +3823,10 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
                 if (
                     COMMENT_MIRRORED_FROM_XSOAR not in comment_body
                     and incident_modified_date
-                    and comment_updated_date > incident_modified_date
+                    and comment_updated_date >= incident_modified_date
                 ):
-                    # We only want to add comments as a Note Entry if it is newer than the incident's modified date.
+                    # We should only add comments as a Note Entry if the comment's modified date is the same as
+                    # or newer than the incident's modified date.
                     parsed_entries.append({
                         'Type': EntryType.NOTE,
                         'Contents': f'{comment_body}\nJira Author: {comment_entry.get("UpdateUser")}',
@@ -4055,6 +4120,7 @@ def main():  # pragma: no cover
         'jira-epic-issue-list': epic_issues_list_command,
         'jira-issue-link-type-get': get_issue_link_types_command,
         'jira-issue-to-issue-link': link_issue_to_issue_command,
+        'jira-issue-delete-file': delete_attachment_file_command,
     }
     try:
         client: JiraBaseClient

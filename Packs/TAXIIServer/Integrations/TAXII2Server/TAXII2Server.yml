@@ -110,6 +110,7 @@ configuration:
   - windows-registry-key
   - file
   - url
+  - x509-certificate
   additionalinfo: Choose which STIX Cyber Observable Object provides as STIX Domain Object of 'indicator'
   section: Collect
   advanced: true
@@ -149,7 +150,7 @@ script:
     - contextPath: TAXIIServer.ServerInfo.description
       description: The server description.
       type: String
-  dockerimage: demisto/flask-nginx:1.0.0.87872
+  dockerimage: demisto/flask-nginx:1.0.0.94079
   longRunning: true
   longRunningPort: true
   script: '-'

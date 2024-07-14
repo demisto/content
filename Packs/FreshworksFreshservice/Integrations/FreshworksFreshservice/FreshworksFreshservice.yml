@@ -459,6 +459,8 @@ script:
       name: fr_due_by
     - description: The ID of the group to which the ticket has been assigned. The default value is the ID of the group that is associated with the given email config ID. Use freshservice-agent-group-list to get the agent group ID.
       name: group_id
+    - description: The channel through which the ticket was created expressed as a numeric value. Custom and non-mapped sources in Freshservice can be used by reference to their numeric code. This code will be available from the Fresservice Adminsitrator. If this option is used the 'source' argument will be ignored.
+      name: source_numeric
     description: |-
       Create a new ticket at the service desk. The default ticket type
       is incident. Create ticket requires one of the following: requester_id, phone, email. Ticket type helps categorize the ticket according to the different
@@ -647,7 +649,7 @@ script:
     - description: A comma-separated list of email address added in the 'cc' field of the incoming ticket email.
       isArray: true
       name: cc_emails
-    - description: Key value pairs containing the names and values of custom fields.
+    - description: A comma-separated list of key value pairs containing the names and values of custom fields. For example 'key1=value1, key2=value2'.
       name: custom_fields
     - description: Timestamp that denotes when the ticket is due to be resolved (for example YYYY-MM-DDThh:mm).
       name: due_by
@@ -659,6 +661,8 @@ script:
       name: group_id
     - description: The resolution note outlines the actions taken to resolve an issue, providing a clear record of the steps and solutions applied.
       name: resolution_notes
+    - description: The channel through which the ticket was created expressed as a numeric value. Custom and non-mapped sources in Freshservice can be used by reference to their numeric code. This code will be available from the Fresservice Adminsitrator. If this option is used the 'source' argument will be ignored.
+      name: source_numeric
     description: Update an existing ticket in Freshservice.
     name: freshservice-ticket-update
     outputs:
@@ -3456,7 +3460,7 @@ script:
       name: lastUpdate
     description: Gets the list of incidents that were modified since the last update time. Note that this method is here for debugging purposes. The get-modified-remote-data command is used as part of a Mirroring feature, which is available in Cortex XSOAR from version 6.1.
     name: get-modified-remote-data
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.10.14.91134
   isfetch: true
   ismappable: true
   isremotesyncin: true

@@ -16,20 +16,12 @@ repos:
     min_py_version: '3.7'
     files: .+_test.py$
 - repo: https://github.com/python-poetry/poetry
-  rev: 1.6.1
+  rev: 1.8.2
   hooks:
   - id: poetry-check
-  - id: poetry-lock
     args:
-    - --check
+    - --lock
     files: ^pyproject.toml$
-  - id: poetry-export
-    args:
-    - --with
-    - dev,typing
-    - --without-hashes
-    - -o
-    - requirements.txt
 - repo: https://github.com/hadialqattan/pycln
   rev: v2.1.2
   hooks:
@@ -41,6 +33,7 @@ repos:
   rev: v0.0.272
   hooks:
   - id: ruff
+    parallel: false
     min_py_version: '3.7'
     args:
     - --fix
@@ -48,14 +41,31 @@ repos:
     - --config=nightly_ruff.toml
     args:ci:
     - --config=nightly_ruff.toml
-- repo: https://github.com/pre-commit/mirrors-autopep8
-  rev: v2.0.4
+    skip:docker_autoupdate: true
+- repo: https://github.com/hhatto/autopep8
+  rev: v2.3.1
   hooks:
   - id: autopep8
     exclude_support_level:ci:
     - community
     exclude_support_level:nightly:
     - community
+    skip:nightly: true
+- repo: https://github.com/pre-commit/mirrors-mypy
+  rev: v0.982
+  hooks:
+  - id: mypy
+    min_py_version: '3.7'
+    args:
+    - --ignore-missing-imports
+    - --check-untyped-defs
+    - --show-error-codes
+    - --follow-imports=silent
+    - --allow-redefinition
+    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
+    language: system
+    entry: mypy
+
 - repo: local
   hooks:
   - id: xsoar-lint
@@ -66,15 +76,18 @@ repos:
     exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
     require_serial: true
     language: system
+    # skip nightly since we don't care about warnings in nightly
+    skip:nightly: true
+    skip:docker_autoupdate: true
+
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
     entry: pylint
-    language: docker
     files: Packs\/.*\.py$
     exclude: _test\.py|.vulture_whitelist\.py|test_data
     args:
@@ -88,17 +101,21 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
+    pass_docker_extra_args:ci: --rm=false
+    pass_docker_extra_args:nightly: --rm=false
+    
   - id: pytest-in-docker
     name: pytest-in-docker
     description: Run pytest on the code in content packs
-    docker_image:nightly: native:ga,native:maintenance,from-yml
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
     docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
     docker_image:native: native:ga,from-yml,native:dev,native:maintenance
     docker_image: from-yml
     entry: python
     language: docker
     files: Packs\/.*_test\.py$
-    exclude: test_data
+    # The exclude list includes the list of all integration/scripts which require network for testing
+    exclude: test_data|Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
     env:
       COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
     args:
@@ -115,19 +132,91 @@ repos:
     - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
     - --color=yes
     - --files
+    args:docker_autoupdate:
+    - /src/Tests/scripts/script_runner.py
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    - --files
     copy_files:
     - Tests/scripts/dev_envs/pytest/conftest.py
     skip:commit: true
+    pass_docker_extra_args:ci: --rm=false --network=none
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_docker_extra_args: --network=none
+
+  - id: pytest-network-in-docker
+    name: pytest-network-in-docker
+    description: Run pytest with network enabled on the code in content packs
+    docker_image:nightly: native:ga,native:maintenance,from-yml,native:candidate
+    docker_image:ci: native:ga,from-yml,native:dev,native:maintenance
+    docker_image:native: native:ga,from-yml,native:dev,native:maintenance
+    docker_image: from-yml
+    entry: coverage
+    language: docker
+    files: Packs/Base/Scripts/CommonServerPython/CommonServerPython_test.py|Packs/Base/Scripts/SanePdfReport/SanePdfReport_test.py|Packs/Base/Scripts/CheckDockerImageAvailable/CheckDockerImageAvailable_test.py|Packs/CommonScripts/Scripts/Ping/Ping_test.py|Packs/CommonScripts/Scripts/GetDockerImageLatestTag/GetDockerImageLatestTag_test.py|Packs/CommonScripts/Scripts/GetDuplicatesMlv2/GetDuplicatesMlv2_test.py|Packs/CommonScripts/Scripts/DockerHardeningCheck/DockerHardeningCheck_test.py|Packs/rasterize/Integrations/rasterize/rasterize_test.py|Packs/Slack/Integrations/Slack/Slack_test.py|Packs/SymantecDLP/Integrations/SymantecDLP/SymantecDLP_test.py|Packs/WebFileRepository/Integrations/WebFileRepository/WebFileRepository_test.py|Packs/Whois/Integrations/Whois/Whois_test.py
+    env:
+      COVERAGE_FILE: /src/.pre-commit/coverage/.coverage
+    args:
+    - run
+    - -p
+    - --source=.
+    - -m
+    - pytest
+    - -v
+    - --override-ini='asyncio_mode=auto'
+    - --rootdir=/src
+    - --junitxml=/src/.pre-commit/pytest-junit/.report_pytest.xml
+    - --color=yes
+    copy_files:
+    - Tests/scripts/dev_envs/pytest/conftest.py
+    skip:commit: true
+    run_isolated: true
+    skip:docker_autoupdate: true
+    pass_docker_extra_args:ci: --rm=false
+    pass_docker_extra_args:nightly: --rm=false
+
   - id: validate-deleted-files
     name: validate-deleted-files
     entry: validate-deleted-files
+    skip:docker_autoupdate: true
     language: system
     require_serial: true
     pass_filenames: false
+    skip:nightly: true
     args:
-      - Packs
-      - Tests
-      - Utils
+    - Packs
+    - Tests
+    - Utils
+
+  - id: validate-content-paths
+    name: validate-content-paths
+    skip:docker_autoupdate: true
+    entry: validate-content-path
+    language: system
+    require_serial: true
+    args:
+    -  validate
+    -  --skip-depth-one-folder
+    -  --skip-integration-script-file-name
+    -  --skip-markdown
+    -  --skip-suffix
+
+
+  - id: validate-conf-json
+    name: validate-conf-json
+    description: validate conf.json
+    files: Tests/conf.json
+    skip:commit: true
+    skip:nightly: true
+    skip:docker_autoupdate: true
+    entry: validate-conf-json
+    pass_filenames: false
+    language: system
+
   - id: pwsh-test-in-docker
     name: pwsh-test-in-docker
     description: Run powershell tests
@@ -143,7 +232,12 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    split_by_object: true
+    run_isolated: true
+    pass_docker_extra_args:ci: --rm=false --network=none
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_docker_extra_args: --network=none
+    skip:commit: true
+
   - id: pwsh-analyze-in-docker
     name: pwsh-analyze-in-docker
     description: Run powershell analyze
@@ -160,31 +254,26 @@ repos:
     copy_files:
     - Packs/Base/Scripts/CommonServerPowerShell/CommonServerPowerShell.ps1
     - Tests/demistomock/demistomock.ps1
-    split_by_object: true
-  - id: is-circle-changed
-    name: is-circle-changed
-    description: Checks if circle files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .circleci/config.yml "" false
-    language: script
-    pass_filenames: false
+    run_isolated: true
     skip:commit: true
-  - id: is-gitlab-changed
-    name: is-gitlab-changed
-    description: Checks if gitlab files are changed, and checkout to current if it is.
-    entry: ./Tests/scripts/is_file_up_to_date.sh .gitlab "" false
-    language: script
-    pass_filenames: false
-    skip:commit: true
+    pass_docker_extra_args:ci: --rm=false --network=none
+    pass_docker_extra_args:nightly: --rm=false --network=none
+    pass_docker_extra_args: --network=none
+
   - id: validate
     name: validate
     description: validate content
     entry: demisto-sdk validate
     args:
     - --skip-pack-dependencies
+    - --config-path=validation_config.toml
     pass_filenames: false
     language: system
     require_serial: true
     skip:commit: true
+    skip:nightly: true
+    skip:docker_autoupdate: true
+
   - id: format
     name: format
     description: Format non-code files, to comply with XSOAR standards.
@@ -196,6 +285,8 @@ repos:
     language: system
     pass_filenames: false
     require_serial: true
+    skip:docker_autoupdate: true
+
   - id: secrets
     name: secrets
     description: Check for secrets in files.
@@ -204,16 +295,9 @@ repos:
     - --ignore-entropy
     pass_filenames: false
     language: system
-  - id: update-additional-dependencies
-    name: update-additional-dependencies
-    entry: update-additional-dependencies
-    language: system
-    files: poetry.lock
-    require_serial: true
-    pass_filenames: false
-    args:
-    - --pre_commit_config
-    - .pre-commit-config_template.yaml
+    skip:ci: true
+    skip:nightly: true
+
   - id: merge-pytest-reports
     name: merge-pytest-reports
     entry: merge-pytest-reports
@@ -222,6 +306,7 @@ repos:
     pass_filenames: false
     needs:
     - pytest-in-docker
+
   - id: coverage-pytest-analyze
     name: coverage-pytest-analyze
     entry: demisto-sdk coverage-analyze
@@ -248,6 +333,7 @@ repos:
     - '100'
     needs:
     - pytest-in-docker
+
 - repo: https://github.com/sourcery-ai/sourcery
   rev: v1.6.0
   hooks:
@@ -267,211 +353,3 @@ repos:
     - --diff
     - git diff HEAD
     skip: true
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v0.982
-  hooks:
-  - id: mypy
-    min_py_version: '3.7'
-    args:
-    - --ignore-missing-imports
-    - --check-untyped-defs
-    - --show-error-codes
-    - --follow-imports=silent
-    - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py
-    additional_dependencies:
-    - astroid==2.9.3 ; python_version >= "3.8" and python_version < "3.11"
-    - attrs==23.1.0 ; python_version >= "3.8" and python_version < "3.11"
-    - autopep8==1.6.0 ; python_version >= "3.8" and python_version < "3.11"
-    - backports-zoneinfo==0.2.1 ; python_version >= "3.8" and python_version < "3.9"
-    - bandit==1.7.5 ; python_version >= "3.8" and python_version < "3.11"
-    - bcrypt==4.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - beautifulsoup4==4.12.2 ; python_version >= "3.8" and python_version < "3.11"
-    - boto3-stubs[accessanalyzer,acm,athena,cloudtrail,dynamodb,ec2,guardduty,iam,lambda,logs,network-firewall,route53,s3,sagemaker-runtime,secretsmanager,securityhub,sns,sqs,ssm,wafv2]==1.28.80 ; python_version >= "3.8" and python_version < "3.11"
-    - botocore-stubs==1.31.80 ; python_version >= "3.8" and python_version < "3.11"
-    - bracex==2.4 ; python_version >= "3.8" and python_version < "3.11"
-    - cachetools==5.3.2 ; python_version >= "3.8" and python_version < "3.11"
-    - certifi==2023.7.22 ; python_version >= "3.8" and python_version < "3.11"
-    - cffi==1.16.0 ; python_version >= "3.8" and python_version < "3.11"
-    - cfgv==3.4.0 ; python_version >= "3.8" and python_version < "3.11"
-    - chardet==5.2.0 ; python_version >= "3.8" and python_version < "3.11"
-    - charset-normalizer==3.3.2 ; python_version >= "3.8" and python_version < "3.11"
-    - click==8.1.7 ; python_version >= "3.8" and python_version < "3.11"
-    - colorama==0.4.6 ; python_version >= "3.8" and python_version < "3.11"
-    - coloredlogs==15.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - commonmark==0.9.1 ; python_version >= "3.8" and python_version < "3.11"
-    - configparser==5.3.0 ; python_version >= "3.8" and python_version < "3.11"
-    - coverage==7.3.2 ; python_version >= "3.8" and python_version < "3.11"
-    - cryptography==36.0.2 ; python_version >= "3.8" and python_version < "3.11"
-    - dateparser==1.1.8 ; python_version >= "3.8" and python_version < "3.11"
-    - decorator==5.1.1 ; python_version >= "3.8" and python_version < "3.11"
-    - defusedxml==0.7.1 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-py==3.2.13 ; python_version >= "3.8" and python_version < "3.11"
-    - demisto-sdk==1.27.4 ; python_version >= "3.8" and python_version < "3.11"
-    - dictdiffer==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
-    - dictor==0.1.12 ; python_version >= "3.8" and python_version < "3.11"
-    - distlib==0.3.7 ; python_version >= "3.8" and python_version < "3.11"
-    - docker==5.0.3 ; python_version >= "3.8" and python_version < "3.11"
-    - docopt==0.6.2 ; python_version >= "3.8" and python_version < "3.11"
-    - exceptiongroup==1.1.3 ; python_version >= "3.8" and python_version < "3.11"
-    - filelock==3.13.1 ; python_version >= "3.8" and python_version < "3.11"
-    - flatten-dict==0.4.2 ; python_version >= "3.8" and python_version < "3.11"
-    - freezegun==1.2.2 ; python_version >= "3.8" and python_version < "3.11"
-    - future==0.18.3 ; python_version >= "3.8" and python_version < "3.11"
-    - gitdb==4.0.11 ; python_version >= "3.8" and python_version < "3.11"
-    - gitpython==3.1.41 ; python_version >= "3.8" and python_version < "3.11"
-    - giturlparse==0.10.0 ; python_version >= "3.8" and python_version < "3.11"
-    - google-api-core==2.13.0 ; python_version >= "3.8" and python_version < "3.11"
-    - google-api-core[grpc]==2.13.0 ; python_version >= "3.8" and python_version < "3.11"
-    - google-auth==2.23.4 ; python_version >= "3.8" and python_version < "3.11"
-    - google-cloud-compute==1.14.1 ; python_version >= "3.8" and python_version < "3.11"
-    - google-cloud-core==2.3.3 ; python_version >= "3.8" and python_version < "3.11"
-    - google-cloud-secret-manager==2.16.4 ; python_version >= "3.8" and python_version < "3.11"
-    - google-cloud-storage==2.13.0 ; python_version >= "3.8" and python_version < "3.11"
-    - google-crc32c==1.5.0 ; python_version >= "3.8" and python_version < "3.11"
-    - google-resumable-media==2.6.0 ; python_version >= "3.8" and python_version < "3.11"
-    - googleapis-common-protos==1.61.0 ; python_version >= "3.8" and python_version < "3.11"
-    - googleapis-common-protos[grpc]==1.61.0 ; python_version >= "3.8" and python_version < "3.11"
-    - grpc-google-iam-v1==0.12.6 ; python_version >= "3.8" and python_version < "3.11"
-    - grpcio-status==1.59.2 ; python_version >= "3.8" and python_version < "3.11"
-    - grpcio==1.59.2 ; python_version >= "3.8" and python_version < "3.11"
-    - humanfriendly==10.0 ; python_version >= "3.8" and python_version < "3.11"
-    - identify==2.5.31 ; python_version >= "3.8" and python_version < "3.11"
-    - idna==3.4 ; python_version >= "3.8" and python_version < "3.11"
-    - imagesize==1.4.1 ; python_version >= "3.8" and python_version < "3.11"
-    - importlib-resources==5.13.0 ; python_version >= "3.8" and python_version < "3.11"
-    - inflection==0.5.1 ; python_version >= "3.8" and python_version < "3.11"
-    - iniconfig==2.0.0 ; python_version >= "3.8" and python_version < "3.11"
-    - isort==5.12.0 ; python_version >= "3.8" and python_version < "3.11"
-    - joblib==1.3.2 ; python_version >= "3.8" and python_version < "3.11"
-    - json5==0.9.14 ; python_version >= "3.8" and python_version < "3.11"
-    - jsonschema-specifications==2023.7.1 ; python_version >= "3.8" and python_version < "3.11"
-    - jsonschema==4.19.2 ; python_version >= "3.8" and python_version < "3.11"
-    - junitparser==3.1.0 ; python_version >= "3.8" and python_version < "3.11"
-    - lazy-object-proxy==1.9.0 ; python_version >= "3.8" and python_version < "3.11"
-    - lxml==5.1.0 ; python_version >= "3.8" and python_version < "3.11"
-    - mccabe==0.6.1 ; python_version >= "3.8" and python_version < "3.11"
-    - mergedeep==1.3.4 ; python_version >= "3.8" and python_version < "3.11"
-    - more-itertools==9.1.0 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-accessanalyzer==1.28.36 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-acm==1.28.37 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-athena==1.28.36 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-cloudtrail==1.28.36 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-dynamodb==1.28.73 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-ec2==1.28.75 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-guardduty==1.28.65 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-iam==1.28.79 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-lambda==1.28.63 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-logs==1.28.52 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-network-firewall==1.28.77 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-route53==1.28.79 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-s3==1.28.55 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-sagemaker-runtime==1.28.39 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-secretsmanager==1.28.67 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-securityhub==1.28.61 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-sns==1.28.72 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-sqs==1.28.36 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-ssm==1.28.68 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-boto3-wafv2==1.28.73 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy-extensions==1.0.0 ; python_version >= "3.8" and python_version < "3.11"
-    - mypy==0.982 ; python_version >= "3.8" and python_version < "3.11"
-    - neo4j==5.14.1 ; python_version >= "3.8" and python_version < "3.11"
-    - networkx==2.8.8 ; python_version >= "3.8" and python_version < "3.11"
-    - nltk==3.8.1 ; python_version >= "3.8" and python_version < "3.11"
-    - nodeenv==1.8.0 ; python_version >= "3.8" and python_version < "3.11"
-    - ordered-set==4.1.0 ; python_version >= "3.8" and python_version < "3.11"
-    - orjson==3.9.10 ; python_version >= "3.8" and python_version < "3.11"
-    - packaging==23.2 ; python_version >= "3.8" and python_version < "3.11"
-    - paramiko==2.12.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pbr==6.0.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pebble==5.0.3 ; python_version >= "3.8" and python_version < "3.11"
-    - pkgutil-resolve-name==1.3.10 ; python_version >= "3.8" and python_version < "3.9"
-    - platformdirs==3.11.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pluggy==1.3.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pre-commit==3.5.0 ; python_version >= "3.8" and python_version < "3.11"
-    - prettytable==3.9.0 ; python_version >= "3.8" and python_version < "3.11"
-    - proto-plus==1.22.3 ; python_version >= "3.8" and python_version < "3.11"
-    - protobuf==4.25.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pyasn1-modules==0.3.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pyasn1==0.5.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pycodestyle==2.8.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pycparser==2.21 ; python_version >= "3.8" and python_version < "3.11"
-    - pydantic==1.10.13 ; python_version >= "3.8" and python_version < "3.11"
-    - pygments==2.16.1 ; python_version >= "3.8" and python_version < "3.11"
-    - pykwalify==1.8.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pylint==2.12.2 ; python_version >= "3.8" and python_version < "3.11"
-    - pynacl==1.5.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pypdf2==1.28.6 ; python_version >= "3.8" and python_version < "3.11"
-    - pyreadline3==3.4.1 ; sys_platform == "win32" and python_version >= "3.8" and python_version < "3.11"
-    - pyspellchecker==0.6.3 ; python_version >= "3.8" and python_version < "3.11"
-    - pytest-freezegun==0.4.2 ; python_version >= "3.8" and python_version < "3.11"
-    - pytest==7.4.3 ; python_version >= "3.8" and python_version < "3.11"
-    - python-dateutil==2.8.2 ; python_version >= "3.8" and python_version < "3.11"
-    - python-dotenv==0.20.0 ; python_version >= "3.8" and python_version < "3.11"
-    - pytz-deprecation-shim==0.1.0.post0 ; python_version >= "3.8" and python_version < "3.11"
-    - pytz==2023.3.post1 ; python_version >= "3.8" and python_version < "3.11"
-    - pywin32==227 ; python_version >= "3.8" and python_version < "3.11" and sys_platform == "win32"
-    - pyyaml==6.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - referencing==0.30.2 ; python_version >= "3.8" and python_version < "3.11"
-    - regex==2023.10.3 ; python_version >= "3.8" and python_version < "3.11"
-    - requests==2.31.0 ; python_version >= "3.8" and python_version < "3.11"
-    - rich==12.6.0 ; python_version >= "3.8" and python_version < "3.11"
-    - rpds-py==0.12.0 ; python_version >= "3.8" and python_version < "3.11"
-    - rsa==4.9 ; python_version >= "3.8" and python_version < "3.11"
-    - ruamel-yaml-clib==0.2.8 ; platform_python_implementation == "CPython" and python_version < "3.11" and python_version >= "3.8"
-    - ruamel-yaml==0.17.40 ; python_version >= "3.8" and python_version < "3.11"
-    - setuptools==68.2.2 ; python_version >= "3.8" and python_version < "3.11"
-    - shellingham==1.5.4 ; python_version >= "3.8" and python_version < "3.11"
-    - six==1.16.0 ; python_version >= "3.8" and python_version < "3.11"
-    - slack-sdk==3.23.0 ; python_version >= "3.8" and python_version < "3.11"
-    - smmap==5.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - soupsieve==2.5 ; python_version >= "3.8" and python_version < "3.11"
-    - stevedore==5.1.0 ; python_version >= "3.8" and python_version < "3.11"
-    - tabulate==0.9.0 ; python_version >= "3.8" and python_version < "3.11"
-    - tenacity==8.2.3 ; python_version >= "3.8" and python_version < "3.11"
-    - toml==0.10.2 ; python_version >= "3.8" and python_version < "3.11"
-    - tomli==2.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - tqdm==4.66.1 ; python_version >= "3.8" and python_version < "3.11"
-    - typed-ast==1.5.5 ; python_version >= "3.8" and python_version < "3.11"
-    - typer[all]==0.7.0 ; python_version >= "3.8" and python_version < "3.11"
-    - types-awscrt==0.19.8 ; python_version >= "3.8" and python_version < "3.11"
-    - types-chardet==5.0.4.6 ; python_version >= "3.8" and python_version < "3.11"
-    - types-cryptography==3.3.23.2 ; python_version >= "3.8" and python_version < "3.11"
-    - types-dateparser==1.1.4.10 ; python_version >= "3.8" and python_version < "3.11"
-    - types-decorator==5.1.8.4 ; python_version >= "3.8" and python_version < "3.11"
-    - types-emoji==2.1.0.3 ; python_version >= "3.8" and python_version < "3.11"
-    - types-filelock==3.2.7 ; python_version >= "3.8" and python_version < "3.11"
-    - types-futures==3.3.8 ; python_version >= "3.8" and python_version < "3.11"
-    - types-ipaddress==1.0.8 ; python_version >= "3.8" and python_version < "3.11"
-    - types-markdown==3.5.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - types-mock==4.0.15.2 ; python_version >= "3.8" and python_version < "3.11"
-    - types-paramiko==2.12.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - types-pkg-resources==0.1.3 ; python_version >= "3.8" and python_version < "3.11"
-    - types-protobuf==4.24.0.4 ; python_version >= "3.8" and python_version < "3.11"
-    - types-pymysql==1.1.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - types-python-dateutil==2.8.19.14 ; python_version >= "3.8" and python_version < "3.11"
-    - types-pytz==2022.7.1.2 ; python_version >= "3.8" and python_version < "3.11"
-    - types-pyvmomi==8.0.0.6 ; python_version >= "3.8" and python_version < "3.11"
-    - types-pyyaml==6.0.12.12 ; python_version >= "3.8" and python_version < "3.11"
-    - types-requests==2.28.11 ; python_version >= "3.8" and python_version < "3.11"
-    - types-s3transfer==0.7.0 ; python_version >= "3.8" and python_version < "3.11"
-    - types-setuptools==67.8.0.0 ; python_version >= "3.8" and python_version < "3.11"
-    - types-six==1.16.21.9 ; python_version >= "3.8" and python_version < "3.11"
-    - types-tabulate==0.9.0.3 ; python_version >= "3.8" and python_version < "3.11"
-    - types-toml==0.10.8.7 ; python_version >= "3.8" and python_version < "3.11"
-    - types-tqdm==4.66.0.4 ; python_version >= "3.8" and python_version < "3.11"
-    - types-ujson==5.8.0.1 ; python_version >= "3.8" and python_version < "3.11"
-    - types-urllib3==1.26.25.14 ; python_version >= "3.8" and python_version < "3.11"
-    - typing-extensions==4.8.0 ; python_version >= "3.8" and python_version < "3.11"
-    - tzdata==2023.3 ; python_version >= "3.8" and python_version < "3.11"
-    - tzlocal==4.3.1 ; python_version >= "3.8" and python_version < "3.11"
-    - ujson==5.8.0 ; python_version >= "3.8" and python_version < "3.11"
-    - urllib3==1.26.18 ; python_version >= "3.8" and python_version < "3.11"
-    - virtualenv==20.24.6 ; python_version >= "3.8" and python_version < "3.11"
-    - vulture==2.10 ; python_version >= "3.8" and python_version < "3.11"
-    - wcmatch==8.5 ; python_version >= "3.8" and python_version < "3.11"
-    - wcwidth==0.2.9 ; python_version >= "3.8" and python_version < "3.11"
-    - websocket-client==1.6.4 ; python_version >= "3.8" and python_version < "3.11"
-    - wrapt==1.13.3 ; python_version >= "3.8" and python_version < "3.11"
-    - yamlordereddictloader==0.4.2 ; python_version >= "3.8" and python_version < "3.11"
-    - zipp==3.17.0 ; python_version >= "3.8" and python_version < "3.10"

@@ -34,7 +34,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 60
+          "y": -300
         }
       }
     note: false
@@ -58,7 +58,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "20"
+      - "25"
       AWS:
       - "15"
       Azure:
@@ -107,7 +107,7 @@ tasks:
       {
         "position": {
           "x": 220,
-          "y": 190
+          "y": -170
         }
       }
     note: false
@@ -240,6 +240,9 @@ tasks:
       username:
         complex:
           root: inputs.username
+      sourceIP:
+        complex:
+          root: inputs.sourceIP
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -302,6 +305,9 @@ tasks:
       username:
         complex:
           root: inputs.username
+      sourceIP:
+        complex:
+          root: inputs.sourceIP
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -443,6 +449,15 @@ tasks:
       username:
         complex:
           root: inputs.username
+      GCPprojectID:
+        complex:
+          root: inputs.GCPprojectID
+      accountType:
+        complex:
+          root: inputs.accountType
+      sourceIP:
+        complex:
+          root: inputs.sourceIP
     separatecontext: false
     continueonerrortype: ""
     loop:
@@ -464,6 +479,185 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: d22ac09b-779f-424b-8a75-44095a40c450
+    type: collection
+    task:
+      id: d22ac09b-779f-424b-8a75-44095a40c450
+      version: -1
+      name: Choose manually the cloud provider
+      description: Select which cloud provider XSOAR should handle this incident.
+      type: collection
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 0
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to:
+        simple: ${incident.assigneduser}
+      subject:
+        simple: Choose the Cloud Provider to react upon - ${incident.name} / ${incident.id}
+      body:
+        simple: |-
+          No Cloud Provider was specified to handle Cloud Response - Generic. Please Choose from the following list.
+
+          Note that only GCP / Azure / AWS is supported in this flow.
+      methods:
+      - email
+      format: html
+      bcc:
+      cc:
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+    form:
+      questions:
+      - id: "0"
+        label: ""
+        labelarg:
+          simple: 'Choose a cloud provider from the list below:'
+        required: true
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - {}
+        - simple: GCP
+        - simple: AWS
+        - simple: Azure
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: 'Choose the Cloud Provider to react upon:'
+      description: Select which cloud provider XSOAR should handle this incident.
+      sender: ""
+      expired: false
+      totalanswers: 0
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 12e4a818-0377-4886-8f78-9462202ede0a
+    type: condition
+    task:
+      id: 12e4a818-0377-4886-8f78-9462202ede0a
+      version: -1
+      name: Which Cloud provider was selected
+      description: Which Cloud provider was selected
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "27"
+      AWS:
+      - "15"
+      Azure:
+      - "16"
+      GCP:
+      - "21"
+    separatecontext: false
+    conditions:
+    - label: GCP
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Choose the Cloud Provider to react upon:.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: GCP
+          ignorecase: true
+    - label: AWS
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Choose the Cloud Provider to react upon:.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: AWS
+          ignorecase: true
+    - label: Azure
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Choose the Cloud Provider to react upon:.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: Azure
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: 1906fc40-41a9-42e6-8315-5ce64fd2a493
+    type: title
+    task:
+      id: 1906fc40-41a9-42e6-8315-5ce64fd2a493
+      version: -1
+      name: No cloud provider was selected
+      description: No cloud provider was selected
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1110,
+          "y": 555
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -472,10 +666,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 725,
-        "width": 1300,
+        "height": 1085,
+        "width": 1730,
         "x": -240,
-        "y": 60
+        "y": -300
       }
     }
   }
@@ -641,6 +835,23 @@ inputs:
 
     Supports: AWS, GCP and Azure
   playbookInputQuery:
+- description: The source IP address of the attacker.
+  key: sourceIP
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: The GCP Project ID for the event scope.
+  key: GCPprojectID
+  playbookInputQuery:
+  required: false
+  value: {}
+- description: |-
+    The account type
+    GCP - "user" / "service_account"
+  key: accountType
+  playbookInputQuery:
+  required: false
+  value: {}
 outputs: []
 tests:
 - No tests (auto formatted)

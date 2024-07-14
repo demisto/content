@@ -1,9 +1,8 @@
 """
 Tests module for ThreatExchangeV2 integration logic
 """
-from typing import Tuple, List, Dict, Optional
 
-from ThreatExchangeV2 import ThreatExchangeV2Status, calculate_dbot_score, calculate_engines,\
+from ThreatExchangeV2 import ThreatExchangeV2Status, calculate_dbot_score, calculate_engines, \
     get_reputation_data_statuses, convert_string_to_epoch_time, flatten_outputs_paging
 import pytest
 from CommonServerPython import Common
@@ -154,7 +153,7 @@ class TestsThreatExchangeV2:
         (unknown_test_input, Common.DBotScore.NONE, unknown_test_err_msg),
         ([], Common.DBotScore.NONE, 'Reputation data has no reported statuses - DBot Score should be 0')
     ])
-    def test_dbot_score_calculation(self, reputation_data_input: List[Dict],
+    def test_dbot_score_calculation(self, reputation_data_input: list[dict],
                                     expected_output: Common.DBotScore,
                                     error_msg: str):
         """
@@ -207,8 +206,8 @@ class TestsThreatExchangeV2:
         (four_engines_no_positive_test_input, (4, 0), four_engines_no_positive_test_err_msg),
         ([], (0, 0), 'Reputation data is empty - Number of engines and positive detections should be 0')
     ])
-    def test_calculate_engines(self, reputation_data_input: List[Dict],
-                               expected_output: Tuple[int, int],
+    def test_calculate_engines(self, reputation_data_input: list[dict],
+                               expected_output: tuple[int, int],
                                error_msg: str):
         """
             Given:
@@ -238,7 +237,7 @@ class TestsThreatExchangeV2:
         (raw_response_without_before_after, expected_output_without_before_after),
         (raw_response_without_cursors, expected_output_without_cursors)
     ])
-    def test_flatten_outputs_paging(self, raw_response_input: Dict, expected_output: Dict):
+    def test_flatten_outputs_paging(self, raw_response_input: dict, expected_output: dict):
         """
             Given:
                 1. A dict which represents a returned raw response of a certain API call, a full raw response contains a
@@ -262,7 +261,7 @@ class TestsThreatExchangeV2:
         ('2021-05-01T12:00:00', 1619870400),
         (None, None)
     ])
-    def test_convert_string_to_epoch_time(self, date_input: Optional[str], expected_output: Optional[int]):
+    def test_convert_string_to_epoch_time(self, date_input: str | None, expected_output: int | None):
         """
             Given:
                 1. A string representing a date in iso 8601 format.

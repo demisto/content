@@ -23,7 +23,7 @@ The permissions required to use this integration depends on which operations you
     | Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
     | Index from which to fetch incidents (CSV) |  | False |
     | Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
-    | Index time field (for sorting sort and limiting data) |  | False |
+    | Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
     | Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
     | Time field type |  | False |
     | Map JSON fields into labels |  | False |

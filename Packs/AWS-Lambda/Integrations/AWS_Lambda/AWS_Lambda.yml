@@ -43,16 +43,19 @@ configuration:
   type: 9
   displaypassword: Secret Key
   required: false
+  hiddenusername: false
 - display: Access Key
   name: access_key
   type: 0
   hidden: true
   required: false
+  defaultvalue:
 - display: Secret Key
   name: secret_key
   type: 4
   hidden: true
   required: false
+  defaultvalue:
 - display: Timeout
   name: timeout
   defaultvalue: 60,10
@@ -68,23 +71,32 @@ configuration:
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
-  section: Connect
-  advanced: true
   required: false
+  defaultvalue:
 - display: STS PrivateLink URL
   name: sts_endpoint_url
   type: 0
+  required: false
+  defaultvalue:
+- display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
+  name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
+  type: 15
   section: Connect
-  advanced: true
   required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  defaultvalue: "false"
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  defaultvalue: "false"
 description: Amazon Web Services Serverless Compute service (lambda).
 display: AWS - Lambda
 name: AWS - Lambda
@@ -943,6 +955,7 @@ script:
       name: qualifier
     description: Deletes a Lambda function URL. When you delete a function URL, you can’t recover it. Creating a new function URL results in a different URL address.
     name: aws-lambda-delete-function-url-config
+    outputs: []
   - arguments:
     - description: The AWS Region. If not specified, the default region will be used.
       auto: PREDEFINED
@@ -977,7 +990,445 @@ script:
       name: qualifier
     description: Deletes a Lambda function. To delete a specific function version, use the Qualifier parameter. Otherwise, all versions and aliases are deleted.
     name: aws-lambda-delete-function
-  dockerimage: demisto/boto3py3:1.0.0.87582
+    outputs: []
+  - name: aws-lambda-create-function
+    description: Creates a Lambda function. To create a function, you need a deployment package and an execution role.
+    deprecated: false
+    arguments:
+    - name: functionName
+      description: The name of the Lambda function.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: runtime
+      description: The runtime environment for the function.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: handler
+      description: "The name of the method within your code that Lambda calls to execute your function. Example: lambda_function.lambda_handler'."
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: code
+      description: Entry ID of the uploaded base64-encoded contents of the deployment package. Amazon Web Services SDK and CLI clients handle the encoding for you.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: S3-bucket
+      description: An Amazon S3 bucket in the same Amazon Web Services Region as your function. The bucket can be in a different Amazon Web Services account.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: description
+      description: A description of the function.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: functionTimeout
+      description: The amount of time that Lambda allows a function to run before stopping it.
+      required: false
+      isArray: false
+      defaultValue: "3"
+      predefined:
+      - ""
+    - name: memorySize
+      description: The amount of memory available to the function at runtime.
+      required: false
+      isArray: false
+      defaultValue: "128"
+      predefined:
+      - ""
+    - name: publish
+      description: Set to true to publish the first version of the function during creation.
+      required: false
+      isArray: false
+      defaultValue: ""
+      auto: PREDEFINED
+      predefined:
+      - "True"
+      - "False"
+    - name: vpcConfig
+      description: Json string contains SubnetIds - list of VPC subnet IDs, SecurityGroupIds - A list of VPC security group IDs,  and boolean Ipv6AllowedForDualStack - allows outbound IPv6 traffic.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: packageType
+      description: The type of deployment package.
+      required: false
+      isArray: false
+      auto: PREDEFINED
+      defaultValue: ""
+      predefined:
+      - "Image"
+      - "Zip"
+    - name: environment
+      description: The environment variables for the function. Should be given as key-value pairs in a json string.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: tracingConfig
+      description: The tracing configuration for the function. Set to Active to sample and trace a subset of incoming requests with X-Ray.
+      required: false
+      isArray: false
+      defaultValue: "Active"
+      predefined:
+      - ""
+    - name: tags
+      description: The list of tags to apply to the function.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: role
+      description: The Amazon Resource Name (ARN) of the function’s execution role.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: layers
+      description: A list of function layers to add to the function's execution environment.
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    outputs:
+    - contextPath: AWS.Lambda.Functions.FunctionName
+      description: The name of the function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.FunctionArn
+      description: The function’s Amazon Resource Name (ARN).
+      type: string
+    - contextPath: AWS.Lambda.Functions.Runtime
+      description: The identifier of the function’s runtime. Runtime is required if the deployment package is a .zip file archive.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Role
+      description: The function’s execution role.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Handler
+      description: The function that Lambda calls to begin running your function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.CodeSize
+      description: The size of the function’s deployment package, in bytes.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Description
+      description: The function’s description.
+      type: string
+    - contextPath: AWS.Lambda.Functions.Timeout
+      description: The amount of time in seconds that Lambda allows a function to run before stopping it.
+      type: number
+    - contextPath: AWS.Lambda.Functions.MemorySize
+      description: The amount of memory available to the function at runtime.
+      type: number
+    - contextPath: AWS.Lambda.Functions.Version
+      description: The version of the Lambda function.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SubnetIds
+      description: A list of VPC subnet IDs.
+      type: list
+    - contextPath: AWS.Lambda.Functions.VpcConfig.SecurityGroupIds
+      description: A list of VPC security group IDs.
+      type: list
+    - contextPath: AWS.Lambda.Functions.VpcConfig.VpcId
+      description: The ID of the VPC.
+      type: string
+    - contextPath: AWS.Lambda.Functions.VpcConfig.Ipv6AllowedForDualStack
+      description: Allows outbound IPv6 traffic on VPC functions that are connected to dual-stack subnets.
+      type: boolean
+    - contextPath: AWS.Lambda.Functions.PackageType
+      description: The type of deployment package. Set to Image for container image and set Zip for .zip file archive.
+      type: string
+    - contextPath: AWS.Lambda.Functions.LastModified
+      description: The date and time that the function was last updated, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: string
+  - name: aws-lambda-publish-layer-version
+    description: Creates an Lambda layer from a ZIP archive.
+    deprecated: false
+    arguments:
+    - name: layer-name
+      description: The name or Amazon Resource Name (ARN) of the layer.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: description
+      description: The description of the version.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: s3-bucket
+      description: The Amazon S3 bucket of the layer archive.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: s3-key
+      description: The Amazon S3 key of the layer archive.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: s3-object-version
+      description: For versioned objects, the version of the layer archive object to use.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: zip-file
+      description: Entry ID of the base64-encoded contents of the layer archive.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: compatible-runtimes
+      description: " The name of the method within your code that Lambda calls to execute your function."
+      required: false
+      isArray: true
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    - auto: PREDEFINED
+      description: A list of compatible architectures.
+      name: compatible-architectures
+      predefined:
+      - x86_64
+      - arm64
+    outputs:
+    - contextPath: AWS.Lambda.Layers.LayerVersionArn
+      description: The ARN of the layer version.
+      type: string
+    - contextPath: AWS.Lambda.Layers.LayerArn
+      description: The ARN of the layer.
+      type: string
+    - contextPath: AWS.Lambda.Layers.Description
+      description: The description of the version.
+      type: string
+    - contextPath: AWS.Lambda.Layers.CreatedDate
+      description: The date that the layer version was created, in ISO-8601 format (YYYY-MM-DDThh:mm:ss.sTZD).
+      type: string
+    - contextPath: AWS.Lambda.Layers.Version
+      description: The version number.
+      type: number
+    - contextPath: AWS.Lambda.Layers.CompatibleRuntimes
+      description: The layer’s compatible runtimes.
+      type: list
+    - contextPath: AWS.Lambda.Layers.CompatibleArchitectures
+      description: The layer’s compatible architectures.
+      type: list
+  - name: aws-lambda-list-layer-version
+    description: Lists the versions of an Lambda layer.
+    deprecated: false
+    arguments:
+    - name: compatible-runtime
+      description: A runtime identifier. For example, java21.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: layer-name
+      description: The name or Amazon Resource Name (ARN) of the layer.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: token
+      description: A pagination token returned by a previous call.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: limit
+      description: The maximum number of versions to return.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: compatible-architecture
+      description: The compatible instruction set architecture.
+      required: false
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    outputs:
+    - contextPath: AWS.Lambda.LayerVersionsNextToken
+      description: A pagination token returned when the response doesn’t contain all versions.
+      type: string
+    - contextPath: AWS.Lambda.Layers.LayerVersionArn
+      description: The ARN of the layer version.
+      type: string
+    - contextPath: AWS.Lambda.Layers.Version
+      description: The version number.
+      type: number
+    - contextPath: AWS.Lambda.Layers.Description
+      description: The description of the version.
+      type: string
+    - contextPath: AWS.Lambda.Layers.CreatedDate
+      description: The date that the version was created, in ISO 8601 format. For example, 2018-11-27T15:10:45.123+0000.
+      type: string
+    - contextPath: AWS.Lambda.Layers.CompatibleRuntimes
+      description: The layer’s compatible runtimes.
+      type: list
+    - contextPath: AWS.Lambda.Layers.LicenseInfo
+      description: The layer’s open-source license.
+      type: string
+    - contextPath: AWS.Lambda.Layers.CompatibleArchitectures
+      description: A list of compatible instruction set architectures.
+      type: list
+  - name: aws-lambda-delete-layer-version
+    description: Deletes a version of an Lambda layer.
+    deprecated: false
+    arguments:
+    - name: version-number
+      description: The version number.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - name: layer-name
+      description: The name or Amazon Resource Name (ARN) of the layer.
+      required: true
+      isArray: false
+      defaultValue: ""
+      predefined:
+      - ""
+    - auto: PREDEFINED
+      description: The AWS Region. If not specified, the default region will be used.
+      name: region
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - ca-central-1
+      - eu-west-1
+      - eu-central-1
+      - eu-west-2
+      - ap-northeast-1
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-south-1
+      - sa-east-1
+      - eu-north-1
+      - eu-west-3
+    - description: The Amazon Resource Name (ARN) of the role to assume.
+      name: roleArn
+    - description: An identifier for the assumed role session.
+      name: roleSessionName
+    - description: The duration, in seconds, of the role session. The value can range from 900 seconds (15 minutes) up to the maximum session duration setting for the role.
+      name: roleSessionDuration
+    outputs: []
+  dockerimage: demisto/boto3py3:1.0.0.100468
   runonce: false
   subtype: python3
   script: ''

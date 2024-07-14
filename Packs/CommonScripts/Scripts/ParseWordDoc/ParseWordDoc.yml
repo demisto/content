@@ -2,8 +2,7 @@ commonfields:
   id: ParseWordDoc
   version: -1
 name: ParseWordDoc
-comment: Takes an input docx file (entryID) as an input and saves an output text file
-  (file entry) with the original file's contents.
+comment: Takes an input docx file (entryID) as an input and saves an output text file (file entry) with the original file's contents.
 script: ''
 type: python
 subtype: python3
@@ -13,9 +12,9 @@ args:
 - name: entryID
   required: true
   default: true
-  description: Docx file to parse
+  description: Docx file to parse.
 scripttarget: 0
-dockerimage: demisto/docxpy:1.0.0.40261
+dockerimage: demisto/office-utils:2.0.0.93886
 fromversion: 5.0.0
 tests:
-  - ParseWordDoc-Test
+- ParseWordDoc-Test

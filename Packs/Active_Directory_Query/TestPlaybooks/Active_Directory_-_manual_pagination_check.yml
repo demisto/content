@@ -312,6 +312,9 @@ tasks:
       type: regular
       iscommand: false
       brand: ""
+    scriptarguments:
+      message:
+        simple: '"page-cookie is not set currently, or it returns no data" '
     separatecontext: false
     view: |-
       {
@@ -347,7 +350,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -357,7 +360,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
     view: |-
       {
         "position": {
@@ -965,7 +968,7 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isEqualNumber
+      - - operator: greaterThanOrEqual
           left:
             value:
               complex:
@@ -976,7 +979,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "1"
     view: |-
       {
         "position": {

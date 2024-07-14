@@ -17,7 +17,7 @@ jobs:
           repository: demisto/content
           path: content
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: 3.8.5
       - name: Install pip and requirements
@@ -89,7 +89,7 @@ jobs:
           cd $GITHUB_WORKSPACE/repository
 
           # Run validate on all changed files
-          demisto-sdk validate --quiet-bc-validation --no-conf-json --allow-skipped
+          demisto-sdk validate --quiet-bc-validation --no-conf-json --allow-skipped --run-old-validate --skip-new-validate
       - name: Run Unit Testing and Lint
         if: always()
         run: |

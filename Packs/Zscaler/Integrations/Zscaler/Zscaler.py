@@ -1,15 +1,6 @@
-import json
-import random
-import time
-
-import requests
-import urllib3
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# disable insecure warnings
-urllib3.disable_warnings()
 
 """ GLOBAL VARS """
 ADD = "ADD_TO_LIST"
@@ -29,8 +20,6 @@ USE_SSL = not demisto.params().get("insecure", False)
 PROXY = demisto.params().get("proxy", True)
 REQUEST_TIMEOUT = int(demisto.params().get("requestTimeout", 15))
 DEFAULT_HEADERS = {"content-type": "application/json"}
-EXCEEDED_RATE_LIMIT_STATUS_CODE = 429
-MAX_SECONDS_TO_WAIT = 100
 SESSION_ID_KEY = "session_id"
 ERROR_CODES_DICT = {
     400: "Invalid or bad request",
@@ -81,60 +70,56 @@ class AuthorizationError(DemistoException):
 """ HELPER FUNCTIONS """
 
 
-def http_request(method, url_suffix, data=None, headers=None, num_of_seconds_to_wait=3):
-    if headers is None:
-        headers = DEFAULT_HEADERS
-    data = {} if data is None else data
-    url = BASE_URL + url_suffix
+def error_handler(res):
+    """
+        Deals with unsuccessful calls
+    """
+    if res.status_code in (401, 403):
+        raise AuthorizationError(res.content)
+    elif (
+        res.status_code == 400
+        and res.request.method == "PUT"
+        and "/urlCategories/" in res.request.url
+    ):
+        raise Exception(
+            "Bad request, This could be due to reaching your organizations quota."
+            " For more info about your quota usage, run the command zscaler-url-quota."
+        )
+    else:
+        if res.status_code in ERROR_CODES_DICT:
+            raise Exception(
+                f"The request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
+            )
+        else:
+            raise Exception(
+                f"The request failed with the following error: {res.status_code}.\nMessage: {res.text}"
+            )
+
+
+def http_request(method, url_suffix, data=None, headers=None, resp_type='json'):
+    time_sensitive = is_time_sensitive()
+    demisto.debug(f'{time_sensitive=}')
+    retries = 0 if time_sensitive else 3
+    status_list_to_retry = None if time_sensitive else [429]
+    timeout = 2 if time_sensitive else REQUEST_TIMEOUT
     try:
-        res = requests.request(
-            method,
-            url,
-            verify=USE_SSL,
-            data=data,
-            headers=headers,
-            timeout=REQUEST_TIMEOUT,
-        )
-        if res.status_code not in (200, 204):
-            if (
-                res.status_code == EXCEEDED_RATE_LIMIT_STATUS_CODE
-                and num_of_seconds_to_wait <= MAX_SECONDS_TO_WAIT
-            ):
-                random_num_of_seconds = random.randint(
-                    num_of_seconds_to_wait, num_of_seconds_to_wait + 3
-                )
-                time.sleep(random_num_of_seconds)  # pylint: disable=sleep-exists
-                return http_request(
-                    method,
-                    url_suffix,
-                    data,
-                    headers=headers,
-                    num_of_seconds_to_wait=num_of_seconds_to_wait + 3,
-                )
-            elif res.status_code in (401, 403):
-                raise AuthorizationError(res.content)
-            elif (
-                res.status_code == 400
-                and method == "PUT"
-                and "/urlCategories/" in url_suffix
-            ):
-                raise Exception(
-                    "Bad request, This could be due to reaching your organizations quota."
-                    " For more info about your quota usage, run the command zscaler-url-quota."
-                )
-            else:
-                if res.status_code in ERROR_CODES_DICT:
-                    raise Exception(
-                        f"Your request failed with the following error: {ERROR_CODES_DICT[res.status_code]}.\nMessage: {res.text}"
-                    )
-                else:
-                    raise Exception(
-                        f"Your request failed with the following error: {res.status_code}.\nMessage: {res.text}"
-                    )
+        res = generic_http_request(method=method,
+                                   server_url=BASE_URL,
+                                   timeout=timeout,
+                                   verify=USE_SSL,
+                                   proxy=PROXY,
+                                   client_headers=DEFAULT_HEADERS,
+                                   headers=headers,
+                                   url_suffix=url_suffix,
+                                   data=data or {},
+                                   ok_codes=(200, 204),
+                                   error_handler=error_handler,
+                                   retries=retries,
+                                   status_list_to_retry=status_list_to_retry,
+                                   resp_type=resp_type)
+
     except Exception as e:
-        LOG(
-            f"Zscaler request failed with url={url}\tdata={data}"
-        )
+        LOG(f"Zscaler request failed with url suffix={url_suffix}\tdata={data}")
         LOG(e)
         raise e
     return res
@@ -182,7 +167,7 @@ def login():
     ts, key = obfuscateApiKey(API_KEY)
     data = {"username": USERNAME, "timestamp": ts, "password": PASSWORD, "apiKey": key}
     json_data = json.dumps(data)
-    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    result = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='response')
     auth = result.headers["Set-Cookie"]
     ctx[SESSION_ID_KEY] = DEFAULT_HEADERS["cookie"] = auth[: auth.index(";")]
     set_integration_context(ctx)
@@ -416,8 +401,8 @@ def get_blacklist_command(args):
 
 def get_blacklist():
     cmd_url = "/security/advanced"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS)
-    return json.loads(result.content)
+    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type='content')
+    return json.loads(result)
 
 
 def get_whitelist_command():
@@ -442,15 +427,15 @@ def get_whitelist_command():
 
 def get_whitelist():
     cmd_url = "/security"
-    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS)
-    return json.loads(result.content)
+    result = http_request("GET", cmd_url, None, DEFAULT_HEADERS, resp_type='content')
+    return json.loads(result)
 
 
 def url_lookup(args):
     url = args.get("url", "")
     multiple = args.get("multiple", "true").lower() == "true"
     response = lookup_request(url, multiple)
-    raw_res = json.loads(response.content)
+    raw_res = json.loads(response)
 
     urls_list = argToList(url)
     results: List[CommandResults] = []
@@ -527,7 +512,7 @@ def ip_lookup(ip):
     results: List[CommandResults] = []
 
     response = lookup_request(ip, multiple=True)
-    raw_res = json.loads(response.content)
+    raw_res = json.loads(response)
 
     for data in raw_res:
         ioc_context = {"Address": data["url"]}
@@ -598,7 +583,7 @@ def lookup_request(ioc, multiple=True):
         ioc_list = [ioc]
     ioc_list = [url.replace("https://", "").replace("http://", "") for url in ioc_list]
     json_data = json.dumps(ioc_list)
-    response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS)
+    response = http_request("POST", cmd_url, json_data, DEFAULT_HEADERS, resp_type='content')
     return response
 
 
@@ -737,7 +722,7 @@ def add_or_remove_urls_from_category(action, urls, category_data, retaining_pare
 
 def url_quota_command():
     cmd_url = "/urlCategories/urlQuota"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     human_readable = {
         "Unique Provisioned URLs": response.get("uniqueUrlsProvisioned"),
@@ -801,7 +786,7 @@ def get_categories(custom_only=False, ids_and_names_only=False):
     else:
         cmd_url = "/urlCategories?customOnly=true" if custom_only else "/urlCategories"
 
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
     return response
 
 
@@ -855,7 +840,7 @@ def sandbox_report_command():
         ec[outputPaths["file"]]["Malicious"] = {
             "Vendor": "Zscaler",
             "Description": "Classified as Malicious, with threat score: "
-            + str(human_readable_report["Zscaler Score"]),
+                           + str(human_readable_report["Zscaler Score"]),
         }
     entry = {
         "Type": entryTypes["note"],
@@ -874,7 +859,7 @@ def sandbox_report_command():
 def sandbox_report(md5, details):
     cmd_url = f"/sandbox/report/{md5}?details={details}"
 
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
     return response
 
 
@@ -943,7 +928,7 @@ def get_users_command(args):
         cmd_url = f"/users?page={pageNo}&pageSize={pageSize}&name={name}"
     else:
         cmd_url = f"/users?page={pageNo}&pageSize={pageSize}"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     if len(response) < 10:
         human_readable = tableToMarkdown(f"Users ({len(response)})", response)
@@ -969,7 +954,7 @@ def get_departments_command(args):
         cmd_url = f"/departments?page={pageNo}&pageSize={pageSize}&search={name}&limitSearch=true"
     else:
         cmd_url = f"/departments?page={pageNo}&pageSize={pageSize}"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     if len(response) < 10:
         human_readable = tableToMarkdown(
@@ -997,7 +982,7 @@ def get_usergroups_command(args):
         cmd_url = f"/groups?page={pageNo}&pageSize={pageSize}&search={name}"
     else:
         cmd_url = f"/groups?page={pageNo}&pageSize={pageSize}"
-    response = http_request("GET", cmd_url).json()
+    response = http_request("GET", cmd_url)
 
     if len(response) < 10:
         human_readable = tableToMarkdown(
@@ -1022,7 +1007,7 @@ def set_user_command(args):
     params = json.loads(args.get("user"))
     cmd_url = f"/users/{userId}"
 
-    response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS)
+    response = http_request("PUT", cmd_url, json.dumps(params), DEFAULT_HEADERS, resp_type='response')
     responseJson = response.json()
     if response.status_code == 200:
         entry = {
@@ -1061,9 +1046,7 @@ def create_ip_destination_group(args: dict):
         "isNonEditable": args.get("is_non_editable", False),
     }
     cmd_url = "/ipDestinationGroups"
-    response = http_request(
-        "POST", cmd_url, data=json.dumps(payload), headers=DEFAULT_HEADERS
-    ).json()
+    response = http_request("POST", cmd_url, data=json.dumps(payload), headers=DEFAULT_HEADERS)
     content = {
         "ID": int(response.get("id", "")),
         "Name": response.get("name", ""),
@@ -1155,8 +1138,8 @@ def list_ip_destination_groups(args: dict):
                 + exclude_type_param
                 + type_params_str
             )
-            ipv4_responses = http_request("GET", ipv4_cmd_url).json()
-            ipv6_responses = http_request("GET", ipv6_cmd_url).json()
+            ipv4_responses = http_request("GET", ipv4_cmd_url)
+            ipv6_responses = http_request("GET", ipv6_cmd_url)
             ipv4_contents_filter = (
                 get_contents_lite(ipv4_responses)
                 if lite
@@ -1201,7 +1184,7 @@ def list_ip_destination_groups(args: dict):
                 + exclude_type_param
                 + type_params_str
             )
-            responses = http_request("GET", cmd_url).json()
+            responses = http_request("GET", cmd_url)
             contents_filter = (
                 get_contents_lite(responses) if lite else get_contents(responses)
             )
@@ -1224,7 +1207,7 @@ def list_ip_destination_groups(args: dict):
         responses = []
         for ip_group_id in ip_group_ids:
             cmd_url = f"/ipDestinationGroups/{ip_group_id}"
-            responses.append(http_request("GET", cmd_url).json())
+            responses.append(http_request("GET", cmd_url))
         contents = get_contents(responses)
         markdown = tableToMarkdown(
             f"IPv4 Destination groups ({len(contents)})",
@@ -1256,7 +1239,7 @@ def edit_ip_destination_group(args: dict):
     ip_group_id = str(args.get("ip_group_id", "")).strip()
     check_url = f"/ipDestinationGroups/{ip_group_id}"
     response_data = {}
-    response_data = http_request("GET", check_url).json()
+    response_data = http_request("GET", check_url)
     if response_data.get("id", 0) == 0:
         raise Exception(f"Resource not found with ip_group_id {ip_group_id}")
 
@@ -1272,7 +1255,7 @@ def edit_ip_destination_group(args: dict):
 
     cmd_url = f"/ipDestinationGroups/{ip_group_id}"
     json_data = json.dumps(payload)
-    response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS).json()
+    response = http_request("PUT", cmd_url, json_data, DEFAULT_HEADERS)
     content = {
         "ID": int(response.get("id", "")),
         "Name": response.get("name", ""),
@@ -1325,8 +1308,8 @@ def main():  # pragma: no cover
     elif command == "zscaler-logout":
         return_results(logout_command())
     else:
-        login()
         try:
+            login()
             if command == "test-module":
                 return_results(test_module())
             elif command == "url":
@@ -1395,7 +1378,6 @@ def main():  # pragma: no cover
                 return_results(delete_ip_destination_groups(demisto.args()))
         except Exception as e:
             return_error(f"Failed to execute {command} command. Error: {str(e)}")
-            raise
         finally:
             try:
                 # activate changes only when required
@@ -1407,7 +1389,7 @@ def main():  # pragma: no cover
                 if demisto.params().get("auto_logout"):
                     logout()
             except Exception as err:
-                demisto.info("Zscaler error: " + str(err))
+                return_error("Zscaler error: " + str(err))
 
 
 # python2 uses __builtin__ python3 uses builtins

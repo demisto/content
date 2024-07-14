@@ -1,0 +1,19 @@
+{
+  "trigger_id": "173b1006c083c0e051ad8317486e1e1f",
+  "playbook_id": "Prisma Cloud Compute - Compliance Alert v2",
+  "suggestion_reason": "Provides a comprehensive enrichment using a dedicated layout to Prisma Cloud Compute compliance alerts.",
+  "description": "This trigger is responsible for running the Prisma Cloud Compute - Compliance Alert v2 playbook on compliance alerts.",
+  "trigger_name": "Prisma Cloud Compute - Compliance Alert v2 Trigger",
+  "fromVersion": "6.10.0",
+  "alerts_filter": {
+    "filter": {
+      "AND": [
+        {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "EQ",
+            "SEARCH_VALUE": "Prisma Cloud Compute Compliance v2"
+        }
+      ]
+    }
+  }
+}

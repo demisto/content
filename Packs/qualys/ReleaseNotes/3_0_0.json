@@ -1,0 +1,1 @@
+{"breakingChanges":true,"breakingChangesNotes":"The ***Qualys Event Collector*** was removed from this pack. To fetch events and assets from Qualys, use the ***Qualys VMDR*** integration instead. Renamed the integration from ***Qualys v2*** to ***Qualys VMDR***."}

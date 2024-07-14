@@ -189,3 +189,67 @@ def test_event_types_to_fetch_parameter_handling(event_types_to_fetch_param, exp
     """
     from NetskopeEventCollector import handle_event_types_to_fetch
     assert handle_event_types_to_fetch(event_types_to_fetch_param) == expected_value
+
+
+@pytest.mark.parametrize('num_fetched_events, max_fetch_events, new_next_run, expected_result',
+                         [(200, 250, {'key': 'value'}, {'nextTrigger': '0', 'key': 'value'}),
+                          (1000, 5000, {'nextTrigger': '0'}, {}),
+                          (0, 0, {'key': 'value'}, {'key': 'value'}),
+                          (0, 0, {}, {}),
+                          (2500, 5000, {'nextTrigger': '0'}, {}),
+                          (2501, 5000, {'key': 'value', 'nextTrigger': '0'}, {'key': 'value', 'nextTrigger': '0'})])
+def test_next_trigger_time(num_fetched_events, max_fetch_events, new_next_run, expected_result):
+    """
+    Given:
+        - The number of fetched events and the max_fetch integration parameter.
+
+    When:
+        - Setting the new last_run
+
+    Then:
+        - Check that the last run is modified with the nextTrigger: '0',
+            only if more than half of the max_fetch amount was fetched.
+    """
+    from NetskopeEventCollector import next_trigger_time
+    next_trigger_time(num_fetched_events, max_fetch_events, new_next_run)
+    assert new_next_run == expected_result
+
+
+@pytest.mark.parametrize(
+    "last_run, supported_event_types, expected_result",
+    [
+        (
+            {
+                "alert": {"operation": "next"},
+                "audit": {"operation": "next"},
+                "network": {"operation": "next"},
+                "nextTrigger": "0",
+                "page": {"operation": "next"},
+            },
+            ["alert"],
+            {"nextTrigger": "0", "alert": {"operation": "next"}},
+        ),
+        ({}, ["alert"], {}),
+        (
+            {
+                "alert": {"operation": "next"},
+                "audit": {"operation": "next"},
+                "network": {"operation": "next"},
+            },
+            ["audit", "network"],
+            {"audit": {"operation": "next"}, "network": {"operation": "next"}},
+        ),
+    ],
+)
+def test_fix_last_run(last_run, supported_event_types, expected_result):
+    """
+    Given:
+        - last run dict and supported event types.
+    When:
+        - preparing the last_run before execution.
+    Then:
+        - remove unsupported event types.
+    """
+    from NetskopeEventCollector import remove_unsupported_event_types
+    remove_unsupported_event_types(last_run, supported_event_types)
+    assert last_run == expected_result

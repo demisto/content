@@ -1,6 +1,6 @@
 {
     "name": "Windows Defender Advanced Threat Protection (Deprecated)",
-    "description": "Deprecated. Use the Microsoft Defender Advanced Threat Protection pack instead.",
+    "description": "Deprecated. Use the Microsoft Defender for Endpoint pack instead.",
     "support": "xsoar",
     "hudden": true,
     "currentVersion": "1.0.4",

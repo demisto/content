@@ -1,6 +1,5 @@
 import pytest
 import demistomock as demisto
-import io
 import json
 from AbnormalSecurity import (Client, check_the_status_of_an_action_requested_on_a_case_command,
                               check_the_status_of_an_action_requested_on_a_threat_command,
@@ -44,12 +43,12 @@ class MockResponse:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_response(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return MockResponse(f.read(), 200)
 
 
@@ -412,7 +411,7 @@ def test_get_details_of_an_abuse_mailbox_campaign_command(mocker):
     results = get_details_of_an_abuse_mailbox_campaign_command(client, {})
     assert results.outputs.get('campaignId') == 'fff51768-c446-34e1-97a8-9802c29c3ebd'
     assert results.outputs.get('attackType') == 'Attack Type: Spam'
-    assert results.outputs_prefix == 'AbnormalSecurity.AbuseCampaign.campaigns'
+    assert results.outputs_prefix == 'AbnormalSecurity.AbuseCampaign'
 
 
 def test_get_employee_identity_analysis_genome_data_command(mocker):

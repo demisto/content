@@ -6,10 +6,10 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 77883c69-f744-478d-860c-99a097248505
+    taskid: d710dced-23ee-4ee9-8498-4c8d307cac4b
     type: start
     task:
-      id: 77883c69-f744-478d-860c-99a097248505
+      id: d710dced-23ee-4ee9-8498-4c8d307cac4b
       version: -1
       name: ""
       iscommand: false
@@ -35,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: c28817da-c2d0-4520-8147-9838de211cab
+    taskid: 7e797b0b-0831-4e8b-8ee4-5ba9d68ca03f
     type: regular
     task:
-      id: c28817da-c2d0-4520-8147-9838de211cab
+      id: 7e797b0b-0831-4e8b-8ee4-5ba9d68ca03f
       version: -1
       name: msg-search-alerts
       description: List alerts (security issues) within a customer's tenant that Microsoft
@@ -68,10 +68,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9a171d7d-5138-42bf-8e64-3515df865794
+    taskid: 3c56bc86-ddbb-45d9-8cb4-cc3b85ec0b2e
     type: regular
     task:
-      id: 9a171d7d-5138-42bf-8e64-3515df865794
+      id: 3c56bc86-ddbb-45d9-8cb4-cc3b85ec0b2e
       version: -1
       name: msg-get-alert-details
       description: Get details for a specific alert.
@@ -111,10 +111,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 054c37e1-6dc1-433e-81a2-db1885d1db34
+    taskid: 5ad762ce-84e8-4586-8030-56c2c49b7958
     type: regular
     task:
-      id: 054c37e1-6dc1-433e-81a2-db1885d1db34
+      id: 5ad762ce-84e8-4586-8030-56c2c49b7958
       version: -1
       name: msg-update-alert
       description: Update an editable alert property within any integrated solution
@@ -160,10 +160,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: e85ccb67-c6ba-42bf-87c7-f2c1da233192
+    taskid: be5ad582-5cb0-427f-828a-4898372b24b9
     type: title
     task:
-      id: e85ccb67-c6ba-42bf-87c7-f2c1da233192
+      id: be5ad582-5cb0-427f-828a-4898372b24b9
       version: -1
       name: Done
       type: title
@@ -175,7 +175,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 1430
+          "y": 1945
         }
       }
     note: false
@@ -187,10 +187,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3f0250d4-4149-43d7-8152-81bb012267ac
+    taskid: fbf70b59-ec8d-4831-8896-03261bd931a0
     type: condition
     task:
-      id: 3f0250d4-4149-43d7-8152-81bb012267ac
+      id: fbf70b59-ec8d-4831-8896-03261bd931a0
       version: -1
       name: Verify msg-search-alerts output
       type: condition
@@ -229,10 +229,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 5d998f84-ddc9-42a8-896d-977441b8f8bc
+    taskid: 5ca6a77e-331e-4fed-86aa-08dd474c6cf4
     type: regular
     task:
-      id: 5d998f84-ddc9-42a8-896d-977441b8f8bc
+      id: 5ca6a77e-331e-4fed-86aa-08dd474c6cf4
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -264,10 +264,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: fbd2ad37-c098-49d9-8e50-c52a3672de8d
+    taskid: 3132be3a-d98d-4a48-895b-967a7f9dd319
     type: regular
     task:
-      id: fbd2ad37-c098-49d9-8e50-c52a3672de8d
+      id: 3132be3a-d98d-4a48-895b-967a7f9dd319
       version: -1
       name: Sleep for 60 seconds
       description: Sleep for X seconds
@@ -277,7 +277,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "5"
+      - "12"
     scriptarguments:
       seconds:
         simple: "60"
@@ -299,10 +299,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 19a209ad-9892-4e32-8d59-c46e32564e1c
+    taskid: 559caf35-dea9-4839-8701-edbfbffeb504
     type: condition
     task:
-      id: 19a209ad-9892-4e32-8d59-c46e32564e1c
+      id: 559caf35-dea9-4839-8701-edbfbffeb504
       version: -1
       name: Verify msg-get-alert-details output
       type: condition
@@ -340,12 +340,122 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 5f3dc15c-8fa0-4c98-8b40-7219427d1426
+    type: regular
+    task:
+      id: 5f3dc15c-8fa0-4c98-8b40-7219427d1426
+      version: -1
+      name: 'msg-advanced-hunting '
+      description: Advanced hunting is a threat-hunting tool that uses specially constructed
+        queries to examine the past 30 days of event data in Microsoft Graph Security.
+      script: '|||msg-advanced-hunting'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      limit:
+        simple: "2"
+      query:
+        simple: AlertInfo
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 06df56df-a6c7-4873-885f-4e35c0352d4f
+    type: regular
+    task:
+      id: 06df56df-a6c7-4873-885f-4e35c0352d4f
+      version: -1
+      name: msg-list-security-incident
+      description: Get a list of incident objects that Microsoft 365 Defender created
+        to track attacks in an organization. If you want a specific incident, just
+        enter incident_id.
+      script: '|||msg-list-security-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      limit:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 2e0d89ef-ef80-4f8a-8903-21b785fdb1dc
+    type: regular
+    task:
+      id: 2e0d89ef-ef80-4f8a-8903-21b785fdb1dc
+      version: -1
+      name: msg-update-security-incident
+      description: Update the incident with the given ID.
+      script: '|||msg-update-security-incident'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    scriptarguments:
+      incident_id:
+        simple: ${MsGraph.Incident.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1445,
+        "height": 1960,
         "width": 380,
         "x": 50,
         "y": 50

@@ -67,14 +67,13 @@ def _format_results(results: list) -> List[dict]:
 
 
 def run_ssdeep_command(anchor_hash: str, hashes_to_compare: str):
-    with tempfile.NamedTemporaryFile() as anchor_hashes_file:
-        with tempfile.NamedTemporaryFile() as hashes_to_compare_file:
-            anchor_hashes_file.write(bytes(anchor_hash, encoding='utf-8'))
-            anchor_hashes_file.flush()
-            hashes_to_compare_file.write(bytes(hashes_to_compare, encoding='utf-8'))
-            hashes_to_compare_file.flush()
-            stream = os.popen(f"ssdeep -k {anchor_hashes_file.name} {hashes_to_compare_file.name} -c -a")  # nosec
-            return stream.read().split('\n')
+    with tempfile.NamedTemporaryFile() as anchor_hashes_file, tempfile.NamedTemporaryFile() as hashes_to_compare_file:
+        anchor_hashes_file.write(bytes(anchor_hash, encoding='utf-8'))
+        anchor_hashes_file.flush()
+        hashes_to_compare_file.write(bytes(hashes_to_compare, encoding='utf-8'))
+        hashes_to_compare_file.flush()
+        stream = os.popen(f"ssdeep -k {anchor_hashes_file.name} {hashes_to_compare_file.name} -c -a")  # nosec
+        return stream.read().split('\n')
 
 
 def compare_ssdeep(anchor_hash: str, hashes_to_compare: list, output_key: str) -> CommandResults:

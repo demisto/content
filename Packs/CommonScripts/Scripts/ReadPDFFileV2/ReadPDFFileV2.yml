@@ -8,6 +8,13 @@ args:
 - defaultValue: "20"
   description: Maximum number of images to extract from the PDF file.
   name: maxImages
+- auto: PREDEFINED
+  defaultValue: 'true'
+  description: To unescape URLs that have been escaped as part of the URLs extraction. Invalid characters will be ignored.
+  name: unescape_url
+  predefined:
+  - 'true'
+  - 'false'
 comment: |-
   Load a PDF file's content and metadata into context. Supports extraction of hashes, urls, and emails when available.
 commonfields:
@@ -122,7 +129,7 @@ tags:
 - ingestion
 timeout: "0"
 type: python
-dockerimage: demisto/readpdf:1.0.0.85832
+dockerimage: demisto/readpdf:1.0.0.98214
 runas: DBotRole
 tests:
 - Extract Indicators From File - Generic v2 - Test

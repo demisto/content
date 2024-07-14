@@ -12,7 +12,7 @@ jobs:
       contents: write
     steps:
     - name: Install poetry
-      uses: Gr1N/setup-poetry@v8
+      uses: Gr1N/setup-poetry@v9
 
     - name: Checkout
       uses: actions/checkout@v4
@@ -23,7 +23,7 @@ jobs:
       run: echo "PYTHONPATH=$GITHUB_WORKSPACE" >> $GITHUB_ENV
 
     - name: Setup python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
         cache: 'poetry'
@@ -42,9 +42,16 @@ jobs:
       env:
         DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
         DOCKERHUB_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        BRANCH_NAME: ${{ github.head_ref }}
       run: |
         source .venv/bin/activate
-        demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+        if [[ "$BRANCH_NAME" =~ ^AUD-demisto/.* ]]; then
+          echo "In docker auto update branch, pre commit on docker_autoupdate mode."
+          demisto-sdk pre-commit -g --mode=docker_autoupdate --show-diff-on-failure --verbose
+        else
+          echo "Not in docker auto update branch, pre commit on CI mode."
+          demisto-sdk pre-commit -g --validate --no-secrets --show-diff-on-failure --verbose --mode=ci
+        fi
 
     - name: "Check coverage.xml exists"
       if: always()
@@ -61,7 +68,7 @@ jobs:
         files: ".report_pytest.xml"
 
     - name: Create pack-wise pytest report
-      run: poetry run python Utils/github_workflow_scripts/parse_junit_per_pack.py
+      run: poetry run python .github/github_workflow_scripts/parse_junit_per_pack.py
       if: |
         always() && 
         steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
@@ -84,9 +91,10 @@ jobs:
       if: |
         always() && 
         steps.check-coverage-xml-exists.outputs.files_exists == 'true' && 
-        steps.check-pytest-junit-exists.outputs.files_exists == false && 
-        github.event.pull_request.head.repo.fork == false
+        steps.check-pytest-junit-exists.outputs.files_exists == 'true' && 
+        ! github.event.pull_request.head.repo.fork
       uses: MishaKav/pytest-coverage-comment@main
+      continue-on-error: true  # may fail on output > 65k chars
       with:
         pytest-xml-coverage-path: coverage_report/coverage.xml
         junitxml-path: .report_pytest.xml
