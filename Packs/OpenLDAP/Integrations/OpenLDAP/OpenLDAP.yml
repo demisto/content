@@ -218,13 +218,13 @@ script:
       - 'all_user_attributes'
       - 'all_operational_attributes'
       - 'all'
-    - description: A comma seperated list of cns to filter the search by (AND operator is used to join them).
+    - description: A comma-separated list of CNs to filter the search by (AND operator is used to join them).
       name: cn
-    - description:  A comma seperated list of uids to filter the search by (AND operator is used to join them).
+    - description:  A comma-separated list of UIDs to filter the search by (AND operator is used to join them).
       name: uid
-    - description: A comma seperated list of objectClasses to filter the search by (AND operator is used to join them).
+    - description: A comma-separated list of objectClasses to filter the search by (AND operator is used to join them).
       name: object_class
-    - description:  A comma seperated list of descriptions to filter the search by (AND operator is used to join them).
+    - description:  A comma-separated list of descriptions to filter the search by (AND operator is used to join them).
       name: description
     - name: page
       description: Page to return.
