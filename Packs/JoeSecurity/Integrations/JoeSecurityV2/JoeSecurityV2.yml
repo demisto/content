@@ -68,11 +68,11 @@ script:
       required: true
     - name: full_display
       description: When set to true, indicators information, including their DBot Scores, will be displayed.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -191,11 +191,11 @@ script:
       defaultValue: '50'
     - name: full_display
       description: When set to true, indicators information, including their DBot Scores, will be displayed.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     outputs:
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
@@ -384,11 +384,11 @@ script:
       required: true
     - name: full_display
       description: When set to true, indicators information, including their DBot Scores, will be displayed.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: Search through all analyses.
     outputs:
     - contextPath: DBotScore.Indicator
@@ -500,7 +500,7 @@ script:
     arguments:
     - name: file
       isArray: true
-      description: 'A comma-separated list of file names, SHA1, SHA256, or MD5 hashes.'
+      description: A comma-separated list of file names, SHA1, SHA256, or MD5 hashes.
       required: true
       default: true
     description: Retrieves files information from Joe Security.
@@ -579,7 +579,7 @@ script:
     - contextPath: DBotScore.Reliability
       description: Reliability of the source providing the intelligence data.
       type: String
-  - name: joe-list–lia-countries
+  - name: joe-list-lia-countries
     arguments: []
     description: Retrieve a list of localized internet anonymization countries.
     outputs:
@@ -628,11 +628,11 @@ script:
       required: true
     - name: full_display
       description: When set to true, indicators information, including their DBot Scores, will be displayed.
-      defaultValue: "true"
+      defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     description: Retrieve the submission info.
     outputs:
     - contextPath: DBotScore.Indicator
@@ -764,14 +764,14 @@ script:
       description: The filename of the submitted sample.
     - name: full_display
       description: When is set to true, indicators information, including their DBot Scores, will be displayed.
-      defaultValue: "true"
+      defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: timeout
       description: The timeout for the polling in seconds.
-      defaultValue: "1200"
+      defaultValue: '1200'
     - name: hide_polling_output
       description: Hide polling output.
       deprecated: true
@@ -785,7 +785,7 @@ script:
       - pdf
       - xml
       - iocjson
-      defaultValue: 'html'
+      defaultValue: html
     - name: cookbook
       description: Uploads a cookbook together with the sample. Needs to be a file-like object or a tuple in the shape (filename, file-like object).
     - name: comments
@@ -1022,21 +1022,21 @@ script:
       required: true
     - name: url_reputation
       description: The URL reputation.
-      defaultValue: "false"
+      defaultValue: 'false'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: full_display
       description: When set to true. indicators information, including their DBot Scores, will be displayed.
-      defaultValue: "true"
+      defaultValue: 'true'
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
     - name: timeout
       description: The timeout for the polling in seconds.
-      defaultValue: "1200"
+      defaultValue: '1200'
     - name: hide_polling_output
       description: Hide polling output.
       deprecated: true
@@ -1050,7 +1050,7 @@ script:
       - pdf
       - xml
       - iocjson
-      defaultValue: 'html'
+      defaultValue: html
     - name: comments
       description: A comment to be added to the analysis.
     - name: tags
@@ -1263,7 +1263,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/vendors-sdk:1.0.0.98422
+  dockerimage: demisto/vendors-sdk:1.0.0.103334
 fromversion: 6.8.0
 tests:
 - testplaybook-JoeSecuirtyV2
