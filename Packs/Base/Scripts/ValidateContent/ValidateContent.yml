@@ -18,17 +18,17 @@ args:
 - name: use_system_proxy
   auto: PREDEFINED
   predefined:
-  - yes
-  - no
+  - true
+  - false
   description: Use system proxy settings to download required models from GitHub.
-  defaultValue: yes
+  defaultValue: true
 - name: trust_any_certificate
   auto: PREDEFINED
   predefined:
-  - yes
-  - no
+  - true
+  - false
   description: Trust any certificate (not secure) to download required models from GitHub.
-  defaultValue: no
+  defaultValue: false
 outputs:
 - contextPath: ValidationResult.Name
   description: Name of validated item.
@@ -43,6 +43,6 @@ scripttarget: 0
 timeout: 600ns
 runas: DBotWeakRole
 fromversion: 5.5.0
-dockerimage: demisto/xsoar-tools:1.0.0.99061
+dockerimage: demisto/xsoar-tools:1.0.0.103341
 tests:
 - ValidateContent - Test
