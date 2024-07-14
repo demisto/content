@@ -338,7 +338,7 @@ script:
       description: The manager email.
       type: String
   - arguments:
-    - description: "The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag."
+    - description: The cursor in which to retrive the results from and on. if the query didn't reach the end of results, the tag can be obtained from the bottom of the grid in the readable output, or in the context path Okta.User.tag.
       name: after
     - description: The maximum number of results to return.
       name: limit
@@ -353,7 +353,7 @@ script:
       - 'false'
     - description: Searches the name property of groups for matching values.
       name: query
-    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a\_type\_of\_OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
     description: Lists users in your organization.
     name: okta-list-users
@@ -647,7 +647,7 @@ script:
   - arguments:
     - description: Searches the name property of groups for matching values.
       name: query
-    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a type of OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
+    - description: "Useful for performing structured queries where constraints on group attribute values can be explicitly targeted. \nThe following expressions are supported(among others) for groups with the filter query parameter: \n type eq \"OKTA_GROUP\" - Groups that have a\_type\_of\_OKTA_GROUP; lastUpdated lt \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with profile last updated before a specific timestamp; lastMembershipUpdated eq \"yyyy-MM-dd''T''HH:mm:ss.SSSZ\" - Groups with memberships last updated at a specific timestamp; id eq \"00g1emaKYZTWRYYRRTSK\" - Group with a specified ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
     - defaultValue: '200'
       description: The maximum number of results to return. The default is 200.
@@ -795,7 +795,7 @@ script:
   - arguments:
     - description: "Useful for performing structured queries where constraints on LogEvent attribute values can be explicitly targeted.  \nThe following expressions are supported for events with the filter query parameter: eventType eq \" :eventType\" \n-Events that have a specific action; eventType target.id eq \":id\" \n- Events published with a specific target id; actor.id eq \":id\"\n- Events published with a specific actor ID. For more information about filtering, visit https://developer.okta.com/docs/api/getting_started/design_principles#filtering"
       name: filter
-    - description: "The query parameter can be used to perform keyword matching against a LogEvents object’s attribute values. To satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: \nEvents that mention a specific city: query=San Francisco; \nEvents that mention a specific url: query=interestingURI.com; \nEvents that mention a specific person: query=firstName lastName."
+    - description: "The query parameter can be used to perform keyword matching against a LogEvents object\u2019s attribute values. To satisfy the constraint, all supplied keywords must be matched exactly. Note that matching is case-insensitive.  The following are some examples of common keyword filtering: \nEvents that mention a specific city: query=San Francisco; \nEvents that mention a specific url: query=interestingURI.com; \nEvents that mention a specific person: query=firstName lastName."
       name: query
     - description: 'Filters the lower time bound of the log events in the Internet Date/Time Format profile of ISO 8601. For example: 2017-05-03T16:22:18Z.'
       name: since
@@ -1264,10 +1264,11 @@ script:
     - description: Okta User ID.
       name: userId
       required: true
-    description: |-
-      Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+    description: 'Removes all active identity provider sessions. This forces the user to authenticate upon the next operation. Optionally revokes OpenID Connect and OAuth refresh and access tokens issued to the user.
+
       For more information and examples:
-      https://developer.okta.com/docs/reference/api/users/#user-sessions
+
+      https://developer.okta.com/docs/reference/api/users/#user-sessions'
     name: okta-clear-user-sessions
   - arguments:
     - description: The maximum number of results to return.
@@ -1485,9 +1486,9 @@ script:
       type: String
   - description: Reset OAuth authentication data (authentication process will start from the beginning, and a new token will be generated).
     name: okta-auth-reset
-  dockerimage: demisto/crypto:1.0.0.95384
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
-  script: ""
+  script: ''
   subtype: python3
   type: python
 fromversion: 5.0.0
