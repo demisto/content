@@ -211,7 +211,7 @@ script:
       - 'SUBTREE'
     - auto : PREDEFINED
       defaultValue: 'all'
-      description: A comma seperated list of attributes to return in the response. If attributes is 'none', no attributes will be returned except the dn. If attributes is 'all_user_attributes' or 'all_operational_attributes' all user attributes or all operational attributes are returned. If attributes is 'all', both user and operational attributes are returned.
+      description: A comma-separated list of attributes to return in the response. If attributes is 'none', no attributes will be returned except the dn. If attributes is 'all_user_attributes' or 'all_operational_attributes', all user attributes or all operational attributes are returned. If attributes is 'all', both user and operational attributes are returned.
       name: attributes
       predefined:
       - 'none'
