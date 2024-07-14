@@ -176,11 +176,10 @@ configuration:
   required: false
 - display: Microsoft 365 Defender context
   name: microsoft_365_defender_context
-  defaultvalue: "false"
+  defaultvalue: 'false'
   type: 8
   required: false
-  additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context.
-    path
+  additionalinfo: Save Hunting Query result to the Microsoft 365 Defender context. path
 description: Unified gateway to security insights - all from a unified Microsoft Graph Security API.
 display: Microsoft Graph Security
 name: Microsoft Graph
@@ -244,7 +243,7 @@ script:
     - description: Number of total results to return. Default is 50.
       name: limit
       defaultValue: 50
-    description: Get a list of alerts (security issues) within a customer's tenant that Microsoft or partner security solutions have identified.
+    description: "Get a list of alerts\_(security issues) within a customer's tenant that Microsoft or partner security solutions have identified."
     name: msg-search-alerts
     outputs:
     - contextPath: MsGraph.Alert.ID
@@ -576,7 +575,7 @@ script:
     - contextPath: MsGraph.Alert.Evidence.FileDetails.Signer
       description: Relevant only for Alerts v2. Evidence file details file signer.
       type: Unknown
-    - contextPath: MsGraph.Alert.Evidence.CֹountryLetterCode
+    - contextPath: "MsGraph.Alert.Evidence.C\u05B9ountryLetterCode"
       description: Relevant only for Alerts v2. Evidence country letter code.
       type: Unknown
     - contextPath: MsGraph.Alert.Evidence.IpAddress
@@ -793,10 +792,10 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'ediscovery'
-      - 'alerts'
-      - 'threat assessment'
-      - 'all'
+      - ediscovery
+      - alerts
+      - threat assessment
+      - all
     description: Tests connectivity to Microsoft Graph Security.
     execution: false
     name: msg-auth-test
@@ -828,7 +827,7 @@ script:
       description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
-      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
+      description: The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
       description: The case description.
@@ -840,19 +839,22 @@ script:
       description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
-      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
+      description: The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
       type: Date
   - arguments:
     - description: The ID of the eDiscovery case.
       isArray: false
       name: case_id
       required: true
-    description: |-
-      Close an eDiscovery case. When the legal case or investigation supported by a eDiscovery (Standard) case is completed, you can close the case. Here's what happens when you close a case:
-      If the case contains any eDiscovery holds, they'll be turned off. After the hold is turned off, a 30-day grace period (called a delay hold) is applied to content locations that were on hold. This helps prevent content from being immediately deleted and provides admins the opportunity to search for and restore content before it may be permanently deleted after the delay hold period expires. For more information, see Removing content locations from an eDiscovery hold.
+    description: 'Close an eDiscovery case. When the legal case or investigation supported by a eDiscovery (Standard) case is completed, you can close the case. Here''s what happens when you close a case:
+
+      If the case contains any eDiscovery holds, they''ll be turned off. After the hold is turned off, a 30-day grace period (called a delay hold) is applied to content locations that were on hold. This helps prevent content from being immediately deleted and provides admins the opportunity to search for and restore content before it may be permanently deleted after the delay hold period expires. For more information, see Removing content locations from an eDiscovery hold.
+
       Closing a case only turns off the holds that are associated with that case. If other holds are placed on a content location (such as a Litigation Hold, a retention policy, or a hold from a different eDiscovery (Standard) case) those holds will still be maintained.
+
       The case is still listed on the eDiscovery (Standard) page in the Microsoft Purview compliance portal. The details, holds, searches, and members of a closed case are retained.
-      You can edit a case after it's closed. For example, you can add or remove members, create searches, and export search results. The primary difference between active and closed cases is that eDiscovery holds are turned off when a case is closed.
+
+      You can edit a case after it''s closed. For example, you can add or remove members, create searches, and export search results. The primary difference between active and closed cases is that eDiscovery holds are turned off when a case is closed.'
     execution: false
     name: msg-close-ediscovery-case
   - arguments:
@@ -920,7 +922,7 @@ script:
       description: 'The case status. Possible values are: unknown, active, pendingDelete, closing, closed, and closedWithError.'
       type: String
     - contextPath: MsGraph.eDiscoveryCase.CreatedDateTime
-      description: 'The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
+      description: The date and time when the entity was created. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.Description
       description: The case description.
@@ -932,7 +934,7 @@ script:
       description: The external case number for customer reference.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.LastModifiedDateTime
-      description: 'The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
+      description: The latest date and time when the case was modified. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
       type: Date
     - contextPath: MsGraph.eDiscoveryCase.ClosedBy.User.DisplayName
       description: The user who closed the case.
@@ -941,7 +943,7 @@ script:
       description: The user who last modified the case.
       type: String
     - contextPath: MsGraph.eDiscoveryCase.ClosedDateTime
-      description: 'The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.'
+      description: The date and time when the case was closed. The Timestamp type represents date and time information using ISO 8601 format and is always in UTC time. For example, midnight UTC on Jan 1, 2014 is 2014-01-01T00:00:00Z.
       type: Date
   - arguments:
     - description: The ID of the eDiscovery case.
@@ -1379,14 +1381,7 @@ script:
       isArray: true
       name: custodian_id
       required: true
-    description: |-
-      Start the process of applying hold on eDiscovery custodians.
-      Available return statuses: 
-      notApplied - The custodian is not on hold (all sources in it are not on hold).
-      applied - The custodian is on hold (all sources are on hold).
-      applying - The custodian is in applying the hold state (applyHold operation triggered).
-      removing - The custodian is in removing the hold state(removeHold operation triggered).
-      partial - The custodian is in a mixed state where some sources are on hold and some not on hold or error state.
+    description: "Start the process of applying hold on eDiscovery custodians.\nAvailable return statuses: \nnotApplied - The custodian is not on hold (all sources in it are not on hold).\napplied - The custodian is on hold (all sources are on hold).\napplying - The custodian is in applying the hold state (applyHold operation triggered).\nremoving - The custodian is in removing the hold state(removeHold operation triggered).\npartial - The custodian is in a mixed state where some sources are on hold and some not on hold or error state."
     execution: false
     name: msg-apply-hold-ediscovery-custodian
   - arguments:
@@ -1434,7 +1429,7 @@ script:
     name: msg-create-ediscovery-search
     outputs:
     - contextPath: MsGraph.eDiscoverySearch.ContentQuery
-      description: 'The query string in KQL (Keyword Query Language) query. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
+      description: The query string in KQL (Keyword Query Language) query. For details, see https://learn.microsoft.com/en-us/microsoft-365/compliance/keyword-queries-and-search-conditions. You can refine searches by using fields paired with values; for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
       description: Name of the application who created the eDiscovery search.
@@ -1464,7 +1459,7 @@ script:
       description: The display name of the eDiscovery search.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.LastModifiedDateTime
-      description: 'The last date and time the eDiscovery search was modified.'
+      description: The last date and time the eDiscovery search was modified.
       type: Date
     - contextPath: MsGraph.eDiscoverySearch.SearchId
       description: The ID for the eDiscovery search.
@@ -1531,7 +1526,7 @@ script:
     name: msg-list-ediscovery-searchs
     outputs:
     - contextPath: MsGraph.eDiscoverySearch.ContentQuery
-      description: 'The query string in KQL (Keyword Query Language) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.'
+      description: The query string in KQL (Keyword Query Language) query. For details, see Keyword queries and search conditions for Content Search and eDiscovery. You can refine searches by using fields paired with values, for example, subject:"Quarterly Financials" AND Date>=06/01/2016 AND Date<=07/01/2016.
       type: String
     - contextPath: MsGraph.eDiscoverySearch.CreatedBy.Application.DisplayName
       description: Name of the application who created the eDiscovery search.
@@ -1618,17 +1613,23 @@ script:
       predefined:
       - teamsMessages
       - mailboxes
-    description: |-
-      Delete Microsoft Teams messages contained in an eDiscovery search.
+    description: 'Delete Microsoft Teams messages contained in an eDiscovery search.
+
       Note: This request purges Teams data only. It does not purge other types of data such as mailbox items.
+
 
       You can collect and purge the following categories of Teams content:
 
+
       Teams 1:1 chats - Chat messages, posts, and attachments shared in a Teams conversation between two people. Teams 1:1 chats are also called conversations.
+
       Teams group chats - Chat messages, posts, and attachments shared in a Teams conversation between three or more people. Also called 1:N chats or group conversations.
+
       Teams channels - Chat messages, posts, replies, and attachments shared in a standard Teams channel.
+
       Private channels - Message posts, replies, and attachments shared in a private Teams channel.
-      Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.
+
+      Shared channels - Message posts, replies, and attachments shared in a shared Teams channel.'
     execution: false
     name: msg-purge-ediscovery-data
   - arguments:
@@ -1641,8 +1642,8 @@ script:
       name: expected_assessment
       auto: PREDEFINED
       predefined:
-      - 'block'
-      - 'unblock'
+      - block
+      - unblock
       required: true
     - description: The category of the threat.
       isArray: false
@@ -1650,15 +1651,15 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'spam'
-      - 'phishing'
-      - 'malware'
+      - spam
+      - phishing
+      - malware
       required: true
     - description: Message user. Could be the user's ID or the user's email.
       isArray: false
       name: message_user
       required: true
-    - description: "Message ID. Message has to contain the 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. Use the msgraph-mail-list-emails command from the Microsoft Graph Mail pack  with the proper user_id in order to get all available messages."
+    - description: Message ID. Message has to contain the 'X-MS-Exchange-Organization-Network-Message-Id' header in the message or the 'X-MS-Office365-Filtering-Correlation-Id' header in quarantined messages. Use the msgraph-mail-list-emails command from the Microsoft Graph Mail pack  with the proper user_id in order to get all available messages.
       isArray: false
       name: message_id
       required: true
@@ -1727,8 +1728,8 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'block'
-      - 'unblock'
+      - block
+      - unblock
       required: true
     - description: The category of the threat.
       isArray: false
@@ -1736,9 +1737,9 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'spam'
-      - 'phishing'
-      - 'malware'
+      - spam
+      - phishing
+      - malware
       required: true
     - description: Base 64 encoded eml file.
       isArray: false
@@ -1806,8 +1807,8 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'block'
-      - 'unblock'
+      - block
+      - unblock
       required: true
     - description: The category of the threat.
       isArray: false
@@ -1815,8 +1816,8 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'phishing'
-      - 'malware'
+      - phishing
+      - malware
       required: true
     - description: The file name.
       isArray: false
@@ -1884,8 +1885,8 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'block'
-      - 'unblock'
+      - block
+      - unblock
       required: true
     - description: The category of the threat.
       isArray: false
@@ -1893,8 +1894,8 @@ script:
       defaultValue: all
       auto: PREDEFINED
       predefined:
-      - 'phishing'
-      - 'malware'
+      - phishing
+      - malware
       required: true
     - description: The URL of the threat.
       isArray: false
@@ -1959,7 +1960,7 @@ script:
       isArray: false
       name: request_id
       required: false
-    - description: The filter for the request. Example category eq 'malware’ and ContentType eq 'file'. Available fields are expectedAssessment, ContentType, status, requestSource.
+    - description: "The filter for the request. Example category eq 'malware\u2019 and ContentType eq 'file'. Available fields are expectedAssessment, ContentType, status, requestSource."
       isArray: false
       name: filter
       required: false
@@ -1968,21 +1969,21 @@ script:
       name: order_by
       auto: PREDEFINED
       predefined:
-      - 'id'
-      - 'createdDateTime'
-      - 'ContentType'
-      - 'expectedAssessment'
-      - 'category'
-      - 'status'
-      - 'requestSource'
+      - id
+      - createdDateTime
+      - ContentType
+      - expectedAssessment
+      - category
+      - status
+      - requestSource
       required: false
     - description: The sort order.
       isArray: false
       name: sort_order
       auto: PREDEFINED
       predefined:
-      - 'asc'
-      - 'desc'
+      - asc
+      - desc
       required: false
     - description: The maximum number of results to retrieve.
       isArray: false
@@ -2083,24 +2084,24 @@ script:
       description: The status of the incident.
       auto: PREDEFINED
       predefined:
-      - 'active'
-      - 'redirected'
-      - 'resolved'
-      - 'inProgress'
-      - 'unknownFutureValue'
-      - 'awaitingAction'
+      - active
+      - redirected
+      - resolved
+      - inProgress
+      - unknownFutureValue
+      - awaitingAction
     - name: assigned_to
       description: Owner of the incident.
     - name: severity
       description: Indicates the possible impact on assets. The higher the severity, the greater the impact. Typically higher severity items require the most immediate attention.
       auto: PREDEFINED
       predefined:
-      - 'unknown'
-      - 'informational'
-      - 'low'
-      - 'medium'
-      - 'high'
-      - 'unknownFutureValue'
+      - unknown
+      - informational
+      - low
+      - medium
+      - high
+      - unknownFutureValue
     - name: classification
       description: The specification for the incident.
     - name: odata
@@ -2256,7 +2257,7 @@ script:
     - contextPath: MsGraph.Incident.systemTags
       description: The system tags associated with the incident.
       type: String collection
-  dockerimage: demisto/crypto:1.0.0.87358
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   runonce: false
   script: '-'
@@ -2272,4 +2273,4 @@ tests:
 - Microsoft Graph Security Test self deployed v2
 - MSG-ediscovery-tpb
 - MSG-Threat-Assessment-test
-fromversion: 5.0.0 
+fromversion: 5.0.0

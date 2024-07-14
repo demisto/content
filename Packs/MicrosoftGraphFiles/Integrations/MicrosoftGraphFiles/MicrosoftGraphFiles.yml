@@ -107,17 +107,20 @@ script:
       - sites
       - users
       required: true
-    - description: |-
-        MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+    - description: 'MS Graph resource ID.
+
+        For resource type ''drive'': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+
+        For resource type ''group'': To get a list of all groups that exists, configure the ''Azure Active Directory Groups'' integration and use the msgraph-groups-list-groups command.
+
+        For resource type ''sites'': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+
+        For resource type ''users'': To get a list of all users that exists, configure the ''Azure Active Directory Users'' integration and use the msgraph-user-list command.'
       name: object_type_id
       required: true
-    - description: |-
-        The ID of the item to delete.
-        To get the ID of the file you want to delete, use the msgraph-list-drive-content command.
+    - description: 'The ID of the item to delete.
+
+        To get the ID of the file you want to delete, use the msgraph-list-drive-content command.'
       name: item_id
       required: true
     description: Deletes an item from OneDrive.
@@ -132,17 +135,20 @@ script:
       - users
       - sites
       required: true
-    - description: |-
-        MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+    - description: 'MS Graph resource ID.
+
+        For resource type ''drive'': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+
+        For resource type ''group'': To get a list of all groups that exists, configure the ''Azure Active Directory Groups'' integration and use the msgraph-groups-list-groups command.
+
+        For resource type ''sites'': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+
+        For resource type ''users'': To get a list of all users that exists, configure the ''Azure Active Directory Users'' integration and use the msgraph-user-list command.'
       name: object_type_id
       required: true
-    - description: |-
-        The ID of the folder in which to upload the file.
-        To get the ID of a folder, use the msgraph-list-drive-content command.
+    - description: 'The ID of the folder in which to upload the file.
+
+        To get the ID of a folder, use the msgraph-list-drive-content command.'
       name: parent_id
       required: true
     - description: The name of the file to upload.
@@ -230,17 +236,20 @@ script:
       - sites
       - users
       required: true
-    - description: |-
-        MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+    - description: 'MS Graph resource ID.
+
+        For resource type ''drive'': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+
+        For resource type ''group'': To get a list of all groups that exists, configure the ''Azure Active Directory Groups'' integration and use the msgraph-groups-list-groups command.
+
+        For resource type ''sites'': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+
+        For resource type ''users'': To get a list of all users that exists, configure the ''Azure Active Directory Users'' integration and use the msgraph-user-list command.'
       name: object_type_id
       required: true
-    - description: |-
-        The MS Graph item ID of the file you want to replace.
-        To get the ID of the file you want to replace, use the msgraph-list-drive-content command.
+    - description: 'The MS Graph item ID of the file you want to replace.
+
+        To get the ID of the file you want to replace, use the msgraph-list-drive-content command.'
       name: item_id
       required: true
     - description: The Cortex XSOAR entry ID of the new file that will replace the current file.
@@ -325,18 +334,22 @@ script:
       - sites
       - users
       required: true
-    - description: |-
-        MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+    - description: 'MS Graph resource ID.
+
+        For resource type ''drive'': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+
+        For resource type ''group'': To get a list of all groups that exists, configure the ''Azure Active Directory Groups'' integration and use the msgraph-groups-list-groups command.
+
+        For resource type ''sites'': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+
+        For resource type ''users'': To get a list of all users that exists, configure the ''Azure Active Directory Users'' integration and use the msgraph-user-list command.'
       name: object_type_id
       required: true
-    - description: |-
-        The ID of the parent in which to upload the new folder.
-        Parent can be either 'root' or another folder.
-        To get the required folder ID, use the msgraph-list-drive-content command.
+    - description: 'The ID of the parent in which to upload the new folder.
+
+        Parent can be either ''root'' or another folder.
+
+        To get the required folder ID, use the msgraph-list-drive-content command.'
       name: parent_id
       required: true
     - description: The name of the new folder.
@@ -403,15 +416,15 @@ script:
       description: The folder size.
       type: Number
   - arguments:
-    - description: |-
-        The ID of the site for which to return available drive resources.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+    - description: 'The ID of the site for which to return available drive resources.
+
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.'
       name: site_id
     - description: The maximum number of results to return.
       name: limit
-    - description: |-
-        The URL for the next results page.
-        If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListDrives.OdataNextLink.
+    - description: 'The URL for the next results page.
+
+        If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListDrives.OdataNextLink.'
       name: next_page_url
     description: Returns the list of document libraries (drives) available for a target site.
     name: msgraph-list-drives-in-site
@@ -465,29 +478,36 @@ script:
       - sites
       - users
       required: true
-    - description: |-
-        MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+    - description: 'MS Graph resource ID.
+
+        For resource type ''drive'': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+
+        For resource type ''group'': To get a list of all groups that exists, configure the ''Azure Active Directory Groups'' integration and use the msgraph-groups-list-groups command.
+
+        For resource type ''sites'': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+
+        For resource type ''users'': To get a list of all users that exists, configure the ''Azure Active Directory Users'' integration and use the msgraph-user-list command.'
       name: object_type_id
       required: true
-    - description: |-
-        The MS Graph item ID.
-        It can be either 'root' or another folder.
+    - description: 'The MS Graph item ID.
+
+        It can be either ''root'' or another folder.
+
         Passing a folder ID retrieves files from a specified folder.
-        The default is 'root': It retrieves the content in the root of the drive.
+
+        The default is ''root'': It retrieves the content in the root of the drive.
+
 
         To get the required folder ID, use the msgraph-list-drive-content command and leave the argument empty in order to get a list of folders that are located in the root.
 
-        If your folder is nested inside another folder, pass the parent ID found when running the msgraph-list-drive-content command without an 'item_id' in this argument to get the required folder ID.
+
+        If your folder is nested inside another folder, pass the parent ID found when running the msgraph-list-drive-content command without an ''item_id'' in this argument to get the required folder ID.'
       name: item_id
     - description: The maximum number of results to return.
       name: limit
-    - description: |-
-        The URL for the next results page.
-        If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListChildren.OdataNextLink
+    - description: 'The URL for the next results page.
+
+        If a next page of results exists, you will find it in the Cortex XSOAR context under MsGraphFiles.ListChildren.OdataNextLink'
       name: next_page_url
     description: Returns a list of files and folders in the specified drive.
     name: msgraph-list-drive-content
@@ -555,7 +575,7 @@ script:
   - arguments:
     - description: Keyword used to search for sites across a SharePoint tenant. If a keyword is not provided, it returns all sites.
       name: keyword
-    description: "Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission."
+    description: Returns a list of the tenant sites. This command requires the 'Sites.Read.All' permission.
     name: msgraph-list-sharepoint-sites
     outputs:
     - contextPath: MsGraph.Sites
@@ -604,24 +624,28 @@ script:
       - sites
       - users
       required: true
-    - description: |-
-        MS Graph resource ID.
-        For resource type 'drive': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
-        For resource type 'group': To get a list of all groups that exists, configure the 'Azure Active Directory Groups' integration and use the msgraph-groups-list-groups command.
-        For resource type 'sites': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
-        For resource type 'users': To get a list of all users that exists, configure the 'Azure Active Directory Users' integration and use the msgraph-user-list command.
+    - description: 'MS Graph resource ID.
+
+        For resource type ''drive'': To get a list of all drives in your site, use the msgraph-list-drives-in-site command.
+
+        For resource type ''group'': To get a list of all groups that exists, configure the ''Azure Active Directory Groups'' integration and use the msgraph-groups-list-groups command.
+
+        For resource type ''sites'': To get a list of all sites, use the msgraph-list-sharepoint-sites command.
+
+        For resource type ''users'': To get a list of all users that exists, configure the ''Azure Active Directory Users'' integration and use the msgraph-user-list command.'
       name: object_type_id
       required: true
-    - description: |-
-        The MS Graph item ID.
-        To get the ID of the file you want to download, use the msgraph-list-drive-content command.
+    - description: 'The MS Graph item ID.
+
+        To get the ID of the file you want to download, use the msgraph-list-drive-content command.'
       name: item_id
       required: true
     - name: file_name
-      description: |-
-        The file name to download.
+      description: 'The file name to download.
+
         Use msgraph-list-drive-content to retrieve the name of a file,
-        if not provided, the file name will be the value of the item_id argument.
+
+        if not provided, the file name will be the value of the item_id argument.'
       required: false
     description: Downloads the file contents of the drive item.
     name: msgraph-download-file
@@ -664,9 +688,9 @@ script:
     - description: The maximum number of results to return.
       name: limit
       defaultValue: 50
-    - description: |-
-        The ID of the site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+    - description: 'The ID of the site. Required if site_name is not provided.
+
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.'
       name: site_id
     - description: The name of the site. Required if site_id is not provided.
       name: site_name
@@ -674,11 +698,11 @@ script:
       name: permission_id
     - auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: Whether to retrieve all the apps with permission for the site. If true, the "limit" argument will be ignored.
       name: all_results
-      defaultValue: "false"
+      defaultValue: 'false'
     name: msgraph-list-site-permissions
     description: List of apps with permissions for the site. if permission_id is provided, it will return the details of that permission.
     outputs:
@@ -695,9 +719,9 @@ script:
       description: The display name of the application. The display name might not always be available or up to date.
       type: String
   - arguments:
-    - description: |-
-        The ID of the site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+    - description: 'The ID of the site. Required if site_name is not provided.
+
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.'
       name: site_id
     - description: The name of the site. Required if site_id is not provided.
       name: site_name
@@ -706,10 +730,11 @@ script:
       - read
       - write
       - owner
-      description: |-
-        read: Provides the ability to read the metadata and contents of the item.
+      description: 'read: Provides the ability to read the metadata and contents of the item.
+
         write: Provides the ability to read and modify the metadata and contents of the item.
-        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.
+
+        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.'
       name: role
       required: true
     - description: The ID of the application.
@@ -723,9 +748,9 @@ script:
   - arguments:
     - description: The name of the site. Required if site_id is not provided.
       name: site_name
-    - description: |-
-        The ID of the site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+    - description: 'The ID of the site. Required if site_name is not provided.
+
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.'
       name: site_id
     - description: The unique identifier of the permission to update.
       name: permission_id
@@ -735,18 +760,19 @@ script:
       - read
       - write
       - owner
-      description: |-
-        read: Provides the ability to read the metadata and contents of the item.
+      description: 'read: Provides the ability to read the metadata and contents of the item.
+
         write: Provides the ability to read and modify the metadata and contents of the item.
-        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.
+
+        owner: Site owners can create and manage lists, libraries, and pages within their site, as well as manage user access and permissions.'
       name: role
       required: true
     name: msgraph-update-site-permissions
     description: Updates an existing permission for a site.
   - arguments:
-    - description: |-
-        Unique identifier for SharePoint site. Required if site_name is not provided.
-        To find a list of all sites, use the msgraph-list-sharepoint-sites command.
+    - description: 'Unique identifier for SharePoint site. Required if site_name is not provided.
+
+        To find a list of all sites, use the msgraph-list-sharepoint-sites command.'
       name: site_id
     - description: The name of the site. Required if site_id is not provided.
       name: site_name
@@ -762,7 +788,7 @@ script:
   - description: Generate the login URL used for Authorization code flow.
     name: msgraph-files-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.103269
   script: ''
   subtype: python3
   type: python

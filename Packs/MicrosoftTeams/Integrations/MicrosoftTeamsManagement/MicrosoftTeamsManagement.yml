@@ -35,7 +35,7 @@ configuration:
 - display: Use system proxy settings
   name: proxy
   type: 8
-  defaultvalue: "false"
+  defaultvalue: 'false'
   section: Connect
   advanced: true
   required: false
@@ -53,9 +53,9 @@ configuration:
   required: false
 - name: tenant_id
   display: Tenant ID (for Client Credentials mode)
-  defaultvalue:
+  defaultvalue: null
   type: 0
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   advanced: true
   required: false
@@ -63,9 +63,9 @@ configuration:
   hiddenusername: true
   displaypassword: Client Secret (for Client Credentials mode)
   display: Client Secret (for Client Credentials mode)
-  defaultvalue:
+  defaultvalue: null
   type: 9
-  additionalinfo: ""
+  additionalinfo: ''
   section: Connect
   required: false
 - additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
@@ -84,9 +84,9 @@ script:
     name: microsoft-teams-auth-start
     arguments: []
     outputs: []
-  - description: |-
-      Run this command to complete the authorization process.
-      Should be used after running the microsoft-teams-auth-start command.
+  - description: 'Run this command to complete the authorization process.
+
+      Should be used after running the microsoft-teams-auth-start command.'
     name: microsoft-teams-auth-complete
     arguments: []
     outputs: []
@@ -679,12 +679,12 @@ script:
     - contextPath: MicrosoftTeams.Team.description
       description: An optional description for the group.
       type: String
-  dockerimage: demisto/crypto:1.0.0.96042
+  dockerimage: demisto/crypto:1.0.0.103269
   runonce: false
   script: '-'
   subtype: python3
   type: python
 tests:
-- "Microsoft Teams - Test"
-- "Microsoft Teams Management - Test"
+- Microsoft Teams - Test
+- Microsoft Teams Management - Test
 fromversion: 5.0.0

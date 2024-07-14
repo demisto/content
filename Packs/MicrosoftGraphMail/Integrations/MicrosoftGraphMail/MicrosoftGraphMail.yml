@@ -84,13 +84,13 @@ configuration:
   section: Collect
   required: false
 - additionalinfo: Supports folder ID and sub-folders, for example Inbox/Phishing.
-  defaultvalue: 'Inbox'
+  defaultvalue: Inbox
   display: Name of the folder or sub-folder from which to fetch incidents
   name: folder_to_fetch
   type: 0
   section: Collect
   required: false
-- defaultvalue: '15 minutes'
+- defaultvalue: 15 minutes
   display: First fetch timestamp
   name: first_fetch
   type: 0
@@ -149,7 +149,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- display: 'Display full email body'
+- display: Display full email body
   name: display_full_email_body
   type: 8
   section: Collect
@@ -157,7 +157,7 @@ configuration:
   required: false
   additionalinfo: If not active, only a preview of the email will be fetched.
   defaultvalue: 'false'
-- display: 'Mark fetched emails as read'
+- display: Mark fetched emails as read
   name: mark_fetched_read
   type: 8
   section: Collect
@@ -173,13 +173,13 @@ configuration:
   section: Collect
   advanced: true
   required: false
-- display: 'Trust any certificate (not secure)'
+- display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
   required: false
-- display: 'Use system proxy settings'
+- display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
@@ -1145,7 +1145,7 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.98977
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   runonce: false
   script: '-'
