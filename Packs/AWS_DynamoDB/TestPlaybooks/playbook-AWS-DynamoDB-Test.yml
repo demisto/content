@@ -866,7 +866,7 @@ tasks:
       brand: ""
     scriptarguments:
       message:
-        simple: In the TPB, we are established on a resource ARN (which most of the
+        simple: In the TPB, we rely on a resource ARN (which most of the
           times is number 12) which ends with 'c' but got another.
     separatecontext: false
     continueonerrortype: ""
