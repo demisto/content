@@ -101,7 +101,7 @@ script:
       description: Calendar identifier.
       type: String
     - contextPath: GoogleCalendar.Acl.userId
-      description: "User\u2019s email address."
+      description: User's email address.
       type: String
     - contextPath: GoogleCalendar.Acl.id
       description: Identifier of the ACL rule.
@@ -152,7 +152,7 @@ script:
       description: Calendar identifier.
       type: String
     - contextPath: GoogleCalendar.Acl.userId
-      description: "User\u2019s email address."
+      description: User's email address.
       type: String
     - contextPath: GoogleCalendar.Acl.id
       description: Identifier of the ACL rule.
@@ -176,7 +176,7 @@ script:
       description: Calendar identifier.
       type: String
     - contextPath: GoogleCalendar.PageToken.Acl.userId
-      description: "User\u2019s email address."
+      description: User's email address.
       type: String
     - contextPath: GoogleCalendar.PageToken.Acl.nextPageToken
       description: Token used to access the next page of this result.

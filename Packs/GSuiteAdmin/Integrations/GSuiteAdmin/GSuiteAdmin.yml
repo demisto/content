@@ -1096,9 +1096,53 @@ script:
     - description: Display name for the schema.
       name: schema_display_name
       required: true
-    - description: "Raw JSON containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
+    - description: |-
+        Raw JSON containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }.
       name: field_raw_json
-    - description: "JSON file entry ID containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
+    - description: |-
+        JSON file entry ID containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }.
       name: field_json_entry_id
     description: 'Creates a custom user schema to add custom fields to user profiles.
 
@@ -1164,9 +1208,53 @@ script:
       name: schema_id
     - description: Display name for the schema.
       name: schema_display_name
-    - description: "Raw JSON containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
+    - description: |-
+        Raw JSON containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }.
       name: field_raw_json
-    - description: "JSON file entry ID containing fields of the schema. Acceptable values for\nfieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable\nvalues for readAccessType are ADMINS_AND_SELF- Only administrators and\nthe associated user can see values, and ALL_DOMAIN_USERS- Any user in\nyour domain can see values.\nE.g.\n{\n  \"fields\": [\n    {\n      \"fieldType\": string,\n      \"fieldName\": string,\n      \"displayName\": string,\n      \"multiValued\": boolean,\n      \"readAccessType\": string,\n      \"indexed\": boolean,\n      \"numericIndexingSpec\": {\n        \"minValue\": double,\n        \"maxValue\": double\n      }\n    }\n  ]\n}."
+    - description: |-
+        JSON file entry ID containing fields of the schema. Acceptable values for
+        fieldType are BOOL, DATE, DOUBLE, EMAIL, INT64, PHONE, and STRING. Acceptable
+        values for readAccessType are ADMINS_AND_SELF- Only administrators and
+        the associated user can see values, and ALL_DOMAIN_USERS- Any user in
+        your domain can see values.
+        E.g.
+        {
+          "fields": [
+            {
+              "fieldType": string,
+              "fieldName": string,
+              "displayName": string,
+              "multiValued": boolean,
+              "readAccessType": string,
+              "indexed": boolean,
+              "numericIndexingSpec": {
+                "minValue": double,
+                "maxValue": double
+              }
+            }
+          ]
+        }.
       name: field_json_entry_id
     description: 'Updates a custom user schema.
 
@@ -1234,9 +1322,43 @@ script:
       name: application_id
     - description: Key and value pair of application data transfer parameters. Key and value must be delimited by (:) colon. Multiple values must be delimited by (,) comma. Multiple key-value pairs must be delimited by (;) semi-colon. E.g. key1:val;key2:val1,val2.
       name: application_transfer_params
-    - description: "Raw JSON containing the whole body of the application data transfers.\nE.g.\n{\n  \"applicationDataTransfers\": [\n    {\n      \"applicationId\": long,\n      \"applicationTransferParams\": [\n        {\n          \"key\": string,\n          \"value\": [\n            string\n          ]\n        }\n      ]\n    }\n  ]\n}."
+    - description: |-
+        Raw JSON containing the whole body of the application data transfers.
+        E.g.
+        {
+          "applicationDataTransfers": [
+            {
+              "applicationId": long,
+              "applicationTransferParams": [
+                {
+                  "key": string,
+                  "value": [
+                    string
+                  ]
+                }
+              ]
+            }
+          ]
+        }.
       name: applications_raw_json
-    - description: "JSON file Entry ID containing the whole body of the application data transfers.\nE.g.\n{\n  \"applicationDataTransfers\": [\n    {\n      \"applicationId\": long,\n      \"applicationTransferParams\": [\n        {\n          \"key\": string,\n          \"value\": [\n            string\n          ]\n        }\n      ]\n    }\n  ]\n}."
+    - description: |-
+        JSON file Entry ID containing the whole body of the application data transfers.
+        E.g.
+        {
+          "applicationDataTransfers": [
+            {
+              "applicationId": long,
+              "applicationTransferParams": [
+                {
+                  "key": string,
+                  "value": [
+                    string
+                  ]
+                }
+              ]
+            }
+          ]
+        }.
       name: applications_raw_json_entry_id
     description: 'Inserts a data transfer request.
 
@@ -2551,13 +2673,33 @@ script:
     - description: ID of the Google Workspace account or literal 'my_customer' for the customer associated with the request.
       name: customer_id
     - auto: PREDEFINED
-      description: "In case of Group use \u201CPOST\u2026groups:batchModify\u201D. In case of OrgUnit use \u201CPOST\u2026orgunits:batchModify\u201D."
+      description: In case of Group use "POST…groups:batchModify". In case of OrgUnit use "POST…orgunits:batchModify".
       name: target_type
       required: true
       predefined:
       - Group
       - OrgUnit
-    - description: "String as JSON representation of the ModifyGroupPolicyRequest\n{\n    \"requests\": [\n        {\n            \"policyTargetKey\": {\n                \"targetResource\": \"orgunits/03ph8a2z1kjba6k\",\n                \"additionalTargetKeys\": {\n                    \"app_id\": \"chrome:jldhpllghnbhlbpcmnajkpdmadaolakh\"\n                }\n            },\n            \"policyValue\": {\n                \"policySchema\": \"chrome.users.apps.InstallType\",\n                \"value\": {\n                    \"appInstallType\": \"BLOCKED\"\n                }\n            },\n            \"updateMask\": \"appInstallType\"\n        }\n   ]\n}"
+    - description: |-
+          String as JSON representation of the ModifyGroupPolicyRequest
+          {
+              "requests": [
+                  {
+                      "policyTargetKey": {
+                          "targetResource": "orgunits/03ph8a2z1kjba6k",
+                          "additionalTargetKeys": {
+                              "app_id": "chrome:jldhpllghnbhlbpcmnajkpdmadaolakh"
+                          }
+                      },
+                      "policyValue": {
+                          "policySchema": "chrome.users.apps.InstallType",
+                          "value": {
+                              "appInstallType": "BLOCKED"
+                          }
+                      },
+                      "updateMask": "appInstallType"
+                  }
+             ]
+          }
       name: policy_raw_json
     - description: Entry ID of the file that contains JSON representation of the ModifyGroupPolicyRequest.
       name: policy_field_json_entry_id
@@ -2726,9 +2868,23 @@ script:
   - arguments:
     - description: ID of the Google Workspace account or literal "my_customer" for the customer associated with the request.
       name: customer_id
-    - description: "String as JSON representation of the DeleteGroupPolicyRequest\n{\n  \"policyTargetKey\": {\n    object (PolicyTargetKey)\n  },\n  \"policySchema\": string\n}"
+    - description: |-
+          String as JSON representation of the DeleteGroupPolicyRequest
+          {
+            "policyTargetKey": {
+              object (PolicyTargetKey)
+            },
+            "policySchema": string
+          }
       name: policy_raw_json
-    - description: "Entry Id of the file that contains JSON representation of the DeleteGroupPolicyRequest\n{\n  \"policyTargetKey\": {\n    object (PolicyTargetKey)\n  },\n  \"policySchema\": string\n}"
+    - description: |-
+          Entry Id of the file that contains JSON representation of the DeleteGroupPolicyRequest
+          {
+            "policyTargetKey": {
+              object (PolicyTargetKey)
+            },
+            "policySchema": string
+          }
       name: policy_field_json_entry_id
     - description: 'The target resource on which this policy is applied. The following resources are supported:
 

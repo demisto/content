@@ -7,7 +7,7 @@ sectionOrder:
 configuration:
 - name: user_service_account_json
   display: User's Service Account JSON
-  defaultvalue: null
+  defaultvalue: 
   type: 4
   section: Connect
   additionalinfo: null
@@ -15,7 +15,7 @@ configuration:
   required: false
 - name: user_id
   display: User ID
-  defaultvalue: null
+  defaultvalue: 
   type: 0
   section: Connect
   advanced: true
@@ -30,7 +30,7 @@ configuration:
   required: false
 - name: action_detail_case_include
   display: Action Detail Case Include
-  defaultvalue: null
+  defaultvalue: 
   type: 16
   section: Collect
   advanced: true
@@ -47,7 +47,7 @@ configuration:
   required: false
 - name: drive_item_search_field
   display: Drive Item Search Field
-  defaultvalue: null
+  defaultvalue: 
   type: 15
   section: Collect
   advanced: true
@@ -60,7 +60,7 @@ configuration:
   display: Drive Item Search Value
   type: 0
   section: Collect
-  defaultvalue: null
+  defaultvalue: 
   advanced: true
   additionalinfo: itemName or folderName for fetching the incident.
   required: false
