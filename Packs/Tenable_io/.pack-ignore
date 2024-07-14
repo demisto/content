@@ -13,7 +13,7 @@ ignore=PR101
 [file:TenableioEventCollector.yml]
 ignore=MR108
 
-[file:Tenable_io_AssetsModelingRule.yml]
+[file:Packs/Tenable_io/AssetsModelingRules/Tenable_io.yml]
 ignore=MR108
 
 [known_words]
