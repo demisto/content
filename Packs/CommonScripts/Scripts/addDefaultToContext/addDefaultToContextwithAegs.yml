@@ -1,0 +1,22 @@
+commonfields:
+  id: addDefaultToContextwithAegs
+  version: -1
+vcShouldKeepItemLegacyProdMachine: false
+name: addDefaultToContextwithAegs
+type: python
+tags: []
+enabled: true
+args:
+- name: field_name
+  required: true
+- name: value
+  required: true
+important:
+- related: ""
+scripttarget: 0
+subtype: python3
+runonce: false
+dockerimage: demisto/python3:3.10.14.101217
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}
