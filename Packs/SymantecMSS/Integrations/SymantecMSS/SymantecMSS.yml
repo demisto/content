@@ -38,7 +38,6 @@ configuration:
   display: Fetch incidents for severities
   name: severities
   type: 0
-
   required: false
 description: Leverage the power of Symantec Managed Security Services for continual threat monitoring and customized guidance 24x7.
 display: Symantec Managed Security Services
@@ -85,7 +84,7 @@ script:
       name: max
     description: Get a list of incidents.
     name: symantec-mss-incidents-list
-  dockerimage: demisto/crypto:1.0.0.89294
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   runonce: false
   script: '-'

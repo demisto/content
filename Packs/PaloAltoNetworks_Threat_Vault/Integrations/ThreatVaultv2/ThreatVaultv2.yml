@@ -54,9 +54,9 @@ configuration:
   name: incidentFetchInterval
   type: 19
   required: false
-description: |-
-  Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-  Query the Advanced Threat Protection (ATP) API endpoint for Analysis reports and PCAPs
+description: 'Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
+
+  Query the Advanced Threat Protection (ATP) API endpoint for Analysis reports and PCAPs'
 display: Palo Alto Networks Threat Vault v2
 name: Palo Alto Networks Threat Vault v2
 script:
@@ -854,15 +854,15 @@ script:
       name: vendor
     - description: The signature name.
       name: signature-name
-    - description: "The release dates range (used with the to-release-date argument), Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
+    - description: 'The release dates range (used with the to-release-date argument), Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).'
       name: from-release-date
-    - description: "The right boundary of date range query (used with the from-release-date argument), Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
+    - description: 'The right boundary of date range query (used with the from-release-date argument), Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).'
       name: to-release-date
     - description: The release versions range (used with the to-release-version argument).
       name: from-release-version
     - description: The right boundary of version range query (used with the from-release-version argument).
       name: to-release-version
-    - description: "The release date, Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year)."
+    - description: 'The release date, Format: YYYY-MM-DD or timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 3 months, 1 year).'
       name: release-date
     - description: The release version.
       name: release-version
@@ -1244,7 +1244,7 @@ script:
     - contextPath: ThreatVault.ATP.PCAP.Name
       description: Threatvault ATP PCAP Name
       type: string
-  dockerimage: demisto/crypto:1.0.0.86361
+  dockerimage: demisto/crypto:1.0.0.103269
   isfetch: true
   script: ''
   subtype: python3
