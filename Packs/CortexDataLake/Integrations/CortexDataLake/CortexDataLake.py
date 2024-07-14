@@ -1,10 +1,12 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 """ IMPORTS """
 import os
 import re
 import json
-from pancloud import QueryService, Credentials, exceptions
+from pancloud import Credentials, exceptions, PanCloudError, HTTPError, QueryService
+import time
 import base64
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from typing import Any
@@ -15,6 +17,7 @@ from datetime import timedelta
 
 # disable insecure warnings
 import urllib3
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 ''' GLOBAL CONSTS '''
@@ -43,6 +46,75 @@ FETCH_TABLE_HR_NAME = {
     "log.config": "Cortex Common Config"
 }
 BAD_REQUEST_REGEX = r'^Error in API call \[400\].*'
+
+
+def iter_job_results(
+    query_service: QueryService,
+    job_id=None,
+    max_wait=None,
+    offset=None,
+    page_cursor=None,
+    page_number=None,
+    page_size=None,
+    result_format=None,
+    **kwargs
+):
+    """Retrieve results iteratively in a non-greedy manner using scroll token.
+
+    Args:
+        query_service (QueryService): An instance of the QueryService class.
+        job_id (str): Specifies the ID of the query job.
+        max_wait (int): How long to wait in ms for a job to complete. Max 2000.
+        offset (int): Along with pageSize, offset can be used to page through result set.
+        page_cursor (str): Token/handle that can be used to fetch more data.
+        page_number (int): Return the nth page from the result set as specified by this parameter.
+        page_size (int): If specified, limits the size of a batch of results to the specified value.
+        If un-specified, backend picks a size that may provide best performance.
+        result_format (str): valuesArray or valuesJson.
+        **kwargs: Supported :meth:`~pancloud.httpclient.HTTPClient.request` parameters.
+
+    Yields:
+        requests.Response: Requests Response() object.
+
+    """
+    credentials = kwargs.pop("credentials", None)
+    params = kwargs.pop("params", {})
+    for name, value in [
+        ("maxWait", max_wait),
+        ("offset", offset),
+        ("pageCursor", page_cursor),
+        ("pageNumber", page_number),
+        ("pageSize", page_size),
+        ("resultFormat", result_format),
+    ]:
+        if value is not None:
+            params.update({name: value})
+    while True:
+        r = query_service.get_job_results(
+            job_id=job_id,
+            params=params,
+            enforce_json=True,
+            credentials=credentials,
+            **kwargs
+        )
+        if not r.ok:
+            raise HTTPError("%s" % r.text)
+        if r.json()["state"] == "DONE":
+            scroll_token = r.json()["page"].get("pageCursor")
+            if scroll_token is not None:
+                params["pageCursor"] = scroll_token
+                yield r
+            else:
+                yield r
+                break
+        elif r.json()["state"] == ('RUNNING'):
+            yield r
+            time.sleep(1)
+        elif r.json()["state"] == "FAILED":
+            yield r
+            break
+        else:
+            raise PanCloudError("Bad state: %s" % r.json()["state"])
 
 
 class Client(BaseClient):
@@ -246,9 +318,9 @@ class Client(BaseClient):
             raise DemistoException(f'Error in query to Cortex Data Lake XSOAR Connector [{status_code}] - {error_message}')
 
         try:
-            raw_results = [r.json() for r in query_service.iter_job_results(job_id=query_result.get('jobId'),
-                                                                            result_format='valuesDictionary',
-                                                                            max_wait=2000)]
+            raw_results = [r.json() for r in iter_job_results(query_service, job_id=query_result.get('jobId'),
+                                                              result_format='valuesDictionary',
+                                                              max_wait=2000)]
         except exceptions.HTTPError as e:
             raise DemistoException(f'Received error {str(e)} when querying logs.')
 
