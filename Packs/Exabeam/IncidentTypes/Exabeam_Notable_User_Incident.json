@@ -1,11 +1,11 @@
 {
-    "id": "Exabeam Incident",
+    "id": "Exabeam Notable User",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Exabeam Incident",
-    "prevName": "Exabeam Incident",
-    "color": "#F8E7A5",
+    "name": "Exabeam Notable User",
+    "prevName": "Exabeam Notable User",
+    "color": "#A3C9FF",
     "hours": 0,
     "days": 0,
     "weeks": 0,
@@ -19,11 +19,11 @@
     "disabled": false,
     "reputationCalc": 0,
     "onChangeRepAlg": 0,
+    "layout": "Exabeam Notable User",
     "detached": false,
     "extractSettings": {
         "mode": "Specific",
         "fieldCliNameToExtractSettings": {}
     },
-    "fromVersion": "6.5.0",
-    "layout": "Exabeam Incident"
+    "fromVersion": "6.10.0"
 }
