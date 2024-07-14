@@ -5655,7 +5655,7 @@ def panorama_query_logs_command(args: dict):
                     removeNull=True
                 )
             demisto.debug(f'{readable_output=}')
-        demisto.debug(f"parsed.ns.response.result.job.status != 'FIN' = {parsed.ns.response.result.job.status != 'FIN'}")
+        demisto.debug(f"{parsed.ns.response.result.job.status=}")
 
         poll_result = PollResult(
             response=CommandResults(
@@ -5665,7 +5665,7 @@ def panorama_query_logs_command(args: dict):
                 readable_output=readable_output,
                 raw_response=parsed.raw
             ),
-            continue_to_poll=parsed.ns.response.result.job.status != 'FIN'
+            continue_to_poll=parsed.ns.response.result.job.status.upper() != 'FIN'
         )
 
     return poll_result
