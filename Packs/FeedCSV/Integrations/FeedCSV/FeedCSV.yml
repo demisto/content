@@ -43,7 +43,7 @@ configuration:
   type: 15
   required: false
 - defaultvalue: indicatorType
-  display: ""
+  display: ''
   name: feedExpirationPolicy
   options:
   - never
@@ -54,7 +54,7 @@ configuration:
   required: false
 - defaultvalue: '20160'
   name: feedExpirationInterval
-  display: ""
+  display: ''
   type: 1
   required: false
 - defaultvalue: '240'
@@ -171,7 +171,7 @@ script:
     - contextPath: CSV.Indicator.rawJSON
       description: The indicator rawJSON value.
       type: Unknown
-  dockerimage: demisto/py3-tools:1.0.0.80165
+  dockerimage: demisto/py3-tools:1.0.0.103307
   feed: true
   runonce: false
   script: ''

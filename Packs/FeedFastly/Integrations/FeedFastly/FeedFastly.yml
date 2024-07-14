@@ -66,7 +66,7 @@ configuration:
   display: Bypass exclusion list
   name: feedBypassExclusionList
   type: 8
-  defaultvalue: "true"
+  defaultvalue: 'true'
   required: false
 - additionalinfo: Supports CSV values.
   display: Tags
@@ -92,7 +92,7 @@ script:
       name: limit
     description: Fetches indicators from the feed.
     name: fastly-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.91504
+  dockerimage: demisto/py3-tools:1.0.0.103307
   feed: true
   runonce: false
   script: '-'
