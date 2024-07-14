@@ -4116,7 +4116,8 @@ def test_get_remote_data_command(mocker, remote_id, close_incident, incident_sta
     detection_entity = input_data.response_detection.copy()
     detection_entity['status'] = detection_status
     mocker.patch('CrowdStrikeFalcon.get_detections_entities', return_value={'resources': [detection_entity]})
-    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident})
+    reopen_statuses = 'New,In progress,True positive,False positive,Reopened,Ignored'
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': close_incident, 'reopen_statuses': reopen_statuses})
 
     result = get_remote_data_command({'id': remote_id, 'lastUpdate': '2022-03-08T08:17:09Z'})
     assert result.mirrored_object == mirrored_object
@@ -4274,6 +4275,27 @@ def test_set_xsoar_incident_entries_reopen(mocker, updated_object):
         assert entries == []
 
 
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_incident_entries_args)
+def test_set_xsoar_incident_entries_empty(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - empty reopen statuses set.
+    When
+        - running get_remote_data_command with reopen_statuses = []
+    Then
+        - A reopen entry wasn't added in any case.
+    """
+    from CrowdStrikeFalcon import set_xsoar_incident_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = []  # don't add a reopen entry in any case
+    set_xsoar_incident_entries(updated_object, entries, input_data.remote_incident_id, reopen_statuses)
+    assert entries == []
+
+
 @pytest.mark.parametrize('updated_object, entry_content, close_incident', input_data.set_xsoar_detection_entries_args)
 def test_set_xsoar_detection_entries(mocker, updated_object, entry_content, close_incident):
     """
@@ -4320,6 +4342,27 @@ def test_set_xsoar_detection_entries_reopen_check(mocker, updated_object):
         assert entries == []
 
 
+@pytest.mark.parametrize('updated_object', input_data.check_reopen_set_xsoar_detections_entries_args)
+def test_set_xsoar_detection_entries_empty_check(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - empty reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries only if the status is Reopened.
+    """
+    from CrowdStrikeFalcon import set_xsoar_detection_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = []  # don't add a reopen entry in any case
+    set_xsoar_detection_entries(updated_object, entries, input_data.remote_detection_id, reopen_statuses)
+    assert entries == []
+
+
 @pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
 def test_set_xsoar_idp_or_mobile_detection_entries(mocker, updated_object):
     """
@@ -4341,6 +4384,32 @@ def test_set_xsoar_idp_or_mobile_detection_entries(mocker, updated_object):
     if updated_object.get('status') == 'reopened':
         assert 'dbotIncidentReopen' in entries[0].get('Contents')
     elif updated_object.get('status') == 'closed':
+        assert 'dbotIncidentClose' in entries[0].get('Contents')
+        assert 'closeReason' in entries[0].get('Contents')
+        assert entries[0].get('Contents', {}).get('closeReason') == 'IDP was closed on CrowdStrike Falcon'
+    else:
+        assert entries == []
+
+
+@pytest.mark.parametrize('updated_object', input_data.set_xsoar_idp_or_mobile_detection_entries)
+def test_set_xsoar_idp_or_mobile_detection_entries_empty_reopen_statuses(mocker, updated_object):
+    """
+    Given
+        - the incident status from the remote system
+        - the close_incident parameter that was set when setting the integration
+        - empty reopen statuses set.
+    When
+        - running get_remote_data_command with changes to make on a detection
+    Then
+        - add the relevant entries.
+    """
+    from CrowdStrikeFalcon import set_xsoar_idp_or_mobile_detection_entries
+    mocker.patch.object(demisto, 'params', return_value={'close_incident': True})
+    mocker.patch.object(demisto, 'debug', return_value=None)
+    entries = []
+    reopen_statuses = []  # don't add a reopen entry in any case
+    set_xsoar_idp_or_mobile_detection_entries(updated_object, entries, input_data.remote_idp_detection_id, 'IDP', reopen_statuses)
+    if updated_object.get('status') == 'closed':
         assert 'dbotIncidentClose' in entries[0].get('Contents')
         assert 'closeReason' in entries[0].get('Contents')
         assert entries[0].get('Contents', {}).get('closeReason') == 'IDP was closed on CrowdStrike Falcon'
