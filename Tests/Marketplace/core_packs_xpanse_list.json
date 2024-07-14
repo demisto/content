@@ -79,6 +79,7 @@
     "Slack",
     "SplunkPy",
     "Tenable_io",
-    "Venafi"
+    "Venafi",
+    "AWS_SystemManager"
   ]
 }
