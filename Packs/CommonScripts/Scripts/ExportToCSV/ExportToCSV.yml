@@ -31,4 +31,4 @@ args:
 scripttarget: 0
 fromversion: 5.0.0
 tests:
-- ExportToCSV-Test
+- exporttocsv_script_test
