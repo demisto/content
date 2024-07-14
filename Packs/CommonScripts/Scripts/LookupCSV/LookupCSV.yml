@@ -26,6 +26,8 @@ args:
 outputs:
 - contextPath: LookupCSV.result
   description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row)
+- contextPath: LookupCSV.Result
+  description: List of result objects; either a list of dicts (with header_row) or a list of lists (no header row)
 - contextPath: LookupCSV.FoundResult
   description: Boolean, for whether the result was found in the CSV or not.
 - contextPath: LookupCSV.SearchValue
