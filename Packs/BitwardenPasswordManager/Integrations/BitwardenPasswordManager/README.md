@@ -36,8 +36,8 @@ Gets events from Bitwarden.
 
 | **Argument Name**  | **Description**                                                                                                                                               | **Required** |
 |--------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| start              | The start date from which to filter events. (e.g. 2024-07-10T08:08:46.76)                                                                                                                   | Optional | 
-| end                | The end date from which to filter events. (e.g. 2024-07-11T08:09:47.08)                                                                                                                   | Optional | 
+| start              | The start date from which to filter events. (e.g., 2024-07-10T08:08:46.76)                                                                                                                   | Optional | 
+| end                | The end date from which to filter events. (e.g., 2024-07-11T08:09:47.08)                                                                                                                   | Optional | 
 | limit              | The number of events to return. Default is 500.                                                                                                                   | Optional | 
 | should_push_events | Set this argument to True in order to save events to XSIAM, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
 
