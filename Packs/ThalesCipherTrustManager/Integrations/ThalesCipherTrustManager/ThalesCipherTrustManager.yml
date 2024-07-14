@@ -1369,7 +1369,7 @@ script:
       default: false
     - name: chained
       isArray: false
-      description: When set to ‘true’ the full CA chain is returned with the certificate. Must be used with the local CA ID.
+      description: "When set to \u2018true\u2019 the full CA chain is returned with the certificate. Must be used with the local CA ID."
       required: false
       secret: false
       default: false
@@ -1711,7 +1711,19 @@ script:
       default: false
     outputs: []
   - deprecated: false
-    description: "Create a new user in a domain (including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.\nThe connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.\nThe connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.\nTo create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.\nTo enable certificate based authentication for a user, it is required to set certificate_subject_dn and add \"user_certificate\" authentication method in allowed_auth_methods. This functionality is available only for local users.\nTo assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.\nTo enable the two-factor authentication based on username-password and user certificate for a user, it is required to set \"certificate_subject_dn\" and add \"password_with_user_certificate\" authentication method in \"allowed_auth_methods\". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users."
+    description: 'Create a new user in a domain (including root), or add an existing domain user to a sub-domain. Users are always created in the local, internal user database, but might have references to external identity providers.
+
+      The connection property is optional. If this property is specified when creating new users, it can be the name of a connection or local_account for a local user.
+
+      The connection property is only used in the body of the create-user request. It is not present in either request or response bodies of the other user endpoints.
+
+      To create a user - username is mandatory. And password is required in most cases except when certificate authentication is used and certificate subject dn is provided.
+
+      To enable certificate based authentication for a user, it is required to set certificate_subject_dn and add "user_certificate" authentication method in allowed_auth_methods. This functionality is available only for local users.
+
+      To assign a root domain user to a sub-domain - the users are added to the domain of the user who is logging in, and the connection property should be left empty. The user_id or username fields are the only ones that are used while adding existing users to sub-domains; all other fields are ignored.
+
+      To enable the two-factor authentication based on username-password and user certificate for a user, it is required to set "certificate_subject_dn" and add "password_with_user_certificate" authentication method in "allowed_auth_methods". For authentication, the user will require both username-password and user certificate. This functionality applies only to local users.'
     name: ciphertrust-user-create
     arguments:
     - name: name
@@ -1746,7 +1758,7 @@ script:
       default: false
     - name: allowed_auth_methods
       isArray: true
-      description: 'A comma-separated list of login authentication methods allowed to the user. Default value - "password". Password Authentication is allowed by default. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. This property does not control login behavior for users in admin group.'
+      description: A comma-separated list of login authentication methods allowed to the user. Default value - "password". Password Authentication is allowed by default. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. This property does not control login behavior for users in admin group.
       required: false
       secret: false
       default: false
@@ -1758,7 +1770,7 @@ script:
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: "A comma-separated list of client types that can authenticate using the user's credentials. Default value - \"unregistered,public,confidential\" i.e., all clients can authenticate the user using user's credentials. Setting it to none, \"none\", authenticate the user using user's credentials. Setting it to none, \"none\", means no client can authenticate this user, which effectively means no one can login into this user This property does not control login behavior for users in admin group."
+      description: A comma-separated list of client types that can authenticate using the user's credentials. Default value - "unregistered,public,confidential" i.e., all clients can authenticate the user using user's credentials. Setting it to none, "none", authenticate the user using user's credentials. Setting it to none, "none", means no client can authenticate this user, which effectively means no one can login into this user This property does not control login behavior for users in admin group.
       required: false
       secret: false
       default: false
@@ -2047,7 +2059,7 @@ script:
       auto: PREDEFINED
     - name: allowed_auth_methods
       isArray: true
-      description: 'List of login authentication methods allowed to the user. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. This property does not control login behavior for users in admin group.'
+      description: List of login authentication methods allowed to the user. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. This property does not control login behavior for users in admin group.
       required: false
       secret: false
       default: false
@@ -2059,7 +2071,7 @@ script:
       auto: PREDEFINED
     - name: allowed_client_types
       isArray: true
-      description: "A comma-separated list of client types that can authenticate using the user's credentials. Setting it to none, i.e., \"none\", means no client can authenticate this user, which effectively means no one can login into this user. This property does not control login behavior for users in admin group."
+      description: A comma-separated list of client types that can authenticate using the user's credentials. Setting it to none, i.e., "none", means no client can authenticate this user, which effectively means no one can login into this user. This property does not control login behavior for users in admin group.
       required: false
       secret: false
       default: false
@@ -2197,13 +2209,13 @@ script:
       default: false
     - name: username
       isArray: false
-      description: The user’s username.
+      description: "The user\u2019s username."
       required: false
       secret: false
       default: false
     - name: email
       isArray: false
-      description: The user’s email.
+      description: "The user\u2019s email."
       required: false
       secret: false
       default: false
@@ -2221,7 +2233,7 @@ script:
       default: false
     - name: auth_domain_name
       isArray: false
-      description: The user’s auth domain.
+      description: "The user\u2019s auth domain."
       required: false
       secret: false
       default: false
@@ -2381,7 +2393,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.99035
+  dockerimage: demisto/py3-tools:1.0.0.103307
   feed: false
   isfetch: false
   runonce: false

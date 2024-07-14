@@ -108,7 +108,7 @@ configuration:
   required: true
   type: 15
   section: Connect
-- additionalinfo: 'The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.'
+- additionalinfo: The SSL\TLS version to use in SSL or Start TLS connections types. Default is None. It is recommended to select the TLS_CLIENT option, which auto-negotiate the highest protocol version that both the client and server support, and configure the context client-side connections.
   defaultvalue: None
   display: SSL Version
   name: ssl_version
@@ -173,28 +173,28 @@ script:
       name: attribute-phone
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to return the name attribute.'
+      description: Whether to return the name attribute.
       name: attribute-name-pull
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'true'
-      description: 'Whether to return the mail attribute.'
+      description: Whether to return the mail attribute.
       name: attribute-mail-pull
       predefined:
       - 'true'
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: 'Whether to return the phone attribute.'
+      description: Whether to return the phone attribute.
       name: attribute-phone-pull
       predefined:
       - 'true'
       - 'false'
     description: Performs a simple bind operation on the LDAP server and returns the authenticated user's groups.
     name: ad-authenticate-and-roles
-  dockerimage: demisto/py3-tools:1.0.0.82746
+  dockerimage: demisto/py3-tools:1.0.0.103307
   runonce: false
   script: '-'
   subtype: python3
