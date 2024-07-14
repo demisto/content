@@ -7,6 +7,7 @@
     "AWS-Organizations",
     "AWS-Route53",
     "AWS-S3",
+    "AWS_SystemManager",
     "AccessInvestigation",
     "Asset",
     "Azure-Enrichment-Remediation",
@@ -38,8 +39,7 @@
     "Slack",
     "SplunkPy",
     "Tenable_io",
-    "Venafi",
-    "AWS_SystemManager"
+    "Venafi"
   ],
   "update_core_packs_list": [
     "Active_Directory_Query",
@@ -49,6 +49,7 @@
     "AWS-Organizations",
     "AWS-Route53",
     "AWS-S3",
+    "AWS_SystemManager",
     "AccessInvestigation",
     "Asset",
     "Azure-Enrichment-Remediation",
@@ -80,7 +81,6 @@
     "Slack",
     "SplunkPy",
     "Tenable_io",
-    "Venafi",
-    "AWS_SystemManager"
+    "Venafi"
   ]
 }
