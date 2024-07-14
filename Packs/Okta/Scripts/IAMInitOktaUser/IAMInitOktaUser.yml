@@ -8,11 +8,13 @@ tags:
 - IAM
 - Utility
 - Okta
-comment: |-
-  Generates a password and sets the password for an Okta user.
+comment: 'Generates a password and sets the password for an Okta user.
+
   Enables the account.
+
   Sends an  email to the user with the account information.
-  This script is running the `send-mail` command, make sure there is a mail sender integration configured.
+
+  This script is running the `send-mail` command, make sure there is a mail sender integration configured.'
 enabled: true
 args:
 - name: pwdGenerationScript
@@ -37,31 +39,31 @@ args:
   description: The subject of the email sent to IT.
 - name: min_lcase
   description: Minimum number of lower case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_lcase
   description: Maximum number of lower case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "10"
+  defaultValue: '10'
 - name: min_ucase
   description: Minimum number of upper case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_ucase
   description: Maximum number of upper case characters to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "10"
+  defaultValue: '10'
 - name: min_digits
   description: Minimum number of digits to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_digits
   description: Maximum number of digits to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "10"
+  defaultValue: '10'
 - name: min_symbols
   description: Minimum number of symbols to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_symbols
   description: Maximum number of symbols to include in password. Used with the GeneratePassword script (leave empty if using another script).
-  defaultValue: "10"
+  defaultValue: '10'
 - name: ZipProtectWithPassword
   description: The password to protect the zip file that contains the generated password. if not provided, the generated password will be send in the body of the email.
-  defaultValue: ""
+  defaultValue: ''
 - name: email_body
   description: The body of the email that will be sent to the user.
 - name: zip_file_name
@@ -81,7 +83,7 @@ outputs:
   type: String
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/py3-tools:1.0.0.95440
+dockerimage: demisto/py3-tools:1.0.0.103307
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
