@@ -44,21 +44,21 @@ script:
     arguments:
     - name: message
       required: true
-      description: The message content
+      description: The message content.
       type: textArea
     - name: to
-      description: The recipient of the message
+      description: The recipient of the message.
       type: textArea
     - name: space_id
       required: true
-      description: The ID of the space to which to send the message
+      description: The ID of the space to which to send the message.
       type: textArea
     - name: thread_id
       description: If replying to a thread, use this argument to specify the thread
-        name to reply to
+        name to reply to.
       type: textArea
     - name: adaptive_card
-      description: 'Card to send. See Card Builder here: https://addons.gsuite.google.com/uikit/builder'
+      description: 'Card to send. See Card Builder here: https://addons.gsuite.google.com/uikit/builder.'
       type: textArea
     - name: entitlement
       description: Full entitlement for GoogleChatAsk script.
@@ -72,7 +72,7 @@ script:
       description: Default response if the expiration time of the message has exceeded.
       type: textArea
       hidden: true
-    description: Send messages through google chat
+    description: Send messages through google chat.
     outputs:
     - contextPath: GoogleChat.sender.name
       description: Display the sender name.

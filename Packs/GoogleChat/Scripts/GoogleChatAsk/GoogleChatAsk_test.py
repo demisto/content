@@ -7,7 +7,7 @@ def test_parse_option_text_color_and_text():
     When: Running parse_option_text with the required argument.
     Then: Ensure the argument is parsed correctly to text, style.
     """
-    from GoogleChatAsk import parse_option_text
+    from GoogleChatAsk.GoogleChatAsk import parse_option_text
     text, style = parse_option_text('yes#blue')
     assert text == 'yes'
     assert style == 'blue'
@@ -17,7 +17,7 @@ def test_parse_option_text_only_text():
     When: Running parse_option_text with the required argument.
     Then: Ensure the argument is parsed correctly to text, style.
     """
-    from GoogleChatAsk import parse_option_text
+    from GoogleChatAsk.GoogleChatAsk import parse_option_text
     text, style = parse_option_text('yes')
     assert text == 'yes'
     assert style is None
@@ -27,7 +27,7 @@ def test_parse_option_text_invalid_color():
     When: Running parse_option_text with the required argument.
     Then: Raise an error since the color is invalid.
     """
-    from GoogleChatAsk import parse_option_text
+    from GoogleChatAsk.GoogleChatAsk import parse_option_text
     from CommonServerPython import DemistoException
     with pytest.raises(DemistoException) as e:
         text, style = parse_option_text('yes#black')
@@ -71,7 +71,7 @@ def test_create_adaptive_card(message, user_options, response_type, expected_res
     When: Running create_adaptive_card with the required argument.
     Then: Returns the desired card.
     """
-    from GoogleChatAsk import create_adaptive_card
+    from GoogleChatAsk.GoogleChatAsk import create_adaptive_card
     assert create_adaptive_card(message, user_options, response_type) == expected_result
 
 
@@ -90,7 +90,7 @@ def test_main(mocker):
     When: Running main with the required argument.
     Then: Sends the correct args to send-notification.
     """
-    from GoogleChatAsk import main
+    from GoogleChatAsk.GoogleChatAsk import main
     import dateparser
     import datetime
     mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)

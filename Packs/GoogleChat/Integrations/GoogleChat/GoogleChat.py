@@ -174,14 +174,14 @@ def create_hr_response(response: dict[str, Any]):
     space = response.get('space', {})
     thread = response.get('thread', {})
     return {
-        'Message name': response.get('name','').split('messages/')[1],
-        'Sender Name': sender.get('name','').split('users/')[1],
+        'Message name': response.get('name', '').split('messages/')[1],
+        'Sender Name': sender.get('name', '').split('users/')[1],
         'Sender display Name': sender.get('displayName'),
         'Sender Type': sender.get('type'),
         'Space Display Name': space.get('displayName'),
-        'Space Name': space.get('name','').split('spaces/')[1],
+        'Space Name': space.get('name', '').split('spaces/')[1],
         'Space Type': space.get('type'),
-        'Thread Name': thread.get('name','').split('threads/')[1],
+        'Thread Name': thread.get('name', '').split('threads/')[1],
         'Thread Key': thread.get('threadKey')
     }
 
@@ -425,7 +425,8 @@ async def handle_googleChat_response(request: Request, credentials: HTTPBasicCre
             message_id_hierarchy = request.get('message', {}).get('name')
             action_selected = request.get('action', {}).get('actionMethodName')
             if action_selected == 'handleSurveyResponse':
-                action_selected = request.get('common',{}).get('formInputs', {}).get('survey', {}).get('stringInputs', {}).get('value', [])[0]
+                action_selected = request.get('common', {}).get('formInputs', {}).get(
+                    'survey', {}).get('stringInputs', {}).get('value', [])[0]
             user_name = request.get('user', {}).get('displayName')
             entitlement_reply = await check_and_handle_entitlement(user_name, action_selected, message_id_hierarchy)
             demisto.debug(f"{entitlement_reply=}")

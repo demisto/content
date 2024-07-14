@@ -22,7 +22,7 @@ def test_send_notification_command_called_with(mocker, google_chat_client):
     http_request.assert_called_with('POST', '/spaces/123/messages',
                                     params={'key': '456'},
                                     json_data={'text': 'hi',
-                                               'privateMessageViewer': {'name': 'test'},
+                                               'privateMessageViewer': {'name': 'users/test'},
                                                'cardsV2': {'button': 'yes'}},
                                     headers={'Authorization': 'Bearer 456', 'Content-Type': 'application/json; charset=UTF-8'},
                                     return_empty_response=True)
@@ -37,9 +37,9 @@ def test_send_notification_command_hr(mocker, google_chat_client):
     from GoogleChat import send_notification_command
     http_request = mocker.patch.object(GoogleChatClient, '_http_request')
     http_request.return_value = {
-        'name': 'message123',
+        'name': 'messages/message123',
         'sender': {
-            'name': 'user456',
+            'name': 'users/user456',
             'displayName': 'John Doe',
             'type': 'USER'
         },
@@ -49,7 +49,7 @@ def test_send_notification_command_hr(mocker, google_chat_client):
             'type': 'ROOM'
         },
         'thread': {
-            'name': 'thread789',
+            'name': 'threads/thread789',
             'threadKey': 'abc123'
         }
     }
@@ -58,16 +58,15 @@ def test_send_notification_command_hr(mocker, google_chat_client):
     command_results = send_notification_command(google_chat_client, args)
     assert command_results.readable_output == ('### The Message that was sent:\n|Message Name|Sender Name|Sender Display Name|'
                                                'Sender Type|Space Display Name|Space Name|Space Type|Thread Name|Thread Key|\n|'
-                                               '---|---|---|---|---|---|---|---|---|\n| message123 | user456 | John Doe | USER |'
-                                               ' Project Chat | spaces/AAAABBBBCCCC | ROOM | thread789 | abc123 |\n')
-    assert command_results.raw_response == {'name': 'message123',
-                                            'sender': {'name': 'user456',
+                                               '---|---|---|---|---|---|---|---|---|\n| message123 | user456 | John Doe | USER | Project Chat | AAAABBBBCCCC | ROOM | thread789 | abc123 |\n')
+    assert command_results.raw_response == {'name': 'messages/message123',
+                                            'sender': {'name': 'users/user456',
                                                        'displayName': 'John Doe',
                                                        'type': 'USER'},
                                             'space': {'displayName': 'Project Chat',
                                                       'name': 'spaces/AAAABBBBCCCC',
                                                       'type': 'ROOM'},
-                                            'thread': {'name': 'thread789', 'threadKey': 'abc123'}}
+                                            'thread': {'name': 'threads/thread789', 'threadKey': 'abc123'}}
 
 
 def test_send_notification_command_card_not_in_format(mocker, google_chat_client):
@@ -247,7 +246,7 @@ def test_send_notification_request(mocker, google_chat_client):
     http_request.assert_called_with('POST', '/spaces/12345/messages',
                                     params={'key': '456'},
                                     json_data={'text': 'hi',
-                                               'privateMessageViewer': {'name': 'test'},
+                                               'privateMessageViewer': {'name': 'users/test'},
                                                'thread': {'threadKey': '1'},
                                                'cardsV2': '{"button":"123456"}'},
                                     headers={'Authorization': 'Bearer 12345rt6y7u8',

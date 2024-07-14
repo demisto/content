@@ -1,6 +1,6 @@
 args:
 - name: user
-  description: The recipient of the message
+  description: The recipient of the message.
   type: textArea
 - name: message
   required: true
@@ -8,29 +8,23 @@ args:
   type: textArea
 - name: space_id
   required: true
-  description: The ID of the space where the message will be send to. 
+  description: The ID of the space where the message will be send to.
   type: textArea
 - name: option1
-  description: The first reply option. The default is "Yes" with a blue button. To
-    change the color of the button, add the pound sign (#) followed by the name of
-    the new color (Blue, White, or Red). For example, "Yes#blue".
+  description: The first reply option. The default is "Yes" with a blue button. To change the color of the button, add the pound sign (#) followed by the name of the new color (Blue, White, or Red). For example, "Yes#blue".
   type: textArea
 - name: option2
-  description: The second reply option. The default is "No" with a red button. To
-    change the button color, add the pound sign (#) followed by the name of the new
-    color (Blue, White, or Red). For example, "No#red".
+  description: The second reply option. The default is "No" with a red button. To change the button color, add the pound sign (#) followed by the name of the new color (Blue, White, or Red). For example, "No#red".
   type: textArea
 - name: additional_options
   description: A CSV list of additional options.
   type: textArea
 - name: task_id
-  description: The task_id to close with the reply. If empty, then no playbook tasks
-    will be closed.
+  description: The task_id to close with the reply. If empty, then no playbook tasks will be closed.
   type: textArea
 - name: lifetime
   defaultValue: 1 day
-  description: Time until the question expires. For example - 1 day. When it expires,
-    a default response is sent.
+  description: Time until the question expires. For example - 1 day. When it expires, a default response is sent.
   type: textArea
 - name: response_type
   description: How the user should respond to the question.
@@ -61,4 +55,4 @@ tests:
 dependson:
   must:
   - GoogleChat|||send-notification
-fromversion: 5.0.0
+fromversion: 6.10.0
