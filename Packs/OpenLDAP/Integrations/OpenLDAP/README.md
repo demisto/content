@@ -245,7 +245,7 @@ A generic LDAP search command.
 | description | A comma-separated list of descriptions to filter the search by (AND operator is used to join them). | Optional | 
 | page | Page to return. | Optional | 
 | page_size | Number of entries per page. Defaults to 50 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The maximum number of entries to return. Defaults to 50. Default is 50. | Optional | 
+| limit | The maximum number of entries to return. Default is 50. | Optional | 
 
 #### Context Output
 
