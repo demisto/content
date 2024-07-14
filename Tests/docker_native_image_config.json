@@ -146,7 +146,17 @@
             "ignored_native_images": [
                 "native:8.6"
             ]
+        },
+        {
+            "id": "ThreatConnect v3",
+            "reason": "",
+            "ignored_native_images": [
+                "native:8.6",
+                "native:dev",
+                "native:candidate"
+            ]
         }
+        
     ],
     "flags_versions_mapping":{
         "native:dev":"native:dev",
