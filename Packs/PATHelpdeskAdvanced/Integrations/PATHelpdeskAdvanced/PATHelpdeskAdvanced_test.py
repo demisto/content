@@ -2,7 +2,7 @@ from pathlib import Path
 from urllib.parse import unquote
 import freezegun
 import pytest
-import datetime as dt
+from datetime import datetime, timezone
 
 from PATHelpdeskAdvanced import (
     DATETIME_FORMAT,
@@ -60,12 +60,8 @@ def test_converts_date_fields():
     EPOCH_2023_INT = 1693573200000
     EPOCH_2022_INT = 1641042000000
 
-    STR_2023 = (
-        dt.datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=dt.UTC)
-    ).strftime(DATETIME_FORMAT)
-    STR_2022 = (
-        dt.datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=dt.UTC)
-    ).strftime(DATETIME_FORMAT)
+    STR_2023 = (datetime.fromtimestamp(EPOCH_2023_INT / 1000, tz=timezone.utc)).strftime(DATETIME_FORMAT)  # noqa: UP017
+    STR_2022 = (datetime.fromtimestamp(EPOCH_2022_INT / 1000, tz=timezone.utc)).strftime(DATETIME_FORMAT)  # noqa: UP017
 
     raw = {
         "Date1": f"/Date({EPOCH_2023_INT})/",
@@ -526,7 +522,7 @@ class TestClient:
             return_value={
                 "refresh_token": "previous_refresh_token",
                 "expires_in": 3600,
-                "token_expiry_utc": dt.datetime(2023, 1, 1, 12, 30).isoformat(),
+                "token_expiry_utc": datetime(2023, 1, 1, 12, 30).isoformat(),
             },
         )
         requests_mock.post(

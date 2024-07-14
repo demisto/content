@@ -1,8 +1,8 @@
 import contextlib
 from json import JSONDecodeError
 from pathlib import Path
-from typing import Any, Literal, NamedTuple
-from collections.abc import Callable, Iterable
+from typing import Literal, NamedTuple
+from collections.abc import Iterable, Callable
 import more_itertools
 from requests import Response
 
