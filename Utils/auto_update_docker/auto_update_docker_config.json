@@ -9,8 +9,7 @@
                         "auto-update-docker"
                     ],
                     "support": [
-                        "partner",
-                        "community"
+                        "xsoar"
                     ]
                 },
                 {
