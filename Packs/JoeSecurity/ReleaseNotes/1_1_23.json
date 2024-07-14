@@ -1,4 +1,0 @@
-{
-    "breakingChanges": true,
-    "breakingChangesNotes": "The file command DBotScore result will now have the SHA256 as the file indicator value instead of the file name"
-}
