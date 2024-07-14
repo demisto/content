@@ -41,6 +41,20 @@ FETCH_EVENTS_PAGE_SIZE = 50000
 urllib3.disable_warnings()
 
 
+def testings():
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+    demisto.info("test")
+
 class Client(BaseClient):
     def get_events(self, config_ids: str, offset: str | None = '', limit: str | int | None = None,
                    from_epoch: str | None = '', to_epoch: str | None = '') \
