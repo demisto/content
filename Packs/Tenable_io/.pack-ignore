@@ -2,7 +2,7 @@
 ignore=RM104
 
 [file:Tenable_io.yml]
-ignore=BA108,BA109,IN150,IN161,MR108
+ignore=BA108,BA109,IN150,IN161
 
 [file:TenableioEventCollector_1_3.yml]
 ignore=MR108
@@ -11,6 +11,9 @@ ignore=MR108
 ignore=PR101
 
 [file:TenableioEventCollector.yml]
+ignore=MR108
+
+[file:Tenable_io_AssetsModelingRule.yml]
 ignore=MR108
 
 [known_words]
