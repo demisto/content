@@ -1,10 +1,10 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
-from typing import Dict, Any, List
+from typing import Any
 
 
-def instance_check(instances, integration_name: str) -> List:
+def instance_check(instances, integration_name: str) -> list:
     instance_names = []
     for instance_name, details in instances.items():
         if details.get('brand') == integration_name:
@@ -13,7 +13,7 @@ def instance_check(instances, integration_name: str) -> List:
     return instance_names
 
 
-def get_instance_name_command(args: Dict[str, Any]) -> CommandResults:
+def get_instance_name_command(args: dict[str, Any]) -> CommandResults:
     integration_name = args.get('integration_name', '')
 
     instances = demisto.getModules()

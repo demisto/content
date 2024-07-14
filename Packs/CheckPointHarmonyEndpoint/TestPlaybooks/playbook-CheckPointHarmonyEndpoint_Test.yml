@@ -516,9 +516,6 @@ tasks:
     nexttasks:
       '#none#':
       - "15"
-    scriptarguments:
-      rule_id:
-        simple: 3604df6f-a13b-47df-ac1e-b3e2f822aa20@705b1672-7be5-47e8-9837-c849b9b16632@b1503d7b-48f5-45fe-bff5-f07f22faac44@df7fc627-5d6d-489e-94d3-15a1990db27e
     separatecontext: false
     continueonerrortype: ""
     view: |-

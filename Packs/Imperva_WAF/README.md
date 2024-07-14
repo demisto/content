@@ -1,5 +1,7 @@
 # Imperva WAF
-This pack includes Cortex XSIAM content. 
+This pack includes Cortex XSIAM content.
+
+<~XSIAM>
 ## Configuration on Server Side
 You need to configure Imperva WAF to forward Syslog messages in CEF format.
 
@@ -19,3 +21,4 @@ You can configure the specific vendor and product for this instance.
 3. When configuring the Syslog Collector, set the following values:
    - vendor as vendor - imperva_inc_
    - product as product - securesphere
+</~XSIAM>
