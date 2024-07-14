@@ -2,7 +2,7 @@ comment: Widget Script to present the number of large incidents
 commonfields:
   id: HealthCheckNumberOfLargeIncidents
   version: -1
-dockerimage: demisto/python3:3.10.11.58677
+dockerimage: demisto/python3:3.10.14.100715
 enabled: true
 name: HealthCheckNumberOfLargeIncidents
 runas: DBotWeakRole

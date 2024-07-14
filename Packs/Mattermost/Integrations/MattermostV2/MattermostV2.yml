@@ -191,7 +191,7 @@ script:
     - description: The name of the channel to create.
       name: name
       required: true
-    - description: The type of the channel to create. 
+    - description: The type of the channel to create.
       name: type
       defaultValue: public
       predefined:
@@ -492,7 +492,7 @@ script:
       - 'false'
     - auto: PREDEFINED
       defaultValue: 'group'
-      description: Mirrors the investigation to a group (private channel) or a public channel. 
+      description: Mirrors the investigation to a group (private channel) or a public channel.
       name: mirrorTo
       predefined:
       - 'group'
@@ -504,7 +504,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/netutils:1.0.0.96365
+  dockerimage: demisto/netutils:1.0.0.99310
 fromversion: 6.10.0
 tests:
 - MattermostV2 - testplaybook
