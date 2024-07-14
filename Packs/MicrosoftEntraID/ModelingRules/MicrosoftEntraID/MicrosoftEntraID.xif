@@ -34,7 +34,7 @@ filter category = "AuditLogs"
 filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
 | call EntraID_Common_fields
 | alter
-        operatingSystem = if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null, json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null),
+        operatingSystem = if(json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != null and json_extract_scalar(properties, "$.deviceDetail.operatingSystem") != "", json_extract_scalar(properties, "$.deviceDetail.operatingSystem"), null),
         authenticationMethod = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethod"),
         authenticationMethodDetail = json_extract_scalar(arrayindex(json_extract_array(properties, "$.authenticationDetails"), 0), "$.authenticationMethodDetail")
 | alter
@@ -42,19 +42,19 @@ filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrinci
         xdm.event.duration = if(to_number(durationMs) != 0, to_number(durationMs), to_number(json_extract_scalar(properties, "$.processingTimeInMilliseconds")) != 0, to_number(json_extract_scalar(properties, "$.processingTimeInMilliseconds")), null),
         xdm.event.id = if(json_extract_scalar(properties, "$.originalRequestId") != null, json_extract_scalar(properties, "$.originalRequestId"), json_extract_scalar(properties, "$.id") != null, json_extract_scalar(properties, "$.id"), null),
         xdm.source.cloud.project_id = coalesce(json_extract_scalar(properties, "$.homeTenantId"), tenantId),
-        xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", ResultType),
-        xdm.event.outcome = if(ResultType = "0", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
+        xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultType),
+        xdm.event.outcome = if(resultType = "0", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
         xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
         xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
         xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
         xdm.source.application.name = if(json_extract_scalar(properties, "$.appDisplayName") != null, json_extract_scalar(properties, "$.appDisplayName"), json_extract_scalar(properties, "$.servicePrincipalName") != null, json_extract_scalar(properties, "$.servicePrincipalName"), null),
         xdm.auth.service = json_extract_scalar(properties, "$.clientAppUsed"),
-        xdm.source.host.device_id = if(json_extract_scalar(properties, "$.deviceDetail.deviceId") != null, json_extract_scalar(properties, "$.deviceDetail.deviceId"), null),
+        xdm.source.host.device_id = if(json_extract_scalar(properties, "$.deviceDetail.deviceId") != null and json_extract_scalar(properties, "$.deviceDetail.deviceId") != "", json_extract_scalar(properties, "$.deviceDetail.deviceId"), null),
         xdm.source.host.os = operatingSystem,
         xdm.source.host.os_family = if(operatingSystem contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, operatingSystem contains "mac", XDM_CONST.OS_FAMILY_MACOS, operatingSystem contains "linux", XDM_CONST.OS_FAMILY_LINUX, operatingSystem contains "android", XDM_CONST.OS_FAMILY_ANDROID, operatingSystem contains "ios", XDM_CONST.OS_FAMILY_IOS, operatingSystem contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, operatingSystem contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, operatingSystem contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, operatingSystem contains "centos", XDM_CONST.OS_FAMILY_CENTOS, operatingSystem contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, operatingSystem contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, operatingSystem contains "scada", XDM_CONST.OS_FAMILY_SCADA, null),
-        xdm.network.http.browser = if(json_extract_scalar(properties, "$.deviceDetail.browser") != null, json_extract_scalar(properties, "$.deviceDetail.browser"), null),
+        xdm.network.http.browser = if(json_extract_scalar(properties, "$.deviceDetail.browser") != null and json_extract_scalar(properties, "$.deviceDetail.browser") != "", json_extract_scalar(properties, "$.deviceDetail.browser"), null),
         xdm.source.location.country = location,
-        xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null, json_extract_scalar(properties, "$.location.city"), null),
+        xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
         xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
         xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
         xdm.logon.type = if(category = "SignInLogs", XDM_CONST.LOGON_TYPE_INTERACTIVE, category = "NonInteractiveUserSignInLogs", "non-interactive", category = "ServicePrincipalSignInLogs" or category = "ManagedIdentitySignInLogs", XDM_CONST.LOGON_TYPE_SERVICE, null),
@@ -78,7 +78,7 @@ filter category = "ProvisioningLogs"
         xdm.event.original_event_type = category,
         xdm.event.duration = to_number(durationMs),
         xdm.event.type = operationName,
-        xdm.event.outcome = if(lowercase(ResultType) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(ResultType) = "failure", XDM_CONST.OUTCOME_FAILED, null),
+        xdm.event.outcome = if(lowercase(resultType) = "success", XDM_CONST.OUTCOME_SUCCESS, lowercase(resultType) = "failure", XDM_CONST.OUTCOME_FAILED, null),
         xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultSignature),
         xdm.event.description = arraystring(json_extract_array(properties, "$.provisioningSteps"), " **Next Step:** "),
         xdm.source.cloud.project_id = tenantId,
