@@ -282,7 +282,7 @@ tasks:
     task:
       id: a176df9f-baef-4027-86b5-65f7205e9a52
       version: -1
-      name: Sleep 1 second
+      name: Sleep 10 second
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -293,7 +293,7 @@ tasks:
       - '6'
     scriptarguments:
       seconds:
-        simple: '1'
+        simple: '10'
     separatecontext: false
     view: |-
       {
@@ -316,7 +316,7 @@ tasks:
     task:
       id: af99be74-d576-4564-8011-062ce60647c3
       version: -1
-      name: Sleep 1 second
+      name: Sleep 10 second
       description: Sleep for X seconds
       scriptName: Sleep
       type: regular
@@ -327,7 +327,7 @@ tasks:
       - '2'
     scriptarguments:
       seconds:
-        simple: '1'
+        simple: '10'
     separatecontext: false
     view: |-
       {
