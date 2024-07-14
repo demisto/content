@@ -1,5 +1,7 @@
 id: Zimperium Incident Enrichment
 version: -1
+contentitemexportablefields:
+  contentitemfields: {}
 name: Zimperium Incident Enrichment
 description: Enriches Zimperium incidents.
 fromversion: 5.0.0
@@ -18,13 +20,14 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "3"
+      - "4"
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 360,
+          "y": -160
         }
       }
     note: false
@@ -32,6 +35,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
     taskid: df4f2e79-a148-4be4-8e20-a6f1f7508b74
@@ -40,11 +45,11 @@ tasks:
       id: df4f2e79-a148-4be4-8e20-a6f1f7508b74
       version: -1
       name: Get device details by zimperium ID
-      description: Retrieve details for a single device.
-      script: '|||zimperium-device-get-by-id'
+      description: Retrieves details for a single device.
+      script: Zimperium|||zimperium-device-get-by-id
       type: regular
       iscommand: true
-      brand: ""
+      brand: Zimperium
     nexttasks:
       '#none#':
       - "2"
@@ -67,6 +72,8 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
     taskid: cef0f8eb-e0ec-4e4c-89df-b068136369b5
@@ -76,10 +83,13 @@ tasks:
       version: -1
       name: Get user details by email
       description: Search users.
-      script: '|||zimperium-users-search'
+      script: Zimperium|||zimperium-users-search
       type: regular
       iscommand: true
-      brand: ""
+      brand: Zimperium
+    nexttasks:
+      '#none#':
+      - "7"
     scriptarguments:
       email:
         complex:
@@ -89,11 +99,12 @@ tasks:
       query: {}
       size: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 370
+          "y": 390
         }
       }
     note: false
@@ -101,15 +112,196 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7d8a6e60-6dca-421d-8007-7a5400d82bcd
+    type: condition
+    task:
+      id: 7d8a6e60-6dca-421d-8007-7a5400d82bcd
+      version: -1
+      name: Is Zimperium Integration Enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "1"
+    scriptarguments:
+      brandname:
+        simple: Zimperium
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9ec7763e-f65b-483c-80f8-762b68b224a1
+    type: condition
+    task:
+      id: 9ec7763e-f65b-483c-80f8-762b68b224a1
+      version: -1
+      name: Is Zimperium v2 Integration Enabled?
+      description: Returns 'yes' if the integration brand is available. Otherwise returns 'no'
+      scriptName: IsIntegrationAvailable
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "7"
+      "yes":
+      - "5"
+    scriptarguments:
+      brandname:
+        simple: Zimperium v2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": -10
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 8462f59a-a2be-43dc-8cf3-12b464706e4f
+    type: regular
+    task:
+      id: 8462f59a-a2be-43dc-8cf3-12b464706e4f
+      version: -1
+      name: Get device details by zimperium ID
+      description: Search devices.
+      script: Zimperium v2|||zimperium-devices-search
+      type: regular
+      iscommand: true
+      brand: Zimperium v2
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      device_id:
+        complex:
+          root: incident
+          accessor: deviceid
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: d8e0b4bb-131f-4534-8be0-86696a31adc9
+    type: regular
+    task:
+      id: d8e0b4bb-131f-4534-8be0-86696a31adc9
+      version: -1
+      name: Get user details by email
+      description: Search users. Only a user created as a "Team admin" is authorized to perform this request. Also, it will only get information about the teams that this user is associated with. Users that are not part of any team (such as account admin) won’t appear in the response.
+      script: Zimperium v2|||zimperium-users-search
+      type: regular
+      iscommand: true
+      brand: Zimperium v2
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      email:
+        complex:
+          root: incident
+          accessor: deviceusername
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 640,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: d140665f-d184-444d-8d36-145f590b9a82
+    type: title
+    task:
+      id: d140665f-d184-444d-8d36-145f590b9a82
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 360,
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+system: true
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "3_1_yes": 0.47
+    },
     "paper": {
       "dimensions": {
-        "height": 415,
-        "width": 380,
+        "height": 785,
+        "width": 970,
         "x": 50,
-        "y": 50
+        "y": -160
       }
     }
   }

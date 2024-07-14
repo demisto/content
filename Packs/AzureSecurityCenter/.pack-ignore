@@ -1,5 +1,5 @@
 [file:AzureSecurityCenter_v2.yml]
-ignore=BA108,BA109,DS107,IN124
+ignore=BA108,BA109,DS107
 
 [file:README.md]
 ignore=RM106

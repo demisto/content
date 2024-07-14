@@ -218,6 +218,33 @@ def test_get_incidents_by_query_with_populate_fields(mocker):
     assert all(set(inc.keys()) == {"id", "name", "testField"} for inc in results)
 
 
+def test_get_incidents_by_query_with_populate_fields_with_pipe_separator(mocker):
+    """
+    Given:
+    - A mock incidents database (INCIDENTS_LIST)
+    - Search incidents query arguments that should return 4 incidents (same as the sanity test)
+    When:
+    - populateFields is id|name|testField
+    Then:
+    - Ensure the expected 4 incidents are returned
+    - Ensure the returned incidents' keys are "id", "name", and "testField" only.
+    """
+    mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
+    args = {
+        "incidentTypes": "Phishing,Malware",
+        "timeField": "created",
+        "fromDate": "2019-02-01T00:00:00",
+        "toDate": "3 days ago",
+        "limit": "10",
+        "includeContext": "false",
+        "pageSize": "10",
+        "populateFields": "id|name|testField"
+    }
+    results = get_incidents_by_query(args)
+    assert len(results) == 4
+    assert all(set(inc.keys()) == {"id", "name", "testField"} for inc in results)
+
+
 def test_get_incidents_by_query_with_context(mocker):
     """
     - A mock incidents database (INCIDENTS_LIST)
@@ -226,7 +253,7 @@ def test_get_incidents_by_query_with_context(mocker):
     - includeContext is true
     Then:
     - Ensure the expected 4 incidents are returned
-    - Ensure each incidents has a non-empty context key
+    - Ensure each incident has a non-empty context key
     """
     mocker.patch.object(demisto, "executeCommand", side_effect=mock_execute_command)
     args = {

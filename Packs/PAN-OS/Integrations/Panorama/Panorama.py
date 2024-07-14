@@ -14210,22 +14210,25 @@ def filter_fetched_entries(entries_dict: dict[str, list[dict[str, Any]]], id_dic
     return new_entries_dict
 
 
-def update_max_fetch_dict(configured_max_fetch: int, max_fetch_dict: MaxFetch, last_fetch_dict: LastFetchTimes) -> MaxFetch:
+def update_max_fetch_dict(max_fetch_dict: MaxFetch,
+                          last_fetch_dict: LastFetchTimes,
+                          new_incident_entries: dict) -> MaxFetch:
     """ This function updates the max fetch value for each log type according to the last fetch timestamp.
     Args:
-        configured_max_fetch (int): the max fetch value for the first fetch cycle
         max_fetch_dict (MaxFetch): a dictionary of log type and its max fetch value
         last_fetch_dict (LastFetchTimes): a dictionary of log type and its last fetch timestamp
+        new_incident_entries (dict): a dictionary of log type and its raw entries without entries that have already been fetched in the previous fetch cycle.
     Returns:
         max_fetch_dict (MaxFetch): a dictionary of log type and its updated max fetch value
     """
+    configured_max_fetch = arg_to_number(demisto.params().get('max_fetch', 100))
     previous_last_fetch = demisto.getLastRun().get("last_fetch_dict", {})
     # If the latest timestamp of the current fetch is the same as the previous fetch timestamp,
     # that means we did not get all logs for that timestamp, in such a case, we will increase the limit to be last limit + configured limit.
     new_max_fetch = {
         log_type: max_fetch_dict[log_type] + configured_max_fetch  # type: ignore[literal-required]
         for log_type, last_fetch in last_fetch_dict.items()
-        if previous_last_fetch.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
+        if new_incident_entries.get(log_type) and previous_last_fetch.get(log_type) == last_fetch
     }
     demisto.debug(f"{new_max_fetch=}")
     return cast(MaxFetch, new_max_fetch)
@@ -14414,7 +14417,7 @@ def get_parsed_incident_entries(incident_entries_dict: dict[str, list[dict[str, 
 def fetch_incidents(last_run: LastRun, first_fetch: str,
                     queries_dict: QueryMap, max_fetch_dict: MaxFetch,
                     fetch_job_polling_max_num_attempts: int
-                    ) -> tuple[LastFetchTimes, LastIDs, list[dict[str, list]]]:
+                    ) -> tuple[LastRun, list[dict[str, list]]]:
     """run one cycle of fetch incidents.
 
     Args:
@@ -14425,7 +14428,7 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
         fetch_job_polling_max_num_attempts (int): The maximal number of attempts to try and pull results for each log type
 
     Returns:
-        (LastFetchTimes, LastIDs, List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
+        (LastRun, List[Dict[str, list]]): last fetch per log type dictionary, last unique id per log type dictionary, parsed incidents tuple
     """
     last_fetch_dict = last_run.get('last_fetch_dict', {})
     last_id_dict = last_run.get('last_id_dict', {})
@@ -14447,7 +14450,12 @@ def fetch_incidents(last_run: LastRun, first_fetch: str,
     parsed_incident_entries_list = get_parsed_incident_entries(
         unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
-    return last_fetch_dict, last_id_dict, parsed_incident_entries_list  # type: ignore[return-value]
+    next_max_fetch = update_max_fetch_dict(max_fetch_dict, last_fetch_dict,  # type: ignore[arg-type]
+                                           unique_incident_entries_dict)  # type: ignore[arg-type]
+    new_last_run = LastRun(last_fetch_dict=last_fetch_dict, last_id_dict=last_id_dict,  # type: ignore[typeddict-item]
+                           max_fetch_dict=next_max_fetch)  # type: ignore[typeddict-item]
+
+    return new_last_run, parsed_incident_entries_list  # type: ignore[return-value]
 
 
 def test_fetch_incidents_parameters(fetch_params):
@@ -14501,11 +14509,10 @@ def main():  # pragma: no cover
             fetch_max_attempts = arg_to_number(params['fetch_job_polling_max_num_attempts'])
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch) | last_run.get('max_fetch_dict', {}))
 
-            last_fetch, last_ids, incident_entries = fetch_incidents(
+            new_last_run, incident_entries = fetch_incidents(
                 last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
-            next_max_fetch = update_max_fetch_dict(configured_max_fetch, max_fetch, last_fetch)  # type: ignore[arg-type]
 
-            demisto.setLastRun(LastRun(last_fetch_dict=last_fetch, last_id_dict=last_ids, max_fetch_dict=next_max_fetch))
+            demisto.setLastRun(new_last_run)
             demisto.incidents(incident_entries)
 
         elif command == 'panorama' or command == 'pan-os':
