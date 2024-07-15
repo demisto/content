@@ -3,71 +3,6 @@
     "feed": false,
     "id": "Sekoia XDR - Incoming Mapper",
     "mapping": {
-        "Carbon Black EDR": {
-            "dontMapEventToLabels": true,
-            "internalMapping": {
-                "Carbon Black EDR IOC Value": {
-                    "simple": "ioc_value"
-                },
-                "Carbon Black EDR Segment ID": {
-                    "simple": "segment_id"
-                },
-                "Carbon Black EDR Unique ID": {
-                    "simple": "unique_id"
-                },
-                "Carbon Black EDR Watchlist Id": {
-                    "simple": "watchlist_id"
-                },
-                "Carbon Black EDR Watchlist Name": {
-                    "simple": "watchlist_name"
-                },
-                "Device External IP": {
-                    "simple": "interface_ip"
-                },
-                "Device Id": {
-                    "simple": "sensor_id"
-                },
-                "Device Name": {
-                    "simple": "hostname"
-                },
-                "Event Descriptions": {
-                    "simple": "description"
-                },
-                "Event Type": {
-                    "simple": "alert_type"
-                },
-                "Incident Link": {
-                    "simple": "link"
-                },
-                "Log Source": {
-                    "simple": "feed_name"
-                },
-                "MD5": {
-                    "simple": "md5"
-                },
-                "OS": {
-                    "simple": "os_type"
-                },
-                "PID": {
-                    "simple": "process_id"
-                },
-                "Process Name": {
-                    "simple": "process_name"
-                },
-                "Process Path": {
-                    "simple": "process_path"
-                },
-                "Resource Type": {
-                    "simple": "ioc_type"
-                },
-                "Username": {
-                    "simple": "username"
-                },
-                "severity": {
-                    "simple": "alert_severity"
-                }
-            }
-        },
         "Sekoia XDR": {
             "dontMapEventToLabels": true,
             "internalMapping": {
@@ -121,43 +56,6 @@
                 },
                 "dbotMirrorInstance": {
                     "simple": "mirror_instance"
-                }
-            }
-        },
-        "Test": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Alert Category": {
-                    "simple": "alert_type.category"
-                },
-                "Alert ID": {
-                    "simple": "short_id"
-                },
-                "Alert Name": {
-                    "simple": "title"
-                },
-                "Alert Type ID": {
-                    "simple": "alert_type.value"
-                },
-                "Description": {
-                    "simple": "details"
-                },
-                "Source Create time": {
-                    "complex": {
-                        "filters": [],
-                        "root": "created_at",
-                        "transformers": [
-                            {
-                                "operator": "TimeStampToDate"
-                            }
-                        ]
-                    }
-                },
-                "Source IP": {
-                    "simple": "source"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "\"Sekoia XDR (beta)_copy_readWrite\""
                 }
             }
         },
