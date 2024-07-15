@@ -49,6 +49,7 @@ CHROME_OPTIONS = ["--headless",
                   ]
 
 WITH_ERRORS = demisto.params().get('with_error', True)
+IS_HTTP = demisto.params().get('is_https', False)
 
 # The default wait time before taking a screenshot
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
@@ -794,7 +795,8 @@ def perform_rasterize(path: str | list[str],
             rasterization_results = []
             for current_path in paths:
                 if not current_path.startswith('http') and not current_path.startswith('file:///'):
-                    current_path = f'http://{current_path}'
+                    protocol = 'http' + 's' * IS_HTTP
+                    current_path = f'{protocol}://{current_path}'
 
                 # Start a new thread in group of max_tabs
                 rasterization_threads.append(

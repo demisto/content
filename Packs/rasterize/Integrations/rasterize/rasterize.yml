@@ -39,6 +39,11 @@ configuration:
   defaultvalue: "10"
   type: 0
   additionalinfo:
+- display: Use secure requests protocol (HTTPS). 
+  name: is_https
+  type: 8
+  advanced: true
+  defaultvalue: false
 - name: rasterize_mode
   display: Rasterize Mode
   required: false
