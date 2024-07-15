@@ -12,6 +12,10 @@ args:
 - defaultValue: '443'
   description: The endpoint port. Default is 443.
   name: port
+- defaultValue: ''
+  description: 'Extra arguments to pass to openssl. eg. -msg,-debug'
+  name: openssl_extra_keys
+  isArray: true
 comment: Exports all certificate-related information from the Python Docker container and decodes it using RFC. It also retrieves the certificate located in the specified endpoint.
 commonfields:
   id: CertificatesTroubleshoot

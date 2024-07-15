@@ -188,8 +188,9 @@ def get_certificates(endpoint: str, port: str) -> str:
     """
     mode = demisto.getArg('mode') or 'python'
     if mode == "openssl":
+        keys = argToList(args.get('openssl_extra_keys'), [])
         openssl_res = subprocess.check_output(['openssl', 's_client', '-servername', endpoint,
-                                               '-host', endpoint, '-port', port, '-showcerts'], text=True,
+                                               '-host', endpoint, '-port', port, '-showcerts' *keys], text=True,
                                               stderr=subprocess.STDOUT)
         demisto.debug(f'openssl output: {openssl_res}')
         return '\n'.join(re.findall(r'^-----BEGIN CERT.*?^-----END CERTIFICATE-----', openssl_res, re.DOTALL | re.MULTILINE))
