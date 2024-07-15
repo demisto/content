@@ -5,7 +5,6 @@ import builtins
 import collections
 import math
 from datetime import datetime
-from typing import Dict, Tuple, Type
 
 import dill as pickle
 import hdbscan
@@ -303,18 +302,18 @@ def extract_fields_from_args(arg: list[str]) -> list[str]:
     :param arg: List of field
     :return: List of field without prefix
     """
-    fields_list = [preprocess_incidents_field(x.strip(), 'incident.') for x in arg if x]
+    fields_list = [preprocess_incidents_field(x) for x in arg if x]
     return list(dict.fromkeys(fields_list))
 
 
-def preprocess_incidents_field(incidents_field: str, prefix_to_remove: list[str]) -> str:
+def preprocess_incidents_field(incidents_field: str) -> str:
     """
     Remove prefixe from incident fields
     :param incidents_field: field
     :param prefix_to_remove: prefix_to_remove
     :return: field without prefix
     """
-    return incidents_field.strip().removeprefix(prefix_to_remove)
+    return incidents_field.strip().removeprefix('incident.')
 
 
 def get_args():  # type: ignore
@@ -509,7 +508,7 @@ def normalize_command_line(command) -> str:
         return ''
 
 
-def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool,
+def store_model_in_demisto(model: PostProcessing, model_name: str, model_override: bool,
                            model_hidden: bool) -> None:
     model_data = base64.b64encode(pickle.dumps(model)).decode('utf-8')  # guardrails-disable-line
     res = demisto.executeCommand('createMLModel', {'modelData': model_data,
@@ -523,7 +522,7 @@ def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_o
         return_error(get_error(res))
 
 
-def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
+def is_clustering_valid(clustering_model: Clustering) -> bool:
     """
     Criteria to decide if clustering is valid or not (like not enough clusters)
     :param clustering_model: Clustering model
@@ -536,7 +535,7 @@ def is_clustering_valid(clustering_model: Type[Clustering]) -> bool:
     return True
 
 
-def create_clusters_json(model_processed: Type[PostProcessing], incidents_df: pd.DataFrame, type: str,
+def create_clusters_json(model_processed: PostProcessing, incidents_df: pd.DataFrame, type: str,
                          display_fields: list[str], fields_for_clustering: list[str]) -> str:
     """
 
@@ -606,14 +605,14 @@ def remove_fields_not_in_incident(*args, incorrect_fields: list[str]) -> list[st
     return [[x for x in field_type if x not in incorrect_fields] for field_type in args]  # type: ignore
 
 
-def get_results(model_processed: Type[PostProcessing]):
+def get_results(model_processed: PostProcessing):
     number_of_sample = model_processed.stats["General"]["Nb sample"]
     number_clusters_selected = len(model_processed.selected_clusters) - 1
     number_of_outliers = number_of_sample - model_processed.stats['number_of_clusterized_sample_after_selection']
     return number_of_sample, number_clusters_selected, number_of_outliers
 
 
-def create_summary(model_processed: Type[PostProcessing], fields_for_clustering: list[str],
+def create_summary(model_processed: PostProcessing, fields_for_clustering: list[str],
                    field_for_cluster_name: list[str]) -> dict:
     """
     Create json with summary of the training
@@ -652,7 +651,7 @@ def create_summary(model_processed: Type[PostProcessing], fields_for_clustering:
     return summary
 
 
-def return_entry_clustering(output_clustering: Dict, tag: str = None) -> None:
+def return_entry_clustering(output_clustering: dict, tag: str = None) -> None:
     """
     Create and return entry with the JSON containing the clusters
     :param output_clustering: json with the cluster
@@ -718,7 +717,7 @@ def most_frequent(values: list):
 
 
 def remove_not_valid_field(fields_for_clustering: list[str], incidents_df: pd.DataFrame, global_msg: str,
-                           max_ratio_of_missing_value: float) -> Tuple[list[str], str]:
+                           max_ratio_of_missing_value: float) -> tuple[list[str], str]:
     """
     Remove fields that are not valid (like too small number of sample)
     :param fields_for_clustering: List of field to use for the clustering
@@ -916,7 +915,7 @@ def main():
 
         # Case where no field for clustrering or field for cluster name if not empty and incorrect)
         if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
-            global_msg += "%s \n" % MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
+            global_msg += MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
             demisto.results(global_msg)
             return None, {}, global_msg
 
@@ -957,7 +956,7 @@ def main():
         model_processed.global_msg = global_msg
 
         if debug:
-            return_outputs(readable_output='## Warning \n {}'.format(global_msg) + tableToMarkdown("Summary", summary))
+            return_outputs(readable_output=f'## Warning \n {global_msg}' + tableToMarkdown("Summary", summary))
         else:
             field_clustering = ' , '.join(fields_for_clustering)
             field_name = field_for_cluster_name[0] if field_for_cluster_name else ""

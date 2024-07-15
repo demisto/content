@@ -82,6 +82,10 @@ args:
   predefined:
   - char
   - word
+outputs:
+- contextPath: DBotTrainClustering
+  description: The data of the clusters in json format.
+  type: String
 comment: Train clustering model on any incident type.
 commonfields:
   id: DBotTrainClustering
