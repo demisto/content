@@ -2,30 +2,47 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
-def main():
-    incident = demisto.incident()
-    alert_uuid = incident.get("CustomFields", {}).get("alertuuid")
-    readable_output = (
-        "### {{color:green}}(There is no case information related to this alert.)"
-    )
+def create_case_object(cases):
+    return [
+        {
+            "title": case_item["title"],
+            "description": case_item["description"],
+            "status": case_item["status"].capitalize(),
+            "priority": case_item["priority"].capitalize(),
+            "related alerts": ", ".join(
+                [alert["short_id"] for alert in case_item["alerts"]]
+            ),
+        }
+        for case_item in cases
+    ]
 
+
+def get_case_info(alert_uuid: str):
+    readable_output = ""
     try:
         cases = execute_command("sekoia-xdr-get-cases-alert", {"alert_id": alert_uuid})
     except Exception as e:
         return_error(f"Failed to get case information: {str(e)}")
 
     if cases:
-        for case in cases:
-            case_title = case["title"]  # type: ignore
-            case_description = case["description"]  # type: ignore
-            case_id = case["short_id"]  # type: ignore
-            case_status = case["status"]  # type: ignore
-            case_priority = case["priority"]  # type: ignore
-            alerts = [alert["short_id"] for alert in case["alerts"]]  # type: ignore
+        readable_cases = create_case_object(cases)
+        headers = ["title", "description", "status", "priority", "related alerts"]
+        readable_output = tableToMarkdown(
+            "Cases information:", readable_cases, headers=headers
+        )
+    else:
+        readable_output = (
+            "### {{color:green}}(There is no case information related to this alert.)"
+        )
 
-        readable_output = f"### Case {case_id}:\n|Case title:|Case description:|Case status:\
-            |Case priority:|Related Alerts:|\n|---|---|---|---|---|\n| \
-            {case_title} | {case_description} | {case_status.capitalize()} | {case_priority.capitalize()} | {', '.join(alerts)}"
+    return readable_output
+
+
+def main():
+    incident = demisto.incident()
+    alert_uuid = incident.get("CustomFields", {}).get("alertuuid")
+
+    readable_output = get_case_info(alert_uuid)
 
     command_results = CommandResults(readable_output=readable_output)
     return_results(command_results)

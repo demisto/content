@@ -2,35 +2,53 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
+def get_username():
+    get_users = execute_command("getUsers", {"current": "true"})
+    username = get_users[0]["name"]  # type: ignore
+    return username
+
+
+def post_comment(alert_short_id: str, comment: Optional[str], author: str):
+    try:
+        execute_command(
+            "sekoia-xdr-post-comment-alert",
+            {"id": alert_short_id, "comment": comment, "author": author},
+        )
+    except Exception as e:
+        return_error(
+            f"Failed to post comment for alert with id {alert_short_id} : {str(e)}"
+        )
+
+
+def update_status(MirrorEnable: str, alert_short_id: str, new_status: str):
+    if MirrorEnable in ["Out", "Both"]:
+        execute_command("setIncident", {"sekoiaalertstatus": new_status})
+    elif MirrorEnable == "In":
+        execute_command(
+            "sekoia-xdr-update-status-alert",
+            {"id": alert_short_id, "status": new_status},
+        )
+    else:
+        execute_command(
+            "sekoia-xdr-update-status-alert",
+            {"id": alert_short_id, "status": new_status},
+        )
+        execute_command("setIncident", {"sekoiaalertstatus": new_status})
+
+
 def main():
     incident = demisto.incidents()[0]  # type: ignore
     isMirrorEnable = incident.get("dbotMirrorDirection")
-    alert_short_id = demisto.args().get("short_id")
-    new_status = demisto.args().get("status")
+    alert_short_id = demisto.args()["short_id"]
+    new_status = demisto.args()["status"]
     comment = demisto.args().get("comment")
 
     if new_status in ["Ongoing", "Acknowledged"]:
         if comment:
-            user = execute_command("getUsers", {"current": "true"})[0]["name"]  # type: ignore
-            execute_command(
-                "sekoia-xdr-post-comment-alert",
-                {"id": alert_short_id, "comment": comment, "author": user},
-            )
-        if isMirrorEnable in ["Out", "Both"]:
-            execute_command("setIncident", {"sekoiaalertstatus": new_status})
-        elif isMirrorEnable == "In":
-            execute_command(
-                "sekoia-xdr-update-status-alert",
-                {"id": alert_short_id, "status": new_status},
-            )
-        else:
-            execute_command(
-                "sekoia-xdr-update-status-alert",
-                {"id": alert_short_id, "status": new_status},
-            )
-            execute_command("setIncident", {"sekoiaalertstatus": new_status})
+            post_comment(alert_short_id, comment, get_username())
+        update_status(isMirrorEnable, alert_short_id, new_status)
         readable_output = f"### Status of the alert changed to:\n {new_status}"
-        demisto.results(
+        return_results(
             {
                 "ContentsFormat": formats["markdown"],
                 "Type": entryTypes["note"],
@@ -39,9 +57,8 @@ def main():
         )
     else:
         raise Exception(
-            "Sorry, the alert was not possible to be changed to that status.\n \
-            If you want to reject or close the Sekoia Alert please do it \
-            by closing the XSOAR incident with the XSOAR close incident button."
+            f"Alert {alert_short_id} could not be changed to that status. \
+                Please reject or close the Sekoia Alert by closing the XSOAR incident using the XSOAR close incident button."
         )
 
 

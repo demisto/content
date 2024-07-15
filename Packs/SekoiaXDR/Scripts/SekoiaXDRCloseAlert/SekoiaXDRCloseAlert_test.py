@@ -1,0 +1,47 @@
+import demistomock as demisto
+import SekoiaXDRCloseAlert  # type: ignore
+from SekoiaXDRCloseAlert import get_status_name, get_username, post_closure_comment, close_alert  # type: ignore
+
+
+def test_get_status_name(mocker):
+    output_data = [{"Type": 3, "Contents": {"status": {"name": "Ongoing"}}}]
+    mocker.patch.object(demisto, "executeCommand", return_value=output_data)
+    assert get_status_name("1") == "Ongoing"
+
+
+def test_get_username(mocker):
+    output_data = [{"Type": 3, "Contents": {"name": "admin1"}}]
+    mocker.patch.object(demisto, "executeCommand", return_value=output_data)
+    assert get_username("admin") == "admin1"
+
+
+def test_post_closure_comment(mocker):
+    output_data = [{"Type": 3, "Contents": {"name": "admin1"}}]
+    mocker.patch.object(demisto, "executeCommand", return_value=output_data)
+    mocker.patch.object(SekoiaXDRCloseAlert, "get_username", return_value="admin1")
+    assert post_closure_comment("1", "reason", "notes", "admin") is None
+
+
+def test_close_alert(mocker):
+    mocker.patch.object(SekoiaXDRCloseAlert, "get_status_name", return_value="Ongoing")
+    output_data = [{"Type": 3, "Contents": {}}]
+    mocker.patch.object(demisto, "executeCommand", return_value=output_data)
+    mocker.patch.object(SekoiaXDRCloseAlert, "post_closure_comment", return_value=None)
+    mocker.patch.object(demisto, "results")
+    close_alert("1", "false", "Out", "reason", "notes", "admin")
+    assert (
+        demisto.results.call_args[0][0]["Contents"]
+        == "**** The alert 1 has been closed. ****"
+    )
+
+    close_alert("1", "true", "Out", "reason", "notes", "admin")
+    assert (
+        demisto.results.call_args[0][0]["Contents"]
+        == "**** The alert 1 has been rejected. ****"
+    )
+
+    mocker.patch.object(SekoiaXDRCloseAlert, "get_status_name", return_value="Closed")
+    try:
+        close_alert("1", "false", "Out", "reason", "notes", "admin")
+    except Exception as e:
+        assert str(e) == "**** The alert is already closed or rejected. ****"
