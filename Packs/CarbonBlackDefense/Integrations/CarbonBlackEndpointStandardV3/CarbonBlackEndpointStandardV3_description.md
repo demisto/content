@@ -4,14 +4,14 @@
 
 ### Create Access Levels and API Keys
 
-In this integration we use 2 rest API's with 2 different permissions. One for the policies commands and another for the rest all commands. Therefore, in addition to creating a Live Response API key and Live Response API secret key (for the policies commands), you also need to create a custom API key and a custom API secret key (for the rest all commands), with a custom access level.
+This integration uses two rest APIs with two different permissions, one for the policy commands and another for the rest all commands. Therefore, in addition to creating a Live Response API key and API secret key for the policy commands, you also need to create a custom API key and a custom API secret key for the rest all commands, with a custom access level.
 
 #### Create a Custom Access Level
 
 1. In the Carbon Black Cloud console, go to **Settings** > **API Access** > **Access Levels** tab.
 2. Open the *Add Access Level* panel. 
-2. Give the access level a unique name (you will need this for creating your API Key) and a description.
-3. In the table, scroll down until you see your API service category. Configure the required permissions. Some service categories have multiple
+3. Give the access level a unique name (you will need this for creating your API Key) and a description.
+4. In the table, scroll down until you see your API service category. Configure the required permissions. Some service categories have multiple
    permissions that can be configured.
 
 #### Create an API Key
