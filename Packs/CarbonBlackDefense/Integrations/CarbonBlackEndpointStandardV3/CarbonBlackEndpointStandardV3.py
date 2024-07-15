@@ -659,9 +659,10 @@ def create_policy_command(client: Client, args: dict):
 
     for field in ['name', 'priority_level', 'description']:
         if not policy.get(field):
-            if not args.get(field):
+            camelcase_field = underscoreToCamelCase(field, upper_camel=False)
+            if not args.get(camelcase_field):
                 raise DemistoException(f"Policy {field.replace('_', ' ')} is required.")
-            policy[field] = args.get(field)
+            policy[field] = args.get(camelcase_field)
 
     res = client.create_new_policy(policy)
 
@@ -699,9 +700,10 @@ def update_policy_command(client: Client, args: dict):
 
     for field in ['name', 'priority_level', 'description']:
         if not policy.get(field):
-            if not args.get(field):
+            camelcase_field = underscoreToCamelCase(field, upper_camel=False)
+            if not args.get(camelcase_field):
                 raise DemistoException(f"Policy {field.replace('_', ' ')} is required.")
-            policy[field] = args.get(field)
+            policy[field] = args.get(camelcase_field)
 
     res = client.update_policy(policy_id, policy)  # type: ignore[arg-type]
 
