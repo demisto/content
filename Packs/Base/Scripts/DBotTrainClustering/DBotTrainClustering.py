@@ -52,7 +52,7 @@ PALETTE_COLOR = ['0048BA', '#B0BF1A	', '#7CB9E8	', '#B284BE	', '#E52B50', '#FFBF
                  '#D0FF14']
 
 
-class Clustering(object):
+class Clustering:
     """
     Class to build a clustering model.
     """
@@ -754,9 +754,9 @@ def get_model_data(model_name):
 
 def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
     """
-    Return boolean if the model needs to be retrain based on the expiration of the model and force_retrain atgument
-    :param force_retrain: boolean if the user cho to retrain the model in any case
-    :param model_expiration: period in hour after which you want to retrain the model
+    Return boolean if the model needs to be retrain based on the expiration of the model and force_retrain argument
+    :param force_retrain: boolean if the user chooses to retrain the model in any case
+    :param model_expiration: period in hours after which you want to retrain the model
     :param model_name: model_name
     :return: PostProcessing model, boolean if needs to be retrained
     """
@@ -777,8 +777,7 @@ def load_model64(model_base64: str):
     :return: PostProcessing model
     """
     try:
-        model = pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
-        return model
+        return pickle.loads(base64.b64decode(model_base64))  # guardrails-disable-line
     except pickle.UnpicklingError:
         return_error("Model exist but cannot be loaded")
 
