@@ -2971,6 +2971,3 @@ Creates a process search job and returns results if 'polling' argument is True.
 | CarbonBlackEEDR.SearchProcess.results.process_username | String | User names related to the process. | 
 | CarbonBlackEEDR.SearchProcess.results.regmod_count | Number | The cumulative count of registry modifications since process tracking started. | 
 | CarbonBlackEEDR.SearchProcess.results.scriptload_count | Number | The cumulative count of loaded scripts since process tracking started. | 
-
-## Troubleshooting
-Note, due to duplicates alert that the API retreives, there might be less alerts than the set limit.
