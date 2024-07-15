@@ -21,6 +21,7 @@ import urllib3
 urllib3.disable_warnings()
 DEFAULT_FROM_FETCH_PARAMETER = '3 days'
 
+
 class EventFilter(NamedTuple):
     ui_name: str
     name: str
@@ -417,7 +418,7 @@ def main(command: str, demisto_params: dict):
             event_filters = ALL_EVENT_FILTERS
 
         after = demisto_params.get('after') or DEFAULT_FROM_FETCH_PARAMETER
-        
+
         if after and not isinstance(after, int):
             demisto.debug(f'MD: Got after argument: {after}')
             timestamp = dateparser.parse(after)  # type: ignore
@@ -428,8 +429,9 @@ def main(command: str, demisto_params: dict):
         request = DefenderHTTPRequest.parse_obj(demisto_params)
         authenticator = DefenderAuthenticator.parse_obj(demisto_params)
 
+        # Based on the flow of the code, after is always an int so ignore it
         client = DefenderClient(request=request, options=options, authenticator=authenticator,
-                                after=after)
+                                after=after)  # type:ignore[arg-type]
         get_events = DefenderGetEvents(client=client, base_url=request.url, options=options, event_filters=event_filters)
 
         if command == 'test-module':
