@@ -6,7 +6,7 @@ This integration was integrated and tested with version 7 of Carbon Black Endpoi
 
 The following commands from the Carbon Black Endpoint Standard v2 integration have been deprecated and replaced with v3 commands:
 
-| Deprecated Command | Replaced with v3 Commands | Comments |
+| Deprecated Command | New v3 Command | Comments |
 | --- | --- | --- |
 | [`cbd-find-events`](https://xsoar.pan.dev/docs/reference#cbd-find-observation) | [`cbd-find-observation`](https://xsoar.pan.dev/docs/reference#cbd-find-observation) | Includes `cbd-find-events-results`. |
 | [`cbd-find-events-results`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-results) | [`cbd-find-observation-results`](https://xsoar.pan.dev/docs/reference#cbd-find-observation-results) | Manually check results without polling. |
@@ -1231,7 +1231,7 @@ Creates a new policy on the CB Defense backend.
 | --- | --- | --- |
 | description | A description of the policy. Can be multiple lines. | Optional | 
 | name | A unique one-line name for the policy. | Optional | 
-| priorityLevel | The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW". Possible values are: MISSION_CRITICAL, HIGH, MEDIUM, LOW. | Optional | 
+| priorityLevel | The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW". | Optional | 
 | policy | The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object. | Required | 
 
 #### Context Output
@@ -1465,7 +1465,7 @@ Update an existing policy on the CB Defense backend.
 | --- | --- | --- |
 | description | A description of the policy. Can be multiple lines. | Optional | 
 | name | A unique one-line name for the policy. | Optional | 
-| priorityLevel | The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW". Possible values are: MISSION_CRITICAL, HIGH, MEDIUM, LOW. | Optional | 
+| priorityLevel | The priority score associated with sensors assigned to this policy. Possible values: "MISSION_CRITICAL", "HIGH", "MEDIUM", and "LOW". | Optional | 
 | id | The policy ID to update. | Required | 
 | policy | The JSON object containing the policy details. Make sure a valid policy object is passed. You can use the get-policy command to retrieve a similar policy object. Then you can reset some of the policy's fields with the set-policy command, and pass the edited object. | Required | 
 
@@ -1988,11 +1988,11 @@ Adds a new rule to an existing policy. Note: System policies cannot be modified.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY, and "TERMINATE_PROCESS". Possible values are: TERMINATE, IGNORE, TERMINATE_THREAD, ALLOW, DENY, TERMINATE_PROCESS. | Required | 
-| operation | Rule operation. Possible values are: BYPASS_ALL, BYPASS_API, INVOKE_SCRIPT, INVOKE_SYSAPP, POL_INVOKE_NOT_TRUSTED, INVOKE_CMD_INTERPRETER, RANSOM, NETWORK, CODE_INJECTION, PROCESS_ISOLATION, MEMORY_SCRAPE, RUN_INMEMORY_CODE, ESCALATE, RUN. | Required | 
-| required | Whether the rule is required. Possible values are: true, false. | Required | 
-| type | Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH". Possible values are: REPUTATION, SIGNED_BY, NAME_PATH. | Required | 
-| value | Application value. Possible values are: ADWARE,, COMMON_WHITE_LIST,, COMPANY_BLACK_LIST,, COMPANY_WHITE_LIST,, HEURISTIC,, IGNORE,, KNOWN_MALWARE,, LOCAL_WHITE,, NOT_LISTED,, PUP,, RESOLVING,, SUSPECT_MALWARE,, TRUSTED_WHITE_LIST. | Required | 
+| action | Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY, and "TERMINATE_PROCESS". | Required | 
+| operation | Rule operation. Possible values: BYPASS_ALL, BYPASS_API, INVOKE_SCRIPT, INVOKE_SYSAPP, POL_INVOKE_NOT_TRUSTED, INVOKE_CMD_INTERPRETER, RANSOM, NETWORK, CODE_INJECTION, PROCESS_ISOLATION, MEMORY_SCRAPE, RUN_INMEMORY_CODE, ESCALATE, RUN. | Required | 
+| required | Whether the rule is required. Possible values: true, false. | Required | 
+| type | Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH". | Required | 
+| value | Application value. Possible values: ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Required | 
 | policyId | The policy ID. | Required | 
 
 #### Context Output
@@ -2076,12 +2076,12 @@ Updates an existing rule with a new rule. Note: System policies cannot be modifi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY", and "TERMINATE_PROCESS". Possible values are: TERMINATE, IGNORE, TERMINATE_THREAD, ALLOW, DENY, TERMINATE_PROCESS. | Required | 
-| operation | Rule operation. Possible values are: BYPASS_ALL, BYPASS_API, INVOKE_SCRIPT, INVOKE_SYSAPP, POL_INVOKE_NOT_TRUSTED, INVOKE_CMD_INTERPRETER, RANSOM, NETWORK, CODE_INJECTION, PROCESS_ISOLATION, MEMORY_SCRAPE, RUN_INMEMORY_CODE, ESCALATE, RUN. | Required | 
-| required | Whether the rule is required. Possible values are: true, false. | Required | 
+| action | Rule action. Possible values: "TERMINATE", "IGNORE", "TERMINATE_THREAD", "ALLOW", "DENY", and "TERMINATE_PROCESS". | Required | 
+| operation | Rule operation. Possible values: BYPASS_ALL, BYPASS_API, INVOKE_SCRIPT, INVOKE_SYSAPP, POL_INVOKE_NOT_TRUSTED, INVOKE_CMD_INTERPRETER, RANSOM, NETWORK, CODE_INJECTION, PROCESS_ISOLATION, MEMORY_SCRAPE, RUN_INMEMORY_CODE, ESCALATE, RUN. | Required | 
+| required | Whether the rule is required. Possible values: true, false. | Required | 
 | id | Rule ID. | Required | 
-| type | Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH". Possible values are: REPUTATION, SIGNED_BY, NAME_PATH. | Required | 
-| value | Application value. Possible values are: ADWARE,, COMMON_WHITE_LIST,, COMPANY_BLACK_LIST,, COMPANY_WHITE_LIST,, HEURISTIC,, IGNORE,, KNOWN_MALWARE,, LOCAL_WHITE,, NOT_LISTED,, PUP,, RESOLVING,, SUSPECT_MALWARE,, TRUSTED_WHITE_LIST. | Required | 
+| type | Application type. Possible values: "REPUTATION", "SIGNED_BY", and "NAME_PATH". | Required | 
+| value | Application value. Possible values: ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Required | 
 | policyId | The policy ID. | Required | 
 
 #### Context Output
@@ -2373,28 +2373,28 @@ Creates a process search job and retrieves the search results. At least one of t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| polling | When set to "no", the function will not use polling and will return the process job ID. Possible values are: yes, no. Default is yes. | Optional | 
+| polling | When set to "no", the function will not use polling and will return the process job ID. Possible values: yes, no. Default is yes. | Optional | 
 | job_id | The unique process search job ID. This ID is used to retrieve the results of the process search initiated by the Carbon Black Cloud. If not provided, a new search job will be created based on the other provided arguments. | Optional | 
-| alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". Possible values are: THREAT, OBSERVED. | Optional | 
+| alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". | Optional | 
 | device_external_ip | The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format. | Optional | 
 | device_id | The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments. | Optional | 
 | device_internal_ip | The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format. | Optional | 
 | device_name | The hostname of the endpoint recorded by the sensor when last initialized. | Optional | 
-| device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". Possible values are: WINDOWS, MAC, LINUX. | Optional | 
+| device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". | Optional | 
 | device_timestamp | The sensor-reported timestamp of the batch of events in which this record was submitted to Carbon Black Cloud. specified as ISO 8601 timestamp in UTC for example: 2020-01-19T04:28:40.190Z. | Optional | 
-| event_type | The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload". Possible values are: filemod, netconn, regmod, modload, crossproc, childproc, scriptload, fileless_scriptload. | Optional | 
+| event_type | The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload". Possible values : filemod, netconn, regmod, modload, crossproc, childproc, scriptload, fileless_scriptload. | Optional | 
 | parent_name | The file system path of the parent process binary. | Optional | 
-| parent_reputation | The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 
+| parent_reputation | The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". | Optional | 
 | process_cmdline | The command line executed by the actor process. | Optional | 
 | process_guid | The unique process ID for the the actor process. | Optional | 
 | hash | Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash). | Optional | 
 | process_name | The file system path of the actor process binary. | Optional | 
 | process_pid | The process ID assigned by the operating system. This can be multi-valued for fork() or exec() process operations on Linux and macOS. | Optional | 
-| process_reputation | The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 
+| process_reputation | The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". | Optional | 
 | process_start_time | The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts. | Optional | 
-| process_terminated | Whether the process has terminated. Always "false" for enriched events (process termination not recorded). Possible values are: true, false. | Optional | 
+| process_terminated | Whether the process has terminated. Always "false" for enriched events (process termination not recorded). Possible values: true, false. | Optional | 
 | process_username | The user context in which the actor process was executed.<br/>MacOS - all users for the PID for fork() and exec() transitions.<br/>Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid(). | Optional | 
-| sensor_action | The action performed by the sensor on the process. Possible values: "TERMINATE", "DENY", and "SUSPEND". Possible values are: TERMINATE, DENY, SUSPEND. | Optional | 
+| sensor_action | The action performed by the sensor on the process. Possible values: "TERMINATE", "DENY", and "SUSPEND". | Optional | 
 | query | The query in Lucene syntax and/or value searches. | Optional | 
 | rows | The number of rows to request. | Optional | 
 | start | The first row to use for pagination. | Optional | 
@@ -2542,7 +2542,7 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| polling | When set to false, the function will not use polling and will return the process job ID. Possible values are: yes, no. Default is True. | Optional | 
+| polling | When set to false, the function will not use polling and will return the process job ID. Possible values: yes, no. Default is True. | Optional | 
 | job_id | The ID of the job to retrieve the details. This is used internally for polling. | Optional | 
 | alert_id | The ID of the alert to retrieve the observation details. Must be specified alone. | Optional | 
 | event_ids | A list of observation IDs to retrieve the details. Must be specified alone. | Optional | 
@@ -2769,26 +2769,26 @@ Fetches Carbon Black events details based on specified parameters. Supports poll
 | --- | --- | --- |
 | polling | When set to false, the function will not use polling and will return the process job ID. Possible values are: yes, no. Default is True. | Optional | 
 | job_id | The ID of the job to retrieve the observation. This is used internally for polling. | Optional | 
-| alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". Possible values are: THREAT, OBSERVED. | Optional | 
+| alert_category | The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED". | Optional | 
 | device_external_ip | The IP address of the endpoint according to Carbon Black Cloud. This IP address can differ from the device_internal_ip due to network proxy or NAT. Can be either IPv4 or IPv6 format. | Optional | 
 | device_id | The ID assigned to the endpoint by Carbon Black Cloud. This ID is unique across all Carbon Black Cloud environments. | Optional | 
 | device_internal_ip | The IP address of the endpoint reported by the sensor. Can be either IPv4 or IPv6 format. | Optional | 
 | device_name | The hostname of the endpoint recorded by the sensor when last initialized. | Optional | 
-| device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". Possible values are: WINDOWS, MAC, LINUX. | Optional | 
+| device_os | The operating system of the endpoint. Possible values: "WINDOWS", "MAC", "LINUX". | Optional | 
 | device_timestamp | The sensor-reported timestamp of the batch of events in which this record was submitted to Carbon Black Cloud. specified as ISO 8601 timestamp in UTC for example: 2020-01-19T04:28:40.190Z. | Optional | 
-| event_type | The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload". Possible values are: filemod, netconn, regmod, modload, crossproc, childproc, scriptload, fileless_scriptload. | Optional | 
+| event_type | The type of enriched event observed. Possible value: "filemod", "netconn", "regmod", "modload", "crossproc", "childproc", "scriptload", and "fileless_scriptload". Possible values: filemod, netconn, regmod, modload, crossproc, childproc, scriptload, fileless_scriptload. | Optional | 
 | parent_name | The file system path of the parent process binary. | Optional | 
-| parent_reputation | The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 
+| parent_reputation | The reputation of the parent process applied by Carbon Black Cloud when the event is initially processed. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". | Optional | 
 | process_cmdline | The command line executed by the actor process. | Optional | 
 | process_guid | The unique process ID for the actor process. | Optional | 
 | hash | Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash). | Optional | 
 | process_name | The file system path of the actor process binary. | Optional | 
 | process_pid | The process ID assigned by the operating system. This can be multi-valued for fork() or exec() process operations on Linux and macOS. | Optional | 
-| process_reputation | The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". Possible values are: ADAPTIVE_WHITE_LIST, ADWARE, COMMON_WHITE_LIST, COMPANY_BLACK_LIST, COMPANY_WHITE_LIST, HEURISTIC, IGNORE, KNOWN_MALWARE, LOCAL_WHITE, NOT_LISTED, PUP, RESOLVING, SUSPECT_MALWARE, TRUSTED_WHITE_LIST. | Optional | 
+| process_reputation | The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST". | Optional | 
 | process_start_time | The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts. | Optional | 
-| process_terminated | Whether the process has terminated. Possible values: "true" and "false". Always "false" for enriched events (process termination not recorded). Possible values are: true, false. | Optional | 
+| process_terminated | Whether the process has terminated. Possible values: "true" and "false". Always "false" for enriched events (process termination not recorded). | Optional | 
 | process_username | The user context in which the actor process was executed.<br/>MacOS - all users for the PID for fork() and exec() transitions.<br/>Linux - process user for exec() events, but in a future sensor release can be multi-valued due to setuid(). | Optional | 
-| sensor_action | The action performed by the sensor on the process. Possible values: "TERMINATE", "DENY", and "SUSPEND". Possible values are: TERMINATE, DENY, SUSPEND. | Optional | 
+| sensor_action | The action performed by the sensor on the process. Possible values: "TERMINATE", "DENY", and "SUSPEND". | Optional | 
 | query | The query in Lucene syntax and/or value searches. | Optional | 
 | rows | The number of rows to request. | Optional | 
 | start | The first row to use for pagination. | Optional | 
@@ -3012,10 +3012,10 @@ Searches devices in your organization.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | device_id | The device ID. | Optional | 
-| os | The operating system. Possible values: "WINDOWS", "MAC", "LINUX", and "OTHER". Possible values are: WINDOWS, MAC, LINUX, OTHER. | Optional | 
-| status | The status of the device. Possible values: "PENDING", "REGISTERED", "DEREGISTERED", "BYPASS", "ACTIVE", "INACTIVE", "ERROR", "ALL", "BYPASS_ON", "LIVE", "SENSOR_PENDING_UPDATE". Possible values are: PENDING, REGISTERED, DEREGISTERED, BYPASS, ACTIVE, INACTIVE, ERROR, ALL, BYPASS_ON, LIVE, SENSOR_PENDING_UPDATE. | Optional | 
+| os | The operating system. Possible values: "WINDOWS", "MAC", "LINUX", and "OTHER". | Optional | 
+| status | The status of the device. Possible values: "PENDING", "REGISTERED", "DEREGISTERED", "BYPASS", "ACTIVE", "INACTIVE", "ERROR", "ALL", "BYPASS_ON", "LIVE", "SENSOR_PENDING_UPDATE". | Optional | 
 | start_time | The time to start getting results. specified as ISO-8601 strings for example: "2021-01-27T12:43:26.243Z". | Optional | 
-| target_priority | The “Target value” configured in the policy assigned to the sensor. Possible values: "LOW", "MEDIUM", "HIGH", "MISSION_CRITICAL". Possible values are: LOW, MEDIUM, HIGH, MISSION_CRITICAL. | Optional | 
+| target_priority | The “Target value” configured in the policy assigned to the sensor. Possible values: "LOW", "MEDIUM", "HIGH", "MISSION_CRITICAL". | Optional | 
 | query | The query in Lucene syntax and/or value searches. | Optional | 
 | end_time | The time to stop getting results. specified as ISO-8601 strings for example: "2021-02-27T12:43:26.243Z". | Optional | 
 | rows | The maximum number of rows to return. Default is 20. Default is 20. | Optional | 
