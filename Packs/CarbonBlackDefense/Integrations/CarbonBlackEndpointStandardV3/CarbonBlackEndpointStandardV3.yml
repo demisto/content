@@ -15,13 +15,13 @@ configuration:
   required: true
   section: connect
 - name: custom_credentials
-  display: Custom Api Key (using for API version 7)
+  display: Custom Api Key (for API version 7)
   type: 9
   required: false
   additionalinfo: Also required for fetch
   section: connect
 - name: live_response_credentials
-  display: Api Key (Api/Live Response key using for API version 1)
+  display: Api Key (Api/Live Response key for API version 1)
   type: 9
   required: false
   section: connect
@@ -61,22 +61,22 @@ configuration:
   additionalinfo: Type of alert to be fetched.
   section: collect
 - name: device_id
-  display: Device id
+  display: Device ID
   type: 0
   required: false
-  additionalinfo: The alerts related to a specific device, represented by its ID.
+  additionalinfo: The alerts related to a specific device, according to the device ID.
   section: collect
 - name: policy_id
-  display: Policy id
+  display: Policy ID
   type: 0
   required: false
-  additionalinfo: The alerts related to a specific policy, represented by its ID.
+  additionalinfo: The alerts related to a specific policy, according to the policy ID.
   section: collect
 - name: device_username
   display: Device username
   type: 0
   required: false
-  additionalinfo: The alerts related to a specific device, represented by its username.
+  additionalinfo: The alerts related to a specific device, according to the device username.
   section: collect
 - name: min_severity
   display: Minimum severity
@@ -123,7 +123,7 @@ script:
     - name: alertId
       description: The ID of the alert.
       required: true
-    description: Get details about the events that led to an alert by its ID. This includes retrieving metadata around the alert as well as a list of all the events associated with the alert. Only API keys of type “API” can call the alerts API.
+    description: Gets alert details according to alert ID, including alert metadata and a list of all events associated with the alert. Only API keys of type “API” can call the alert API.
     outputs:
     - contextPath: CarbonBlackDefense.Alert.org_key
       description: The organization key associated with the alert.
@@ -132,7 +132,7 @@ script:
       description: The URL to view the alert in the Carbon Black Defense console.
       type: String
     - contextPath: CarbonBlackDefense.Alert.id
-      description: The unique identifier of the alert.
+      description: The unique alert ID.
       type: String
     - contextPath: CarbonBlackDefense.Alert.type
       description: The type of the alert.
@@ -165,10 +165,10 @@ script:
       description: The reason code for the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_id
-      description: The identifier of the threat related to the alert.
+      description: The threat ID related to the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.primary_event_id
-      description: The identifier of the primary event related to the alert.
+      description: The primary event ID related to the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.policy_applied
       description: The policy applied to the device when the alert was generated.
@@ -228,7 +228,7 @@ script:
       description: The name of the device related to the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_uem_id
-      description: The UEM (Unified Endpoint Management) identifier of the device.
+      description: The Unified Endpoint Management (UEM) ID of the device.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_target_value
       description: The target value of the device.
@@ -237,7 +237,7 @@ script:
       description: The policy applied to the device.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_policy_id
-      description: The identifier of the policy applied to the device.
+      description: The policy ID applied to the device.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.device_os
       description: The operating system of the device.
@@ -261,7 +261,7 @@ script:
       description: The asset group to which the device belongs.
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.mdr_alert
-      description: Indicates whether the alert is an MDR (Managed Detection and Response) alert.
+      description: Indicates whether the alert is a Managed Detection and Response (MDR) alert.
       type: Boolean
     - contextPath: CarbonBlackDefense.Alert.mdr_alert_notes_present
       description: Indicates whether MDR alert notes are present.
@@ -270,7 +270,7 @@ script:
       description: Indicates whether MDR threat notes are present.
       type: Boolean
     - contextPath: CarbonBlackDefense.Alert.report_id
-      description: The identifier of the report associated with the alert.
+      description: The report ID associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.report_name
       description: The name of the report associated with the alert.
@@ -285,13 +285,13 @@ script:
       description: The link to the report associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.ioc_id
-      description: The identifier of the indicator of compromise (IOC) related to the alert.
+      description: The indicator of compromise (IOC) ID related to the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.ioc_hit
       description: The IOC hit associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.id
-      description: The identifier of the watchlist associated with the alert.
+      description: The watchlist ID associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.name
       description: The name of the watchlist associated with the alert.
@@ -380,7 +380,7 @@ script:
   - name: cbd-alerts-search
     arguments:
     - name: type
-      description: The type of the alerts.
+      description: The alert type.
       auto: PREDEFINED
       predefined:
       - cbanalytics
@@ -422,18 +422,18 @@ script:
       - NOT_COMPANY_WHITE_OBSOLETE
       - LOCAL_WHITE
       - NOT_SUPPORTED
-      description: 'The reputation of the primary involved process. Possible values: "KNOWN_MALWARE", "NOT_LISTED", etc.'
+      description: 'The reputation of the primary involved process.'
     - name: tags
       description: The tags associated with the alert.
     - name: device_username
-      description: The username of the user logged on during the alert. If the user is not available then this may be populated with the device owner.
+      description: The username of the user logged on during the alert. If the user is not available, the device owner is used.
     - name: query
       description: The query in Lucene syntax and/or value searches.
     - name: rows
       description: The number of results to be returned.
     - name: start
       description: The number of the alert from where to start retrieving results.
-    description: Gets details on the events that led to an alert. This includes retrieving metadata around the alert as well as the event associated with the alert.
+    description: Gets alert details, including alert metadata and the event associated with the alert.
     outputs:
     - contextPath: CarbonBlackDefense.Alert.org_key
       description: The organization key associated with the alert.
@@ -442,7 +442,7 @@ script:
       description: The URL to view the alert in the Carbon Black Defense console.
       type: String
     - contextPath: CarbonBlackDefense.Alert.id
-      description: The unique identifier of the alert.
+      description: The unique alert ID.
       type: String
     - contextPath: CarbonBlackDefense.Alert.type
       description: The type of the alert.
@@ -475,10 +475,10 @@ script:
       description: The reason code for the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_id
-      description: The identifier of the threat related to the alert.
+      description: The unique alert ID
       type: String
     - contextPath: CarbonBlackDefense.Alert.primary_event_id
-      description: The identifier of the primary event related to the alert.
+      description: The primary event ID related to the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.policy_applied
       description: The policy applied to the device when the alert was generated.
@@ -532,13 +532,13 @@ script:
       description: Indicates whether the alert has been updated.
       type: Boolean
     - contextPath: CarbonBlackDefense.Alert.device_id
-      description: The identifier of the device related to the alert.
+      description: The device ID related to the alert.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.device_name
       description: The name of the device related to the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_uem_id
-      description: The UEM (Unified Endpoint Management) identifier of the device.
+      description: The Unified Endpoint Management (UEM) ID of the device.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_target_value
       description: The target value of the device.
@@ -547,7 +547,7 @@ script:
       description: The policy applied to the device.
       type: String
     - contextPath: CarbonBlackDefense.Alert.device_policy_id
-      description: The identifier of the policy applied to the device.
+      description: The policy ID applied to the device.
       type: Number
     - contextPath: CarbonBlackDefense.Alert.device_os
       description: The operating system of the device.
@@ -580,7 +580,7 @@ script:
       description: Indicates whether MDR threat notes are present.
       type: Boolean
     - contextPath: CarbonBlackDefense.Alert.report_id
-      description: The identifier of the report associated with the alert.
+      description: The report ID associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.report_name
       description: The name of the report associated with the alert.
@@ -589,13 +589,13 @@ script:
       description: The tags associated with the report.
       type: Unknown
     - contextPath: CarbonBlackDefense.Alert.ioc_id
-      description: The identifier of the indicator of compromise (IOC) related to the alert.
+      description: The indicator of compromise (IOC) ID related to the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.ioc_hit
       description: The IOC hit associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.id
-      description: The identifier of the watchlist associated with the alert.
+      description: The watchlist ID associated with the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.watchlists.name
       description: The name of the watchlist associated with the alert.
@@ -680,7 +680,7 @@ script:
       description: A brief summary or description of the policy.
       type: String
     - contextPath: CarbonBlackDefense.Policy.id
-      description: The unique identifier of the policy.
+      description: The unique policy ID.
       type: Number
     - contextPath: CarbonBlackDefense.Policy.name
       description: The name of the policy.
@@ -779,7 +779,7 @@ script:
       description: A description of the rule configuration.
       type: String
     - contextPath: CarbonBlackDefense.Policy.policy.rule_configs.id
-      description: The unique identifier of the rule configuration.
+      description: The unique rule configuration ID.
       type: String
     - contextPath: CarbonBlackDefense.Policy.policy.rule_configs.inherited_from
       description: The source from which the rule configuration is inherited.
@@ -887,7 +887,7 @@ script:
       description: The value of the application specified by the rule.
       type: String
     - contextPath: CarbonBlackDefense.Policy.policy.rules.id
-      description: The unique identifier of the rule.
+      description: The unique rule ID.
       type: Number
     - contextPath: CarbonBlackDefense.Policy.policy.rules.operation
       description: The operation specified by the rule.
@@ -902,7 +902,7 @@ script:
       description: A description of the sensor configuration.
       type: String
     - contextPath: CarbonBlackDefense.Policy.policy.sensor_configs.id
-      description: The unique identifier of the sensor configuration.
+      description: The unique sensor configuration ID.
       type: String
     - contextPath: CarbonBlackDefense.Policy.policy.sensor_configs.inherited_from
       description: The source from which the sensor configuration is inherited.
@@ -932,7 +932,7 @@ script:
       description: A brief summary or description of the policy.
       type: String
     - contextPath: CarbonBlackDefense.PolicySummary.id
-      description: The unique identifier of the policy.
+      description: The unique policy ID.
       type: Number
     - contextPath: CarbonBlackDefense.PolicySummary.is_system
       description: Indicates whether the policy is a system policy.
@@ -975,7 +975,7 @@ script:
       description: A brief summary or description of the policy.
       type: String
     - contextPath: CarbonBlackDefense.Policy.id
-      description: The unique identifier of the policy.
+      description: The unique policy ID.
       type: Number
     - contextPath: CarbonBlackDefense.Policy.name
       description: The name of the policy.
@@ -1186,7 +1186,7 @@ script:
       description: A brief summary or description of the policy.
       type: String
     - contextPath: CarbonBlackDefense.Policy.id
-      description: The unique identifier of the policy.
+      description: The unique policy ID.
       type: Number
     - contextPath: CarbonBlackDefense.Policy.name
       description: The name of the policy.
@@ -1385,7 +1385,7 @@ script:
       description: A brief summary or description of the policy.
       type: String
     - contextPath: CarbonBlackDefense.Policy.id
-      description: The unique identifier of the policy.
+      description: The unique policy ID.
       type: Number
     - contextPath: CarbonBlackDefense.Policy.name
       description: The name of the policy.
@@ -1610,7 +1610,7 @@ script:
       required: true
     - name: required
       auto: PREDEFINED
-      description: 'Whether the rule is required. Possible values: "true" and "false".'
+      description: 'Whether the rule is required.'
       predefined:
       - 'true'
       - 'false'
@@ -1649,7 +1649,7 @@ script:
       description: A brief summary or description of the policy.
       type: String
     - contextPath: CarbonBlackDefense.Policy.id
-      description: The unique identifier of the policy.
+      description: The unique policy ID.
       type: Number
     - contextPath: CarbonBlackDefense.Policy.name
       description: The name of the policy.
@@ -1868,7 +1868,7 @@ script:
       required: true
     - name: required
       auto: PREDEFINED
-      description: 'Whether the rule is required. Possible values: "true" and "false".'
+      description: 'Whether the rule is required.'
       predefined:
       - 'true'
       - 'false'
@@ -1910,7 +1910,7 @@ script:
       description: A brief summary or description of the policy.
       type: String
     - contextPath: CarbonBlackDefense.Policy.id
-      description: The unique identifier of the policy.
+      description: The unique policy ID.
       type: Number
     - contextPath: CarbonBlackDefense.Policy.name
       description: The name of the policy.
@@ -2108,14 +2108,14 @@ script:
     arguments:
     - name: polling
       auto: PREDEFINED
-      defaultValue: true
+      defaultValue: "yes"
       predefined:
       - "yes"
       - "no"
-      description: When set to false, the function will not use polling and will return the process job ID.
+      description: When set to "no", the function will not use polling and will return the process job ID.
     - name: job_id
       hidden: true
-      description: 'The unique identifier for the process search job. This ID is used to retrieve the results of the process search initiated by the Carbon Black Cloud. If not provided, a new search job will be created based on the other provided arguments.'
+      description: 'The unique process search job ID. This ID is used to retrieve the results of the process search initiated by the Carbon Black Cloud. If not provided, a new search job will be created based on the other provided arguments.'
     - name: alert_category
       auto: PREDEFINED
       description: 'The Carbon Black Cloud classification for events tagged to an alert. Possible values: "THREAT" and "OBSERVED".'
@@ -2174,13 +2174,13 @@ script:
     - name: process_cmdline
       description: The command line executed by the actor process.
     - name: process_guid
-      description: The unique process identifier for the actor process.
+      description: The unique process ID for the the actor process.
     - name: hash
       description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
     - name: process_name
       description: The file system path of the actor process binary.
     - name: process_pid
-      description: The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
+      description: The process ID assigned by the operating system. This can be multi-valued for fork() or exec() process operations on Linux and macOS.
     - name: process_reputation
       auto: PREDEFINED
       description: 'The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
@@ -2203,7 +2203,7 @@ script:
       description: 'The sensor reported timestamp of when the process started. specified as ISO 8601 timestamp in UTC for example: 2020-05-04T21:34:03.968Z. This is not available for processes running before the sensor starts.'
     - name: process_terminated
       auto: PREDEFINED
-      description: 'Whether the process has terminated. Possible values: "true" and "false". Always "false" for enriched events (process termination not recorded).'
+      description: 'Whether the process has terminated. Always "false" for enriched events (process termination not recorded).'
       predefined:
       - 'true'
       - 'false'
@@ -2247,7 +2247,7 @@ script:
       description: The number of cross-process interactions involving the process.
       type: Number
     - contextPath: CarbonBlackDefense.Process.Results.device_id
-      description: The unique identifier of the device where the process is running.
+      description: The unique ID of the device where the process is running.
       type: Number
     - contextPath: CarbonBlackDefense.Process.Results.device_name
       description: The name of the device where the process is running.
@@ -2337,7 +2337,7 @@ script:
       description: The category of the alert associated with the observation.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.alert_id
-      description: The unique identifier of the alert associated with the observation.
+      description: The unique ID of the alert associated with the observation.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.backend_timestamp
       description: The timestamp when the observation data was collected from the backend.
@@ -2355,7 +2355,7 @@ script:
       description: The group ID associated with the device.
       type: Number
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_id
-      description: The unique identifier of the device where the observation was made.
+      description: The unique ID of the device where the observation was made.
       type: Number
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_installed_by
       description: The user or process that installed the device.
@@ -2379,7 +2379,7 @@ script:
       description: The policy applied to the device.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_policy_id
-      description: The unique identifier of the policy applied to the device.
+      description: The unique ID of the policy applied to the device.
       type: Number
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_sensor_version
       description: The version of the sensor installed on the device.
@@ -2421,7 +2421,7 @@ script:
       description: A description of the observation.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.observation_id
-      description: The unique identifier of the observation.
+      description: The unique observation ID.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.observation_type
       description: The type of observation.
@@ -2597,13 +2597,13 @@ script:
     - name: process_cmdline
       description: The command line executed by the actor process.
     - name: process_guid
-      description: The unique process identifier for the actor process.
+      description: The unique process ID for the actor process.
     - name: hash
       description: Aggregate set of MD5 and SHA-256 hashes associated with the process (including childproc_hash, crossproc_hash, filemod_hash, modload_hash, process_hash).
     - name: process_name
       description: The file system path of the actor process binary.
     - name: process_pid
-      description: The process identifier assigned by the operating system. This can be multi-valued in case of fork() or exec() process operations on Linux and macOS.
+      description: The process ID assigned by the operating system. This can be multi-valued for fork() or exec() process operations on Linux and macOS.
     - name: process_reputation
       auto: PREDEFINED
       description: 'The reputation of the actor process applied when the event is processed by Carbon Black Cloud. Possible values: "ADAPTIVE_WHITE_LIST", "ADWARE", "COMMON_WHITE_LIST", "COMPANY_BLACK_LIST", "COMPANY_WHITE_LIST", "HEURISTIC", "IGNORE", "KNOWN_MALWARE", "LOCAL_WHITE", "NOT_LISTED", "PUP", "RESOLVING", "SUSPECT_MALWARE", and "TRUSTED_WHITE_LIST".'
@@ -2664,7 +2664,7 @@ script:
       description: 'Category of the alert associated with the event.'
       type: String
     - contextPath: CarbonBlackDefense.Events.alert_id
-      description: 'Unique identifier for the alert.'
+      description: The unique alert ID.
       type: String
     - contextPath: CarbonBlackDefense.Events.backend_timestamp
       description: 'Timestamp when the event was processed on the backend.'
@@ -2679,10 +2679,10 @@ script:
       description: 'External IP address of the device.'
       type: String
     - contextPath: CarbonBlackDefense.Events.device_group_id
-      description: 'Identifier of the device group.'
+      description: The device group ID.
       type: Number
     - contextPath: CarbonBlackDefense.Events.device_id
-      description: 'Unique identifier for the device.'
+      description: The unique device ID.
       type: Number
     - contextPath: CarbonBlackDefense.Events.device_installed_by
       description: 'User or entity that installed the device.'
@@ -2706,7 +2706,7 @@ script:
       description: 'Security policy applied to the device.'
       type: String
     - contextPath: CarbonBlackDefense.Events.device_policy_id
-      description: 'Identifier of the security policy applied to the device.'
+      description: The the security policy ID applied to the device.
       type: Number
     - contextPath: CarbonBlackDefense.Events.device_sensor_version
       description: 'Version of the sensor installed on the device.'
@@ -2718,7 +2718,7 @@ script:
       description: 'Timestamp of the event as recorded by the device.'
       type: Date
     - contextPath: CarbonBlackDefense.Events.document_guid
-      description: 'Globally unique identifier for the document associated with the event.'
+      description: The global unique ID for the document associated with the event.
       type: String
     - contextPath: CarbonBlackDefense.Events.enriched
       description: 'Indicates whether the event data has been enriched.'
@@ -2748,13 +2748,13 @@ script:
       description: 'Description of the observation associated with the event.'
       type: String
     - contextPath: CarbonBlackDefense.Events.observation_id
-      description: 'Unique identifier for the observation.'
+      description: The unique observation ID.
       type: String
     - contextPath: CarbonBlackDefense.Events.observation_type
       description: 'Type of the observation associated with the event.'
       type: String
     - contextPath: CarbonBlackDefense.Events.org_id
-      description: 'Identifier of the organization associated with the event.'
+      description: The organization ID associated with the event.
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_cmdline
       description: 'Command line used to execute the parent process.'
@@ -2769,7 +2769,7 @@ script:
       description: 'Source of the effective reputation of the parent process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_guid
-      description: 'Globally unique identifier for the parent process.'
+      description: The global unique ID for the parent process.
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_hash
       description: 'Hash of the parent process.'
@@ -2778,7 +2778,7 @@ script:
       description: 'Name of the parent process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_pid
-      description: 'Process identifier of the parent process.'
+      description: The parent process ID.
       type: Number
     - contextPath: CarbonBlackDefense.Events.parent_publisher
       description: 'Publisher of the parent process.'
@@ -2811,7 +2811,7 @@ script:
       description: 'File description of the process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.process_guid
-      description: 'Globally unique identifier for the process.'
+      description: The global unique process ID.
       type: String
     - contextPath: CarbonBlackDefense.Events.process_hash
       description: 'Hash of the process.'
@@ -2829,7 +2829,7 @@ script:
       description: 'Original filename of the process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.process_pid
-      description: 'Process identifier of the process.'
+      description: The process ID of the process.
       type: Number
     - contextPath: CarbonBlackDefense.Events.process_privileges
       description: 'Privileges associated with the process.'
@@ -2879,7 +2879,7 @@ script:
   - name: cbd-device-search
     arguments:
     - name: device_id
-      description: The identifier for the device.
+      description: The device ID.
     - name: os
       auto: PREDEFINED
       description: 'The operating system. Possible values: "WINDOWS", "MAC", "LINUX", and "OTHER".'
@@ -2989,7 +2989,7 @@ script:
       description: The position that describes the device.
       type: Number
     - contextPath: CarbonBlackDefense.Device.device_owner_id
-      description: The identifier for the device owner associated with the device.
+      description: The ID of the device owner associated with the device.
       type: Number
     - contextPath: CarbonBlackDefense.Device.email
       description: The email address for the device owner.
@@ -3058,7 +3058,7 @@ script:
       description: The hostname of the endpoint recorded by the sensor when last initialized.
       type: String
     - contextPath: CarbonBlackDefense.Device.organization_id
-      description: The organization identifier.
+      description: The organization ID.
       type: Number
     - contextPath: CarbonBlackDefense.Device.organization_name
       description: The organization name.
@@ -3073,7 +3073,7 @@ script:
       description: Whether the device is in bypass mode.
       type: Boolean
     - contextPath: CarbonBlackDefense.Device.policy_id
-      description: The policy identifier assigned to the device.
+      description: The policy ID assigned to the device.
       type: Number
     - contextPath: CarbonBlackDefense.Device.policy_name
       description: The policy name assigned to the device. This name may not match the current_sensor_policy_name until the sensor checks back in.
@@ -3130,7 +3130,7 @@ script:
       description: The 128-bit SMBIOS UUID of a vCenter represented as a hexadecimal string.
       type: String
     - contextPath: CarbonBlackDefense.Device.vdi_base_device
-      description: The identifier of the device from which this device was cloned/re-registered.
+      description: The ID of the device from which this device was cloned/re-registered.
       type: Number
     - contextPath: CarbonBlackDefense.Device.virtual_machine
       description: Whether this device is a virtual machine (VMware AppDefense integration). Deprecated for deployment_type.
@@ -3229,7 +3229,7 @@ script:
       description: 'When set to false, the function will not use polling and will return the process status or the result if the process is complete.'
     - name: job_id
       required: true
-      description: 'The unique identifier for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud.'
+      description: 'The unique ID for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud.'
     - name: rows
       description: The number of rows to request.
     description: 'Retrieves the search results using the specified job ID.'
@@ -3245,7 +3245,7 @@ script:
       description: The number of cross-process interactions involving the process.
       type: Number
     - contextPath: CarbonBlackDefense.Process.Results.device_id
-      description: The unique identifier of the device where the process is running.
+      description: The unique ID of the device where the process is running.
       type: Number
     - contextPath: CarbonBlackDefense.Process.Results.device_name
       description: The name of the device where the process is running.
@@ -3309,7 +3309,7 @@ script:
       description: 'When set to false, the function will not use polling and will return the process status or the result if the process is complete.'
     - name: job_id
       required: true
-      description: 'The unique identifier for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud.'
+      description: 'The unique ID for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud.'
     - name: rows
       description: The number of rows to request.
     description: 'Retrieves the search results using the specified job ID.'
@@ -3319,7 +3319,7 @@ script:
       description: The category of the alert associated with the observation.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.alert_id
-      description: The unique identifier of the alert associated with the observation.
+      description: The unique ID of the alert associated with the observation.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.backend_timestamp
       description: The timestamp when the observation data was collected from the backend.
@@ -3337,7 +3337,7 @@ script:
       description: The group ID associated with the device.
       type: Number
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_id
-      description: The unique identifier of the device where the observation was made.
+      description: The unique ID of the device where the observation was made.
       type: Number
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_installed_by
       description: The user or process that installed the device.
@@ -3361,7 +3361,7 @@ script:
       description: The policy applied to the device.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_policy_id
-      description: The unique identifier of the policy applied to the device.
+      description: The unique ID of the policy applied to the device.
       type: Number
     - contextPath: CarbonBlackDefense.EventDetails.Results.device_sensor_version
       description: The version of the sensor installed on the device.
@@ -3403,7 +3403,7 @@ script:
       description: A description of the observation.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.observation_id
-      description: The unique identifier of the observation.
+      description: The unique observation ID
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.observation_type
       description: The type of observation.
@@ -3517,7 +3517,7 @@ script:
       description: 'When set to false, the function will not use polling and will return the process status or the result if the process is complete.'
     - name: job_id
       required: true
-      description: 'The unique identifier for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud.'
+      description: The unique ID for the process search job. This ID is used to retrieve the results of the process search initiated by Carbon Black Cloud.
     - name: rows
       description: The number of rows to request.
     description: 'Retrieves the search results using the specified job ID.'
@@ -3527,7 +3527,7 @@ script:
       description: 'Category of the alert associated with the event.'
       type: String
     - contextPath: CarbonBlackDefense.Events.alert_id
-      description: 'Unique identifier for the alert.'
+      description: The unique alert ID.
       type: String
     - contextPath: CarbonBlackDefense.Events.backend_timestamp
       description: 'Timestamp when the event was processed on the backend.'
@@ -3542,10 +3542,10 @@ script:
       description: 'External IP address of the device.'
       type: String
     - contextPath: CarbonBlackDefense.Events.device_group_id
-      description: 'Identifier of the device group.'
+      description: The device group ID.
       type: Number
     - contextPath: CarbonBlackDefense.Events.device_id
-      description: 'Unique identifier for the device.'
+      description: The unique device ID.
       type: Number
     - contextPath: CarbonBlackDefense.Events.device_installed_by
       description: 'User or entity that installed the device.'
@@ -3569,7 +3569,7 @@ script:
       description: 'Security policy applied to the device.'
       type: String
     - contextPath: CarbonBlackDefense.Events.device_policy_id
-      description: 'Identifier of the security policy applied to the device.'
+      description: The ID of the security policy applied to the device.
       type: Number
     - contextPath: CarbonBlackDefense.Events.device_sensor_version
       description: 'Version of the sensor installed on the device.'
@@ -3581,7 +3581,7 @@ script:
       description: 'Timestamp of the event as recorded by the device.'
       type: Date
     - contextPath: CarbonBlackDefense.Events.document_guid
-      description: 'Globally unique identifier for the document associated with the event.'
+      description: The global unique ID for the document associated with the event.
       type: String
     - contextPath: CarbonBlackDefense.Events.enriched
       description: 'Indicates whether the event data has been enriched.'
@@ -3611,13 +3611,13 @@ script:
       description: 'Description of the observation associated with the event.'
       type: String
     - contextPath: CarbonBlackDefense.Events.observation_id
-      description: 'Unique identifier for the observation.'
+      description: The unique observation ID.
       type: String
     - contextPath: CarbonBlackDefense.Events.observation_type
       description: 'Type of the observation associated with the event.'
       type: String
     - contextPath: CarbonBlackDefense.Events.org_id
-      description: 'Identifier of the organization associated with the event.'
+      description: The ID of the organization associated with the event.
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_cmdline
       description: 'Command line used to execute the parent process.'
@@ -3632,7 +3632,7 @@ script:
       description: 'Source of the effective reputation of the parent process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_guid
-      description: 'Globally unique identifier for the parent process.'
+      description: The global unique ID for the parent process.
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_hash
       description: 'Hash of the parent process.'
@@ -3641,7 +3641,7 @@ script:
       description: 'Name of the parent process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.parent_pid
-      description: 'Process identifier of the parent process.'
+      description: The process ID of the parent process.
       type: Number
     - contextPath: CarbonBlackDefense.Events.parent_publisher
       description: 'Publisher of the parent process.'
@@ -3674,7 +3674,7 @@ script:
       description: 'File description of the process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.process_guid
-      description: 'Globally unique identifier for the process.'
+      description: The global unique process ID.
       type: String
     - contextPath: CarbonBlackDefense.Events.process_hash
       description: 'Hash of the process.'
@@ -3692,7 +3692,7 @@ script:
       description: 'Original filename of the process.'
       type: String
     - contextPath: CarbonBlackDefense.Events.process_pid
-      description: 'Process identifier of the process.'
+      description: The process ID of the process.
       type: Number
     - contextPath: CarbonBlackDefense.Events.process_privileges
       description: 'Privileges associated with the process.'
