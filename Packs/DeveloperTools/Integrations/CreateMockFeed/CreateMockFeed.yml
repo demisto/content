@@ -5,7 +5,7 @@ fromversion: 6.0.0
 name: Create-Mock-Feed-Relationships
 display: Create-Mock-Feed-Relationships
 category: Data Enrichment & Threat Intelligence
-description: Mock Feed
+description: Mock Feed.
 configuration:
 - display: Indicator Type
   name: indicator_type
