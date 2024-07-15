@@ -36,7 +36,7 @@
             "type": "string",
             "is_array": false
         },
-        "ipAddress": {
+        "ipaddress": {
             "type": "string",
             "is_array": false
         },
