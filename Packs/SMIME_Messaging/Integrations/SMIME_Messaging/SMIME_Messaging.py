@@ -5,7 +5,6 @@ from CommonServerUserPython import *
 ''' IMPORTS '''
 
 from M2Crypto import BIO, SMIME, X509, m2
-from typing import Dict, Tuple
 from tempfile import NamedTemporaryFile
 
 from charset_normalizer import from_bytes
@@ -37,7 +36,7 @@ class Client:
 ''' COMMANDS '''
 
 
-def sign_email(client: Client, args: Dict):
+def sign_email(client: Client, args: dict):
     """
     send a S/MIME-signed message via SMTP.
     """
@@ -80,7 +79,7 @@ def sign_email(client: Client, args: Dict):
     return signed, context
 
 
-def encrypt_email_body(client: Client, args: Dict):
+def encrypt_email_body(client: Client, args: dict):
     """ generate an S/MIME-encrypted message
 
     Args:
@@ -114,7 +113,7 @@ def encrypt_email_body(client: Client, args: Dict):
     return encrypted_message, entry_context
 
 
-def verify(client: Client, args: Dict):
+def verify(client: Client, args: dict):
     """ Verify the signature
 
     Args:
@@ -145,13 +144,13 @@ def verify(client: Client, args: Dict):
             p7bio = BIO.MemoryBuffer(p7data)
             p7 = SMIME.PKCS7(m2.pkcs7_read_bio_der(p7bio._ptr()))
             v = client.smime.verify(p7, flags=SMIME.PKCS7_NOVERIFY)
-            return_results(fileResult('unwrapped-' + signed_message.get('name'), v))
+            return_results(fileResult(f'unwrapped-{signed_message["name"]}', v))
             human_readable = 'The signature verified\n\n'
 
     return human_readable, {}
 
 
-def decode_str(decrypted_text: bytes, encoding: str) -> Tuple[str, str]:
+def decode_str(decrypted_text: bytes, encoding: str) -> tuple[str, str]:
     """
     Detect encoding type using chardet, if the confidence of the detected encoding is lower than 0.9 we will add a
     message indicates it. If encoding is given, will use it.
@@ -173,7 +172,7 @@ def decode_str(decrypted_text: bytes, encoding: str) -> Tuple[str, str]:
     return out, msg
 
 
-def decrypt_email_body(client: Client, args: Dict, file_path=None):
+def decrypt_email_body(client: Client, args: dict, file_path=None):
     """ Decrypt the message
 
     Args:
@@ -217,7 +216,7 @@ def decrypt_email_body(client: Client, args: Dict, file_path=None):
     return human_readable, entry_context
 
 
-def sign_and_encrypt(client: Client, args: Dict):
+def sign_and_encrypt(client: Client, args: dict):
 
     message = args.get('message', '').encode('utf-8')
     msg_bio = BIO.MemoryBuffer(message)
