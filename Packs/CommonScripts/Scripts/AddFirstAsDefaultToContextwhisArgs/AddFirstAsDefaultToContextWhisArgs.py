@@ -1,19 +1,19 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import re
 import traceback
 
 
 """ STANDALONE FUNCTION """
 
 
-def update_context(fields: dict, context: dict) -> None:
+def update_context(fields: dict, context: dict):
     outputs = {}
     for field_name, default_values in fields.items():
         if not context.get(field_name):
             outputs[field_name] = default_values
 
     demisto.executeCommand("setIncident", outputs)
+    return "Updated the context is successful."
 
 
 """ MAIN FUNCTION """

@@ -8,9 +8,7 @@ import traceback
 
 
 def get_incidenttype(incident_type_name: str) -> dict:
-    all_incidenttype = demisto.executeCommand("core-api-get", {"uri": "/incidenttype"})[
-        0
-    ]
+    all_incidenttype = demisto.executeCommand("core-api-get", {"uri": "/incidenttype"})[0]
     response = all_incidenttype.get("Contents", {}).get("response")
     for incidenttype in response:
         if incidenttype.get("id", "") == incident_type_name:
@@ -45,12 +43,15 @@ def get_fieldname_and_default_val(fields: list[dict]) -> dict:
     return result
 
 
-def update_context(fields: dict, context: dict) -> None:
+def update_context(fields: dict, context: dict):
     outputs = {}
     for field_name, default_values in fields.items():
-        if not context.get("CustomFields",{}).get(field_name):
+        if not context.get("CustomFields", {}).get(field_name):
             outputs[field_name] = default_values
     demisto.executeCommand("setIncident", outputs)
+
+    return "Updated the context is successful."
+
 
 """ MAIN FUNCTION """
 
