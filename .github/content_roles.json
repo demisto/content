@@ -1,12 +1,14 @@
 {
     "CONTRIBUTION_REVIEWERS": [
-        "kgal-pan"
+        "barryyosi-panw",
+        "samuelFain",
+        "israelpoli"
     ],
-    "CONTRIBUTION_TL": "tl1",
-    "CONTRIBUTION_SECURITY_REVIEWER": "sr1",
+    "CONTRIBUTION_TL": "thefrieddan1",
+    "CONTRIBUTION_SECURITY_REVIEWER": "ssokolovich",
     "ON_CALL_DEVS": [
-        "ocd1",
-        "ocd2"
+        "skidorball",
+        "ayousef"
     ],
     "DOC_REVIEWER": "dr1",
     "TIM_REVIEWER": "tr1"

@@ -1100,24 +1100,30 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
     assert value == expected_value
 
 
-@pytest.mark.parametrize('notable_data, search, raw, expected_search', [
-    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, 'search a="1" c="3" suffix'),
-    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, 'search (a="1" OR a="2") b="3" suffix'),
-    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, ''),
-    ({"signature": "Backdoor.test"}, "View related '$signature$' events for $dest$", {"dest": "ACME-test-005"},
+@pytest.mark.parametrize('notable_data, search, raw, is_query_name, expected_search', [
+    ({'a': '1', '_raw': 'c=3'}, 'search a=$a|s$ c=$c$ suffix', {'c': '3'}, False, 'search a="1" c="3" suffix'),
+    ({'a': ['1', '2'], 'b': '3'}, 'search a=$a|s$ b=$b|s$ suffix', {}, False, 'search (a="1" OR a="2") b="3" suffix'),
+    ({'a': '1', '_raw': 'b=3', 'event_id': '123'}, 'search a=$a|s$ c=$c$ suffix', {'b': '3'}, False, ''),
+    ({"signature": "Backdoor.test"}, "View related '$signature$' events for $dest$", {"dest": "ACME-test-005"}, True,
      "View related 'Backdoor.test' events for ACME-test-005"),
-    ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"},
+    ({}, 'View all wineventlogs involving user="$user$"', {'user': "test"}, True,
      'View all wineventlogs involving user="test"'),
-    ({}, 'Test query name', {}, 'Test query name')
+    ({}, 'Test query name', {}, True, 'Test query name'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = $user|s$', {}, False,
+     'index="test" | where user = "test\\\\crusher"'),
+    ({'user': 'test\crusher'}, 'index="test" | where user = "$user|s$"', {}, False,
+     'index="test" | where user = "test\\\\crusher"')
 ], ids=[
     "search query fields in notables data and raw data",
     "search query fields in notable data more than one value",
     "search query fields don't exist in notable data and raw data",
     "query name fields in notables data and raw data",
     "query name fields in raw data",
-    "query name without fields to replace"
+    "query name without fields to replace",
+    "search query with a user field that contains a backslash",
+    "search query with a user field that is surrounded by quotation marks and contains a backslash"
 ])
-def test_build_drilldown_search(notable_data, search, raw, expected_search, mocker):
+def test_build_drilldown_search(notable_data, search, raw, is_query_name, expected_search, mocker):
     """
     Scenario: When building the drilldown search query, we replace every field in between "$" sign with its
      corresponding query part (key & value).
@@ -1129,6 +1135,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
     - A raw query name with fields both in the notable's data and in the notable's raw data
     - A raw query name with fields in the notable's raw data
     - A raw query name without any fields to replace.
+    - A raw query search with a user field that contains a backslash
+    - A raw query search with a user field that is surrounded by quotation marks and contains a backslash
 
 
     When:
@@ -1138,7 +1146,8 @@ def test_build_drilldown_search(notable_data, search, raw, expected_search, mock
     - Return the expected result
     """
     mocker.patch.object(demisto, 'error')
-    assert splunk.build_drilldown_search(notable_data, search, raw) == expected_search
+    parsed_query = splunk.build_drilldown_search(notable_data, search, raw, is_query_name)
+    assert parsed_query == expected_search
 
 
 @pytest.mark.parametrize('notable_data, prefix, fields, query_part', [
@@ -1519,7 +1528,7 @@ def test_drilldown_enrichment_get_timeframe(mocker, notable_data, expected_call_
      [("View all login attempts by system 'test_src'",
        '| from datamodel:"Authentication"."Authentication" | search src="\'test_src\'"'),
       ('View all test involving user="\'test_user\'"',
-       'search index="test"\n| where user = \'test_user\'')]),
+       'search index="test"\n| where user = "\'test_user\'"')]),
 ], ids=[
     "A notable data with one drilldown search enrichment",
     "A notable data with multiple (two) drilldown searches to enrich"
@@ -1551,7 +1560,7 @@ def test_drilldown_enrichment(notable_data, expected_result):
 
 
 @pytest.mark.parametrize('notable_data, debug_log_message', [
-    ({'event_id': 'test_id'}, 'drill-down was not configured for notable test_id'),
+    ({'event_id': 'test_id'}, 'drill-down was not properly configured for notable test_id'),
 
     ({'event_id': 'test_id', 'drilldown_name': 'View all login attempts by system $src$',
       'drilldown_search': "| from datamodel:\"Authentication\".\"Authentication\" | search src=$src|s$",
@@ -1566,18 +1575,18 @@ def test_drilldown_enrichment(notable_data, expected_result):
     ({'event_id': 'test_id',
       'drilldown_searches': [
           "{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentica"
-          "tion\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
+          "tion\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
           "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
-                  "$user|s$\",\"earliest\":,\"latest\":}"],
+                  "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"],
       '_raw': "src=\'test_src\', user='test_user'"},
      'Failed getting the drilldown timeframe for notable test_id'),
 
     ({'event_id': 'test_id',
       'drilldown_searches':
           ["{\"name\":\"View all login attempts by system $src$\",\"search\":\"| from datamodel:\\\"Authentic"
-              "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":,\"latest\":}",
+              "ation\\\".\\\"Authentication\\\" | search src=$src|s$\",\"earliest\":\"\",\"latest\":\"\"}",
               "{\"name\":\"View all test involving user=\\\"$user$\\\"\",\"search\":\"index=\\\"test\\\"\\n| where user ="
-                  "$user|s$\",\"earliest\":,\"latest\":}"], '_raw': ""},
+                  "$user|s$\",\"earliest\":\"\",\"latest\":\"\"}"], '_raw': ""},
      "Couldn't build search query for notable test_id with the following drilldown search"),
 ], ids=[
     "A notable data without drilldown enrichment data",
@@ -2636,3 +2645,57 @@ def test_handle_message(item: dict | results.Message, expected: bool):
     Tests that passing a results.Message object returns True
     """
     assert splunk.handle_message(item) is expected
+
+
+def test_single_drilldown_searches(mocker):
+    """
+    Given: - notable with single string represent dict, in the drilldown_searches key.
+    When:  - call to drilldown_enrichment.
+    Then:  - validate there is no errors in the process.
+
+    """
+
+    drilldown_searches = json.dumps(
+        {
+            "name": "test drilldown",
+            "search": "| from datamodel: test",
+            "earliest": 1719218100,
+            "latest": 1719823500
+        }
+    )
+    mocker.patch.object(demisto, 'error')
+    mocker.patch.object(splunk, 'build_drilldown_search', return_value=None)
+
+    splunk.drilldown_enrichment(
+        service=None,
+        notable_data={'drilldown_searches': drilldown_searches, 'event_id': 'test_id'},
+        num_enrichment_events=1)
+
+    assert demisto.error.call_count == 0, 'Something was wrong in the drilldown_enrichment process'
+
+
+@pytest.mark.parametrize(
+    'drilldown_data, expected',
+    [({'drilldown_search': 'test'}, ['test']),
+     ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': ['{"search_1":"test_1"}', '{"search_2":"test_2"}']},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}]'},
+      [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}, {"search_2":"test_2"}]'},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}])
+     ]
+)
+def test_get_drilldown_searches(drilldown_data, expected):
+    """
+    Given:  -
+        1. A notable data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
+        2. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        3. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        4. A notable data with a single drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+        5. A notable data with a multiple drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+    When:   - call to get_drilldown_searches.
+    Then:   - validate the result are as expected.
+    """
+
+    assert splunk.get_drilldown_searches(drilldown_data) == expected

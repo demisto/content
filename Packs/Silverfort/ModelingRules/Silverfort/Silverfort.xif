@@ -1,0 +1,37 @@
+[MODEL: dataset = "silverfort_admin_console_raw"]
+//The event type we're mapping is "Authentication"
+filter cefdeviceeventclassid = "Authentication"
+| alter
+    src_user = arrayindex(regextract(suser,"(\S+)\@"),0), //src_user comes sometimes as UPN
+    coordinates = if(cs11 != "n/a", split(cs11, ",")), //The coordinates comes as <latitude>,<longitude>
+    outcome_reason = arrayindex(regextract(cs2, "\w+\s\((.+)\)"), 0), //The format of 'cs2' is 'Denied (Bad Password)', we're extracting the outcome reason, which will appear mostly in Denied.
+    risks = if(cs7 != "n/a", replace(cs7, "_", " ")) //Comes with underscore instead of space delimiter
+| alter
+    latitude = if(cs11 != "n/a", to_float(arrayindex(coordinates, 0))),
+    longitude = if(cs11 != "n/a", to_float(arrayindex(coordinates, 1)))
+
+//Mapping to XDM fields
+| alter
+    xdm.source.user.username = coalesce(src_user,suser),
+    xdm.source.user.upn = if(src_user != null, suser),
+    xdm.source.user.domain = sntdom,
+    xdm.source.host.hostname = shost,
+    xdm.source.ipv4 = if(incidr(src, "0.0.0.0/0"), src),
+    xdm.source.ipv6 = arrayindex(regextract(src, "(?:[a-fA-F\d]{0,4}\:){7}[\wa-fA-F]{0,4}"),0),
+    xdm.target.application.name = if(destinationServiceName != "", destinationServiceName),
+    xdm.target.resource.name = if(dhost !="", dhost),
+    xdm.target.domain = if(dntdom != "", dntdom),
+    xdm.event.operation_sub_type = app,
+    xdm.event.description = if(msg != "", msg),
+    xdm.alert.severity = cs1,
+    xdm.event.outcome = if(cs2 contains "Allowed", XDM_CONST.OUTCOME_SUCCESS, cs2 contains "Denied", XDM_CONST.OUTCOME_FAILED, XDM_CONST.OUTCOME_UNKNOWN),
+    xdm.observer.action = if(cs3 != "n/a",cs3),
+    xdm.event.outcome_reason = if(cs5 != "n/a", cs5, outcome_reason),
+    xdm.alert.risks = split(risks ,","),
+    xdm.network.rule = if(cs8 != "n/a", replace(cs8, "_", " ")),
+    xdm.source.location.country = if(cs9 != "n/a", cs9),
+    xdm.source.location.city = if(cs10 != "n/a", cs10),
+    xdm.source.location.latitude = latitude,
+    xdm.source.location.longitude = longitude,
+    xdm.event.type = cefdeviceeventclassid,
+    xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_AUTHENTICATION);

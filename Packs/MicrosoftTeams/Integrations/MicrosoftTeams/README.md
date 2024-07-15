@@ -1071,8 +1071,8 @@ There is no context output for this command.
 
 ### microsoft-teams-generate-login-url
 ***
-Generate the login url used for Authorization code flow.
-
+Generate the login url used for Authorization code flow.  
+Note: Authorization codes are short-lived. Typically, they expire after about 10 minutes.
 
 #### Base Command
 
@@ -1170,7 +1170,7 @@ Note: To enrich an incident created via the Demisto BOT (`new incident` command)
 
 4. The integration stores in cache metadata about the teams, members and channels. Starting from Cortex XSOAR version 6.1.0, you can clear the integration cache in the integration instance config:
 
-   <img height="75" src="./doc_files/cache.png" />
+   <img height="75" src="../../doc_files/cache.png" />
 
    First, make sure to remove the bot from the team (only via the Teams app), before clearing the integration cache, and add it back after done.
    If the bot belongs to multiple teams, make sure to remove it from all the teams it was added to, and then clear the cache.

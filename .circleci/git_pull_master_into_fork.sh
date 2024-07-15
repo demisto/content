@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
-
+# this file has been deprecated and relocated to the contribution/utils directory
 #Be aware, only contributors should run this script.
+
+echo "This file has been deprecated and relocated to the contribution/utils directory"
 
 CONTENT_URL='https://github.com/demisto/content.git'
 
