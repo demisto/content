@@ -17,24 +17,24 @@ This integration was integrated and tested with version 1.0 of Sekoia XDR.
     | Use system proxy settings |  | False |
     | Fetch incidents |  | False |
     | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | True |
-    | Fetch alerts with the selected status. |  | False |
-    | List of types of alerts to fetch. (Write and press enter to insert types that are not in the list) |  | False |
-    | Filter alerts by their urgencies range in the following format: "MINurgency,MAXurgency". i.e: 80,100. |  | False |
-    | Maximum incidents to fetch per interval (By default set to 10). |  | True |
+    | First fetch timestamp (&lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt;, e.g., -7d, -1h) |  | True |
+    | Maximum incidents to fetch per interval. | By default the max_fetch is set to 10 | True |
+    | Incidents Fetch Interval |  | False |
+    | Alerts status. | Filter alerts to fetch by status. You can write and press enter to insert new types. | False |
+    | Alerts types. | Filter alerts to fetch by types. You can write and press enter to insert new types. | False |
+    | Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ). | Filter alerts by their urgency levels. Use the format "MINurgency, MAXurgency" | False |
     | Fetch mode | If there's no max_fetch it will fetch 10 incidents by default. | True |
+    | Replace "dots" in event field names with another character. | Replacing dots in events will make names look pretty good for users | True |
+    | Events fields to exclude from the events search result. | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
     | Include assets information in the alerts when fetching. | When selected, it includes the assets information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
     | Include kill chain information in the alerts when fetching. | When selected, it includes the kill chain information in the alert when fetched from Sekoia.<br/>And also If there's no max_fetch it will fetch 10 incidents by default. | False |
-    | Replace the "dots" from the event field names for a different character easier to reference in XSOAR. |  | True |
-    | Indicate if there is any information you want to exclude from the results of the events search.  i.e:  original.message, message,  agent.name, etc.  | These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter. | False |
-    | Incident Mirroring Direction | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). | True |
+    | Incident Mirroring Direction. | Choose the direction to mirror the incident: None\(Disable mirroring\), Incoming \(from Sekoia XDR  to Cortex XSOAR\) , Outgoing \(from Cortex XSOAR to Sekoia XDR\), or Incoming and Outgoing \(from/to Cortex XSOAR and Sekoia XDR\). | True |
+    | Include events in the mirroring of the alerts. | When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia. | False |
+    | Include kill chain information in the mirroring of the alerts. | When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia. | False |
     | Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident. | False |
     | Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring) | When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident. | False |
     | Close notes. | Change the closing notes that will be added to the tickets closed automatically by the automation. | True |
-    | Include events in the mirroring of the alerts. | When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia. | False |
-    | Include kill chain information in the mirroring of the alerts. | When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia. | False |
-    | Input your timezone, use formats from the list of tz database time zones (i.e. 'UTC', 'Europe/Madrid', 'US/Eastern', 'Etc/Greenwich', 'Canada/Eastern')  | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
-    | Incidents Fetch Interval |  | False |
+    | Timezone ( TZ format ) | This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc. | True |
 
 4. Click **Test** to validate the URLs, token, and connection.
 
@@ -124,7 +124,7 @@ Command to retrieve a list of Alerts from Sekoia XDR.
 ### sekoia-xdr-get-alert
 
 ***
-Command to retrieve a specific Alert by uuid or short_id from Sekoia XDR.
+Command to retrieve a specific alert by uuid or short_id from Sekoia XDR.
 
 #### Base Command
 
@@ -134,7 +134,7 @@ Command to retrieve a specific Alert by uuid or short_id from Sekoia XDR.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
+| id | The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
 
 #### Context Output
 
@@ -157,9 +157,9 @@ Command to create an event search job on Sekoia XDR, after this execute "sekoia-
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| earliest_time | Valid expressions: -3d: from three days ago, -2w: from two weeks before now, -7d: seven days before now. | Required | 
-| lastest_time | Valid expressions: +3d: three days in the future, +2w: two weeks in the future, now: current time. | Required | 
-| query | The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga". | Required | 
+| earliest_time | Valid formats &lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt; or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z. | Required | 
+| lastest_time | Valid formats &lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt; or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z. | Required | 
+| query | The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga". | Optional | 
 | max_last_events | Maximum number of listed events. | Optional | 
 
 #### Context Output
@@ -202,7 +202,7 @@ Command to create an event search job on Sekoia XDR, after this execute "sekoia-
 ### sekoia-xdr-events-status-query
 
 ***
-Command to query the status of the search job "sekoia-xdr-execute-events-query" previously executed on Sekoia XDR.
+Command to query the status of the search job on Sekoia XDR.
 
 #### Base Command
 
@@ -212,7 +212,7 @@ Command to query the status of the search job "sekoia-xdr-execute-events-query" 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the query excuted previously with the "sekoia-xdr-query-events" command. | Required | 
+| uuid | UUID of the query executed previously with the "sekoia-xdr-query-events" command. | Required | 
 
 #### Context Output
 
@@ -265,7 +265,7 @@ Command to retrieve the events from the search job "sekoia-xdr-execute-events-qu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| uuid | UUID of the query excuted previously with the "sekoia-xdr-query-events" command. | Required | 
+| uuid | UUID from response of the query executed previously with the "sekoia-xdr-query-events" command. | Required | 
 
 #### Context Output
 
@@ -286,13 +286,12 @@ Command to search and retrieve the events from an alert. This is a combination o
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| earliest_time | Valid expressions: -3d: from three days ago, -2w: from two weeks before now, -7d: seven days before now. | Required | 
-| lastest_time | Valid expressions: +3d: three days in the future, +2w: two weeks in the future, now: current time. | Required | 
-| query | The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga". | Required | 
+| earliest_time | Valid formats &lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt; or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z. | Required | 
+| lastest_time | Valid formats &lt;sign + or -&gt;&lt;number&gt;&lt;time unit&gt; or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z. | Required | 
+| query | The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga". | Optional | 
 | max_last_events | Maximum number of listed events. | Optional | 
 | exclude_info | Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter. Possible values are: original.message, message, __event_id, agent.name, alert_short_ids, client.address, client.ip, client.user.id, customer.community_name, customer.community_uuid, customer.id, customer.intake_key, customer.intake_name, customer.intake_uuid, ecs.version, entity.id, entity.name, entity.uuid, event.created, event.dialect, event.dialect_uuid, event.id, event.outcome, http.request.method, http.request.referrer, related.ip, sekoiaio.activity.client.id, sekoiaio.activity.client.type, sekoiaio.customer.community_name, sekoiaio.customer.community_uuid, sekoiaio.customer.id, sekoiaio.entity.id, sekoiaio.entity.name, sekoiaio.entity.uuid, sekoiaio.intake.dialect, sekoiaio.intake.dialect_uuid, sekoiaio.intake.key, sekoiaio.intake.name, sekoiaio.intake.parsing_status, sekoiaio.intake.uuid, timestamp, url.domain, url.original, url.path, url.port, url.query, url.registered_domain, url.scheme, url.subdomain, url.top_level_domain, user_agent.original. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. Default is 2. | Optional | 
-| timeout_in_seconds | Polling timeout in seconds. Default is 60. | Optional | 
+| job_uuid | The job UUID to retrieve query results. | Optional | 
 
 #### Context Output
 
@@ -313,9 +312,9 @@ Command to update the status of a specific Alert by uuid or short_id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
+| id | The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
 | status | The status you want to apply. (Acknowledged, Rejected, Ongoing, Closed)). Possible values are: Acknowledged, Rejected, Ongoing, Closed. | Required | 
-| comment | A comment to describe why the alert status has changed. | Optional | 
+| comment | Comment to describe why the alert status has changed. | Optional | 
 
 #### Context Output
 
@@ -333,7 +332,7 @@ Command to post comments to alerts in Sekoia XDR.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
+| id | The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
 | comment | Content of the comment to be posted on the alert. | Required | 
 | author | Author of the comment. | Optional | 
 
@@ -353,7 +352,7 @@ Command to get all the comments from an alert in Sekoia XDR.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
+| id | The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
 
 #### Context Output
 
@@ -381,7 +380,7 @@ Command to get the possible transitions of status on the alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
+| id | The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
 
 #### Context Output
 
@@ -404,8 +403,8 @@ Command to retrieve the cases related to an Alert from Sekoia XDR. If a case_id 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | The uuid or short_id of the alert to retrieve. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
-| case_id | The short_id of the case to retrieve. i.e: "CAQNurTJM8q2". | Optional | 
+| alert_id | The uuid or short_id of the alert to retrieve from sekoia-xdr-list-alerts command or from sekoia plateform. i.e: "f5dcb81c-8d81-4332-9f1e-f119a1b31217" or "ALUnyZCYZ9Ga". | Required | 
+| case_id | The short_id of the case to retrieve from sekoia plateform or from this command without case_is param i.e: "CAQNurTJM8q2". | Optional | 
 
 #### Context Output
 
@@ -625,7 +624,7 @@ Command to get information about a user in Sekoia XDR. Used also in the command 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_uuid | UUID of the user to obtain the information from. | Required | 
+| user_uuid | UUID of the user, you get it from `sekoia-xdr-get-comments` for example. But make sure that `created_by_type` field is `user`. | Required | 
 
 #### Context Output
 
@@ -725,7 +724,7 @@ Command to retrieve the definition of a Cyber Kill Chain Step.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| kill_chain_uuid | UUID or short_id of the kill chain. | Required | 
+| kill_chain_uuid | UUID or short_id of the kill chain the UUID should appear with "sekoia-xdr-list-alerts". | Required | 
 
 #### Context Output
 
