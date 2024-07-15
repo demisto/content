@@ -1,6 +1,7 @@
 import demistomock as demisto
 from CommonServerPython import *
 from CommonServerUserPython import *
+import time
 
 '''IMPORTS'''
 import requests
@@ -117,7 +118,7 @@ def extract_api_from_username_password(username, password):
 def test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query,
                  username, password, api_key, api_id):
     """Test instance was set up correctly"""
-    now = datetime.now()
+    now = int(time.time())
     if username and not password:
         return_error('Please provide a password when using Username + Password authentication')
     elif password and not username:
@@ -170,7 +171,7 @@ def test_command(client, feed_type, src_val, src_type, default_type, time_method
 
 def get_indicators_command(client, feed_type, src_val, src_type, default_type):
     """Implements es-get-indicators command"""
-    now = datetime.now()
+    now = int(time.time())
     if FEED_TYPE_GENERIC in feed_type:
         search = get_scan_generic_format(client, now)
         ioc_lst = get_generic_indicators(search, src_val, src_type, default_type, client.tags, client.tlp_color)
@@ -219,6 +220,7 @@ def update_last_fetch(client, ioc_lst):
             demisto.info(f"ioc {ioc.get('name')} if missing {client.time_field}")
             break
         calculate_timestamp = int(calculate_time.timestamp() * 1000)
+        demisto.debug(f'{calculate_timestamp}')
         if not last_calculated_timestamp or calculate_timestamp >= last_calculated_timestamp:
             last_calculated_timestamp = calculate_timestamp
             last_ids.append(ioc.get('id'))
@@ -238,7 +240,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     last_fetch_timestamp = get_last_fetch_timestamp(last_fetch, client.time_method, client.fetch_time)
     demisto.debug(f"FeedElasticSearch: last_fetch_timestamp is: {last_fetch_timestamp}")
     prev_iocs_ids = demisto.getLastRun().get("ids", [])
-    now = datetime.now()
+    now = int(time.time())
     ioc_lst: list = []
     ioc_enrch_lst: list = []
     if FEED_TYPE_GENERIC not in feed_type:
@@ -267,6 +269,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
                 demisto.createIndicators(b)
+    demisto.debug(f'fetch_indicators_command: {last_calculated_timestamp}')
     demisto.setLastRun({'time': str(last_calculated_timestamp), 'ids': last_ids})
 
 
@@ -320,6 +323,7 @@ def get_scan_insight_format(client, now, last_fetch_timestamp=None, feed_type=No
     range_field = {
         time_field: {'gte': last_fetch_timestamp, 'lte': now}} if last_fetch_timestamp else {
         time_field: {'lte': now}}
+    demisto.debug(f'### get_scan_insight_format {range_field=}')
     es = client.es
     query = QueryString(query=time_field + ":*")
     indices = client.fetch_index
@@ -421,13 +425,13 @@ def main():
         src_type = params.get('src_type')
         default_type = params.get('default_type')
         last_fetch = demisto.getLastRun().get('time')
-
-        if demisto.command() == 'test-module':
+        command = 'fetch-indicators'
+        if command == 'test-module':
             test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query,
                          username, password, api_key, api_id)
-        elif demisto.command() == 'fetch-indicators':
+        elif command == 'fetch-indicators':
             fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch, fetch_limit)
-        elif demisto.command() == 'es-get-indicators':
+        elif command == 'es-get-indicators':
             get_indicators_command(client, feed_type, src_val, src_type, default_type)
     except Exception as e:
         return_error(f"Failed executing {demisto.command()}.\nError message: {str(e)}")
