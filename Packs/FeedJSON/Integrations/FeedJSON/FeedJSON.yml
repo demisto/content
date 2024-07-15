@@ -97,7 +97,7 @@ configuration:
   name: indicator
   type: 0
   required: false
-- additionalinfo: 'Send specified data in a POST request. When specified, by default will add the header: ''Content-Type: application/x-www-form-urlencoded''. To specify a different Content-Type (for example: application/json) use the Headers config param.'
+- additionalinfo: "Send specified data in a POST request. When specified, by default will add the header: 'Content-Type: application/x-www-form-urlencoded'. To specify a different Content-Type (for example: application/json) use the Headers config param."
   display: POST Data
   name: data
   type: 0
