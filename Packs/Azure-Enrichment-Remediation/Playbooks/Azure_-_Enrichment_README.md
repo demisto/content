@@ -47,7 +47,7 @@ This playbook does not use any scripts.
 | MSGraphIdentity.Role | Microsoft Graph Role object that contains role ID and user IDs | unknown |
 | Account | Microsoft Graph User account objects for found user IDs. | unknown |
 | MSGraphUser | Microsoft Graph User objects for found user IDs. | unknown |
-| azureAssetHierarchy | Azure Compute Hierarchy Path. | unknown |
+| AzureAssetHierarchy | Azure Compute Hierarchy Path. | unknown |
 
 ## Playbook Image
 

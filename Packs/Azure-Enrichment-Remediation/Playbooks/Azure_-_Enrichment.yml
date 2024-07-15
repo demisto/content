@@ -3,7 +3,7 @@ version: -1
 name: Azure - Enrichment
 description: Given an IP address, this playbook enriches Azure Compute, Microsoft Graph User, and IAM information and outputs Azure Compute, Microsoft Graph User, and IAM information.
 inputs:
-- description: Azure IP in Alert
+- description: Azure IP address in the alert.
   key: AzureIP
   playbookInputQuery:
   required: false
@@ -191,7 +191,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks whether the last command returned information on the Public IP or not.
+      description: Checks whether the last command returned information on the public IP address or not.
       id: 9e1014cc-4f4a-4fb3-8b4b-bc194a75c207
       iscommand: false
       name: Is there a public IP in Azure?
@@ -293,7 +293,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Check whether the last command returned information for the NIC associated with the IP or not.
+      description: Check whether the last command returned information for the NIC associated with the IP address or not.
       id: d59b8af2-c8c2-47cd-8289-f3e7c01a8edd
       iscommand: false
       name: Is there a NIC in Azure associated with the IP?
@@ -615,7 +615,7 @@ tasks:
     skipunavailable: false
     task:
       brand: MicrosoftGraphIdentityandAccess
-      description: Gets all members in the Global admins role ID.
+      description: Gets all members in the Global Admins role ID.
       id: c85ffc7c-483c-4d60-8d70-19dd4912a3d6
       iscommand: true
       name: Lookup members of Global Admin from MS Graph

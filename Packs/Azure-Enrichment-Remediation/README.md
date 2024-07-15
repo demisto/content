@@ -1,6 +1,6 @@
 ##### What does this pack do?
 
-The pack is intended to contain Azure playbooks and scripts that conduct enrichment and/or remediation and can use multiple other Azure 
+The pack contains Azure playbooks and scripts that conduct enrichment and/or remediation and can use multiple other Azure 
 content packs.
 
 There are multiple Azure content packs for multiple Azure products (Compute, MSGraphUsers, etc).  The intent was so that 
@@ -11,7 +11,7 @@ as Compute and MSGraphUsers), they can't reside in one of the current packs beca
 
 #### AzureFindAvailableNSGPriorities
 
-This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number available priorities to return available priorities from the provided list.
+This script takes in a list of numbers that represent Azure priorities for NSG rules, a target priority number, and a number of available priorities to return available priorities from the provided list.
 
 ### Playbooks
 
