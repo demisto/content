@@ -1,5 +1,5 @@
-name: Radware Cloud Services Parsing Rule
-id: Radware_Cloud_Services_ParsingRule
+name: Microsoft Entra ID Parsing Rule
+id: Microsoft_Entra_ID_ParsingRule
 fromversion: 8.5.0
 tags: []
 rules: ''
