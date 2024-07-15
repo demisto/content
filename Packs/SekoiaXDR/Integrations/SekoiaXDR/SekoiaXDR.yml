@@ -77,8 +77,7 @@ configuration:
   - Ongoing
   - Rejected
   - Closed
-  additionalinfo: Filter alerts to fetch by status. You can write and press enter
-    to insert new types.
+  additionalinfo: Filter alerts to fetch by status. You can write and press enter to insert new types.
 - section: Collect
   advanced: true
   display: Alerts types.
@@ -118,16 +117,14 @@ configuration:
   - tunnel
   - exfiltration
   - blacklist
-  additionalinfo: Filter alerts to fetch by types. You can write and press enter to
-    insert new types.
+  additionalinfo: Filter alerts to fetch by types. You can write and press enter to insert new types.
 - section: Collect
   advanced: true
   display: 'Alerts urgency levels  ( "MINurgency,MAXurgency".  i.e: 80,100 ).'
   name: alerts_urgency
   type: 0
   required: false
-  additionalinfo: Filter alerts by their urgency levels. Use the format "MINurgency,
-    MAXurgency"
+  additionalinfo: Filter alerts by their urgency levels. Use the format "MINurgency, MAXurgency"
 - section: Collect
   display: Fetch mode
   name: fetch_mode
@@ -180,8 +177,7 @@ configuration:
   - event.outcome
   - http.request.method
   - sekoiaio.customer.community_name
-  additionalinfo: These are the names of the headers presented in the events table.
-    If the header is not in the dropdown list write it and press enter.
+  additionalinfo: These are the names of the headers presented in the events table. If the header is not in the dropdown list write it and press enter.
 - section: Collect
   advanced: true
   display: Include assets information in the alerts when fetching.
@@ -213,9 +209,7 @@ configuration:
   - Incoming
   - Outgoing
   - Incoming and Outgoing
-  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring),
-    Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia
-    XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
+  additionalinfo: 'Choose the direction to mirror the incident: None(Disable mirroring), Incoming (from Sekoia XDR  to Cortex XSOAR) , Outgoing (from Cortex XSOAR to Sekoia XDR), or Incoming and Outgoing (from/to Cortex XSOAR and Sekoia XDR).'
 - section: Collect
   advanced: true
   display: Include events in the mirroring of the alerts.
@@ -223,8 +217,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: When selected, it includes the events in the mirrored alerts when
-    an alert is updated in Sekoia.
+  additionalinfo: When selected, it includes the events in the mirrored alerts when an alert is updated in Sekoia.
 - section: Collect
   advanced: true
   display: Include kill chain information in the mirroring of the alerts.
@@ -232,8 +225,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: When selected, it includes the kill chain information of the alert
-    in the mirrored alerts when an alert is updated in Sekoia.
+  additionalinfo: When selected, it includes the kill chain information of the alert in the mirrored alerts when an alert is updated in Sekoia.
 - section: Collect
   advanced: true
   display: Reopen Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
@@ -241,8 +233,7 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: When selected, reopening the Sekoia XDR alert will reopen the Cortex
-    XSOAR incident.
+  additionalinfo: When selected, reopening the Sekoia XDR alert will reopen the Cortex XSOAR incident.
 - section: Collect
   advanced: true
   display: Close Mirrored Cortex XSOAR Incidents (Incoming Mirroring)
@@ -250,24 +241,21 @@ configuration:
   defaultvalue: "false"
   type: 8
   required: false
-  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject"
-    status will close the Cortex XSOAR incident.
+  additionalinfo: When selected, closing the Sekoia XDR alert with a "Closed" or "Reject" status will close the Cortex XSOAR incident.
 - section: Collect
   display: Close notes.
   name: close_notes
   defaultvalue: Closed by Sekoia.
   type: 0
   required: true
-  additionalinfo: Change the closing notes that will be added to the tickets closed
-    automatically by the automation.
+  additionalinfo: Change the closing notes that will be added to the tickets closed automatically by the automation.
 - section: Collect
   display: Timezone ( TZ format )
   name: timezone
   defaultvalue: Europe/Paris
   type: 0
   required: true
-  additionalinfo: This will be used to present dates in the appropiate timezones,  used
-    for comment timestamps, etc.
+  additionalinfo: This will be used to present dates in the appropiate timezones,  used for comment timestamps, etc.
 script:
   script: "-"
   type: python
@@ -445,10 +433,10 @@ script:
     arguments:
     - name: earliest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z"
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z."
     - name: lastest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z"
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z."
     - name: query
       defaultValue: ""
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
@@ -607,10 +595,10 @@ script:
     arguments:
     - name: earliest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z"
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g -3d, -2w, -7d, 2023-01-15T00:00:00Z."
     - name: lastest_time
       required: true
-      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z"
+      description: "Valid formats <sign + or -><number><time unit> or ISO 8601 e.g +3d, +2w, now, 2023-01-15T00:00:00Z."
     - name: query
       description: 'The query to use, i.e: "alert_short_ids:ALUnyZCYZ9Ga".'
       defaultValue: ""
@@ -670,7 +658,7 @@ script:
       - url.subdomain
       - url.top_level_domain
       - user_agent.original
-      description:  "Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter."
+      description: "Indicate if there is any information you want to exclude from the results of the events.  i.e:  original.message, message,  agent.name, etc. These are the names of the headers presented in the table. If the header you want to exclude is not in the list write it and press enter."
       isArray: true
     - name: job_uuid
       description: The job UUID to retrieve query results.
