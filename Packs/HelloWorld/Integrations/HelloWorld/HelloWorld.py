@@ -908,6 +908,8 @@ def main() -> None:  # pragma: no cover
     main function, parses params and runs command functions
     """
 
+    print("Hello")
+
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
