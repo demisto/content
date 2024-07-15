@@ -246,6 +246,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
     if FEED_TYPE_GENERIC not in feed_type:
         # Insight is the name of the indicator object as it's saved into the database
         search = get_scan_insight_format(client, now, last_fetch_timestamp, feed_type)
+        demisto.debug(f'fetch_indicators_command {fetch_indicators_command=}')
         for hit in search if client.time_field else search.scan:  # if time field is not set we have to scan all
             hit_lst, hit_enrch_lst = extract_indicators_from_insight_hit(hit, tags=client.tags,
                                                                          tlp_color=client.tlp_color)
@@ -253,6 +254,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
             ioc_enrch_lst.extend(hit_enrch_lst)
     else:
         search = get_scan_generic_format(client, now, last_fetch_timestamp, fetch_limit)
+        demisto.debug(f'fetch_indicators_command {get_scan_generic_format=}')
         for hit in search if client.time_field else search.scan:  # if time field is not set we have to scan all
             ioc_lst.extend(extract_indicators_from_generic_hit(hit, src_val, src_type, default_type, client.tags,
                                                                client.tlp_color))
@@ -265,6 +267,7 @@ def fetch_indicators_command(client, feed_type, src_val, src_type, default_type,
         last_ids.extend(prev_iocs_ids)
     if ioc_enrch_lst:
         ioc_enrch_batches = create_enrichment_batches(ioc_enrch_lst)
+        demisto.debug(f'fetch_indicators_command {ioc_enrch_batches=}')
         for enrch_batch in ioc_enrch_batches:
             # ensure batch sizes don't exceed 2000
             for b in batch(enrch_batch, batch_size=2000):
