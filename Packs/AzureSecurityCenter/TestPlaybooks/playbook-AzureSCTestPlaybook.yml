@@ -380,7 +380,7 @@ tasks:
     task:
       id: 3da95f14-3b4e-4095-8974-4805e589d8ce
       version: -1
-      name: Check if list alert result is not empty
+      name: Check list alert result not empty
       type: condition
       iscommand: false
       brand: ""
@@ -420,7 +420,7 @@ tasks:
     task:
       id: 48bb73c0-aa6c-4a83-8040-40827670d36d
       version: -1
-      name: Check lust aps not empty
+      name: Check list aps not empty
       type: condition
       iscommand: false
       brand: ""
