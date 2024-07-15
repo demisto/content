@@ -29,7 +29,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           echo Deleting branch protection rule for deleted branch '${{ github.event.ref }}'
-          # poetry run python .github/github_workflow_scripts/delete_branch_protection.py "${{ github.event.ref }}"
+          poetry run python .github/github_workflow_scripts/delete_branch_protection.py "${{ github.event.ref }}" 
 
   find_orphaned_protection_rules:
     runs-on: ubuntu-latest
