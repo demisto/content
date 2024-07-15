@@ -1,0 +1,58 @@
+name: Handle Deleted Branch
+
+on:
+  delete:
+    branches:
+      - 'contrib/**'
+
+jobs:
+  delete_protection_rule:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.7
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.1.1
+        with:
+          python-version: '3.10'
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+
+      - name: Install python dependencies
+        run: |
+          poetry install --with ci
+
+      - name: Delete Branch '${{ github.event.ref }}'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo Deleting branch protection rule for deleted branch '${{ github.event.ref }}'
+          # poetry run python .github/github_workflow_scripts/delete_branch_protection.py "${{ github.event.ref }}"
+
+  find_orphaned_protection_rules:
+    runs-on: ubuntu-latest
+    needs: delete_protection_rule
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4.1.7
+
+      - name: Set up Python
+        uses: actions/setup-python@v5.1.1
+        with:
+          python-version: '3.10'
+
+      - name: Setup Poetry
+        uses: Gr1N/setup-poetry@v9
+
+      - name: Install python dependencies
+        run: |
+          poetry install --with ci
+
+      - name: Get Branch Protection Rules Requiring Deletion
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo Checking for any branches that need to be deleted...
+          # python .github/github_workflow_scripts/find_orphaned_protection_rules.py
