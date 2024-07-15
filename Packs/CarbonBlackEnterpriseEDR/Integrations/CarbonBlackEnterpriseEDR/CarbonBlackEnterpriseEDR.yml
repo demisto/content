@@ -65,7 +65,7 @@ configuration:
   type: 0
   section: Collect
   required: false
-  additionalinfo: Note, due to duplicates alert that the API retreives, there might be less alerts than the set limit.
+  additionalinfo: Note, If the API returns duplicates, we will drop them, causing the total number of alerts fetched to potentially be fewer than the set limit.
 - defaultvalue: "1"
   display: Incidents Fetch Interval
   name: incidentFetchInterval
