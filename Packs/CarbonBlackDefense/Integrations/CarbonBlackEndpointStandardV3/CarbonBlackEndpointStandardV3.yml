@@ -475,7 +475,7 @@ script:
       description: The reason code for the alert.
       type: String
     - contextPath: CarbonBlackDefense.Alert.threat_id
-      description: The unique alert ID
+      description: The unique alert ID.
       type: String
     - contextPath: CarbonBlackDefense.Alert.primary_event_id
       description: The primary event ID related to the alert.
@@ -3403,7 +3403,7 @@ script:
       description: A description of the observation.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.observation_id
-      description: The unique observation ID
+      description: The unique observation ID.
       type: String
     - contextPath: CarbonBlackDefense.EventDetails.Results.observation_type
       description: The type of observation.
