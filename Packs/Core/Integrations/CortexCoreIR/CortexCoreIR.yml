@@ -2940,8 +2940,8 @@ script:
       description: Type of user group.
       type: String
   - arguments:
-    - description: The endpoint id.
-      name: endpoint_ids
+    - description: The agent id.
+      name: agent_id
       isArray: false
       required: true
     - description: The instance id.
@@ -2960,12 +2960,12 @@ script:
     description: Terminate a process by it's instance id.
     polling: true
     outputs:
-    - contextPath: Core.TerminateProcess.action_id
+    - contextPath: Core.TerminateProcess.group_action_id
       description: test.
       type: String
   - arguments:
     - description: The agent id.
-      name: endpoint_ids
+      name: agent_id
       isArray: false
       required: true
     - description: The causality id.
@@ -2984,7 +2984,7 @@ script:
     description: Stops a process by it's causality id.
     polling: true
     outputs:
-    - contextPath: Core.CausalityProcess.action_id
+    - contextPath: Core.CausalityProcess.group_action_id
       description: The group action id.
       type: String
   runonce: false

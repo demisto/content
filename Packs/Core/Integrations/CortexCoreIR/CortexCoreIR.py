@@ -466,15 +466,13 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
-            
         
         elif command == 'core-terminate-process':
-            # return_results(terminate_process_command(client, args))
             return_results(run_polling_command(client=client,
                                                args=args,
-                                               cmd="core-run-script-kill-process",
+                                               cmd="core-terminate-process",
                                                command_function=terminate_process_command,
-                                               command_decision_field="action_id",
+                                               command_decision_field="group_action_id",
                                                results_function=action_status_get_command,
                                                polling_field="status",
                                                polling_value=["PENDING",
@@ -482,13 +480,12 @@ def main():  # pragma: no cover
                                                               "PENDING_ABORT"]))
         
         elif command == 'core-causality-process':
-            # return_results(terminate_causality_command(client, args))
             return_results(run_polling_command(client=client,
                                                args=args,
-                                               cmd="core-run-script-kill-process",
-                                               command_function=terminate_process_command,
-                                               command_decision_field="action_id",
-                                               results_function=terminate_causality_command,
+                                               cmd="core-causality-process",
+                                               command_function=terminate_causality_command,
+                                               command_decision_field="group_action_id",
+                                               results_function=action_status_get_command,
                                                polling_field="status",
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
