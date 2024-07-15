@@ -6,6 +6,7 @@ from typing import Any
 import dateparser
 import requests
 import urllib3
+from more_itertools import map_reduce
 
 
 # Disable insecure warnings
@@ -1293,10 +1294,8 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
 
-    from more_itertools import map_reduce
-
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
-    last_fetched_alerts_ids = last_run.get('last_fetched_alerts_ids', '')
+    last_fetched_alerts_ids = last_run.get('last_fetched_alerts_ids', [])
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
 
@@ -1312,18 +1311,20 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         limit=fetch_limit,
     )
 
-    # Some alerts have exactly the same backend_timestamp,
-    # therefor we dedup alerts that have the backend_timestamp of the last alert in the last run.
-    def get_backend_timestamp(alert):
-        return alert['backend_timestamp']
-    alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], get_backend_timestamp)
-    # backend_timestamp of last alert retrieved.
-    last_backend_timestamp = response['results'][-1]['backend_timestamp']
-    # alert ids that have that backend_timestamp (need to be deduped in the next run).
-    alerts_ids_to_save = [alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_backend_timestamp]]
-
     alerts = response.get('results', [])
     demisto.debug(f'{LOG_INIT} got {len(alerts)} alerts from server')
+
+    if alerts:
+        # Alerts may be created with the same backend_timestamp.
+        # Therefore, we deduplicate alerts that have the same # backend_timestamp as the last alert we saved in the previous run.
+        def get_backend_timestamp(alert):
+            return alert['backend_timestamp']
+        alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], get_backend_timestamp)
+        # backend_timestamp of last alert retrieved.
+        last_fetched_alert_timestamp = response['results'][-1]['backend_timestamp']
+        # All IDs of alerts that share the same timestamp as the last one.
+        alerts_ids_to_save = [alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_fetched_alert_timestamp]]
+
     for alert in alerts:
         alert_id = alert.get('id')
 
@@ -1343,7 +1344,11 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         assert parsed_date is not None, f'failed parsing {alert_create_date}'
 
     demisto.debug(f'{LOG_INIT} sending {len(incidents)} incidents')
-    res = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
+    if alerts:
+        res = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
+    else:
+        res = last_run
+        
     return incidents, res
 
 

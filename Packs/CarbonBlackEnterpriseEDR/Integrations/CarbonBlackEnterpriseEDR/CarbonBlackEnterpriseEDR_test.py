@@ -478,26 +478,22 @@ test_fetch_incidents_second_run_data = [
         {'id': '123', 'backend_timestamp': '2023-06-12T08:17:51.779Z', 'first_event_timestamp': '2000-05-12T08:14:51.779Z'},
         {'id': '345', 'backend_timestamp': '2023-07-12T08:17:51.779Z', 'first_event_timestamp': '2000-05-12T08:14:51.779Z'}
     ]},
-        {'last_fetched_alert_create_time': '2023-05-12T08:17:51.779Z', 'last_fetched_alerts_ids': ['456', '789']},  # last_run
-        [
-        {'name': 'Carbon Black Enterprise EDR alert 123', 'occurred': '2023-06-12T08:17:51.779Z'},
-        {'name': 'Carbon Black Enterprise EDR alert 345', 'occurred': '2023-07-12T08:17:51.779Z'},
-    ]
+        {'last_fetched_alert_create_time': '2023-05-12T08:17:51.779Z', 'last_fetched_alerts_ids': ['456', '789']}  # last_run
     )
 ]
 
 
-@pytest.mark.parametrize('response, last_run, expected_incidents', test_fetch_incidents_second_run_data)
-def test_fetch_incidents_second_run(mocker, response, last_run, expected_incidents):
+@pytest.mark.parametrize('response, last_run', test_fetch_incidents_second_run_data)
+def test_fetch_incidents_second_run(mocker, response, last_run):
     """
     Given:
         - All arguments needed.
 
     When:
-        - Running 'fetch-incidents' command in the second time (there is a last_run value).
+        - When the fetch is running for the second cycle (there is an existing last_run to use).
 
     Then:
-        - The fetch_incidents fun returns the right incidents.
+        - The fetch_incidents func returns the alerts needed and drops the duplicates.
     """
     from CarbonBlackEnterpriseEDR import fetch_incidents
     mocker.patch.object(CLIENT, 'search_alerts_request', return_value=response)
@@ -507,3 +503,21 @@ def test_fetch_incidents_second_run(mocker, response, last_run, expected_inciden
     assert '789' not in incidents_ids
     assert '123' in incidents_ids
     assert '345' in incidents_ids
+    
+    
+def test_fetch_incidents_no_alerts(mocker):
+    """
+    Given:
+        - All arguments needed.
+
+    When:
+        - Running 'fetch-incidents' command and there are no alerts retrieved.
+
+    Then:
+        - The fetch_incidents func doesn't fail and the last run doesn't change.
+    """
+    from CarbonBlackEnterpriseEDR import fetch_incidents
+    mocker.patch.object(CLIENT, 'search_alerts_request', return_value={})
+    _, res = fetch_incidents(CLIENT, fetch_time='3 days', fetch_limit='50', last_run={'bla': 'bla'})
+    assert res == {'bla': 'bla'}
+
