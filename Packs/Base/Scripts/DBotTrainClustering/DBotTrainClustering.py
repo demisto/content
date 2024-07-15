@@ -1,22 +1,24 @@
 import demistomock as demisto
 from CommonServerPython import *
-from CommonServerUserPython import *
 
-import pandas as pd
-import numpy as np
-import collections
-import dill as pickle
 import builtins
-from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
+import collections
+import math
+from datetime import datetime
+from typing import Dict, Tuple, Type
+
+import dill as pickle
+import hdbscan
+import numpy as np
+import pandas as pd
+from CommonServerUserPython import *
 from sklearn import cluster
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.compose import ColumnTransformer
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.manifold import TSNE
-import hdbscan
-from datetime import datetime
-from typing import Type, Tuple, Dict, Union
-import math
+from sklearn.pipeline import Pipeline
+
 
 GENERAL_MESSAGE_RESULTS = "#### - Successfully grouped **%s incidents into %s groups**.\n #### - The grouping was based on " \
                           "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
@@ -59,7 +61,7 @@ class Clustering:
 
     def __init__(self, params, model_name='hdbscan'):
         """
-        Instiantiate class object for clustering
+        Instantiate class object for clustering
         """
 
         self.model_name = model_name
@@ -97,9 +99,8 @@ class Clustering:
 
     def create_model(self, parameters={}):
         """ Create a new model.
-        This function takes in parameter a dictionnary.
-        The keys of this dictionnary should comply with the Scikit Learn
-        naming.
+        This function takes in parameter a dictionary.
+        The keys of this dictionary should comply with the scikit-learn naming.
         """
         if self.model_name == "DBSCAN":
             self.model = cluster.DBSCAN()
@@ -111,7 +112,6 @@ class Clustering:
 
         for key, value in parameters.items():
             setattr(self.model, key, value)
-        return
 
     def get_data(self, X: np.ndarray, y: pd.DataFrame):
         """
@@ -143,7 +143,6 @@ class Clustering:
             else:
                 self.results = self.model.predict(X)  # type: ignore
         self.number_clusters = len(set(self.results[self.results >= 0]))
-        return
 
     def reduce_dimension(self, dimension=2):
         """
@@ -171,12 +170,12 @@ class Clustering:
                 self.centers[cluster_] = center
 
 
-class PostProcessing(object):
+class PostProcessing:
     """
     Class to analyze the clustering
     """
 
-    def __init__(self, clustering: Type[Clustering], threshold: float, generic_cluster_name: bool):
+    def __init__(self, clustering: Clustering, threshold: float, generic_cluster_name: bool):
         """
         Instantiate class object for visualization
         :param clustering: Object Clustering
@@ -184,8 +183,8 @@ class PostProcessing(object):
         :param generic_cluster_name: Boolean if cluster don't have name and needs generic naming
         :return: Instantiate class object for visualization
         """
-        self.clustering = clustering  # type: Type[Clustering]
-        self.threshold = threshold  # type: float
+        self.clustering: Clustering = clustering
+        self.threshold: float = threshold
         self.generic_cluster_name = generic_cluster_name
         self.stats = {}  # type: ignore
         self.statistics()
@@ -237,8 +236,8 @@ class PostProcessing(object):
                         self.clustering.model.labels_ == cluster_number].label.isin(  # type: ignore
                         list(chosen.keys())))  # type: ignore
                 dist_total[cluster_number]['distribution'] = dist
-                cluster_name = ' , '.join([x for x in chosen.keys()])[:15]
-                if cluster_name in duplicate_family.keys():
+                cluster_name = ' , '.join(chosen)[:15]
+                if cluster_name in duplicate_family:
                     new_cluster_name = '%s_%s' % (cluster_name, str(duplicate_family[cluster_name]))
                     duplicate_family[cluster_name] += 1
                 else:
@@ -255,8 +254,47 @@ class PostProcessing(object):
                 dist_total[cluster_number]['number_samples'] = self.stats[cluster_number]['number_samples']
                 dist_total[cluster_number]['clusterName'] = 'Cluster %s' % str(cluster_number)
         self.stats['number_of_clusterized_sample_after_selection'] = sum(dist_total[cluster_number]['number_samples']
-                                                                         for cluster_number in dist_total.keys())
+                                                                         for cluster_number in dist_total)
         self.selected_clusters = dist_total
+
+
+class Tfidf(BaseEstimator, TransformerMixin):
+    """
+    TFIDF transformer
+    """
+
+    def __init__(self, normalize_function):
+        """
+        :param model_params: parameters of TFIDF
+        :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
+        """
+        self.normalize_function = normalize_function
+        self.vec = TfidfVectorizer(**TFIDF_PARAMS)
+
+    def fit(self, x, y=None):
+        """
+        Fit TFIDF transformer
+        :param x: incident on which we want to fit the transfomer
+        :return: self
+        """
+        feature_name = x.columns[0]
+        if self.normalize_function:
+            x = x[feature_name].apply(self.normalize_function)
+        self.vec.fit(x)
+        return self
+
+    def transform(self, x):
+        """
+        Transform x with the trained vectorizer
+        :param x: DataFrame or np.array
+        :return:
+        """
+        feature_name = x.columns[0]
+        if self.normalize_function:
+            x = x[feature_name].apply(self.normalize_function)
+        else:
+            x = x[feature_name]
+        return self.vec.transform(x).toarray()
 
 
 def extract_fields_from_args(arg: list[str]) -> list[str]:
@@ -469,45 +507,6 @@ def normalize_command_line(command) -> str:
         return my_string
     else:
         return ''
-
-
-class Tfidf(BaseEstimator, TransformerMixin):
-    """
-    TFIDF transformer
-    """
-
-    def __init__(self, normalize_function):
-        """
-        :param model_params: parameters of TFIDF
-        :param normalize_function: Normalize function to apply on each sample of the corpus before the vectorization
-        """
-        self.normalize_function = normalize_function
-        self.vec = TfidfVectorizer(**TFIDF_PARAMS)
-
-    def fit(self, x, y=None):
-        """
-        Fit TFIDF transformer
-        :param x: incident on which we want to fit the transfomer
-        :return: self
-        """
-        feature_name = x.columns[0]
-        if self.normalize_function:
-            x = x[feature_name].apply(self.normalize_function)
-        self.vec.fit(x)
-        return self
-
-    def transform(self, x):
-        """
-        Transform x with the trained vectorizer
-        :param x: DataFrame or np.array
-        :return:
-        """
-        feature_name = x.columns[0]
-        if self.normalize_function:
-            x = x[feature_name].apply(self.normalize_function)
-        else:
-            x = x[feature_name]
-        return self.vec.transform(x).toarray()
 
 
 def store_model_in_demisto(model: Type[PostProcessing], model_name: str, model_override: bool,
