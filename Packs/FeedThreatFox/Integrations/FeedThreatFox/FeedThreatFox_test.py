@@ -84,16 +84,16 @@ def test_check_params_bad_arguments(query_args, expected_result):
 
 test_create_query_data = [
     ('days', {'days': 1, 'id': None, 'search_term': None, 'hash': None, 'tag': None, 'malware': None, 'limit': None},  # case days
-     '{"query": "get_iocs", "days" : 1 }'),  # expected query
+     {"query": "get_iocs", "days" : 1}),  # expected query
     ('days', {'days': 1, 'limit': 10, 'id': None, 'search_term': None,
       'hash': None, 'tag': None, 'malware': None},  # case days with limit that isn't needed
-     '{"query": "get_iocs", "days" : 1 }'),  # expected query, ignores limit
+     {"query": "get_iocs", "days" : 1}),  # expected query, ignores limit
     ('tag', {'tag': 'bla', 'limit': 10, 'id': None, 'search_term': None,
       'hash': None, 'days': None, 'malware': None},  # case tag  with needed limit
-     '{"query": "taginfo", "limit" : 10 }'),  # expected query with limit
+     {"query": "taginfo", "tag": "bla", "limit" : 10}),  # expected query with limit
     ('tag', {'tag': 'bla', 'limit': None, 'id': None, 'search_term': None,
       'hash': None, 'days': None, 'malware': None},  # case tag with no needed limit
-     '{"query": "taginfo", "limit" : 50 }')  # expected query with default limit
+     {"query": "taginfo", "tag": "bla", "limit" : 50})  # expected query with default limit
 ]
 @pytest.mark.parametrize('query_arg, args, expected_query', test_create_query_data)
 def test_create_query(query_arg, args, expected_query):

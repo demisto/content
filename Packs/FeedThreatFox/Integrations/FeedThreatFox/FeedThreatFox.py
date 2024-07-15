@@ -65,19 +65,20 @@ def create_query(query_arg, id: int | None = None, search_term: str | None = Non
         
     query = assign_params(
         query = query_dict[query_arg],
-        limit = limit,
         id = id,
         search_term = search_term,
         hash = hash,
         tag = tag,
         malware = malware,
-        days = days
+        days = days,
+        limit = limit
     )
         
     if query_arg != 'tag' and query_arg != 'malware':
        del query['limit']
-       
-    return f'{query}'
+    
+    #string_query = str(query).replace("'", '"')
+    return query
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
