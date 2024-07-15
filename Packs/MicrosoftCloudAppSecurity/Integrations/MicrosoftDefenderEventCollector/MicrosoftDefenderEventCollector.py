@@ -189,9 +189,8 @@ class IntegrationGetEvents(ABC):
                 stored_per_type.extend(logs)
                 if self.options.limit:
                     demisto.debug(
-                        f'MD: {self.options.limit=} reached. \
-                        slicing from {len(logs)=}. \
-                        limit must be presented ONLY in commands and not in fetch-events.'
+                        f'MD: {self.options.limit=} reached. slicing from {len(logs)=}.' \
+                        ' limit must be presented ONLY in commands and not in fetch-events.'
                     )
                     if len(stored_per_type) >= self.options.limit:
                         final_stored_all_types.extend(stored_per_type[: self.options.limit])
@@ -257,7 +256,7 @@ class DefenderAuthenticator(BaseModel):
             else:
                 request.headers = auth  # type: ignore[assignment]
 
-            demisto.debug('getting access token for Defender Authenticator - succeeded')
+            demisto.debug('MD: getting access token for Defender Authenticator - succeeded')
 
         except BaseException as e:
             # catch BaseException to catch also sys.exit via return_error
@@ -406,7 +405,7 @@ def module_test(get_events: DefenderGetEvents) -> str:
 
 
 def main(command: str, demisto_params: dict):
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f'MD: Command being called is {command}')
 
     try:
         demisto_params['client_secret'] = demisto_params['credentials']['password']
