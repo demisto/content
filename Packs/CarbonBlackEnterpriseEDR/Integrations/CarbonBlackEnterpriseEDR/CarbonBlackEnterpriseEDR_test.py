@@ -439,17 +439,19 @@ def test_alert_process_search_command_func_called(mocker, args, func_to_be_calle
     execute_command = mocker.patch.object(CLIENT, func_to_be_called)
     process_search_command_with_polling(args, CLIENT)
     assert execute_command.called is True
-    
+
 
 test_fetch_incidents_first_run_data = [
     ({'results': [  # response
         {'id': '123', 'backend_timestamp': '2023-05-12T08:16:51.779Z', 'first_event_timestamp': '2000-04-12T08:14:51.779Z'},
         {'id': '456', 'backend_timestamp': '2023-05-12T08:17:51.779Z', 'first_event_timestamp': '2000-04-12T08:14:51.779Z'},
         {'id': '789', 'backend_timestamp': '2023-05-12T08:17:51.779Z', 'first_event_timestamp': '2000-04-12T08:14:51.779Z'}
-        ]},
-     {'last_fetched_alert_create_time': '2023-05-12T08:17:51.779Z', 'last_fetched_alerts_ids': ['456', '789']}  # expected res
-     )
+    ]},
+        {'last_fetched_alert_create_time': '2023-05-12T08:17:51.779Z', 'last_fetched_alerts_ids': ['456', '789']}  # expected res
+    )
 ]
+
+
 @pytest.mark.parametrize('response, expected_res', test_fetch_incidents_first_run_data)
 def test_fetch_incidents_first_run(mocker, response, expected_res):
     """
@@ -465,24 +467,26 @@ def test_fetch_incidents_first_run(mocker, response, expected_res):
     from CarbonBlackEnterpriseEDR import fetch_incidents
     mocker.patch.object(CLIENT, 'search_alerts_request', return_value=response)
     mocker.patch('CommonServerPython.parse_date_range', return_value='2023-03-12T08:17:51.779Z')
-    #last_fetched_alert_create_time = '2024-07-12T08:08:17.000Z'
-    _ , res = fetch_incidents(CLIENT, '3 days', '3', {})
+    # last_fetched_alert_create_time = '2024-07-12T08:08:17.000Z'
+    _, res = fetch_incidents(CLIENT, '3 days', '3', {})
     assert res == expected_res
-    
-    
+
+
 test_fetch_incidents_second_run_data = [
     ({'results': [  # response
         {'id': '789', 'backend_timestamp': '2023-05-12T08:17:51.779Z', 'first_event_timestamp': '2000-04-12T08:14:51.779Z'},
         {'id': '123', 'backend_timestamp': '2023-06-12T08:17:51.779Z', 'first_event_timestamp': '2000-05-12T08:14:51.779Z'},
         {'id': '345', 'backend_timestamp': '2023-07-12T08:17:51.779Z', 'first_event_timestamp': '2000-05-12T08:14:51.779Z'}
-        ]},
-     {'last_fetched_alert_create_time': '2023-05-12T08:17:51.779Z', 'last_fetched_alerts_ids': ['456', '789']},  # last_run
-     [
-         {'name': 'Carbon Black Enterprise EDR alert 123', 'occurred': '2023-06-12T08:17:51.779Z'},
-         {'name': 'Carbon Black Enterprise EDR alert 345', 'occurred': '2023-07-12T08:17:51.779Z'},
-     ]
-     )
+    ]},
+        {'last_fetched_alert_create_time': '2023-05-12T08:17:51.779Z', 'last_fetched_alerts_ids': ['456', '789']},  # last_run
+        [
+        {'name': 'Carbon Black Enterprise EDR alert 123', 'occurred': '2023-06-12T08:17:51.779Z'},
+        {'name': 'Carbon Black Enterprise EDR alert 345', 'occurred': '2023-07-12T08:17:51.779Z'},
+    ]
+    )
 ]
+
+
 @pytest.mark.parametrize('response, last_run, expected_incidents', test_fetch_incidents_second_run_data)
 def test_fetch_incidents_second_run(mocker, response, last_run, expected_incidents):
     """
@@ -498,7 +502,7 @@ def test_fetch_incidents_second_run(mocker, response, last_run, expected_inciden
     from CarbonBlackEnterpriseEDR import fetch_incidents
     mocker.patch.object(CLIENT, 'search_alerts_request', return_value=response)
     mocker.patch('CommonServerPython.parse_date_range', return_value='2023-03-12T08:17:51.779Z')
-    incidents , _ = fetch_incidents(CLIENT, '3 days', '3', last_run)
+    incidents, _ = fetch_incidents(CLIENT, '3 days', '3', last_run)
     incidents_ids = "".join([incident['name'] for incident in incidents])
     assert '789' not in incidents_ids
     assert '123' in incidents_ids
