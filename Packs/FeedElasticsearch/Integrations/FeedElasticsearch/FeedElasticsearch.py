@@ -425,13 +425,12 @@ def main():
         src_type = params.get('src_type')
         default_type = params.get('default_type')
         last_fetch = demisto.getLastRun().get('time')
-        command = 'fetch-indicators'
-        if command == 'test-module':
+        if demisto.command() == 'test-module':
             test_command(client, feed_type, src_val, src_type, default_type, time_method, time_field, fetch_time, query,
                          username, password, api_key, api_id)
-        elif command == 'fetch-indicators':
+        elif demisto.command() == 'fetch-indicators':
             fetch_indicators_command(client, feed_type, src_val, src_type, default_type, last_fetch, fetch_limit)
-        elif command == 'es-get-indicators':
+        elif demisto.command() == 'es-get-indicators':
             get_indicators_command(client, feed_type, src_val, src_type, default_type)
     except Exception as e:
         return_error(f"Failed executing {demisto.command()}.\nError message: {str(e)}")
