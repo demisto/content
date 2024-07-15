@@ -19,7 +19,7 @@ import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
-
+DEFAULT_FROM_FETCH_PARAMETER = '3 days'
 
 class EventFilter(NamedTuple):
     ui_name: str
@@ -313,9 +313,11 @@ class DefenderGetEvents(IntegrationGetEvents):
         if after:
             filters['date'] = {'gte': after}  # type: ignore
 
+        demisto.debug(f"MD: Sending request with filters {filters}")
         self.client.request.params['filters'] = json.dumps(filters)
         response = self.client.call(self.client.request).json()
         events = response.get('data', [])
+        demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
 
         # add new field with the event type
         for event in events:
@@ -326,11 +328,12 @@ class DefenderGetEvents(IntegrationGetEvents):
         yield events
 
         while has_next:
+            demisto.debug("MD: Got more events to fetch")
             last = events.pop()
             self.client.set_request_filter(last['timestamp'])
             response = self.client.call(self.client.request).json()
             events = response.get('data', [])
-
+            demisto.debug(f"MD: Got {len(events)} events for {event_type_name=}")
             # add new field with the event type
             for event in events:
                 event['event_type_name'] = event_type_name
@@ -342,6 +345,7 @@ class DefenderGetEvents(IntegrationGetEvents):
     @staticmethod
     def get_last_run(events: list) -> dict:
         last_run = demisto.getLastRun()
+        demisto.debug(f'MD: Got the last run: {last_run}')
         alerts_last_run = 0
         activities_admin_last_run = 0
         activities_login_last_run = 0
@@ -349,6 +353,7 @@ class DefenderGetEvents(IntegrationGetEvents):
         for event in events:
             event_type = event['event_type_name']
             timestamp = event['timestamp']
+            demisto.debug(f'MD: Got event from type {event_type}, with timestamp {timestamp}')
             if event_type == 'alerts':
                 alerts_last_run = timestamp
             elif event_type == 'activities_login':
@@ -411,10 +416,13 @@ def main(command: str, demisto_params: dict):
         else:
             event_filters = ALL_EVENT_FILTERS
 
-        after = demisto_params.get('after')
+        after = demisto_params.get('after') or DEFAULT_FROM_FETCH_PARAMETER
+        
         if after and not isinstance(after, int):
+            demisto.debug(f'MD: Got after argument: {after}')
             timestamp = dateparser.parse(after)  # type: ignore
             after = int(timestamp.timestamp() * 1000)  # type: ignore
+            demisto.debug(f'MD: Parsed the after arg: {after}')
 
         options = IntegrationOptions.parse_obj(demisto_params)
         request = DefenderHTTPRequest.parse_obj(demisto_params)
@@ -436,7 +444,9 @@ def main(command: str, demisto_params: dict):
             if command == 'fetch-events':
                 # publishing events to XSIAM
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)  # type: ignore
-                demisto.setLastRun(DefenderGetEvents.get_last_run(events))
+                next_run = DefenderGetEvents.get_last_run(events)
+                demisto.debug(f'MD: setting the next run: {next_run}')
+                demisto.setLastRun(next_run)
 
             elif command == 'microsoft-defender-cloud-apps-get-events':
                 command_results = CommandResults(
