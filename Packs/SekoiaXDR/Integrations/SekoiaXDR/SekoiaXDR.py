@@ -615,11 +615,11 @@ def fetch_incidents(
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         if mirror_direction != "None":
             alert["mirror_instance"] = demisto.integrationInstance()
-            incident["rawJSON"] = json.dumps(alert)
-            incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(
+            alert["dbotMirrorDirection"] = MIRROR_DIRECTION.get(
                 str(mirror_direction)
             )
-            incident["dbotMirrorId"] = alert["short_id"]
+            alert["dbotMirrorId"] = alert["short_id"]
+            incident["rawJSON"] = json.dumps(alert)
 
         incidents.append(incident)
 
