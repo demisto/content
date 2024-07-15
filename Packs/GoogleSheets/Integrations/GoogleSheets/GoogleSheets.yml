@@ -14,12 +14,12 @@ configuration:
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
-  additionalinfo: null
+  additionalinfo:
   required: false
 - name: proxy
   display: Use system proxy settings
   type: 8
-  additionalinfo: null
+  additionalinfo:
   required: false
 - name: user_id
   display: Email - Associate to Google Drive

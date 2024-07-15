@@ -170,7 +170,7 @@ script:
       type: String
   - arguments:
     - defaultValue: ''
-      description: 'An expression for filtering the results of the request. Filter rules are case insensitive. The fields eligible for filtering are:
+      description: "An expression for filtering the results of the request. Filter rules are case insensitive. The fields eligible for filtering are:
 
         name
 
@@ -180,9 +180,9 @@ script:
 
         Some examples:
 
-        name:how*                 The project''s name starts with "how".
+        name:how*                 The project's name starts with 'how'.
 
-        name:Howl                 The project''s name is Howl or howl.
+        name:Howl                 The project's name is Howl or howl.
 
         name:HOWL                 Equivalent to above.
 
@@ -190,9 +190,9 @@ script:
 
         labels.color:*            The project has the label color.
 
-        labels.color:red          The project''s label color has the value red.
+        labels.color:red          The project's label color has the value red.
 
-        labels.color:red labels.size:big    The project''s label color has the value red and its label size has the value big.'
+        labels.color:red labels.size:big    The project's label color has the value red and its label size has the value big."
       name: filter
       predefined: []
     description: Lists projects that are visible to the user and satisfies the specified filter. Projects are returned in an unspecified order.

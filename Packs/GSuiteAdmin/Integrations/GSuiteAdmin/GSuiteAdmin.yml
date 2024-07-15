@@ -2719,11 +2719,10 @@ script:
       name: policy_schema
     - description: The value of the policy that is compatible with the schema that it is associated with Struct format.
       name: policy_value
-    - description: 'Policy fields to update. Only fields in this mask will be updated; other fields in policyValue will be ignored (even if they have values). If a field is in this list it must have a value in ''policyValue''.
-
-        This is a comma-separated list of fully qualified names of fields. Example: "user.displayName,photo".
-
-        Field mask format.'
+    - description: |-
+          Policy fields to update. Only fields in this mask will be updated; other fields in policyValue will be ignored (even if they have values). If a field is in this list it must have a value in 'policyValue'.
+          This is a comma-separated list of fully qualified names of fields. Example: "user.displayName,photo".
+          Field mask format.
       name: update_mask
     description: Modifies multiple policy values that are applied to a specific group. All targets must have the same target format. That is to say that they must point to the same target resource and must have the same keys specified in additionalTargetKeyNames, though the values for those keys may be different. On failure the request will return the error details as part of the google.rpc.Status.
     name: gsuite-policy-modify
