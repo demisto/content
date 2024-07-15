@@ -8,7 +8,7 @@ description: Manage Secrets and Protect Sensitive Data through HashiCorp Vault.
 configuration:
 - display: HashiCorp server URL (e.g., https://192.168.0.1:8200)
   name: server
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: Use AppRole Auth Method
@@ -18,12 +18,12 @@ configuration:
 - display: Username / Role ID
   displaypassword: Password / Secret ID
   name: credentials
-  defaultvalue: ""
+  defaultvalue: ''
   type: 9
   required: false
 - display: Authentication token
   name: token
-  defaultvalue: ""
+  defaultvalue: ''
   type: 4
   hidden: true
   required: false
@@ -34,7 +34,7 @@ configuration:
   required: false
 - display: Vault enterprise namespace
   name: namespace
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: false
 - display: Trust any certificate (not secure)
@@ -47,7 +47,7 @@ configuration:
   required: false
 - display: Fetches credentials
   name: isFetchCredentials
-  defaultvalue: "true"
+  defaultvalue: 'true'
   type: 8
   required: false
 - display: CSV list of secrets engine types to fetch secrets from
@@ -91,10 +91,10 @@ script:
     - name: version
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "2"
+      - '1'
+      - '2'
       description: The version of the KV engine.
-      defaultValue: "1"
+      defaultValue: '1'
     outputs:
     - contextPath: HashiCorp.Secret.Path
       description: Secret path.
@@ -214,8 +214,8 @@ script:
     - name: kv_version
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "2"
+      - '1'
+      - '2'
       description: KV version to mount. Set to "2" for mount KV V2.
     - name: local
       description: Specifies if the secrets engine is a local mount only. Local mounts are not replicated, nor (if a secondary) removed by replication. Supported only in Vault Enterprise.
@@ -255,7 +255,7 @@ script:
     - name: reset
       auto: PREDEFINED
       predefined:
-      - "true"
+      - 'true'
       description: Reset the unseal project.
     description: Use a single master key share to unseal the vault. If the master key shares threshold is met, the vault will attempt to unseal the vault. Otherwise, this API must be called until the threshold is met.
   - name: hashicorp-configure-engine
@@ -270,22 +270,22 @@ script:
     - name: aws_method
       auto: PREDEFINED
       predefined:
-      - "GET"
-      - "POST"
+      - GET
+      - POST
       description: A parameter to indicate which type of request we would like to use to generate credentials.
     - name: type
       auto: PREDEFINED
       predefined:
-      - "KV"
-      - "Cubbyhole"
-      - "AWS"
+      - KV
+      - Cubbyhole
+      - AWS
       required: true
       description: The engine type, e.g., "KV".
     - name: version
       auto: PREDEFINED
       predefined:
-      - "1"
-      - "2"
+      - '1'
+      - '2'
       description: The engine version (for KV engines); "1" or "2".
     description: Configure a secrets engine to fetch secrets from.
   - name: hashicorp-reset-configuration
@@ -303,25 +303,25 @@ script:
     - name: no_parent
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: If true and set by a root caller, the token will not have the parent token of the caller. This creates a token with no parent.
     - name: no_default_policy
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: If true the default policy will not be included in this token's policy set.
     - name: renewable
       auto: PREDEFINED
       predefined:
-      - "true"
-      - "false"
+      - 'true'
+      - 'false'
       description: If set to false, the token cannot be renewed past its initial TTL. If set to true, the token can be renewed up to the system/mount maximum TTL.
     - name: ttl
       description: The TTL(lease duration) period of the token, provided as "10m" or "1h", where hour is the largest suffix. If not provided, the token is valid for the default lease TTL, or indefinitely if the root policy is used.
     - name: explicit_max_ttl
-      description: 'If set, the token will have an explicit max TTL applied to it. The maximum token TTL cannot be changed later, and unlike with normal tokens, updates to the system/mount max TTL value will have no effect at renewal time. The token can never be renewed or used past the value set at issue time.'
+      description: If set, the token will have an explicit max TTL applied to it. The maximum token TTL cannot be changed later, and unlike with normal tokens, updates to the system/mount max TTL value will have no effect at renewal time. The token can never be renewed or used past the value set at issue time.
     - name: display_name
       description: The display name of the token.
     - name: num_uses
@@ -338,7 +338,7 @@ script:
       description: Authentication lease duration in seconds, 0 if indefinitely.
       type: number
     description: Creates a new authentication token.
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.103334
 tests:
 - hashicorp_test
 fromversion: 5.0.0

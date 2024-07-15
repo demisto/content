@@ -8,22 +8,22 @@ description: Analytic database management software
 configuration:
 - display: Host (myhost.example.com)
   name: url
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: Database
   name: database (mydb)
-  defaultvalue: ""
+  defaultvalue: ''
   type: 0
   required: true
 - display: Username
   name: credentials
-  defaultvalue: ""
+  defaultvalue: ''
   type: 9
   required: true
 - display: Port
   name: port
-  defaultvalue: "5433"
+  defaultvalue: '5433'
   type: 0
   required: false
 script:
@@ -37,7 +37,7 @@ script:
       description: A SQL query to perform on the Vertica database.
     - name: limit
       description: The maximum number of results to be returned from the query. (Use 0 for all results)
-      defaultValue: "50"
+      defaultValue: '50'
     outputs:
     - contextPath: Vertica.Query
       description: The original query.
@@ -46,7 +46,7 @@ script:
       description: The content of rows.
       type: string
     description: Executes a query on the Vertica database.
-  dockerimage: demisto/py3-tools:1.0.0.91504
+  dockerimage: demisto/py3-tools:1.0.0.103307
   subtype: python3
 tests:
 - Vertica Test

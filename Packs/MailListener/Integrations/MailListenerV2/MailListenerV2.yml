@@ -23,7 +23,7 @@ configuration:
   type: 9
   section: Connect
 - displaypassword: Client Certificate And Private Key (List of PEMs)
-  display: ""
+  display: ''
   name: clientCertAndKey
   required: false
   section: Connect
@@ -175,7 +175,7 @@ script:
       required: true
     description: Fetches an email by message ID and returns the information in an eml file format.
     name: mail-listener-get-email-as-eml
-  dockerimage: demisto/py3-tools:1.0.0.99035
+  dockerimage: demisto/py3-tools:1.0.0.103307
   isfetch: true
   runonce: false
   script: '-'
