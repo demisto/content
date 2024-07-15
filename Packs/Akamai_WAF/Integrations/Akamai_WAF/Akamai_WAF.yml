@@ -1498,7 +1498,7 @@ script:
       description: Enrollment on which to perform the desired operation. Default is 0. "change_path" is used.
       name: enrollment_id
       required: true
-    - description: "Change path on which to perform the desired operation. Sample: /cps/v2/enrollments/100000/changes/88888888. Note: change_path is not listed in the reference as a parameter. However it can be extracted directly from \"list_enrollments_command\". This should be the most common useage when generate RestAPI's URL."
+    - description: "Change path on which to perform the desired operation. Sample: /cps/v2/enrollments/100000/changes/88888888. Note: change_path is not listed in the reference as a parameter. However it can be extracted directly from \"list_enrollments_command\". This should be the most common usage when generating the RestAPI's URL."
       name: change_path
     - description: For customers who manage more than one account, this runs the operation from another account. The Identity and Access Management API provides a list of available account switch keys.
       name: account_switch_key
