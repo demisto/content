@@ -66,7 +66,7 @@ test_check_params_bad_arguments_data = [
      (False, None))  # expected
 ]
 @pytest.mark.parametrize('query_args, expected_result', test_check_params_bad_arguments_data)
-def test_check_params_bad_arguments(query_args, expected_result,test_check_params_bad_arguments_data):
+def test_check_params_bad_arguments(query_args, expected_result):
     """
     Given:
         - Wrong arguments for a query.
@@ -80,4 +80,35 @@ def test_check_params_bad_arguments(query_args, expected_result,test_check_param
     from FeedThreatFox import check_params
     is_valid, query_arg = check_params(query_args)
     assert (is_valid, query_arg) == expected_result
+    
+
+test_create_query_data = [
+    ('days', {'days': 1, 'id': None, 'search_term': None, 'hash': None, 'tag': None, 'malware': None, 'limit': None},  # case days
+     '{"query": "get_iocs", "days" : 1 }'),  # expected query
+    ('days', {'days': 1, 'limit': 10, 'id': None, 'search_term': None,
+      'hash': None, 'tag': None, 'malware': None},  # case days with limit that isn't needed
+     '{"query": "get_iocs", "days" : 1 }'),  # expected query, ignores limit
+    ('tag', {'tag': 'bla', 'limit': 10, 'id': None, 'search_term': None,
+      'hash': None, 'days': None, 'malware': None},  # case tag  with needed limit
+     '{"query": "taginfo", "limit" : 10 }'),  # expected query with limit
+    ('tag', {'tag': 'bla', 'limit': None, 'id': None, 'search_term': None,
+      'hash': None, 'days': None, 'malware': None},  # case tag with no needed limit
+     '{"query": "taginfo", "limit" : 50 }')  # expected query with default limit
+]
+@pytest.mark.parametrize('query_arg, args, expected_query', test_create_query_data)
+def test_create_query(query_arg, args, expected_query):
+    """
+        Given:
+            - Wrong arguments for a query.
+        
+        When:
+            - Running check_params function.
+        
+        Then:
+            - The function returns (False, None).
+    """
+    from FeedThreatFox import create_query
+    query = create_query(query_arg, id = args['id'], search_term=args['search_term'], hash=args['hash'],
+                         tag=args['tag'], malware=args['malware'], days=args['days'], limit=args['limit'])
+    assert query == expected_query
     

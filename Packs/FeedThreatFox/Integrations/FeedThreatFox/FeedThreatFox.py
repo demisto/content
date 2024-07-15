@@ -49,21 +49,35 @@ def check_params(args: dict):
         return True, args_lst[0]
 
 
-def create_query(query_arg: str, **kwargs):
+def create_query(query_arg, id: int | None = None, search_term: str | None = None, hash: str | None = None, tag: str | None = None,
+                 malware: str | None = None, days: str | None = None, limit: int | None = None):
+    
+    
+    ###need to duplicate ' those
+    
     
     query_dict = {'search_term': 'search_ioc', 'id': 'ioc', 'hash': 'search_hash',
             'tag': 'taginfo', 'malware': 'malwareinfo', 'days': 'get_iocs'}
     
+    limit = limit
+    if not limit:
+        limit = 50
+        
     query = assign_params(
         query = query_dict[query_arg],
-        limit = 50,
-        **kwargs
+        limit = limit,
+        id = id,
+        search_term = search_term,
+        hash = hash,
+        tag = tag,
+        malware = malware,
+        days = days
     )
-    
+        
     if query_arg != 'tag' and query_arg != 'malware':
        del query['limit']
        
-    return query
+    return f'{query}'
 
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
