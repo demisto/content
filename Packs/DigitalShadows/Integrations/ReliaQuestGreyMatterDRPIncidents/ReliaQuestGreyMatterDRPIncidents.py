@@ -1,18 +1,21 @@
 """Digital Shadows for Cortex XSOAR."""
-
-''' IMPORTS '''
-import traceback
-from datetime import datetime, timezone, timedelta
-from time import monotonic, sleep
-
-# Disable insecure warnings
-requests.packages.urllib3.disable_warnings()
-from threading import RLock
-import base64
-import json
-from abc import ABC, abstractmethod
+from abc import ABC
 from contextlib import contextmanager
 from dataclasses import dataclass
+from datetime import datetime
+from threading import RLock
+from time import monotonic, sleep
+
+import urllib3
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from CommonServerUserPython import *  # noqa
+
+''' IMPORTS '''
+
+# Disable insecure warnings
+urllib3.disable_warnings()
 
 ''' CONSTANTS '''
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
@@ -80,42 +83,12 @@ ALERT_FIELD = 'alert'
 
 DS_BASE_URL = 'https://portal-digitalshadows.com'
 
-
-class Logger(ABC):
-    """
-    Abstract Base Class which provides an interface for Logging
-    """
-
-    def __init__(self, **kwargs):
-        pass
-
-    @abstractmethod
-    def info(self, msg, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def debug(self, msg, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def warning(self, msg, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def error(self, msg, *args, **kwargs):
-        pass
-
-    @abstractmethod
-    def critical(self, msg, *args, **kwargs):
-        pass
-
-
 @dataclass
 class HttpResponse:
     """Response from a HTTP Request"""
 
     status_code: int
-    headers: Dict
+    headers: dict
     body: Any
 
     def raise_for_status(self):
@@ -149,17 +122,17 @@ class HttpResponseHeaderRateLimiter:
         self.last_call = self.clock() - self.period_s
         self.lock = RLock()
 
-    def handle_response(self, resp: HttpResponse) -> HttpResponse:
+    def handle_response(self, resp: HttpResponse):
         # re-initialise rate limit config if we find the header has changed
         if 'ratelimit-limit' in resp.headers:
             self.__set_ratelimit_from_header(resp.headers['ratelimit-limit'])
         # check the remaining count and if it is getting too low, ensure we delay
         # our next request
         if 'ratelimit-remaining' in resp.headers:
-            remaining = int(resp.headers.get('ratelimit-remaining'))
+            remaining = int(resp.headers.get('ratelimit-remaining', ''))
             if remaining <= 4:
                 # find the remaining seconds and backoff for that long so we don't hit the limit
-                reset_s = int(resp.headers.get('ratelimit-reset'))
+                reset_s = int(resp.headers.get('ratelimit-reset', ''))
                 # push the last_call for this url out a bit further to avoid the next call breaking
                 # the limit
                 self.last_call = self.clock() + reset_s
@@ -223,19 +196,19 @@ class HttpRequestHandler(ABC):
         if self.account_id:
             headers['searchlight-account-id'] = self.account_id
         auth = str(self.access_key) + ':' \
-               + str(self.secret_key)
-        headers['Authorization'] = 'Basic {}'.format(base64.b64encode(auth.encode()).decode())
+            + str(self.secret_key)
+        headers['Authorization'] = f'Basic {base64.b64encode(auth.encode()).decode()}'
         return headers
 
     @abstractmethod
-    def get(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+    def get(self, url, headers={}, params={}, data=None, **kwargs):
         pass
 
     @abstractmethod
-    def post(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+    def post(self, url, headers={}, params={}, data=None, **kwargs):
         pass
 
-    def rate_limit_response(self, response: HttpResponse):
+    def rate_limit_response(self, response):
         return self.ratelimiter.handle_response(response)
 
 
@@ -260,8 +233,8 @@ class DSHttpRequestHandler(ABC):
         """
         headers = {}
         auth = str(self.access_key) + ':' \
-               + str(self.secret_key)
-        headers['Authorization'] = 'Basic {}'.format(base64.b64encode(auth.encode()).decode())
+            + str(self.secret_key)
+        headers['Authorization'] = f'Basic {base64.b64encode(auth.encode()).decode()}'
         return headers
 
     @abstractmethod
@@ -292,17 +265,17 @@ class DSApiRequestHandler(DSHttpRequestHandler):
         if proxies:
             self.session.proxies = proxies
 
-    def get(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+    def get(self, url, headers={}, params={}, data=None, **kwargs):
         response = self.session.get(
             self.base_url + url, headers=headers, params=params, data=data, **kwargs)
         return self.rate_limit_response(response)
 
-    def post(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
+    def post(self, url, headers={}, params={}, data=None, **kwargs):
         response = self.session.post(
             self.base_url + url, headers=headers, params=params, json=data, **kwargs)
         return self.rate_limit_response(response)
 
-    def rate_limit_response(self, response: HttpResponse):
+    def rate_limit_response(self, response):
         return self.ratelimiter.handle_response(response)
 
 
@@ -321,9 +294,6 @@ class SearchLightRequestHandler(HttpRequestHandler):
             self.session.proxies = proxies
 
     def get(self, url, headers={}, params={}, **kwargs):
-        LOG(f"SearchLightRequestHandler get headers --> {headers}")
-        LOG(f"SearchLightRequestHandler get params --> {params}")
-        LOG(f"SearchLightRequestHandler get params --> {kwargs}")
         r = self.session.get(self.base_url + url, params=params, headers=headers, verify=False, **kwargs)
         LOG(f"respnse incidents->> {r.json()}")
         return self.rate_limit_response(r)
@@ -340,11 +310,11 @@ class SearchLightRequestHandler(HttpRequestHandler):
 '''Incidents'''
 
 
-def get_incidents(request_handler: HttpRequestHandler, incident_ids=[], **kwargs) -> List:
-    LOG("Fetching incidents for ids: {}".format(incident_ids))
+def get_incidents(request_handler: HttpRequestHandler, incident_ids=[], **kwargs) -> list:
+    LOG(f"Fetching incidents for ids: {incident_ids}")
     if not incident_ids:
         return []
-    params = dict(id=incident_ids)
+    params = {'id': incident_ids}
     r = request_handler.get('/v1/incidents', params=params, **kwargs)
     r.raise_for_status()
     return r.json()
@@ -353,13 +323,13 @@ def get_incidents(request_handler: HttpRequestHandler, incident_ids=[], **kwargs
 '''Assets'''
 
 
-def get_assets(request_handler: HttpRequestHandler, asset_ids=[], **kwargs) -> List:
-    LOG("Fetching assets for ids: {}".format(asset_ids))
+def get_assets(request_handler: HttpRequestHandler, asset_ids=[], **kwargs) -> list:
+    LOG(f"Fetching assets for ids: {asset_ids}")
     if not asset_ids:
         return []
     results = []
     for chunk in chunks(asset_ids, 100):
-        params = dict(id=chunk)
+        params = {'id': chunk}
         r = request_handler.get('/v1/assets', params=params, **kwargs)
         r.raise_for_status()
         results.extend(r.json())
@@ -384,7 +354,7 @@ def chunks(lst, n):
 
 
 def get_triage_item_events(request_handler: HttpRequestHandler, event_num_after=0,
-                           event_created_after: datetime = None, risk_types=[], limit=100, **kwargs) -> List:
+                           event_created_after: datetime = None, risk_types=[], limit=100, **kwargs) -> list:
     """Retrieve a batch of triage item events
 
     Args:
@@ -405,190 +375,90 @@ def get_triage_item_events(request_handler: HttpRequestHandler, event_num_after=
     return r.json()
 
 
-def get_triage_items(request_handler: HttpRequestHandler, triage_item_ids=[], **kwargs) -> List:
-    LOG("Fetching triage items for ids: {}".format(triage_item_ids))
+def get_triage_items(request_handler: HttpRequestHandler, triage_item_ids=[], **kwargs) -> list:
+    LOG(f"Fetching triage items for ids: {triage_item_ids}")
     if not triage_item_ids:
         return []
-    params = dict(id=triage_item_ids)
+    params = {'id': triage_item_ids}
     r = request_handler.get('/v1/triage-items', params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-def get_triage_item_comments(request_handler: HttpRequestHandler, triage_item_ids=[], **kwargs) -> List:
-    LOG("Fetching triage item comments for ids: {}".format(triage_item_ids))
+def get_triage_item_comments(request_handler: HttpRequestHandler, triage_item_ids=[], **kwargs) -> list:
+    LOG(f"Fetching triage item comments for ids: {triage_item_ids}")
     if not triage_item_ids:
         return []
     data = []
     for chunk in chunks(triage_item_ids, 10):
-        params = dict(id=chunk)
+        params = {'id': chunk}
         r = request_handler.get('/v1/triage-item-comments', params=params, **kwargs)
         r.raise_for_status()
         data.extend(r.json())
     return data
 
 
-def update_triage_item_state(request_handler: HttpRequestHandler, triage_item_id, state, comment=None, **kwargs):
-    payload = {
-        "state": state,
-    }
-    if comment:
-        payload["comment"] = {"content": comment}
-    r = request_handler.put('/v1/triage-items/{}/state'.format(triage_item_id), json=payload, **kwargs)
-    r.raise_for_status()
-    return r
-
-
 '''Alerts'''
 
 
-def get_alerts(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> List:
-    LOG("Fetching alert ids: {}".format(alert_ids))
+def get_alerts(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> list:
+    LOG(f"Fetching alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = dict(id=alert_ids)
+    params = {'id': alert_ids}
     r = request_handler.get("/v1/alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-def get_credential_exposure_alerts(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> List:
-    LOG("Fetching credential exposure alerts for alert ids: {}".format(alert_ids))
+def get_credential_exposure_alerts(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> list:
+    LOG(f"Fetching credential exposure alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = dict(id=alert_ids)
+    params = {'id': alert_ids}
     r = request_handler.get("/v1/exposed-credential-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
 def get_impersonating_domain_alerts(request_handler: HttpRequestHandler, alert_ids=[],
-                                    **kwargs) -> List:
-    LOG("Fetching impersonating domain alerts for alert ids: {}".format(alert_ids))
+                                    **kwargs) -> list:
+    LOG(f"Fetching impersonating domain alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = dict(id=alert_ids)
+    params = {'id': alert_ids}
     r = request_handler.get("/v1/impersonating-domain-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
 def get_impersonating_subdomain_alerts(request_handler: HttpRequestHandler, alert_ids=[],
-                                       **kwargs) -> List:
-    LOG("Fetching impersonating subdomain alerts for alert ids: {}".format(alert_ids))
+                                       **kwargs) -> list:
+    LOG(f"Fetching impersonating subdomain alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = dict(id=alert_ids)
+    params = {'id': alert_ids}
     r = request_handler.get("/v1/impersonating-subdomain-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-def get_unauthorized_code_commit(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> List:
-    LOG("Fetching unauthorized code commit for alert ids: {}".format(alert_ids))
+def get_unauthorized_code_commit(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> list:
+    LOG(f"Fetching unauthorized code commit for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = dict(id=alert_ids)
+    params = {'id': alert_ids}
     r = request_handler.get("/v1/unauthorized-code-commit-alerts", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
 
-def get_exposed_access_key_alerts(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> List:
-    LOG("Fetching exposed access key alerts for alert ids: {}".format(alert_ids))
+def get_exposed_access_key_alerts(request_handler: HttpRequestHandler, alert_ids=[], **kwargs) -> list:
+    LOG(f"Fetching exposed access key alerts for alert ids: {alert_ids}")
     if not alert_ids:
         return []
-    params = dict(id=alert_ids)
+    params = {'id': alert_ids}
     r = request_handler.get("/v1/exposed-access-key-alerts", params=params, **kwargs)
-    r.raise_for_status()
-    return r.json()
-
-
-'''Indicators'''
-
-
-def get_indicator_events(
-    request_handler: HttpRequestHandler,
-    event_num_after=0,
-    event_created_after: datetime = None,
-    limit=100,
-    **kwargs
-) -> List:
-    """Retrieve a batch of triage item events
-
-    Args:
-        request_handler (HttpRequestHandler): the request_handler to use for HTTP requests
-        logger (Logger): logger used for logging
-        event_num_after (int): only return events with a higher event-num than this value, default 0
-        event_created_after (datetime): only return events created after this value
-        limit (int): return up to this number of events, default 100
-    """
-
-    params = {"event-num-after": event_num_after, "limit": limit}
-    if event_created_after is not None:
-        utc_datetime = event_created_after.astimezone(utc_tzinfo)
-        params["event-created-after"] = utc_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    LOG("Fetching indicator events. Parameters: {}".format(params))
-    r = request_handler.get("/v1/indicator-events", params=params, **kwargs)
-    r.raise_for_status()
-    return r.json()
-
-
-def get_indicators(
-    request_handler: HttpRequestHandler, indicator_ids=[], **kwargs
-) -> List:
-    """Retrieve one or more indicators by ID."""
-
-    LOG("Fetching indicators for ids: {}".format(indicator_ids))
-    if not indicator_ids:
-        return []
-    params = dict(id=indicator_ids, limit=100)
-    r = request_handler.get("/v1/indicators", params=params, **kwargs)
-    r.raise_for_status()
-    return r.json()
-
-
-'''Indicator grouping'''
-
-
-def get_indicator_grouping_events(
-    request_handler: HttpRequestHandler,
-    logger: Logger,
-    event_num_after=0,
-    event_created_after: datetime = None,
-    limit=100,
-    **kwargs
-) -> List:
-    """Retrieve a batch of triage item events
-
-    Args:
-        request_handler (HttpRequestHandler): the request_handler to use for HTTP requests
-        logger (Logger): logger used for logging
-        event_num_after (int): only return events with a higher event-num than this value, default 0
-        event_created_after (datetime): only return events created after this value
-        limit (int): return up to this number of events, default 100
-    """
-
-    params = {"event-num-after": event_num_after, "limit": limit}
-    if event_created_after is not None:
-        utc_datetime = event_created_after.astimezone(utc_tzinfo)
-        params["event-created-after"] = utc_datetime.strftime("%Y-%m-%dT%H:%M:%SZ")
-    logger.debug("Fetching indicator events. Parameters: {}".format(params))
-    r = request_handler.get("/v1/indicator-grouping-events", params=params, **kwargs)
-    r.raise_for_status()
-    return r.json()
-
-
-def get_indicator_groupings(
-    request_handler: HttpRequestHandler, ids=[], **kwargs
-) -> List:
-    """Retrieve one or more indicator groupings by ID."""
-
-    LOG("Fetching indicator groupings for ids: {}".format(ids))
-    if not ids:
-        return []
-    params = dict(id=ids, limit=100)
-    r = request_handler.get("/v1/indicator-groupings", params=params, **kwargs)
     r.raise_for_status()
     return r.json()
 
@@ -660,46 +530,6 @@ def search_find(request_handler: DSHttpRequestHandler, args):
     return json_data
 
 
-'''HttpRequestHandler'''
-
-
-class HttpRequestHandler(ABC):
-    """
-    Abstract Base Class which provides an interface for HTTP request handlers.
-    """
-
-    def __init__(self, base_url, account_id, access_key, secret_key, **kwargs):
-        self.base_url = base_url.rstrip("/")
-        self.account_id = account_id
-        self.access_key = access_key
-        self.secret_key = secret_key
-        self.headers = self.build_auth_headers()
-        self.ratelimiter = HttpResponseHeaderRateLimiter(**kwargs)
-
-    def build_auth_headers(self):
-        """
-        Create the default basic auth and 'searchlight-account-id' headers required for each request
-        """
-        headers = {}
-        if self.account_id:
-            headers['searchlight-account-id'] = self.account_id
-        auth = str(self.access_key) + ':' \
-               + str(self.secret_key)
-        headers['Authorization'] = 'Basic {}'.format(base64.b64encode(auth.encode()).decode())
-        return headers
-
-    @abstractmethod
-    def get(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
-        pass
-
-    @abstractmethod
-    def post(self, url, headers={}, params={}, data=None, **kwargs) -> HttpResponse:
-        pass
-
-    def rate_limit_response(self, response: HttpResponse):
-        return self.ratelimiter.handle_response(response)
-
-
 @dataclass(frozen=True)
 class IndicatorsResult:
     max_event_number: int
@@ -721,7 +551,8 @@ def removing_unwanted_data(data_item):
         data_item[ALERT_FIELD].pop(ASSETS)
         data_item[ALERT_FIELD].pop(RISK_ASSESSMENT)
         data_item[ALERT_FIELD].pop(RISK_TYPE)
-        if data_item[ALERT_FIELD].get(CLASSIFICATION): data_item[ALERT_FIELD].pop(CLASSIFICATION)
+        if data_item[ALERT_FIELD].get(CLASSIFICATION):
+            data_item[ALERT_FIELD].pop(CLASSIFICATION)
     elif data_item.get(INCIDENT) and data_item[INCIDENT].get(ASSETS):
         data_item[INCIDENT].pop(ASSETS)
         data_item[INCIDENT].pop(RISK_LEVEL)
@@ -736,7 +567,7 @@ def removing_unwanted_data(data_item):
 
 
 def get_comments_map(triage_item_comments):
-    comment_map = {}
+    comment_map = {}  # type: Dict[str, list]
     for comment in triage_item_comments:
         if comment[TRIAGE_ITEM_ID] in comment_map:
             comment_map[comment[TRIAGE_ITEM_ID]].append(comment)
@@ -754,7 +585,7 @@ def get_comments_map(triage_item_comments):
 '''SearchLightTriagePoller'''
 
 
-class SearchLightTriagePoller(object):
+class SearchLightTriagePoller:
 
     def __init__(self, request_handler: HttpRequestHandler):
         self.request_handler = request_handler
@@ -778,15 +609,15 @@ class SearchLightTriagePoller(object):
         access_key_alert_ids = set()
         other_alert_ids = set()
         for ti in alert_triage_items:
-            if EXPOSED_CREDENTIAL == ti[RISK_TYPE]:
+            if ti[RISK_TYPE] == EXPOSED_CREDENTIAL:
                 cred_alert_ids.add(ti[SOURCE][ALERT_ID])
-            elif IMPERSONATING_DOMAIN == ti[RISK_TYPE]:
+            elif ti[RISK_TYPE] == IMPERSONATING_DOMAIN:
                 domain_alert_ids.add(ti[SOURCE][ALERT_ID])
-            elif IMPERSONATING_SUBDOMAIN == ti[RISK_TYPE]:
+            elif ti[RISK_TYPE] == IMPERSONATING_SUBDOMAIN:
                 subdomain_alert_ids.add(ti[SOURCE][ALERT_ID])
-            elif UNAUTHORIZED_CODE_COMMIT == ti[RISK_TYPE]:
+            elif ti[RISK_TYPE] == UNAUTHORIZED_CODE_COMMIT:
                 code_commit_alert_ids.add(ti[SOURCE][ALERT_ID])
-            elif EXPOSED_ACCESS_KEY == ti[RISK_TYPE]:
+            elif ti[RISK_TYPE] == EXPOSED_ACCESS_KEY:
                 access_key_alert_ids.add(ti[SOURCE][ALERT_ID])
             else:
                 other_alert_ids.add(ti[SOURCE][ALERT_ID])
@@ -805,8 +636,7 @@ class SearchLightTriagePoller(object):
         other_alerts = get_alerts(self.request_handler, other_alert_ids)
         return [*cred_alerts, *domain_alerts, *subdomain_alerts, *code_commit_alerts, *access_key_alerts, *other_alerts]
 
-    def merge_data(self, events, triage_items, triage_item_comments, alerts, incidents, assets, should_ingest_closed) -> List[
-        PollResult]:
+    def merge_data(self, events, triage_items, triage_item_comments, alerts, incidents, assets, should_ingest_closed):
         """
         Merge the triage item data together with the found alert, incident and asset information.
         """
@@ -882,13 +712,14 @@ class SearchLightTriagePoller(object):
         Returns the largest event-num from the triage item events that were processed.
         """
         LOG(
-            "Polling triage items. Event num start: {}, Event created after: {}, Limit: {} risk_level: {} alert_risk_types: {}".format(
+            "Polling triage items. Event num start: {}, Event created after: {}, Limit: {} risk_level: {} "
+            "alert_risk_types: {}".format(
                 event_num_start,
                 event_created_after,
                 limit, risk_level, alert_risk_types))
         risk_types_filter = []
 
-        if not RISK_TYPE_ALL in alert_risk_types and len(alert_risk_types) > 0:
+        if RISK_TYPE_ALL not in alert_risk_types and len(alert_risk_types) > 0:
             risk_types_filter = alert_risk_types
 
         events = get_triage_item_events(self.request_handler, event_num_after=event_num_start, limit=limit,
@@ -899,7 +730,7 @@ class SearchLightTriagePoller(object):
 
         risk_level_filter = []
 
-        if not RISK_LEVEL_ALL in risk_level and len(risk_level) > 0:
+        if RISK_LEVEL_ALL not in risk_level and len(risk_level) > 0:
             risk_level_filter = risk_level
 
         if events:
@@ -911,8 +742,9 @@ class SearchLightTriagePoller(object):
             events = [event for event in events if event[RISK_LEVEL] in risk_level_filter]
 
         if not events:
-            LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit: {}, risk_level: {}, alert_risk_types: {}".format(
-                event_num_start, event_created_after, limit, risk_level, alert_risk_types))
+            LOG("No events were fetched. Event num start: {}, Event created after: {}, Limit:"
+                " {}, risk_level: {}, alert_risk_types: {}".format(
+                    event_num_start, event_created_after, limit, risk_level, alert_risk_types))
             return PollResult(max_event_num, [])
 
         triage_item_ids = [e[TRIAGE_ITEM_ID] for e in events]
@@ -921,7 +753,8 @@ class SearchLightTriagePoller(object):
         if not triage_items:
             # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
             # so validate before proceeding
-            LOG("No triage items were fetched. Event num start: {}, Event created after: {}, Limit: {},  risk_level: {}, alert_risk_types: {}"
+            LOG("No triage items were fetched. Event num start: {}, Event created after: {}, Limit: {},  "
+                "risk_level: {}, alert_risk_types: {}"
                 .format(event_num_start, event_created_after, limit, risk_level, alert_risk_types))
             return PollResult(max_event_num, [])
 
@@ -935,12 +768,12 @@ class SearchLightTriagePoller(object):
         # credential we have found exposed in a specific field on the model
         alerts = self.get_alerts(alert_triage_items=alert_triage_items)
 
-        incident_ids = set([ti[SOURCE][INCIDENT_ID] for ti in triage_items if
-                            INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]])
+        incident_ids = {ti[SOURCE][INCIDENT_ID] for ti in triage_items if
+                        INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]}
         incidents = get_incidents(self.request_handler, incident_ids=incident_ids)
 
-        asset_ids = set(
-            [asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]])
+        asset_ids = {
+            asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]}
         assets = get_assets(self.request_handler, asset_ids=asset_ids)
 
         triage_data = self.merge_data(events, triage_items, triage_item_comments, alerts, incidents, assets, should_ingest_closed)
@@ -952,7 +785,7 @@ class SearchLightTriagePoller(object):
         if not triage_items:
             # if a triage item is deleted it is not returned to the list - outside chance that all could be deleted
             # so validate before proceeding
-            LOG("No triage items were fetched. Event id:".format(triage_item_ids))
+            LOG(f"No triage items were fetched. Event id:{triage_item_ids}")
             return []
 
         triage_item_comments = get_triage_item_comments(self.request_handler, triage_item_ids=triage_item_ids)
@@ -965,119 +798,14 @@ class SearchLightTriagePoller(object):
         # credential we have found exposed in a specific field on the model
         alerts = self.get_alerts(alert_triage_items=alert_triage_items)
 
-        incident_ids = set([ti[SOURCE][INCIDENT_ID] for ti in triage_items if
-                            INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]])
+        incident_ids = {ti[SOURCE][INCIDENT_ID] for ti in triage_items if
+                        INCIDENT_ID in ti[SOURCE] and ti[SOURCE][INCIDENT_ID]}
         incidents = get_incidents(self.request_handler, incident_ids=incident_ids)
 
-        asset_ids = set(
-            [asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]])
+        asset_ids = {
+            asset[ID] for alert_or_incident in [*alerts, *incidents] for asset in alert_or_incident[ASSETS]}
         assets = get_assets(self.request_handler, asset_ids=asset_ids)
-        return self.merge_data([], triage_items, triage_item_comments, alerts, incidents, assets)
-
-
-'''SearchLightIndicatorsPoller'''
-
-
-class SearchLightIndicatorsPoller(object):
-    def __init__(self, request_handler: HttpRequestHandler):
-        self.request_handler = request_handler
-
-    def get_group_map(self, groups):
-        """
-        prepare group id to group info map
-        @param groups: groups objects
-        @return: map group id to group info
-        """
-        return {grp["id"]: {"group_name": grp["indicator-grouping"]["name"],
-                            "group_description": grp["indicator-grouping"]["description"],
-                            "group_url": grp["indicator-grouping"]["url"],
-                            "group_labels": grp["indicator-grouping"]["labels"]} for grp in groups}
-
-    def merge_data(self, indicators, groups):
-        """
-        Its just merges the indicator data along with the grouping details
-        @param indicators: indicators
-        @param groups: groups info
-        @return: data as list
-        """
-        group_map = self.get_group_map(groups)
-        data = []
-        for indicator in indicators:
-            indicator_data = {
-                "id": indicator.get("id"),
-                "indicator_grouping_id": indicator.get("indicator-grouping-id"),
-                "created": indicator.get("created"),
-                "revoked": indicator.get("revoked"),
-                # flattened indicator fields
-                "value": self.transform_value(indicator['indicator'].get("type"), indicator['indicator'].get("value")),
-                "title": indicator['indicator'].get("title"),
-                "description": indicator['indicator'].get("description"),
-                "source_created": indicator['indicator'].get("source-created"),
-                "source": indicator['indicator'].get("source"),
-                "type": indicator['indicator'].get("type")
-            }
-            indicator_data.update(group_map.get(indicator["indicator-grouping-id"], None))
-            data.append(indicator_data)
-        return data
-
-    def transform_value(self, value_type: str, value: str):
-        """Apply a type-specific transformation to the value.
-
-        Typically used to canonicalize values for loading into the kvstore
-        as kv lookups are case-sensitive
-
-        Args:
-            value_type (str): the type of value
-            value (str): the value itself
-
-        Returns:
-            a transformed value, or the original value if no transform is needed
-        """
-        if value_type == 'email' \
-            or value_type == 'host' \
-            or value_type == 'ipv4' \
-            or value_type == 'ipv6' \
-            or value_type == 'md5' \
-            or value_type == 'sha1' \
-            or value_type == 'sha256':
-
-            # lowercase as these types are inherantly case-insensitive
-            return value.lower()
-        else:
-            # type is not known to be case-insensitive, so don't transform.
-            return value
-
-    def poll_indicators(self, event_num_start=0, limit=100, event_created_after=None):
-        """
-        polls indicators for given filters
-        @param event_num_start: event number
-        @param limit: limit
-        @param event_created_after: date from where we want to poll the indicators
-        @return: returns IndicatorsResult object
-        """
-        LOG(
-            "Polling indicators items. Event num start: {}, Event created after: {}, Limit: {}".format(event_num_start,
-                                                                                                       event_created_after,
-                                                                                                       limit))
-        events = get_indicator_events(self.request_handler, event_num_start, event_created_after, limit)
-        if not events:
-            LOG("{}: No events were fetched. Event num start: {}, Event created after: {}, Limit: {}".format(
-                THREAT_INTELLIGENCE, event_num_start, event_created_after, limit))
-            return IndicatorsResult(event_num_start, [])
-        max_event_num = max([e['event-num'] for e in events])
-
-        indicator_event_ids = [e["indicator-id"] for e in events]
-        indicators = get_indicators(self.request_handler, indicator_event_ids)
-        if not indicators:
-            # if indicators are deleted it is not returned to the list - outside chance that all could be deleted
-            # so validate before proceeding
-            LOG("{}: No indicators were fetched. Event num start: {}, Event created after: {}, Limit: {}"
-                .format(THREAT_INTELLIGENCE, event_num_start, event_created_after, limit))
-            return IndicatorsResult(event_num_start, [])
-        indicator_grouping_ids = [e["indicator-grouping-id"] for e in events]
-        indicator_groups = get_indicator_groupings(self.request_handler, indicator_grouping_ids)
-        indicators_data = self.merge_data(indicators, indicator_groups)
-        return IndicatorsResult(max_event_num, indicators_data)
+        return self.merge_data([], triage_items, triage_item_comments, alerts, incidents, assets, True)
 
 
 class Client(BaseClient):
@@ -1119,8 +847,8 @@ class Client(BaseClient):
         if self.account_id:
             headers['searchlight-account-id'] = self.account_id
         auth = str(self.access_key) + ':' \
-               + str(self.secret_key)
-        headers['Authorization'] = 'Basic {}'.format(base64.b64encode(auth.encode()).decode())
+            + str(self.secret_key)
+        headers['Authorization'] = f'Basic {base64.b64encode(auth.encode()).decode()}'
         return headers
 
 
@@ -1137,11 +865,12 @@ def parse_date(since):
     SINCE_DATE_FORMAT_WITH_MILLISECONDS = "%Y-%m-%dT%H:%M:%S.%fZ"
     try:
         return datetime.strptime(since, SINCE_DATE_FORMAT)
-    except Exception as e:
-        return datetime.strptime(since, SINCE_DATE_FORMAT_WITH_MILLISECONDS)
-    except Exception as ee:
-        LOG(f"Unable to parse date from input: {since}")
-        raise ee
+    except Exception:
+        try:
+            return datetime.strptime(since, SINCE_DATE_FORMAT_WITH_MILLISECONDS)
+        except Exception as e:
+            LOG(f"Unable to parse date from input: {since}")
+            raise e
 
 
 def main():
@@ -1149,12 +878,12 @@ def main():
         PARSE AND VALIDATE INTEGRATION PARAMS
     """
     LOG(f'input config------: {demisto.params()}')
-    secretKey = demisto.params().get("apiSecret").get('identifier')
-    accessKey = demisto.params().get('apiKey').get('identifier')
-    account = demisto.params().get('accountId')
-    riskTypes = demisto.params().get('riskTypes')
-    riskLevel = demisto.params().get('riskLevel')
-    ingestClosed = demisto.params().get('ingestClosed')
+    secretKey = demisto.params()["apiSecret"]['password']
+    accessKey = demisto.params()['apiKey']['password']
+    accountId = demisto.params()['accountId']
+    riskTypes = demisto.params()['riskTypes']
+    riskLevel = demisto.params()['riskLevel']
+    ingestClosed = demisto.params().get('ingestClosedIncidents')
 
     if RISK_TYPE_ALL in riskTypes:
         riskTypes = [RISK_TYPE_ALL]
@@ -1164,68 +893,34 @@ def main():
     # get the service API url
     base_url = demisto.params()['searchLightUrl']
     verify_certificate = not demisto.params().get('insecure', False)
-
-    # How much time before the first fetch to retrieve incidents
-    first_fetch_time = demisto.params().get('fetch_time', '3 days').strip()
-    fetchLimit = demisto.params().get('fetchLimit')
-    sinceDate = demisto.params().get('sinceDate')
-    try:
-        sinceDate = parse_date(sinceDate)
-    except Exception as ee:
-        demisto.results('Unable to parse date from input')
-    if sinceDate > datetime.now():
-        demisto.results('Date should be less than current date')
-    proxy = demisto.params().get('proxy', False)
+    fetchLimit = arg_to_number(demisto.params()['fetchLimit'], "fetchLimit", True)
+    if fetchLimit > 100:
+        raise DemistoException("fetch limit must be less than 100")
+    sinceDate = parse_date(demisto.params()['sinceDate'])
+    demisto.params().get('proxy', False)
     last_run = demisto.getLastRun()
     LOG(f'after last run----- {last_run}')
     LOG(f'Command being called is {demisto.command()}')
     try:
         searchLightClient = Client(
             base_url=base_url,
-            account_id=account,
+            account_id=accountId,
             access_key=accessKey,
             secret_key=secretKey,
             verify=verify_certificate,
             auth=(secretKey, accessKey),
         )
         search_light_request_handler = SearchLightRequestHandler(base_url,
-                                                                 account,
+                                                                 accountId,
                                                                  accessKey,
                                                                  secretKey)
         digital_shadows_request_handler = DSApiRequestHandler(DS_BASE_URL, accessKey, secretKey)
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
-            if fetchLimit.isdigit() and int(fetchLimit) > 100:
-                demisto.results('fetch limit must be less than 100')
-            elif not fetchLimit.isdigit():
-                demisto.results('fetch limit must be number')
             result = test_module(searchLightClient)
             return_results(result)
         elif demisto.command() == 'fetch-incidents':
-            last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
-            search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
-            poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=fetchLimit,
-                                                                event_created_after=sinceDate,
-                                                                alert_risk_types=riskTypes, risk_level=riskLevel,
-                                                                should_ingest_closed=ingestClosed)
-            data = poll_result.triage_data
-            last_polled_number = poll_result.max_event_number
-            if data:
-                incidents = []
-                for item in data:
-                    incident = {
-                        'name': item["triage_item"]['title'],
-                        'occurred': item["triage_item"]['raised'],
-                        'rawJSON': json.dumps(item)
-                    }
-                    incidents.append(incident)
-                demisto.incidents(incidents)
-                demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
-                LOG(f"data found for iteration last_polled_number:{last_polled_number}")
-            else:
-                LOG(f"No data found for iteration last_polled_number:{last_polled_number}")
-                demisto.incidents([])
-                demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
+            fetch_incidents(fetchLimit, ingestClosed, last_run, riskLevel, riskTypes, search_light_request_handler, sinceDate)
         elif demisto.command() == 'ds-search':
             return_results(search_find(digital_shadows_request_handler, demisto.args()))
         else:
@@ -1235,6 +930,44 @@ def main():
         demisto.error(traceback.format_exc())  # print the traceback
         return_error(
             f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+
+
+def fetch_incidents(fetchLimit, ingestClosed, last_run, riskLevel, riskTypes, search_light_request_handler, sinceDate):
+    """
+    fetch incidents will take config for fetching and ingesting incidents in xsoar
+    Args:
+        fetchLimit: no of incidents needs to fetch per iteration
+        ingestClosed: closed incidents should be ingested or not
+        last_run: last run config
+        riskLevel: risk levels needs to ingest
+        riskTypes: risk types needs to ingest
+        search_light_request_handler: request handler to fetch data
+        sinceDate: since when we want to ingest data
+    """
+    last_event_num = last_run.get('incidents', {}).get('last_fetch', 0)
+    search_list_triage_poller = SearchLightTriagePoller(search_light_request_handler)
+    poll_result = search_list_triage_poller.poll_triage(event_num_start=last_event_num, limit=fetchLimit,
+                                                        event_created_after=sinceDate,
+                                                        alert_risk_types=riskTypes, risk_level=riskLevel,
+                                                        should_ingest_closed=ingestClosed)
+    data = poll_result.triage_data
+    last_polled_number = poll_result.max_event_number
+    if data:
+        incidents = []
+        for item in data:
+            incident = {
+                'name': item["triage_item"]['title'],
+                'occurred': item["triage_item"]['raised'],
+                'rawJSON': json.dumps(item)
+            }
+            incidents.append(incident)
+        demisto.incidents(incidents)
+        demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
+        LOG(f"data found for iteration last_polled_number:{last_polled_number}")
+    else:
+        LOG(f"No data found for iteration last_polled_number:{last_polled_number}")
+        demisto.incidents([])
+        demisto.setLastRun({'incidents': {'last_fetch': last_polled_number}})
 
 
 ''' ENTRY POINT '''

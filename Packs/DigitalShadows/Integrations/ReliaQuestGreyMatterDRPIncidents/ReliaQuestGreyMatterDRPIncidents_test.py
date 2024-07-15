@@ -1,10 +1,16 @@
-import pytest
-import io
 import json
 from CommonServerPython import *
 
 from ReliaQuestGreyMatterDRPIncidents import \
     HttpRequestHandler, get_triage_item_events
+
+# @pytest.fixture
+# def client():
+#     return Client(
+#         base_url='https://api.example.com',
+#         verify=False,
+#         headers={'Authorization': 'Bearer test_api_key'}
+#     )
 
 
 class MockResponse:
@@ -15,12 +21,12 @@ class MockResponse:
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
 def util_load_response(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return MockResponse(f.read(), 200)
 
 
@@ -34,4 +40,4 @@ def test_get_triage_item_events(request_mock):
     request_mock.get('/v1/triage-item-events', json=mock_response)
     client = HttpRequestHandler(DS_BASE_URL, '100000', ACCESS_KEY, SECRETE_KEY)
     response = get_triage_item_events(client)
-    assert response != None
+    assert response is not None

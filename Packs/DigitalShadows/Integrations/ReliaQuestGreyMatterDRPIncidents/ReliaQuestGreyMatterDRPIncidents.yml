@@ -16,20 +16,19 @@ configuration:
   required: true
   type: 0
 - additionalinfo: Account ID associated with this account.
-  display: Account ID
-  displaypassword: API Key
-  hiddenusername: true
   name: accountId
   required: true
   type: 0
 - additionalinfo: Enter the API Key for this account.
+  hiddenusername: true
+  displaypassword: API Key
   display: API Key
-  hiddenpassword: true
   name: apiKey
   required: true
   type: 9
 - display: API Secret
-  hiddenpassword: true
+  hiddenusername: true
+  displaypassword: API Secret
   name: apiSecret
   required: true
   type: 9
@@ -105,7 +104,7 @@ configuration:
   name: ingestClosedIncidents
   required: false
   type: 8
-- additionalinfo: No of incidents want to fetch per iteration
+- additionalinfo: The maximum number of incidents to fetch
   defaultvalue: "50"
   display: Fetch Limit
   name: fetchLimit
@@ -113,6 +112,7 @@ configuration:
   type: 0
 - additionalinfo: This controls how often the integration will perform a fetch_incidents command
   display: Incidents Fetch Interval
+  defaultvalue: "1"
   name: incidentFetchInterval
   required: false
   type: 19
@@ -139,5 +139,5 @@ script:
   type: python
 fromversion: 5.0.0
 supportlevelheader: xsoar
-defaultmapperin: Reliaquest GreyMatter DRP Mapper
+defaultmapperin: Reliaquest GreyMatter DRP Incidents Mapper
 defaultclassifier: Reliaquest GreyMatter DRP Incidents Classifier

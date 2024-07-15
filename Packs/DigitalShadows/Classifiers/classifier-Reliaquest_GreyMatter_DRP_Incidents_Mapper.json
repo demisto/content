@@ -6,14 +6,14 @@
 	"description": "",
 	"feed": false,
     "fromVersion": "6.0.0",
-	"id": "Reliaquest_GreyMatter_DRP_Incidents_Mapper",
+	"id": "Reliaquest GreyMatter DRP Incidents Mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 18,
+	"logicalVersion": 19,
 	"mapping": {
 		"DS EXPOSED_CREDENTIAL": {
 			"dontMapEventToLabels": false,
@@ -29,6 +29,9 @@
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
+				"Alert Name": {
+					"simple": "alert.title"
+				},
 				"Classification": {
 					"simple": "triage_item.classification"
 				},
@@ -49,43 +52,14 @@
 				"DS Alert Email": {
 					"simple": "alert.email"
 				},
-				"DS Alert Event": {
-					"complex": {
-						"filters": [],
-						"root": "comments",
-						"transformers": [
-							{
-								"operator": "ArrayToCSV"
-							}
-						]
-					}
-				},
-				"DS Alert ID": {
+				"Alert ID": {
 					"simple": "alert.id"
-				},
-				"DS Alert Mitre Attack Mapping": {
-					"complex": {
-						"accessor": "mitre-attack-mapping",
-						"filters": [],
-						"root": "alert",
-						"transformers": [
-							{
-								"operator": "ArrayToCSV"
-							}
-						]
-					}
 				},
 				"DS Alert Password": {
 					"simple": "alert.password"
 				},
-				"DS Alert Risk Factor": {
-					"simple": "alert.risk-factors"
-				},
 				"DS Alert Risk Factors": {
 					"simple": "alert.risk-factors"
-				},
-				"DS Alert Title": {
-					"simple": "alert.title"
 				},
 				"DS Alert Validation": {
 					"complex": {
@@ -172,9 +146,6 @@
 				"DS Risk Level": {
 					"simple": "triage_item.risk-level"
 				},
-				"DS Risk Type": {
-					"simple": "triage_item.risk-type"
-				},
 				"DS Severity": {
 					"simple": "triage_item.risk-level"
 				},
@@ -201,14 +172,11 @@
 				},
 				"dbotMirrorTags": {
 					"simple": "comments"
-				},
-				"severity": {
-					"simple": "triage_item.risk-level"
 				}
 			}
 		}
 	},
-	"name": "Reliaquest_GreyMatter_DRP_Incidents_Mapper",
+	"name": "Reliaquest GreyMatter DRP Incidents Mapper",
 	"nameRaw": "Reliaquest GreyMatter DRP Incidents Mapper",
 	"packID": "",
 	"packName": "",

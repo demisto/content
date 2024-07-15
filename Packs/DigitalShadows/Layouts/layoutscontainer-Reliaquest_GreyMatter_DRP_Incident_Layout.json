@@ -115,7 +115,7 @@
 						"name": "Case Details",
 						"static": false,
 						"w": 1,
-						"x": 1,
+						"x": 2,
 						"y": 0
 					},
 					{
@@ -129,7 +129,7 @@
 						"type": "notes",
 						"w": 1,
 						"x": 2,
-						"y": 4
+						"y": 6
 					},
 					{
 						"displayType": "ROW",
@@ -143,7 +143,7 @@
 						"type": "workplan",
 						"w": 1,
 						"x": 2,
-						"y": 6
+						"y": 8
 					},
 					{
 						"displayType": "ROW",
@@ -186,7 +186,7 @@
 						"type": "evidence",
 						"w": 1,
 						"x": 2,
-						"y": 0
+						"y": 2
 					},
 					{
 						"displayType": "ROW",
@@ -331,92 +331,11 @@
 							{
 								"dropEffect": "move",
 								"endCol": 2,
-								"fieldId": "dsalertid",
+								"fieldId": "dstriageitemid",
 								"height": 22,
-								"id": "bca35230-02de-11ef-80c4-9f2c84b74abe",
+								"id": "6354ae70-0e3e-11ef-9ab2-5b374698464c",
 								"index": 0,
 								"listId": "caseinfoid-a91f97f0-02de-11ef-80c4-9f2c84b74abe",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsalertdescription",
-								"height": 44,
-								"id": "b27ee2b0-02de-11ef-80c4-9f2c84b74abe",
-								"index": 1,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsalertemail",
-								"height": 22,
-								"id": "b3aa1c40-02de-11ef-80c4-9f2c84b74abe",
-								"index": 2,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsalertpassword",
-								"height": 22,
-								"id": "c12b2440-02de-11ef-80c4-9f2c84b74abe",
-								"index": 3,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsalerttitle",
-								"height": 44,
-								"id": "b677bb30-02de-11ef-80c4-9f2c84b74abe",
-								"index": 4,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsassets",
-								"height": 44,
-								"id": "b77b96a0-02de-11ef-80c4-9f2c84b74abe",
-								"index": 5,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dseventaction",
-								"height": 22,
-								"id": "53522bb0-0e3e-11ef-9ab2-5b374698464c",
-								"index": 6,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dseventnumber",
-								"height": 22,
-								"id": "56a74a20-0e3e-11ef-9ab2-5b374698464c",
-								"index": 7,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsrisklevel",
-								"height": 22,
-								"id": "5c8adba0-0e3e-11ef-9ab2-5b374698464c",
-								"index": 8,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsrisktype",
-								"height": 22,
-								"id": "5ef57300-0e3e-11ef-9ab2-5b374698464c",
-								"index": 9,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -426,71 +345,53 @@
 								"fieldId": "dstriagetitle",
 								"height": 44,
 								"id": "65c11a90-0e3e-11ef-9ab2-5b374698464c",
-								"index": 10,
+								"index": 1,
 								"listId": "caseinfoid-a91f97f0-02de-11ef-80c4-9f2c84b74abe",
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "dstriageitemid",
-								"height": 22,
-								"id": "6354ae70-0e3e-11ef-9ab2-5b374698464c",
-								"index": 11,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsincidentid",
-								"height": 22,
-								"id": "4daf0f00-3906-11ef-ad16-7f919eefcb2c",
-								"index": 12,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsincidentdescription",
-								"height": 22,
-								"id": "c61007d0-38ff-11ef-aebc-a1cdbf020a5a",
-								"index": 13,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
-								"fieldId": "dsincidentmitigation",
+								"fieldId": "dsassets",
 								"height": 44,
-								"id": "d35a9680-38ff-11ef-aebc-a1cdbf020a5a",
-								"index": 14,
+								"id": "b77b96a0-02de-11ef-80c4-9f2c84b74abe",
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "dsincidentraiseddate",
+								"fieldId": "dseventaction",
 								"height": 22,
-								"id": "da143cb0-38ff-11ef-aebc-a1cdbf020a5a",
-								"index": 15,
+								"id": "53522bb0-0e3e-11ef-9ab2-5b374698464c",
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "dsincidentupdateddate",
+								"fieldId": "dseventnumber",
 								"height": 22,
-								"id": "dd8e6f50-38ff-11ef-aebc-a1cdbf020a5a",
-								"index": 16,
+								"id": "56a74a20-0e3e-11ef-9ab2-5b374698464c",
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
 							{
 								"endCol": 2,
-								"fieldId": "dsmitremapping",
+								"fieldId": "type",
 								"height": 22,
-								"id": "e1a8d990-38ff-11ef-aebc-a1cdbf020a5a",
-								"index": 17,
+								"id": "889426f0-4040-11ef-87f4-1dc4b15dec0a",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsrisklevel",
+								"height": 22,
+								"id": "5c8adba0-0e3e-11ef-9ab2-5b374698464c",
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -499,7 +400,7 @@
 								"fieldId": "dsriskfactors",
 								"height": 44,
 								"id": "e89a7fb0-38ff-11ef-aebc-a1cdbf020a5a",
-								"index": 18,
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -508,7 +409,7 @@
 								"fieldId": "dsimpactdescription",
 								"height": 44,
 								"id": "f624fd90-38ff-11ef-aebc-a1cdbf020a5a",
-								"index": 19,
+								"index": 7,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -547,7 +448,7 @@
 						"type": "",
 						"w": 1,
 						"x": 2,
-						"y": 2
+						"y": 4
 					},
 					{
 						"h": 2,
@@ -573,6 +474,123 @@
 						"w": 1,
 						"x": 1,
 						"y": 6
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-d257a430-3e8b-11ef-97aa-abb998a8619e",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "alertid",
+								"height": 22,
+								"id": "2dff37c0-4040-11ef-87f4-1dc4b15dec0a",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "alertname",
+								"height": 22,
+								"id": "1ad02d30-4040-11ef-87f4-1dc4b15dec0a",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsalertdescription",
+								"height": 44,
+								"id": "b27ee2b0-02de-11ef-80c4-9f2c84b74abe",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsalertemail",
+								"height": 22,
+								"id": "b3aa1c40-02de-11ef-80c4-9f2c84b74abe",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsalertpassword",
+								"height": 22,
+								"id": "c12b2440-02de-11ef-80c4-9f2c84b74abe",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentid",
+								"height": 22,
+								"id": "4daf0f00-3906-11ef-ad16-7f919eefcb2c",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "dsmitremapping",
+								"height": 22,
+								"id": "e1a8d990-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 6,
+								"listId": "caseinfoid-d257a430-3e8b-11ef-97aa-abb998a8619e",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentmitigation",
+								"height": 44,
+								"id": "d35a9680-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentdescription",
+								"height": 22,
+								"id": "c61007d0-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentraiseddate",
+								"height": 22,
+								"id": "da143cb0-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dsincidentupdateddate",
+								"height": 22,
+								"id": "dd8e6f50-38ff-11ef-aebc-a1cdbf020a5a",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Details",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
 					}
 				],
 				"type": "custom"
@@ -1802,8 +1820,8 @@
 			}
 		]
 	},
-	"fromServerVersion": "",
-	"group": "incident",
+    "fromVersion": "6.0.0",
+    "group": "incident",
 	"id": "Reliaquest GreyMatter DRP Incident Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
@@ -3072,6 +3090,5 @@
 	"quickViewV2": null,
 	"system": false,
 	"toServerVersion": "",
-    "fromVersion": "6.0.0",
 	"version": -1
 }
