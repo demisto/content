@@ -5,10 +5,6 @@
                 "description": "",
                 "fields": [
                     {
-                        "fieldId": "incident_sekoiaalertreject",
-                        "isVisible": true
-                    },
-                    {
                         "fieldId": "incident_closereason",
                         "isVisible": true
                     },
@@ -1470,10 +1466,6 @@
                     },
                     {
                         "fieldId": "incident_sekoiaalertstatus",
-                        "isVisible": true
-                    },
-                    {
-                        "fieldId": "incident_sekoiaevents",
                         "isVisible": true
                     },
                     {
