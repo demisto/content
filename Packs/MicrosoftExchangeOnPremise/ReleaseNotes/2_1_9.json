@@ -1,4 +1,4 @@
 {
   "breakingChanges":true,
-  "breakingChangesNotes":"Attachments names will appear in the following format: <image ID>-imageName-<image name>."
+  "breakingChangesNotes":"From version 1.3.13 attachments names format was changed and now will appear in the following format: <image ID>-imageName-<image name>."
 }
