@@ -2980,11 +2980,11 @@ script:
       name: incident_id
       isArray: false
       required: false
-    name: core-causality-process
+    name: core-terminate-causality
     description: Stops a process by it's causality id.
     polling: true
     outputs:
-    - contextPath: Core.CausalityProcess.group_action_id
+    - contextPath: Core.TerminateCausality.group_action_id
       description: The group action id.
       type: String
   runonce: false

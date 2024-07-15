@@ -479,10 +479,10 @@ def main():  # pragma: no cover
                                                               "IN_PROGRESS",
                                                               "PENDING_ABORT"]))
         
-        elif command == 'core-causality-process':
+        elif command == 'core-terminate-causality':
             return_results(run_polling_command(client=client,
                                                args=args,
-                                               cmd="core-causality-process",
+                                               cmd="core-terminate-causality",
                                                command_function=terminate_causality_command,
                                                command_decision_field="group_action_id",
                                                results_function=action_status_get_command,
