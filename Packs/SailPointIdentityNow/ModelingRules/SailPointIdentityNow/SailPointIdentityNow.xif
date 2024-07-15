@@ -1,15 +1,17 @@
 [MODEL: dataset= "sailpoint_identitynow_raw"]
 alter
     src_name = actor -> name,
-    dst_name = `target` -> name
+    dst_name = `target` -> name,
+    objects = objects-> []
 | alter
     src_email = arrayindex(regextract(src_name, "(?:\w+)\@\S+"),0),
-    dst_email = arrayindex(regextract(dst_name, "(?:\w+)\@\S+"),0)
+    dst_email = arrayindex(regextract(dst_name, "(?:\w+)\@\S+"),0),
+    objects = arraymap(objects , trim("@element", "\""))
 | alter
     xdm.event.original_event_type = action,
     xdm.event.id = id,
     xdm.alert.name = name,
-    //xdm.event.tags = objects,
+    xdm.event.tags = objects,
     xdm.event.operation_sub_type = operation,
     xdm.source.user.ou = org,
     xdm.source.cloud.region = pod,
