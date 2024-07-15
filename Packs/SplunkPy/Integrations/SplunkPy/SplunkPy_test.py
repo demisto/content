@@ -2679,6 +2679,10 @@ def test_single_drilldown_searches(mocker):
     [({'drilldown_search': 'test'}, ['test']),
      ({'drilldown_searches': '{"search_1":"test_1"}'}, [{'search_1': 'test_1'}]),
      ({'drilldown_searches': ['{"search_1":"test_1"}', '{"search_2":"test_2"}']},
+      [{'search_1': 'test_1'}, {'search_2': 'test_2'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}]'},
+      [{'search_1': 'test_1'}]),
+     ({'drilldown_searches': '[{"search_1":"test_1"}, {"search_2":"test_2"}]'},
       [{'search_1': 'test_1'}, {'search_2': 'test_2'}])
      ]
 )
@@ -2686,10 +2690,12 @@ def test_get_drilldown_searches(drilldown_data, expected):
     """
     Given:  -
         1. A notable data with a single 'old' (string value in the 'drilldown_search' key) drilldown enrichment data .
-        4. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
-        5. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        2. A notable data with a single drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        3. A notable data with multiple drilldown enrichments as json string in the 'new' key (drilldown_searches).
+        4. A notable data with a single drilldown enrichments as json list string in the 'new' key (drilldown_searches).
+        5. A notable data with a multiple drilldown enrichments as json list string in the 'new' key (drilldown_searches).
     When:   - call to get_drilldown_searches.
-    Then:   - validate the result are as expectedץ
+    Then:   - validate the result are as expected.
     """
 
     assert splunk.get_drilldown_searches(drilldown_data) == expected
