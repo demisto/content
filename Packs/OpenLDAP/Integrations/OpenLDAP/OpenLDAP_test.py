@@ -306,27 +306,39 @@ class TestLDAPAuthentication:
                                    f'{client.CUSTOM_ATTRIBUTE}')
 
 
-# Assuming the function is imported from the module where it's defined
-# from your_module import entries_paged_search
+'''
+please add doc string to the tests in our format given: when: then
+'''
+
 
 class TestEntriesPagedSearch(unittest.TestCase):
 
     def setUp(self):
+        """
+        Set up the test by creating a mock connection and search parameters.
+        """
         self.connection = MagicMock()
-        self.search_params = {'searchBase': 'dc=example,dc=com', 'searchFilter': '(objectClass=person)'}
+        self.search_params = {'search_base': 'dc=example,dc=com', 'search_filter': '(objectClass=person)'}
         self.page_size = 10
 
     def test_first_page(self):
-        # Mock the connection's search method
+        """
+        when running the entries_paged_search function with a page number of 1 then the search method should be called with
+        the correct parameters and the results should be returned.
+        """
         self.connection.search.return_value = [{'name': 'John Doe'}]
 
         results = entries_paged_search(self.connection, self.search_params, page=1, page_size=self.page_size)
 
-        # Assert the search method was called with the correct parameters
         self.connection.search.assert_called_once_with(**self.search_params, paged_size=self.page_size)
         assert results == [{'name': 'John Doe'}]
 
     def test_subsequent_page(self):
+        """
+        when running the entries_paged_search function with a page number greater than 1 then the search method should be called
+        with the correct parameters and the results should be returned. The search method should be called twice, once to skip
+        the results and once to get the actual results.
+        """
         # Mock the connection's search method for the first search (to skip results)
         self.connection.search.side_effect = [
             None,  # First call returns None to simulate the skip search
@@ -353,8 +365,14 @@ class TestEntriesPagedSearch(unittest.TestCase):
 
 
 class TestEntriesSearchCommand(unittest.TestCase):
+    """
+    Test class for the entries_search_command function.
+    """
 
     def setUp(self):
+        """
+        Set up the test by creating an instance of the LdapClient class and mocking the _get_auto_bind_value method.
+        """
         self.instance = LdapClient({
             'host': 'server_ip',
             'port': '636',
@@ -374,6 +392,10 @@ class TestEntriesSearchCommand(unittest.TestCase):
     @patch('OpenLDAP.get_search_attributes', return_value=['cn', 'mail'])
     def test_entries_search_command_first_page(self, mock_get_search_attributes, mock_create_entries_search_filter,
                                                mock_connection):
+        """
+        when running the entries_search_command function with a page number of 1 then the search method should be called with
+        the correct parameters and the results should be returned.
+        """
         # Mock the LDAP connection
         mock_conn_instance = mock_connection.return_value.__enter__.return_value
         mock_conn_instance.entries = [MagicMock(entry_to_json=MagicMock(return_value=json.dumps({
@@ -406,6 +428,11 @@ class TestEntriesSearchCommand(unittest.TestCase):
     @patch('OpenLDAP.get_search_attributes', return_value=['cn', 'mail'])
     def test_entries_search_command_subsequent_page(self, mock_get_search_attributes, mock_create_entries_search_filter,
                                                     mock_connection):
+        """
+        when running the entries_search_command function with a page number greater than 1 then the search method should be
+        called with the correct parameters and the results should be returned. The search method should be called twice, once
+        to skip the results and once to get the actual results.
+        """
         # Mock the LDAP connection
         mock_conn_instance = mock_connection.return_value.__enter__.return_value
         mock_conn_instance.entries = [MagicMock(entry_to_json=MagicMock(return_value=json.dumps({
