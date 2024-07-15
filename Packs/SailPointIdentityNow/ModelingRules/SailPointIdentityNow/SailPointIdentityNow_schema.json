@@ -17,7 +17,7 @@
             "is_array": false
         },
         "objects": {
-            "type": "array",
+            "type": "string",
             "is_array": false
         },
         "operation": {
