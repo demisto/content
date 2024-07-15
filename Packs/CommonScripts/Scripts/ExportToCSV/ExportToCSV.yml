@@ -7,19 +7,28 @@ type: javascript
 tags:
 - Utility
 - csv
-comment: Export given array to csv file
+comment: Export given array to csv file.
 enabled: true
 args:
 - name: fileName
   required: true
   default: true
-  description: output filename
+  description: output filename.
 - name: csvArray
   required: true
-  description: Array to export
+  description: Array to export.
   isArray: true
 - name: headers
   description: Array to hold the file headers in order.  Also excepts a comma separated list.
   isArray: true
+- auto: PREDEFINED
+  defaultValue: UTF-8
+  description: 'UTF-16-BOM to encode Non English characters. Default is: UTF-8.'
+  name: codec
+  predefined:
+  - UTF-8
+  - UTF-16-BOM
 scripttarget: 0
 fromversion: 5.0.0
+tests:
+- exporttocsv_script_test
