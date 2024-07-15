@@ -35,7 +35,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
 
-    def search_alerts_request(self, minimum_severity: None | int = None, create_time: None | dict = None,
+    def search_alerts_request(self, minimum_severity: None | int = None, time_range: None | dict = None,
                               device_os_version: None | list = None, policy_id: None | list = None, alert_tag: None | list = None,
                               alert_id: None | list = None, device_username: None | list = None, device_id: None | list = None,
                               device_os: None | list = None, process_sha256: None | list = None, policy_name: None | list = None,
@@ -46,7 +46,6 @@ class Client(BaseClient):
         body = {
             'criteria': assign_params(
                 minimum_severity=minimum_severity,
-                create_time=create_time,
                 device_os_version=device_os_version,
                 policy_id=policy_id,
                 tag=alert_tag,
@@ -61,6 +60,7 @@ class Client(BaseClient):
                 device_name=device_name,
                 process_name=process_name
             ),
+            'time_range':time_range,
             'sort': [
                 {
                     'field': sort_field,
@@ -1292,34 +1292,42 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
-    # The new API version (v7) always returns the previous last alert along with the new alerts.
-    if not (int_fetch_limit := arg_to_number(fetch_limit)):
-        raise ValueError("limit cannot be empty.")
-    if last_run:
-        int_fetch_limit += 1
+    
+    from more_itertools import map_reduce
+    
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
-    last_fetched_alert_id = last_run.get('last_fetched_alert_id', '')
+    last_fetched_alerts_ids = last_run.get('last_fetched_alerts_ids', '')
     if not last_fetched_alert_create_time:
         last_fetched_alert_create_time, _ = parse_date_range(fetch_time, date_format='%Y-%m-%dT%H:%M:%S.000Z')
-    latest_alert_create_date = last_fetched_alert_create_time
-    latest_alert_id = last_fetched_alert_id
 
     incidents = []
 
     response = client.search_alerts_request(
         sort_field='first_event_timestamp',
         sort_order='ASC',
-        create_time=assign_params(
+        time_range=assign_params(
             start=last_fetched_alert_create_time,
             end=datetime.now().strftime('%Y-%m-%dT%H:%M:%S.000Z')
         ),
         limit=fetch_limit,
     )
+    
+    # Some alerts have exactly the same backend_timestamp,
+    # therefor we dedup alerts that have the backend_timestamp of the last alert in the last run.
+    get_backend_timestamp_func = lambda alert: alert['backend_timestamp']
+    alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], get_backend_timestamp_func)
+    # backend_timestamp of last alert retrieved.
+    last_backend_timestamp = response['results'][-1]['backend_timestamp']
+    # alert ids that have that backend_timestamp (need to be deduped in the next run).
+    alerts_ids_to_save = [alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_backend_timestamp]]
+    
     alerts = response.get('results', [])
     demisto.debug(f'{LOG_INIT} got {len(alerts)} alerts from server')
     for alert in alerts:
         alert_id = alert.get('id')
-        if alert_id == last_fetched_alert_id:
+        
+        #  dedup
+        if alert_id in last_fetched_alerts_ids:
             demisto.debug(f'{LOG_INIT} got previously fetched alert {alert_id}, skipping it')
             continue
 
@@ -1332,11 +1340,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         incidents.append(incident)
         parsed_date = dateparser.parse(alert_create_date)
         assert parsed_date is not None, f'failed parsing {alert_create_date}'
-        latest_alert_create_date = datetime.strftime(parsed_date + timedelta(seconds=1),
-                                                     '%Y-%m-%dT%H:%M:%S.000Z')
-        latest_alert_id = alert_id
+              
     demisto.debug(f'{LOG_INIT} sending {len(incidents)} incidents')
-    res = {'last_fetched_alert_create_time': latest_alert_create_date, 'last_fetched_alert_id': latest_alert_id}
+    res = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
     return incidents, res
 
 
