@@ -336,8 +336,8 @@ HEADERS_PACKAGE = [
     ('', {}),
     ('header=value', {'header': 'value'}),
     ('header1=value1, header2=value2', {'header1': 'value1', 'header2': 'value2'}),
-    # Can not register the same header more then once.
-    ('header3=value3, header3=other_value', {'header3': 'value3'})
+    # Can register the same header more then once.
+    ('header3=value3, header3=other_value', {'header3': 'other_value'})
 ]
 
 
