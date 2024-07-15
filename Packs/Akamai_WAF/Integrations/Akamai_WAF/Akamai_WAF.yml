@@ -1505,7 +1505,7 @@ script:
     description: Cancels a pending change on CPS.
     name: akamai-cancel-cps-change
   - arguments:
-    - description: Enrollment on which to perform the desired operation.
+    - description: Enrollment ID on which to perform the desired operation.
       name: enrollment_id
       required: true
     description: Get an enrollment in CPS by enrollment id.
