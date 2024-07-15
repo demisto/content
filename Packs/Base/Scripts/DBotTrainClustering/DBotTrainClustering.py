@@ -19,10 +19,13 @@ from sklearn.manifold import TSNE
 from sklearn.pipeline import Pipeline
 
 
-GENERAL_MESSAGE_RESULTS = "#### - Successfully grouped **%s incidents into %s groups**.\n #### - The grouping was based on " \
-                          "the **%s** field(s).\n #### - Each group name is based on the majority value of the **%s** field in " \
-                          "the group.\n #### - For %s incidents, no matches were found.\n" \
-                          " #### - Model was trained on **%s**.\n"
+GENERAL_MESSAGE_RESULTS = '\n'.join((
+    "#### - Successfully grouped **{} incidents into {} groups**.",
+    "#### - The grouping was based on the **{!r}** field(s).",
+    "#### - Each group name is based on the majority value of the **{!r}** field in the group.",
+    "#### - No matches were found for {} incident(s).",
+    "#### - Model was trained on **{}**.\n",
+))
 
 MESSAGE_NO_INCIDENT_FETCHED = "- 0 incidents fetched with these exact match for the given dates."
 MESSAGE_WARNING_TRUNCATED = "- Incidents fetched have been truncated to %s. please either enlarge the time period " \
@@ -884,10 +887,8 @@ def main():
         # Get all the incidents from query, date and field similarity and field family
         populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
         populate_high_level_fields = keep_high_level_field(populate_fields)
-        incidents, msg = get_all_incidents_for_time_window_and_type(populate_high_level_fields, from_date, to_date,
-                                                                    query,
-                                                                    # type: ignore
-                                                                    limit, incident_type)  # type: ignore
+        incidents, msg = get_all_incidents_for_time_window_and_type(
+            populate_high_level_fields, from_date, to_date, query, limit, incident_type)  # type: ignore
         global_msg += f"{msg} \n"
         # If no incidents found with those criteria
         if not incidents:
@@ -962,8 +963,8 @@ def main():
             field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
             number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
             training_date = str(model_processed.date_training)
-            msg = GENERAL_MESSAGE_RESULTS % (number_of_sample, number_clusters_selected,
-                                             field_clustering, field_name, number_of_outliers, training_date)
+            msg = GENERAL_MESSAGE_RESULTS.format(
+                number_of_sample, number_clusters_selected, field_clustering, field_name, number_of_outliers, training_date)
             return_outputs(
                 readable_output='## General results \n {}'.format(msg) + '## Warning \n {}'.format(global_msg))
             model_processed.summary_description = msg
