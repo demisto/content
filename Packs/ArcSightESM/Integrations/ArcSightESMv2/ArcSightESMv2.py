@@ -20,7 +20,7 @@ REQ_SOAP_BODY = """<?xml version="1.0" encoding="UTF-8"?>
                 {entryList}
             </act:{function}>
         </soapenv:Body>
-    </soapenv:Envelope>
+    </soapenv:Envel>
 """.format
 
 ENTRY_LIST = "<entryList>{}</entryList>".format
