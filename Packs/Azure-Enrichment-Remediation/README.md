@@ -20,7 +20,7 @@ This content pack includes the following playbook:
 
 #### Azure - Enrichment
 
-![Azure - Enrichment]()
+![Azure - Enrichment](https://raw.githubusercontent.com/demisto/content/0636a595509367554d21c0b932b2da2347b121b5/Packs/Azure-Enrichment-Remediation/doc_files/Azure_-_Enrichment.png)
 
 #### Azure - Network Security Group Remediation
 
