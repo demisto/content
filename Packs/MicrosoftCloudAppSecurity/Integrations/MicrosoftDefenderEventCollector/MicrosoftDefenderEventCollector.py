@@ -189,7 +189,7 @@ class IntegrationGetEvents(ABC):
                 stored_per_type.extend(logs)
                 if self.options.limit:
                     demisto.debug(
-                        f'MD: {self.options.limit=} reached. slicing from {len(logs)=}.' \
+                        f'MD: {self.options.limit=} reached. slicing from {len(logs)=}.'
                         ' limit must be presented ONLY in commands and not in fetch-events.'
                     )
                     if len(stored_per_type) >= self.options.limit:
