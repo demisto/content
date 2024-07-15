@@ -1,8 +1,37 @@
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 import re
 import traceback
 
 
 """ STANDALONE FUNCTION """
+
+
+def get_incidenttype(incident_type_name: str) -> dict:
+    all_incidenttype = demisto.executeCommand("core-api-get", {"uri": "/incidenttype"})[
+        0
+    ]
+    response = all_incidenttype.get("Contents", {}).get("response")
+    for incidenttype in response:
+        if incidenttype.get("id", "") == incident_type_name:
+            return incidenttype
+
+    return {}
+
+
+def get_incidentfields(type_name: str, name_fields: list[str]) -> list:
+    res = demisto.executeCommand("core-api-get", {"uri": "/incidentfields"})
+    all_incidentfields = res[0]["Contents"]["response"]
+
+    singleSelect_field = []
+    for field in all_incidentfields:
+        if (
+            field.get("type", "") == type_name
+            and field.get("cliName", "") in name_fields
+        ):
+            singleSelect_field.append(field)
+
+    return singleSelect_field
 
 
 def get_fieldname_and_default_val(fields: list[dict]) -> dict:
@@ -16,48 +45,12 @@ def get_fieldname_and_default_val(fields: list[dict]) -> dict:
     return result
 
 
-def get_incidenttype(incident_type_name: str) -> dict:
-    all_incidenttype = demisto.executeCommand("core-api-get", {"uri": "/incidenttype"})[0]
-    response = all_incidenttype.get("Contents", {}).get("response")
-    for incidenttype in response:
-        if incidenttype.get("id", "") == incident_type_name:
-            return incidenttype
-
-    return {}
-
-
 def update_context(fields: dict, context: dict) -> None:
     outputs = {}
     for field_name, default_values in fields.items():
-        if not context.get(field_name):
+        if not context.get("CustomFields",{}).get(field_name):
             outputs[field_name] = default_values
-
     demisto.executeCommand("setIncident", outputs)
-
-
-def common_strings(list1: list[str], list2: list[dict]) -> list[dict]:
-    result = []
-
-    for dictionary in list2:
-        if "cliName" in dictionary and dictionary["cliName"] in list1:
-            result.append(dictionary)
-
-    return result
-
-
-def get_incidentfields(type_name: str, name_fields: list[str]) -> list:
-    res = demisto.executeCommand(
-        "core-api-get", {"uri": "/incidentfields"}
-    )
-    all_incidentfields = res[0]["Contents"]["response"]
-    
-    singleSelect_field = []
-    for field in all_incidentfields:
-        if field.get("type", "") == type_name and field.get("cliName", "") in name_fields:
-            singleSelect_field.append(field)
-
-    return singleSelect_field
-
 
 """ MAIN FUNCTION """
 
@@ -75,9 +68,7 @@ def main():
         pattern = r"'fieldId':\s*'([^']+)'"
         name_of_fields_in_layout = re.findall(pattern, str(layout_file))
         incidentfields_filtered = get_incidentfields("singleSelect", name_of_fields_in_layout)
-        incidentfields_to_update_in_context = get_fieldname_and_default_val(
-            incidentfields_filtered
-        )
+        incidentfields_to_update_in_context = get_fieldname_and_default_val(incidentfields_filtered)
         return_results(update_context(incidentfields_to_update_in_context, context))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback

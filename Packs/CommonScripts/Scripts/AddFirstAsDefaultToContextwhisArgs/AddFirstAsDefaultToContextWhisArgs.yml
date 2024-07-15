@@ -1,22 +1,24 @@
 commonfields:
-  id: addDefaultToContextwithAegs
+  id: AddFirstAsDefaultToContext_whisArgs
   version: -1
-vcShouldKeepItemLegacyProdMachine: false
-name: addDefaultToContextwithAegs
+name: AddFirstAsDefaultToContext_whisArgs
+script: ''
 type: python
 tags: []
 enabled: true
 args:
 - name: field_name
   required: true
+  description: Field name to update in context.
 - name: value
   required: true
-important:
-- related: ""
+  description: Value to update in context.
 scripttarget: 0
 subtype: python3
 runonce: false
 dockerimage: demisto/python3:3.10.14.101217
 runas: DBotWeakRole
 engineinfo: {}
-mainengineinfo: {}
+fromversion: 6.10.0
+tests:
+- No tests (auto formatted)
