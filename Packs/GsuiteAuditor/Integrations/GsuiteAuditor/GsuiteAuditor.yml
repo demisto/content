@@ -52,7 +52,7 @@ script:
       required: true
     - description: The name of the event being queried. For a list of event names for each application, see the integration documentation.
       name: event_name
-    - description:  |-
+    - description: |-
         A comma-separated list of event parameters and relational operators. For example-
         'API_CLIENT_NAME==111,API_SCOPES=aaa'.
         The relevant 'event name' argument must be supplied to use this argument.
