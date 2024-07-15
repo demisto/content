@@ -4388,7 +4388,7 @@ def terminate_process_command(client, args) -> CommandResults:
         raise DemistoException('Terminate process failed')
     demisto.debug(f'Action terminate process succeeded with action_id={response.get("group_action_id")}')
     return CommandResults(
-        readable_output=tableToMarkdown(f'Action terminate process succeeded with action_id={response.get("group_action_id")}', response),
+        readable_output=tableToMarkdown(f'Action terminate process created with group_action_id={response.get("group_action_id")}', response),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.TerminateProcess',
         outputs_key_field='group_action_id',
         outputs=response,
@@ -4411,7 +4411,7 @@ def terminate_causality_command(client, args) -> CommandResults:
         raise DemistoException('Terminate causality failed')
     demisto.debug(f'Action terminate causality succeeded with action_id={response.get("group_action_id")}')
     return CommandResults(
-        readable_output=tableToMarkdown(f'Action terminate causality succeeded with action_id={response.get("group_action_id")}', response),
+        readable_output=tableToMarkdown(f'Action terminate causality created with group_action_id={response.get("group_action_id")}', response),
         outputs_prefix=f'{args.get("integration_context_brand", "CoreApiModule")}.CausalityProcess',
         outputs_key_field='group_action_id',
         outputs=response,
