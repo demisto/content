@@ -35,7 +35,7 @@ class Client(BaseClient):
 
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
 
-    def search_alerts_request(self, minimum_severity: None | int = None, time_range: None | dict = None,
+    def search_alerts_request(self, minimum_severity: None | int = None, create_time: None | dict = None,
                               device_os_version: None | list = None, policy_id: None | list = None, alert_tag: None | list = None,
                               alert_id: None | list = None, device_username: None | list = None, device_id: None | list = None,
                               device_os: None | list = None, process_sha256: None | list = None, policy_name: None | list = None,
@@ -60,7 +60,7 @@ class Client(BaseClient):
                 device_name=device_name,
                 process_name=process_name
             ),
-            'time_range':time_range,
+            'time_range':create_time,
             'sort': [
                 {
                     'field': sort_field,
