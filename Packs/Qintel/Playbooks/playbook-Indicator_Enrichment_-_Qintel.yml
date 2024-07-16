@@ -183,6 +183,8 @@ tasks:
     nexttasks:
       "yes":
       - "9"
+      "no":
+      - "16"
     scriptarguments:
       brandname:
         simple: QintelQSentry
