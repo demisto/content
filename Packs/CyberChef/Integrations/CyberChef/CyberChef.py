@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import json
+from subprocess import Popen
 
 
 def test_module(client):
@@ -14,7 +15,7 @@ def test_module(client):
 
 
 def run_command(client, data, endpoint):
-    response = client._http_request('POST', endpoint, json_data=data)
+    response = client._http_request('POST', endpoint, json_data=data, retries=50, backoff_factor=0.1)
     return response
 
 
@@ -29,9 +30,13 @@ def create_output(results, endpoint):
 
 def main():
     apikey = demisto.params().get('apikey')
+    host_instance = argToBoolean(demisto.params().get('host_instance', 'false'))
 
     # get the service API url
-    base_url = urljoin(demisto.params()['url'], '/cyberchef')
+    if host_instance:
+        base_url = "http://localhost:3000"
+    else:
+        base_url = urljoin(demisto.params()['url'])
 
     verify_certificate = not demisto.params().get('insecure', False)
 
@@ -39,6 +44,10 @@ def main():
 
     headers = {'Content-Type': 'application/json',
                'x-api-key': apikey}
+    
+    if host_instance:
+        process = Popen(['/bin/sh', '-c', 'npm run prod --silent &'])
+        demisto.debug(f"Created process {process} to run the server")
 
     demisto.info(f'Command being called is {demisto.command()}')
     try:
