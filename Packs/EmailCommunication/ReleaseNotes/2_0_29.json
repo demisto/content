@@ -1,0 +1,4 @@
+{
+    "breakingChanges":true,
+    "breakingChangesNotes":"From version 2.0.28 updated the preprocess script to handle image in the following format: <the image ID>-imageName-<the image name>."
+}
