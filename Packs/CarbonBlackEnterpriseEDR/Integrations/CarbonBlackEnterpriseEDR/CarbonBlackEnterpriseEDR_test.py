@@ -9,6 +9,13 @@ from CarbonBlackEnterpriseEDR import (
 import demistomock as demisto
 from freezegun import freeze_time
 
+CLIENT = cbe.Client(
+    base_url='https://server_url.com',
+    use_ssl=False,
+    use_proxy=False,
+    token=None,
+    cb_org_key="123")
+
 PROCESS_CASES = [
     (
         {'process_hash': '63d423ea882264dbb157a965c200306212fc5e1c6ddb8cbbb0f1d3b51ecd82e6',
@@ -44,15 +51,9 @@ def test_create_process_search_body(mocker, demisto_args, expected_results):
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-    m = mocker.patch.object(client, '_http_request', return_value={})
+    m = mocker.patch.object(CLIENT, '_http_request', return_value={})
 
-    client.create_search_process_request(**demisto_args)
+    CLIENT.create_search_process_request(**demisto_args)
     assert m.call_args[1].get('json_data') == expected_results
 
 
@@ -81,16 +82,10 @@ def test_create_process_search_failing(mocker, requests_mock, demisto_args, expe
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-    mocker.patch.object(client, '_http_request', return_value={})
+    mocker.patch.object(CLIENT, '_http_request', return_value={})
 
     with pytest.raises(Exception) as e:
-        client.create_search_process_request(**demisto_args)
+        CLIENT.create_search_process_request(**demisto_args)
     assert str(e.value) == expected_error_msg
 
 
@@ -125,15 +120,9 @@ def test_create_event_by_process_search_body(mocker, demisto_args, expected_resu
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-    m = mocker.patch.object(client, '_http_request', return_value={})
+    m = mocker.patch.object(CLIENT, '_http_request', return_value={})
 
-    client.create_search_event_by_process_request(**demisto_args)
+    CLIENT.create_search_event_by_process_request(**demisto_args)
     assert m.call_args[1].get('json_data') == expected_results
 
 
@@ -166,16 +155,10 @@ def test_event_by_process_failing(mocker, requests_mock, demisto_args, expected_
     """
 
     mocker.patch.object(demisto, 'args', return_value=demisto_args)
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-    mocker.patch.object(client, '_http_request', return_value={})
+    mocker.patch.object(CLIENT, '_http_request', return_value={})
 
     with pytest.raises(Exception) as e:
-        client.create_search_event_by_process_request(**demisto_args)
+        CLIENT.create_search_event_by_process_request(**demisto_args)
     assert str(e.value) == expected_error_msg
 
 
@@ -196,17 +179,10 @@ def test_add_threat_tags_command(mocker):
         - validate that the returned results were parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
-    mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_THREAT_TAGS_RESPONSE)
+    mocker.patch.object(CLIENT, '_http_request', return_value=MOCK_UPDATE_THREAT_TAGS_RESPONSE)
 
     args = {'threat_id': '123456', 'tags': ['tag1', 'tag2']}
-    result = add_threat_tags_command(client, args)
+    result = add_threat_tags_command(CLIENT, args)
 
     assert result.outputs == {'ThreatID': '123456', 'Tags': ['tag1', 'tag2']}
     assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
@@ -233,17 +209,10 @@ def test_add_threat_notes_command(mocker):
         - validate that the returned results were parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
-    mocker.patch.object(client, '_http_request', return_value=MOCK_CREATE_THREAT_NOTES_RESPONSE)
+    mocker.patch.object(CLIENT, '_http_request', return_value=MOCK_CREATE_THREAT_NOTES_RESPONSE)
 
     args = {'threat_id': '123456', 'notes': 'These are threat notes'}
-    result = add_threat_notes_command(client, args)
+    result = add_threat_notes_command(CLIENT, args)
 
     assert result.outputs == {'ThreatID': '123456', 'Notes': 'These are threat notes'}
     assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
@@ -273,17 +242,10 @@ def test_get_threat_tags_command(mocker):
         - validate that the returned results was parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
-    mocker.patch.object(client, '_http_request', return_value=MOCK_GET_THREAT_TAGS_RESPONSE)
+    mocker.patch.object(CLIENT, '_http_request', return_value=MOCK_GET_THREAT_TAGS_RESPONSE)
 
     args = {'threat_id': '123456'}
-    result = get_threat_tags_command(client, args)
+    result = get_threat_tags_command(CLIENT, args)
 
     assert result.outputs == {'ThreatID': '123456', 'Tags': [{'tag': 'malware'}, {'tag': 'suspicious'}]}
     assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
@@ -310,17 +272,10 @@ def test_add_alert_notes_command(mocker):
         - validate that the returned results were parsed as expected.
 
     """
-    client = cbe.Client(
-        base_url='https://server_url.com',
-        use_ssl=False,
-        use_proxy=False,
-        token=None,
-        cb_org_key="123")
-
-    mocker.patch.object(client, '_http_request', return_value=MOCK_UPDATE_ALERT_NOTES_RESPONSE)
+    mocker.patch.object(CLIENT, '_http_request', return_value=MOCK_UPDATE_ALERT_NOTES_RESPONSE)
 
     args = {'alert_id': '789012', 'notes': 'These are alert notes'}
-    result = add_alert_notes_command(client, args)
+    result = add_alert_notes_command(CLIENT, args)
 
     assert result.outputs == {'AlertID': '789012', 'Notes': 'These are alert notes'}
     assert result.outputs_prefix == 'CarbonBlackEEDR.Threat'
@@ -328,3 +283,159 @@ def test_add_alert_notes_command(mocker):
 
     assert "Successfully added notes to alert: \"789012\"" in result.readable_output
     assert result.raw_response == MOCK_UPDATE_ALERT_NOTES_RESPONSE
+
+
+def test_test_module(mocker):
+    """
+    Given:
+        - All relevant parameters for the integration.
+
+    When:
+        - testing the configuration of the integration.
+
+    Then:
+        - The http request is called with the right API version.
+        - The 'start' field in the body of the request equals to 1.
+    """
+    from CarbonBlackEnterpriseEDR import test_module
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    test_module(client=CLIENT)
+    assert 'api/alerts/v7/orgs' in http_request.call_args.kwargs['url_suffix']
+    assert http_request.call_args.kwargs['json_data']['start'] == 1
+
+
+def test_search_alerts_request(mocker):
+    """
+    Given:
+        - All argument needed for a search_alert_request
+
+    When:
+        - calling search_alert_request function
+
+    Then:
+        - The http request is called with the right API version.
+        - the 'start' field in the body of the request equals to 1.
+    """
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.search_alerts_request()
+    assert 'api/alerts/v7/orgs' in http_request.call_args[0][1]
+    assert http_request.call_args.kwargs['json_data']['start'] == 1
+
+
+def test_alert_workflow_update_get_request(mocker):
+    """
+    Given:
+        - A request_id
+
+    When:
+        - Calling alert_workflow_update_get_request function
+
+    Then:
+        - The http request is called with the request_id.
+    """
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.alert_workflow_update_get_request('1234')
+    assert '1234' in http_request.call_args[0][1]
+
+
+def test_alert_workflow_update_request_good_arguments(mocker):
+    """
+    Given:
+        - All required arguments.
+
+    When:
+        - Calling alert_workflow_update_request function.
+
+    Then:
+        - The http request is called with the right version.
+        - The http request is called with the right json body.
+    """
+    http_request = mocker.patch.object(CLIENT, '_http_request', return_value=[])
+    CLIENT.alert_workflow_update_request(alert_id='1234', state='OPEN', comment='bla1', determination='NONE',
+                                         time_range='-2w', start='1', end='2', closure_reason='bla2')
+    assert 'api/alerts/v7/orgs' in http_request.call_args[0][1]
+    assert http_request.call_args.kwargs['json_data'] == {'time_range': {'start': '1', 'end': '2', 'range': '-2w'},
+                                                          'criteria': {'id': ['1234']}, 'determination': 'NONE',
+                                                          'closure_reason': 'bla2', 'status': 'OPEN', 'note': 'bla1'}
+
+
+alert_workflow_update_command_func_called_data = [
+    ({'alert_id': '123', 'state': 'OPEN'},  # case first time polling (no request_id).
+     'alert_workflow_update_request',  # func to be called.
+     {'request_id': '123456789'}  # response
+     ),
+    ({'alert_id': '123', 'request_id': '12345'},  # case there is a request_id.
+     'alert_workflow_update_get_request',  # func to be called.
+     {'status': 'COMPLETED',
+      'job_parameters': {'job_parameters': {'request': {'state': 'OPEN'}, 'userWorkflowDto': {'changed_by': 'bla'}}},
+      'last_update_time': 'now'})
+]
+
+
+@pytest.mark.parametrize('args, func_to_be_called, response', alert_workflow_update_command_func_called_data)
+def test_alert_workflow_update_command_func_called(mocker, args, func_to_be_called, response):
+    """
+    Given:
+        - All arguments needed.
+
+    When:
+        - Running 'cb-eedr-alert-workflow-update' command.
+
+    Then:
+        - The right function is called regarding polling.
+    """
+    from CarbonBlackEnterpriseEDR import alert_workflow_update_command_with_polling
+    execute_command = mocker.patch.object(CLIENT, func_to_be_called, return_value=response)
+    alert_workflow_update_command_with_polling(args, CLIENT)
+    assert execute_command.called is True
+
+
+alert_workflow_update_command_bad_argument_data = [
+    ({'alert_id': '123'}),  # case no status and no determination.
+    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z'}),  # case there is start but no end.
+    ({'alert_id': '123', 'start': '2019-01-01T11:00:00.157Z', 'end': '2018-01-01T11:00:00.157Z'})  # case end is before start
+]
+
+
+@pytest.mark.parametrize('args', alert_workflow_update_command_bad_argument_data)
+def test_alert_workflow_update_command_bad_arguments(args):
+    """
+    Given:
+        - Invalid command's input.
+    When:
+        - Running 'cb-eedr-alert-workflow-update' command.
+
+    Then:
+        - The right exception is called.
+    """
+    from CarbonBlackEnterpriseEDR import alert_workflow_update_command_with_polling
+    from CommonServerPython import DemistoException
+    with pytest.raises(DemistoException):
+        alert_workflow_update_command_with_polling(args, CLIENT)
+
+
+process_search_command_func_called_data = [
+    ({'process_name': 'bla1'},  # case first time polling (no job_id).
+     'create_search_process_request'  # func to be called.
+     ),
+    ({'process_name': 'bla2', 'job_id': '12345'},  # case there is a job_id.
+     'get_search_process_request'  # func to be called.
+     )]
+
+
+@pytest.mark.parametrize('args, func_to_be_called', process_search_command_func_called_data)
+def test_alert_process_search_command_func_called(mocker, args, func_to_be_called):
+    """
+    Given:
+        - All arguments needed.
+
+    When:
+        - Running 'cb-eedr-alert-workflow-update' command.
+
+    Then:
+        - The right function is called regarding polling.
+    """
+    from CarbonBlackEnterpriseEDR import process_search_command_with_polling
+    execute_command = mocker.patch.object(CLIENT, func_to_be_called)
+    process_search_command_with_polling(args, CLIENT)
+    assert execute_command.called is True
