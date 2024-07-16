@@ -1661,7 +1661,7 @@ def update_remote_system_command(args, params, service: client.Service, auth_tok
     delta = parsed_args.delta
     notable_id = parsed_args.remote_incident_id
     entries = parsed_args.entries
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     demisto.debug(f"mirroring args: entries:{parsed_args.entries} delta:{parsed_args.delta}")
     if parsed_args.incident_changed and delta:
         demisto.debug(
@@ -3047,7 +3047,7 @@ def main():  # pragma: no cover
 
     connection_args = get_connection_args(params)
 
-    base_url = 'https://' + params['host'] + ':' + params['port'] + '/'
+    base_url = f"https://{params['host'].replace('https://', '')}:{params['port']}/"
     auth_token = None
     username = params['authentication']['identifier']
     password = params['authentication']['password']
