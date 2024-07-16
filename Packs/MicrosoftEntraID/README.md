@@ -71,7 +71,7 @@
 
 <hr>
 
-<h3>XQL Queries</h3>
+<h2>XQL Queries</h2>
 <p>Use the below queries to review the mapped logs (post installation).</p> 
 <details>
     <summary>AuditLogs</summary>
