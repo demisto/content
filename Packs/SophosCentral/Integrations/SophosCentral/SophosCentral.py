@@ -464,7 +464,8 @@ class Client(BaseClient):
             view (str): Type of view to be returned in the response.
             limit (int): Max number of endpoints to return.
             ip_addresses (list(str)): Find endpoints by IP addresses.
-            hostname_contains (str): Find endpoints where the hostname contains the given string. Only the first 10 characters of the given string are matched.
+            hostname_contains (str): Find endpoints where the hostname contains the given string.
+                Only the first 10 characters of the given string are matched.
 
         Returns:
             response (Response): API response from Sophos.
@@ -2042,12 +2043,13 @@ def sophos_central_endpoint_list_command(client: Client, args: dict) -> CommandR
                 matching_ips = [ip for ip in query_ips if ip in ips]
                 if not matching_ips:
                     continue
-                
+
             # The Sophos API does partial string matching, which can be unwanted for hostnames.
-            if full_match_hostname:
-                if object_data.get("hostname") is None or object_data.get("hostname") != args.get("hostname_contains"):
-                    continue
-                    
+            if full_match_hostname and (
+                object_data.get("hostname") is None or object_data.get("hostname") != args.get("hostname_contains")
+            ):
+                continue
+
             assigned_products = item.get("assignedProducts")
             if assigned_products:
                 object_data["assignedProductCodes"] = [
