@@ -377,7 +377,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, []  # type: ignore
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -1934,8 +1934,13 @@ def add_additional_headers(additional_headers):
         try:
             Message.register(header_name, TempClass)
             headers[header_name] = header_value
-        except ValueError as e:
-            demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
+        except ValueError:
+            Message.deregister(header_name)
+            try:
+                Message.register(header_name, TempClass)
+                headers[header_name] = header_value
+            except ValueError as e:
+                demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
 
     return headers
 
