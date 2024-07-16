@@ -453,10 +453,10 @@ script:
       description: Title of the report.
       type: string
     - contextPath: Ignite.Report.UpdatedAt
-      description: Last updated date of report.
+      description: Last updated date of the report.
       type: string
     - contextPath: Ignite.Report.ReportId
-      description: Unique id of the report.
+      description: Unique ID of the report.
       type: string
     description: List related reports for a particular report using the report ID.
   - name: flashpoint-ignite-alert-list

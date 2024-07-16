@@ -500,8 +500,8 @@ List related reports for a particular report using the report ID.
 | Ignite.Report.PostedAt | number | Posted date of the report. | 
 | Ignite.Report.Summary | string | Summary of the report. | 
 | Ignite.Report.Title | string | Title of the report. | 
-| Ignite.Report.UpdatedAt | string | Last updated date of report. | 
-| Ignite.Report.ReportId | string | Unique id of the report. | 
+| Ignite.Report.UpdatedAt | string | Last updated date of the report. | 
+| Ignite.Report.ReportId | string | Unique ID of the report. | 
 
 #### Command example
 ```!flashpoint-ignite-intelligence-related-report-list report_id=00000000000000000003```
