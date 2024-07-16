@@ -7,7 +7,6 @@ import os
 import json
 import urllib3
 from google.cloud import bigquery
-from google.oauth2 import service_account
 from datetime import date
 import hashlib
 
@@ -46,8 +45,7 @@ def start_and_return_bigquery_client(google_service_creds_json_string):
         json.dump(json.loads(google_service_creds_json_string), creds_file)
         os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = path_to_save_creds_file
         creds_file.close()
-    creds = service_account.Credentials.from_service_account_file(path_to_save_creds_file)
-    bigquery_client = bigquery.Client(credentials=creds, project=creds.project_id)
+    bigquery_client = bigquery.Client()
     return bigquery_client
 
 
@@ -120,7 +118,7 @@ def query(query_string, project_id, location, allow_large_results, default_datas
     job_config = build_query_job_config(allow_large_results, default_dataset, destination, dry_run, priority,
                                         use_query_cache, use_legacy_sql, kms_key_name, write_disposition)
     query_job = bigquery_client.query(query=query_string, job_config=job_config, location=location,
-                                      job_id=job_id, project=project_id)
+                                      job_id=job_id, project=project_id, api_method=bigquery.enums.QueryApiMethod.QUERY)
     if not (dry_run and str_to_bool(dry_run)):
         query_results = query_job.result()
         return query_results
