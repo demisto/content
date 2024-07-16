@@ -1436,7 +1436,6 @@ def get_token_request():
     headers = {
         'Content-Type': 'application/x-www-form-urlencoded'
     }
-    demisto.debug('In get_token_request')
     token_res = http_request('POST', '/oauth2/token', data=body, headers=headers, get_token_flag=False)
     demisto.debug(f'In get_token_request, token_res is not None {token_res is not None}')
     if not token_res:
