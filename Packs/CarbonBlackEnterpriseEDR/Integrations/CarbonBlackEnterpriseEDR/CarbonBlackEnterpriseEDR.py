@@ -1309,7 +1309,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     incidents = []
 
     response = client.search_alerts_request(
-        sort_field='first_event_timestamp',
+        sort_field='backend_timestamp',
         sort_order='ASC',
         create_time=assign_params(
             start=last_fetched_alert_create_time,
@@ -1323,7 +1323,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
 
     if alerts:
         # Alerts may be created with the same backend_timestamp.
-        # Therefore, we deduplicate alerts that have the same # backend_timestamp as the last alert we saved in the previous run.
+        # Therefore, we deduplicate alerts that have the same backend_timestamp as the last alert we saved in the previous run.
         def get_backend_timestamp(alert):
             return alert['backend_timestamp']
         alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], get_backend_timestamp)

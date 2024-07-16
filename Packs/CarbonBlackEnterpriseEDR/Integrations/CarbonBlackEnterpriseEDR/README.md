@@ -2975,5 +2975,5 @@ Creates a process search job and returns results if 'polling' argument is True.
 
 ## Troubleshooting
 
-Note, If the API returns duplicates, we will drop them, causing the total number of alerts fetched to potentially be fewer than the set limit.
+Note: If the API returns duplicates, the duplicates will be dropped, causing the total number of alerts fetched to potentially be fewer than the set limit. Moreover, if all of the alerts returned are duplicates, they will all be dropped, causing no alerts to be returned. In such cases, increase the limit.
 
