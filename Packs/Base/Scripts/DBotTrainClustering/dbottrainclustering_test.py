@@ -1,4 +1,5 @@
 import json
+from pytest_mock import MockerFixture
 
 from DBotTrainClustering import (
     demisto,
@@ -210,37 +211,35 @@ class PostProcessing:
 
 
 def executeCommand(command, args):
-    global FETCHED_INCIDENT
+
     if command == "GetIncidentsByQuery":
         return [{"Contents": json.dumps(FETCHED_INCIDENT), "Type": "note"}]
     elif command == "getMLModel":
-        model = PostProcessing()
-        model.date_training = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-        model_data = base64.b64encode(pickle.dumps(model)).decode(
-            "utf-8"
-        )  # guardrails-disable-line
-        return [
-            {
-                "Contents": {"modelData": model_data, "model": {"type": {"type": ""}}},
-                "Type": "note",
-            }
-        ]
+        # model = PostProcessing()
+        # model.date_training = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
+        # model_data = base64.b64encode(pickle.dumps(model)).decode(
+        #     "utf-8"
+        # )  # guardrails-disable-line
+        with open('test_data/model.pkl', encoding='utf-8') as f:
+            return [
+                {
+                    "Contents": {"modelData": f.read(), "model": {"type": {"type": ""}}},
+                    "Type": "note",
+                }
+            ]
+    elif command == 'createMLModel':
+        with open('test_data/model.pkl', 'w', encoding='utf-8') as f:
+            f.write(args['modelData'])
+    return None
 
 
 def test_preprocess_incidents_field():
-    assert (
-        preprocess_incidents_field("incident.commandline")
-        == "commandline"
-    )
-    assert (
-        preprocess_incidents_field("commandline") == "commandline"
-    )
+    assert preprocess_incidents_field("incident.commandline")  == "commandline"
+    assert preprocess_incidents_field("commandline") == "commandline"
 
 
 def test_check_list_of_dict():
-    assert (
-        check_list_of_dict([{"test": "value_test"}, {"test1": "value_test1"}]) is True
-    )
+    assert check_list_of_dict([{"test": "value_test"}, {"test1": "value_test1"}]) is True
     assert check_list_of_dict({"test": "value_test"}) is False
 
 
@@ -474,8 +473,24 @@ def test_same_cluster_name(mocker):
     mocker.patch.object(demisto, "args", return_value=PARAMETERS_DICT)
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     model, output_clustering_json, msg = main()
-    with open('test_data/model.pkl', 'w', encoding='utf-8') as f:
-        f.write(pickle.dumps([model, output_clustering_json, msg]).decode())
+    clusters_name = [x["clusterName"] for x in model.selected_clusters.values()]
+    assert "nmap" in clusters_name
+    assert "nmap_0" in clusters_name
+
+
+def test_end_to_end(mocker):
+    global FETCHED_INCIDENT
+    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY_SAME_CLUSTER_NAME
+    PARAMETERS_DICT.update(
+        {
+            "fieldsForClustering": "field_1, field_2, wrong_field",
+            "fieldForClusterName": "entityname",
+        }
+    )
+    mocker.patch.object(demisto, "args", return_value=PARAMETERS_DICT)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    model, output_clustering_json, msg = main()
+    
     clusters_name = [x["clusterName"] for x in model.selected_clusters.values()]
     assert "nmap" in clusters_name
     assert "nmap_0" in clusters_name

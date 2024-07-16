@@ -450,11 +450,11 @@ def normalize_global(obj):
     if isinstance(obj, float) or not obj:
         return " "
     if check_list_of_dict(obj):
-        obj = {k: v for k, v in enumerate(obj)}  # type: ignore
+        obj = dict(enumerate(obj))  # type: ignore
         return normalize_json(obj)
     if isinstance(obj, dict):
         return normalize_json(obj)
-    if isinstance(obj, str) or isinstance(obj, list):
+    if isinstance(obj, (str, list)):
         return normalize_command_line(obj)
 
 
@@ -643,10 +643,7 @@ def create_summary(model_processed: PostProcessing, fields_for_clustering: list[
                                                               str(number_of_clusterized),
                                                               str(number_of_sample)),
         'Percentage of cluster selected (Number of high quality groups/Total number of groups)':
-            "%s  (%s/%s)" %
-            (str(percentage_clusters_selected),
-             str(number_clusters_selected),
-             str(nb_clusters)),
+            f"{percentage_clusters_selected}  ({number_clusters_selected}/{nb_clusters})",
         'Fields used for training': ' , '.join(fields_for_clustering),
         'Fields used for cluster name': field_for_cluster_name[0] if field_for_cluster_name else "",
         'Training time': str(model_processed.date_training)
@@ -672,7 +669,7 @@ def return_entry_clustering(output_clustering: dict, tag: str = None) -> None:
     demisto.results(return_entry)
 
 
-def wrapped_list(obj: list) -> list:
+def wrapped_list(obj: Any) -> list:
     """
     Wrapped object into a list if not list
     :param obj:
@@ -801,9 +798,9 @@ def prepare_data_for_training(generic_cluster_name, incidents_df, field_for_clus
 
 def transform_names_if_list(incidents_df, field_for_cluster_name):
     """
-    Check if field_for_cluster_name value are type list and keep the maximun value if this is the case
+    Check if field_for_cluster_name value are type list and keep the maximum value if this is the case
     :param incidents_df: Dataframe of incidents
-    :param field_for_cluster_name: List with one field that correspong to the name of the cluster
+    :param field_for_cluster_name: List with one field that corresponding to the name of the cluster
     :return: Dataframe of incidents with modification on field_for_cluster_name columns
     """
     if field_for_cluster_name and field_for_cluster_name[0] in incidents_df.columns:
@@ -852,8 +849,8 @@ def main():
 
     HDBSCAN_PARAMS.update({'min_cluster_size': min_number_of_incident_in_cluster,
                            'min_samples': min_number_of_incident_in_cluster})
-    TFIDF_PARAMS.update({'max_features': number_feature_per_field})
-    TFIDF_PARAMS.update({'analyzer': analyzer})
+    TFIDF_PARAMS.update({'max_features': number_feature_per_field,
+                         'analyzer': analyzer})
 
     # Check if need to retrain
     model_processed, retrain = is_model_needs_retrain(force_retrain, model_expiration, model_name)
@@ -879,104 +876,104 @@ def main():
 
         return_entry_clustering(output_clustering=data_clusters_json, tag="trained")
         return model_processed, model_processed.json, ""  # pylint: disable=E1101
+
+    # Check if user gave a field for cluster name - if not use generic cluster name
+    if not field_for_cluster_name:
+        generic_cluster_name = True
+
+    # Get all the incidents from query, date and field similarity and field family
+    populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
+    populate_high_level_fields = keep_high_level_field(populate_fields)
+    incidents, msg = get_all_incidents_for_time_window_and_type(
+        populate_high_level_fields, from_date, to_date, query, limit, incident_type)  # type: ignore
+    global_msg += f"{msg} \n"
+    # If no incidents found with those criteria
+    if not incidents:
+        demisto.results(global_msg)
+        return None, {}, global_msg
+
+    incidents_df = pd.DataFrame(incidents).fillna('')
+    incidents_df.index = incidents_df.id
+
+    # Fill nested fields with appropriate values
+    incidents_df = transform_names_if_list(incidents_df, field_for_cluster_name)
+    incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
+    incidents_df = fill_nested_fields(incidents_df, incidents, field_for_cluster_name, keep_unique_value=True)
+
+    # Check Field that appear in populate_fields but are not in the incidents_df and return message
+    global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
+
+    fields_for_clustering, field_for_cluster_name, display_fields = \
+        remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, display_fields,
+                                        incorrect_fields=incorrect_fields)
+
+    # Remove fields that are not valid (like too small number of sample)
+    fields_for_clustering, global_msg = remove_not_valid_field(fields_for_clustering, incidents_df, global_msg,
+                                                                max_percentage_of_missing_value)  # type: ignore
+
+    # Case where no field for clustrering or field for cluster name if not empty and incorrect)
+    if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
+        global_msg += MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
+        demisto.results(global_msg)
+        return None, {}, global_msg
+
+    # Create data for training
+    labels = prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name)
+
+    # TFIDF pipeline
+    tfidf_pipe = Pipeline(steps=[
+        ('tfidf', Tfidf(normalize_function=normalize_global))
+    ])
+
+    # preprocessor
+    transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
+    preprocessor = ColumnTransformer(
+        transformers=transformers_list)
+
+    # Model pipeline
+    model = Pipeline(steps=[(PREPROCESSOR_STEP_PIPELINE, preprocessor),
+                            (CLUSTERING_STEP_PIPELINE, Clustering(HDBSCAN_PARAMS))
+                            ])
+    # Fit of the model on incidents_df and labels
+    model.fit(incidents_df, labels)
+
+    # Check is clustering is valid
+    if not is_clustering_valid(model.named_steps[CLUSTERING_STEP_PIPELINE]):
+        global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
+        return None, {}, global_msg
+
+    # Reduce dimension
+    model.named_steps[CLUSTERING_STEP_PIPELINE].compute_centers()
+    model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
+    model_processed = PostProcessing(model.named_steps[CLUSTERING_STEP_PIPELINE], min_homogeneity_cluster,
+                                        generic_cluster_name)
+
+    # Create summary of the training and assign it the the summary attribute of the model
+    summary = create_summary(model_processed, fields_for_clustering, field_for_cluster_name)
+    model_processed.summary = summary
+    model_processed.global_msg = global_msg
+
+    if debug:
+        return_outputs(readable_output=f'## Warning \n {global_msg}' + tableToMarkdown("Summary", summary))
     else:
-        # Check if user gave a field for cluster name - if not use generic cluster name
-        if not field_for_cluster_name:
-            generic_cluster_name = True
+        field_clustering = ' , '.join(fields_for_clustering)
+        field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
+        number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
+        training_date = str(model_processed.date_training)
+        msg = GENERAL_MESSAGE_RESULTS.format(
+            number_of_sample, number_clusters_selected, field_clustering, field_name, number_of_outliers, training_date)
+        return_outputs(
+            readable_output=f'## General results\n{msg}\n## Warning\n{global_msg}')
+        model_processed.summary_description = msg
 
-        # Get all the incidents from query, date and field similarity and field family
-        populate_fields = fields_for_clustering + field_for_cluster_name + display_fields
-        populate_high_level_fields = keep_high_level_field(populate_fields)
-        incidents, msg = get_all_incidents_for_time_window_and_type(
-            populate_high_level_fields, from_date, to_date, query, limit, incident_type)  # type: ignore
-        global_msg += f"{msg} \n"
-        # If no incidents found with those criteria
-        if not incidents:
-            demisto.results(global_msg)
-            return None, {}, global_msg
-
-        incidents_df = pd.DataFrame(incidents).fillna('')
-        incidents_df.index = incidents_df.id
-
-        # Fill nested fields with appropriate values
-        incidents_df = transform_names_if_list(incidents_df, field_for_cluster_name)
-        incidents_df = fill_nested_fields(incidents_df, incidents, fields_for_clustering)
-        incidents_df = fill_nested_fields(incidents_df, incidents, field_for_cluster_name, keep_unique_value=True)
-
-        # Check Field that appear in populate_fields but are not in the incidents_df and return message
-        global_msg, incorrect_fields = find_incorrect_field(populate_fields, incidents_df, global_msg)
-
-        fields_for_clustering, field_for_cluster_name, display_fields = \
-            remove_fields_not_in_incident(fields_for_clustering, field_for_cluster_name, display_fields,
-                                          incorrect_fields=incorrect_fields)
-
-        # Remove fields that are not valid (like too small number of sample)
-        fields_for_clustering, global_msg = remove_not_valid_field(fields_for_clustering, incidents_df, global_msg,
-                                                                   max_percentage_of_missing_value)  # type: ignore
-
-        # Case where no field for clustrering or field for cluster name if not empty and incorrect)
-        if not fields_for_clustering or (not field_for_cluster_name and not generic_cluster_name):
-            global_msg += MESSAGE_NO_FIELD_NAME_OR_CLUSTERING
-            demisto.results(global_msg)
-            return None, {}, global_msg
-
-        # Create data for training
-        labels = prepare_data_for_training(generic_cluster_name, incidents_df, field_for_cluster_name)
-
-        # TFIDF pipeline
-        tfidf_pipe = Pipeline(steps=[
-            ('tfidf', Tfidf(normalize_function=normalize_global))
-        ])
-
-        # preprocessor
-        transformers_list = [('tfidf' + field, tfidf_pipe, [field]) for field in fields_for_clustering]
-        preprocessor = ColumnTransformer(
-            transformers=transformers_list)
-
-        # Model pipeline
-        model = Pipeline(steps=[(PREPROCESSOR_STEP_PIPELINE, preprocessor),
-                                (CLUSTERING_STEP_PIPELINE, Clustering(HDBSCAN_PARAMS))
-                                ])
-        # Fit of the model on incidents_df and labels
-        model.fit(incidents_df, labels)
-
-        # Check is clustering is valid
-        if not is_clustering_valid(model.named_steps[CLUSTERING_STEP_PIPELINE]):
-            global_msg += "%s \n" % MESSAGE_CLUSTERING_NOT_VALID
-            return None, {}, global_msg
-
-        # Reduce dimension
-        model.named_steps[CLUSTERING_STEP_PIPELINE].compute_centers()
-        model.named_steps[CLUSTERING_STEP_PIPELINE].reduce_dimension()
-        model_processed = PostProcessing(model.named_steps[CLUSTERING_STEP_PIPELINE], min_homogeneity_cluster,
-                                         generic_cluster_name)
-
-        # Create summary of the training and assign it the the summary attribute of the model
-        summary = create_summary(model_processed, fields_for_clustering, field_for_cluster_name)
-        model_processed.summary = summary
-        model_processed.global_msg = global_msg
-
-        if debug:
-            return_outputs(readable_output=f'## Warning \n {global_msg}' + tableToMarkdown("Summary", summary))
-        else:
-            field_clustering = ' , '.join(fields_for_clustering)
-            field_name = field_for_cluster_name[0] if field_for_cluster_name else ""
-            number_of_sample, number_clusters_selected, number_of_outliers = get_results(model_processed)
-            training_date = str(model_processed.date_training)
-            msg = GENERAL_MESSAGE_RESULTS.format(
-                number_of_sample, number_clusters_selected, field_clustering, field_name, number_of_outliers, training_date)
-            return_outputs(
-                readable_output='## General results \n {}'.format(msg) + '## Warning \n {}'.format(global_msg))
-            model_processed.summary_description = msg
-
-        # return Entry and summary
-        output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields,
-                                                      fields_for_clustering)
-        model_processed.json = output_clustering_json
-        return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
-        if store_model:
-            store_model_in_demisto(model_processed, model_name, model_override, model_hidden)
-        return model_processed, output_clustering_json, global_msg
+    # return Entry and summary
+    output_clustering_json = create_clusters_json(model_processed, incidents_df, incident_type, display_fields,
+                                                    fields_for_clustering)
+    model_processed.json = output_clustering_json
+    return_entry_clustering(output_clustering=model_processed.json, tag="trained")  # type: ignore
+    if store_model:
+        store_model_in_demisto(model_processed, model_name, model_override, model_hidden)
+    return model_processed, output_clustering_json, global_msg
 
 
 if __name__ in ['__main__', '__builtin__', 'builtins']:
