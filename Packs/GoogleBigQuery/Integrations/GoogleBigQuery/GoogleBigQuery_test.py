@@ -43,7 +43,8 @@ def test_remove_outdated_incident_ids_keep_equal():
 
     latest_incident_time_str = '2020-05-05 08:08:09.000'
     res = remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str)
-    assert 'aaa' not in res and 'bbb' not in res
+    assert 'aaa' not in res
+    assert 'bbb' not in res
     assert 'ddd' in res
 
 
@@ -86,7 +87,8 @@ def test_remove_outdated_incident_ids_keep_equal_no_incidents():
 
     latest_incident_time_str = '2020-05-05 08:08:09.000'
     res = remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str)
-    assert 'aaa' not in res and 'bbb' not in res
+    assert 'aaa' not in res
+    assert 'bbb' not in res
 
 
 def test_verify_params_all_existing(mocker):
