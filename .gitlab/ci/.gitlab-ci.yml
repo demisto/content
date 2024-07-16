@@ -1,9 +1,9 @@
 variables:
-  CURRENT_BRANCH_NAME: 'tpb-file-dep'
+  CURRENT_BRANCH_NAME: 'fix-run-test-xsoar-6'
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: 'tpb-file-dep'
+    ref: 'fix-run-test-xsoar-6'
     project: "${CI_PROJECT_NAMESPACE}/infra"
 
 default:
