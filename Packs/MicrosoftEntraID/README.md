@@ -4,13 +4,7 @@
 <details>
   <summary>Click me</summary>
     <h1>Heading</h1>
-    <p>
-
-  1. Foo
-  2. Bar
-     * Baz
-     * Qux
-    </p>
+    <p>text</p>
   <h2> Some Javascript </h2>
 
   ```sql
