@@ -1,6 +1,6 @@
 category: Endpoint
 commonfields:
-  id: Carbon Black Enterprise EDR Dev
+  id: Carbon Black Enterprise EDR
   version: -1
 configuration:
 - display: Server URL (e.g. https://defense.conferdeploy.net)
@@ -72,8 +72,8 @@ configuration:
   required: false
   type: 19
 description: VMware Carbon Black Enterprise EDR (formerly known as Carbon Black ThreatHunter) is an advanced threat hunting and incident response solution delivering continuous visibility for top security operations centers (SOCs) and incident response (IR) teams. (formerly known as ThreatHunter).
-display: Carbon Black Enterprise EDR Dev
-name: Carbon Black Enterprise EDR Dev
+display: Carbon Black Enterprise EDR
+name: Carbon Black Enterprise EDR
 script:
   commands:
   - arguments:
