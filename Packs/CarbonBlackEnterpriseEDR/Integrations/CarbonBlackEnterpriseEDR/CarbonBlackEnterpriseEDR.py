@@ -1293,14 +1293,14 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
-    
+
     # In every call to the api the start timestamp equals to the last alert timestamp in the last run.
     # Therefor, every call to the api, except the first one, will return at least one duplicate.
     if not (int_fetch_limit := arg_to_number(fetch_limit)):
         raise ValueError("limit cannot be empty.")
     if last_run:
         int_fetch_limit += 1
-        
+
     last_fetched_alert_create_time = last_run.get('last_fetched_alert_create_time')
     last_fetched_alerts_ids = last_run.get('last_fetched_alerts_ids', [])
     if not last_fetched_alert_create_time:
@@ -1355,7 +1355,7 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
         res = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
     else:
         res = last_run
-        
+
     return incidents, res
 
 

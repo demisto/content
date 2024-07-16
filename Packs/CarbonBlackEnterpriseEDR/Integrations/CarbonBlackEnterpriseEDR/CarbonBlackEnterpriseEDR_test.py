@@ -502,8 +502,8 @@ def test_fetch_incidents_second_run(mocker, response, last_run):
     assert '789' not in incidents_ids
     assert '123' in incidents_ids
     assert '345' in incidents_ids
-    
-    
+
+
 def test_fetch_incidents_no_alerts(mocker):
     """
     Given:
@@ -519,4 +519,3 @@ def test_fetch_incidents_no_alerts(mocker):
     mocker.patch.object(CLIENT, 'search_alerts_request', return_value={})
     _, res = fetch_incidents(CLIENT, fetch_time='3 days', fetch_limit='50', last_run={'bla': 'bla'})
     assert res == {'bla': 'bla'}
-
