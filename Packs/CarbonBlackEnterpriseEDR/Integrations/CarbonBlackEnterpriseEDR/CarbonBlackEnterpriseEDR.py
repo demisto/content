@@ -1294,10 +1294,12 @@ def get_file_path_command(client: Client, args: dict) -> CommandResults:
 
 def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run: dict) -> tuple[list, dict]:
 
-    # In every call to the api the start timestamp equals to the last alert timestamp in the last run.
-    # Therefor, every call to the api, except the first one, will return at least one duplicate.
     if not (int_fetch_limit := arg_to_number(fetch_limit)):
         raise ValueError("limit cannot be empty.")
+
+    # Each API call uses the last alert timestamp from the previous run as the start timestamp.
+    # Consequently, every API call after the first one will result in at least one duplicate.
+    # Therefore, we increase the limit by one.
     if last_run:
         int_fetch_limit += 1
 
@@ -1324,39 +1326,34 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     if alerts:
         # Alerts may be created with the same backend_timestamp.
         # Therefore, we deduplicate alerts that have the same backend_timestamp as the last alert we saved in the previous run.
-        def get_backend_timestamp(alert):
-            return alert['backend_timestamp']
-        alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], get_backend_timestamp)
-        # backend_timestamp of last alert retrieved.
+        alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], lambda x: x['backend_timestamp'])
         last_fetched_alert_timestamp = response['results'][-1]['backend_timestamp']
         # All IDs of alerts that share the same timestamp as the last one.
         alerts_ids_to_save = [alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_fetched_alert_timestamp]]
 
-    for alert in alerts:
-        alert_id = alert.get('id')
+        for alert in alerts:
+            alert_id = alert.get('id')
 
-        #  dedup
-        if alert_id in last_fetched_alerts_ids:
-            demisto.debug(f'{LOG_INIT} got previously fetched alert {alert_id}, skipping it')
-            continue
+            #  dedup
+            if alert_id in last_fetched_alerts_ids:
+                demisto.debug(f'{LOG_INIT} got previously fetched alert {alert_id}, skipping it')
+                continue
 
-        alert_create_date = alert.get('backend_timestamp')
-        incident = {
-            'name': f'Carbon Black Enterprise EDR alert {alert_id}',
-            'occurred': alert_create_date,
-            'rawJSON': json.dumps(alert)
-        }
-        incidents.append(incident)
-        parsed_date = dateparser.parse(alert_create_date)
-        assert parsed_date is not None, f'failed parsing {alert_create_date}'
+            alert_create_date = alert.get('backend_timestamp')
+            incident = {
+                'name': f'Carbon Black Enterprise EDR alert {alert_id}',
+                'occurred': alert_create_date,
+                'rawJSON': json.dumps(alert)
+            }
+            incidents.append(incident)
+            parsed_date = dateparser.parse(alert_create_date)
+            assert parsed_date is not None, f'failed parsing {alert_create_date}'
+
+        last_run = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
 
     demisto.debug(f'{LOG_INIT} sending {len(incidents)} incidents')
-    if alerts:
-        res = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
-    else:
-        res = last_run
 
-    return incidents, res
+    return incidents, last_run
 
 
 @polling_function(
