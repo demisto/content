@@ -368,7 +368,7 @@ def start_chrome_headless(chrome_port, instance_id, chrome_options, chrome_binar
     return None, None
 
 
-def terminate_chrome(chrome_port: str = '', killall: bool = False) -> None:
+def terminate_chrome(chrome_port: str = '', killall: bool = False) -> None:  # pragma: no cover
     """
     Terminates Chrome processes based on the specified criteria.
 

@@ -43,7 +43,7 @@ configuration:
   name: is_https
   type: 8
   advanced: true
-  defaultvalue: false
+  defaultvalue: 'false'
 - name: rasterize_mode
   display: Rasterize Mode
   required: false

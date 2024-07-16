@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 
 dill.settings['recurse'] = True
 
-no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)
+no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)  # type: ignore
 
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
@@ -457,6 +457,7 @@ def return_and_remove_additional_results(results: list, from_index):
         del results[from_index:]
         demisto.debug(f'removed and returned {from_index} outputs')
 
+
 def weed_rasterize_errors(urls: list[str], res_rasterize: list[Union[dict, str]]):
     '''Remove the URLs that failed rasterization and return them.'''
     error_idx = [
@@ -471,7 +472,7 @@ def weed_rasterize_errors(urls: list[str], res_rasterize: list[Union[dict, str]]
         )))
 
 
-def rasterize_command(urls: list[str], rasterize_timeout: int) -> list[Union[dict, str]]:
+def rasterize_command(urls: Union[list[str], str], rasterize_timeout: int) -> list[Union[dict, str]]:
     res_rasterize: list[dict] = demisto.executeCommand(  # type: ignore
         'rasterize',
         {
@@ -731,7 +732,7 @@ def main():
         email_html = args.get('emailHTML', "")
         max_urls = int(args.get('maxNumberOfURL', 5))
         urls_argument = args.get('urls', '')
-        rasterize_timeout = arg_to_number(args.get('rasterize_timeout', TIMEOUT_RASTERIZE))
+        rasterize_timeout = arg_to_number(args.get('rasterize_timeout', TIMEOUT_RASTERIZE)) or 0
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
             args.get("reliability", DBotScoreReliability.A_PLUS)
         )
