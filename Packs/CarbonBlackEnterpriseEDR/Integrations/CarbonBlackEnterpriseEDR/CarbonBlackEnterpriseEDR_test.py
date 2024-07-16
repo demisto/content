@@ -467,7 +467,6 @@ def test_fetch_incidents_first_run(mocker, response, expected_res):
     from CarbonBlackEnterpriseEDR import fetch_incidents
     mocker.patch.object(CLIENT, 'search_alerts_request', return_value=response)
     mocker.patch('CommonServerPython.parse_date_range', return_value='2023-03-12T08:17:51.779Z')
-    # last_fetched_alert_create_time = '2024-07-12T08:08:17.000Z'
     _, res = fetch_incidents(CLIENT, '3 days', '3', {})
     assert res == expected_res
 
