@@ -1052,7 +1052,7 @@ Gets the search ID based on the provided search parameters.
 | time_range | Time range. For example: Last 30 minutes, Last 7 days, etc. If not provided, it will use 'Last 5 minutes' as the time range by default. Default is "Last 5 minutes". | Optional | 
 | limit | Number of logs to fetch. If not provided, the first 100 logs will be displayed. Default is 100. | Optional | 
 | repos | A comma-separated list of LogPoint repos from which logs are to be fetched. If not provided, it will display logs from all repos. | Optional |
-| timeout | LogPoint search timeout in seconds. Default is 60. | Optional | q
+| timeout | LogPoint search timeout in seconds. Default is 60. | Optional | 
 
 
 #### Context Output
