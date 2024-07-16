@@ -14,7 +14,7 @@ args:
 - name: doubleBackslash
   default: true
   description: Adds a second backslash to all existing backslashes in the value field.
-  defaultValue: "true"
+  defaultValue: 'true'
 outputs:
 - contextPath: StixExportedIndicators.created
   description: The date/time that the indicator was created.
@@ -38,7 +38,7 @@ outputs:
   description: The date/time that the indicator was last seen.
   type: date
 scripttarget: 0
-dockerimage: demisto/py3-tools:1.0.0.96102
+dockerimage: demisto/py3-tools:1.0.0.103307
 subtype: python3
 runas: DBotWeakRole
 tests:

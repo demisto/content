@@ -53,7 +53,7 @@ display: CyberArk Identity Event Collector
 name: CyberArk Identity Event Collector
 script:
   commands:
-  - description: 'Returns a list of events'
+  - description: Returns a list of events
     name: cyberarkidentity-get-events
     arguments:
     - description: The maximum number of events per fetch. Default is 1000.
@@ -76,7 +76,7 @@ script:
   isfetchevents: true
   type: python
   subtype: python3
-  dockerimage: demisto/py3-tools:1.0.0.94051
+  dockerimage: demisto/py3-tools:1.0.0.103307
 marketplaces:
 - marketplacev2
 fromversion: 6.8.0
