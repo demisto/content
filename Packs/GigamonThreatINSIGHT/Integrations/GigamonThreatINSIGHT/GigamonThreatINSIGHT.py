@@ -16,7 +16,7 @@ from typing import Tuple
 TRAINING_ACC = 'f6f6f836-8bcd-4f5d-bd61-68d303c4f634'
 MAX_DETECTIONS = 100
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
-
+a = 24
 
 class Client(BaseClient):
     @staticmethod
