@@ -45,7 +45,7 @@ configuration:
   type: 8
   required: false
 script:
-  script: ""
+  script: ''
   type: python
   commands:
   - arguments:
@@ -59,7 +59,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: duo-get-events
-  dockerimage: demisto/vendors-sdk:1.0.0.96124
+  dockerimage: demisto/vendors-sdk:1.0.0.103334
   isfetchevents: true
   subtype: python3
 marketplaces:

@@ -30,9 +30,9 @@ configuration:
   name: proxy
   type: 8
   required: false
-description: |-
-  DUO for admins.
-  Must have access to the admin api in order to use this.
+description: 'DUO for admins.
+
+  Must have access to the admin api in order to use this.'
 display: DUO Admin
 name: DUO Admin
 script:
@@ -133,7 +133,7 @@ script:
       description: Username.
       type: string
     - contextPath: DuoAdmin.UserDetails.user_id
-      description: 'User Id.'
+      description: User Id.
       type: string
     - contextPath: DuoAdmin.UserDetails.status
       description: Status.
@@ -300,8 +300,8 @@ script:
       name: status
       auto: PREDEFINED
       predefined:
-      - 'active'
-      - 'disabled'
+      - active
+      - disabled
     - description: Notes for the user.
       name: notes
     - description: The email of the user.
@@ -324,7 +324,7 @@ script:
     outputs: []
     description: Modify the user account.
     name: duoadmin-modify-user
-  dockerimage: demisto/vendors-sdk:1.0.0.87491
+  dockerimage: demisto/vendors-sdk:1.0.0.103334
   script: ''
   type: python
   subtype: python3
