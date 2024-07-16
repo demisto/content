@@ -245,10 +245,18 @@ script:
       type: string
     - contextPath: File.Malicious.Vendor
       description: For malicious files, the vendor that made the decision.
+    - contextPath: File.Malicious.Description
+      description: For malicious files, the reason that the vendor made the decision.
     - contextPath: File.Malicious.Detections
       description: For malicious files, the total number of detections.
     - contextPath: File.Malicious.TotalEngines
       description: For malicious files, the total number of engines that checked the file hash.
+    - contextPath: File.VTVendors.EngineDetections
+      description: Number of VT vendors that flagged the file as malicious.
+    - contextPath: File.VTVendors.EngineVendors
+      description: VT vendors who flagged the file as malicious.
+    - contextPath: File.VTVendors.EngineDetectionNames
+      description: VT detection names that flagged the file as malicious.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
@@ -491,6 +499,12 @@ script:
       description: For malicious IPs, the vendor that made the decision.
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason that the vendor made the decision.
+    - contextPath: IP.VTVendors.EngineDetections
+      description: Number of VT vendors that flagged the IP as malicious.
+    - contextPath: IP.VTVendors.EngineVendors
+      description: VT vendors who flagged the IP as malicious.
+    - contextPath: IP.VTVendors.EngineDetectionNames
+      description: VT detection names that flagged the IP as malicious.
     - contextPath: IP.ASOwner
       description: The autonomous system owner of the IP.
       type: String
@@ -588,6 +602,12 @@ script:
       description: For malicious URLs, the vendor that made the decision.
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
+    - contextPath: URL.VTVendors.EngineDetections
+      description: Number of VT vendors that flagged the URL as malicious.
+    - contextPath: URL.VTVendors.EngineVendors
+      description: VT vendors who flagged the URL as malicious.
+    - contextPath: URL.VTVendors.EngineDetectionNames
+      description: VT detection names that flagged the URL as malicious.
     - contextPath: URL.Relationships.EntityA
       description: The source of the relationship.
       type: string
@@ -730,6 +750,12 @@ script:
       description: For malicious domains, the vendor that made the decision.
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason that the vendor made the decision.
+    - contextPath: Domain.VTVendors.EngineDetections
+      description: Number of VT vendors that flagged the domain as malicious.
+    - contextPath: Domain.VTVendors.EngineVendors
+      description: VT vendors who flagged the domain as malicious.
+    - contextPath: Domain.VTVendors.EngineDetectionNames
+      description: VT detection names that flagged the domain as malicious.
     - contextPath: Domain.Relationships.EntityA
       description: The source of the relationship.
       type: string
@@ -1666,7 +1692,7 @@ script:
       description: The analysis ID.
       type: String
 
-  dockerimage: demisto/python3:3.10.13.89009
+  dockerimage: demisto/python3:3.11.9.101916
 tests:
 - VirusTotalV3-test
 - VirusTotal (API v3) Detonate Test
