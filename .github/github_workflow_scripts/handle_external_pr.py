@@ -572,14 +572,14 @@ def main():
     ver = get_pack_metadata(pr_files[0]).get('currentVersion')
     print(f'version is: {ver}')
     if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR:
-        contributors_body = 'Thanks for contributing to a Cortex XSOAR supported pack. To receive credit for your generous' \
+        contributors_body = 'Thanks for contributing to the XSOAR marketplace. To receive credit for your generous' \
                             ' contribution, please ask the reviewer to update your information in the pack contributors file.' \
                             ' See more information here [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
     else:
-        contributors_body = f'Hi @{pr.user.login}, thanks for contributing to a Cortex XSOAR supported pack. To receive ' \
+        contributors_body = f'Hi @{pr.user.login}, thanks for contributing to the XSOAR marketplace. To receive ' \
             f'credit for your generous contribution please follow this [link]' \
             f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
-    if XSOAR_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
+    if XSOAR_SUPPORT_LEVEL_LABEL or COMMUNITY_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
         pr.create_issue_comment(contributors_body)
 
 
