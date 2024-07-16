@@ -3226,7 +3226,7 @@
         },
         {
             "playbookID": "Send Investigation Summary Reports - Test",
-            "integrations": "EWS v2",
+            "integrations": ["EWS v2", "CommonReports"],
             "instance_names": [
                 "ews_mail_sender_labdemisto"
             ],
