@@ -170,7 +170,7 @@ This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XD
 
 This playbook is used for enriching domain information using CSC Domain Manager integration.
 
-![Cortex ASM - CSC Domain Enrichment]()
+![Cortex ASM - CSC Domain Enrichment](https://raw.githubusercontent.com/demisto/content/2788e682627305ebde0e63cab15512e74c39cb70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_CSC_Domain_Enrichment.png)
 
 #### Cortex ASM - Detect Service
 
