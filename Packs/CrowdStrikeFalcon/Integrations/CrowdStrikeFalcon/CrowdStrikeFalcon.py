@@ -441,6 +441,8 @@ def http_request(method, url_suffix, params=None, data=None, files=None, headers
         # to create the token in case of 429 in the first call to generic_http_request and not in the second call to avoid a
         # loop of calls to get_token_request().
         retries = 5
+        # error code 401 - isn't relevant for requesting a token.
+        # error code 403 - The IP is missing from the IP allowlist, no need to retry.
         status_list_to_retry = [429]
         valid_status_codes = [200, 201, 202, 204]
         demisto.debug(f'In http_request {get_token_flag=} updated retries, status_list_to_retry, valid_status_codes')
