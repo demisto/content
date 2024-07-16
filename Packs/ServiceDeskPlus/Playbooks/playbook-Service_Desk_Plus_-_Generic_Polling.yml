@@ -1,8 +1,8 @@
 id: Service Desk Plus - Generic Polling
 version: -1
 name: Service Desk Plus - Generic Polling
+description: This playbook uses generic polling to wait until a request is closed.
 starttaskid: "0"
-description: 'This playbook uses generic polling to wait until a request is closed.'
 tasks:
   "0":
     id: "0"
@@ -139,6 +139,8 @@ tasks:
       iscommand: false
       brand: ""
     nexttasks:
+      "no":
+      - "5"
       "yes":
       - "4"
     scriptarguments:
@@ -178,6 +180,41 @@ tasks:
       {
         "position": {
           "x": 50,
+          "y": 890
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: b561ce1d-d3a1-4d2a-8099-cfcd0d3019fb
+    type: regular
+    task:
+      id: b561ce1d-d3a1-4d2a-8099-cfcd0d3019fb
+      version: -1
+      name: Close request
+      description: Closes the specified request.
+      script: '|||service-desk-plus-request-close'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      request_id:
+        simple: ${ServiceDeskPlus.Request.Id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 380,
           "y": 720
         }
       }
@@ -193,8 +230,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 735,
-        "width": 380,
+        "height": 905,
+        "width": 710,
         "x": 50,
         "y": 50
       }
