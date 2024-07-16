@@ -2573,4 +2573,8 @@ To display the new fields in indicators:
 2. Select the desired indicator type, for example, `File`. 
 3. Click `Edit` and, under `Custom Fields`, choose the desired field and add the corresponding path. For instance, if you select the `VT Engine Detections` field for the `File` indicator type, add the path `File.VTVendors.EngineDetections`. This will enable the field to be populated in the indicator data.
 
-Note that the field will not automatically appear in the indicator's layout. To make it visible, go to `Settings -> Objects Setup -> Indicators -> Layouts`, select the desired layout (e.g., `File Indicator`), click `Detach` if needed, and then edit the layout to include the new field.
+Note that the field will not automatically appear in the indicator's layout. To make it visible:
+
+1. Navigate to `Settings > Objects Setup > Indicators > Layouts`.
+2. Select the desired layout (e.g., `File Indicator`).
+3. Click `Detach` if needed, and then edit the layout to include the new field.
