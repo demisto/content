@@ -429,9 +429,9 @@ Checks the reputation of an IP address.
 | IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
 | IP.Malicious.Vendor | String | For malicious IPs, the vendor who made the decision. | 
 | IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. | 
-| IP.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the IP as malicious. |
-| IP.VTVendors.EngineVendors | Array | VT vendors which flagged the IP as malicious. |
-| IP.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the IP as malicious. |
+| IP.VTVendors.EngineDetections | Number | Number of VT vendors that flagged the IP as malicious. |
+| IP.VTVendors.EngineVendors | Array | VT vendors who flagged the IP as malicious. |
+| IP.VTVendors.EngineDetectionNames | Array | VT detection names that flagged the IP as malicious. |
 | IP.ASOwner | String | The autonomous system owner of the IP. | 
 | DBotScore.Indicator | unknown | The indicator that was tested. | 
 | DBotScore.Type | unknown | The indicator type. | 
