@@ -715,7 +715,7 @@ script:
       isArray: true
       name: repos
     - defaultValue: '60'
-      description: LogPoint search timeout.
+      description: LogPoint search timeout in seconds.
       name: timeout
     description: Gets the search ID based on the provided search parameters.
     name: lp-get-searchid
