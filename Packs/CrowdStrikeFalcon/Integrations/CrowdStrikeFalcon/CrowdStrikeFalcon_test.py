@@ -7106,6 +7106,7 @@ def test_http_request_get_token_request_429(mocker, requests_mock):
     assert mock_request_generic_http_request.call_count == 1
     assert mock_request_error_handler.call_count == 1
 
+
 class ResMocker:
     def __init__(self, http_response, status_code, reason):
         self.http_response = http_response
