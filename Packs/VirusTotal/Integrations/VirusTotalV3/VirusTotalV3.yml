@@ -751,11 +751,11 @@ script:
     - contextPath: Domain.Malicious.Description
       description: For malicious domains, the reason that the vendor made the decision.
     - contextPath: Domain.VTVendors.EngineDetections
-      description: Number of VT vendors which flagged the domain as malicious.
+      description: Number of VT vendors that flagged the domain as malicious.
     - contextPath: Domain.VTVendors.EngineVendors
-      description: VT vendors which flagged the domain as malicious.
+      description: VT vendors who flagged the domain as malicious.
     - contextPath: Domain.VTVendors.EngineDetectionNames
-      description: VT detection names which flagged the domain as malicious.
+      description: VT detection names that flagged the domain as malicious.
     - contextPath: Domain.Relationships.EntityA
       description: The source of the relationship.
       type: string
