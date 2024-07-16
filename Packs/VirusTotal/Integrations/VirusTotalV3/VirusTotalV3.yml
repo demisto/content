@@ -603,11 +603,11 @@ script:
     - contextPath: URL.Malicious.Description
       description: For malicious URLs, the reason that the vendor made the decision.
     - contextPath: URL.VTVendors.EngineDetections
-      description: Number of VT vendors which flagged the URL as malicious.
+      description: Number of VT vendors that flagged the URL as malicious.
     - contextPath: URL.VTVendors.EngineVendors
-      description: VT vendors which flagged the URL as malicious.
+      description: VT vendors who flagged the URL as malicious.
     - contextPath: URL.VTVendors.EngineDetectionNames
-      description: VT detection names which flagged the URL as malicious.
+      description: VT detection names that flagged the URL as malicious.
     - contextPath: URL.Relationships.EntityA
       description: The source of the relationship.
       type: string
