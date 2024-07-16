@@ -220,7 +220,7 @@ RELATED_INDICATOR_OBJECTS_PACK = [
     ("value1", "relates to", "some-type", "11", "phishing", Common.DBotScore.SUSPICIOUS,
      {
          "Value": "value1\n", "Reputation": "Suspicious (2)", "Entity Category": "phishing",
-         "Relationship Type": "relates to", "Indicator Type": "some-type", "Timestamp UTC": "11",
+         "Relationship Type": "relates to", "Indicator Type": "some-type", "Timestamp UTC": "11",  # Invalid timestamp
      }),
 ]
 
