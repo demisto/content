@@ -19,41 +19,44 @@ args:
   name: email_subject
 - name: min_lcase
   description: Minimum number of lower case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_lcase
   description: Maximum number of lower case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
+  defaultValue: '10'
 - name: min_ucase
   description: Minimum number of upper case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_ucase
   description: Maximum number of upper case characters to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
+  defaultValue: '10'
 - name: min_digits
   description: Minimum number of digits to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_digits
   description: Maximum number of digits to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
+  defaultValue: '10'
 - name: min_symbols
   description: Minimum number of symbols to include in password. Used with the GeneratePassword script.
-  defaultValue: "0"
+  defaultValue: '0'
 - name: max_symbols
   description: Maximum number of symbols to include in password. Used with the GeneratePassword script.
-  defaultValue: "10"
+  defaultValue: '10'
 - name: ZipProtectWithPassword
   description: The password to protect the zip file that contains the generated password. if not provided, the generated password will be send in the body of the email.
-  defaultValue: ""
+  defaultValue: ''
 - name: email_body
   description: The body of the email that will be sent to the user.
 - name: zip_file_name
   description: Name of the generated zip file (used internally for polling).
-comment: |-
-  Generates password,
+comment: 'Generates password,
+
   Set an AD user account with this password.
+
   Enable the account.
+
   Send mail to the user with the account information.
-  This script is running `send-mail` command, make sure there is a matching Integration configured.
+
+  This script is running `send-mail` command, make sure there is a matching Integration configured.'
 commonfields:
   id: IAMInitADUser
   version: -1
@@ -80,13 +83,13 @@ tags:
 - active directory
 - Utility
 type: python
-dockerimage: demisto/py3-tools:1.0.0.95440
+dockerimage: demisto/py3-tools:1.0.0.103307
 runas: DBotWeakRole
 tests:
 - Active Directory Test
 fromversion: 5.0.0
 contentitemexportablefields:
   contentitemfields:
-    fromServerVersion: ""
+    fromServerVersion: ''
 scripttarget: 0
 polling: true
