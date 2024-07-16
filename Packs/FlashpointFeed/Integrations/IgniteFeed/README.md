@@ -2,7 +2,7 @@ Flashpoint Ignite Feed Integration allows importing indicators of compromise tha
 This integration was integrated and tested with API v1 of Ignite.
 
 ## Fetch Indicators
-Fetching the Ignite indicators. The indicators that are created or updated after the provided first fetch time interval will be fetched in the ascending order. 
+Fetching the Ignite indicators. The indicators that are created or updated after the provided "First fetch time" will be fetched in the ascending order.
 
 If you are upgrading from a Flashpoint Feed integration, please refer to the [Migration Guide](#migration-guide) for guidance.
 
@@ -16,8 +16,8 @@ If you are upgrading from a Flashpoint Feed integration, please refer to the [Mi
     | --- | --- | --- |
     | Server URL | Server URL to connect to Ignite. | True |
     | API Key | API key used for secure communication with the Ignite platform. | True |
-    | Types of the indicators to fetch | Supports multiple values such as url, domain, ip-src. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types. | False |
-    | First fetch time interval | Backfill indicators by providing date or relative timestamp. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
+    | Types of the indicators to fetch | Supports multiple values such as url, domain. Supports comma separated values. If not specified, it fetches all the indicators. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types. | False |
+    | First fetch time | Backfill indicators by providing date or relative timestamp. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\) | False |
     | Fetch indicators |  | False |
     | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | True |
@@ -39,8 +39,8 @@ If you are upgrading from a Flashpoint Feed integration, please refer to the [Mi
 
 ### Error: The maximum indicators to fetch for the given first fetch can not exceed 10,000
 
-- The maximum number of indicators that can be fetched using the first fetch time interval is limited to 10,000 by the API.
-- To resolve this issue, you can reduce the first fetch time interval to a shorter time period, ensuring that the total number of indicators fetched during the specified time falls within the 10,000 limit.
+- The maximum number of indicators that can be fetched using the first fetch time is limited to 10,000 by the API.
+- To resolve this issue, you can reduce the first fetch time to a shorter time period, ensuring that the total number of indicators fetched during the specified time falls within the 10,000 limit.
 
 ## Commands
 
@@ -62,7 +62,7 @@ Retrieves indicators from the Ignite API. It displays the content of the fetch-i
 | --- | --- | --- |
 | limit | The maximum number of result objects to return. Maximum allowed limit is 1000. Default is 10. | Optional | 
 | updated_since | Only retrieve values after the given timestamp. This parameter operates on the timestamp when an IOC was last updated, i.e. enriched with more metadata. When the user wants the most recent IOCs shared in the past week, the freshest data, we recommend using this parameter.<br/><br/>Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc. Default is 3 days. | Optional | 
-| types | Search by Attribute types. Can have multiple terms. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types. Possible values are: IP, Domain, URL, Email, File, IP-src. | Optional | 
+| types | Search by Attribute types. Can have multiple terms. See all available types: https://www.circl.lu/doc/misp/categories-and-types/#types. Possible values are: IP, Domain, URL, Email, File. | Optional | 
 
 #### Context Output
 
