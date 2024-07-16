@@ -483,7 +483,7 @@ def rasterize_command(urls: Union[list[str], str], rasterize_timeout: int) -> li
         }
     )
     demisto.debug(f'Rasterize Data: {res_rasterize}')
-    return_and_remove_additional_results(res_rasterize, len(urls))
+    return_and_remove_additional_results(res_rasterize, len(urls) if isinstance(urls, list) else 1)
     return [res['Contents'] for res in res_rasterize]
 
 
