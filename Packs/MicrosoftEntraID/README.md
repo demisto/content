@@ -1,18 +1,108 @@
 <~XSIAM>  
 
 <html>
+
+<h1>Microsoft Entra ID</h1>
+<h2>What does this pack do</h2>
+<h3>Log Normalization - One Data Model</h3>
+<p>This pack support normalization of the below log categories of Microsoft Entra ID:</p>
+<ol>
+    <li>AuditLogs</li>
+    <li>SignInLogs</li>
+    <li>NonInteractiveUserSignInLogs</li>
+    <li>ServicePrincipalSignInLogs</li>
+    <li>ManagedIdentitySignInLogs</li>
+    <li>ADFSSignInLogs</li>
+    <li>ProvisioningLogs</li>
+</ol>
+
+<h3>Timestamp Parsing</h3>
+<p>Timestamp parsing relies on 2 fields, which depends on the log category:</p>
+<ol>
+  <li>`properties.activityDateTime`
+    <ol>
+        <li>AuditLogs</li>
+        <li>ProvisioningLogs</li>
+    </ol>
+  </li>
+  <li>`properties.activityDateTime`
+    <ol>
+        <li>SignInLogs</li>
+        <li>NonInteractiveUserSignInLogs</li>
+        <li>ServicePrincipalSignInLogs</li>
+        <li>ManagedIdentitySignInLogs</li>
+        <li>ADFSSignInLogs</li>
+    </ol>
+  </li>
+</ol>
+<hr>
+
+<h2>Data Collection</h2>
+<h3>Entra ID Side</h3>
+<p>To configure Microsoft Entra ID to send logs to XSIAM, follow the below steps.</p>
+<h4>Prerequisites</h4>
+<ol>
+    <li>Create an <b>Azure event hub</b>. For more information, refer to Microsoft's official <a href="https://learn.microsoft.com/en-us/azure/event-hubs/event-hubs-create">documetaion</a>.</li>
+    <li>Make sure that you have at least Security Administrator role.</li>
+</ol>
+<h4>Stream logs to an event hub</h4>
+<ol>
+    <li>Sign in to the <b>Microsoft Entra admin center</b>.</li>
+    <li>Navigate to <b>Identity</b> &rarr; <b>Monitoring & health</b> &rarr; <b>Diagnostic settings</b>.</li>
+    <li>Select <b>+ Add diagnostic setting</b> to create a new integration or select <b>Edit setting</b> for an existing integration.</li>
+    <li>Enter a <b>Diagnostic setting name</b>. If you're editing an existing integration, you can't change the name.</li>
+    <li>Select the log categories that you want to stream. Refer to the <b>Log Normalization</b> section for the supported log categories for normalization.</li>
+    <li>Select the Stream to an event hub check box.</li>
+    <li>Select the Azure subscription, Event Hubs namespace, and optional event hub where you want to route the logs.</li>
+</ol>
+
+<p>For more information, refer to Microsoft's official <a href="https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub">documetaion</a>.</p>
+
+<h3>XSIAM side</h3>
+<p>To connect XSIAM to the Azure Event Hub, follow the below steps.</p>
+<h4>Azure Event Hub Collector</h4>
+<ol>
+    <li>Navigate to <b>Settings</b> &rarr; <b>Data Sources</b>.</li>
+    <li>If you have already configured an <b>Azure Event Hub Collector</b>, select the <b>3 dots</b>, and then select <b>+ Add New Instance</b>. If not, select <b>+ Add Data Source</b>, search for "Azure Event Hub" and then select <b>Connect</b>.</li>
+    <li>Fill in the attributes based on the Azure Event Hub you streamed your data to.</li>
+    <li>Leave the <b>Use audit logs in analytics</b> checkbox selected, unless you were told otherwise.</li>
+</ol>
+<p>More information can be found <a href="https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=yjPDSlvRYtlNncGBLHOzvw">here</a></p>
+
+<hr>
+
+<h3>XQL Queries</h3>
+<p>Use the below queries to review the mapped logs (post installation).</p> 
 <details>
-  <summary>Click me</summary>
-    <h1>Heading</h1>
-    <p>text</p>
-  <h2> Some Javascript </h2>
+    <summary>AuditLogs</summary>
 
   ```sql
-  function logSomething(something) {
-    console.log('Something', something);
-  }
+datamodel dataset = msft_azure_raw 
+| filter xdm.event.original_event_type = "AuditLogs"
+| fields xdm.event.original_event_type, xdm.event.type, xdm.event.id,  xdm.session_context_id, xdm.event.description, xdm.event.operation_sub_type, xdm.event.outcome_reason, xdm.event.outcome, xdm.source.cloud.project_id, xdm.source.cloud.geo_region, xdm.observer.type, xdm.source.user.upn, xdm.source.user.identifier, xdm.source.user.username, xdm.source.application.name, xdm.target.resource.sub_type, xdm.target.resource.id, xdm.target.resource.name, xdm.target.resource.type, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent
   ```
 </details>
+<br>
+<details>
+<summary>SignInLogs, NonInteractiveUserSignInLogs, ServicePrincipalSignInLogs, ManagedIdentitySignInLogs, ADFSSignInLogs</summary>
+    
+  ```sql
+datamodel dataset = msft_azure_raw 
+| filter xdm.event.original_event_type in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
+| fields xdm.event.original_event_type, xdm.event.type, xdm.event.duration, xdm.event.id, xdm.session_context_id, xdm.source.cloud.project_id, xdm.event.outcome_reason, xdm.event.outcome, xdm.source.user.username, xdm.source.user.upn, xdm.source.user.identifier, xdm.source.application.name, xdm.auth.service, xdm.source.host.device_id, xdm.source.host.os, xdm.source.host.os_family, xdm.network.http.browser, xdm.source.location.country, xdm.source.location.city, xdm.source.location.latitude, xdm.source.location.longitude, xdm.logon.type, xdm.alert.severity, xdm.alert.risks, xdm.target.resource.name, xdm.target.resource.id, xdm.auth.auth_method, xdm.auth.is_mfa_needed, xdm.auth.privilege_level, xdm.source.asn.as_number, xdm.source.ipv4, xdm.source.ipv6, xdm.source.user_agent
+  ```
+</details>
+<br>
+<details>
+<summary>ProvisioningLogs</summary>
+    
+  ```sql
+datamodel dataset = msft_azure_raw 
+| filter xdm.event.original_event_type = "ProvisioningLogs"
+| fields xdm.event.original_event_type, xdm.event.duration, xdm.event.type, xdm.event.outcome, xdm.event.outcome_reason, xdm.event.description, xdm.source.cloud.project_id, xdm.event.id, xdm.session_context_id, xdm.event.operation_sub_type, xdm.source.application.name, xdm.target.application.name, xdm.source.user.username, xdm.source.user.identifier, xdm.target.resource.id, xdm.target.resource.type, xdm.target.resource.name, xdm.target.resource.value
+  ```
+</details>
+
 </html>
 
 </~XSIAM>
