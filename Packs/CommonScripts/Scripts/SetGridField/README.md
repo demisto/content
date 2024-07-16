@@ -134,7 +134,7 @@ Entry Context:
 
 The first time you run `SetGridField` on a newly created grid field, you may see an error similar to the following:
 
-![Screen Shot 2021-12-21 at 10 36 03 PM](doc_files/troubleshoot.png)
+![Screen Shot 2021-12-21 at 10 36 03 PM](../../doc_files/troubleshoot.png)
 
 To resolve the error:
 
