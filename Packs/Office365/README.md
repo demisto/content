@@ -8,9 +8,9 @@ In order to use the collector, use the XDRC (XDR Collector).
 To create or configure the Office 365 collector, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Ingest-Logs-from-Microsoft-Office-365).
 
 To access the Office 365 XDRC on your XSIAM tenant:
-1.  At the left panel, press on **Setting** &rarr; **Data Sources**
-2.  At the top-right corner, press on **Add Data Source**
-3.  Search for **Office 365**, hover over the integration and press on **Connect**.
+1.  On the left panel, click **Settings** &rarr; **Data Sources**
+2.  At the top-right corner, click **Add Data Source**
+3.  Search for **Office 365** and click **Connect**.
 
 **Pay Attention:**
 Timestamp ingestion for Office 365 logs is currently available for the following datasets:
