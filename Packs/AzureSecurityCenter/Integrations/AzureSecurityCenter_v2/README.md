@@ -47,7 +47,7 @@ For more details about the authentication used in this integration, see [Microso
 Some commands require a subscription ID parameter in order to run.
 You can find your organization's subscriptions list in the ***Microsoft Azure Portal > Subscriptions*** or by running the ***azure-list-subscriptions*** command.
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
   After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. azure-sc-list-alert

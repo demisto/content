@@ -1,9 +1,11 @@
 Use the Azure Key Vault integration to safeguard and manage cryptographic keys and secrets used by cloud applications and services.
 This integration was integrated and tested with version 2022-07-01 of AzureKeyVault.
 
-## Configure Azure Key Vault on Cortex XSOAR
+## Configure Azure Key Vault on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Azure Key Vault.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -40,7 +42,7 @@ This integration was integrated and tested with version 2022-07-01 of AzureKeyVa
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-key-vault-create-update

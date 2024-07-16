@@ -33,7 +33,7 @@
 <p>Fetches incidents data from RSA Archer, by using the <code>archer-fetch-incidents</code> command. In the first fetch, the program fetches incidents from the previous day until the time you run the command.</p>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_4037375851529412223838">Create a record: archer-create-record</a></li>
 <li><a href="#h_914233048261529412549945">Update a record: archer-update-record</a></li>

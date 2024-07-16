@@ -1,9 +1,11 @@
 Use this integration to manage Jira objects and attach files to Jira objects from Cortex XSOAR.
 This integration was integrated and tested with version 5.4.15 of AtlassianJiraServiceManagement.
 
-## Configure Atlassian Jira Service Management on Cortex XSOAR
+## Configure Atlassian Jira Service Management on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Atlassian Jira Service Management.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -18,7 +20,7 @@ This integration was integrated and tested with version 5.4.15 of AtlassianJiraS
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### jira-asset-object-schema-list

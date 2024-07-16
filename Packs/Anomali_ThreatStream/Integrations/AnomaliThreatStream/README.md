@@ -43,7 +43,7 @@
 <p>Use this integration to retrieve threat intelligence from the ThreatStream cloud. You can specify criteria by which the intelligence should be retrieved, as shown in the commands below. The integration supports getting reputation for IP, domain, file and email.</p>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ul>
 <li><a href="#h_956498138931525680640820">Receive threat intelligence: threatstream-intelligence</a></li>
 <li><a href="#h_5769900451251525680987811">Check IP/domain reputation: domain</a></li>

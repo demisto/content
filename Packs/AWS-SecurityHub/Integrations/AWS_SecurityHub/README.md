@@ -17,10 +17,12 @@ For more information regarding the AWS SecurityHub service, please visit the off
 
 For detailed instructions about setting up authentication, see: [AWS Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/aws-integrations---authentication).
 
-## Configure AWS - Security Hub on Cortex XSOAR
+## Configure AWS - Security Hub on Cortex
 ---
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for AWS - Security Hub.
 3. Click **Add instance** to create and configure a new integration instance.
 4. To ensure that fetch incidents works:
@@ -68,7 +70,7 @@ The following throttling limits apply to using Security Hub API operations:
 
 ## Commands
 ---
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 1. aws-securityhub-disable-security-hub
 2. aws-securityhub-batch-update-findings

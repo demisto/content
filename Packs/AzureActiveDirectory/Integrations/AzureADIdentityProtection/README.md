@@ -43,7 +43,9 @@ Follow these steps for a self-deployed configuration:
 
 ## Configure Azure Active Directory Identity Protection on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Azure Active Directory Identity Protection.
 3. Click **Add instance** to create and configure a new integration instance.
 

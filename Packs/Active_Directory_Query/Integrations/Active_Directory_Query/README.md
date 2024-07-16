@@ -39,9 +39,11 @@ Use Cases
 * Create or modify Active Directory users.
 * Manage user accounts and their status
 
-## Configure Active Directory Query v2 on Cortex XSOAR
+## Configure Active Directory Query v2 on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Active Directory Query v2.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -78,7 +80,7 @@ To allow the integration to access the mapper from within the code, as required 
 
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ad-expire-password
 ***

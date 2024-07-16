@@ -5,7 +5,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Cisco AMP Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Data Sources** > **Add Data Source** > **Search**.
 2. Search for Cisco AMP Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 

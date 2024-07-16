@@ -22,7 +22,7 @@
 </ol>
 <hr>
 <h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_422050772161529842440330">Return a list of flags assigned to a domain: wisdom-domain-flags</a></li>
 <li><a href="#h_254254248331529856911360">Return a list of flags assigned to an IP connection: wisdom-ip-flags</a></li>

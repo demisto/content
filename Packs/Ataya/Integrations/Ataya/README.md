@@ -1,6 +1,6 @@
 # Ataya Harmony
 Use the Ataya Harmony integration, we can achieve the security access control which assign the user through the api access token.
-## Configure Ataya Harmony on Cortex XSOAR
+## Configure Ataya Harmony on Cortex
 
 1. Navigate to **Settings** > **Integrations**.
 2. Search for Ataya Harmony .
@@ -17,7 +17,7 @@ Use the Ataya Harmony integration, we can achieve the security access control wh
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, or in a playbook.
+You can execute these commands from the Cortex CLI, or in a playbook.
 
 ### ataya-assign-user
 ***

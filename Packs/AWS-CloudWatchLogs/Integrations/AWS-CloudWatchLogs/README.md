@@ -22,7 +22,7 @@
 <li>Click <strong>Test</strong> to validate the URLs, token, and connection.</li>
 </ol>
 <h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.<br>After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_97524814141539170450412">Create a log group: aws-logs-create-log-group</a></li>
 <li><a href="#h_5057555411231539170456210">Create a log stream: aws-logs-create-log-stream</a></li>

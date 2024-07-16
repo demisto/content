@@ -6,9 +6,11 @@ For detailed instructions about setting up authentication, see: [AWS Integration
 
 Required AWS IAM Permissions and Roles for Lambda are documented [here](https://docs.aws.amazon.com/lambda/latest/dg/access-control-identity-based.html).
 
-## Configure AWS - Lambda on Cortex XSOAR
+## Configure AWS - Lambda on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for AWS - Lambda.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -27,7 +29,7 @@ Required AWS IAM Permissions and Roles for Lambda are documented [here](https://
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-lambda-get-function
 ***

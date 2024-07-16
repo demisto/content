@@ -1,9 +1,11 @@
 Amazon Security Lake is a fully managed security data lake service.
 This integration was integrated and tested with version 1.34.20 of AWS Security Lake SDK (boto3).
 
-## Configure Amazon Security Lake on Cortex XSOAR
+## Configure Amazon Security Lake on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for AWS-SecurityLake.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -25,7 +27,7 @@ This integration was integrated and tested with version 1.34.20 of AWS Security 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-security-lake-query-execute

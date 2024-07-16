@@ -1,7 +1,7 @@
 <!-- HTML_DOC -->
 <h2>Overview</h2>
 <p>Use the Awake Security integration to manage and respond to network threats.</p>
-<h2>Configure Awake Security on Cortex XSOAR</h2>
+<h2>Configure Awake Security on Cortex</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for Awake Security.</li>
@@ -25,7 +25,7 @@
 </ol>
 <h2> </h2>
 <h2>Commands</h2>
-<p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
+<p>You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
 <ol>
 <li><a href="#h_99540541251544465827889">Query devices: awake-query-devices</a></li>
 <li><a href="#h_275281160801544465832555">Query activities: awake-query-activities</a></li>

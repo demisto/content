@@ -1,8 +1,10 @@
 The ARIA Cybesecurity Solutions Software-Defined Security (SDS) platform integrates with Cortex XSOAR to add robustness when responding to incidents. The combination of ARIA hardware, in the form of a Secure Intelligent Adapter (SIA), and software, specifically Packet Intelligence and SDS orchestrator (SDSo), provides the elements required to react instantly when an incident is detected. When integrated with the ARIA solution, you can create playbooks that instruct one or more SIAs to add, modify, or delete rules automatically. These rule changes, which take effect immediately, can block conversations, redirect packets to a recorder or VLAN, or perform a variety of other actions.
 This integration was integrated and tested with version 1.0.9 of ARIA Packet Intelligence
-## Configure ARIA Packet Intelligence on Cortex XSOAR
+## Configure ARIA Packet Intelligence on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for ARIA Packet Intelligence.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -14,7 +16,7 @@ This integration was integrated and tested with version 1.0.9 of ARIA Packet Int
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 Note that all commands support a remediation configuration string (RCS). It is a set of parameters that defines how and 

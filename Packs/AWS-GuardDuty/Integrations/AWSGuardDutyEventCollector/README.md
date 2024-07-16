@@ -2,7 +2,7 @@ Amazon Web Services Guard Duty Service Event Collector integration for Cortex XS
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
-## Configure AWS - GuardDuty Event Collector on Cortex XSOAR
+## Configure AWS - GuardDuty Event Collector on Cortex XSIAM
 
 1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
 2. Search for AWS - GuardDuty Event Collector.
@@ -27,7 +27,7 @@ This is the default integration for this content pack when configured by the Dat
 
 4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex XSIAM CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### aws-gd-get-events
 ***

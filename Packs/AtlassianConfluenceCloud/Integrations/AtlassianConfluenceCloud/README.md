@@ -1,9 +1,11 @@
 Atlassian Confluence Cloud allows users to interact with confluence entities like content, space, users and groups. Users can also manage the space permissions.
 This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of Atlassian Confluence Cloud.
 
-## Configure Atlassian Confluence Cloud on Cortex XSOAR
+## Configure Atlassian Confluence Cloud on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Atlassian Confluence Cloud.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -18,7 +20,7 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### confluence-cloud-space-create
 ***

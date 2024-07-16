@@ -4,7 +4,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure AWS Security Hub Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automations & Feed Integrations**.
+1. Navigate to **Settings** > **Data Sources** > **Add Data Source** > **Search**.
 2. Search for AWS Security Hub Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 

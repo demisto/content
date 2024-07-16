@@ -31,9 +31,11 @@ Follow these steps for [client-credentials configuration:](https://xsoar.pan.dev
 
 To use The Azure Resource Graph, you must have appropriate rights in Azure role-based access control (Azure RBAC) with at least read access to the resources you want to query. No results are returned if you don't have at least read permissions to the Azure object or object group.
 
-## Configure Azure Resource Graph on Cortex XSOAR
+## Configure Azure Resource Graph on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Azure Resource Graph.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -52,7 +54,7 @@ To use The Azure Resource Graph, you must have appropriate rights in Azure role-
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-rg-list-operations

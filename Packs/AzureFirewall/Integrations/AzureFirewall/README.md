@@ -1,9 +1,11 @@
 Azure Firewall is a cloud-native and intelligent network firewall security service that provides breed threat protection for cloud workloads running in Azure. It's a fully stateful, firewall as a service, with built-in high availability and unrestricted cloud scalability.
 This integration was integrated and tested with version 2021-03-01 of Azure Firewall.
 
-## Configure Azure Firewall on Cortex XSOAR
+## Configure Azure Firewall on Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
+   * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
+   * For XSIAM users: Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation & Feed Integrations**.
 2. Search for Azure Firewall.
 3. Click **Add instance** to create and configure a new integration instance.
 
@@ -25,7 +27,7 @@ This integration was integrated and tested with version 2021-03-01 of Azure Fire
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the Cortex CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-firewall-auth-test
