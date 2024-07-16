@@ -1297,9 +1297,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     if not (int_fetch_limit := arg_to_number(fetch_limit)):
         raise ValueError("limit cannot be empty.")
 
-    # Each API call uses the last alert timestamp from the previous run as the start timestamp.
-    # Consequently, every API call after the first one will result in at least one duplicate.
-    # Therefore, we increase the limit by one.
+    # When using the last alert timestamp from the previous run as the start timestamp,
+    # the API will return at least one alert that has already been received, which will be filtered out.
+    # Therefore, we increase the limit by one to meet the original requested limit.
     if last_run:
         int_fetch_limit += 1
 

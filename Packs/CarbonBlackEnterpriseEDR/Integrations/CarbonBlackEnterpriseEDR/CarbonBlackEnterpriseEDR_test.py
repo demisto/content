@@ -453,7 +453,7 @@ test_fetch_incidents_first_run_data = [
 
 
 @pytest.mark.parametrize('response, expected_res', test_fetch_incidents_first_run_data)
-def test_fetch_incidents_first_run(mocker, response, expected_res):
+def test_fetch_incidents__first_run(mocker, response, expected_res):
     """
     Given:
         - All arguments needed.
@@ -483,7 +483,7 @@ test_fetch_incidents_second_run_data = [
 
 
 @pytest.mark.parametrize('response, last_run', test_fetch_incidents_second_run_data)
-def test_fetch_incidents_second_run(mocker, response, last_run):
+def test_fetch_incidents__second_run(mocker, response, last_run):
     """
     Given:
         - All arguments needed.
@@ -504,7 +504,7 @@ def test_fetch_incidents_second_run(mocker, response, last_run):
     assert '345' in incidents_ids
 
 
-def test_fetch_incidents_no_alerts(mocker):
+def test_fetch_incidents__no_alerts(mocker):
     """
     Given:
         - All arguments needed.
