@@ -1,0 +1,206 @@
+category: Utilities
+commonfields:
+  id: AnythingLLM
+  version: -1
+configuration:
+- defaultvalue: http://localhost:3001
+  display: AnythingLLM URL (e.g., http://<url to AnythingLLM>:3001)
+  name: url
+  required: true
+  section: Connect
+  type: 0
+- display: AnythingLLM API Key
+  displaypassword: AnythingLLM API Key
+  hiddenusername: true
+  name: apikey
+  required: true
+  section: Collect
+  type: 9
+description: Retrieval Augmented Generation (RAG) with LLM and Vector DB that can be local for full data privacy or cloud-based for greater functionality.
+display: AnythingLLM
+name: AnythingLLM
+script:
+  commands:
+  - arguments:
+    - description: 'XSOAR file entry to upload - example: 181@24789.'
+      name: fileentry
+      required: true
+    description: Uploads an XSOAR file entry to the custom-documents folder.
+    name: anyllm-document-upload-file
+  - arguments:
+    - description: 'Web link to upload - example:  https://unit42.paloaltonetworks.com/darkgate-malware-uses-excel-files".'
+      name: link
+      required: true
+    - name: title
+      required: true
+    - name: description
+      required: true
+    - name: author
+      required: true
+    - name: source
+      required: true
+    description: Uploads a web link to the custom-documents folder.
+    name: anyllm-document-upload-link
+  - arguments:
+    - description: Raw text content that is the document.
+      name: text
+      required: true
+    - description: Document title to use when uploading.
+      name: title
+      required: true
+    - description: Description of the document.
+      name: description
+    - description: Author of the document.
+      name: author
+    - description: Source of the document.
+      name: source
+    description: Upload text content as a document to the custom-documents folder.
+    name: anyllm-document-upload-text
+  - arguments:
+    - description: Name of the workspace to create.
+      name: workspace
+      required: true
+    description: Creates a new workspace in AnythingLLM.
+    name: anyllm-workspace-new
+  - arguments:
+    - description: Name of the workspace to delete.
+      name: workspace
+      required: true
+    description: Deletes an AnythingLLM workspace.
+    name: anyllm-workspace-delete
+  - arguments: []
+    description: List all the workspaces in AnythingLLM.
+    name: anyllm-workspace-list
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    description: Get a specific workspace details.
+    name: anyllm-workspace-get
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: JSON object for the settings.
+      name: settings
+      required: true
+    description: Update workspace settings.
+    name: anyllm-workspace-settings
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Folder name containing the document.
+      name: folder
+      required: true
+    - description: Document name to add as an embedding.
+      name: document
+      required: true
+    description: Add a document to a workspace and create its vector embedding in the workspace.
+    name: anyllm-workspace-add-embedding
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Folder the document originated from.
+      name: folder
+      required: true
+    - description: Name of the document to have its embedding deleted.
+      name: document
+      required: true
+    description: Delete a document embedding from the workspace.
+    name: anyllm-workspace-delete-embedding
+  - arguments:
+    - description: Name of the folder to create.
+      name: folder
+      required: true
+    description: Create a new document folder.
+    name: anyllm-document-createfolder
+  - arguments:
+    - description: Name of the source folder.
+      name: srcfolder
+      required: true
+    - description: Name of the destination folder.
+      name: dstfolder
+    - description: Document name to move.
+      name: document
+    description: Move a document from a source folder to a destination folder.
+    name: anyllm-document-move
+  - arguments:
+    - description: Name of the folder.
+      name: folder
+      required: true
+    - description: Name of the document to delete.
+      name: document
+      required: true
+    description: Delete a document.
+    name: anyllm-document-delete
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Message to send.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: Mode to chat, query or chat.
+      name: mode
+      predefined:
+      - query
+      - chat
+    description: Send a chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
+    name: anyllm-workspace-chat
+  - arguments:
+    - description: Name of the workspace.
+      name: workspace
+      required: true
+    - description: Message to send.
+      name: message
+      required: true
+    - auto: PREDEFINED
+      description: Chat mode, query or chat.
+      name: mode
+      predefined:
+      - query
+      - chat
+    description: Send a stream chat message to a workspace (default thread). Query mode is based on embedded documents in chat, whereas chat mode is more general.
+    name: anyllm-workspace-stream-chat
+  - arguments: []
+    description: List all document details.
+    name: anyllm-document-list
+  - arguments:
+    - description: Folder containing the document.
+      name: folder
+      required: true
+    - description: Document name.
+      name: document
+      required: true
+    description: Get a specific document details.
+    name: anyllm-document-get
+  - arguments:
+    - description: Workspace name.
+      name: workspace
+      required: true
+    - description: Folder the document originated from.
+      name: folder
+      required: true
+    - description: Document name.
+      name: document
+      required: true
+    - auto: PREDEFINED
+      description: Set pin status to true or false.
+      name: status
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    description: Set the pinned status of a document embedding.
+    name: anyllm-workspace-pin
+  dockerimage: demisto/python3:3.11.9.103066
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
