@@ -500,11 +500,11 @@ script:
     - contextPath: IP.Malicious.Description
       description: For malicious IPs, the reason that the vendor made the decision.
     - contextPath: IP.VTVendors.EngineDetections
-      description: Number of VT vendors which flagged the IP as malicious.
+      description: Number of VT vendors that flagged the IP as malicious.
     - contextPath: IP.VTVendors.EngineVendors
-      description: VT vendors which flagged the IP as malicious.
+      description: VT vendors who flagged the IP as malicious.
     - contextPath: IP.VTVendors.EngineDetectionNames
-      description: VT detection names which flagged the IP as malicious.
+      description: VT detection names that flagged the IP as malicious.
     - contextPath: IP.ASOwner
       description: The autonomous system owner of the IP.
       type: String
