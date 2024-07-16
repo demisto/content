@@ -6,6 +6,7 @@ import os
 import re
 import sys
 import urllib
+import uuid
 import warnings
 
 import dateparser
@@ -17,18 +18,21 @@ from pytest import raises, mark
 
 import CommonServerPython
 import demistomock as demisto
-from CommonServerPython import xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase, \
-    flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList, \
-    remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid, get_demisto_version, \
-    IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger, b64_encode, parse_date_range, \
-    return_outputs, is_filename_valid, convert_dict_values_bytes_to_str, \
-    argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch, FeedIndicatorType, \
-    encode_string_results, safe_load_json, remove_empty_elements, aws_table_to_markdown, is_demisto_version_ge, \
-    appendContext, auto_detect_indicator_type, handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, \
-    url_to_clickable_markdown, WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, \
-    remove_duplicates_from_list_arg, DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics, \
-    response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar, is_xsoar_on_prem, \
-    is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam, censor_request_logs, censor_request_logs
+from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableToMarkdown, underscoreToCamelCase,
+                                flattenCell, date_to_timestamp, datetime, timedelta, camelize, pascalToSpace, argToList,
+                                remove_nulls_from_dictionary, is_error, get_error, hash_djb2, fileResult, is_ip_valid,
+                                get_demisto_version, IntegrationLogger, parse_date_string, IS_PY3, PY_VER_MINOR, DebugLogger,
+                                b64_encode, parse_date_range, return_outputs, is_filename_valid, convert_dict_values_bytes_to_str,
+                                argToBoolean, ipv4Regex, ipv4cidrRegex, ipv6cidrRegex, urlRegex, ipv6Regex, domainRegex, batch,
+                                FeedIndicatorType, encode_string_results, safe_load_json, remove_empty_elements,
+                                aws_table_to_markdown, is_demisto_version_ge, appendContext, auto_detect_indicator_type,
+                                handle_proxy, get_demisto_version_as_str, get_x_content_info_headers, url_to_clickable_markdown,
+                                WarningsHandler, DemistoException, SmartGetDict, JsonTransformer, remove_duplicates_from_list_arg,
+                                DBotScoreType, DBotScoreReliability, Common, send_events_to_xsiam, ExecutionMetrics,
+                                response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
+                                is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
+                                censor_request_logs, censor_request_logs, safe_sleep, get_server_config
+                                )
 
 EVENTS_LOG_ERROR = \
     """Error sending new events into XSIAM.
@@ -1272,9 +1276,10 @@ def test_get_error_need_raise_error_on_non_error_input():
     (b"binary data\x15\x00", b"binary data\x15\x00", "test.txt"),
 ])  # noqa: E124
 def test_fileResult(mocker, request, data, data_expected, filename):
-    mocker.patch.object(demisto, 'uniqueFile', return_value="test_file_result")
-    mocker.patch.object(demisto, 'investigation', return_value={'id': '1'})
-    file_name = "1_test_file_result"
+    file_id = str(uuid.uuid4())
+    mocker.patch.object(demisto, 'uniqueFile', return_value="fileresult")
+    mocker.patch.object(demisto, 'investigation', return_value={'id': file_id})
+    file_name = "{}_fileresult".format(file_id)
 
     def cleanup():
         try:
@@ -1563,6 +1568,48 @@ def test_is_mac_address():
 
     assert (is_mac_address(mac_address_false) is False)
     assert (is_mac_address(mac_address_true))
+
+
+def test_return_error_truncated_message(mocker):
+    """
+    Given
+    - invalid error message due to longer than max length (50,000)
+
+    When
+    - return_error function is called
+
+    Then
+    - Return a truncated message that contains clarification about the truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * (MAX_ERROR_MESSAGE_LENGTH + 1)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == MAX_ERROR_MESSAGE_LENGTH + \
+        len("...This error body was truncated...")
+    assert "This error body was truncated" in results.call_args[0][0]["Contents"]
+
+
+def test_return_error_valid_message(mocker):
+    """
+    Given
+    - A valid error message
+
+    When
+    - return_error function is called
+
+    Then
+    - Ensure the same message is returned
+    - Ensure the error message does not contain clarification about a truncation
+    """
+    from CommonServerPython import return_error, MAX_ERROR_MESSAGE_LENGTH
+    err_msg = "1" * int(MAX_ERROR_MESSAGE_LENGTH * 0.9)
+    results = mocker.spy(demisto, 'results')
+    mocker.patch.object(sys, 'exit')
+    return_error(err_msg)
+    assert len(results.call_args[0][0]["Contents"]) == len(err_msg)
+    assert "This error body was truncated" not in results.call_args[0][0]["Contents"]
 
 
 def test_return_error_command(mocker):
@@ -6904,13 +6951,13 @@ class TestCommonTypes:
             traffic_light_protocol='traffic_light_protocol_test'
         )
         assert email_context.to_context()[email_context.CONTEXT_PATH] == \
-            {'Address': 'user@example.com',
+            {"Email": {'Address': 'user@example.com'},
              'Domain': 'example.com',
-                'Description': 'test',
-                'Internal': True,
-                'STIXID': 'stix_id_test',
-                'Tags': ['tag1', 'tag2'],
-                'TrafficLightProtocol': 'traffic_light_protocol_test'}
+             'Description': 'test',
+             'Internal': True,
+             'STIXID': 'stix_id_test',
+             'Tags': ['tag1', 'tag2'],
+             'TrafficLightProtocol': 'traffic_light_protocol_test'}
 
     @pytest.mark.parametrize('item', [
         'CommunityNotes', 'Publications', 'ThreatTypes'
@@ -7983,7 +8030,8 @@ class TestFetchWithLookBack:
         fetch_limit = last_run.get('limit') or fetch_limit_param
 
         start_fetch_time, end_fetch_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch,
-                                                                    look_back=look_back, timezone=time_zone, date_format=date_format)
+                                                                    look_back=look_back, timezone=time_zone,
+                                                                    date_format=date_format)
 
         query = self.build_query(start_fetch_time, end_fetch_time, fetch_limit)
         incidents_res = self.get_incidents_request(query, date_format)
@@ -8033,14 +8081,17 @@ class TestFetchWithLookBack:
         ({'limit': 2, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]], {'limit': 2, 'time': INCIDENTS_TIME_AWARE[3]['created'],
                                      'found_incident_ids': {3: 1667482800, 4: 1667482800}}),
-        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]], [],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'], 'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
+        ({'limit': 3, 'first_fetch': '40 minutes'}, [INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3], INCIDENTS_TIME_AWARE[4]],
+         [],
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[4]['created'],
+          'found_incident_ids': {3: 1667482800, 4: 1667482800, 5: 1667482800}}),
         ({'limit': 2, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2]], [INCIDENTS_TIME_AWARE[3],
                                                                                                       INCIDENTS_TIME_AWARE[4]],
          {'limit': 2, 'time': INCIDENTS_TIME_AWARE[2]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800}}),
         ({'limit': 3, 'first_fetch': '2 hours'}, [INCIDENTS_TIME_AWARE[1], INCIDENTS_TIME_AWARE[2], INCIDENTS_TIME_AWARE[3]],
          [INCIDENTS_TIME_AWARE[4]],
-         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'], 'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
+         {'limit': 3, 'time': INCIDENTS_TIME_AWARE[3]['created'],
+          'found_incident_ids': {2: 1667482800, 3: 1667482800, 4: 1667482800}}),
     ])
     @freeze_time("2022-11-03 13:40:00 UTC")
     def test_regular_fetch(self, mocker, params, result_phase1, result_phase2, expected_last_run):
@@ -8964,8 +9015,8 @@ class TestSendEventsToXSIAMTest:
         expected_error_header = 'Error sending new {data_type} into XSIAM.\n'.format(data_type=data_type)
 
         with pytest.raises(
-                DemistoException,
-                match=re.escape(expected_error_header + expected_error_msg),
+            DemistoException,
+            match=re.escape(expected_error_header + expected_error_msg),
         ):
             send_data_to_xsiam(data=events, vendor='some vendor', product='some product', data_type=data_type)
 
@@ -9416,6 +9467,7 @@ class TestIsIntegrationCommandExecution:
     def test_with_integration_exec(self, mocker):
         mocker.patch.object(demisto, 'callingContext', {'context': {'ExecutedCommands': [{'moduleBrand': 'some-integration'}]}})
         assert is_integration_command_execution() == True
+
     data_test_problematic_cases = [
         None, 1, [], {}, {'context': {}}, {'context': {'ExecutedCommands': None}},
         {'context': {'ExecutedCommands': []}}, {'context': {'ExecutedCommands': [None]}},
@@ -9467,8 +9519,12 @@ def test_has_passed_time_threshold__different_timestamps(timestamp_str, seconds_
     ("3:Wg8oEIjOH9+KS3qvRBTdRi690oVqzBUGyT0/n:Vx0HgKnTdE6eoVafY8", "ssdeep"),
     ("1ff8be1766d9e16b0b651f89001e8e7375c9e71f", "sha1"),
     ("6c5360d41bd2b14b1565f5b18e5c203cf512e493", "sha1"),
-    ("eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069", "sha512"),
-    ("a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211", "sha512"),
+    (
+        "eaf7542ade2c338d8d2cc76fcbf883e62c31336e60cb236f86ed66c8154ea9fb836fd88367880911529bdafed0e76cd34272123a4d656db61b120b95eaa3e069",
+        "sha512"),
+    (
+        "a7c19471fb4f2b752024246c28a37127ea7475148c04ace743392334d0ecc4762baf30b892d6a24b335e1065b254166f905fc46cc3ba5dba89e757bb7023a211",
+        "sha512"),
     ("@", None)
 ])
 def test_detect_file_indicator_type(indicator, expected_result):
@@ -9628,3 +9684,139 @@ def test_logger_write__censor_request_logs_has_been_called(mocker, request_log):
     ilog.set_buffering(False)
     ilog.write(request_log)
     assert mock_censor.call_count == 1
+
+
+def test_replace_send_preffix(mocker):
+    """
+    Given:
+        - A string that contains 'send: b"' in it.
+    When:
+        - The write function is called to add this string to the logs.
+    Then:
+        - Verify that the text 'send: b"' has been replaced with "send: b'" to standardize the log format for easier log handling.
+    """
+    mocker.patch.object(demisto, 'params', return_value={
+        'credentials': {'password': 'my_password'},
+    })
+    mocker.patch.object(demisto, 'info')
+    mocker.patch('CommonServerPython.is_debug_mode', return_value=True)
+    mock_censor = mocker.patch('CommonServerPython.censor_request_logs')
+    mocker.patch('CommonServerPython.IntegrationLogger.build_curl')
+    ilog = IntegrationLogger()
+    ilog.set_buffering(False)
+    ilog.write('send: b"hello\n')
+    assert mock_censor.call_args[0][0] == "send: b\'hello"
+
+
+@freeze_time(datetime(2024, 4, 10, 10, 0, 10))
+def test_sleep_exceeds_ttl(mocker):
+    """
+   Given: a sleep duration exceeding the remaining TTL.
+
+    When: The `sleep` method is called with that duration.
+
+   Then:
+    - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+  """
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
+
+    with pytest.raises(ValueError) as excinfo:
+        safe_sleep(duration_seconds=350)
+    assert str(excinfo.value) == "Requested a sleep of 350 seconds, but time left until docker timeout is 300 seconds."
+
+
+def test_sleep_not_supported(mocker):
+    """
+       Given: a sleep duration in not supported server version.
+
+        When: The `sleep` method is called with that duration.
+
+       Then:
+        - A warning should be outputed indicating that the requested sleep exceeds the TTL.
+        - Sleep the requested time.
+      """
+    mocker.patch.object(demisto, 'callingContext', {"context": {}})
+    logger_mocker = mocker.patch.object(demisto, 'info')
+
+    sleep_mocker = mocker.patch('time.sleep')
+
+    safe_sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 1
+    assert logger_mocker.call_args[0][0] == "Safe sleep is not supported in this server version, sleeping for the requested time."
+
+
+def test_sleep_mocked_time(mocker):
+    """
+    Given:  a method using sleep.
+
+   When:  The `sleep` method is called with a specific duration.
+
+   Then:
+    - The sleep duration should be based on the difference between the mocked time calls.
+    - No exception should be raised if the sleep duration is within the remaining TTL based on mocked time.
+    """
+
+    mocker.patch.object(demisto, 'callingContext', {"context": {"runDuration": 5}})
+    setattr(CommonServerPython, 'SAFE_SLEEP_START_TIME', datetime(2024, 4, 10, 10, 0, 0))  # Set stub in your_script
+    sleep_mocker = mocker.patch('time.sleep')
+
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 10)):
+        safe_sleep(duration_seconds=5)  # Sleep for 5 seconds
+
+    # Advance mocked time by the sleep duration
+    with freeze_time(datetime(2024, 4, 10, 10, 0, 25)):
+        safe_sleep(duration_seconds=50)
+
+    # Verify sleep duration based on mocked time difference
+    assert sleep_mocker.call_count == 2
+
+
+def test_get_server_config(mocker):
+    mock_response = {
+        'body': '{"sysConf":{"incident.closereasons":"CustomReason1, CustomReason 2, Foo","versn":40},"defaultMap":{}}\n',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    server_config = get_server_config()
+    assert server_config == {'incident.closereasons': 'CustomReason1, CustomReason 2, Foo', 'versn': 40}
+
+
+@pytest.mark.skipif(not IS_PY3, reason='test not supported in py2')
+def test_get_server_config_fail(mocker):
+    mock_response = {
+        'body': 'NOT A VALID JSON',
+        'headers': {
+            'Content-Length': ['104'],
+            'X-Xss-Protection': ['1; mode=block'],
+            'X-Content-Type-Options': ['nosniff'],
+            'Strict-Transport-Security': ['max-age=10886400000000000; includeSubDomains'],
+            'Vary': ['Accept-Encoding'],
+            'Server-Timing': ['7'],
+            'Date': ['Wed, 03 Jul 2010 09:11:35 GMT'],
+            'X-Frame-Options': ['DENY'],
+            'Content-Type': ['application/json']
+        },
+        'status': '200 OK',
+        'statusCode': 200
+    }
+
+    mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
+    mocked_error = mocker.patch.object(demisto, 'error')
+    assert get_server_config() == {}
+    assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'

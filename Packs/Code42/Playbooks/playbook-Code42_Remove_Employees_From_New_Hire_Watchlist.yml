@@ -534,3 +534,5 @@ inputs:
     Default is 30.
   playbookInputQuery: null
 outputs: []
+tests:
+- No tests

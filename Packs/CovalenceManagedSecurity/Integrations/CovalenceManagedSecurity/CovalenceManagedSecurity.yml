@@ -169,7 +169,7 @@ script:
       default: false
       isArray: false
       secret: false
-      description: This ARO ID to transition.
+      description: The ARO ID to transition.
     - name: resolution
       required: true
       description: 'Resolution to transition the ARO to.'
@@ -270,6 +270,118 @@ script:
     - contextPath: FESPortal.Aro.type
       description: Type.
       type: String
+  - name: cov-mgsec-comment-aro
+    arguments:
+    - name: aro_id
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      description: The ARO ID to comment on.
+    - name: comment
+      required: true
+      default: false
+      isArray: false
+      secret: false
+      description: Comment to leave on the ARO.
+    - name: is_comment_sensitive
+      required: false
+      default: false
+      isArray: false
+      secret: false
+      description: Optionally mark the comment as sensitive.
+    description: Comment on an ARO.
+    outputs:
+    - contextPath: FESPortal.Aro.ID
+      description: 'ID.'
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged
+      description: Acknowledged.
+      type: Boolean
+    - contextPath: FESPortal.Aro.acknowledged_by.ID
+      description: Acknowledged By ID.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.avatar_file_url
+      description: Acknowledged By.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.email
+      description: Acknowledged By Email.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.first_name
+      description: Acknowledged By First Name.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_by.last_name
+      description: Acknowledged By Last Name.
+      type: String
+    - contextPath: FESPortal.Aro.acknowledged_time
+      description: Acknowledged Time.
+      type: Date
+    - contextPath: FESPortal.Aro.aro_id
+      description: ARO ID.
+      type: String
+    - contextPath: FESPortal.Aro.author.ID
+      description: Author ID.
+      type: String
+    - contextPath: FESPortal.Aro.author.avatar_file_url
+      description: Author Avatar File URL.
+      type: String
+    - contextPath: FESPortal.Aro.author.email
+      description: Author Email.
+      type: String
+    - contextPath: FESPortal.Aro.author.first_name
+      description: Author First Name.
+      type: String
+    - contextPath: FESPortal.Aro.author.last_name
+      description: Author Last Name.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization.ID
+      description: Author Organization ID.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization.email
+      description: Author Organization Email.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization.name
+      description: Author Organization Name.
+      type: String
+    - contextPath: FESPortal.Aro.author_organization_type
+      description: Author Organization Type.
+      type: String
+    - contextPath: FESPortal.Aro.available_only_to_organization_id
+      description: ARO Comment Available Only to Organization ID.
+      type: String
+    - contextPath: FESPortal.Aro.available_only_to_provider_id
+      description: ARO Comment Available Only to Provider ID.
+      type: String
+    - contextPath: FESPortal.Aro.created_time
+      description: ARO Created Time.
+      type: Date
+    - contextPath: FESPortal.Aro.id
+      description: ARO Comment ID.
+      type: String
+    - contextPath: FESPortal.Aro.last_updated_time
+      description: ARO Comment Last Updated Time.
+      type: Date
+    - contextPath: FESPortal.Aro.sensitive
+      description: ARO Comment Sensitive.
+      type: Boolean
+    - contextPath: FESPortal.Aro.source
+      description: ARO Comment Source.
+      type: String
+    - contextPath: FESPortal.Aro.text
+      description: ARO Comment Text.
+      type: String
+    - contextPath: FESPortal.Aro.type
+      description: ARO Comment Type.
+      type: String
+    - contextPath: FESPortal.Aro.visible_to.ID
+      description: ARO Comment Visible to ID.
+      type: String
+    - contextPath: FESPortal.Aro.visible_to.email
+      description: ARO Comment Visible to Email.
+      type: String
+    - contextPath: FESPortal.Aro.visible_to.name
+      description: ARO Comment Visible to Name.
+      type: String
   - name: cov-mgsec-broker-ping
     arguments: []
     description: Broker - Test connectivity to the Broker service.
@@ -278,8 +390,8 @@ script:
       description: 'API Status.'
       type: String
   - name: cov-mgsec-broker-list-org
-    arguments: []
     description: Broker - List organizations.
+    arguments: []
     outputs:
     - contextPath: FESBroker.ID
       description: 'Organization ID.'
@@ -374,22 +486,22 @@ script:
       description: ARO ID (eg. "00000000-1111-2222-3333-444444444444").
     outputs:
     - contextPath: FESBroker.action_id
-      description: 'Action ID.'
+      description: Action ID.
       type: String
     - contextPath: FESBroker.action_type
-      description: 'Action Type.'
+      description: Action Type.
       type: String
     - contextPath: FESBroker.action_params
-      description: 'Action Parameters.'
+      description: Action Parameters.
       type: Unknown
     - contextPath: FESBroker.created_time
-      description: 'Created Time.'
+      description: Created Time.
       type: String
     - contextPath: FESBroker.status
-      description: 'Status.'
+      description: Status.
       type: String
     - contextPath: FESBroker.result
-      description: 'Result.'
+      description: Result.
       type: String
   dockerimage: demisto/python3:3.10.13.89009
   isfetch: true

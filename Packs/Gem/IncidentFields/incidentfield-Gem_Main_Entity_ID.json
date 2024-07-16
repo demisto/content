@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Gem Alert"
+    ],
+    "caseInsensitive": true,
+    "cliName": "gemmainentityid",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_gemmainentityid",
+    "isReadOnly": true,
+    "locked": false,
+    "name": "Gem Main Entity ID",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.12.0"
+}

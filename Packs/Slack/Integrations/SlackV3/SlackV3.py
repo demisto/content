@@ -156,6 +156,14 @@ def test_module():
         demisto.error('Mirroring is enabled, however long running is disabled. For mirrors to work correctly,'
                       ' long running must be enabled.')
 
+    # validation for permitted_notifications since not all the options are supported by xsiam
+    if is_xsiam():
+        xsiam_permitted_notification_types = {"investigationClosed", "investigationDeleted", "incidentReminderSLA",
+                                              "taskCompleted", "failedFetchIncidents", "mentionNew", "mentionOld"}
+
+        if not_allowed := set(CUSTOM_PERMITTED_NOTIFICATION_TYPES).difference(xsiam_permitted_notification_types):
+            demisto.error(f"The {','.join(sorted(not_allowed))} 'Types of Notifications to Send' are not supported in XSIAM.")
+
     demisto.results('ok')
 
 
@@ -1027,6 +1035,10 @@ class SlackLogger(IntegrationLogger):
         self.messages.append(text)
 
     def error(self, message):
+        text = self.encode(message)
+        self.messages.append(text)
+
+    def exception(self, message):
         text = self.encode(message)
         self.messages.append(text)
 
@@ -2849,7 +2861,7 @@ def init_globals(command_name: str = ''):
     IGNORE_RETRIES = demisto.params().get('ignore_event_retries', True)
     EXTENSIVE_LOGGING = demisto.params().get('extensive_logging', False)
     common_channels = demisto.params().get('common_channels', None)
-    COMMON_CHANNELS = dict(item.split(':') for item in common_channels.split(',')) if common_channels else {}
+    COMMON_CHANNELS = parse_common_channels(common_channels)
     DISABLE_CACHING = demisto.params().get('disable_caching', False)
 
     # Formats the error message for the 'Channel Not Found' errors
@@ -2874,6 +2886,7 @@ def init_globals(command_name: str = ''):
 
     # Handle Long-Running Specific Globals
     if command_name == 'long-running-execution':
+        demisto.debug('in long running execution init globals')
         # Bot identification
         integration_context = get_integration_context(SYNC_CONTEXT)
         if integration_context.get('bot_user_id'):
@@ -2889,6 +2902,24 @@ def init_globals(command_name: str = ''):
         # Pull initial Cached context and set the Expiry
         CACHE_EXPIRY = next_expiry_time()
         CACHED_INTEGRATION_CONTEXT = get_integration_context(SYNC_CONTEXT)
+
+
+def parse_common_channels(common_channels: str):
+    common_channels = (common_channels or '').strip()
+    if not common_channels:
+        return {}
+    try:
+        stripped_channels = {}
+        for pair in re.split(r',|\n', common_channels):
+            stripped = pair.strip()
+            if stripped:
+                key, val = stripped.split(':')
+                stripped_channels[key.strip()] = val.strip()
+    except Exception as e:
+        demisto.error(f'{common_channels=} error parsing common channels {str(e)}')
+        raise ValueError('Invalid common_channels parameter value. common_channels must be in key:value,key2:value2 format') \
+            from e
+    return stripped_channels
 
 
 def print_thread_dump():
@@ -3004,13 +3035,16 @@ def main() -> None:
         demisto.info(f'{command_name} started.')
         command_func = commands[command_name]
         init_globals(command_name)
+        demisto.info('after init globals')
         if EXTENSIVE_LOGGING:
             os.environ['PYTHONASYNCIODEBUG'] = "1"
         support_multithreading()
         command_func()  # type: ignore
     except Exception as e:
-        demisto.debug(e)
+        demisto.error(f'Error occured error: {e}')
+        demisto.error(traceback.format_exc())
         return_error(str(e))
+
     finally:
         demisto.info(f'{command_name} completed.')  # type: ignore
         if EXTENSIVE_LOGGING:

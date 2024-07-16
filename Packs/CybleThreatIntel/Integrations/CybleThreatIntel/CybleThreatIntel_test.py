@@ -5,6 +5,7 @@ import pytest
 input_value = json.load(open("test_data/input.json", "r"))
 params = input_value['params']
 args = input_value['args']
+args2 = input_value['args2']
 DATETIME_FORMAT = "%Y-%m-%d %H:%M:%S+00:00"
 
 
@@ -74,7 +75,7 @@ def test_get_taxii_invalid(mocker, capfd):
     mocker.patch.object(client, 'fetch', return_value=[mock_response_1])
     with capfd.disabled():
         try:
-            val, time = Client.get_taxii(client, args)
+            val, time = Client.get_taxii(client, args2)
         except Exception as e:
             error_val = e.args[0]
 

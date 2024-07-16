@@ -769,6 +769,13 @@ script:
       predefined:
       - 'True'
       - 'False'
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Whether to overwrite the URL list or not.
+      name: is_overwrite
+      predefined:
+      - 'True'
+      - 'False'
     description: Update the URL list with the values provided. Note that this command overrides the list.
     name: netskope-url-list-update
     outputs:
@@ -998,7 +1005,7 @@ script:
     - contextPath: Netskope.URLList.pending
       description: Netskope URL list pending.
       type: Number
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.10.14.92207
   isfetch: true
   runonce: false
   script: ''

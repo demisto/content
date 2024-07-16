@@ -1,4 +1,3 @@
-import io
 import json
 import requests
 
@@ -20,7 +19,7 @@ def client(mocker):
 
 
 def util_load_json(path):
-    with io.open(path, mode='r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return json.loads(f.read())
 
 
@@ -126,7 +125,7 @@ def test_storage_blob_service_properties_get(client, mocker):
                                                  params={'subscription_id': subscription_id,
                                                          'resource_group_name': resource_group_name})
     expected_hr = '### Azure Storage Blob Service Properties\n' \
-                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n'\
+                  '|Name|Account Name|Subscription ID|Resource Group|Change Feed|Delete Retention Policy|Versioning|\n' \
                   '|---|---|---|---|---|---|---|\n' \
                   '| default | account_name | subscription_id | resource_group_name |  | false ' \
                   '|  |\n'
@@ -361,6 +360,6 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code&scope=offline_access%20https://management.azure.com/.default' \
-                   f'&client_id={client_id}&redirect_uri={redirect_uri}&prompt=consent)'
+                   f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = AzureStorage.return_results.call_args[0][0].readable_output
     assert expected_url in res

@@ -1,7 +1,7 @@
 {
     "description": "",
     "feed": false,
-    "id": "Hurukai alert mapper",
+    "id": "Hurukai - Incoming mapper",
     "mapping": {
         "Hurukai alert": {
             "dontMapEventToLabels": false,
@@ -113,13 +113,138 @@
                 "Tenant Name": {
                     "simple": "tenant"
                 },
+                "HarfangLab EDR Threat ID": {
+                    "simple": "threat_key"
+                },
                 "User SID": {
                     "simple": "process.usersid"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "sec:"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                }
+            }
+        },
+        "Hurukai threat": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Agents ID": {
+                    "simple": "agents.id"
+                },
+                "HarfangLab EDR Total Security Event Count": {
+                    "simple": "total_security_event_count"
+                },
+                "HarfangLab EDR Critical Security Event Count": {
+                    "simple": "security_event_count_by_level.critical"
+                },
+                "Description": {
+                    "simple": "note.content"
+                },
+                "HarfangLab EDR High Security Event Count": {
+                    "simple": "security_event_count_by_level.high"
+                },
+                "HarfangLab EDR Medium Security Event Count": {
+                    "simple": "security_event_count_by_level.medium"
+                },
+                "HarfangLab EDR Low Security Event Count": {
+                    "simple": "security_event_count_by_level.low"
+                },
+                "MITRE Tactic Name": {
+                    "simple": "mitre_tactics"
+                },
+                "First Seen": {
+                    "simple": "first_seen"
+                },
+                "Hostnames": {
+                    "simple": "agents.agent_hostname"
+                },
+                "Incident Link": {
+                    "simple": "incident_link"
+                },
+                "Last Seen": {
+                    "simple": "last_seen"
+                },
+                "Rule Name": {
+                    "simple": "rules.rule_name"
+                },
+                "HarfangLab EDR Threat ID": {
+                    "simple": "id"
+                },
+                "HarfangLab EDR Top Agents": {
+                    "simple": "top_agents.agent_hostname"
+                },
+                "HarfangLab EDR Top Impacted Users": {
+                    "simple": "top_impacted_users.user_name"
+                },
+                "HarfangLab EDR Top Rules": {
+                    "simple": "top_rules.rule_name"
+                },
+                "Users": {
+                    "simple": "impacted_users.full_name"
+                },
+                "details": {
+                    "simple": "note.content"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorId": {
+                    "complex": {
+                        "filters": [],
+                        "root": "id",
+                        "transformers": [
+                            {
+                                "args": {
+                                    "prefix": {
+                                        "isContext": false,
+                                        "value": {
+                                            "simple": "thr:"
+                                        }
+                                    },
+                                    "suffix": {
+                                        "isContext": false
+                                    }
+                                },
+                                "operator": "concat"
+                            }
+                        ]
+                    }
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "dbotMirrorTags": {
+                    "complex": null,
+                    "simple": "mirror_tags"
                 }
             }
         }
     },
-    "name": "Hurukai alert mapper",
+    "name": "Hurukai - Incoming mapper",
     "type": "mapping-incoming",
     "version": -1,
     "fromVersion": "6.2.0"

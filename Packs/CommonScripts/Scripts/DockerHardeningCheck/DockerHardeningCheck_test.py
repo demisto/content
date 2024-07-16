@@ -1,4 +1,4 @@
-from DockerHardeningCheck import (check_cpus, check_memory, mem_size_to_bytes, check_pids, check_fd_limits,
+from DockerHardeningCheck import (check_memory, mem_size_to_bytes, check_pids, check_fd_limits,
                                   get_default_gateway, check_network, CLOUD_METADATA_URL)
 import pytest
 import os
@@ -24,13 +24,6 @@ def test_pids():
 
 def test_fd_limits():
     assert check_fd_limits(100, 200)
-
-
-def test_check_cpus():
-    if os.getenv("CI"):
-        pytest.skip("skipping as in CI we run with a single CPU")
-        return
-    assert check_cpus(1)  # during unit tests we should fail
 
 
 def test_get_default_gateway():

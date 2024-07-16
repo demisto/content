@@ -49,4 +49,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution](../doc_files/MITRE_ATT&CK_CoA_-_T1547_-_Boot_or_Logon_Autostart_Execution.png)
+![MITRE ATT&CK CoA - T1547 - Boot or Logon Autostart Execution](../doc_files/MITRE_ATTandCK_CoA_-_T1547_-_Boot_or_Logon_Autostart_Execution.png)

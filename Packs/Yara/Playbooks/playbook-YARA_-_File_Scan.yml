@@ -21,14 +21,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "1"
+      - "4"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 50
+          "x": 275,
+          "y": 70
         }
       }
     note: false
@@ -75,8 +75,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 210
+          "x": -105,
+          "y": 545
         }
       }
     note: false
@@ -88,10 +88,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b5263cb2-a2ae-41ce-8c1b-3f6f593c402c
+    taskid: 172f2408-5edd-4d5c-8348-c3954013e5ac
     type: regular
     task:
-      id: b5263cb2-a2ae-41ce-8c1b-3f6f593c402c
+      id: 172f2408-5edd-4d5c-8348-c3954013e5ac
       version: -1
       name: Run YARA scan
       description: Performs a YARA scan on the specified files.
@@ -106,16 +106,20 @@ tasks:
       entryIDs:
         complex:
           root: inputs.EntryID
+          transformers:
+          - operator: uniq
       yaraRule:
         complex:
           root: inputs.YARA
+          transformers:
+          - operator: uniq
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 340,
-          "y": 380
+          "x": -105,
+          "y": 790
         }
       }
     note: false
@@ -142,8 +146,241 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 560
+          "x": 275,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 10228755-d924-4afc-8059-1f7473f57e18
+    type: condition
+    task:
+      id: 10228755-d924-4afc-8059-1f7473f57e18
+      version: -1
+      name: Was a query provided?
+      description: Check if a query was provided by the user to use YARA Rule indicators instead of a manual input.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      "yes":
+      - "10"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: inputs.Query
+                transformers:
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275,
+          "y": 205
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 85d1edac-1181-447e-84c5-6f9c3e646ca0
+    type: condition
+    task:
+      id: 85d1edac-1181-447e-84c5-6f9c3e646ca0
+      version: -1
+      name: YARA indicators found
+      description: Check if the query returned any indicators.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "3"
+      "Yes":
+      - "7"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${foundIndicators}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 655,
+          "y": 790
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 1d3bd7e3-012a-441d-89eb-c81d8efe8a89
+    type: regular
+    task:
+      id: 1d3bd7e3-012a-441d-89eb-c81d8efe8a89
+      version: -1
+      name: Run YARA scan
+      description: Performs a YARA scan on the specified files.
+      scriptName: YaraScan
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      entryIDs:
+        complex:
+          root: inputs.EntryID
+          transformers:
+          - operator: uniq
+      yaraRule:
+        complex:
+          root: foundIndicators
+          accessor: rawrule
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 655,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 5f3b0e78-f228-4af5-849e-4a9f2da3bcc8
+    type: regular
+    task:
+      id: 5f3b0e78-f228-4af5-849e-4a9f2da3bcc8
+      version: -1
+      name: Search Yara Rules Indicator
+      description: |
+        Searches XSOAR for the required YARA Rule Indicators to scan the files with. The search returns the "Raw Rule" field to use for the scan.
+      scriptName: SearchIndicator
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      add_fields_to_context:
+        simple: rawrule
+      query:
+        simple: ${inputs.Query}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 655,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: b8aa239a-271f-4c9f-8f29-c4b7b632f528
+    type: title
+    task:
+      id: b8aa239a-271f-4c9f-8f29-c4b7b632f528
+      version: -1
+      name: Manual Rule Input
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -105,
+          "y": 390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 7dae5720-6bda-48c2-810e-cbb3a52ebd6a
+    type: title
+    task:
+      id: 7dae5720-6bda-48c2-810e-cbb3a52ebd6a
+      version: -1
+      name: Using YARA Rule Indicators
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 655,
+          "y": 390
         }
       }
     note: false
@@ -156,15 +393,16 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "1_2_yes": 0.54,
-      "1_3_#default#": 0.48
+      "1_2_yes": 0.73,
+      "1_3_#default#": 0.54,
+      "6_3_#default#": 0.5
     },
     "paper": {
       "dimensions": {
-        "height": 575,
-        "width": 670,
-        "x": 50,
-        "y": 50
+        "height": 1240,
+        "width": 1140,
+        "x": -105,
+        "y": 70
       }
     }
   }
@@ -183,11 +421,20 @@ inputs:
   value: {}
   required: false
   description: The YARA rule content
-  playbookInputQuery: null
+  playbookInputQuery:
+- key: Query
+  value:
+    simple: 
+  required: false
+  description: |-
+    A query to match the relevant YARA rule indicators from TIM.
+
+    Example: type:"YARA Rule"
+  playbookInputQuery:
 outputs:
 - contextPath: Yara
   type: unknown
-  description: The Yara context path
+  description: The Yara context path.
 - contextPath: Yara.Filename
   description: The filename of the file that was scanned.
   type: string
@@ -224,6 +471,7 @@ outputs:
   type: string
 - contextPath: Matches.Tags
   description: A list of tags that are defined in the rule.
-quiet: true
 tests:
 - No tests (auto formatted)
+contentitemexportablefields:
+  contentitemfields: {}

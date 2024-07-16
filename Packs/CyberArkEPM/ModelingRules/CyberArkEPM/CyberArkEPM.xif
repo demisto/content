@@ -1,0 +1,80 @@
+[MODEL: dataset = "cyberark_epm_raw"]
+// Modeling for admin audit events
+filter source_log_type = "set admin audit data"
+| alter
+        xdm.event.type = source_log_type,
+        xdm.event.description = concat(Description, ". ", "PermissionDescription:", PermissionDescription, ". ", "Role:", Role),
+        xdm.source.zone = SetName,
+        xdm.source.user.upn = Administrator,
+        xdm.source.user.username = arrayindex(regextract(Administrator, "([^@]+)@?"), 0),
+        xdm.auth.privilege_level = XDM_CONST.PRIVILEGE_LEVEL_ADMIN,
+        xdm.session_context_id = to_string(InternalSessionId),
+        xdm.event.operation_sub_type = Feature,
+        xdm.source.ipv4 = if(LoggedFrom ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", LoggedFrom, null),
+        xdm.source.ipv6 = if(LoggedFrom ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", LoggedFrom, null);
+
+// Modeling for detailed raw events
+filter source_log_type = "detailed raw"
+| alter
+        accessAction = if (accessAction = "true", "allow", "restrict"),
+        userName_extracted = if(userName contains """\\""", arrayindex(regextract(userName, "\\([^\\]+)"), 0), userName),
+        operatingSystemType = lowercase(operatingSystemType),
+        winEventType = to_string(winEventType)
+| alter
+        xdm.event.type = source_log_type,
+        xdm.source.process.executable.filename = coalesce(fileName, packageName),
+        xdm.source.process.executable.extension = arrayindex(regextract(fileName, "\.([^\.]+)$"), 0),
+        xdm.alert.original_threat_name = policyName,
+        xdm.source.application.publisher = publisher,
+        xdm.event.original_event_type = coalesce(eventType, to_string(winEventType)),
+        xdm.source.process.executable.path = filePath,
+        xdm.source.user.username =  coalesce(userName_extracted, runAsUsername, sourceProcessUsername),
+        xdm.source.user.domain = arrayindex(regextract(userName, "([^\\]+)\\+"), 0),
+        xdm.source.process.executable.size = to_integer(multiply(fileSize, 1024)),
+        xdm.observer.action = coalesce(threatProtectionAction, accessAction),
+        xdm.source.application.name = coalesce(productName, bundleName),
+        xdm.source.application.version = coalesce(productVersion, bundleVersion),
+        xdm.source.user.identifier = originUserUID,
+        xdm.target.resource.type = accessTargetType,
+        xdm.target.resource.name = accessTargetName,
+        xdm.source.process.command_line = coalesce(sourceProcessCommandLine, processCommandLine),
+        xdm.source.process.executable.md5 = if(sourceProcessHash ~= "^[a-f0-9]{32}$", sourceProcessHash, null),
+        xdm.source.process.executable.sha256 = if(sourceProcessHash ~= "^[a-fA-F0-9]{64}$", sourceProcessHash, null),
+        xdm.source.process.executable.signer = sourceProcessSigner,
+        xdm.source.host.os_family = if(operatingSystemType contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, operatingSystemType contains "mac", XDM_CONST.OS_FAMILY_MACOS, operatingSystemType contains "linux", XDM_CONST.OS_FAMILY_LINUX, operatingSystemType contains "android", XDM_CONST.OS_FAMILY_ANDROID, operatingSystemType contains "ios", XDM_CONST.OS_FAMILY_IOS, operatingSystemType contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, operatingSystemType contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, operatingSystemType contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, operatingSystemType contains "centos", XDM_CONST.OS_FAMILY_CENTOS, operatingSystemType contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, operatingSystemType contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, operatingSystemType contains "scada", XDM_CONST.OS_FAMILY_SCADA),
+        xdm.source.host.hostname = coalesce(computerName, sourceWSName),
+        xdm.source.ipv4 = if(sourceWSIp ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", sourceWSIp, null),
+        xdm.source.ipv6 = if(sourceWSIp ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", sourceWSIp, null),
+        xdm.event.id = to_string(winEventRecordId),
+        xdm.source.agent.identifier = agentId,
+        xdm.logon.type = if(logonAttemptTypeId = 2, XDM_CONST.LOGON_TYPE_INTERACTIVE, logonAttemptTypeId = 3, XDM_CONST.LOGON_TYPE_NETWORK, logonAttemptTypeId = 4, XDM_CONST.LOGON_TYPE_BATCH, logonAttemptTypeId = 5, XDM_CONST.LOGON_TYPE_SERVICE, logonAttemptTypeId = 7, XDM_CONST.LOGON_TYPE_UNLOCK, logonAttemptTypeId = 8, XDM_CONST.LOGON_TYPE_NETWORK_CLEARTEXT, logonAttemptTypeId = 9, XDM_CONST.LOGON_TYPE_NEW_CREDENTIALS, logonAttemptTypeId = 10, XDM_CONST.LOGON_TYPE_REMOTE_INTERACTIVE, logonAttemptTypeId = 11, XDM_CONST.LOGON_TYPE_CACHED_INTERACTIVE, to_string(logonAttemptTypeId)),
+        xdm.event.outcome = if(logonStatusId = 3221225566, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225572, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225578, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225581, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225582, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225583, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225584, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225585, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225586, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225692, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225779, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225819, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225868, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225874, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221225875, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226036, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226222, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226515, XDM_CONST.OUTCOME_FAILED, logonStatusId = 3221226020, XDM_CONST.OUTCOME_PARTIAL, logonStatusId = 3221226021, XDM_CONST.OUTCOME_PARTIAL, logonStatusId = 0, XDM_CONST.OUTCOME_SUCCESS, to_string(logonStatusId));
+
+// Modeling for policy audit events
+filter source_log_type = "policy audit raw event details"
+| alter
+        winEventType = to_string(winEventType),
+        userName_extracted = if(userName contains """\\""", arrayindex(regextract(userName, "\\([^\\]+)"), 0), userName),
+        operatingSystemType = lowercase(operatingSystemType)
+
+| alter
+        xdm.event.type = source_log_type,
+        xdm.source.application.publisher = publisher,
+        xdm.event.original_event_type = coalesce(eventType, winEventType),
+        xdm.source.user.username =  coalesce(userName_extracted, runAsUsername),
+        xdm.source.user.domain = arrayindex(regextract(userName, "([^\\]+)\\+"), 0),
+        xdm.source.process.executable.filename = coalesce(fileName, packageName),
+        xdm.source.process.executable.size = to_integer(multiply(fileSize, 1024)),
+        xdm.source.process.executable.path = filePath,
+        xdm.source.application.name = coalesce(productName, bundleName),
+        xdm.source.application.version = coalesce(productVersion, bundleVersion),
+        xdm.source.user.identifier = originUserUID,
+        xdm.network.rule = policyName,
+        xdm.source.host.os_family = if(operatingSystemType contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, operatingSystemType contains "mac", XDM_CONST.OS_FAMILY_MACOS, operatingSystemType contains "linux", XDM_CONST.OS_FAMILY_LINUX, operatingSystemType contains "android", XDM_CONST.OS_FAMILY_ANDROID, operatingSystemType contains "ios", XDM_CONST.OS_FAMILY_IOS, operatingSystemType contains "ubuntu", XDM_CONST.OS_FAMILY_UBUNTU, operatingSystemType contains "debian", XDM_CONST.OS_FAMILY_DEBIAN, operatingSystemType contains "fedora", XDM_CONST.OS_FAMILY_FEDORA, operatingSystemType contains "centos", XDM_CONST.OS_FAMILY_CENTOS, operatingSystemType contains "chrome", XDM_CONST.OS_FAMILY_CHROMEOS, operatingSystemType contains "solaris", XDM_CONST.OS_FAMILY_SOLARIS, operatingSystemType contains "scada", XDM_CONST.OS_FAMILY_SCADA),
+        xdm.target.resource.type = accessTargetType,
+        xdm.target.resource.name = accessTargetName,
+        xdm.source.agent.identifier = agentId,
+        xdm.source.host.hostname = coalesce(computerName),
+        xdm.observer.action = policyAction,
+        xdm.source.process.command_line = commandInfo,
+        xdm.source.process.executable.extension = arrayindex(regextract(fileName, "\.([^\.]+)$"), 0);

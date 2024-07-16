@@ -1730,6 +1730,22 @@ def test_close_incident_in_remote(mocker, delta, data, close_ticket_param, to_cl
         {'title': 'Title', 'severity': 'Low', 'status': 'Active', 'classification': 'Undetermined'},
         {'title': 'Title', 'severity': 'Low', 'status': 'Closed', 'classification': 'Undetermined'},
         True
+    ),
+    (  # Update labels of active incident when no labels exist.
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': []},
+        {'title': 'Title', 'tags': ['Test']},
+        {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active'},
+        {'title': 'Title', 'severity': 'Medium', 'status': 'Active', 'labels': [{'labelName': 'Test', 'type': 'User'}]},
+        False
+    ),
+    (   # Update labels of active incident when a label already exist.
+        {'title': 'Title', 'description': 'desc', 'severity': 2, 'status': 1, 'tags': ['Test']},
+        {'title': 'Title', 'tags': ['Test2']},
+        {'title': 'Title', 'description': 'desc', 'severity': 'Medium', 'status': 'Active',
+         'properties': {'labels': [{'labelName': 'Test', 'type': 'User'}]}},
+        {'title': 'Title', 'severity': 'Medium', 'status': 'Active',
+         'labels': [{'labelName': 'Test', 'type': 'User'}, {'labelName': 'Test2', 'type': 'User'}]},
+        False
     )
 ])
 def test_update_incident_request(mocker, data, delta, mocked_fetch_data, expected_response, close_ticket):

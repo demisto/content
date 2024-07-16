@@ -416,6 +416,27 @@
 				}
 			}
 		},
+        "Prisma Cloud Compute Compliance v2": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+                "Alert Category": {
+					"complex": null,
+					"simple": "type"
+				},
+                "Compliance Notes": {
+					"complex": null,
+					"simple": "compliance"
+				},
+				"Prisma Cloud Compute Markdown": {
+					"complex": null,
+					"simple": "complianceMarkdownTable"
+				},
+				"Prisma Cloud Compute Raw Alert JSON": {
+					"complex": null,
+					"simple": "rawJSONAlert"
+				}
+			}
+		},
 		"Prisma Cloud Compute Vulnerability": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {

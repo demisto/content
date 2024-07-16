@@ -1,4 +1,5 @@
 Find past similar incidents based on incident fields' similarity. Includes an option to also display indicators similarity.
+Note: For the similarity calculation, at least one field must be provided in one of the "similarTextField", "similarCategoricalField", or "similarJsonField" arguments.
 
 ## Script Data
 
@@ -29,7 +30,7 @@ This script is used in the following playbooks and scripts.
 | similarCategoricalField | Comma-separated list of incident categorical fields to take into account whe computing similarity. For example: IP, URL. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters. |
 | similarJsonField | Comma-separated list of incident JSON fields to take into account whe computing similarity. For example: CustomFields. Note: In order to calculate similarity, fields must consist of a minimum of 2 letters. |
 | fieldsToDisplay | Comma-separated list of additional incident fields to display, but which will not be taken into account when computing similarity. |
-| fieldExactMatch | Comma-separated list of incident fields that have to be equal to the current incident fields. This helps reduce the query size. |
+| fieldExactMatch | Comma-separated list of incident fields that have to be equal to the current incident fields. This helps reduce the query size. These fields are not part of the similarity calculation. |
 | useAllFields | Whether to use a predefined set of fields and custom fields to compute similarity. If "True", it will ignore values in similarTextField, similarCategoricalField, similarJsonField. |
 | fromDate | The start date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 \+0200"\). |
 | toDate | The end date by which to filter incidents. Date format will be the same as in the incidents query page, for example, "3 days ago", ""2019-01-01T00:00:00 \+0200"\). |

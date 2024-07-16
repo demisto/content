@@ -53,3 +53,4 @@
 !xdr-list-user-groups group_names=test
 !xdr-set-user-role role_name=dummy user_emails=email@company.com
 !xdr-remove-user-role user_emails=email@company.com
+!xdr-update-alert alert_ids=35326 severity=low

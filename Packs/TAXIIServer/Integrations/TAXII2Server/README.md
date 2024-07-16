@@ -31,6 +31,7 @@ You can add a collection description as is done in *collection1_name*, or enter 
 (For Cortex XSOAR 8 or Cortex XSIAM):
 
 - `https://ext-<tenant>/xsoar/instance/execute/<instance-name>/<taxii2_api_endpoint>/`
+NOTE: The instance name cannot be changed after saving the integration configuration.
 
 
 ## Access the TAXII Service by Instance Name

@@ -345,8 +345,13 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
         integration_context = get_integration_context()
         incident_mirror_reset: dict = {incident['id']: True for incident in incidents}
         if incident_mirror_reset:
-            demisto.debug(f'Adding incidents id to mirror reset set:{incident_mirror_reset}')
-            integration_context[MIRROR_RESET] = incident_mirror_reset
+            if isinstance(integration_context.get(MIRROR_RESET), dict):
+                demisto.debug(f'Adding incidents id: {incident_mirror_reset} '
+                              f'to integration context: {integration_context.get(MIRROR_RESET)}')
+                integration_context[MIRROR_RESET].update(incident_mirror_reset)
+            else:
+                demisto.debug(f'Set integration context to: {incident_mirror_reset}')
+                integration_context[MIRROR_RESET] = incident_mirror_reset
             set_to_integration_context_with_retries(context=integration_context)
 
     for incident in incidents:
@@ -370,29 +375,29 @@ def fetch_incidents(client: Client, max_results: int, last_run: dict[str, Union[
 
         file_attachments = []
         # When demisto.command() == 'test-module' we can't write files since we are not running in a playground.
-        if demisto.command() != 'test-module':
-            if incident.get('attachment') and len(incident.get('attachment', [])) > 0 and incident.get('investigationId'):
-                entries = client.get_incident_entries(
-                    incident_id=incident['investigationId'],  # type: ignore
-                    from_date=0,
-                    max_results=10,
-                    categories=['attachments'],
-                    tags=None,
-                    tags_and_operator=False
-                )
+        if (demisto.command() != 'test-module' and incident.get('attachment')
+                and len(incident.get('attachment', [])) > 0 and incident.get('investigationId')):
+            entries = client.get_incident_entries(
+                incident_id=incident['investigationId'],  # type: ignore
+                from_date=0,
+                max_results=10,
+                categories=['attachments'],
+                tags=None,
+                tags_and_operator=False
+            )
 
-                for entry in entries:
-                    if 'file' in entry and entry.get('file'):
-                        file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
-                        file_result = fileResult(entry['file'], file_entry_content)
-                        if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
-                            if file_result['Type'] == EntryType.ERROR:
-                                raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
+            for entry in entries:
+                if 'file' in entry and entry.get('file'):
+                    file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
+                    file_result = fileResult(entry['file'], file_entry_content)
+                    if any(attachment.get('name') == entry['file'] for attachment in incident.get('attachment', [])):
+                        if file_result['Type'] == EntryType.ERROR:
+                            raise Exception(f"Error getting attachment: {str(file_result.get('Contents', ''))}")
 
-                            file_attachments.append({
-                                'path': file_result.get('FileID', ''),
-                                'name': file_result.get('File', '')
-                            })
+                        file_attachments.append({
+                            'path': file_result.get('FileID', ''),
+                            'name': file_result.get('File', '')
+                        })
 
         incident_result['attachment'] = file_attachments
         incidents_result.append(incident_result)
@@ -642,7 +647,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
             # in case new entries created less than a minute after incident creation
 
         demisto_debug(f'tags: {tags}')
-        demisto_debug(f'tags: {categories}')
+        demisto_debug(f'categories: {categories}')
         integration_context = get_integration_context()
         XSOARMirror_mirror_reset: dict = json.loads(integration_context.get(MIRROR_RESET, '{}'))
         is_incident_update_after_reset = False
@@ -669,7 +674,9 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
         # file_attachments = []
 
         if entries:
+            demisto.debug(f'Got entries: {entries} for incident id {remote_args.remote_incident_id}')
             for entry in entries:
+                demisto.debug(f'Got entry {entry}')
                 if 'file' in entry and entry.get('file'):
                     file_entry_content = client.get_file_entry(entry.get('id'))  # type: ignore
                     file_result = fileResult(entry['file'], file_entry_content)
@@ -687,6 +694,7 @@ def get_remote_data_command(client: Client, args: dict[str, Any], params: dict[s
 
         # Handle if the incident closed remotely
         if incident.get('status') == IncidentStatus.DONE:
+            demisto.debug('incident was closed remotely, adding note')
             formatted_entries.append({
                 'Type': EntryType.NOTE,
                 'Contents': {

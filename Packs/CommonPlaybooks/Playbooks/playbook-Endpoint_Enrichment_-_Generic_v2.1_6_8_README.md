@@ -282,4 +282,4 @@ This playbook does not use any integrations.
 
 ---
 
-![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2.1.png)
+![Endpoint Enrichment - Generic v2.1](../doc_files/Endpoint_Enrichment_-_Generic_v2_1.png)

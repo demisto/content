@@ -519,4 +519,4 @@ This playbook does not use any scripts.
 
 ---
 
-![Detonate URL - Generic v1.5](../doc_files/Detonate_URL_-_Generic_v1.5.png)
+![Detonate URL - Generic v1.5](../doc_files/Detonate_URL_-_Generic_v1_5.png)

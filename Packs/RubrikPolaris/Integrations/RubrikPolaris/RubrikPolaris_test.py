@@ -9,7 +9,7 @@ from RubrikPolaris import ERROR_MESSAGES, MAXIMUM_PAGINATION_LIMIT, OUTPUT_PREFI
     TOKEN_EXPIRY_TIME_SPAN, TOKEN_EXPIRY_BUFFER_TIME, IOC_TYPE_ENUM
 from unittest.mock import patch
 
-BASE_URL = "https://rubrik-se-beta.my.rubrik.com/api"
+BASE_URL = "https://demo.my.rubrik.com/api"
 BASE_URL_GRAPHQL = BASE_URL + "/graphql"
 BASE_URL_SESSION = BASE_URL + "/session"
 last_fetch = "2021-10-22T14:55:51.616000Z"
@@ -50,7 +50,7 @@ def test_main_incorrect_credentials(requests_mock, monkeypatch, capfd, caplog):
     """Tests the execution of main function when incorrect credentials are provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta",
+        "url": "demo",
         "email": {
             "identifier": "incorrect@account.com",
             "password": "password"
@@ -79,7 +79,7 @@ def test_main_unknown_commmand(requests_mock, monkeypatch, capfd):
     """Tests the execution of main function when unknown command name is provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta",
+        "url": "demo",
         "email": {
             "identifier": "username@domain.com",
             "password": "password"
@@ -100,7 +100,7 @@ def test_main_no_json_no_email(monkeypatch, capfd):
     """Tests the execution of main function when neither service account json nor email-password have been provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta"})
+        "url": "demo"})
     monkeypatch.setattr(mock_command, lambda: "some_command")
     with pytest.raises(SystemExit):
         capfd.close()
@@ -113,7 +113,7 @@ def test_main_incorrect_json_structure(monkeypatch, capfd, service_account_json,
     """Tests the execution of main function when incorrectly formatted service account json is provided."""
     from RubrikPolaris import main
     monkeypatch.setattr(mock_params, lambda: {
-        "url": "rubrik-se-beta",
+        "url": "demo",
         "service_account_json": service_account_json})
 
     monkeypatch.setattr(mock_command, lambda: "some_command")
@@ -134,7 +134,7 @@ def client(requests_mock, capfd):
     requests_mock.post(BASE_URL_SESSION, json=data)
     capfd.close()
     client_obj = MyClient(
-        domain="rubrik-se-beta",
+        domain="demo",
         username="dummy_username",
         password="dummy_password",
         insecure=True

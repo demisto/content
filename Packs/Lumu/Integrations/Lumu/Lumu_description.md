@@ -6,7 +6,7 @@ SecOps operations, reflect and manage the Lumu Incidents either from XSOAR Corte
 
 #### Diagram
 
-![diagram](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/Cortex_Lumu.draw.png)
+![diagram](https://raw.githubusercontent.com/demisto/content/master/Packs/Lumu//doc_files/Cortex_Lumu_draw.png)
 
 #### Lumu API Specifications
 

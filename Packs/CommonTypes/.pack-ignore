@@ -204,6 +204,9 @@ ignore=IF115
 [file:incidentfield-Alert_Source.json]
 ignore=IF100
 
+[file:incidentfield-Alert_Rules.json]
+ignore=IF100
+
 [file:incidentfield-Use_Case_Description.json]
 ignore=IF100
 
@@ -306,6 +309,9 @@ ignore=IF115
 [file:incidentfield-Alert_tags.json]
 ignore=IF100
 
+[file:3_4_9.md]
+ignore=RN115
+
 [known_words]
 SysAid
 longText
@@ -337,3 +343,4 @@ DN
 PEM
 SPKI
 subkeys
+formatter

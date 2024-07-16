@@ -1,12 +1,8 @@
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 
-import urllib3
 import traceback
-from typing import Dict, Any
-
-# Disable insecure warnings
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+from typing import Any
 
 BRAND_NAME = "IPinfo"  # matches context output path for faster caching
 
@@ -17,18 +13,22 @@ class Client(BaseClient):
         Client to use in the IPinfo integration. Uses BaseClient
         """
         super().__init__(base_url=base_url, proxy=proxy, verify=verify_certificate)
+        time_sensitive = is_time_sensitive()
+        demisto.debug(f'{time_sensitive=}')
+
+        self.timeout = 2 if time_sensitive else 20
         self.api_key = api_key
         self.reliability = reliability
 
-    def ipinfo_ip(self, ip: str) -> Dict[str, Any]:
+    def ipinfo_ip(self, ip: str) -> dict[str, Any]:
         return self.http_request(ip)
 
-    def http_request(self, ip: str) -> Dict[str, Any]:
+    def http_request(self, ip: str) -> dict[str, Any]:
         """ constructs url with token (if existent), then returns request """
         return self._http_request(method='GET',
                                   url_suffix=f'{ip}/json',
                                   params=assign_params(token=self.api_key),
-                                  timeout=20)
+                                  timeout=self.timeout)
 
 
 def test_module(client: Client) -> str:
@@ -48,7 +48,7 @@ def ipinfo_ip_command(client: Client, ip: str) -> List[List[CommandResults]]:
     return ip_results
 
 
-def parse_results(ip: str, raw_result: Dict[str, Any], reliability: str) -> List[CommandResults]:
+def parse_results(ip: str, raw_result: dict[str, Any], reliability: str) -> List[CommandResults]:
     command_results: List[CommandResults] = []
 
     # default values

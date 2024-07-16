@@ -2,7 +2,7 @@
     "id": "incident_checkpointhecfarm",
     "version": -1,
     "modified": "2023-08-07T15:36:49.667762Z",
-    "name": "CP HEC Farm",
+    "name": "CheckPointHEC Farm",
     "ownerOnly": false,
     "placeholder": "CP Farm",
     "description": "Customer farm",
