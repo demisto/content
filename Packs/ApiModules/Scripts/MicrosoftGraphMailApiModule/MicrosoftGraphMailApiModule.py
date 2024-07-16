@@ -714,6 +714,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
         """
 
         attachment_size = len(attachment_data)
+        demisto.debug(f'{attachment_size=}')
         upload_session = self.get_upload_session(
             email=email,
             draft_id=draft_id,
@@ -722,6 +723,7 @@ class MsGraphMailBaseClient(MicrosoftClient):
             is_inline=is_inline,
             content_id=content_id
         )
+        demisto.debug(f'{upload_session}=')
         upload_url = upload_session.get('uploadUrl')
         if not upload_url:
             raise Exception(f'Cannot get upload URL for attachment {attachment_name}')
@@ -731,7 +733,8 @@ class MsGraphMailBaseClient(MicrosoftClient):
         end_chunk_index = attachment_size if attachment_size < self.MAX_ATTACHMENT_SIZE else self.MAX_ATTACHMENT_SIZE
 
         chunk_data = attachment_data[start_chunk_index: end_chunk_index]
-
+        chunk_num = 1
+        demisto.debug(f'uploading {chunk_num=}')
         response = self.upload_attachment(
             upload_url=upload_url,
             start_chunk_idx=start_chunk_index,
@@ -739,7 +742,11 @@ class MsGraphMailBaseClient(MicrosoftClient):
             chunk_data=chunk_data,
             attachment_size=attachment_size
         )
+        demisto.debug(f'response body {response.content}')
+
         while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
+            chunk_num = chunk_num + 1
+            demisto.debug(f'uploading {chunk_num=}')
             start_chunk_index = end_chunk_index
             next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
             end_chunk_index = next_chunk if next_chunk < attachment_size else attachment_size
@@ -753,9 +760,10 @@ class MsGraphMailBaseClient(MicrosoftClient):
                 chunk_data=chunk_data,
                 attachment_size=attachment_size
             )
+            demisto.debug(f'response body {response.content}')
 
             if response.status_code not in (201, 200):
-                raise Exception(f'{response.json()}')
+                raise Exception(f'{response.content}')
 
     def send_mail_with_upload_session_flow(self, email: str, json_data: dict,
                                            attachments_more_than_3mb: list[dict], reply_message_id: str = None):
