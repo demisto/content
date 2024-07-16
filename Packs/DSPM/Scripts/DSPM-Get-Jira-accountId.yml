@@ -1,6 +1,6 @@
 commonfields:
   id: c02bb7d7-278e-40db-83fc-9a2f5750602f
-  version: 53
+  version: 5
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM-Get-Jira-accountId
 script: |
@@ -10,7 +10,7 @@ script: |
   def get_account_id_by_email(email: str) -> str:
       try:
           result = demisto.executeCommand("dspm-get-integration-cofig", {})
-          integration_conf = result[0].get("Contents",{}).get("integration_conf",{})
+          integration_conf = result[0].get("Contents",{}).get("integration_config",{})
 
           # Extract Jira credentials and URL
           jira_url = integration_conf.get('jiraServerUrl')

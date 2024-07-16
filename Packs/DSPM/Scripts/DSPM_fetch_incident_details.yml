@@ -1,21 +1,11 @@
 commonfields:
   id: ea589919-2c6d-4575-8ea0-9345cc1675e5
-  version: 2
+  version: 51
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM_fetch_incident_details
 script: |+
-  """Base Script for Cortex XSOAR (aka Demisto)
-  This is an empty script with some basic structure according
-  to the code conventions.
-  MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
-  Developer Documentation: https://xsoar.pan.dev/docs/welcome
-  Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-  Linting: https://xsoar.pan.dev/docs/integrations/linting
-  """
-
   from typing import Dict, Any
   import traceback
-
 
 
   def get_incident_details_command(args):
@@ -26,7 +16,7 @@ script: |+
       asset_details = incident_data.get('assetdetails',{})
 
       incident_object = {
-          "incidentId": incident_data.get('id', ''),
+          "incidentId":incident_data.get('id', 'N/A'),
           "ruleName": labels.get('ruleName', 'N/A'),
           "severity": labels.get('severity', 'N/A'),
           "assetName": asset.get('name', 'N/A'),
@@ -39,10 +29,10 @@ script: |+
           "complianceStandards": labels.get('complianceStandards', 'N/A'),
           "assetDigTags": asset_details.get('assetDigTags',"N/A"),
           "openToWorld": asset_details.get("openToWorld","N/A"),
-          "dbotMirrorId": labels.get('id', 'N/A'),
           "serviceType":asset_details.get('serviceType','N/A'),
+          "riskFindingId":labels.get('id', 'N/A'),
           "dataTypeGroups":asset_details.get("dataTypeGroups","N/A"),
-          "tags":asset_details.get("tags","N/A"),
+          "tags":asset_details.get("assetDigTags","N/A"),
           "remediateDescription": incident_data.get('remediatestep','N/A')
       }
       return incident_object

@@ -1,6 +1,6 @@
 commonfields:
   id: 3950c5bc-cbc4-4a60-81cc-4867ad9acdab
-  version: 18
+  version: 11
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM_send_risk_to_slack_app
 script: |+
@@ -23,7 +23,7 @@ script: |+
       allowRemediation = incident.get('ruleName') in REMEDIATION_LIST
 
       result = demisto.executeCommand("dspm-get-integration-cofig", {})
-      integration_conf = result[0].get("Contents",{}).get("integration_conf",{})
+      integration_conf = result[0].get("Contents",{}).get("integration_config",{})
 
       incident_data = {
           "incident_id": incident.get('incidentId'),
@@ -42,9 +42,10 @@ script: |+
           "dataTypeGroups":incident.get("dataTypeGroups","N/A"),
           "tags":incident.get("tags","N/A"),
           "remediateDescription": incident.get('remediateDescription','N/A'),
-          "username": "manas@metronlabs.com",
+          "username": "",
           "risk_type": incident.get("ruleName"),
           "project_keys": projects_list,
+          "riskFindingId":incident.get("riskFindingId",123),
           "playbookId":"da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417",
           "xsoar_credentials": {
               "api_key": integration_conf.get('xsoarApiKey'),
@@ -58,7 +59,7 @@ script: |+
       incident_json = json.dumps(incident_data)
       print(incident_json)
       # Define the endpoint URL and headers for the POST request
-      url = 'https://284b-111-92-112-186.ngrok-free.app/dspm_receiver'
+      url = 'https://d9aa-111-92-112-186.ngrok-free.app/dspm_receiver'
       headers = {
           'Content-Type': 'application/json'
       }

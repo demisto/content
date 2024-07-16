@@ -1,6 +1,6 @@
 commonfields:
   id: bd8ff7bf-775a-4856-82fa-c226c406e27a
-  version: 2
+  version: 59
 vcShouldKeepItemLegacyProdMachine: false
 name: DSPM_fetch_list_of_jira_project
 script: |+
@@ -37,12 +37,15 @@ script: |+
   def get_list_of_projects() -> str:
       try:
           result = demisto.executeCommand("dspm-get-integration-cofig", {})
-          integration_conf = result[0].get("Contents",{}).get("integration_conf",{})
-
+          integration_conf = result[0].get("Contents",{}).get('integration_config',{})
+          print(integration_conf)
           # Extract Jira credentials and URL
           api_key = integration_conf.get('jiraApiToken')
           url = integration_conf.get('jiraServerUrl')
           email = integration_conf.get('jiraEmail')
+          print("api key :",api_key)
+          print("url",url)
+          print("email ",email)
 
           # Fetch the list of projects from Jira
           return fetch_jira_projects(email, api_key, url)
