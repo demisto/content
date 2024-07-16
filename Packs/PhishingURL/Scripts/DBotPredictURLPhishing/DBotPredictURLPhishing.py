@@ -13,9 +13,6 @@ dill.settings['recurse'] = True
 
 no_fetch_extract = TLDExtract(suffix_list_urls=None, cache_dir=False)
 
-VERSION = get_demisto_version_as_str()
-NEW_DEMISTO_VERSION = VERSION[0] + '.' + VERSION[2] >= '6.5'
-
 OOB_MAJOR_VERSION_INFO_KEY = 'major'
 OOB_MINOR_VERSION_INFO_KEY = 'minor'
 MAJOR_VERSION = 1
@@ -58,13 +55,8 @@ SUSPICIOUS_THRESHOLD = 0.7
 SCORE_INVALID_URL = -1.0
 SCORE_BENIGN = 0.0  # type: float
 
-GREEN_COLOR = "{{color:#1DB846}}({})" if NEW_DEMISTO_VERSION else "**{}**"
-RED_COLOR = "{{color:#D13C3C}}({})" if NEW_DEMISTO_VERSION else "**{}**"
-
-VERDICT_MALICIOUS_COLOR = "{{color:#D13C3C}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
-VERDICT_SUSPICIOUS_COLOR = "{{color:#EF9700}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
-VERDICT_BENIGN_COLOR = "{{color:#1DB846}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
-VERDICT_ERROR_COLOR = "{{color:#D13C3C}}(**{}**)" if NEW_DEMISTO_VERSION else "**{}**"
+GREEN_COLOR = RED_COLOR = VERDICT_MALICIOUS_COLOR = VERDICT_SUSPICIOUS_COLOR = \
+    VERDICT_BENIGN_COLOR = VERDICT_ERROR_COLOR = "**{}**"
 MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT: VERDICT_MALICIOUS_COLOR, BENIGN_VERDICT: VERDICT_BENIGN_COLOR,
                          SUSPICIOUS_VERDICT: VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST: VERDICT_BENIGN_COLOR}
 
@@ -458,11 +450,12 @@ def extract_created_date(entry: dict):
 
 
 def return_and_remove_additional_results(results: list, from_index):
-    '''Return and remove the extra unneeded results returned from a command call.'''
+    '''Return and remove the extra unneeded results returned from a command call.
+    In XSOAR 8 log results are usually returned with sub-commands if debug-mode=true'''
     if results[from_index:]:
         return_results(results[from_index:])
         del results[from_index:]
-
+        demisto.debug(f'removed and returned {from_index} outputs')
 
 def weed_rasterize_errors(urls: list[str], res_rasterize: list[Union[dict, str]]):
     '''Remove the URLs that failed rasterization and return them.'''
