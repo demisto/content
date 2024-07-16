@@ -189,7 +189,7 @@ Checks the file reputation of the specified hash.
 | File.Malicious.TotalEngines | Number | For malicious files, the total number of engines that checked the file hash. |
 | File.VTVendors.EngineDetections | Number | Number of VT vendors that flagged the file as malicious. |
 | File.VTVendors.EngineVendors | Array | VT vendors who flagged the file as malicious. |
-| File.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the file as malicious. |
+| File.VTVendors.EngineDetectionNames | Array | VT detection names that flagged the file as malicious. |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
