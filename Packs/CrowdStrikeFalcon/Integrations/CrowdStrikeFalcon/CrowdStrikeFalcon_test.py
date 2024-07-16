@@ -7067,15 +7067,15 @@ def test_http_request_get_token_request_429(mocker, requests_mock):
         f'{SERVER_URL}/oauth2/token',
         json={
             "meta": {
-            "query_time": 0.000875986,
-            "powered_by": "crowdstrike-api-gateway",
-            "trace_id": "trace_id"
+                "query_time": 0.000875986,
+                "powered_by": "crowdstrike-api-gateway",
+                "trace_id": "trace_id"
             },
             "errors": [
-            {
-            "code": 429,
-            "message": "API rate limit exceeded."
-            }
+                {
+                    "code": 429,
+                    "message": "API rate limit exceeded."
+                }
             ]
         },
         status_code=429
