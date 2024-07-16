@@ -252,11 +252,11 @@ script:
     - contextPath: File.Malicious.TotalEngines
       description: For malicious files, the total number of engines that checked the file hash.
     - contextPath: File.VTVendors.EngineDetections
-      description: Number of VT vendors which flagged the file as malicious.
+      description: Number of VT vendors that flagged the file as malicious.
     - contextPath: File.VTVendors.EngineVendors
-      description: VT vendors which flagged the file as malicious.
+      description: VT vendors who flagged the file as malicious.
     - contextPath: File.VTVendors.EngineDetectionNames
-      description: VT detection names which flagged the file as malicious.
+      description: VT detection names that flagged the file as malicious.
     - contextPath: DBotScore.Indicator
       description: The indicator that was tested.
     - contextPath: DBotScore.Type
