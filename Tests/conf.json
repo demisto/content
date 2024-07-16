@@ -5773,6 +5773,7 @@
         }
     ],
     "skipped_tests": {
+        "ThreatCrowd - Test": "The pack is deprecated",
         "Retrieve File from Endpoint - Generic V2 Test": "The playbook is deprecated",
         "test-threatConnectv3": "No instance - Instance issues",
         "generic-sql-mssql-encrypted-connection": "Instance issues",
