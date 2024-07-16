@@ -1,5 +1,6 @@
 import json
 from pytest_mock import MockerFixture
+from freezegun import freeze_time
 
 from DBotTrainClustering import (
     demisto,
@@ -21,7 +22,7 @@ PARAMETERS_DICT = {
     "limit": "1000",
     "query": "",
     "minNumberofIncidentPerCluster": "2",
-    "modelName": "model ",
+    "modelName": "model_name",
     "storeModel": "False",
     "minHomogeneityCluster": 0.6,
     "type": "Phishing",
@@ -63,6 +64,41 @@ FETCHED_INCIDENT_NOT_EMPTY = [
         "created": "2021-01-30",
         "name": "name_4",
         "field_1": "nmap port 2",
+        "field_2": "nmap",
+        "entityname": "nmap",
+    },
+]
+
+FETCHED_INCIDENT_RETRAIN = [
+    {
+        "id": "5",
+        "created": "2021-01-30",
+        "name": "name_1",
+        "field_1": "powershell IP=1.1.1.3",
+        "field_2": "powershell.exe",
+        "entityname": "powershell",
+    },
+    {
+        "id": "6",
+        "created": "2021-01-30",
+        "name": "name_2",
+        "field_1": "nmap port 3",
+        "field_2": "nmap.exe",
+        "entityname": "nmap",
+    },
+    {
+        "id": "7",
+        "created": "2021-01-30",
+        "name": "name_3",
+        "field_1": "powershell IP=1.1.1.4",
+        "field_2": "powershell",
+        "entityname": "powershell",
+    },
+    {
+        "id": "8",
+        "created": "2021-01-30",
+        "name": "name_4",
+        "field_1": "nmap port 4",
         "field_2": "nmap",
         "entityname": "nmap",
     },
@@ -205,8 +241,8 @@ sub_dict_1 = {
 
 
 class PostProcessing:
-    def __init__(self):
-        self.date_training = None
+    def __init__(self, date_training):
+        self.date_training = date_training
         self.json = {"data": "data"}
 
 
@@ -215,21 +251,18 @@ def executeCommand(command, args):
     if command == "GetIncidentsByQuery":
         return [{"Contents": json.dumps(FETCHED_INCIDENT), "Type": "note"}]
     elif command == "getMLModel":
-        # model = PostProcessing()
-        # model.date_training = datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-        # model_data = base64.b64encode(pickle.dumps(model)).decode(
-        #     "utf-8"
-        # )  # guardrails-disable-line
-        with open('test_data/model.pkl', encoding='utf-8') as f:
-            return [
-                {
-                    "Contents": {"modelData": f.read(), "model": {"type": {"type": ""}}},
-                    "Type": "note",
-                }
-            ]
-    elif command == 'createMLModel':
-        with open('test_data/model.pkl', 'w', encoding='utf-8') as f:
-            f.write(args['modelData'])
+        if args['modelName'] == 'from_file':
+            with open('test_data/model.pkl', encoding='utf-8') as f:
+                model_data = f.read()
+        else:
+            model = PostProcessing(datetime.now().strftime("%m/%d/%Y %H:%M:%S"))
+            model_data = base64.b64encode(pickle.dumps(model)).decode("utf-8")  # guardrails-disable-line
+        return [
+            {
+                "Contents": {"modelData": model_data},
+                "Type": "note",
+            }
+        ]
     return None
 
 
@@ -246,8 +279,6 @@ def test_check_list_of_dict():
 # Test regular training
 def test_main_regular(mocker):
     global FETCHED_INCIDENT
-    global sub_dict_1
-    global sub_dict_0
     FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY
     PARAMETERS_DICT.update(
         {
@@ -261,14 +292,17 @@ def test_main_regular(mocker):
     output_json = json.loads(output_clustering_json)
     cluster_0 = output_json["data"][0]
     cluster_1 = output_json["data"][1]
-    assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
     cond_1 = all(item in cluster_0.items() for item in sub_dict_0.items()) and all(
         item in cluster_1.items() for item in sub_dict_1.items()
     )
     cond_2 = all(item in cluster_0.items() for item in sub_dict_1.items()) and all(
         item in cluster_1.items() for item in sub_dict_0.items()
     )
-    assert cond_1 or cond_2
+    assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
+    assert cluster_0['incidents_ids'] == ['1', '3']
+    assert cluster_1['incidents_ids'] == ['2', '4']
+    assert cond_1 is True
+    assert cond_2 is False
 
 
 # Test if wrong cluster name
@@ -478,19 +512,26 @@ def test_same_cluster_name(mocker):
     assert "nmap_0" in clusters_name
 
 
-def test_end_to_end(mocker):
+@freeze_time('2024-07-16 14:56:00 UTC')
+def test_no_retrain_model(mocker: MockerFixture):
     global FETCHED_INCIDENT
-    FETCHED_INCIDENT = FETCHED_INCIDENT_NOT_EMPTY_SAME_CLUSTER_NAME
+    global sub_dict_1
+    global sub_dict_0
+    FETCHED_INCIDENT = FETCHED_INCIDENT_RETRAIN
     PARAMETERS_DICT.update(
         {
             "fieldsForClustering": "field_1, field_2, wrong_field",
             "fieldForClusterName": "entityname",
+            'forceRetrain': 'False',
+            'modelName': 'from_file'
         }
     )
     mocker.patch.object(demisto, "args", return_value=PARAMETERS_DICT)
-    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    execute_command_mock = mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     model, output_clustering_json, msg = main()
+    output_json = json.loads(output_clustering_json)
     
-    clusters_name = [x["clusterName"] for x in model.selected_clusters.values()]
-    assert "nmap" in clusters_name
-    assert "nmap_0" in clusters_name
+    assert output_json["data"][0]['incidents_ids'] == ['5', '7']
+    assert output_json["data"][1]['incidents_ids'] == ['6', '8']
+    assert MESSAGE_INCORRECT_FIELD % "wrong_field" in msg
+    execute_command_mock.assert_any_call("getMLModel", {"modelName": 'from_file'})

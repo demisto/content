@@ -141,7 +141,7 @@ class Clustering:
         else:
             self.model.fit(X)  # type: ignore
             if hasattr(self.model, 'labels_'):
-                self.results = self.model.labels_.astype(np.int)  # type: ignore
+                self.results = self.model.labels_.astype(int)  # type: ignore
             else:
                 self.results = self.model.predict(X)  # type: ignore
         self.number_clusters = len(set(self.results[self.results >= 0]))
@@ -681,7 +681,7 @@ def wrapped_list(obj: Any) -> list:
 
 
 def fill_nested_fields(
-    incidents_df: pd.DataFrame, incidents: list | str, *list_of_field_list: list[str], keep_unique_value=False
+    incidents_df: pd.DataFrame, incidents: Union[list, str], *list_of_field_list: list[str], keep_unique_value=False
 ) -> pd.DataFrame:
     """
     Handle nested fields by concatening values for each sub list of the field
@@ -746,8 +746,7 @@ def get_model_data(model_name):
     if is_error(res_model):
         return None, MESSAGE_ERROR_MESSAGE
     model_data = res_model['Contents']['modelData']
-    model_type = dict_safe_get(res_model, ['Contents', 'model', "type", "type"], UNKNOWN_MODEL_TYPE)
-    return model_data, model_type
+    return model_data
 
 
 def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_name: str):
@@ -760,7 +759,7 @@ def is_model_needs_retrain(force_retrain: bool, model_expiration: float, model_n
     """
     if force_retrain:
         return None, True
-    model_data, _ = get_model_data(model_name)
+    model_data = get_model_data(model_name)
     if not model_data:
         return None, True
     model = load_model64(model_data)
