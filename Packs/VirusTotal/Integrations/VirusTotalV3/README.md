@@ -821,11 +821,11 @@ Checks the reputation of a domain.
 | Domain.Relationships.Relationship | String | The name of the relationship. |
 | Domain.Relationships.EntityAType | String | The type of the source of the relationship. |
 | Domain.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| Domain.Malicious.Vendor | String | For malicious domains, the vendor that made the decision. |
+| Domain.Malicious.Vendor | String | For malicious domains, the vendor who made the decision. |
 | Domain.Malicious.Description | String | For malicious domains, the reason that the vendor made the decision. |
-| Domain.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the domain as malicious. |
-| Domain.VTVendors.EngineVendors | Array | VT vendors which flagged the domain as malicious. |
-| Domain.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the domain as malicious. |
+| Domain.VTVendors.EngineDetections | Number | Number of VT vendors that flagged the domain as malicious. |
+| Domain.VTVendors.EngineVendors | Array | VT vendors who flagged the domain as malicious. |
+| Domain.VTVendors.EngineDetectionNames | Array | VT detection names that flagged the domain as malicious. |
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
