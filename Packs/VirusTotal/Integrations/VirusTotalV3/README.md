@@ -2563,9 +2563,9 @@ Get analysis of a private file submitted to VirusTotal.
 ## VT indicator fields
 
 3 indicator fields have been added to all indicator types:
-- **VT Engine Detections**. Number. Number of VT vendors which flagged the indicator as malicious.
-- **VT Engine Vendors**. Array. VT vendors which flagged the indicator as malicious.
-- **VT Engine Detection Names**. Array. VT detection names which flagged the indicator as malicious.
+- **VT Engine Detections**. Number. Number of VT vendors that flagged the indicator as malicious.
+- **VT Engine Vendors**. Array. VT vendors who flagged the indicator as malicious.
+- **VT Engine Detection Names**. Array. VT detection names that flagged the indicator as malicious.
 
 To display the new fields in indicators, navigate to `Settings -> Objects Setup -> Indicators -> Types`. Select the desired indicator type, for example, `File`. Click on `Edit` and, under `Custom Fields`, choose the desired field and add the corresponding path. For instance, if you select the `VT Engine Detections` field for the `File` indicator type, add the path `File.VTVendors.EngineDetections`. This will enable the field to be populated in the indicator data.
 
