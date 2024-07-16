@@ -1,5 +1,5 @@
 id: da7fa1c4-11b7-4c6c-8afa-15d0e3e5f417
-version: 6
+version: 8
 vcShouldKeepItemLegacyProdMachine: false
 name: Security Incident JIRA and S3 Management
 description: This playbook automates incident response actions by creating a JIRA
@@ -52,7 +52,7 @@ tasks:
       Jira action:
       - "16"
       Remedition action (Sensitive asset open to world):
-      - "17"
+      - "20"
     separatecontext: false
     conditions:
     - label: Jira action
@@ -320,48 +320,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "17":
-    id: "17"
-    taskid: b3285112-7b8e-413e-8e9c-0ed2f7ee4183
-    type: regular
-    task:
-      id: b3285112-7b8e-413e-8e9c-0ed2f7ee4183
-      version: -1
-      name: aws-s3-get-public-access-block
-      description: Retrieves the PublicAccessBlock configuration for an Amazon S3
-        bucket.
-      script: AWS - S3|||aws-s3-get-public-access-block
-      type: regular
-      iscommand: true
-      brand: AWS - S3
-    nexttasks:
-      '#none#':
-      - "18"
-    scriptarguments:
-      bucket:
-        simple: dig-security-integration
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 480,
-          "y": 545
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 05102cac-552b-4211-8831-d14339c30be3
+    taskid: cc21344c-fdb6-4886-884d-c0c3742ac3d0
     type: regular
     task:
-      id: 05102cac-552b-4211-8831-d14339c30be3
+      id: cc21344c-fdb6-4886-884d-c0c3742ac3d0
       version: -1
       name: Update Slack Incident with AWS details
       description: commands.local.cmd.set.incident
@@ -419,6 +383,50 @@ tasks:
         "position": {
           "x": 265,
           "y": 1110
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: b369110e-21aa-4e7e-8fb6-db85ba33b406
+    type: regular
+    task:
+      id: b369110e-21aa-4e7e-8fb6-db85ba33b406
+      version: -1
+      name: aws-s3-put-public-access-block
+      description: Creates or modifies the PublicAccessBlock configuration for an
+        Amazon S3 bucket.
+      script: AWS - S3|||aws-s3-put-public-access-block
+      type: regular
+      iscommand: true
+      brand: AWS - S3
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      BlockPublicAcls:
+        simple: "true"
+      BlockPublicPolicy:
+        simple: "true"
+      IgnorePublicAcls:
+        simple: "true"
+      RestrictPublicBuckets:
+        simple: "true"
+      bucket:
+        simple: dig-security-integration
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 545
         }
       }
     note: false
