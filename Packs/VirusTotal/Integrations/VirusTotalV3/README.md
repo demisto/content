@@ -661,11 +661,11 @@ Checks the reputation of a URL.
 | URL.Relationships.Relationship | String | The name of the relationship. |
 | URL.Relationships.EntityAType | String | The type of the source of the relationship. |
 | URL.Relationships.EntityBType | String | The type of the destination of the relationship. |
-| URL.Malicious.Vendor | String | For malicious URLs, the vendor that made the decision. |
+| URL.Malicious.Vendor | String | For malicious URLs, the vendor who made the decision. |
 | URL.Malicious.Description | String | For malicious URLs, the reason that the vendor made the decision. |
-| URL.VTVendors.EngineDetections | Number | Number of VT vendors which flagged the URL as malicious. |
-| URL.VTVendors.EngineVendors | Array | VT vendors which flagged the URL as malicious. |
-| URL.VTVendors.EngineDetectionNames | Array | VT detection names which flagged the URL as malicious. |
+| URL.VTVendors.EngineDetections | Number | Number of VT vendors that flagged the URL as malicious. |
+| URL.VTVendors.EngineVendors | Array | VT vendors who flagged the URL as malicious. |
+| URL.VTVendors.EngineDetectionNames | Array | VT detection names that flagged the URL as malicious. |
 | DBotScore.Indicator | unknown | The indicator that was tested. |
 | DBotScore.Type | unknown | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
