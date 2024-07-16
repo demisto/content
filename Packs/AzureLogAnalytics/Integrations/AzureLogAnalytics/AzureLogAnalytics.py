@@ -42,6 +42,7 @@ class Client:
         )
         base_url = urljoin(url=self.azure_cloud.endpoints.resource_manager, suffix=suffix)
         demisto.debug(f'##### demisto.debug ##### {base_url=}')
+        demisto.debug(f'##### demisto.debug ##### {self.azure_cloud.endpoints=}')
 
         self.ms_client = MicrosoftClient(
             self_deployed=self_deployed,
@@ -49,7 +50,7 @@ class Client:
             refresh_token=refresh_token,
             enc_key=enc_key,  # client_secret for client credential
             redirect_uri=redirect_uri,
-            token_retrieval_url='https://login.microsoftonline.com/{tenant_id}/oauth2/token',
+            token_retrieval_url=urljoin(self.azure_cloud.endpoints.active_directory, '/{tenant_id}/oauth2/token'),
             grant_type=CLIENT_CREDENTIALS if client_credentials else AUTHORIZATION_CODE,  # disable-secrets-detection
             app_name=APP_NAME,
             base_url=base_url,
@@ -64,13 +65,12 @@ class Client:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure,
+            managed_identities_resource_uri=self.azure_cloud.endpoints.resource_manager,
             command_prefix="azure-log-analytics",
             azure_cloud=azure_cloud
         )
         demisto.debug('##### demisto.debug ##### MicrosoftClient created successfully')
         demisto.debug(f'##### demisto.debug ##### {self.ms_client._base_url}=')
-
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
 
