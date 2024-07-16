@@ -60,14 +60,14 @@ class Client(BaseClient):
         headers = self.create_header(url_suffix, method)
         if content_type:
             headers['Content-Type'] = content_type
-        response = self._http_request(method=method, url_suffix=url_suffix, data=payload, resp_type=responseType,  # type: ignore
+        response = self._http_request(method=method.value, url_suffix=url_suffix, data=payload, resp_type=responseType,
                                       params=params,
                                       headers=headers)
         return response
 
     def create_header(self, url_suffix: str, method: Method) -> dict:
         timestamp = round(time.time())
-        to_sign = f'{url_suffix}:{method}:{timestamp}'
+        to_sign = f'{url_suffix}:{method.value}:{timestamp}'
         hash = base64.b64encode(
             hmac.new(self.api_secret.encode('utf8'), to_sign.encode('utf8'), hashlib.sha256).digest()).decode()
         return {'Authorization': f'TC {self.api_id}:{hash}', 'Timestamp': str(timestamp),
