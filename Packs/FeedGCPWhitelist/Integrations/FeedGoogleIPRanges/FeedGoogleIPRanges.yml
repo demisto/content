@@ -51,7 +51,7 @@ configuration:
   - WHITE
   type: 15
   required: false
-- display: ""
+- display: ''
   name: feedExpirationPolicy
   defaultvalue: suddenDeath
   type: 17
@@ -62,7 +62,7 @@ configuration:
   - suddenDeath
   required: false
 - defaultvalue: '20160'
-  display: ""
+  display: ''
   name: feedExpirationInterval
   type: 1
   required: false
@@ -97,10 +97,10 @@ script:
   - arguments:
     - name: limit
       description: The maximum number of results to return. The default value is 10.
-      defaultValue: "10"
+      defaultValue: '10'
     description: Gets indicators from the feed.
     name: google-ip-ranges-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.86612
+  dockerimage: demisto/py3-tools:1.0.0.103307
   feed: true
   runonce: false
   script: '-'

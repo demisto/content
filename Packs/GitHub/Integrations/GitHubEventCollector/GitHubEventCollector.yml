@@ -11,11 +11,11 @@ description: Github logs event collector integration for Cortex XSIAM.
 configuration:
 - display: Server URL (e.g. 'https://api.github.com/orgs/XXXXX/audit-log')
   name: url
-  defaultvalue: 'https://api.github.com/orgs/${ORGANIZATION}/audit-log'
+  defaultvalue: https://api.github.com/orgs/${ORGANIZATION}/audit-log
   type: 0
   required: true
   section: Connect
-- display: ""
+- display: ''
   displaypassword: API Key
   name: auth_credendtials
   type: 9
@@ -60,7 +60,7 @@ configuration:
   advanced: true
   required: false
 script:
-  script: ""
+  script: ''
   type: python
   commands:
   - arguments:
@@ -74,7 +74,7 @@ script:
       required: true
     description: Manual command to fetch events and display them.
     name: github-get-events
-  dockerimage: demisto/py3-tools:1.0.0.94051
+  dockerimage: demisto/py3-tools:1.0.0.103307
   isfetchevents: true
   subtype: python3
 marketplaces:
