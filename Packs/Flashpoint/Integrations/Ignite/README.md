@@ -2,7 +2,7 @@ Use the Flashpoint Ignite integration to reduce business risk. Ignite allows use
 This integration was integrated and tested with API v1 of Ignite.
 
 ### Auto Extract Indicator
-Both incident types **Flashpoint Alerts** and **Flashpoint Compromised Credentials** support auto extraction feature by default that extract indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer [this](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) for more detail).
+Both incident types **Ignite Alert** and **Flashpoint Compromised Credentials** support the auto extraction feature by default. This feature extracts indicators and enriches their reputations using commands and scripts defined for the indicator type (Refer to [Indicator Extraction](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.12/Cortex-XSOAR-Administrator-Guide/Indicator-Extraction) for more details).
 
 If you are upgrading from a Flashpoint integration, please refer to the [Migration Guide](#migration-guide) for guidance.
 
@@ -11,8 +11,8 @@ If you are upgrading from a Flashpoint integration, please refer to the [Migrati
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for Flashpoint Ignite.
 3. Click **Add instance** to create and configure a new integration instance.
-4. To fetch Ignite Alerts refer to the section ["Configuration for fetching Ignite Alerts as an XSOAR Incident".](#configuration-for-fetching-ignite-alerts-as-an-xsoar-incident)
-5. To fetch Ignite Alerts refer to the section ["Configuration for fetching Ignite Compromised Credentials as an XSOAR Incident".](#configuration-for-fetching-ignite-compromised-credentials-as-an-xsoar-incident)
+4. To fetch Ignite alerts, refer to the section ["Configuration for fetching Ignite Alerts as a Cortex XSOAR Incident"](#configuration-for-fetching-ignite-alerts-as-a-cortex-xsoar-incident).
+5. To fetch Ignite compromised credentials, refer to the section ["Configuration for fetching Ignite Compromised Credentials as a Cortex XSOAR Incident"](#configuration-for-fetching-ignite-compromised-credentials-as-a-cortex-xsoar-incident).
 
 
     | **Parameter** | **Description** | **Required** |
@@ -22,51 +22,51 @@ If you are upgrading from a Flashpoint integration, please refer to the [Migrati
     | Server URL | Server URL to connect to Ignite. | True |
     | API Key | API key used for secure communication with the Ignite platform. | True |
     | Maximum number of incidents per fetch | The maximum limit is 200 for alerts and compromised credentials. | False |
-    | First fetch time interval | Date or relative timestamp to start fetching the incidents from. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc\). | False |
-    | Fetch Type | Whether to fetch the Ignite alerts or the compromised credentials. Would choose "Compromised Credentials" if nothing selected. | False |
+    | First fetch time | Date or relative timestamp to start fetching the incidents from. \(Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc.\). | False |
+    | Fetch Type | Whether to fetch the Ignite alerts or the compromised credentials. Defaults to "Compromised Credentials" if nothing selected. | False |
     | Severity for Incidents | Set the default severity for the incidents using this instance. | False |
     | Alert Status | Filters the incoming alerts with the provided alert status. | False |
-    | Alert Origin | Filters the incoming alerts with the origin of alert. | False |
-    | Alert Sources | Filters the incoming alerts with the source of alert. | False |
+    | Alert Origin | Filters the incoming alerts with the origin of the alert. | False |
+    | Alert Sources | Filters the incoming alerts with the source of the alert. | False |
     | Fetch fresh compromised credentials alerts | Adds the 'is_fresh' flag to compromised credential queries so it only ingests username/password combinations if they haven't been seen before. | False |
     | Source Reliability | Reliability of the source providing the intelligence data. | False |
-    | Create relationships | Create relationships between indicators as part of Enrichment. | False |
+    | Create relationships | Create relationships between indicators as part of enrichment. | False |
     | Trust any certificate (not secure) |  | False |
     | Use system proxy settings |  | False |
 
 6. Click **Test** to validate the URLs, token, and connection.
 
-## Configuration for fetching Ignite Alerts as an XSOAR Incident
+## Configuration for fetching Ignite Alerts as a Cortex XSOAR Incident
 
-1. Select Fetches incidents.
+1. Select **Fetches incidents**.
 2. Under Classifier, select "N/A".
 3. Under Incident type, select "Ignite Alert".
 4. Under Mapper (incoming), select "Ignite Alert - Incoming Mapper" for default mapping.
-5. Enter the connection parameters. (Server URL, API key)
+5. Enter the connection parameters (Server URL, API key).
 6. Under the Fetch Type, select "Alerts".
-7. Select "Alert Status" based on your requirement to filter the alerts.By default, it will fetch all status of alerts.
-8. Select "Alert Origin" based on your requirement to filter the alerts.By default, it will fetch all origins of alerts.
-9. Select "Alert Sources" based on your requirement to filter the alerts.By default, it will fetch all sources of alerts.
-10. Select "Severity for Incidents" based on your requirement to set the default severity for the incidents.By default, it will set the Unknown severity for all incidents.
-11. Update "First fetch time interval" & "Max Fetch Count" based on your requirement.
+7. Select "Alert Status" based on your requirement to filter the alerts. By default, it will fetch all status of alerts.
+8. Select "Alert Origin" based on your requirement to filter the alerts. By default, it will fetch all origins of alerts.
+9. Select "Alert Sources" based on your requirement to filter the alerts. By default, it will fetch all sources of alerts.
+10. Select "Severity for Incidents" based on your requirement to set the default severity for the incidents. By default, it will set the Unknown severity for all incidents.
+11. Update "First fetch time" and "Max Fetch Count" based on your requirements.
 
-## Configuration for fetching Ignite Compromised Credentials as an XSOAR Incident
+## Configuration for fetching Ignite Compromised Credentials as a Cortex XSOAR Incident
 
-1. Select Fetches incidents.
+1. Select **Fetches incidents**.
 2. Under Classifier, select "N/A".
 3. Under Incident type, select "Flashpoint Compromised Credentials".
 4. Under Mapper (incoming), select "Flashpoint Compromised Credentials - Incoming Mapper" for default mapping.
-5. Enter the connection parameters. (Server URL, API key)
+5. Enter the connection parameters (Server URL, API key).
 6. Under the Fetch Type, select "Compromised Credentials".
 7. Select "Fetch fresh compromised credentials alerts" so that it only ingests username/password combinations if they haven't been seen before.
-8. Update "First fetch time interval" & "Max Fetch Count" based on your requirement.
+8. Update "First fetch time" and "Max Fetch Count" based on your requirements.
 
 ## Troubleshooting
 
 ### Error: The maximum records to fetch for the given first fetch can not exceed 10,000
 
-- The maximum number of records that can be fetched using the first fetch time interval is limited to 10,000 by the API.
-- To resolve this issue, you can reduce the first fetch time interval to a shorter time period, ensuring that the total number of records fetched during the specified time falls within the 10,000 limit.
+- The maximum number of records that can be fetched using the first fetch time is limited to 10,000 by the API.
+- To resolve this issue, you can reduce the first fetch time to a shorter time period, ensuring that the total number of records fetched during the specified time falls within the 10,000 limit.
 
 ## Commands
 
@@ -93,12 +93,12 @@ Search for the Intelligence Reports using a keyword.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Ignite.Report.NotifiedAt | string | Notify date of report. | 
-| Ignite.Report.PlatformUrl | string | Platform url of report. It helps to redirect Ignite platform. | 
-| Ignite.Report.PostedAt | number | posted date of report. | 
-| Ignite.Report.Summary | string | Summary of report. | 
+| Ignite.Report.PlatformUrl | string | Platform URL of the report. Used to help redirect the Ignite platform. | 
+| Ignite.Report.PostedAt | number | Posted date of the report. | 
+| Ignite.Report.Summary | string | Summary of the report. | 
 | Ignite.Report.Title | string | Title of the report. | 
-| Ignite.Report.UpdatedAt | string | Last updated date of report. | 
-| Ignite.Report.ReportId | string | Unique id of the report. | 
+| Ignite.Report.UpdatedAt | string | Last updated date of the report. | 
+| Ignite.Report.ReportId | string | Unique ID of the report. | 
 
 #### Command example
 ```!flashpoint-ignite-intelligence-report-search report_search=ChatGpt```
@@ -154,7 +154,7 @@ Retrieves the compromised credentials based on the filter values provided in the
 | page_number | Specify a page number to retrieve the compromised credentials. Note: The multiplication of page_size and page_number parameters cannot exceed 10,000. Default is 1. | Optional | 
 | sort_date | Sort the compromised credential's breach data by either created or first observed date. Note: Will consider ascending as default for sort_order if sort_date is initialized. Possible values are: created_at, first_observed_at. | Optional | 
 | sort_order | Specify the order to sort the data in. Note: Requires sort_date along with the given argument. Possible values are: asc, desc. | Optional | 
-| is_fresh | Whether to fetch the fresh compromised credentials or not. Possible values are: true, false. Possible values are: true, false. | Optional | 
+| is_fresh | Whether to fetch the fresh compromised credentials or not. Possible values are: true, false. | Optional | 
 
 #### Context Output
 
@@ -165,36 +165,36 @@ Retrieves the compromised credentials based on the filter values provided in the
 | Ignite.CompromisedCredential._source.basetypes | Unknown | The array contains the underlying type of the credentials object, in this case  \["credential-sighting"\]. | 
 | Ignite.CompromisedCredential._source.body.raw | String | This is the raw content captured from the breach Flashpoint discovered. | 
 | Ignite.CompromisedCredential._source.breach._header | String | This is the breach header object. | 
-| Ignite.CompromisedCredential._source.breach.basetypes | Unknown | Array containing underlying base type of breach object, i.e. \["breach"\]. | 
+| Ignite.CompromisedCredential._source.breach.basetypes | Unknown | Array containing the underlying base type of the breach object, i.e., \["breach"\]. | 
 | Ignite.CompromisedCredential._source.breach.breach_type | String | Constant for future use. | 
-| Ignite.CompromisedCredential._source.breach.created_at.date-time | Date | Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. | 
-| Ignite.CompromisedCredential._source.breach.created_at.timestamp | Number | UNIX timestamp. | 
-| Ignite.CompromisedCredential._source.breach.first_observed_at.date-time | Date | Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. | 
-| Ignite.CompromisedCredential._source.breach.first_observed_at.timestamp | Number | UNIX timestamp. | 
+| Ignite.CompromisedCredential._source.breach.created_at.date-time | Date | The datetime when the source breach was created, formatted as YYYY-mm-ddTHH:MM:SSZ. | 
+| Ignite.CompromisedCredential._source.breach.created_at.timestamp | Number | The UNIX timestamp when the source breach was created. | 
+| Ignite.CompromisedCredential._source.breach.first_observed_at.date-time | Date | Datetime when the source breach was first observed, formatted as YYYY-mm-ddTHH:MM:SSZ. | 
+| Ignite.CompromisedCredential._source.breach.first_observed_at.timestamp | Number | The UNIX timestamp when the source breach was first observed. | 
 | Ignite.CompromisedCredential._source.breach.fpid | String | Flashpoint ID of the breach. | 
-| Ignite.CompromisedCredential._source.breach.source | String | Data source of breach \(i.e. Analyst Research, CredentialStealer, etc.\). | 
+| Ignite.CompromisedCredential._source.breach.source | String | Data source of breach \(i.e., Analyst Research, CredentialStealer, etc.\). | 
 | Ignite.CompromisedCredential._source.breach.source_type | String | Type of source of the breach. | 
-| Ignite.CompromisedCredential._source.breach.title | String | Title of breach. | 
+| Ignite.CompromisedCredential._source.breach.title | String | Title of the breach. | 
 | Ignite.CompromisedCredential._source.breach.victim | String | Victim of the breach. | 
-| Ignite.CompromisedCredential._source.credential_record_fpid | String | This is the Flashpoint ignite ID of the associated record object. This is used to retrieve sightings for a credential. | 
+| Ignite.CompromisedCredential._source.credential_record_fpid | String | The Flashpoint ID of the associated record object. Used to retrieve sightings for a credential. | 
 | Ignite.CompromisedCredential._source.customer_id | String | Customer ID of the IoC. | 
-| Ignite.CompromisedCredential._source.domain | String | This is the domain object extracted off of the email address. | 
+| Ignite.CompromisedCredential._source.domain | String | The domain object extracted off of the email address. | 
 | Ignite.CompromisedCredential._source.email | String | The email address for the compromised credential. | 
 | Ignite.CompromisedCredential._source.extraction_id | String | Extraction ID of the IoC. | 
 | Ignite.CompromisedCredential._source.extraction_record_id | String | Extraction record ID of the IoC. | 
 | Ignite.CompromisedCredential._source.fpid | String | The Flashpoint ID of this credentials object. | 
 | Ignite.CompromisedCredential._source.header_.indexed_at | String | Timestamp for when this document was indexed into the Flashpoint database. | 
 | Ignite.CompromisedCredential._source.header_.pipeline_duration | String | Pipeline duration header information of the IoC. | 
-| Ignite.CompromisedCredential._source.is_fresh | Boolean | This will be "true" if the credential has not been seen before, and it hasn't been marked "not fresh" by an analyst. \(Historical breaches are not "fresh".\). | 
+| Ignite.CompromisedCredential._source.is_fresh | Boolean | "true" if the credential has not been seen before, and it hasn't been marked "not fresh" by an analyst. \(Historical breaches are not "fresh".\). | 
 | Ignite.CompromisedCredential._source.last_observed_at.date-time | Date | If exists, time object for when the credential was previously observed. Datetime object formatted as YYYY-mm-ddTHH:MM:SSZ. | 
-| Ignite.CompromisedCredential._source.last_observed_at.timestamp | Number | UNIX timestamp. | 
+| Ignite.CompromisedCredential._source.last_observed_at.timestamp | Number | The UNIX timestamp when the source breach was first observed. | 
 | Ignite.CompromisedCredential._source.password | String | The password for the credential \(in plain text, if possible\). | 
-| Ignite.CompromisedCredential._source.password_complexity.has_lowercase | Boolean | Boolean true/false if lowercase letters are present. | 
-| Ignite.CompromisedCredential._source.password_complexity.has_number | Boolean | Boolean true/false if numbers are present. | 
-| Ignite.CompromisedCredential._source.password_complexity.has_symbol | Boolean | Boolean true/false if symbols are present. | 
-| Ignite.CompromisedCredential._source.password_complexity.has_uppercase | Boolean | Boolean true/false if uppercase letters are present. | 
-| Ignite.CompromisedCredential._source.password_complexity.length | Number | Integer value that represents number of characters in password. | 
-| Ignite.CompromisedCredential._source.password_complexity.probable_hash_algorithms | Unknown | List of possible hash algorithms suspected based on textpattern of the password \(May include values like "MD5", "SHA-1", "SHA-256", "bcrypt", etc.\) | 
+| Ignite.CompromisedCredential._source.password_complexity.has_lowercase | Boolean | Whether lowercase letters are present. | 
+| Ignite.CompromisedCredential._source.password_complexity.has_number | Boolean | Whether numbers are present. | 
+| Ignite.CompromisedCredential._source.password_complexity.has_symbol | Boolean | Whether symbols are present. | 
+| Ignite.CompromisedCredential._source.password_complexity.has_uppercase | Boolean | Whether uppercase letters are present. | 
+| Ignite.CompromisedCredential._source.password_complexity.length | Number | Integer value that represents the number of characters in the password. | 
+| Ignite.CompromisedCredential._source.password_complexity.probable_hash_algorithms | Unknown | List of possible hash algorithms suspected based on the text pattern of the password. \(May include values like "MD5", "SHA-1", "SHA-256", "bcrypt", etc.\) | 
 | Ignite.CompromisedCredential._source.times_seen | Number | Integer representing the number of times the credential has been seen at Flashpoint. | 
 | Ignite.CompromisedCredential._type | String | Type of the IoC. | 
 | Ignite.CompromisedCredential.matched_queries | Unknown | Matching queries of the IoC. | 
@@ -288,7 +288,7 @@ Retrieves the compromised credentials based on the filter values provided in the
 ### flashpoint-ignite-event-list
 
 ***
-Searches for events within the specified time-period, the report fpid, or attack IDs.
+Searches for events within the specified time period, the Flashpoint report ID, or attack IDs.
 
 #### Base Command
 
@@ -299,8 +299,8 @@ Searches for events within the specified time-period, the report fpid, or attack
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | time_period | The time period for the search. | Optional | 
-| report_fpid | The report fpid. To retrieve the report fpid, run the flashpoint-ignite-intelligence-related-report-list command. | Optional | 
-| limit | Specify the limit on the no. of record. Default is 10. | Optional | 
+| report_fpid | The Flashpoint report ID. To retrieve the Flashpoint report ID, run the flashpoint-ignite-intelligence-related-report-list command. | Optional | 
+| limit | The maximum number of records. Default is 10. | Optional | 
 | attack_ids | A comma-separated list of attack IDs for which to search. Attack IDs can be found in event information or on the Ignite platform by filtering events by attack IDs. | Optional | 
 
 #### Context Output
@@ -310,8 +310,8 @@ Searches for events within the specified time-period, the report fpid, or attack
 | Ignite.Event.EventCreatorEmail | string | The email of the event creator. | 
 | Ignite.Event.EventId | string | The ID of the event. | 
 | Ignite.Event.UUID | string | The UUID of the event. | 
-| Ignite.Event.Href | string | The hyper link of the event. | 
-| Ignite.Event.MalwareDescription | string | The description about the malware. | 
+| Ignite.Event.Href | string | The hyperlink of the event. | 
+| Ignite.Event.MalwareDescription | string | The description of the malware. | 
 | Ignite.Event.Name | string | The name of the event. | 
 | Ignite.Event.ObservedTime | string | The date that the event was triggered. | 
 | Ignite.Event.Tags | string | The tags of the event. | 
@@ -374,7 +374,7 @@ Retrieves the details of a single event using event FPID or UUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | The FPID or UUID that identifies a particular event. The event id can be fetched from output context path (Ignite.Event.EventId) flashpoint-ignite-event-list command or indicator reputation command response or some other investigation. | Required | 
+| event_id | The FPID or UUID that identifies a particular event. The event ID can be fetched from the output context path (Ignite.Event.EventId) of the flashpoint-ignite-event-list command, or the indicator reputation command response or some other investigation. | Required | 
 
 #### Context Output
 
@@ -383,8 +383,8 @@ Retrieves the details of a single event using event FPID or UUID.
 | Ignite.Event.EventCreatorEmail | string | The email of the event creator. | 
 | Ignite.Event.EventId | string | The ID of the event. | 
 | Ignite.Event.UUID | string | The UUID of the event. | 
-| Ignite.Event.Href | string | The hyper link of the event. | 
-| Ignite.Event.MalwareDescription | string | The description about the malware. | 
+| Ignite.Event.Href | string | The hyperlink of the event. | 
+| Ignite.Event.MalwareDescription | string | The description of the malware. | 
 | Ignite.Event.Name | string | The name of the event. | 
 | Ignite.Event.ObservedTime | string | The date that the event was triggered. | 
 | Ignite.Event.Tags | string | The tags of the event. | 
@@ -431,19 +431,19 @@ Get single report details using the report id.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The report id of the report for which the details are to be fetched. The report id can be known from output context path (Ignite.Report.ReportId) of flashpoint-ignite-intelligence-report-search command or some other investigation. | Required | 
+| report_id | The ID of the report for which the details are to be fetched. The report ID can be retrieved from the output context path (Ignite.Report.ReportId) of the flashpoint-ignite-intelligence-report-search command or some other investigation. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Ignite.Report.NotifiedAt | string | Notify date of report. | 
-| Ignite.Report.PlatformUrl | string | Platform url of report. It helps to redirect Ignite platform. | 
-| Ignite.Report.PostedAt | number | posted date of report. | 
-| Ignite.Report.Summary | string | Summary of report. | 
+| Ignite.Report.NotifiedAt | string | Notify date of the report. | 
+| Ignite.Report.PlatformUrl | string | Platform URL of the report. Used to help redirect the Ignite platform. | 
+| Ignite.Report.PostedAt | number | Posted date of the report. | 
+| Ignite.Report.Summary | string | Summary of the report. | 
 | Ignite.Report.Title | string | Title of the report. | 
-| Ignite.Report.UpdatedAt | string | Last updated date of report. | 
-| Ignite.Report.ReportId | string | Unique id of the report. |
+| Ignite.Report.UpdatedAt | string | Last updated date of the report. | 
+| Ignite.Report.ReportId | string | Unique ID of the report. | 
 | Ignite.Report.Tags | string | Tags of the report. | 
 
 #### Command example
@@ -479,7 +479,7 @@ Get single report details using the report id.
 ### flashpoint-ignite-intelligence-related-report-list
 
 ***
-List related reports for a particular report using the report-id.
+List related reports for a particular report using the report ID.
 
 #### Base Command
 
@@ -496,9 +496,9 @@ List related reports for a particular report using the report-id.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Ignite.Report.NotifiedAt | string | Notify date of report. | 
-| Ignite.Report.PlatformUrl | string | Platform url of report. It helps to redirect Ignite platform. | 
-| Ignite.Report.PostedAt | number | posted date of report. | 
-| Ignite.Report.Summary | string | Summary of report. | 
+| Ignite.Report.PlatformUrl | string | Platform URL of the report. Used to help redirect the Ignite platform. | 
+| Ignite.Report.PostedAt | number | Posted date of the report. | 
+| Ignite.Report.Summary | string | Summary of the report. | 
 | Ignite.Report.Title | string | Title of the report. | 
 | Ignite.Report.UpdatedAt | string | Last updated date of report. | 
 | Ignite.Report.ReportId | string | Unique id of the report. | 
@@ -536,25 +536,261 @@ List related reports for a particular report using the report-id.
 >Link to the given Report on Ignite platform: [https:<span>//</span>app.flashpoint.io/cti/intelligence/report/00000000000000000001#detail](https:<span>//</span>app.flashpoint.io/cti/intelligence/report/00000000000000000001#detail)
 
 
-### email
+### flashpoint-ignite-alert-list
+
 ***
-Lookup the "Email" type indicator details. The reputation of Email is considered Malicious if there's at least one IOC event in Ignite database matching the Email indicator.
+Retrieves a list of alerts based on the filter values provided in the command arguments.
+
+#### Base Command
+
+`flashpoint-ignite-alert-list`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| size | The number of alerts to return. Default is 10. | Optional | 
+| created_after | Returns alerts that occurred after the specified date. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc). | Optional | 
+| created_before | Returns alerts that occurred before the specified date. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc). | Optional | 
+| cursor | The cursor to retrieve next page data. Used for pagination only. The value of the cursor can be found from the output context path (Ignite.PageToken.Alert.cursor) or the HR output of the flashpoint-ignite-alert-list command. | Optional | 
+| status | Filter alerts by status. Possible values are: Archived, Starred, Sent, None. | Optional | 
+| origin | Filter alerts by origin. Possible values are: Searches, Assets. | Optional | 
+| sources | Filter alerts by source. Possible values are: Github, Gitlab, Bitbucket, Communities, Images, Marketplaces. | Optional | 
+| tags | A comma-separated list of alerts filtered by tags. | Optional | 
+| asset_type | Filter alerts by asset type. | Optional | 
+| asset_ip | Filter alerts by asset IP. | Optional | 
+| asset_ids | A comma-separated list of alerts filtered by asset IDs. | Optional | 
+| query_ids | A comma-separated list of alerts filtered by search IDs. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Ignite.Alert.id | String | The unique identifier for the alert. | 
+| Ignite.Alert.resource.id | String | The identifier for the resource associated with the alert. | 
+| Ignite.Alert.resource.basetypes | String | Base types of the resource related to the alert. | 
+| Ignite.Alert.resource.container.container.name | String | The name of the nested container within the resource that holds the alert. | 
+| Ignite.Alert.resource.container.container.native_id | String | The native identifier for the nested container within the resource. | 
+| Ignite.Alert.resource.container.container.title | String | The title of the nested container within the resource. | 
+| Ignite.Alert.resource.container.name | String | The name of the container that holds the resource associated with the alert. | 
+| Ignite.Alert.resource.container.native_id | String | The native identifier for the container that holds the resource. | 
+| Ignite.Alert.resource.container.title | String | The title of the container that holds the resource associated with the alert. | 
+| Ignite.Alert.resource.created_at.date-time | String | The date and time when the resource associated with the alert was created in ISO 8601 format. | 
+| Ignite.Alert.resource.created_at.raw | Date | The raw timestamp or other date-time representation when the resource was created. | 
+| Ignite.Alert.resource.created_at.timestamp | Number | The UNIX timestamp representing when the resource associated with the alert was created. | 
+| Ignite.Alert.resource.media_v2.sha1 | String | The SHA1 hash of the media file related to the alert. | 
+| Ignite.Alert.resource.media_v2.phash | String | The perceptual hash \(pHash\) of the media file, used to find visually similar images. | 
+| Ignite.Alert.resource.media_v2.media_type | String | The type of media \(e.g., image, video\) associated with the alert. | 
+| Ignite.Alert.resource.media_v2.mime_type | String | The MIME type of the media file associated with the alert. | 
+| Ignite.Alert.resource.media_v2.storage_uri | String | The storage URI where the media file related to the alert is located. | 
+| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.racy | Number | A score indicating the likelihood that the image contains racy content. | 
+| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.spoof | Number | A score indicating the likelihood that the image contains spoofed content. | 
+| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.medical | Number | A score indicating the likelihood that the image contains medical content. | 
+| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.adult | Number | A score indicating the likelihood that the image contains sexual content. | 
+| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.adult | Number | A score indicating the likelihood that the image contains adult content. | 
+| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.violence | Number | A score indicating the likelihood that the image contains violent content. | 
+| Ignite.Alert.resource.title | String | The title of the resource associated with the alert. | 
+| Ignite.Alert.resource.section | String | The section of the platform or service where the resource is categorized or located. | 
+| Ignite.Alert.resource.repo | String | Repository of the resource related to the alert. | 
+| Ignite.Alert.resource.snippet | String | Snippet of the resource related to the alert. | 
+| Ignite.Alert.resource.source | String | Source of the resource related to the alert. | 
+| Ignite.Alert.resource.url | String | URL of the resource related to the alert. | 
+| Ignite.Alert.resource.owner | String | Owner of the resource related to the alert. | 
+| Ignite.Alert.resource.file | String | File associated with the resource related to the alert. | 
+| Ignite.Alert.resource.parent_basetypes | String | The parent base types that categorize the resource. | 
+| Ignite.Alert.resource.site_actor.names.handle | String | The username or handle of the site actor related to the resource. | 
+| Ignite.Alert.resource.site_actor.native_id | String | The native identifier for the site actor associated with the resource. | 
+| Ignite.Alert.resource.sort_date | Date | The date and time used for sorting the resource, typically the creation or publication date. | 
+| Ignite.Alert.resource.site.title | String | The title of the site or platform associated with the resource. | 
+| Ignite.Alert.resource.shodan_host.asn | String | The ASN \(Autonomous System Number\) of the Shodan host. | 
+| Ignite.Alert.resource.shodan_host.country | String | The country of the Shodan host. | 
+| Ignite.Alert.resource.shodan_host.org | String | The organization of the Shodan host. | 
+| Ignite.Alert.resource.shodan_host.shodan_url | String | The Shodan URL of the Shodan host. | 
+| Ignite.Alert.resource.shodan_host.vulns | Unknown | The vulnerabilities related to the Shodan host. | 
+| Ignite.Alert.reason.id | String | ID of the reason for the alert. | 
+| Ignite.Alert.reason.name | String | Name of the reason for the alert. | 
+| Ignite.Alert.reason.text | String | Text related to the reason for the alert. | 
+| Ignite.Alert.reason.origin | String | Origin of the reason for the alert. | 
+| Ignite.Alert.reason.details.sources | String | Sources related to the reason for the alert. | 
+| Ignite.Alert.reason.details.params | Unknown | Parameters related to the reason for the alert. | 
+| Ignite.Alert.reason.details.params.include.date.end | String | The end date for the included date range in the alert's reason details. | 
+| Ignite.Alert.reason.details.params.include.date.label | String | The label describing the included date range in the alert's reason details. | 
+| Ignite.Alert.reason.details.params.include.date.start | String | The start date for the included date range in the alert's reason details. | 
+| Ignite.Alert.reason.details.type | String | The type of details related to the reason for the alert. | 
+| Ignite.Alert.reason.entity.id | String | ID of the entity related to the reason for the alert. | 
+| Ignite.Alert.reason.entity.name | String | Name of the entity related to the reason for the alert. | 
+| Ignite.Alert.reason.entity.type | String | Type of the entity related to the reason for the alert. | 
+| Ignite.Alert.status | String | Status of the alert. | 
+| Ignite.Alert.generated_at | Date | Date when the alert was generated. | 
+| Ignite.Alert.created_at | Date | Date when the alert was created. | 
+| Ignite.Alert.tags | Unknown | Tags associated with the alert. | 
+| Ignite.Alert.highlights.media_v2.image_enrichment.enrichments.v1.image-analysis.text.value | String | The text value extracted from the image analysis in the alert's highlights. | 
+| Ignite.Alert.highlights.ports | String | The highlighted ports related to the alert. | 
+| Ignite.Alert.highlights.services | String | The highlighted services related to the alert. | 
+| Ignite.Alert.highlight_text | String | The highlighted text associated with the alert. | 
+| Ignite.Alert.data_type | String | Data type of the alert. | 
+| Ignite.Alert.parent_data_type | String | Parent data type of the alert. | 
+| Ignite.Alert.source | String | Source of the alert. | 
+| Ignite.Alert.is_read | Boolean | Indicates if the alert has been read. | 
+| Ignite.Alert.highlights.body.text/plain | String | The plain text extracted from the body of the content highlighted in the alert. | 
+| Ignite.Alert.reason.details.params.include.ships_from | String | The shipping origin included in the alert's reason details. | 
+| Ignite.Alert.highlights.snippet | String | A snippet or excerpt highlighted in the alert. | 
+| Ignite.PageToken.Alert.created_after | Date | Date for filtering alerts created after a specific time. | 
+| Ignite.PageToken.Alert.created_before | Date | Date for filtering alerts created before a specific time. | 
+| Ignite.PageToken.Alert.size | String | Size of the page for pagination. | 
+| Ignite.PageToken.Alert.cursor | Date | Cursor for pagination to retrieve the next set of alerts. | 
+| Ignite.PageToken.Alert.name | String | The name of the command. | 
+
+
+#### Command example
+```!flashpoint-ignite-alert-list created_after="2024-06-11T05:54:25Z" created_before="2024-06-12T05:54:27Z" size=1```
+#### Context Example
+```json
+{
+    "Ignite": {
+        "Alert": {
+            "id": "00000000-0000-0000-0000-000000000001",
+            "resource": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "basetypes": [
+                    "code",
+                    "file",
+                    "github",
+                    "repository"
+                ],
+                "file": "2024/06/17/My First Blog/index.html",
+                "url": "https://dummyurl.com/naive-gabrie-white",
+                "owner": "naive-gabrie-white",
+                "source": "github",
+                "repo": "naive-gabrie-white.github.io",
+                "snippet": "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"facebook,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:..."
+            },
+            "reason": {
+                "id": "00000000-0000-0000-0000-000000000001",
+                "name": "fb",
+                "text": "facebook",
+                "origin": "searches",
+                "details": {
+                    "sources": [
+                        "data_exposure__github",
+                        "data_exposure__gitlab",
+                        "data_exposure__bitbucket"
+                    ]
+                },
+                "entity": {
+                    "id": "000000000000000001",
+                    "name": "Crest Data Systems",
+                    "type": "organization"
+                }
+            },
+            "generated_at": "2024-06-17T05:54:19Z",
+            "created_at": "2024-06-17T05:54:22.158905Z",
+            "highlights": {
+                "snippet": [
+                    "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"<x-fp-highlight>facebook</x-fp-highlight>,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:..."
+                ]
+            },
+            "highlight_text": "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"<x-fp-highlight>facebook</x-fp-highlight>,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:...",
+            "data_type": "github",
+            "source": "data_exposure__github",
+            "is_read": false
+        },
+        {
+            "id": "00000000-0000-0000-0000-000000000005",
+            "resource": {
+                "id": "00000000000000000005",
+                "basetypes": [
+                    "infrastructure",
+                    "internet",
+                    "shodan"
+                ],
+                "source": "shodan",
+                "shodan_host": {
+                    "asn": "AS0001",
+                    "country": "United States",
+                    "org": "Company LLC",
+                    "shodan_url": "https://www.shodan.io/host/0.0.0.1"
+                }
+            },
+            "reason": {
+                "id": "00000000000000000005",
+                "name": "Company IP",
+                "text": "0.0.0.1",
+                "origin": "assets",
+                "details": {
+                    "type": "ipv4s"
+                },
+                "entity": {
+                    "id": "000000000000000001",
+                    "name": "Crest Data Systems",
+                    "type": "organization"
+                }
+            },
+            "generated_at": "2024-07-02T16:43:17Z",
+            "created_at": "2024-07-02T16:43:37.476237Z",
+            "highlights": {
+                "ports": [
+                    "<x-fp-highlight>53</x-fp-highlight>",
+                    "<x-fp-highlight>443</x-fp-highlight>"
+                ],
+                "services": [
+                    "<x-fp-highlight>Unknown Service (Port 01)</x-fp-highlight>",
+                    "<x-fp-highlight>Unknown Service (Port 02)</x-fp-highlight>"
+                ]
+            },
+            "highlight_text": "<x-fp-highlight>53</x-fp-highlight>",
+            "data_type": "unknown",
+            "is_read": false
+        },
+        "PageToken": {
+            "Alert": {
+                "created_after": "2024-06-14T05:54:25Z",
+                "created_before": "2024-06-17T05:54:25Z",
+                "cursor": "1718603662.158905",
+                "name": "flashpoint-ignite-alert-list",
+                "size": "1"
+            }
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Alerts
+>|ID|Created at (UTC)|Query|Source|Resource URL|Site Title|Shodan Host|Repository|Owner|Origin|Ports|Services|Highlight Text|
+>|---|---|---|---|---|---|---|---|---|---|---|---|---|
+>| 00000000-0000-0000-0000-000000000001 | Jun 17, 2024  05:54 | facebook | data_exposure__github | [https://dummyurl.com/naive-gabrie-white](https://dummyurl.com/naive-gabrie-white) |  |  | naive-gabrie-white.github.io | naive-gabrie-white | searches |  |  | data\-image="https://i.dummyurl.net/2021/02/24/000000000000001.png" data\-sites="<x\-fp\-highlight>facebook</x\-fp\-highlight>,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https:... |
+>| 00000000-0000-0000-0000-000000000005 | Jul 02, 2024  16:43 | 0.0.0.1 |  |  |  | ***asn***: AS0001<br>***country***: United States<br>***org***: Company LLC<br>***shodan_url***: [https://www.shodan.io/host/0.0.0.1](https://www.shodan.io/host/0.0.0.1) |  |  | assets | 53, 443 | Unknown Service (Port 01), Unknown Service (Port 02) | <x\-fp\-highlight>53</x\-fp\-highlight> |
+>
+>#### To retrieve the next set of result use,
+>created_after = 2024-06-14T05:54:25Z
+>created_before = 2024-06-17T05:54:25Z
+>size = 1
+>cursor = 1718603662.158905
+
+
+### email
+
+***
+Looks up the "Email" type indicator details. The reputation of Email is considered malicious if there's at least one IoC event in the Ignite database matching the Email indicator.
 
 #### Base Command
 
 `email`
+
 #### Input
 
-| **Argument Name** | **Description**                                                  | **Required** |
-| --- |------------------------------------------------------------------| --- |
-| email | List of emails. | Required | 
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| email | A comma-separated list of emails. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Reliability | string | The reliability of the vendor. |  
+| DBotScore.Reliability | string | The reliability of the vendor. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
@@ -566,8 +802,8 @@ Lookup the "Email" type indicator details. The reputation of Email is considered
 | Ignite.Email.Event.Type | string | The indicator type. | 
 | Ignite.Email.Event.Uuid | string | The UUID of the indicator. | 
 | Ignite.Email.Event.Comment | string | The comment that was provided when the indicator was observed. | 
-| Account.Email.Name | string | Name of indicator. | 
 | Account.Description | string | The description of the indicator. | 
+| Account.Email.Name | string | Name of indicator. | 
 
 #### Command Example
 ```
@@ -626,9 +862,9 @@ Lookup the "Email" type indicator details. The reputation of Email is considered
 
 
 ### filename
-***
-Lookup the "Filename" type indicator details. The reputation of Filename is considered Malicious if there's at least one IOC event in Ignite database matching the Filename indicator.
 
+***
+Looks up the "Filename" type indicator details. The reputation of Filename is considered malicious if there's at least one IoC event in the Ignite database matching the Filename indicator.
 
 #### Base Command
 
@@ -638,31 +874,30 @@ Lookup the "Filename" type indicator details. The reputation of Filename is cons
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filename | List of filenames. | Required | 
-
+| filename | A comma-separated list of filenames. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Reliability | string | The reliability of the vendor. |  
+| DBotScore.Reliability | string | The reliability of the vendor. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | Ignite.Filename.Event.Href | string | A list of reference links of the indicator. | 
-| Ignite.Filename.Event.Filename | string | Filename of the indicator | 
+| Ignite.Filename.Event.Filename | string | Filename of the indicator. | 
 | Ignite.Filename.Event.EventDetails | string | The event details in which the indicator was observed. | 
 | Ignite.Filename.Event.Category | string | The category of the indicator. | 
-| Ignite.Filename.Event.Fpid | string | The Flashpoint ID of the indicator. | 
+| Ignite.Filename.Event.Fpid | string | The Ignite ID of the indicator. | 
 | Ignite.Filename.Event.Timestamp | string | The time and date that the indicator was observed. | 
 | Ignite.Filename.Event.Type | string | The indicator type. | 
 | Ignite.Filename.Event.Uuid | string | The UUID of the indicator. | 
 | Ignite.Filename.Event.Comment | string | The comment that was provided when the indicator was observed. | 
-| Filename.Malicious.Description | string | The description of the malicious indicator. |
-| Filename.Malicious.Vendor | string | Vendor of malicious Filename. |
-| Filename.Name | string | The Filename. |
-| Filename.Description | string | The description of the indicator. |
+| Filename.Malicious.Description | string | The description of the malicious indicator. | 
+| Filename.Malicious.Vendor | string | Vendor of the malicious filename. | 
+| Filename.Name | string | The filename. | 
+| Filename.Description | string | The description of the indicator. | 
 
 #### Command Example
 ```
@@ -729,7 +964,7 @@ Lookup the "Filename" type indicator details. The reputation of Filename is cons
 ### ip
 
 ***
-Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IOC event in the Ignite database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the Community's Peer IP Address.
+Looks up details of an IP indicator. The reputation of the IP address is considered malicious if there's at least one IoC event in the Ignite database that matches the IP indicator. Alternatively, the IP address is considered suspicious if it matches any one of the community's peer IP addresses.
 
 #### Base Command
 
@@ -739,22 +974,22 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Required | 
+| ip | A comma-separated list of IP addresses. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Reliability | string | The reliability of the vendor. |  
+| DBotScore.Reliability | string | The reliability of the vendor. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | IP.Address | string | The IP address. | 
 | IP.Malicious.Description | string | The description of the malicious indicator. | 
 | IP.Malicious.Vendor | string | The vendor used to calculate the severity of the IP address. | 
+| IP.Description | string | The description of the indicator. | 
 | Ignite.IP.Event.Href | string | A list of reference links of the indicator. | 
-| IP.Description | string | The description of the indicator. |
 | Ignite.IP.Event.Address | string | The IP address of the indicator. | 
 | Ignite.IP.Event.EventDetails | string | The event details in which the indicator was observed. | 
 | Ignite.IP.Event.Category | string | The category of the indicator. | 
@@ -894,37 +1129,93 @@ Looks up details of an IP indicator. The reputation of the IP address is conside
 >
 >### Events in which this IOC observed
 >|Date Observed (UTC)|Name|Tags|
->|---|---|---|
+>|---|---|---
 >| Jun 09, 2024  20:16 | Observation: CobaltStrikeVariant [2024-06-09 14:08:21] | asn:as11878, infrastructure:c2, mitre:T1071, source:masscan, tool:cobaltstrike |
 >
 >All events and details (ignite): [https:<span>//</span>app.flashpoint.io/cti/malware/iocs?query=%220.0.0.1%22&sort_date=All%20Time&types=ip-dst,ip-src,ip-dst|port](https:<span>//</span>app.flashpoint.io/cti/malware/iocs?query=%220.0.0.1%22&sort_date=All%20Time&types=ip-dst,ip-src,ip-dst|port)
 
 
+### flashpoint-ignite-common-lookup
 
-### url
 ***
-Lookup the "URL" type indicator details. The reputation of Url is considered Malicious if there's at least one IOC event in Ignite database matching the Url indicator.
+Looks up any type of indicator.
 
 #### Base Command
 
-`url`
+`flashpoint-ignite-common-lookup`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | List of URLs. | Required | 
+| indicator | List of indicators. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Reliability | string | The reliability of the vendor. |  
+| DBotScore.Reliability | string | The reliability of the vendor. | 
+| DBotScore.Score | number | The actual score. | 
+| DBotScore.Type | string | The indicator type. | 
+| DBotScore.Vendor | string | The vendor used to calculate the score. | 
+
+#### Command example
+```!flashpoint-ignite-common-lookup indicator="dummy@dummy.com"```
+#### Context Example
+```json
+{
+    "DBotScore": [
+        {
+            "Indicator": "dummy@dummy.com",
+            "Reliability": "B - Usually reliable",
+            "Score": 3,
+            "Type": "email",
+            "Vendor": "Ignite"
+        }
+    ]
+}
+```
+
+#### Human Readable Output
+
+>### Ignite reputation for dummy@dummy.com
+>Reputation: Malicious
+>
+>### Events in which this IOC observed
+>|Date Observed (UTC)|Name|Tags|
+>|---|---|---|
+>| Feb 06, 2021  01:29 | Observation: reported BazarLoader iocs [2021-02-05 15:30:30] | event:observation, malware:bazar, source:osint, type:64bit, misp-galaxy:mitre-enterprise-attack-attack-pattern="Exfiltration Over Command and Control Channel - 00001" |
+>
+>All events and details (ignite): [https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&query=%22dummy%40dummy.com%22](https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&query=%22dummy%40dummy.com%22)
+
+
+### url
+
+***
+Looks up the "URL" type indicator details. The reputation of the URL is considered malicious if there's at least one IoC event in the Ignite database matching the URL indicator.
+
+#### Base Command
+
+`url`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| url | A comma-separated list of URLs. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| DBotScore.Indicator | string | The indicator that was tested. | 
+| DBotScore.Reliability | string | The reliability of the vendor. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | Ignite.Url.Event.Href | string | A list of reference links of the indicator. | 
-| Ignite.Url.Event.Url | string | Url of the indicator | 
+| Ignite.Url.Event.Url | string | URL of the indicator. | 
 | Ignite.Url.Event.EventDetails | string | The event details in which the indicator was observed. | 
 | Ignite.Url.Event.Category | string | The category of the indicator. | 
 | Ignite.Url.Event.Fpid | string | The Flashpoint ID of the indicator. | 
@@ -933,14 +1224,14 @@ Lookup the "URL" type indicator details. The reputation of Url is considered Mal
 | Ignite.Url.Event.Uuid | string | The UUID of the indicator. | 
 | Ignite.Url.Event.Comment | string | The comment that was provided when the indicator was observed. | 
 | URL.Malicious.Description | string | The description of the malicious indicator. | 
-| URL.Malicious.Vendor | string | Vendor of malicious url. | 
-| URL.Data | string | The URL | 
+| URL.Malicious.Vendor | string | Vendor of the malicious URL. | 
+| URL.Data | string | The URL. | 
 | URL.Relationships.EntityA | string | The source of the relationship. | 
 | URL.Relationships.EntityB | string | The destination of the relationship. | 
 | URL.Relationships.Relationship | string | The name of the relationship. | 
 | URL.Relationships.EntityAType | string | The type of the source of the relationship. | 
 | URL.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-| URL.Description | string | The description of the indicator. |
+| URL.Description | string | The description of the indicator. | 
 
 #### Command Example
 ```
@@ -1027,65 +1318,10 @@ Lookup the "URL" type indicator details. The reputation of Url is considered Mal
 >All events and details (ignite): [https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=url&query=%22http%3A//dummy.com%22](https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=url&query=%22http%3A//dummy.com%22)
 
 
-### flashpoint-ignite-common-lookup
-
-***
-Lookup any type of indicator.
-
-#### Base Command
-
-`flashpoint-ignite-common-lookup`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| indicator | List of indicators. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Reliability | string | The reliability of the vendor. |  
-| DBotScore.Score | number | The actual score. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-
-#### Command example
-```!flashpoint-ignite-common-lookup indicator="dummy@dummy.com"```
-#### Context Example
-```json
-{
-    "DBotScore": [
-        {
-            "Indicator": "dummy@dummy.com",
-            "Reliability": "B - Usually reliable",
-            "Score": 3,
-            "Type": "email",
-            "Vendor": "Ignite"
-        }
-    ]
-}
-```
-
-#### Human Readable Output
-
->### Ignite reputation for dummy@dummy.com
->Reputation: Malicious
->
->### Events in which this IOC observed
->|Date Observed (UTC)|Name|Tags|
->|---|---|---|
->| Feb 06, 2021  01:29 | Observation: reported BazarLoader iocs [2021-02-05 15:30:30] | event:observation, malware:bazar, source:osint, type:64bit, misp-galaxy:mitre-enterprise-attack-attack-pattern="Exfiltration Over Command and Control Channel - 00001" |
->
->All events and details (ignite): [https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&query=%22dummy%40dummy.com%22](https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&query=%22dummy%40dummy.com%22)
-
-
 ### domain
 
 ***
-Lookup the "Domain" type indicator details. The reputation of Domain is considered Malicious if there's at least one IOC event in Ignite database matching the Domain indicator.
+Looks up the "Domain" type indicator details. The reputation of Domain is considered malicious if there's at least one IoC event in the Ignite database matching the Domain indicator.
 
 #### Base Command
 
@@ -1095,14 +1331,14 @@ Lookup the "Domain" type indicator details. The reputation of Domain is consider
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | List of domains. | Required | 
+| domain | A comma-separated list of domains. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Reliability | string | The reliability of the vendor. |  
+| DBotScore.Reliability | string | The reliability of the vendor. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
@@ -1116,14 +1352,14 @@ Lookup the "Domain" type indicator details. The reputation of Domain is consider
 | Ignite.Domain.Event.Uuid | string | The UUID of the indicator. | 
 | Ignite.Domain.Event.Comment | string | The comment that was provided when the indicator was observed. | 
 | Domain.Malicious.Description | string | The description of the malicious indicator. | 
-| Domain.Malicious.Vendor | string | Vendor of malicious indicator. | 
-| Domain.Name | string | Name of domain. | 
+| Domain.Malicious.Vendor | string | Vendor of the malicious indicator. | 
+| Domain.Name | string | Name of the domain. | 
+| Domain.Description | string | The description of the indicator. | 
 | Domain.Relationships.EntityA | string | The source of the relationship. | 
 | Domain.Relationships.EntityB | string | The destination of the relationship. | 
 | Domain.Relationships.Relationship | string | The name of the relationship. | 
 | Domain.Relationships.EntityAType | string | The type of the source of the relationship. | 
 | Domain.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-| Domain.Description | string | The description of the indicator. |
 
 #### Command example
 ```!domain domain="dummy.com"```
@@ -1190,12 +1426,14 @@ Lookup the "Domain" type indicator details. The reputation of Domain is consider
 >All events and details (ignite): [https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&types=domain&query=%22dummy.com%22](https:<span>//</span>app.flashpoint.io/cti/malware/iocs?sort_date=All%20Time&types=domain&query=%22dummy.com%22)
 
 ### file
+
 ***
-Lookup the "File" type indicator details. The reputation of File-hash is considered Malicious if there's at least one IOC event in Ignite database matching the File-hash indicator.
+Looks up the "File" type indicator details. The reputation of File hash is considered malicious if there's at least one IoC event in the Ignite database matching the File hash indicator.
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1207,30 +1445,30 @@ Lookup the "File" type indicator details. The reputation of File-hash is conside
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Reliability | string | The reliability of the vendor. |  
+| DBotScore.Reliability | string | The reliability of the vendor. | 
 | DBotScore.Score | number | The actual score. | 
 | DBotScore.Type | string | The indicator type. | 
 | DBotScore.Vendor | string | The vendor used to calculate the score. | 
 | Ignite.File.Event.Href | string | A list of reference links of the indicator. | 
-| Ignite.File.Event.MD5 | string | MD5 file hash of the indicator | 
-| Ignite.File.Event.SHA1 | string | SHA1 file hash of the indicator | 
-| Ignite.File.Event.SHA256 | string | SHA256 file hash of the indicator | 
-| Ignite.File.Event.SHA512 | string | SHA512 file hash of the indicator | 
-| Ignite.File.Event.SSDeep | string | SSDeep file hash of the indicator | 
+| Ignite.File.Event.MD5 | string | MD5 file hash of the indicator. | 
+| Ignite.File.Event.SHA1 | string | SHA1 file hash of the indicator. | 
+| Ignite.File.Event.SHA256 | string | SHA256 file hash of the indicator. | 
+| Ignite.File.Event.SHA512 | string | SHA512 file hash of the indicator. | 
+| Ignite.File.Event.SSDeep | string | SSDeep file hash of the indicator. | 
 | Ignite.File.Event.EventDetails | string | The event details in which the indicator was observed. | 
 | Ignite.File.Event.Category | string | The category of the indicator. | 
-| Ignite.File.Event.Fpid | string | The Flashpoint ID of the indicator. | 
+| Ignite.File.Event.Fpid | string | The Ignite ID of the indicator. | 
 | Ignite.File.Event.Timestamp | string | The time and date that the indicator was observed. | 
 | Ignite.File.Event.Type | string | The indicator type. | 
 | Ignite.File.Event.Uuid | string | The UUID of the indicator. | 
 | Ignite.File.Event.Comment | string | The comment that was provided when the indicator was observed. | 
 | File.Malicious.Description | string | The description of the malicious indicator. | 
-| File.Malicious.Vendor | string | Vendor of malicious file. | 
+| File.Malicious.Vendor | string | Vendor of the malicious file. | 
 | File.MD5 | string | MD5 type file. | 
 | File.SHA1 | string | SHA1 type file. | 
 | File.SHA256 | string | SHA256 type file. | 
-| File.SHA512 | string | SHA512 type file. |
-| File.SSDeep | string | SSDeep type file. |
+| File.SHA512 | string | SHA512 type file. | 
+| File.SSDeep | string | SSDeep type file. | 
 | File.Relationships.EntityA | string | The source of the relationship. | 
 | File.Relationships.EntityB | string | The destination of the relationship. | 
 | File.Relationships.Relationship | string | The name of the relationship. | 
@@ -1327,238 +1565,6 @@ Lookup the "File" type indicator details. The reputation of File-hash is conside
 >
 >All events and details (ignite): [https://mock_dummy.com/cti/malware/iocs?sort_date=All%20time&types=md5,sha1,sha256,sha512,ssdeep&query=%2200000000000000000000000000000001%22](https://mock_dummy.com/cti/malware/iocs?sort_date=All%20time&types=md5,sha1,sha256,sha512,ssdeep&query=%2200000000000000000000000000000001%22)
 
-
-### flashpoint-ignite-alert-list
-
-***
-Retrieves a list of alerts based on the filter values provided in the command arguments.
-
-#### Base Command
-
-`flashpoint-ignite-alert-list`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| size | The number of alerts to return. Default is 10. | Optional | 
-| created_after | Returns alerts that occurred after the specified date. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc). | Optional | 
-| created_before | Returns alerts that occurred before the specified date. (Formats accepted: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ, etc). | Optional | 
-| cursor | Provide cursor for retrieve next page data. Used for pagination only. The value of cursor can be found from output context path (Ignite.PageToken.Alert.cursor) or HR output of flashpoint-ignite-alert-list command. | Optional | 
-| status | Filter Alerts by status. Possible values are: Archived, Starred, Sent, None. | Optional | 
-| origin | Filter Alerts by origin. Possible values are: Searches, Assets. | Optional | 
-| sources | Filter Alerts by source. Possible values are: Github, Gitlab, Bitbucket, Communities, Images, Marketplaces. | Optional | 
-| tags | Filter Alerts by tags. Supports comma-separated list. | Optional | 
-| asset_type | Filter Alerts by Asset type. | Optional | 
-| asset_ip | Filter Alerts by Asset IP. | Optional | 
-| asset_ids | Filter Alerts by Asset IDs. Supports comma-separated list. | Optional | 
-| query_ids | Filter Alerts by Search IDs. Supports comma-separated list. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Ignite.Alert.id | String | The unique identifier for the alert. | 
-| Ignite.Alert.resource.id | String | The identifier for the resource associated with the alert. | 
-| Ignite.Alert.resource.basetypes | String | Basetypes of the resource related to the alert. | 
-| Ignite.Alert.resource.container.container.name | String | The name of the nested container within the resource that holds the alert. | 
-| Ignite.Alert.resource.container.container.native_id | String | The native identifier for the nested container within the resource. | 
-| Ignite.Alert.resource.container.container.title | String | The title of the nested container within the resource. | 
-| Ignite.Alert.resource.container.name | String | The name of the container that holds the resource associated with the alert. | 
-| Ignite.Alert.resource.container.native_id | String | The native identifier for the container that holds the resource. | 
-| Ignite.Alert.resource.container.title | String | The title of the container that holds the resource associated with the alert. | 
-| Ignite.Alert.resource.created_at.date-time | String | The date and time when the resource associated with the alert was created in ISO 8601 format. | 
-| Ignite.Alert.resource.created_at.raw | Date | The raw timestamp or other date-time representation when the resource was created. | 
-| Ignite.Alert.resource.created_at.timestamp | Number | The UNIX timestamp representing when the resource associated with the alert was created. | 
-| Ignite.Alert.resource.media_v2.sha1 | String | The SHA-1 hash of the media file related to the alert. | 
-| Ignite.Alert.resource.media_v2.phash | String | The perceptual hash \(pHash\) of the media file, used to find visually similar images. | 
-| Ignite.Alert.resource.media_v2.media_type | String | The type of media \(e.g., image, video\) associated with the alert. | 
-| Ignite.Alert.resource.media_v2.mime_type | String | The MIME type of the media file associated with the alert. | 
-| Ignite.Alert.resource.media_v2.storage_uri | String | The storage URI where the media file related to the alert is located. | 
-| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.racy | Number | A score indicating the likelihood that the image contains racy content. | 
-| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.spoof | Number | A score indicating the likelihood that the image contains spoofed content. | 
-| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.medical | Number | A score indicating the likelihood that the image contains medical content. | 
-| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.adult | Number | A score indicating the likelihood that the image contains sexual content. | 
-| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.adult | Number | A score indicating the likelihood that the image contains adult content. | 
-| Ignite.Alert.resource.media_v2.image_enrichment.enrichments.v1.image-analysis.safe_search.violence | Number | A score indicating the likelihood that the image contains violent content. | 
-| Ignite.Alert.resource.title | String | The title of the resource associated with the alert. | 
-| Ignite.Alert.resource.section | String | The section of the platform or service where the resource is categorized or located. | 
-| Ignite.Alert.resource.repo | String | Repository of the resource related to the alert. | 
-| Ignite.Alert.resource.snippet | String | Snippet of the resource related to the alert. | 
-| Ignite.Alert.resource.source | String | Source of the resource related to the alert. | 
-| Ignite.Alert.resource.url | String | URL of the resource related to the alert. | 
-| Ignite.Alert.resource.owner | String | Owner of the resource related to the alert. | 
-| Ignite.Alert.resource.file | String | File associated with the resource related to the alert. | 
-| Ignite.Alert.resource.parent_basetypes | String | The parent base types that categorize the resource. | 
-| Ignite.Alert.resource.site_actor.names.handle | String | The username or handle of the site actor related to the resource. | 
-| Ignite.Alert.resource.site_actor.native_id | String | The native identifier for the site actor associated with the resource. | 
-| Ignite.Alert.resource.sort_date | Date | The date and time used for sorting the resource, typically the creation or publication date. | 
-| Ignite.Alert.resource.site.title | String | The title of the site or platform associated with the resource. | 
-| Ignite.Alert.resource.shodan_host.asn | String | The ASN \(Autonomous System Number\) of the Shodan host. | 
-| Ignite.Alert.resource.shodan_host.country | String | The country of the Shodan host. | 
-| Ignite.Alert.resource.shodan_host.org | String | The organization of the Shodan host. | 
-| Ignite.Alert.resource.shodan_host.shodan_url | String | The Shodan URL of the Shodan host. | 
-| Ignite.Alert.resource.shodan_host.vulns | Unknown | The vulnerabilities related to the Shodan host. | 
-| Ignite.Alert.reason.id | String | ID of the reason for the alert. | 
-| Ignite.Alert.reason.name | String | Name of the reason for the alert. | 
-| Ignite.Alert.reason.text | String | Text related to the reason for the alert. | 
-| Ignite.Alert.reason.origin | String | Origin of the reason for the alert. | 
-| Ignite.Alert.reason.details.sources | String | Sources related to the reason for the alert. | 
-| Ignite.Alert.reason.details.params | Unknown | Parameters related to the reason for the alert. | 
-| Ignite.Alert.reason.details.params.include.date.end | String | The end date for the included date range in the alert's reason details. | 
-| Ignite.Alert.reason.details.params.include.date.label | String | The label describing the included date range in the alert's reason details. | 
-| Ignite.Alert.reason.details.params.include.date.start | String | The start date for the included date range in the alert's reason details. | 
-| Ignite.Alert.reason.details.type | String | The type of details related to the reason for the alert. | 
-| Ignite.Alert.reason.entity.id | String | ID of the entity related to the reason for the alert. | 
-| Ignite.Alert.reason.entity.name | String | Name of the entity related to the reason for the alert. | 
-| Ignite.Alert.reason.entity.type | String | Type of the entity related to the reason for the alert. | 
-| Ignite.Alert.status | String | Status of the alert. | 
-| Ignite.Alert.generated_at | Date | Date when the alert was generated. | 
-| Ignite.Alert.created_at | Date | Date when the alert was created. | 
-| Ignite.Alert.tags | Unknown | Tags associated with the alert. | 
-| Ignite.Alert.highlights.media_v2.image_enrichment.enrichments.v1.image-analysis.text.value | String | The text value extracted from the image analysis in the alert's highlights. | 
-| Ignite.Alert.highlights.ports | String | The highlighted ports related to the alert. | 
-| Ignite.Alert.highlights.services | String | The highlighted services related to the alert. | 
-| Ignite.Alert.highlight_text | String | The highlighted text associated with the alert. | 
-| Ignite.Alert.data_type | String | Data type of the alert. | 
-| Ignite.Alert.parent_data_type | String | Parent data type of the alert. | 
-| Ignite.Alert.source | String | Source of the alert. | 
-| Ignite.Alert.is_read | Boolean | Indicates if the alert has been read. | 
-| Ignite.Alert.highlights.body.text/plain | String | The plain text extracted from the body of the content highlighted in the alert. | 
-| Ignite.Alert.reason.details.params.include.ships_from | String | The shipping origin included in the alert's reason details. | 
-| Ignite.Alert.highlights.snippet | String | A snippet or excerpt highlighted in the alert. | 
-| Ignite.PageToken.Alert.created_after | Date | Date for filtering alerts created after a specific time. | 
-| Ignite.PageToken.Alert.created_before | Date | Date for filtering alerts created before a specific time. | 
-| Ignite.PageToken.Alert.size | String | Size of the page for pagination. | 
-| Ignite.PageToken.Alert.cursor | Date | Cursor for pagination to retrieve the next set of alerts. | 
-| Ignite.PageToken.Alert.name | String | The name of the command. | 
-
-#### Command example
-```!flashpoint-ignite-alert-list created_after="2024-06-11T05:54:25Z" created_before="2024-06-12T05:54:27Z" size=1```
-#### Context Example
-```json
-{
-    "Ignite": {
-        "Alert": {
-            "id": "00000000-0000-0000-0000-000000000001",
-            "resource": {
-                "id": "00000000-0000-0000-0000-000000000001",
-                "basetypes": [
-                    "code",
-                    "file",
-                    "github",
-                    "repository"
-                ],
-                "file": "2024/06/17/My First Blog/index.html",
-                "url": "https://dummyurl.com/naive-gabrie-white",
-                "owner": "naive-gabrie-white",
-                "source": "github",
-                "repo": "naive-gabrie-white.github.io",
-                "snippet": "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"facebook,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:..."
-            },
-            "reason": {
-                "id": "00000000-0000-0000-0000-000000000001",
-                "name": "fb",
-                "text": "facebook",
-                "origin": "searches",
-                "details": {
-                    "sources": [
-                        "data_exposure__github",
-                        "data_exposure__gitlab",
-                        "data_exposure__bitbucket"
-                    ]
-                },
-                "entity": {
-                    "id": "000000000000000001",
-                    "name": "Crest Data Systems",
-                    "type": "organization"
-                }
-            },
-            "generated_at": "2024-06-17T05:54:19Z",
-            "created_at": "2024-06-17T05:54:22.158905Z",
-            "highlights": {
-                "snippet": [
-                    "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"<x-fp-highlight>facebook</x-fp-highlight>,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:..."
-                ]
-            },
-            "highlight_text": "data-image=\"https://i.dummyurl.net/2021/02/24/000000000000001.png\" data-sites=\"<x-fp-highlight>facebook</x-fp-highlight>,twitter,wechat,weibo,qq\"></div><link rel=\"stylesheet\" href=\"https:...",
-            "data_type": "github",
-            "source": "data_exposure__github",
-            "is_read": false
-        },
-        {
-            "id": "00000000-0000-0000-0000-000000000005",
-            "resource": {
-                "id": "00000000000000000005",
-                "basetypes": [
-                    "infrastructure",
-                    "internet",
-                    "shodan"
-                ],
-                "source": "shodan",
-                "shodan_host": {
-                    "asn": "AS0001",
-                    "country": "United States",
-                    "org": "Company LLC",
-                    "shodan_url": "https://www.shodan.io/host/0.0.0.1"
-                }
-            },
-            "reason": {
-                "id": "00000000000000000005",
-                "name": "Company IP",
-                "text": "0.0.0.1",
-                "origin": "assets",
-                "details": {
-                    "type": "ipv4s"
-                },
-                "entity": {
-                    "id": "000000000000000001",
-                    "name": "Crest Data Systems",
-                    "type": "organization"
-                }
-            },
-            "generated_at": "2024-07-02T16:43:17Z",
-            "created_at": "2024-07-02T16:43:37.476237Z",
-            "highlights": {
-                "ports": [
-                    "<x-fp-highlight>53</x-fp-highlight>",
-                    "<x-fp-highlight>443</x-fp-highlight>"
-                ],
-                "services": [
-                    "<x-fp-highlight>Unknown Service (Port 01)</x-fp-highlight>",
-                    "<x-fp-highlight>Unknown Service (Port 02)</x-fp-highlight>"
-                ]
-            },
-            "highlight_text": "<x-fp-highlight>53</x-fp-highlight>",
-            "data_type": "unknown",
-            "is_read": false
-        },
-        "PageToken": {
-            "Alert": {
-                "created_after": "2024-06-14T05:54:25Z",
-                "created_before": "2024-06-17T05:54:25Z",
-                "cursor": "1718603662.158905",
-                "name": "flashpoint-ignite-alert-list",
-                "size": "1"
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Alerts
->|ID|Created at (UTC)|Query|Source|Resource URL|Site Title|Shodan Host|Repository|Owner|Origin|Ports|Services|Highlight Text|
->|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 00000000-0000-0000-0000-000000000001 | Jun 17, 2024  05:54 | facebook | data_exposure__github | [https://dummyurl.com/naive-gabrie-white](https://dummyurl.com/naive-gabrie-white) |  |  | naive-gabrie-white.github.io | naive-gabrie-white | searches |  |  | data\-image="https://i.dummyurl.net/2021/02/24/000000000000001.png" data\-sites="<x\-fp\-highlight>facebook</x\-fp\-highlight>,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https:... |
->| 00000000-0000-0000-0000-000000000005 | Jul 02, 2024  16:43 | 0.0.0.1 |  |  |  | ***asn***: AS0001<br>***country***: United States<br>***org***: Company LLC<br>***shodan_url***: [https://www.shodan.io/host/0.0.0.1](https://www.shodan.io/host/0.0.0.1) |  |  | assets | 53, 443 | Unknown Service (Port 01), Unknown Service (Port 02) | <x\-fp\-highlight>53</x\-fp\-highlight> |
->
->#### To retrieve the next set of result use,
->created_after = 2024-06-14T05:54:25Z
->created_before = 2024-06-17T05:54:25Z
->size = 1
->cursor = 1718603662.158905
 
 ## Migration Guide
 

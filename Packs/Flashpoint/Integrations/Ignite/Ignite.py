@@ -154,7 +154,7 @@ MESSAGES = {
     "INVALID_JSON_OBJECT": 'Failed to parse json object from response: {}.',
     "STATUS_CODE": "Error in API call [{}] - {}",
     "INVALID_FETCH_TIME": '{} is invalid value for First Fetch Time. First fetch time should not be in the future.',
-    "INVALID_FIRST_FETCH": "Argument 'First fetch time interval' should be a valid date or relative timestamp such as "
+    "INVALID_FIRST_FETCH": "Argument 'First fetch time' should be a valid date or relative timestamp such as "
                            "'2 days', '2 months', 'yyyy-mm-dd', 'yyyy-mm-ddTHH:MM:SSZ'",
     "SIZE_ERROR": "{} is an invalid value for size. Size must be between 1 to {}.",
     "NO_RECORDS_FOUND": "No {} were found for the given argument(s).",

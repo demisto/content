@@ -2,7 +2,7 @@
 import io
 import json
 import os.path
-from datetime import timedelta, timezone
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
@@ -19,9 +19,9 @@ API_KEY = 'api_key'
 MOCK_URL = "https://mock_dummy.com"
 BASIC_PARAMS = {'url': MOCK_URL, 'credentials': {'password': API_KEY}}
 CURRENT_TIME = get_current_time()
-CURRENT_TIME_STRING = CURRENT_TIME.astimezone(timezone.utc).strftime(DATE_FORMAT)
+CURRENT_TIME_STRING = CURRENT_TIME.strftime(DATE_FORMAT)
 CURRENT_TIME_PLUS_ONE = CURRENT_TIME + timedelta(days=1)
-CURRENT_TIME_PLUS_ONE_STRING = CURRENT_TIME_PLUS_ONE.astimezone(timezone.utc).strftime(DATE_FORMAT)
+CURRENT_TIME_PLUS_ONE_STRING = CURRENT_TIME_PLUS_ONE.strftime(DATE_FORMAT)
 
 MESSAGES.update({
     "NO_SERVER_URL_PROVIDED": "Please provide the Server URL.",
