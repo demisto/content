@@ -1,0 +1,528 @@
+{
+    "entry_type": 1,
+    "ignore_auto_extract": "False",
+    "mark_as_note": "False",
+    "outputs":
+    {
+        "GSuite.Policy(val.name && val.name == obj.name)":
+        [
+            {
+                "name": "customers/C02f0zfqw/policySchemas/chrome.devices.kiosk.appsconfig.AutoLaunchApp",
+                "policyDescription": "Allows setting of the auto-launch app.",
+                "definition":
+                {
+                    "messageType":
+                    [
+                        {
+                            "name": "AutoLaunchApp",
+                            "field":
+                            [
+                                {
+                                    "name": "appId",
+                                    "number": "1",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_STRING"
+                                },
+                                {
+                                    "name": "enableHealthMonitoring",
+                                    "number": "2",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "screenRotation",
+                                    "number": "3",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_ENUM",
+                                    "typeName": "Rotation"
+                                },
+                                {
+                                    "name": "enableSystemLogUpload",
+                                    "number": "4",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "ackNoticeForEnableSystemLogUploadSetToTrue",
+                                    "number": "10004",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "enableAutoLoginBailout",
+                                    "number": "5",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "promptForNetworkWhenOffline",
+                                    "number": "6",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                }
+                            ]
+                        }
+                    ],
+                    "enumType":
+                    [
+                        {
+                            "name": "Rotation",
+                            "value":
+                            [
+                                {
+                                    "name": "ROTATE_0",
+                                    "number": "0"
+                                },
+                                {
+                                    "name": "ROTATE_90",
+                                    "number": "1"
+                                },
+                                {
+                                    "name": "ROTATE_180",
+                                    "number": "2"
+                                },
+                                {
+                                    "name": "ROTATE_270",
+                                    "number": "3"
+                                },
+                                {
+                                    "name": "UNSET",
+                                    "number": "4"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "fieldDescriptions":
+                [
+                    {
+                        "field": "appId",
+                        "description": "Id of the app prefixed with one of either \"chrome:\" or \"web:\", depending on the app type. For Chrome apps, the app id can be found on the Chrome Web Store, example: \"chrome:aapbdbdomjkkjkaonfhkkikfgjllcleb\". For Web apps, the app id is simply the URL, example: \"web:https://translate.google.com\".",
+                        "name": "Id of the app prefixed with one of either \"chrome:\" or \"web:\", depending on the app type. For Chrome apps, the app id can be found on the Chrome Web Store, example: \"chrome:aapbdbdomjkkjkaonfhkkikfgjllcleb\". For Web apps, the app id is simply the URL, example: \"web:https://translate.google.com\".",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "enableHealthMonitoring",
+                        "description": "Enables health monitoring of the auto launch app, which will alert you if it crashes.",
+                        "name": "Enables health monitoring of the auto launch app, which will alert you if it crashes.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "screenRotation",
+                        "description": "Sets the rotation angle for the auto launch app.",
+                        "knownValueDescriptions":
+                        [
+                            {
+                                "value": "UNSET",
+                                "description": "Allow the device to set screen rotation."
+                            },
+                            {
+                                "value": "ROTATE_0",
+                                "description": "Rotate by 0 degrees."
+                            },
+                            {
+                                "value": "ROTATE_90",
+                                "description": "Rotate by 90 degrees."
+                            },
+                            {
+                                "value": "ROTATE_180",
+                                "description": "Rotate by 180 degrees."
+                            },
+                            {
+                                "value": "ROTATE_270",
+                                "description": "Rotate by 270 degrees."
+                            }
+                        ],
+                        "name": "Sets the rotation angle for the auto launch app.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "enableSystemLogUpload",
+                        "description": "Enables system log upload of the auto launch app.",
+                        "knownValueDescriptions":
+                        [
+                            {
+                                "value": "true",
+                                "description": "Enables system log upload of the auto launch app."
+                            },
+                            {
+                                "value": "false",
+                                "description": "Disables system log upload of the auto launch app."
+                            }
+                        ],
+                        "name": "Enables system log upload of the auto launch app.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "ackNoticeForEnableSystemLogUploadSetToTrue",
+                        "description": "This field must be set to true to acknowledge the notice message associated with the field \"enable_system_log_upload\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldDescription": "This field must be set to true to acknowledge the notice message associated with the field \"enable_system_log_upload\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "enableAutoLoginBailout",
+                        "description": "Enables auto login bailout for the auto launch app.",
+                        "name": "Enables auto login bailout for the auto launch app.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "promptForNetworkWhenOffline",
+                        "description": "Enables prompting for network if auto launch app is offline.",
+                        "name": "Enables prompting for network if auto launch app is offline.",
+                        "fieldConstraints": {}
+                    }
+                ],
+                "notices":
+                [
+                    {
+                        "field": "enableSystemLogUpload",
+                        "noticeValue": "true",
+                        "noticeMessage": "In order to enable System Log Upload functionality, you must first inform the users of managed kiosk devices that their activity may be monitored and data may be inadvertently captured and shared. Without notification to your users, you are in violation of the terms of your agreement with Google.",
+                        "acknowledgementRequired": "True"
+                    }
+                ],
+                "schemaName": "chrome.devices.kiosk.appsconfig.AutoLaunchApp",
+                "validTargetResources": ["ORG_UNIT"],
+                "policyApiLifecycle":
+                {
+                    "policyApiLifecycleStage": "API_CURRENT"
+                },
+                "categoryTitle": "Kiosk apps config"
+            },
+            {
+                "name": "customers/C02f0zfqw/policySchemas/chrome.users.appsconfig.AndroidAppsEnabled",
+                "policyDescription": "Android apps on Chrome devices.",
+                "definition":
+                {
+                    "messageType":
+                    [
+                        {
+                            "name": "AndroidAppsEnabled",
+                            "field":
+                            [
+                                {
+                                    "name": "arcEnabled",
+                                    "number": "1",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "ackNoticeForArcEnabledSetToTrue",
+                                    "number": "10001",
+                                    "type": "TYPE_BOOL"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "fieldDescriptions":
+                [
+                    {
+                        "field": "arcEnabled",
+                        "description": "Whether to allow or disallow to install Android apps for managed ChromeOS users.",
+                        "knownValueDescriptions":
+                        [
+                            {
+                                "value": "true",
+                                "description": "Allow users to install Android apps on ChromeOS devices."
+                            },
+                            {
+                                "value": "false",
+                                "description": "Do not allow users to install Android apps on a ChromeOS devices."
+                            }
+                        ],
+                        "defaultValue": "True",
+                        "name": "Whether to allow or disallow to install Android apps for managed ChromeOS users.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "ackNoticeForArcEnabledSetToTrue",
+                        "description": "This field must be set to true to acknowledge the notice message associated with the field \"arc_enabled\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldDescription": "This field must be set to true to acknowledge the notice message associated with the field \"arc_enabled\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldConstraints": {}
+                    }
+                ],
+                "notices":
+                [
+                    {
+                        "field": "arcEnabled",
+                        "noticeValue": "true",
+                        "noticeMessage": "Before you set this to true you must accept the Managed Google Play Agreement by going to https://play.google.com/work/termsofservice with a super administrator account."
+                    },
+                    {
+                        "field": "arcEnabled",
+                        "noticeValue": "true",
+                        "noticeMessage": "Devices must have sufficient resources to support Android apps. Without proper planning, session startup time and network resources might be significantly impacted. For details, read this best practices guide: https://support.google.com/chrome/a/answer/9962839. We strongly recommend that you set this value to \"false\" for highly shared Chromebook environments or if ephemeral mode is set.",
+                        "acknowledgementRequired": "True"
+                    }
+                ],
+                "supportUri": "https://support.google.com/chrome/a/answer/9039146?hl=en#androidapps",
+                "schemaName": "chrome.users.appsconfig.AndroidAppsEnabled",
+                "validTargetResources": ["ORG_UNIT"],
+                "policyApiLifecycle":
+                {
+                    "policyApiLifecycleStage": "API_CURRENT"
+                },
+                "categoryTitle": "Additional app settings",
+                "supportedPlatforms": ["CHROME_OS"]
+            }
+        ],
+        "GSuite(true)":
+        {
+            "PolicySchemasNextToken": ""
+        }
+    },
+    "raw_response": {
+        "policySchemas": [
+            {
+                "name": "customers/C02f0zfqw/policySchemas/chrome.devices.kiosk.appsconfig.AutoLaunchApp",
+                "policyDescription": "Allows setting of the auto-launch app.",
+                "definition": {
+                    "messageType": [
+                        {
+                            "name": "AutoLaunchApp",
+                            "field": [
+                                {
+                                    "name": "appId",
+                                    "number": "1",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_STRING"
+                                },
+                                {
+                                    "name": "enableHealthMonitoring",
+                                    "number": "2",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "screenRotation",
+                                    "number": "3",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_ENUM",
+                                    "typeName": "Rotation"
+                                },
+                                {
+                                    "name": "enableSystemLogUpload",
+                                    "number": "4",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "ackNoticeForEnableSystemLogUploadSetToTrue",
+                                    "number": "10004",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "enableAutoLoginBailout",
+                                    "number": "5",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "promptForNetworkWhenOffline",
+                                    "number": "6",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                }
+                            ]
+                        }
+                    ],
+                    "enumType": [
+                        {
+                            "name": "Rotation",
+                            "value": [
+                                {
+                                    "name": "ROTATE_0",
+                                    "number": "0"
+                                },
+                                {
+                                    "name": "ROTATE_90",
+                                    "number": "1"
+                                },
+                                {
+                                    "name": "ROTATE_180",
+                                    "number": "2"
+                                },
+                                {
+                                    "name": "ROTATE_270",
+                                    "number": "3"
+                                },
+                                {
+                                    "name": "UNSET",
+                                    "number": "4"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "fieldDescriptions": [
+                    {
+                        "field": "appId",
+                        "description": "Id of the app prefixed with one of either \"chrome:\" or \"web:\", depending on the app type. For Chrome apps, the app id can be found on the Chrome Web Store, example: \"chrome:aapbdbdomjkkjkaonfhkkikfgjllcleb\". For Web apps, the app id is simply the URL, example: \"web:https://translate.google.com\".",
+                        "name": "Id of the app prefixed with one of either \"chrome:\" or \"web:\", depending on the app type. For Chrome apps, the app id can be found on the Chrome Web Store, example: \"chrome:aapbdbdomjkkjkaonfhkkikfgjllcleb\". For Web apps, the app id is simply the URL, example: \"web:https://translate.google.com\".",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "enableHealthMonitoring",
+                        "description": "Enables health monitoring of the auto launch app, which will alert you if it crashes.",
+                        "name": "Enables health monitoring of the auto launch app, which will alert you if it crashes.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "screenRotation",
+                        "description": "Sets the rotation angle for the auto launch app.",
+                        "knownValueDescriptions": [
+                            {
+                                "value": "UNSET",
+                                "description": "Allow the device to set screen rotation."
+                            },
+                            {
+                                "value": "ROTATE_0",
+                                "description": "Rotate by 0 degrees."
+                            },
+                            {
+                                "value": "ROTATE_90",
+                                "description": "Rotate by 90 degrees."
+                            },
+                            {
+                                "value": "ROTATE_180",
+                                "description": "Rotate by 180 degrees."
+                            },
+                            {
+                                "value": "ROTATE_270",
+                                "description": "Rotate by 270 degrees."
+                            }
+                        ],
+                        "name": "Sets the rotation angle for the auto launch app.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "enableSystemLogUpload",
+                        "description": "Enables system log upload of the auto launch app.",
+                        "knownValueDescriptions": [
+                            {
+                                "value": "true",
+                                "description": "Enables system log upload of the auto launch app."
+                            },
+                            {
+                                "value": "false",
+                                "description": "Disables system log upload of the auto launch app."
+                            }
+                        ],
+                        "name": "Enables system log upload of the auto launch app.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "ackNoticeForEnableSystemLogUploadSetToTrue",
+                        "description": "This field must be set to true to acknowledge the notice message associated with the field \"enable_system_log_upload\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldDescription": "This field must be set to true to acknowledge the notice message associated with the field \"enable_system_log_upload\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "enableAutoLoginBailout",
+                        "description": "Enables auto login bailout for the auto launch app.",
+                        "name": "Enables auto login bailout for the auto launch app.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "promptForNetworkWhenOffline",
+                        "description": "Enables prompting for network if auto launch app is offline.",
+                        "name": "Enables prompting for network if auto launch app is offline.",
+                        "fieldConstraints": {}
+                    }
+                ],
+                "notices": [
+                    {
+                        "field": "enableSystemLogUpload",
+                        "noticeValue": "true",
+                        "noticeMessage": "In order to enable System Log Upload functionality, you must first inform the users of managed kiosk devices that their activity may be monitored and data may be inadvertently captured and shared. Without notification to your users, you are in violation of the terms of your agreement with Google.",
+                        "acknowledgementRequired": "True"
+                    }
+                ],
+                "schemaName": "chrome.devices.kiosk.appsconfig.AutoLaunchApp",
+                "validTargetResources": [
+                    "ORG_UNIT"
+                ],
+                "policyApiLifecycle": {
+                    "policyApiLifecycleStage": "API_CURRENT"
+                },
+                "categoryTitle": "Kiosk apps config"
+            },
+            {
+                "name": "customers/C02f0zfqw/policySchemas/chrome.users.appsconfig.AndroidAppsEnabled",
+                "policyDescription": "Android apps on Chrome devices.",
+                "definition": {
+                    "messageType": [
+                        {
+                            "name": "AndroidAppsEnabled",
+                            "field": [
+                                {
+                                    "name": "arcEnabled",
+                                    "number": "1",
+                                    "label": "LABEL_OPTIONAL",
+                                    "type": "TYPE_BOOL"
+                                },
+                                {
+                                    "name": "ackNoticeForArcEnabledSetToTrue",
+                                    "number": "10001",
+                                    "type": "TYPE_BOOL"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                "fieldDescriptions": [
+                    {
+                        "field": "arcEnabled",
+                        "description": "Whether to allow or disallow to install Android apps for managed ChromeOS users.",
+                        "knownValueDescriptions": [
+                            {
+                                "value": "true",
+                                "description": "Allow users to install Android apps on ChromeOS devices."
+                            },
+                            {
+                                "value": "false",
+                                "description": "Do not allow users to install Android apps on a ChromeOS devices."
+                            }
+                        ],
+                        "defaultValue": "True",
+                        "name": "Whether to allow or disallow to install Android apps for managed ChromeOS users.",
+                        "fieldConstraints": {}
+                    },
+                    {
+                        "field": "ackNoticeForArcEnabledSetToTrue",
+                        "description": "This field must be set to true to acknowledge the notice message associated with the field \"arc_enabled\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldDescription": "This field must be set to true to acknowledge the notice message associated with the field \"arc_enabled\" set to value \"true\". Please sse the notices listed with this policy for more information.",
+                        "fieldConstraints": {}
+                    }
+                ],
+                "notices": [
+                    {
+                        "field": "arcEnabled",
+                        "noticeValue": "true",
+                        "noticeMessage": "Before you set this to true you must accept the Managed Google Play Agreement by going to https://play.google.com/work/termsofservice with a super administrator account."
+                    },
+                    {
+                        "field": "arcEnabled",
+                        "noticeValue": "true",
+                        "noticeMessage": "Devices must have sufficient resources to support Android apps. Without proper planning, session startup time and network resources might be significantly impacted. For details, read this best practices guide: https://support.google.com/chrome/a/answer/9962839. We strongly recommend that you set this value to \"false\" for highly shared Chromebook environments or if ephemeral mode is set.",
+                        "acknowledgementRequired": "True"
+                    }
+                ],
+                "supportUri": "https://support.google.com/chrome/a/answer/9039146?hl=en#androidapps",
+                "schemaName": "chrome.users.appsconfig.AndroidAppsEnabled",
+                "validTargetResources": [
+                    "ORG_UNIT"
+                ],
+                "policyApiLifecycle": {
+                    "policyApiLifecycleStage": "API_CURRENT"
+                },
+                "categoryTitle": "Additional app settings",
+                "supportedPlatforms": [
+                    "CHROME_OS"
+                ]
+            }
+        ]
+    },
+    "readable_output": "### Policy Schemas List\n|Name|Policy Description|Schema Name|\n|---|---|---|\n| customers/C02f0zfqw/policySchemas/chrome.devices.kiosk.appsconfig.AutoLaunchApp | Allows setting of the auto-launch app. | chrome.devices.kiosk.appsconfig.AutoLaunchApp |\n| customers/C02f0zfqw/policySchemas/chrome.users.appsconfig.AndroidAppsEnabled | Android apps on Chrome devices. | chrome.users.appsconfig.AndroidAppsEnabled |\n",
+    "replace_existing": "False"
+}

@@ -1,0 +1,41 @@
+{
+    "TotalCount": 3,
+    "AdminAudits": [
+        {
+            "SetName": "PANW Production(palo alto networks inc.)",
+            "EventTime": "2023-12-12T07:45:26.78Z",
+            "PermissionDescription": "View all events and files.",
+            "Description": "API Get Policy Audit raw details /API/Sets/47f5830e-383a-4db1-9e5f-b38ed0448a92/policyaudits/search?sortDir=asc&nextCursor=start&limit=200 POST setId: Me, offset: 0, limit: 200, nextCursor: start, sortBy: Date, sortDir: asc, filterPayload: arrivalTime GE 2023-12-12T07:44:07.775Z",
+            "Feature": "Public API",
+            "LoggedAt": "2023-12-11T11:45:41.586Z",
+            "LoggedFrom": "1.1.1.1",
+            "Administrator": "svc-epmlogs@paloaltonetworks.com",
+            "InternalSessionId": 235816,
+            "Role": "SetUser"
+        },
+        {
+            "SetName": "PANW Production(palo alto networks inc.)",
+            "EventTime": "2023-12-12T07:45:27.077Z",
+            "PermissionDescription": "View all events and files.",
+            "Description": "API Get Policy Audit raw details /API/Sets/47f5830e-383a-4db1-9e5f-b38ed0448a92/policyaudits/search?sortDir=asc&nextCursor=1702367064000&limit=200 POST setId: Me, offset: 0, limit: 200, nextCursor: 1702367064000, sortBy: Date, sortDir: asc, filterPayload: arrivalTime GE 2023-12-12T07:44:07.775Z",
+            "Feature": "Public API",
+            "LoggedAt": "2023-12-11T11:45:41.587Z",
+            "LoggedFrom": "1.1.1.1",
+            "Administrator": "svc-epmlogs@paloaltonetworks.com",
+            "InternalSessionId": 235816,
+            "Role": "SetUser"
+        },
+        {
+            "SetName": "PANW Production(palo alto networks inc.)",
+            "EventTime": "2023-12-12T07:45:27.14Z",
+            "PermissionDescription": "None",
+            "Description": "API Get Admin audit data /API/Sets/47f5830e-383a-4db1-9e5f-b38ed0448a92/AdminAudit?dateFrom=2023-12-12T07:44:27.141Z&limit=200 GET DateFrom: 2023-12-12T07:44:27.141Z, DateTo: , offset: 0, limit: 200",
+            "Feature": "Public API",
+            "LoggedAt": "2023-12-11T11:45:41.588Z",
+            "LoggedFrom": "1.1.1.1",
+            "Administrator": "svc-epmlogs@paloaltonetworks.com",
+            "InternalSessionId": 235816,
+            "Role": "SetUser"
+        }
+    ]
+}

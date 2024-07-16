@@ -2,6 +2,8 @@ import json
 import demistomock as demisto  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerPython import entryTypes
 from typing import Any
+import pytest
+from CommonServerPython import DemistoException
 
 
 def util_load_json(path):
@@ -139,6 +141,34 @@ def test_block_builder_command_url(mocker):
 
     response = slack_block_builder_command(COMMAND_ARGS)
     assert response.readable_output == 'Message sent to Slack successfully.\nThread ID is: 1660645689.649679'
+
+
+def test_block_builder_command_url_return_fail(mocker):
+    """
+    Given: A URL which contains a valid URI encoded Slack Block JSON.
+    When: Executing the block builder command using the url argument.
+    Then: Assert that the readable output from the command indicates that the message was successfully sent.
+    """
+    from SlackBlockBuilder import slack_block_builder_command
+
+    mock_list = util_load_json('test_data/list.json')
+
+    def executeCommand(command: str, args: dict[str, Any]) -> list[dict[str, Any]]:
+        if command == 'getList':
+            return [{"Contents": json.dumps(mock_list)}]
+        elif command == 'addEntitlement':
+            return [{'Type': entryTypes['note'], 'Contents': 'some-guid'}]
+        elif command == 'send-notification':
+            return [{'Type': 4, 'HumanReadable': None,
+                     'Contents': "Could not find any destination to send to."}]
+        return []
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    COMMAND_ARGS["blocks_url"] = BLOCKS_URL
+    mocker.patch.object(demisto, 'args', return_value=COMMAND_ARGS)
+
+    with pytest.raises(DemistoException, match="Could not find any destination to send to."):
+        slack_block_builder_command(COMMAND_ARGS)
 
 
 def test_image_id_bug_XSUP_31982(mocker):

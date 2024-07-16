@@ -3039,7 +3039,7 @@ RESPONSE_FETCH = {
                 'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '',
                 'close_notes': '',
                 'notify': '1', 'sys_class_name': 'incident', 'closed_by': '', 'follow_up': '', 'parent_incident': '',
-                'sys_id': 'sys_id', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
+                'sys_id': 'sys_id1', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
                 'problem_id': '', 'company': {'link': 'demisto.com', 'value': 'test'}, 'reassignment_count': '',
                 'u_custom_field_test': 'NYC', 'activity_due': '', 'assigned_to': '', 'severity': '3', 'comments': '',
                 'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '',
@@ -3072,7 +3072,7 @@ RESPONSE_FETCH = {
                 'description': 'Unable to access Oregon mail server. Is it down?', 'calendar_duration': '',
                 'close_notes': '',
                 'notify': '1', 'sys_class_name': 'incident', 'closed_by': '', 'follow_up': '', 'parent_incident': '',
-                'sys_id': 'sys_id', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
+                'sys_id': 'sys_id2', 'contact_type': 'phone', 'reopened_by': '', 'incident_state': '1', 'urgency': '3',
                 'problem_id': '', 'company': {'link': 'demisto.com', 'value': 'test'}, 'reassignment_count': '',
                 'u_custom_field_test': 'NYC', 'activity_due': '', 'assigned_to': '', 'severity': '3', 'comments': '',
                 'approval': 'not requested', 'sla_due': '2019-09-26 00:41:01', 'comments_and_work_notes': '',
@@ -3518,7 +3518,7 @@ MIRROR_COMMENTS_RESPONSE_FROM_XSOAR = {'result': [{
 
 MIRROR_ENTRIES = [
     {'Contents': '', 'ContentsFormat': 'text', 'type': 3, 'File': 'test.txt',
-     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3'},
+     'FileID': '20eb1079-d6c3-47cf-81bf-95968f93f6d3', 'id': 'entry-id'},
     {'type': None, 'category': None, 'contents': 'This is a comment', 'contentsFormat': None,
      'tags': ['comments', 'work_notes'], 'note': True}]
 

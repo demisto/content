@@ -51,4 +51,4 @@ There are no inputs for this playbook.
 
 ## Playbook Image
 ---
-![MITRE ATT&CK CoA - T1021.001 - Remote Desktop Protocol](../doc_files/MITRE_ATT&CK_CoA_-_T1021.001_-_Remote_Desktop_Protocol.png)
+![MITRE ATT&CK CoA - T1021_001 - Remote Desktop Protocol](../doc_files/MITRE_ATTandCK_CoA_-_T1021_001_-_Remote_Desktop_Protocol.png)

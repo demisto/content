@@ -38,8 +38,8 @@ def util_tmp_json_file(mock_object, file_name: str):
 def mock_client():
     return Client(
         base_url='',
-        user_name='',
-        api_key='',
+        user_name='user',
+        api_key='key',
         proxy=False,
         should_create_relationships=True,
         verify=False,
@@ -1864,3 +1864,24 @@ def test_remove_indicator_tag_command_success(
 
     # Verify result
     assert result.readable_output == expected_output
+
+
+@pytest.mark.parametrize(
+    "without_credentials, expected_params",
+    [
+        (False, {'Authorization': 'apikey user:key'}),
+        (True, {}),
+    ],
+)
+def test_http_request_without_credentials(mocker, without_credentials: bool, expected_params: dict):
+    """
+    Given: Different boolean value for without_credentials argument of Client.http_request()
+    When: Calling http_request()
+    Then: Ensuring the credentials parameters are added if the value is True, and not added otherwise.
+    """
+    from AnomaliThreatStreamv3 import BaseClient
+    http_request = mocker.patch.object(BaseClient, "_http_request", return_value={})
+    client: BaseClient = mock_client()
+
+    client.http_request("GET", "/hello", without_credentials=without_credentials)
+    assert http_request.call_args.kwargs["headers"] == expected_params

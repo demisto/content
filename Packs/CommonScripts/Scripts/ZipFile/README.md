@@ -36,3 +36,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | File.SSDeep | The ssdeep hash of the file \(same as displayed in file entries\). | String |
 | File.Extension | The file extension, for example: 'xls'. | String |
 | File.Type | The file type, as determined by libmagic \(same as displayed in file entries\). | String |
+
+### Troubleshooting
+Because of security reasons we support only AES encryption which is not supported on the Windows OS without 3rd party unzip applications. For more information about the encryption methods, see https://en.wikipedia.org/wiki/ZIP_(file_format)#Encryption.
+

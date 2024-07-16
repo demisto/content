@@ -1,11 +1,11 @@
 {
     "name": "Bambenek Consulting Feed",
     "description": "Indicators feed from Bambenek Consulting",
-    "support": "xsoar",
-    "currentVersion": "1.2.1",
-    "author": "Cortex XSOAR",
-    "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "support": "partner",
+    "currentVersion": "1.2.3",
+    "author": "Bambenek Labs",
+    "url": "https://wellfedintelligence.com/",
+    "email": "support@bambenekconsulting.com",
     "created": "2020-03-09T16:04:45Z",
     "categories": [
         "Data Enrichment & Threat Intelligence"

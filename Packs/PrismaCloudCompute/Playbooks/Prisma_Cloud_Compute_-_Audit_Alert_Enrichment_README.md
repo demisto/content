@@ -16,7 +16,7 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Integrations
 
-* PaloAltoNetworks_PrismaCloudCompute
+PaloAltoNetworks_PrismaCloudCompute
 
 ### Scripts
 

@@ -3,9 +3,11 @@ This integration was integrated and tested with version 1.0 of Microsoft Graph M
 
 
 ## Fetch Incidents
+
 The integration imports email messages from the destination folder in the target mailbox as incidents. If the message contains any attachments, they are uploaded to the War Room as files. If the attachment is an email (item attachment), Cortex XSOAR fetches information about the attached email and downloads all of its attachments (if there are any) as files. To use Fetch incidents, configure a new instance and select the Fetches incidents option in the instance settings.
 
 ## OData Usage
+
 The OData parameter can be used to create different queries for the `msgraph-mail-list-emails` and `msgraph-mail-get-email` commands. Please see [OData Docs](https://docs.microsoft.com/en-us/graph/query-parameters) for detailed information.
 Examples:
 !msgraph-mail-list-emails odata=&quot;$select=from&quot;
@@ -16,22 +18,32 @@ Note:
 The query parameter `$filter` is not supported when using the `search` parameter.
 
 ## Authentication
+
 For more details about the authentication used in this integration, see [Microsoft Integrations - Authentication](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication).
 
-Note: For this integration, you cannot use a "Shared mailbox" regardless of the authentication method used.
 
 ## Email Attachments Limitations
+
 * The maximum attachment size to be sent in an email can be 150-MB. [large-attachments](https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http)
 * The larger the attachment, the longer it would take for a command that supports adding attachments to run.
 * Requires the permission of Mail.ReadWrite (Application) - to send attachments > 3mb
 * When sending mails with large attachments, it could take up to 5 minutes for the mail to actually be sent.
 
 ### Required Permissions
+
 The following permissions are required for all commands:
-- Mail.ReadWrite - Delegated
-- Mail.Send - Delegated
-- User.Read - Delegated 
-- MailboxSettings.ReadWrite - Delegated 
+
+* Mail.ReadWrite - Delegated
+* Mail.Send - Delegated
+* User.Read - Delegated 
+* MailboxSettings.ReadWrite - Delegated 
+
+The following permissions are required for Shared Mailbox:
+
+* Mail.Read.Shared
+* Mail.ReadBasic.Shared
+* Mail.ReadWrite.Shared
+* Mail.Send.Shared
 
 ## Configure Microsoft Graph Mail Single User on Cortex XSOAR
 

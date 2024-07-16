@@ -1089,6 +1089,9 @@ def generate_field_value(client, field_name, field_data, field_val, depth):
     if field_type == 4:
         field_data = client.get_field_value_list(field_data["FieldId"], depth)
         list_ids = []
+        other_text = None
+        if isinstance(field_val, dict) and (other_text := field_val.get('OtherText', None)):
+            field_val = field_val.get('ValuesList')
         if not isinstance(field_val, list):
             field_val = [field_val]
         for item in field_val:
@@ -1101,7 +1104,10 @@ def generate_field_value(client, field_name, field_data, field_val, depth):
                 raise Exception(
                     f"Failed to create the field: {field_name} with the value: {item}"
                 )
-        return "Value", {"ValuesListIds": list_ids}
+        res = {"ValuesListIds": list_ids}
+        if other_text:
+            res['OtherText'] = other_text
+        return "Value", res
 
     # when field type is External Links
     # for example: {"Patch URL":[{"value":"github", "link": "https://github.com"}]}

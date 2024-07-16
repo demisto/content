@@ -218,7 +218,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "16"
+      - "18"
     scriptarguments:
       AutoContainment:
         complex:
@@ -304,7 +304,7 @@ tasks:
       brand: ""
     nexttasks:
       '#default#':
-      - "16"
+      - "18"
       "yes":
       - "25"
     separatecontext: false
@@ -324,68 +324,6 @@ tasks:
         "position": {
           "x": 440,
           "y": 660
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "16":
-    id: "16"
-    taskid: 6a4c1876-1b2f-426e-841e-7fa1a9a22df8
-    type: title
-    task:
-      id: 6a4c1876-1b2f-426e-841e-7fa1a9a22df8
-      version: -1
-      name: Review
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "17"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1650
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-    continueonerrortype: ""
-  "17":
-    id: "17"
-    taskid: 9c06759e-9696-45cd-8a45-78d3e3e552f3
-    type: regular
-    task:
-      id: 9c06759e-9696-45cd-8a45-78d3e3e552f3
-      version: -1
-      name: Manual Review Internal Scan
-      description: Manual review of the investigation.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "18"
-    separatecontext: false
-    view: |-
-      {
-        "position": {
-          "x": 440,
-          "y": 1790
         }
       }
     note: false
@@ -431,7 +369,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 1960
+          "y": 1650
         }
       }
     note: false
@@ -463,7 +401,7 @@ tasks:
       {
         "position": {
           "x": 60,
-          "y": 2130
+          "y": 1820
         }
       }
     note: false
@@ -491,7 +429,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2490
+          "y": 2180
         }
       }
     note: false
@@ -523,7 +461,7 @@ tasks:
       {
         "position": {
           "x": 440,
-          "y": 2310
+          "y": 2000
         }
       }
     note: false
@@ -841,12 +779,11 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "15_16_#default#": 0.46,
       "18_19_#default#": 0.4
     },
     "paper": {
       "dimensions": {
-        "height": 2695,
+        "height": 2385,
         "width": 1260,
         "x": -200,
         "y": -140

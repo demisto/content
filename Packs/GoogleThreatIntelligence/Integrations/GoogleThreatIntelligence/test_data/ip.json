@@ -1,0 +1,76 @@
+{
+  "data": {
+    "attributes": {
+      "as_owner": "EMERALD-ONION",
+      "asn": 396507,
+      "continent": "NA",
+      "country": "US",
+      "jarm": ":jarm:",
+      "last_analysis_results": {
+        "ADMINUSLabs": {
+          "category": "harmless",
+          "engine_name": "ADMINUSLabs",
+          "method": "blacklist",
+          "result": "clean"
+        },
+        "GreenSnow": {
+          "category": "malicious",
+          "engine_name": "GreenSnow",
+          "method": "blacklist",
+          "result": "malicious"
+        },
+        "Snort IP sample list": {
+          "category": "suspicious",
+          "engine_name": "Snort IP sample list",
+          "method": "blacklist",
+          "result": "suspicious"
+        }
+      },
+      "last_analysis_stats": {
+        "harmless": 72,
+        "malicious": 5,
+        "suspicious": 2,
+        "timeout": 0,
+        "undetected": 8
+      },
+      "last_modification_date": 1613300914,
+      "network": ":cidr:",
+      "regional_internet_registry": "ARIN",
+      "reputation": -4,
+      "tags": [],
+      "total_votes": {
+        "harmless": 0,
+        "malicious": 1
+      },
+      "whois": "NetRange: :range:\nCIDR: :cidr:\nNetName: ENCRYPTED-TRANSIT-IPV4\nNetHandle: :net-handle:\nParent: :parent:\nNetType: Direct Allocation\nOriginAS: :oas:\nOrganization: :org name: (:org-id:)\nRegDate: 2017-07-19\nUpdated: 2017-07-19\nComment: :comment:\nRef: :ref:\nOrgName: :org name:\nOrgId: :org-id:\nAddress: 815 1st Ave # 331\nCity: Seattle\nStateProv: WA\nPostalCode: :code:\nCountry: US\nRegDate: 2017-06-20\nUpdated: 2018-11-15\nRef: :ref:\nOrgTechHandle: :handle:\nOrgTechName: Technical Support\nOrgTechPhone: :phone: \nOrgTechEmail: tech@example.com\nOrgTechRef: :ref:/:handle:\nOrgAbuseHandle: :abuse-handle:\nOrgAbuseName: Abuse Management\nOrgAbusePhone: :phone: \nOrgAbuseEmail: abuse@example.com\nOrgAbuseRef: :ref:/:abuse-handle:\nOrgNOCHandle: NETWO8737-ARIN\nOrgNOCName: Network Operations\nOrgNOCPhone: :phone: \nOrgNOCEmail: noc@example.com\nOrgNOCRef: :ref::ref\n",
+      "whois_date": 1611870274,
+      "gti_assessment": {
+        "threat_score": {
+          "value": 100
+        },
+        "severity": {
+          "value": "SEVERITY_HIGH"
+        },
+        "contributing_factors": {
+          "mandiant_association_report": true,
+          "mandiant_association_actor": true,
+          "gavs_detections": 3,
+          "normalised_categories": [
+            "trojan"
+          ],
+          "mandiant_association_malware": true,
+          "mandiant_confidence_score": 100
+        },
+        "verdict": {
+          "value": "VERDICT_MALICIOUS"
+        },
+        "description": "This indicator is malicious (high severity) with high impact."
+      }
+    },
+    "id": "8.8.8.8",
+    "links": {
+      "self": "https://www.virustotal.com/api/v3/ip_addresses/8.8.8.8"
+    },
+    "type": "ip_address"
+  }
+}

@@ -80,6 +80,8 @@ def http_request(requests_func, url_suffix, **kwargs):
 
     if res.status_code == 403:
         raise Exception('API Key is incorrect')
+    if res.status_code == 404:
+        return {}
 
     if res.status_code not in [200, 201, ]:
         LOG(f'result is: {res.json()}')
@@ -401,7 +403,7 @@ def list_detections(page, per_page, since=None):
                        since=since
                    ),
                    )
-    return res['data']
+    return res.get('data', [])
 
 
 def get_detection_command():
@@ -554,7 +556,7 @@ def execute_playbook(playbook_id, detection_id):
     return res
 
 
-def fetch_incidents(last_run):
+def fetch_incidents(last_run, per_page):
     last_incidents_ids = []
 
     if last_run:
@@ -568,7 +570,7 @@ def fetch_incidents(last_run):
     demisto.debug(f'iterating on detections, looking for more recent than {last_fetch}')
     incidents = []
     new_incidents_ids = []
-    for raw_detection in get_unacknowledged_detections(last_fetch, per_page=2):
+    for raw_detection in get_unacknowledged_detections(last_fetch, per_page=per_page):
         demisto.debug('found a new detection in RedCanary #{}'.format(raw_detection['id']))
         incident = detection_to_incident(raw_detection)
         # the rawJson is a string of dictionary e.g. - ('{"ID":2,"Type":5}')
@@ -597,6 +599,8 @@ def main():
     BASE_URL = urljoin(params.get('domain', ''), '/openapi/v3')
     API_KEY = params.get('api_key_creds', {}).get('password') or params.get('api_key')
     USE_SSL = not params.get('insecure', False)
+    per_page = params.get('fetch_limit', 2)
+
     ''' EXECUTION CODE '''
     COMMANDS = {
         'test-module': test_integration,
@@ -618,7 +622,7 @@ def main():
         if command_func is not None:
             if demisto.command() == 'fetch-incidents':
                 initial_last_run = demisto.getLastRun()
-                last_run, incidents = fetch_incidents(initial_last_run)
+                last_run, incidents = fetch_incidents(initial_last_run, per_page)
                 demisto.incidents(incidents)
                 demisto.setLastRun(last_run)
             else:
@@ -631,5 +635,5 @@ def main():
         return_error(f'error has occurred: {str(e)}')
 
 
-if __name__ in ('__builtin__', 'builtins'):
+if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()

@@ -1,0 +1,31 @@
+{
+    "Type": 1,
+    "ContentsFormat": "json",
+    "Contents": [
+        {
+            "description": "A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software for specific PAN-OS versions and distinct feature configurations may enable an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.\n\nCloud NGFW, Panorama appliances, and Prisma Access are not impacted by this vulnerability.",
+            "modified": "2024-04-18T01:00:01.527",
+            "published": "2024-04-12T08:15:06.230",
+            "id": "CVE-2024-3400",
+            "score": 10.0,
+            "cvssversion": "3.1"
+        }
+    ],
+    "HumanReadable": "### CVEs\n|ID|Score|Description|\n|---|---|---|\n| CVE-2024-3400 | 10.0 | A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software for specific PAN-OS versions and distinct feature configurations may enable an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.<br><br>Cloud NGFW, Panorama appliances, and Prisma Access are not impacted by this vulnerability. |\n",
+    "EntryContext": {
+        "NistNVDv2.Indicators(val.Name && val.Name == obj.Name)": [
+            {
+                "description": "A command injection vulnerability in the GlobalProtect feature of Palo Alto Networks PAN-OS software for specific PAN-OS versions and distinct feature configurations may enable an unauthenticated attacker to execute arbitrary code with root privileges on the firewall.\n\nCloud NGFW, Panorama appliances, and Prisma Access are not impacted by this vulnerability.",
+                "modified": "2024-04-18T01:00:01.527",
+                "published": "2024-04-12T08:15:06.230",
+                "id": "CVE-2024-3400",
+                "score": 10.0,
+                "cvssversion": "3.1"
+            }
+        ]
+    },
+    "IndicatorTimeline": [],
+    "IgnoreAutoExtract": false,
+    "Note": false,
+    "Relationships": []
+}

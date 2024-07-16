@@ -1,0 +1,9 @@
+- **Generating an API Access Key**
+  - In order for XSOAR to fetch incidents from the Gem platform and be able to modify status and other details, you’ll need to provide an API access key.
+  - Follow these instructions to generate one:
+    - In Gem, go to the **Integrations** page, and find the **XSOAR** integration card under the **Destinations** tab
+    - Under the **Actions and Pull Integration** section you’ll find the **Client ID** and **Client Secret** to use when setting up the integration in XSOAR
+- **Configuration Settings**
+  - **API Endpoint:** Select the Gem tenant to use (US or EU). Default tenant is US
+  - **Sync incidents 30 days back**: Check this box to send historic Gem alerts to XSOAR as well
+  - **Maximum number of alerts per fetch:** The number of alerts to fetch in every run, when using the pull integration method instead of real-time. Default value is 10

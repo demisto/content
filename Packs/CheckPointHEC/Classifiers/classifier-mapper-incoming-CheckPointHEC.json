@@ -1,0 +1,34 @@
+{
+    "description": "CheckPointHEC Incoming Mapper",
+    "feed": false,
+    "id": "CheckPointHEC Incoming Mapper",
+    "mapping": {
+        "CheckPointHEC Security Event": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "CheckPointHEC Entity": {
+                    "simple": "entityId"
+                },
+                "Event ID": {
+                    "simple": "eventId"
+                },
+                "Event Type": {
+                    "simple": "type"
+                },
+                "State": {
+                    "simple": "state"
+                },
+                "External Link": {
+                    "simple": "entityLink"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "CheckPointHEC Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

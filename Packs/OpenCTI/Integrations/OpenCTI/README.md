@@ -1,7 +1,5 @@
 Manages indicators from OpenCTI.  
-This integration is compatible with OpenCTI versions from 4.X to 5.11.X.  
-
-**Note**: Due to [breaking changes to the OpenCTI API on version 5.12.0](https://github.com/OpenCTI-Platform/opencti/releases/tag/5.12.0), this integration is not currently compatible with OpenCTI versions 5.12.0 and above.
+This integration was tested with version 5.12.17 of OpenCTI.  
 
 ## Configure OpenCTI on Cortex XSOAR
 
@@ -33,8 +31,8 @@ Gets indicators from OpenCTI.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of indicators to return. Default value is 50. Maximum value is 500. | Optional | 
-| score_start | Score minimum value to filter by. Values range is 1-100. | Optional | 
-| score_end | Score maximum value to filter by. Values range is 1-100.| Optional | 
+| score_start | Score minimum value to filter by. Values range is 0-100. | Optional | 
+| score_end | Score maximum value to filter by. Values range is 0-100.| Optional | 
 | indicator_types | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
 | last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path. | Optional | 
 

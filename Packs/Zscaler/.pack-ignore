@@ -3,6 +3,7 @@ ignore=RM104,RM106
 
 [known_words]
 requesttimeout
+NSS
 
 [file:ZscalerModelingRule.yml]
 ignore=MR108

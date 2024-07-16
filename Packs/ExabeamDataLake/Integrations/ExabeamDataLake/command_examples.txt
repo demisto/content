@@ -1,0 +1,1 @@
+!exabeam-data-lake-search query="risk_score:3" start_time="2024.02.27" end_time="2024.02.28" limit=2

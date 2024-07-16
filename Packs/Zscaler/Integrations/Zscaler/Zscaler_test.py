@@ -22,9 +22,16 @@ class ObjectMocker(dict):
     __delattr__ = dict.__delitem__
 
 
-def run_command_test(command_func, args, response_path, expected_result_path, mocker, result_validator=None):
+def run_command_test(command_func, args, response_path, expected_result_path, mocker, result_validator=None,
+                     resp_type='json'):
     with open(response_path) as response_f:
         response = ResponseMock(json.load(response_f))
+    match resp_type:
+        case 'json':
+            response = response.json()
+        case 'content':
+            response = response.content
+
     mocker.patch('Zscaler.http_request', return_value=response)
     if command_func.__name__ in ['url_lookup', 'get_users_command', 'set_user_command',
                                  'get_departments_command', 'get_usergroups_command',
@@ -84,7 +91,8 @@ def test_url_command(mocker):
                      args={'url': 'https://www.demisto-news.com,https://www.demisto-search.com'},
                      response_path='test_data/responses/url.json',
                      expected_result_path='test_data/results/url.json',
-                     mocker=mocker, result_validator=validator)
+                     mocker=mocker, result_validator=validator,
+                     resp_type='content')
 
 
 def test_url_fails_unknown_error_code(mocker, requests_mock):
@@ -116,7 +124,8 @@ def test_url_command_with_urlClassificationsWithSecurityAlert(mocker):
                      args={'url': 'www.demisto22.com'},
                      response_path='test_data/responses/url_with_urlClassificationsWithSecurityAlert.json',
                      expected_result_path='test_data/results/url_with_urlClassificationsWithSecurityAlert.json',
-                     mocker=mocker, result_validator=validator)
+                     mocker=mocker, result_validator=validator,
+                     resp_type='content')
 
 
 def test_ip_command(mocker):
@@ -138,7 +147,8 @@ def test_ip_command(mocker):
                      args={'ip': '1.22.33.4'},
                      response_path='test_data/responses/ip.json',
                      expected_result_path='test_data/results/ip.json',
-                     mocker=mocker, result_validator=validator)
+                     mocker=mocker, result_validator=validator,
+                     resp_type='content')
 
 
 def test_undo_blacklist_url_command(mocker):
@@ -148,7 +158,8 @@ def test_undo_blacklist_url_command(mocker):
                      args={'url': 'www.demisto22.com, www.demisto33.com'},
                      response_path='test_data/responses/blacklist_urls.json',
                      expected_result_path='test_data/results/undo_blacklist_urls.txt',
-                     mocker=mocker)
+                     mocker=mocker,
+                     resp_type='content')
 
 
 def test_blacklist_url_command(mocker):
@@ -231,7 +242,8 @@ def test_get_blacklist(mocker):
                      args={},
                      response_path='test_data/responses/blacklist_urls.json',
                      expected_result_path='test_data/results/blacklist.json',
-                     mocker=mocker)
+                     mocker=mocker,
+                     resp_type='content')
 
 
 def test_get_blacklist_filter(requests_mock):
@@ -333,7 +345,8 @@ def test_get_whitelist(mocker):
                      args={},
                      response_path='test_data/responses/whitelist_url.json',
                      expected_result_path='test_data/results/whitelist.json',
-                     mocker=mocker)
+                     mocker=mocker,
+                     resp_type='content')
 
 
 # disable-secrets-detection-start
@@ -561,7 +574,8 @@ def test_set_user_command(mocker):
                            'user': user_json},
                      response_path='test_data/responses/set_user.json',
                      expected_result_path='test_data/results/set_user.json',
-                     mocker=mocker)
+                     mocker=mocker,
+                     resp_type='response')
 
 
 def test_get_departments_command(mocker):
@@ -721,3 +735,19 @@ def test_category_add_ip(mocker):
     mocker.patch('Zscaler.add_or_remove_urls_from_category', return_value={})
     result = category_add(1, '1.1.1.1', '1.1.1.1', "ip")
     assert result['HumanReadable'].startswith('Added the following IP addresses to category 1')
+
+
+def test_return_error_is_called_on_error(mocker, requests_mock):
+    """
+    Given:
+        - Any command run
+    When:
+        - Calling login() which fails on 429
+    Then:
+        - Ensure an error entry is returned
+    """
+    from Zscaler import main
+    requests_mock.get('http://cloud/api/v1/status', status_code=429)
+    return_error_mock = mocker.patch.object(CommonServerPython, 'return_error')
+    main()
+    assert return_error_mock.called_once

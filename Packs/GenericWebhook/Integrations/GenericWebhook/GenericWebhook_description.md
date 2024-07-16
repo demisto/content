@@ -6,7 +6,7 @@ We recommend that you use Cortex XSOAR server rerouting when using this integrat
 </~XSOAR_ON_PREM>
 
 
-**Note**: The **Listen Port** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations. <br> (For Cortex XSOAR 8 and Cortex XSIAM) If using an engine, you must enter a Listen Port. If not using an engine, do not enter a Listen Port and an unused port will automatically be generated when the instance is saved.                                      
+**Note**: The **Listen Port** needs to be available, which means it has to be unique for each integration instance. It cannot be used by other long-running integrations.                                      
 
 #### Security
 - We recommend using the authorization header, as described below, to validate the requests sent from your app. If you do not use this header it might result in incident creation from unexpected requests.

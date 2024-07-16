@@ -31,6 +31,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     description: Gather device info by saved query.
     name: axonius-get-devices-by-savedquery
     outputs:
@@ -70,6 +71,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     description: Gather user info by saved query.
     name: axonius-get-users-by-savedquery
     outputs:
@@ -103,6 +105,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -139,6 +142,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -175,6 +179,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -211,6 +216,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -247,6 +253,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -289,6 +296,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -331,6 +339,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -373,6 +382,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -415,6 +425,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -457,6 +468,7 @@ script:
       required: true
     - description: The maximum number of results to return.
       name: max_results
+      defaultValue: "50"
     - description: Comma separated list of Axonius fields to return.
       isArray: true
       name: fields
@@ -568,7 +580,7 @@ script:
     - contextPath: Axonius.tags
       description: Axonius Tags.
       type: Unknown
-  dockerimage: demisto/axonius:1.1.0.79132
+  dockerimage: demisto/axonius:1.1.0.94077
   runonce: false
   script: '-'
   subtype: python3

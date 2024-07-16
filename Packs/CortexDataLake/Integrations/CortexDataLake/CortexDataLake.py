@@ -787,6 +787,12 @@ def build_where_clause(args: dict) -> str:
         if any(args.get(key) for key in args_dict):
             where_clause += ' AND '
 
+    if args.get('rule'):
+        rules_list = argToList(args.pop('rule'))
+        where_clause += '(' + ' OR '.join(f'rule_matched = "{rule}"' for rule in rules_list) + ')'
+        if any(args.get(key) for key in args_dict):
+            where_clause += ' AND '
+
     # We want to add only keys that are part of the query
     string_query_fields = {key: value for key, value in args.items() if key in args_dict and key not in non_string_keys}
     or_statements = []

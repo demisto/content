@@ -9,11 +9,27 @@ def util_load_json(path):
         return json.loads(f.read())
 
 
-def test_get_email_info(mocker):
-    mock_response = util_load_json('./test_data/checkpointhec-get_email_info.json')
+def test_get_email_info_error(mocker):
+    error = 'Error: Entity not found'
 
     def execute_command(name, args):
-        if name == 'checkpointhec-get-email-info':
+        if name == 'checkpointhec-get-entity':
+            return [{'Contents': error}]
+
+        raise ValueError(f'Error: Unknown command or command/argument pair: {name} {args!r}')
+
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+
+    success, email_info = get_email_info('0000', 'CheckPointHEC-instance-1')
+    assert success is False
+    assert email_info == error
+
+
+def test_get_email_info_success(mocker):
+    mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
+
+    def execute_command(name, args):
+        if name == 'checkpointhec-get-entity':
             return [{'Contents': mock_response['responseData'][0]['entityPayload']}]
 
         if name == 'setIncident':
@@ -21,21 +37,15 @@ def test_get_email_info(mocker):
 
         raise ValueError(f'Error: Unknown command or command/argument pair: {name} {args!r}')
 
-    mocked_ec = mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
+    mocker.patch.object(demisto, 'executeCommand', side_effect=execute_command)
 
-    result = get_email_info('0000')
-    email_info = result[0]['Contents']
-    custom_fields = json.dumps({
-        'checkpointhecemailsender': email_info['fromEmail'],
-        'checkpointhecemailsubject': email_info['subject']
-    })
-    assert result == [{'Contents': mock_response['responseData'][0]['entityPayload']}]
-    assert mocked_ec.call_args_list[1][0][0] == 'setIncident'
-    assert mocked_ec.call_args_list[1][0][1] == {'customFields': custom_fields}
+    success, email_info = get_email_info('0000', 'CheckPointHEC-instance-1')
+    assert success is True
+    assert email_info == dict_to_md(mock_response['responseData'][0]['entityPayload'])
 
 
 def test_dict_to_md():
-    mock_response = util_load_json('./test_data/checkpointhec-get_email_info.json')
+    mock_response = util_load_json('./test_data/checkpointhec-get_entity.json')
     md = dict_to_md(mock_response['responseData'][0]['entityPayload'])
     lines = [
         '|field|value|',
@@ -45,7 +55,9 @@ def test_dict_to_md():
         '|recipients|user1@avanandevus1.onmicrosoft.com, unicode@avanandevus1.onmicrosoft.com|',
         '|subject|Fw: dnp-split-quarantine-2|',
         '|received|2022-08-15T21:24:15|',
+        '|isDeleted|False|',
         '|isIncoming|True|',
+        '|isOutgoing|False|',
         '|internetMessageId|<00000000.00000000000000.00000000000000.00000000@mail.example.com>|',
         '|isUserExposed|True|'
     ]

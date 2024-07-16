@@ -31,8 +31,11 @@ def test_rage_replace_class(start, end, value, should_replace):
 
 data_test_get_typed_value = [
     ('a', str),
-    ('1', float),
-    (1, float),
+    ('1', int),
+    (1, int),
+    ('1.5', float),
+    (1.5, float),
+    ('10.0', int)
 ]
 
 

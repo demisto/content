@@ -1,15 +1,15 @@
 id: Generic Webhook - Test
-version: -1
+version: 4
 vcShouldKeepItemLegacyProdMachine: false
 name: Generic Webhook - Test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 70c82575-965e-4fe1-82fa-fd160908f479
+    taskid: d6bfbdcf-36bd-4f92-8dac-e7879e9658c3
     type: start
     task:
-      id: 70c82575-965e-4fe1-82fa-fd160908f479
+      id: d6bfbdcf-36bd-4f92-8dac-e7879e9658c3
       version: -1
       name: ""
       iscommand: false
@@ -18,10 +18,11 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 50
         }
       }
@@ -34,10 +35,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 1e4e6562-50f4-4895-8321-bb4d3963c84a
+    taskid: 33950939-ca6e-4645-8f4b-d13b209b4d1e
     type: regular
     task:
-      id: 1e4e6562-50f4-4895-8321-bb4d3963c84a
+      id: 33950939-ca6e-4645-8f4b-d13b209b4d1e
       version: -1
       name: Trigger the webhook
       description: Sends http request. Returns the response as json.
@@ -51,18 +52,21 @@ tasks:
     scriptarguments:
       body:
         simple: '{"name":"webhook"}'
-      headers:
-        simple: Authorization:token
       method:
         simple: POST
       url:
-        simple: http://localhost:9000
+        simple: ${apiurl}
+      password:
+        simple: a
+      username:
+        simple: a
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 545
+          "x": 265,
+          "y": 1245
         }
       }
     note: false
@@ -74,10 +78,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: ed4acac5-5f67-4f70-823e-bd56b99fadf8
+    taskid: b11d3d56-9dac-4033-842c-fca4b9b2cb69
     type: regular
     task:
-      id: ed4acac5-5f67-4f70-823e-bd56b99fadf8
+      id: b11d3d56-9dac-4033-842c-fca4b9b2cb69
       version: -1
       name: Search the incident
       description: Searches Demisto incidents
@@ -92,11 +96,12 @@ tasks:
       name:
         simple: webhook
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1070
+          "x": 265,
+          "y": 1770
         }
       }
     note: false
@@ -108,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: ac6cae19-629e-4372-8620-ee537f79c25d
+    taskid: 7a8c1ae1-48ea-4e74-82e1-7c994f269786
     type: condition
     task:
-      id: ac6cae19-629e-4372-8620-ee537f79c25d
+      id: 7a8c1ae1-48ea-4e74-82e1-7c994f269786
       version: -1
       name: Verify incident was created successfully
       type: condition
@@ -129,11 +134,12 @@ tasks:
             value:
               simple: foundIncidents.id
             iscontext: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1245
+          "x": 265,
+          "y": 1945
         }
       }
     note: false
@@ -145,10 +151,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 84802530-89ee-4ca8-8eb2-339899de1a5e
+    taskid: ee39eba6-0e40-4fbb-86fb-8606ec708ae3
     type: regular
     task:
-      id: 84802530-89ee-4ca8-8eb2-339899de1a5e
+      id: ee39eba6-0e40-4fbb-86fb-8606ec708ae3
       version: -1
       name: Close webhook triggered incident
       description: commands.local.cmd.close.inv
@@ -160,11 +166,13 @@ tasks:
       id:
         simple: ${foundIncidents.id}
     separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 1420
+          "x": 265,
+          "y": 2120
         }
       }
     note: false
@@ -176,10 +184,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 231d0f93-ee6a-4335-8dff-99ae78e946c4
+    taskid: 7c91989a-46ac-4f4c-85e1-13ec287fb1a6
     type: regular
     task:
-      id: 231d0f93-ee6a-4335-8dff-99ae78e946c4
+      id: 7c91989a-46ac-4f4c-85e1-13ec287fb1a6
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -194,10 +202,11 @@ tasks:
       all:
         simple: "yes"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 195
         }
       }
@@ -210,10 +219,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: ccaef695-050b-4212-8a20-2b61e3511939
+    taskid: ecf28446-ac6a-40c3-893a-0688a419efc4
     type: condition
     task:
-      id: ccaef695-050b-4212-8a20-2b61e3511939
+      id: ecf28446-ac6a-40c3-893a-0688a419efc4
       version: -1
       name: Verify Success HTTP Response
       type: condition
@@ -234,11 +243,12 @@ tasks:
           right:
             value:
               simple: "200"
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
-          "y": 720
+          "x": 265,
+          "y": 1420
         }
       }
     note: false
@@ -250,10 +260,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 0102897a-8451-4150-8c15-30c27d589383
+    taskid: 61092be2-3227-4dd5-8a61-d9fde0328d47
     type: regular
     task:
-      id: 0102897a-8451-4150-8c15-30c27d589383
+      id: 61092be2-3227-4dd5-8a61-d9fde0328d47
       version: -1
       name: Sleep 10 seconds to let the webserver spin up
       description: Sleep for X seconds
@@ -263,15 +273,16 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "1"
+      - "10"
     scriptarguments:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 50,
+          "x": 265,
           "y": 370
         }
       }
@@ -284,10 +295,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: b2a34874-e4de-49a0-8786-15886d23264b
+    taskid: 83fb9320-7c9e-462e-85dc-ec41ecc4f8d0
     type: regular
     task:
-      id: b2a34874-e4de-49a0-8786-15886d23264b
+      id: 83fb9320-7c9e-462e-85dc-ec41ecc4f8d0
       version: -1
       name: Sleep 10 seconds before searching the incident
       description: Sleep for X seconds
@@ -302,10 +313,219 @@ tasks:
       seconds:
         simple: "10"
     separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 3a691e2c-224f-4e1f-8761-d72e744893a3
+    type: regular
+    task:
+      id: 3a691e2c-224f-4e1f-8761-d72e744893a3
+      version: -1
+      name: GetServerInfo
+      scriptName: GetServerInfo
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 649918f7-a6bc-435b-8e7b-d94f3cefed79
+    type: condition
+    task:
+      id: 649918f7-a6bc-435b-8e7b-d94f3cefed79
+      version: -1
+      name: is xsoar 6
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "14"
+      "yes":
+      - "12"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: startWith
+          left:
+            value:
+              simple: ServerInfo.version.version
+            iscontext: true
+          right:
+            value:
+              simple: "6"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 0d134f4e-6e47-41cd-898a-b31883ee16b7
+    type: regular
+    task:
+      id: 0d134f4e-6e47-41cd-898a-b31883ee16b7
+      version: -1
+      name: set localhost
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: apiurl
+      value:
+        simple: http://localhost:9000
+    separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: a02a5e68-a051-46e9-8687-feea84ac2069
+    type: regular
+    task:
+      id: a02a5e68-a051-46e9-8687-feea84ac2069
+      version: -1
+      name: set serverurl
+      description: Set a value in context under the key you entered.
+      scriptName: Set
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    scriptarguments:
+      key:
+        simple: apiurl
+      value:
+        complex:
+          root: ${ServerInfo.urls
+          accessor: server}
+          transformers:
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: /xsoar/instance/execute/
+          - operator: replace
+            args:
+              limit: {}
+              replaceWith:
+                value:
+                  simple: https://ext-
+              toReplace:
+                value:
+                  simple: https://
+          - operator: concat
+            args:
+              prefix: {}
+              suffix:
+                value:
+                  simple: Instances.instanceName
+                iscontext: true
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 176051f8-18b8-4317-8e9a-f9b9654f33d1
+    type: regular
+    task:
+      id: 176051f8-18b8-4317-8e9a-f9b9654f33d1
+      version: -1
+      name: get webhook name
+      description: Given an integration name, returns the instance name.
+      scriptName: GetInstanceName
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      integration_name:
+        simple: Generic Webhook
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
           "y": 895
         }
       }
@@ -316,14 +536,13 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-system: true
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1465,
-        "width": 380,
+        "height": 2165,
+        "width": 810,
         "x": 50,
         "y": 50
       }
@@ -332,3 +551,4 @@ view: |-
 inputs: []
 outputs: []
 fromversion: 5.5.0
+description: ''

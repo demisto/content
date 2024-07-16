@@ -4,5 +4,5 @@ You can configure the specific vendor and product for this instance.
 1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**. 
 2. Right-click, and select **Syslog Collector** -> **Configure**.
 3. When configuring the Syslog Collector, set:
-   - vendor as vendor<- F5
-   - product as product<- ASM
+   - vendor as F5
+   - product as ASM

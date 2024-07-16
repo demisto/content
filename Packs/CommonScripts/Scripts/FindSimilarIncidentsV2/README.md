@@ -1,3 +1,5 @@
+Deprecated. Use DBotFindSimilarIncidents instead.
+
 Finds similar incidents by common incident keys, labels, custom fields or context keys.
 It's highly recommended to use incident keys if possible (e.g., "type" for the same incident type).
 For best performance, it's recommended to avoid using context keys if possible (for example, if the value also appears in a label key, use label).

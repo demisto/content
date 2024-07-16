@@ -1,0 +1,62 @@
+2023-07-12 (Wednesday): Lorum Ipsum Infection with Dolor Sit Amet
+
+Reference:
+- https://twitter.com/LoremIpsum/status/1234567890123456789
+
+Associated Malware:
+1. File 1:
+   - SHA256 Hash: abcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890
+   - File Size: 123,456 bytes
+   - File Type: PE32 executable (DLL) (GUI) Intel 80386 (stripped to external PDB), for MS Windows
+   - Description: 32-bit Windows DLL for Lorem Ipsum, Botnet 1234, build 567890
+   - Run Method: regsvr32.exe [filename]
+
+2. File 2:
+   - SHA256 Hash: 1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef
+   - File Size: 789,012 bytes
+   - File Type: PE32+ executable (DLL) (GUI) x86-64 (stripped to external PDB), for MS Windows
+   - File Location: hxxps://example[.]com/64HTTPS.dll
+   - Saved Location: C:\\Windows\\Tasks\\dolorsit.dll
+   - Description: 64-bit Windows DLL for Dolor Sit stager
+   - Run Method: start-process rundll32.exe -ArgumentList '/s c:\\windows\\tasks\\dolorsit.dll,recurring'
+
+Traffic from Infected Windows Host:
+
+Lorem Ipsum C2 Traffic:
+- 123.456.789[.]101 port 80 - example[.]ru - GET /uploaded/[long base64 string with backslashes and underscores].pct
+- 123.456.789[.]101 port 80 - example[.]ru - POST /uploaded/[long base64 string with backslashes and underscores].dib
+- 123.456.789[.]101 port 80 - example[.]ru - GET /uploaded/[long base64 string with backslashes and underscores].pmg
+- 123.456.789[.]101 port 80 - example[.]su - GET /uploaded/[long base64 string with backslashes and underscores].pmg
+- 123.456.789[.]101 port 80 - example[.]su - POST /uploaded/[long base64 string with backslashes and underscores].dib
+
+Lorem Ipsum Modules (Encrypted Data Binaries):
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file1.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file2.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file3.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file4.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file5.rar
+- 234.567.890[.]123 port 80 - 234.567.890[.]123 - GET /file6.rar
+
+Traffic Caused by File Module:
+- 345.678.901[.]234 port 9955 - TCP traffic
+
+Encrypted Data Binary for Dolor Sit Stager:
+- 456.789.012[.]345 port 80 - 456.789.012[.]345 - GET /01/64HTTPS.zip
+
+DLL for Dolor Sit Stager:
+- 567.890.123[.]456 port 443 - exampledw[.]com - GET /exampledw.com/64HTTPS.dll
+
+Dolor Sit C2:
+- 678.901.234[.]567 port 443 - ipsumupdate[.]com - HTTPS traffic, TLSv1.2, Let's Encrypt certificate, not valid before 2023-07-03
+
+---
+
+2020-09-21 (Monday): Infection from Ipsum Malspam
+
+Reference:
+- https://twitter.com/LoremIpsum/status/09876543210987654321
+
+Email Header Data:
+- Received: from [123.456.789.101] (unknown [123.456.789.101]) by [removed]; Mon, 21 Sep 2020 14:25:24 +0200 (CEST)
+- Received: from [234.567.890.123] (helo=LOREMIPSUM.esa4.example-out.iphmx.com) by [removed] (envelope-from example@example.com) [removed]; Mon, 21 Sep 2020 13:25:24 +0100
+- Date: Mon, 21 Sep 2020 13:25:24 +0100

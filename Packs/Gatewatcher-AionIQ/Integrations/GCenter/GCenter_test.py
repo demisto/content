@@ -205,7 +205,7 @@ def test_gw_get_alert(client, requests_mock, uid, prefix_mapping, raw_alerts_rea
         gw_get_alert(client, args)
 
 
-@pytest.mark.parametrize("ltype", ["white", "black"])
+@pytest.mark.parametrize("ltype", ["white", "black"], ids=["test-white-list", "test-black-list"])
 def test_gw_get_malcore_list_entry(client, requests_mock, ltype, prefix_mapping, get_malcore_list):
     args = {
         "type": ltype
@@ -228,7 +228,7 @@ def test_gw_get_malcore_list_entry(client, requests_mock, ltype, prefix_mapping,
         gw_get_malcore_list_entry(client, args)
 
 
-@pytest.mark.parametrize("ltype", ["white", "black"])
+@pytest.mark.parametrize("ltype", ["white", "black"], ids=["test-white-list", "test-black-list"])
 def test_gw_add_malcore_list_entry(client, requests_mock, ltype, prefix_mapping, add_malcore_list):
     args = {
         "type": ltype,
@@ -254,7 +254,7 @@ def test_gw_add_malcore_list_entry(client, requests_mock, ltype, prefix_mapping,
         gw_add_malcore_list_entry(client, args)
 
 
-@pytest.mark.parametrize("ltype", ["white", "black"])
+@pytest.mark.parametrize("ltype", ["white", "black"], ids=["test-white-list", "test-black-list"])
 def test_gw_del_malcore_list_entry(client, requests_mock, ltype, prefix_mapping):
     args = {
         "type": ltype,
@@ -277,7 +277,7 @@ def test_gw_del_malcore_list_entry(client, requests_mock, ltype, prefix_mapping)
         gw_del_malcore_list_entry(client, args)
 
 
-@pytest.mark.parametrize("ltype", ["white", "black"])
+@pytest.mark.parametrize("ltype", ["white", "black"], ids=["test-white-list", "test-black-list"])
 def test_gw_get_dga_list_entry(client, requests_mock, ltype, prefix_mapping, get_dga_list):
     args = {
         "type": ltype
@@ -300,7 +300,7 @@ def test_gw_get_dga_list_entry(client, requests_mock, ltype, prefix_mapping, get
         gw_get_dga_list_entry(client, args)
 
 
-@pytest.mark.parametrize("ltype", ["white", "black"])
+@pytest.mark.parametrize("ltype", ["white", "black"], ids=["test-white-list", "test-black-list"])
 def test_gw_add_dga_list_entry(client, requests_mock, ltype, prefix_mapping, add_dga_list):
     args = {
         "type": ltype,
@@ -325,7 +325,7 @@ def test_gw_add_dga_list_entry(client, requests_mock, ltype, prefix_mapping, add
         gw_add_dga_list_entry(client, args)
 
 
-@pytest.mark.parametrize("ltype", ["white", "black"])
+@pytest.mark.parametrize("ltype", ["white", "black"], ids=["test-white-list", "test-black-list"])
 def test_gw_del_dga_list_entry(client, requests_mock, ltype, prefix_mapping):
     args = {
         "type": ltype,
