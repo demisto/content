@@ -66,7 +66,18 @@ script:
     - name: parent_issue_id
       description: The ID of the parent issue.
     - name: custom_fields
-      description: The custom field to update. The format is costumFieldID:Value,costumFieldID:Value, etc.
+      description: |-
+        The custom field to update.
+        - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
+        - Please use an array if the field is of multiselect type.
+        - Instruction for each custom field type:
+          - Boolean: use "0" for False and "1" for True.
+          - Date: the format is "yyyy-mm-dd".
+          - Float: A number with two digits after the decimal point.
+          - Integer: A number.
+          - Key/Value list: Use the Key (ID) of the value.
+          - User: Use the user ID.
+          - Version- use the version ID.
       isArray: true
     - name: watcher_user_ids
       description: An array with watcher user IDs for this issue -> 1,2,3.
@@ -202,7 +213,18 @@ script:
     - name: parent_issue_id
       description: The ID of the parent issue, if applicable.
     - name: custom_fields
-      description: The custom field to update. The format is costumFieldID:Value,costumFieldID:Value etc. 
+      description: |-
+        The custom field to update.
+        - "The format is `{\"customFieldID2\": \"value3\, \"customFieldID1\": [\"value1\",\"value2\"]"}`."
+        - Please use an array if the field is of multiselect type.
+        - Instruction for each custom field type:
+          - Boolean: use "0" for False and "1" for True.
+          - Date: the format is "yyyy-mm-dd".
+          - Float: A number with two digits after the decimal point.
+          - Integer: A number.
+          - Key/Value list: Use the Key (ID) of the value.
+          - User: Use the user ID.
+          - Version- use the version ID.
       isArray: true
     - name: watcher_user_ids
       description: A comma-separated list of watcher IDs. -> 1,2,3.

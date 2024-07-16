@@ -8,7 +8,7 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Cloud Services"
+        "Network Security"
     ],
     "tags": [],
     "useCases": [],
@@ -16,5 +16,6 @@
     "marketplaces": [
         "xsoar",
         "marketplacev2"
-    ]
+    ],
+    "defaultDataSource": "NetskopeEventCollector"
 }

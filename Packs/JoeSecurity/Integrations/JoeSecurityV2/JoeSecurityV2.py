@@ -22,8 +22,11 @@ class Client(jbxapi.JoeSandbox):
         self.reliability = reliability
         self.create_relationships = create_relationships
         self.on_premise = on_premise
-        if proxy:
-            proxies = handle_proxy()
+        if not proxy:
+            demisto.debug("Removing proxy environment variables.")
+        else:
+            demisto.debug("Handling proxy.")
+        proxies = handle_proxy()
         super().__init__(apikey=apikey, apiurl=base_url, accept_tac=accept_tac, verify_ssl=verify_ssl, proxies=proxies)
 
     def analysis_info_list(self, web_ids: List[str]) -> List[Dict[str, Any]]:
@@ -277,7 +280,7 @@ def build_file_object(client: Client, analysis: Dict[str, Any], analyses: List[D
     score, description = max(
         [indicator_calculate_score(entry.get('detection', '')) for entry in analyses if entry.get('sha256') == sha256],
         key=lambda tup: tup[1])  # Find the max dbot score between all the analysis results.
-    dbot_score = Common.DBotScore(indicator=file_name, integration_name='JoeSecurityV2',
+    dbot_score = Common.DBotScore(indicator=sha256, integration_name='JoeSecurityV2',
                                   indicator_type=DBotScoreType.FILE,
                                   reliability=DBotScoreReliability.get_dbot_score_reliability_from_str(
                                       client.reliability), score=score, malicious_description=description)
@@ -596,6 +599,7 @@ def test_module(client: Client) -> str:     # pragma: no cover
     :rtype: ``str``
     """
     try:
+        demisto.debug(f"sending request with url: {client.apiurl + '/v2/server/online'}")
         client.server_online()
     except Exception as e:
         if isinstance(e, jbxapi.ApiError):
@@ -607,7 +611,7 @@ def test_module(client: Client) -> str:     # pragma: no cover
                 case 'ServerOfflineError' | 'InternalServerError':
                     return "Server error, please verify the Server URL or check if the server is offline"
         else:
-            return "Server error, please verify the server url or check if the server is online"
+            return f"Server error, please verify the server url or check if the server is online, exact error: {e}"
     return 'ok'
 
 
@@ -898,6 +902,12 @@ def main() -> None:  # pragma: no cover
     """
     api_key = demisto.get(demisto.params(), 'credentials.password')
     base_url = demisto.params().get('url')
+
+    demisto.debug(f"base url before handling it: {base_url}")
+    if 'api' not in base_url:
+        base_url = urljoin(base_url, 'api/')
+    demisto.debug(f"base url after handling it: {base_url}")
+
     verify_certificate = not demisto.params().get('insecure', False)
     proxy = demisto.params().get('proxy', False)
     reliability = demisto.params().get('Reliability', DBotScoreReliability.C)

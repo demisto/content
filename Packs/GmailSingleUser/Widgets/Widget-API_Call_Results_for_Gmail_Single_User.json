@@ -1,0 +1,95 @@
+{
+    "dataType": "metrics",
+    "params": {
+        "customGroupBy": [
+            null,
+            {
+                "ConnectionError": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "ConnectionError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "ConnectionError"
+                },
+                "General Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "GeneralError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "General Error"
+                },
+                "Quota Error": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "QuotaError",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Quota Error"
+                },
+                "Success": {
+                    "conditions": [
+                        [
+                            {
+                                "field": "apiResponseType",
+                                "operator": "isEqualCaseString",
+                                "right": "Successful",
+                                "type": "string"
+                            }
+                        ]
+                    ],
+                    "name": "Success"
+                }
+            }
+        ],
+        "groupBy": [
+            "modified(h)",
+            "apiResponseType"
+        ],
+        "keys": [
+            "sum|totalAPICalls"
+        ],
+        "timeFrame": "hours",
+        "valuesFormat": "abbreviated",
+        "xAxisLabel": "Time",
+        "yAxisLabel": "Request Counts"
+    },
+    "query": "type:integration and name:\"Gmail Single User\"",
+    "modified": "2024-05-21T10:23:37.500573773Z",
+    "name": "API Call Results For Gmail Single User",
+    "dateRange": {
+        "fromDate": "0001-01-01T00:00:00Z",
+        "toDate": "0001-01-01T00:00:00Z",
+        "period": {
+            "by": "",
+            "byTo": "hours",
+            "byFrom": "hours",
+            "toValue": 0,
+            "fromValue": 3,
+            "field": ""
+        },
+        "fromDateLicense": "0001-01-01T00:00:00Z"
+    },
+    "isPredefined": true,
+    "version": -1,
+    "id": "eff19897-4635-44c4-889c-f106373be355",
+    "widgetType": "line",
+    "fromVersion": "6.10.0",
+    "description": ""
+}

@@ -1,0 +1,28 @@
+name: Protect Infrastructure Directories (Contributions)
+
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  protect-non-packs:
+    runs-on: ubuntu-latest
+    if: 'startsWith(github.head_ref, ''contrib'') || (github.event.pull_request.head.repo.fork == true && contains(github.event.pull_request.base.ref, ''contrib''))'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v41  # disable-secrets-detection
+
+      - name: Check for changes in protected directories
+        run: |
+              python .github/github_workflow_scripts/check_protected_directories.py ${{ steps.changed-files.outputs.all_changed_files }}

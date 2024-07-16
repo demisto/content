@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from ExtractFQDNFromUrlAndEmail import extract_fqdn
 import pytest
 
@@ -8,7 +7,7 @@ import pytest
     [  # noqa: E501 disable-secrets-detection
         ("http://this.is.test.com", "this.is.test.com"),
         ("https://caseapi.phishlabs.com", "caseapi.phishlabs.com"),
-        (u"www.bücher.de", u"www.bücher.de"),
+        ("www.bücher.de", "www.bücher.de"),
         (
             "https://urldefense.proofpoint.com/v2/url?u=http-3A__go.getpostman.com_y4wULsdG0h0DDMY0Dv00100&d=DwMFaQ&c=yw"
             "DJJevdGcjv4rm9P3FcNg&r=s5kA2oIAQRXsacJiBKmTORIWyRN39ZKhobje2GyRgNs&m=vN1dVSiZvEoM9oExtQqEptm9Dbvq9tnjACDZzr"

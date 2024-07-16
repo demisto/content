@@ -4,13 +4,14 @@ alter
     targetIP2 = json_extract_scalar(Service, "$.Action.KubernetesApiCallAction.RemoteIpDetails.IpAddressV4"),
     username1 = trim(json_extract_scalar(Resource,"$.AccessKeyDetails.UserName"), "\""),
     username2 = json_extract_scalar(Resource, "$.KubernetesDetails.KubernetesUserDetails.Username"),
-    userType = json_extract_scalar(Resource, "$.AccessKeyDetails.UserType")
+    userType = json_extract_scalar(Resource, "$.AccessKeyDetails.UserType"),
+    severity = to_float(Severity)
 | alter
     xdm.alert.category = json_extract_scalar(Resource, "$.ResourceType"),
     xdm.alert.subcategory = Type,
     xdm.alert.description = Description,
     xdm.event.outcome_reason = Title,
-    xdm.alert.severity = to_string(Severity),
+    xdm.alert.severity = if( severity >= 7, "High", severity >= 4 and severity < 6.9 , "Medium", severity >= 1 and severity < 3.9 , "Low", to_string(Severity)),
     xdm.target.resource.id = AccountId,
     xdm.target.host.hostname = json_extract_scalar(Resource, "$.EksClusterDetails.Name"),
     xdm.source.user.user_type = if(userType in("Root","IAMUser","Role","FederatedUser","AWSAccount"),XDM_CONST.USER_TYPE_REGULAR , userType in("Directory","AWSService") ,XDM_CONST.USER_TYPE_SERVICE_ACCOUNT,userType in("AssumedRole") ,XDM_CONST.USER_TYPE_MACHINE_ACCOUNT ,to_string(userType)),

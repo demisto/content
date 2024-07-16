@@ -14,10 +14,12 @@ Use Gem alerts as a trigger for Cortex XSOAR’s custom playbooks, to automate r
     | Service Account Secret | The Service Account Secret to use for connection | True |
     | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
     | Use system proxy settings |  | False |
+    | Trust any certificate (not secure) |  | False |
     | Fetch incidents |  | False |
     | Maximum number of alerts per fetch |  | False |
 
 4. Click **Test** to validate the URLs, token, and connection.
+
 
 ## Commands
 

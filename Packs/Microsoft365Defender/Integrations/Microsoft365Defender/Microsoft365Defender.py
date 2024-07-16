@@ -52,7 +52,7 @@ class Client:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.security_center,
+            managed_identities_resource_uri=Resources.security,
             command_prefix="microsoft-365-defender",
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
