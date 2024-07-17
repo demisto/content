@@ -131,5 +131,4 @@ type: python
 dockerimage: demisto/sklearn:1.0.0.87502
 tests:
 - No tests (auto formatted)
-runonce: true
 fromversion: 5.0.0
