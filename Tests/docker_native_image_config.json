@@ -118,7 +118,7 @@
         },
         {
             "id":"Intezer v2",
-            "reason":"Issue: CIAC-7861",
+            "reason":"Issue: CIAC-10263",
             "ignored_native_images":[
                 "native:8.6",
                 "native:candidate"
@@ -143,6 +143,21 @@
         {
             "id": "Github Feed",
             "reason": "update docker image",
+            "ignored_native_images": [
+                "native:8.6"
+            ]
+        },
+        {
+            "id":"CyrenThreatInDepthRenderRelated",
+            "reason": "This integration support only from python 3.11",
+            "ignored_native_images":[
+                "native:8.6",
+                "native:candidate"
+            ]
+        },
+        {
+            "id": "rapid7_threat_command",
+            "reason": "This integration support only from python 3.11",
             "ignored_native_images": [
                 "native:8.6",
                 "native:candidate"
