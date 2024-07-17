@@ -119,11 +119,11 @@ def get_model_data(model_name: str):
     :param model_name: name of the model to load from demisto
     :return: str, str
     """
-    res_model: dict = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]['Contents']  # type: ignore
+    res_model: dict = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]  # type: ignore
     if is_error(res_model):
         raise DemistoException(f"Error reading model {model_name} from Demisto")
-    model_data = res_model['modelData']
-    model_type = dict_safe_get(res_model, ['model', 'type', 'type'], UNKNOWN_MODEL_TYPE)
+    model_data = res_model['Contents']['modelData']
+    model_type = dict_safe_get(res_model, ['Contents', 'model', 'type', 'type'], UNKNOWN_MODEL_TYPE)
     return model_data, model_type
 
 
