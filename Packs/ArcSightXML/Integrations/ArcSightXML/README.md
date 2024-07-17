@@ -1,6 +1,6 @@
 Deprecated. Use the ArcSight ESM v2 integration instead.
 
-## Configure ArcSight XML on Cortex XSOAR
+## Configure ArcSight XML on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

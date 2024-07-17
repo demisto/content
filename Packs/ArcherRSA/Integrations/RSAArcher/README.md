@@ -2,7 +2,7 @@
 <h2>Overview</h2>
 <p>Deprecated. Use the RSA Archer v2 integration instead.</p>
 <hr>
-<h2>Configure the RSA Archer integration on Cortex XSOAR</h2>
+<h2>Configure the RSA Archer integration on Cortex</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for RSA Archer.</li>

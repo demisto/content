@@ -11,7 +11,7 @@
 <h2>Fetched Incidents Data</h2>
 <hr>
 <p><strong>name</strong>: Incident name<br><strong>label</strong>: "Starlight event"<br><strong>aella_eid</strong>: Aella event ID<br><strong>aella_event</strong>: Aella event name<br><strong>event_severity</strong>: Severity of the event</p>
-<h2>Configure Aella Starlight on Cortex XSOAR</h2>
+<h2>Configure Aella Starlight on Cortex</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

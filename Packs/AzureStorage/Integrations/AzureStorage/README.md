@@ -87,7 +87,7 @@ To use a self-configured Azure application, you need to add a new Azure App Regi
 
 The application must have *user_impersonation* permission and must allow public client flows (can be found under the **Authentication** section of the app).
 
-## Configure Azure Storage on Cortex XSOAR
+## Configure Azure Storage on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

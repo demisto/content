@@ -30,7 +30,7 @@ This integration is powered by Ansible 2.9. Further information can be found on 
 * [Ansible Getting Started](https://docs.ansible.com/ansible/latest/user_guide/intro_getting_started.html)
 * [Module Documentation](https://docs.ansible.com/ansible/2.9/modules/list_of_all_modules.html)
 
-## Configure Ansible Linux on Cortex XSOAR
+## Configure Ansible Linux on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

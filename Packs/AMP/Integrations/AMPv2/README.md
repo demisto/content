@@ -1,7 +1,7 @@
 Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
 This integration was integrated and tested with version 1 of CiscoAMP.
 
-## Configure Cisco AMP Secure Endpoint on Cortex XSOAR
+## Configure Cisco AMP Secure Endpoint on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

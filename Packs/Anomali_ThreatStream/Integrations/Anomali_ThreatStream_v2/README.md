@@ -10,7 +10,7 @@ Use Anomali ThreatStream to query and submit threats.
 3. Import indicators to ThreatStream platform.
 4. Submit file or URL to sandbox and receive an analysis report.
 
-## Configure Anomali ThreatStream v2 on Cortex XSOAR
+## Configure Anomali ThreatStream v2 on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

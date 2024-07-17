@@ -26,7 +26,7 @@ If you have a dedicated server URL, enter it in the *Server Url* parameter.
 
 To get the *Subscription ID*, *Workspace Name* and *Resource Group* parameters, in the Azure Portal navigate  to **Azure Sentinel** > your workspace > **Settings** and click the **Workspace Settings** tab.
 
-## Configure Azure Sentinel on Cortex XSOAR
+## Configure Azure Sentinel on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

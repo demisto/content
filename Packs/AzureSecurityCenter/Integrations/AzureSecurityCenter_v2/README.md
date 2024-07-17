@@ -26,7 +26,7 @@ For more details about the authentication used in this integration, see [Microso
       - Microsoft.Security/locations/jitNetworkAccessPolicies/initiate/action
     * Select the Azure Security Center application.
 
-## Configure Azure Security Center v2 on Cortex XSOAR
+## Configure Azure Security Center v2 on Cortex
 
 1. Navigate to **Settings** > **Integrations**   > **Servers & Services**.
 2. Search for Azure Security Center v2.

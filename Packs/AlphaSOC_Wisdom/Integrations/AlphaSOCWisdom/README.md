@@ -7,7 +7,7 @@
 <p>This integration requires an AlphaSOC API key. Navigate to <a href="https://alphasoc.com/wisdom/">https://alphasoc.com/wisdom/</a> to generate the API key. You can use the key for 30 days to evaluate the integration and additional context that AlphaSOC provides.</p>
 <p>If you run into any problems using the integration, or wish to discuss licensing and API use beyond the 30 day evaluation period for the AlphaSOC Wisdom service, contact the <a href="mailto:support@alphasoc.com" target="_blank" rel="noopener">AlphaSOC support team</a>.</p>
 <hr>
-<h2>Configure the AlphaSOC integration on Cortex XSOAR</h2>
+<h2>Configure the AlphaSOC integration on Cortex</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>
 <li>Search for AlphaSOC Wisdom.</li>

@@ -24,7 +24,7 @@ To get your API key, you need to add an authorization code, and then activate th
 Use the API key when configuring the integration.
 For more information on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
 
-## Configure AutoFocus V2 on Cortex XSOAR
+## Configure AutoFocus V2 on Cortex
 ---
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.

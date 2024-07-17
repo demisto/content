@@ -1,4 +1,4 @@
-## Configure AutoFocus Tags Feed on Cortex XSOAR
+## Configure AutoFocus Tags Feed on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

@@ -6,7 +6,7 @@
 <p> <img src="https://raw.githubusercontent.com/demisto/content/master/docs/images/Integrations/integration-AlphaSOC_Network_Behavior_Analytics_mceclip0.png"></p>
 <p>The AlphaSOC Analytics Engine is free to evaluate without restriction for 30 days and you can instantly create an API key within Network Flight Recorder or our Splunk apps to evaluate and use the service.</p>
 <p> </p>
-<h2>Configure the AlphaSOC Network Behavior Analysis Integration on Cortex XSOAR</h2>
+<h2>Configure the AlphaSOC Network Behavior Analysis Integration on Cortex</h2>
 <hr>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

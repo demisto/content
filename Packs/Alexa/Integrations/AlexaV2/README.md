@@ -7,7 +7,7 @@ This integration was integrated and tested with Alexa Rank Indicator V2.
 - If the domain doesn't exist, there is an error.
 - Default values changed: 1000 for *Top Domain Threshold* and unspecified for *Suspicous Domain Threshold*.
 
-## Configure Alexa Rank Indicator V2 on Cortex XSOAR
+## Configure Alexa Rank Indicator V2 on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
