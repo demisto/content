@@ -171,7 +171,7 @@ def main():  # pragma: no cover
             }
             add_sensitive_log_strs(api_key)
     else:
-        url = "/api/webapp/" # internal calls to XDR, i.e. FE/internal apps.
+        url = "/api/webapp/"  # internal calls to XDR, i.e. FE/internal apps.
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get('proxy')
     verify_cert = not demisto.params().get('insecure', False)
@@ -466,7 +466,7 @@ def main():  # pragma: no cover
 
         elif command == 'core-get-incidents':
             return_outputs(*get_incidents_command(client, args))
-        
+
         elif command == 'core-terminate-process':
             return_results(run_polling_command(client=client,
                                                args=args,
@@ -478,7 +478,7 @@ def main():  # pragma: no cover
                                                polling_value=["PENDING",
                                                               "IN_PROGRESS",
                                                               "PENDING_ABORT"]))
-        
+
         elif command == 'core-terminate-causality':
             return_results(run_polling_command(client=client,
                                                args=args,
