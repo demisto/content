@@ -155,6 +155,11 @@ configuration:
   name: risk_score_threshold
   required: false
   type: 0
+- additionalinfo: 'Improve the feed performance by removing the rawJSON from the indicators. Note: a loss of data may occure if checking this box'
+  display: Improve performance
+  name: performance
+  type: 8
+  required: false
 description: Ingests indicators from Recorded Future feeds into Demisto.
 display: Recorded Future RiskList Feed
 name: Recorded Future Feed

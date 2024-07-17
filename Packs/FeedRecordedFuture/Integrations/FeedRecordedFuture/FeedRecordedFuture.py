@@ -36,6 +36,7 @@ RF_INDICATOR_TYPES = {
     'hash': 'hash'
 }
 
+RF_RISK_SCORE_TYPE_TO_FIELD = {}
 
 class Client(BaseClient):
     """
@@ -53,7 +54,7 @@ class Client(BaseClient):
                  fusion_file_path: str = None, insecure: bool = False,
                  polling_timeout: int = 20, proxy: bool = False,
                  malicious_threshold: int = 65, suspicious_threshold: int = 25, risk_score_threshold: int = 0,
-                 tags: list | None = None, tlp_color: str | None = None):
+                 tags: list | None = None, tlp_color: str | None = None, performance: bool = False):
         """
         Attributes:
              indicator_type: string, the indicator type of the feed.
@@ -87,6 +88,7 @@ class Client(BaseClient):
         self.risk_score_threshold = int(risk_score_threshold) if risk_score_threshold else DEFAULT_RISK_SCORE_THRESHOLD_VALUE
         self.tags = tags
         self.tlp_color = tlp_color
+        self.performance = argToBoolean(performance)
 
         if self.malicious_threshold <= self.suspicious_threshold:
             raise DemistoException('The Suspicious Threshold must be less than the Malicious Threshold.')
@@ -413,7 +415,6 @@ def calculate_recorded_future_criticality_label(risk_from_feed):
     else:
         return 'No current evidence of risk'
 
-
 def format_risk_string(risk_string):
     """Formats the risk string returned from the feed
     Args:
@@ -468,8 +469,10 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 indicators_value_set.add(value)
                 raw_json['type'] = get_indicator_type(indicator_type, item)
                 score = 0
+                risk_score = 0
                 risk = item.get('Risk')
                 if isinstance(risk, str) and risk.isdigit():
+                    risk_score = int(risk)
                     raw_json['score'] = score = client.calculate_indicator_score(risk)
                     raw_json['Criticality Label'] = calculate_recorded_future_criticality_label(risk)
                     # If the indicator risk score is lower than the risk score threshold we shouldn't create it.
@@ -490,10 +493,11 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 indicator_obj = {
                     'value': value,
                     'type': raw_json['type'],
-                    'rawJSON': {},
+                    'rawJSON': raw_json if not client.performance else {},
                     'fields': {
                         'recordedfutureevidencedetails': lower_case_evidence_details_keys,
                         'tags': client.tags,
+                        'recordedfutureriskscore': risk_score,
                     },
                     'score': score
                 }
@@ -585,7 +589,7 @@ def main():  # pragma: no cover
                     params.get('risk_rule'), params.get('fusion_file_path'), params.get('insecure'),
                     params.get('polling_timeout'), params.get('proxy'), params.get('threshold'),
                     params.get('suspicious_threshold'), params.get('risk_score_threshold'),
-                    argToList(params.get('feedTags')), params.get('tlp_color'))
+                    argToList(params.get('feedTags')), params.get('tlp_color'), params.get('performance'))
     demisto.debug('RF: Finished initializing client')
     command = demisto.command()
     demisto.info(f'Command being called is {command}')
