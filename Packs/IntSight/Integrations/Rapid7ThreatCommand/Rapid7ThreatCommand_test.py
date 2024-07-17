@@ -1084,7 +1084,7 @@ def test_create_alert_command(
                 "sub_type": "test",
             },
             ReadableErrors.ARGUMENT.value.format(
-                "severity", ArgumentValues.ALERT_IOC_SEVERITY.value
+                "severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
             ),
         ),
         (
@@ -1267,7 +1267,7 @@ def test_update_alert_severity_command(
         (
             {"alert_id": "test", "severity": "test"},
             ReadableErrors.ARGUMENT.value.format(
-                "severity", ArgumentValues.ALERT_IOC_SEVERITY.value
+                "severity", ArgumentValues.ALERT_IOC_AND_DOCUMENT_SEVERITY.value
             ),
         ),
     ),
