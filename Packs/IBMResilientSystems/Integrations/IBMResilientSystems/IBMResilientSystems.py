@@ -120,12 +120,14 @@ EXP_TYPE_ID_DICT = {
 
 ''' CONSTANTS '''
 SCRIPT_ENTITIES = 'entities'
-
+DEFAULT_RETRIES = 1
 ''' HELPER FUNCTIONS '''
 
 
 def normalize_timestamp(timestamp):
-    ''' Converts epoch timestamp to human readable timestamp '''
+    """
+    Converts epoch timestamp to human readable timestamp.
+    """
     return datetime.fromtimestamp(timestamp / 1000.0).strftime('%Y-%m-%dT%H:%M:%SZ')
 
 
@@ -176,6 +178,22 @@ def prettify_incidents(client, incidents):
                 translated_nist.append(NIST_ID_DICT[vector])
             incident['nist_attack_vectors'] = translated_nist
     return incidents
+
+
+def prettify_incident_notes(notes: list[dict]) -> list[dict]:
+    """
+    Reformatting retrieved incident notes to be more readable.
+    """
+    formatted_notes = []
+    while notes:
+        note = notes.pop()
+        new_note_obj = {
+            'id': note.get('id', ''),
+            # Removing HTML tags.
+            'text':  re.sub(r'<[^>]+>', '', note.get('text', '')),
+            'create_date': normalize_timestamp(note.get('create_date', ''))}
+        formatted_notes.append(new_note_obj)
+    return formatted_notes
 
 
 ''' FUNCTIONS '''
@@ -342,13 +360,26 @@ def search_incidents(client, args):
                 'method': 'gte',
                 'value': now * 1000
             }))
+
     data = {
         'filters': [{
             'conditions': conditions
         }]
     }
-    response = client.post('/incidents/query', data)
-    return response
+    # Pagination mechanism.
+    page = int(args.get('page'))
+    page_size = int(args.get('page_size'))
+    if page_size > 0 and page > 0:
+        data['start'] = page_size * (page - 1)
+        data['length'] = page_size
+    else:
+        raise DemistoException('Invalid page number or page size. Page number and page sizes must be positive integers.')
+
+    search_incidents_endpoint = '/incidents/query_paged'
+    if return_level := args.get("return_level"):
+        search_incidents_endpoint += f'?return_level={return_level}'
+    response = client.post(search_incidents_endpoint, data)
+    return response['data']
 
 
 def extract_data_form_other_fields_argument(other_fields, incident, changes):
@@ -1090,6 +1121,7 @@ def list_scripts_command(rs_client: SimpleClient, args: dict) -> CommandResults:
     script_id = args.get("script_id", "")
     try:
         response = rs_client.get(f'/scripts/{script_id}')
+
         demisto.debug(f'list_scripts_command {response=}')
 
         script_ids = []
@@ -1101,10 +1133,10 @@ def list_scripts_command(rs_client: SimpleClient, args: dict) -> CommandResults:
             # Padding blank lines inorder to format the outputs in a block.
             human_readable += f"""
             
-            Script ID: {script_id}
-            Script Name: {script.get('name, ''')}
-            Description: {script.get('description', '')}
-            Language: {script.get('language', '')}
+Script ID: {script_id}
+Script Name: {script.get('name, ''')}
+Description: {script.get('description', '')}
+Language: {script.get('language', '')}
             
             """
         demisto.info(f'list_scripts_command received script ids: {str(script_ids)}')
@@ -1115,10 +1147,7 @@ def list_scripts_command(rs_client: SimpleClient, args: dict) -> CommandResults:
         )
 
     except (SimpleHTTPException, RetryHTTPException) as e:
-        return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f'Could not find a script with ID: {script_id}.\nGot error: {e.response.text}'
-        )
+        return_error(f'Could not find a script with ID: {script_id}.\nGot error: {e.response.text}')
 
 
 def upload_incident_attachment_command(rs_client: SimpleClient, args: dict) -> CommandResults:
@@ -1161,7 +1190,7 @@ def delete_incidents_command(rs_client: SimpleClient, args: dict) -> CommandResu
     demisto.info(f'delete_incidents_command {incident_ids=}')
     try:
         response: dict = rs_client.put(f'/incidents/delete', payload=incident_ids)
-        human_readable: str = f'{incident_ids} were deleted successfully.' if response['Success'] else f"{response['message']}"
+        human_readable: str = f'{incident_ids} were deleted successfully.' if response['success'] else f"{response['message']}"
     except SimpleHTTPException as e:
         return CommandResults(
             entry_type=EntryType.ERROR,
@@ -1180,7 +1209,7 @@ def list_incident_notes_command(rs_client: SimpleClient, args: dict) -> CommandR
     demisto.debug(f'list_incident_notes_command {incident_id=}')
     try:
         response = rs_client.get(f'/incidents/{incident_id}/comments')
-        human_readable: str = tableToMarkdown(f'Incident {incident_id} Notes', t=response)
+        human_readable: str = tableToMarkdown(f'Incident {incident_id} Notes', t=prettify_incident_notes(response))
         demisto.debug(f'{response=}')
         return CommandResults(
             outputs_prefix='Resilient.IncidentNotes',
@@ -1200,8 +1229,14 @@ def update_incident_note_command(rs_client: SimpleClient, args: dict) -> Command
     """
     incident_id, note_id, note_text = args.get('incident_id'), args.get('note_id'), args.get('note')
     demisto.debug(f'update_incident_note_command {incident_id=}, {note_id=}, {note_text=}')
+    body = {
+        'text': {
+            'format': 'text',
+            'content': note_text
+        }
+    }
     try:
-        response = rs_client.put(f'/incidents/{incident_id}/comments/{note_id}', payload={"text": note_text})
+        response = rs_client.put(f'/incidents/{incident_id}/comments/{note_id}', payload=body)
         demisto.debug(f'{response=}')
         return CommandResults(
             readable_output=f'Successfully updated note ID {note_id} for incident ID {incident_id}'
@@ -1219,8 +1254,14 @@ def add_custom_incident_task_command(rs_client: SimpleClient, args: dict):
     """
     incident_id, task_instructions = args.get('incident_id'), args.get('instructions')
     demisto.debug(f'add_custom_incident_task_command {incident_id=}')
+    body = {
+        'text': {
+            'format': 'text',
+            'content': task_instructions
+        }
+    }
     try:
-        response = rs_client.post(f'/incidents/{incident_id}/tasks', payload={"text": "SHISHI"})
+        response = rs_client.post(f'/incidents/{incident_id}/tasks', payload=body)
         demisto.debug(f'{response=}')
         return CommandResults(
             readable_output=f'Successfully created task for incident ID {incident_id}'
@@ -1243,11 +1284,11 @@ def list_tasks_command(rs_client: SimpleClient) -> CommandResults:
         for incident_tasks_obj in response:
             tasks_list.extend(incident_tasks_obj.get('tasks'))
         # TODO - Figure out what human readable table to produce here
-        # human_readable: str = tableToMarkdown(name="Open Tasks", t=tasks_list)
+        human_readable: str = tableToMarkdown(name="Open Tasks", t=tasks_list)
         return CommandResults(
             outputs_prefix='Resilient.Tasks',
             outputs=response,
-            # readable_output=human_readable
+            readable_output=human_readable
         )
     except SimpleHTTPException as e:
         return CommandResults(
@@ -1376,6 +1417,7 @@ def get_client():
     else:
         return_error('Credentials were not provided. Please configure API key ID and API key secret')
     resilient_client = resilient.get_client(opts=opts_dict)
+    resilient_client.request_max_retries = DEFAULT_RETRIES
     return resilient_client
 
 

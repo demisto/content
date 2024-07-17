@@ -114,30 +114,34 @@ script:
   - name: rs-search-incidents
     description: Query for incidents
     arguments:
-    - description: Comma-separated list of incident severity, e.g., Low,Medium,High.
-      name: severity
-    - description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      name: date-created-before
-    - description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      name: date-created-after
-    - description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
-      name: date-created-within-the-last
-    - auto: PREDEFINED
+    - name: page
+      description: Indicates the starting point for the first record in the dataset. Starting from 1.
+    - name: page_size
+      description: The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit.
+    - name: severity
+      description: Comma-separated list of incident severity, e.g., Low,Medium,High.
+    - name: date-created-before
+      description: Created date of the incident before the given date in the formatYYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
+    - name: date-created-after
+      description: Created date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
+    - name: date-created-within-the-last
+      description: Created date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with with the timeframe argument.
+    - name: timeframe
       description: 'Time frame to search within for incident. Should be given with within-the-last/due-in argument. Possible values: "days", "hours", "minutes".'
-      name: timeframe
+      auto: PREDEFINED
       predefined:
       - days
       - hours
       - minutes
-    - description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
-      name: date-occurred-within-the-last
-    - description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      name: date-occurred-before
-    - description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
-      name: date-occurred-after
-    - auto: PREDEFINED
+    - name: date-occurred-within-the-last
+      description: Occurred date of the incident within the last time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
+    - name: date-occurred-before
+      description: Occurred date of the incident before the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
+    - name: date-occurred-after
+      description: Occurred date of the incident after the given date in the format YYYY-MM-DDTHH:MM:SSZ, e.g., 2018-05-07T10:59:07Z.
+    - name: incident-type
       description: Incident type.
-      name: incident-type
+      auto: PREDEFINED
       predefined:
       - CommunicationError
       - DenialOfService
@@ -158,9 +162,9 @@ script:
       - SystemIntrusion
       - TBD/Unknown
       - Vendor/3rdPartyError
-    - auto: PREDEFINED
+    - name: nist
+      auto: PREDEFINED
       description: 'NIST Attack Vectors. Possible values: "Attrition", "E-mail", "External/RemovableMedia", "Impersonation", "ImproperUsage", "Loss/TheftOfEquipment", "Other", "Web".'
-      name: nist
       predefined:
       - Attrition
       - E-mail
@@ -170,14 +174,22 @@ script:
       - Loss/TheftOfEquipment
       - Other
       - Web
-    - auto: PREDEFINED
+    - name: status
+      auto: PREDEFINED
       description: 'Incident status. Possible values: "Active" and "Closed".'
-      name: status
       predefined:
       - Active
       - Closed
-    - description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
-      name: due-in
+    - name: due-in
+      description: Due date of the incident in given time frame (days/hours/minutes). Should be given a number, along with the timeframe argument.
+    - name: return_level
+      description: The incident data structure returned ("partial", "normal", "full").'
+      auto: PREDEFINED
+      predefined:
+        - partial
+        - normal
+        - full
+      defaultvalue: full
     outputs:
     - contextPath: Resilient.Incidents.CreateDate
       description: Created date of the incident.
@@ -627,7 +639,6 @@ script:
     - contextPath: Resilient.IncidentNote.comment_perms.delete
       description: Whether the current user has permission to delete this note.
       type: Boolean
-
 
   - name: rs-add-artifact
     description: Add an artifact to an incident.
