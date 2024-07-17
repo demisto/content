@@ -562,7 +562,7 @@ def test_check_getLastRun(last_run, expected_last_run):
     Then:
         - The func returns a last run that is in the same pattern as the most updated version.
     """
-    from CarbonBlackEnterpriseEDR import check_getLastRun
+    from CarbonBlackEnterpriseEDR import check_get_last_run
 
-    updated_last_run = check_getLastRun(last_run)
+    updated_last_run = check_get_last_run(last_run)
     assert updated_last_run == expected_last_run
