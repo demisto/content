@@ -9824,14 +9824,14 @@ def test_get_server_config_fail(mocker):
     assert mocked_error.call_args[0][0] == 'Error decoding JSON: Expecting value: line 1 column 1 (char 0)'
 
 
-# Example functions to use with the debugger decorator
-@debugger
-def example_function(x, y):
-    return x + y
+# Example function to use with the decorator
+@debugger(secret_keys=['password'])
+def example_function(username, password):
+    return f"User {username} logged in."
 
-
-@debugger
-def error_function(x, y):
+# Example function to use with the decorator and an error
+@debugger(secret_keys=['token'])
+def error_function(token):
     raise ValueError("Test exception")
 
 
@@ -9850,16 +9850,16 @@ def test_successful_execution(mocker):
 
     mock_debug = mocker.patch.object(demisto, 'debug', side_effect=demisto_debug)
 
-    result = example_function(3, 4)
-    assert result == 7
+    result = example_function('someuser', 'super-secret-shhh')
+    assert result == 'User someuser logged in.'
 
     mock_debug.assert_has_calls([
         mocker.call("Calling function: example_function"),
-        mocker.call("Arguments: (3, 4)"),
+        mocker.call("Arguments: ('someuser', '***')"),
         mocker.call("Keyword arguments: {}"),
         mocker.call(mocker.ANY),  # Runtime log, we can't know the exact time
         mocker.call(mocker.ANY),  # Memory usage log, we can't know the exact value
-        mocker.call("Function example_function result: 7")
+        mocker.call("Function example_function result: User someuser logged in.")
     ])
 
 
@@ -9877,16 +9877,16 @@ def test_function_with_kwargs(mocker):
         pass
     mock_debug = mocker.patch.object(demisto, 'debug', side_effect=demisto_debug)
 
-    result = example_function(x=10, y=20)
-    assert result == 30
+    result = example_function(username='someuser', password='super-secret-shhh')
+    assert result == 'User someuser logged in.'
 
     mock_debug.assert_has_calls([
         mocker.call("Calling function: example_function"),
         mocker.call("Arguments: ()"),
-        mocker.call("Keyword arguments: {'x': 10, 'y': 20}"),
+        mocker.call("Keyword arguments: {'username': 'someuser', 'password': '***'}"),
         mocker.call(mocker.ANY),  # Runtime log, we can't know the exact time
         mocker.call(mocker.ANY),  # Memory usage log, we can't know the exact value
-        mocker.call("Function example_function result: 30")
+        mocker.call("Function example_function result: User someuser logged in.")
     ])
 
 
@@ -9905,11 +9905,11 @@ def test_exception_handling(mocker):
     error_mock = mocker.patch.object(demisto, 'error')
 
     with pytest.raises(ValueError, match="Test exception"):
-        error_function(3, 4)
+        error_function(3)
 
     mock_debug.assert_has_calls([
         mocker.call("Calling function: error_function"),
-        mocker.call("Arguments: (3, 4)"),
+        mocker.call("Arguments: (3,)"),
         mocker.call("Keyword arguments: {}")
     ])
     error_mock.assert_called_once_with("Exception in error_function: Test exception")
