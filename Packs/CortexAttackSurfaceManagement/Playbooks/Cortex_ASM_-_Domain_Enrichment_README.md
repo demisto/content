@@ -1,4 +1,4 @@
-Playbook to enrich Domain information.
+Playbook to enrich domain information.
 
 ## Dependencies
 
@@ -10,7 +10,7 @@ This playbook does not use any sub-playbooks.
 
 ### Integrations
 
-* CSCDomainManager
+CSCDomainManager
 
 ### Scripts
 
@@ -19,7 +19,7 @@ This playbook does not use any sub-playbooks.
 
 ### Commands
 
-* domain
+domain
 
 ## Playbook Inputs
 

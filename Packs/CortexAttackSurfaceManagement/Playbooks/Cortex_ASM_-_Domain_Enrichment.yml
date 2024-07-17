@@ -1,7 +1,7 @@
-description: Playbook to enrich Domain information.
+description: Playbook to enrich domain information.
 id: 'Cortex ASM - Domain Enrichment'
 inputSections:
-- description: Generic group for inputs
+- description: Generic group for inputs.
   inputs:
   - Hostname
   name: General (Inputs group)
@@ -14,7 +14,7 @@ inputs:
     simple: ${alert.hostname}
 name: Cortex ASM - Domain Enrichment
 outputSections:
-- description: Generic group for outputs
+- description: Generic group for outputs.
   name: General (Outputs group)
   outputs: []
 outputs: []
@@ -100,13 +100,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Checks if there’s an active instance of the CSCDomainManager integration enabled and Input is defined.
-      id: 13cfb2f6-89de-4fe9-818f-d14968030e9d
+      description: Checks if there’s an active instance of the CSCDomainManager integration enabled and input is defined.
+      id: d9197b1e-217d-4dca-88e2-e4ba3a9b1a9c
       iscommand: false
       name: Is CSC Domain Manager enabled and Input defined?
       type: condition
       version: -1
-    taskid: 13cfb2f6-89de-4fe9-818f-d14968030e9d
+    taskid: d9197b1e-217d-4dca-88e2-e4ba3a9b1a9c
     timertriggers: []
     type: condition
     view: |-
@@ -313,13 +313,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Is there Service Owner information?
-      id: 4c39b3e7-e971-4a29-8c9c-28f87e8ed38c
+      description: Is there service owner information?
+      id: 3b05d602-39ef-4dcc-82d6-01d19ddd41ee
       iscommand: false
       name: Is there Service Owner information?
       type: condition
       version: -1
-    taskid: 4c39b3e7-e971-4a29-8c9c-28f87e8ed38c
+    taskid: 3b05d602-39ef-4dcc-82d6-01d19ddd41ee
     timertriggers: []
     type: condition
     view: |-
@@ -644,13 +644,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      description: Is there Service IDs information?
-      id: 54442d84-f0eb-4fb3-898e-2f6b018f60ef
+      description: Is there service ID information?
+      id: 69e35ce9-0142-4de3-814b-ce9f2e22b81f
       iscommand: false
       name: Is there System ID information?
       type: condition
       version: -1
-    taskid: 54442d84-f0eb-4fb3-898e-2f6b018f60ef
+    taskid: 69e35ce9-0142-4de3-814b-ce9f2e22b81f
     timertriggers: []
     type: condition
     view: |-
