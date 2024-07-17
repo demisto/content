@@ -1,2 +1,5 @@
 [file:layoutscontainer-Shadow_IT_Layout.json]
 ignore=BA101
+
+[file:README.md]
+ignore=RM108

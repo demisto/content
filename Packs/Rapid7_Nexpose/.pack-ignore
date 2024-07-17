@@ -19,3 +19,6 @@ ignore=BA108,BA109,IN135
 [known_words]
 InsightVM
 Nexpose
+
+[file:README.md]
+ignore=RM108

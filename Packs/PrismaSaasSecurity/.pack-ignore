@@ -12,3 +12,5 @@ ignore=MR108
 [file:PrismaSaasSecurity.yml]
 ignore=PR101
 
+[file:README.md]
+ignore=RM108

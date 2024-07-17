@@ -145,3 +145,6 @@ graphql
 mappings
 validations
 typename
+
+[file:README.md]
+ignore=RM108

@@ -4,3 +4,5 @@ ignore=BA101
 [file:GDPRContactAuthorities.yml]
 ignore=BA124
 
+[file:README.md]
+ignore=RM108

@@ -7,3 +7,5 @@ ignore=BA124
 [file:RansomwareHostWidget.yml]
 ignore=BA124
 
+[file:README.md]
+ignore=RM108

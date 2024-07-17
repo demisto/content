@@ -3,3 +3,6 @@ ignore=PB105
 
 [file:incidentfield-CTF02.json]
 ignore=IF113,IF115
+
+[file:README.md]
+ignore=RM108

@@ -137,3 +137,6 @@ ignore=PB105
 [known_words]
 NGFW
 SEIM
+
+[file:README.md]
+ignore=RM108

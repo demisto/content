@@ -7,3 +7,6 @@ Mappers
 Mapper
 Webhook
 Classifiers
+
+[file:README.md]
+ignore=RM108

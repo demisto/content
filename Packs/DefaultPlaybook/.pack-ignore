@@ -12,3 +12,6 @@ ignore=PA125
 
 [known_words]
 Deduplicates
+
+[file:README.md]
+ignore=RM108

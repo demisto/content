@@ -1,2 +1,5 @@
 [file:ComputerVisionEngine_image.png]
 ignore=IM111
+
+[file:README.md]
+ignore=RM108

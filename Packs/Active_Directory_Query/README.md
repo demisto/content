@@ -22,4 +22,4 @@ This integration can be used along with the Identity Lifecycle Management premiu
 
 For more information, see [Active Directory Query v2](https://xsoar.pan.dev/docs/reference/integrations/active-directory-query-v2)
 
-![Playbook Image](https://github.com/demisto/content/raw/master/docs/images/playbooks/Active_Directory_-_Get_User_Manager_Details.png)
+![Playbook Image](doc_files/Active_Directory_-_Get_User_Manager_Details.png)

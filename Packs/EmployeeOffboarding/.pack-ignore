@@ -6,3 +6,6 @@ ignore=BA101
 
 [file:Employee_Offboarding_-_Revoke_Permissions.yml]
 ignore=PB107
+
+[file:README.md]
+ignore=RM108

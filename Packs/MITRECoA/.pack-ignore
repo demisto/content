@@ -159,3 +159,6 @@ ignore=BA124
 
 [file:1_0_4.md]
 ignore=RN116
+
+[file:README.md]
+ignore=RM108

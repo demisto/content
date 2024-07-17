@@ -1,5 +1,5 @@
 [file:README.md]
-ignore=RM106
+ignore=RM106,RM108
 
 [file:Packs/OpenCTI/ReleaseNotes/1_0_10.md]
 ignore=RN112

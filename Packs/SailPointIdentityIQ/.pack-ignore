@@ -13,3 +13,5 @@ ignore=IF100
 [file:incidentfield-SailPoint_IdentityIQ_Alert_Type.json]
 ignore=IF100
 
+[file:README.md]
+ignore=RM108

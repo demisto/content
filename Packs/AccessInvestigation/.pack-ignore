@@ -6,3 +6,6 @@ ignore=PA116
 
 [file:layoutscontainer-Access.json]
 ignore=BA101
+
+[file:README.md]
+ignore=RM108

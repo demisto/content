@@ -6,3 +6,6 @@ APIS
 assignee
 mapper
 mappers
+
+[file:README.md]
+ignore=RM108

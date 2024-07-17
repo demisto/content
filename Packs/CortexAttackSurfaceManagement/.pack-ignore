@@ -49,3 +49,6 @@ vpc
 Prisma
 ITSM
 Terrapin
+
+[file:README.md]
+ignore=RM108

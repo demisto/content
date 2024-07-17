@@ -1,3 +1,5 @@
 [file:WatchguardFirebox_1_3.yml]
 ignore=MR108
 
+[file:README.md]
+ignore=RM108

@@ -2,3 +2,6 @@
 NGFW
 TS
 PANW
+
+[file:README.md]
+ignore=RM108

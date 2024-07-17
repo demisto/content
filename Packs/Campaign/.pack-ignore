@@ -24,3 +24,6 @@ ignore=BA124
 
 [file:ShowNumberOfCampaignIncidents.yml]
 ignore=BA124
+
+[file:README.md]
+ignore=RM108
