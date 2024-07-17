@@ -50,6 +50,10 @@ configuration:
   required: false
   type: 8
   additionalinfo:
+- name: user_agent
+  display: User Agent
+  required: false
+  type: 0
 description: Converts URLs, PDF files, and emails to an image file or PDF file.
 display: Rasterize
 name: Rasterize
