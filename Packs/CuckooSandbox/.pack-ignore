@@ -1,5 +1,5 @@
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM112
 
 [file:CuckooSandbox_image.png]
 ignore=IM111
