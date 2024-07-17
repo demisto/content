@@ -113,16 +113,17 @@ WAIT_TIME_RASTERIZE = 5
 TIMEOUT_RASTERIZE = 120
 
 
-def get_model_data(model_name: str):
+def load_demisto_model():
     """
     Return model data saved in demisto (string of encoded base 64)
     :param model_name: name of the model to load from demisto
     :return: str, str
     """
-    res_model: dict = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]  # type: ignore
+    res_model: dict = demisto.executeCommand(
+        "getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]  # type: ignore
     if is_error(res_model):
-        raise DemistoException(f"Error reading model {model_name} from Demisto")
-    return res_model['Contents']['modelData']
+        raise DemistoException(f"Error reading model {URL_PHISHING_MODEL_NAME} from Demisto")
+    return decode_model_data(res_model['Contents']['modelData'])
 
 
 def decode_model_data(model_data: str):
@@ -598,11 +599,6 @@ def extract_urls(text):
     return list(set(json.loads(res[0]["Contents"]).get("URL", [])))
 
 
-def load_demisto_model():
-    model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)
-    return decode_model_data(model_64_str)
-
-
 def get_final_urls(urls, max_urls, model):
     final_url = []
     seen = []
@@ -685,8 +681,7 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
     if reset_model or not exist or (
             demisto_major_version < MAJOR_VERSION and demisto_minor_version == MINOR_DEFAULT_VERSION):
         msg_list.append(load_oob_model(OUT_OF_THE_BOX_MODEL_PATH))
-        model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)
-        model = decode_model_data(model_64_str)
+        model = load_demisto_model()
 
     elif demisto_major_version == MAJOR_VERSION:
         model = decode_model_data(model_data)
@@ -700,8 +695,7 @@ def update_and_load_model(debug, exist, reset_model, msg_list, demisto_major_ver
         model_docker.minor += 1
         save_model_in_demisto(model_docker)
         msg_list.append(MSG_UPDATE_LOGO.format(MAJOR_VERSION, model_docker_minor, model.major, model.minor))
-        model_64_str = get_model_data(URL_PHISHING_MODEL_NAME)
-        model = decode_model_data(model_64_str)
+        model = load_demisto_model()
     else:
         msg_list.append(MSG_WRONG_CONFIG_MODEL)
         raise DemistoException(MSG_WRONG_CONFIG_MODEL)
