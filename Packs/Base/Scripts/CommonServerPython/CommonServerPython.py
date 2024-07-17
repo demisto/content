@@ -26,7 +26,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
-# from distutils.version import LooseVersion
+from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
 from inspect import currentframe
@@ -808,10 +808,10 @@ def auto_detect_indicator_type(indicator_value):
 
     try:
         tldextract_version = tldextract.__version__
-        # if LooseVersion(tldextract_version) < '3.0.0':
-        #     no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
-        # else:
-        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
+        if LooseVersion(tldextract_version) < '3.0.0':
+            no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        else:
+            no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
 
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
