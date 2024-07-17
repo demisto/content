@@ -30,4 +30,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Cortex ASM - ServiceNow CMDB Enrichment](https://raw.githubusercontent.com/demisto/content/15935bbaa183dd38239aada567b1eb7cbae9b704/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)
+![Cortex ASM - ServiceNow CMDB Enrichment](../doc_files/Cortex_ASM_-_ServiceNow_CMDB_Enrichment.png)

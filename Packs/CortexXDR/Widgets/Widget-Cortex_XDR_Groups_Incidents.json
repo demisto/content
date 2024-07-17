@@ -21,8 +21,5 @@
     "id": "c89bc765-50a9-479f-88e5-d256e09788c5",
     "widgetType": "text",
     "fromVersion": "6.2.0",
-    "description": "",
-    "marketplaces": [
-        "xsoar_on_prem"
-    ]
+    "description": ""
 }

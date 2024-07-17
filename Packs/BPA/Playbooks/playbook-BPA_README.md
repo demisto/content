@@ -26,4 +26,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Palo Alto Networks BPA Playbook](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Palo_Alto_Networks_BPA_Playbook.png)
+![Palo Alto Networks BPA Playbook](../doc_files/Palo_Alto_Networks_BPA_Playbook.png)

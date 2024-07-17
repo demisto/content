@@ -28,4 +28,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Digital_Defense_FrontlineVM_Old_Vulnerabilities_Found](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Digital_Defense_FrontlineVM_Old_Vulnerabilities_Found.png)
+![Digital_Defense_FrontlineVM_Old_Vulnerabilities_Found](../doc_files/Digital_Defense_FrontlineVM_Old_Vulnerabilities_Found.png)

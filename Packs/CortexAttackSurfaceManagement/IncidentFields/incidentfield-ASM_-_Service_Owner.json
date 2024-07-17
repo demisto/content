@@ -65,7 +65,7 @@
             "fieldCalcScript": "",
             "isDefault": true,
             "isReadOnly": false,
-            "key": "ranking_score",
+            "key": "rankingscore",
             "orgType": "shortText",
             "required": false,
             "script": "",
