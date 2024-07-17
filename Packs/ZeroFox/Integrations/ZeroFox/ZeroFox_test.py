@@ -23,6 +23,7 @@ from ZeroFox import (
     get_modified_remote_data_command,
     get_policy_types_command,
     get_remote_data_command,
+    get_compromised_credentials_command,
     list_alerts_command,
     list_entities_command,
     malicious_hash_command,
@@ -51,6 +52,11 @@ def build_url(base_url, params):
 def load_json(file: str):
     with open(file) as f:
         return json.load(f)
+
+
+def load_file(file: str):
+    with open(file) as f:
+        return f.read()
 
 
 def fetch_alert_endpoint(alert_id: str):
@@ -185,8 +191,10 @@ def test_fetch_incidents_no_first_time(requests_mock, mocker):
     requests_mock.get(mock_url, json=first_page_alert_response)
     second_page_alert_response = load_json(
         "test_data/alerts/list_10_records_page2_5records.json")
-    expected_last_modified = get_formatted_date(second_page_alert_response["alerts"][-1]["timestamp"])
-    requests_mock.get(first_page_alert_response.get("next", ""), json=second_page_alert_response)
+    expected_last_modified = get_formatted_date(
+        second_page_alert_response["alerts"][-1]["timestamp"])
+    requests_mock.get(first_page_alert_response.get(
+        "next", ""), json=second_page_alert_response)
     client = build_zf_client()
     first_fetch_time = "2023-06-01T00:00:00.000000"
     spy = mocker.spy(client, "get_alerts")
@@ -1301,3 +1309,57 @@ def test_get_alert_attachments_command(requests_mock, mocker):
     assert alert_id == alert_id_called
     assert isinstance(results.outputs, list)
     assert results.outputs_prefix == "ZeroFox.AlertAttachments"
+
+
+def test_get_existing_compromised_credentials(requests_mock, mocker):
+    """
+    Given
+        An alert of type compromised credentials
+    When
+        Calling get_compromised_credentials_command
+    Then
+        It should return a csv file with compromised cred contents
+    """
+    alert_id = 123
+    file_id = "dummyId"
+    breach_data = load_file("test_data/breach_data/breach_123.csv")
+    client = build_zf_client()
+    mocker.patch.object(demisto, "uniqueFile", return_value=file_id)
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.get(
+        f"/2.0/alerts/{alert_id}/breach_csv/", text=breach_data)
+    args = {"alert_id": alert_id}
+
+    results = get_compromised_credentials_command(client, args)
+
+    expected = {
+        'Contents': '',
+        'ContentsFormat': 'text',
+        'File': 'breach_123.csv',
+        'FileID': file_id,
+        'Type': 3
+    }
+
+    assert results == expected
+
+
+def test_no_compromised_credentials_found(requests_mock, mocker):
+    """
+    Given
+        An alert that is not of type compromised credentials
+    When
+        Calling get_compromised_credentials_command
+    Then
+        It should return a message that no compromised credentials were found
+    """
+    alert_id = 123
+    client = build_zf_client()
+    requests_mock.post("/1.0/api-token-auth/", json={"token": ""})
+    requests_mock.get(f"/2.0/alerts/{alert_id}/breach_csv/", status_code=404)
+    args = {"alert_id": alert_id}
+
+    results = get_compromised_credentials_command(client, args)
+
+    expected = "No compromised credentials were found for alert_id=123"
+
+    assert results.readable_output == expected
