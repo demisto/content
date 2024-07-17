@@ -184,8 +184,7 @@ class Client(BaseClient):
         self.reliability = reliability
         self.should_create_relationships = should_create_relationships
         self.credentials = {
-            'username': user_name,
-            'api_key': api_key
+            'Authorization': f"apikey {user_name}:{api_key}",
         }
         self.remote_api = remote_api
 
@@ -198,9 +197,9 @@ class Client(BaseClient):
         """
             A wrapper for requests lib to send our requests and handle requests and responses better.
         """
-        params = params or {}
+        headers = headers or {}
         if not without_credentials:
-            params.update(self.credentials)
+            headers.update(self.credentials)
         res = super()._http_request(
             method=method,
             url_suffix=url_suffix,
