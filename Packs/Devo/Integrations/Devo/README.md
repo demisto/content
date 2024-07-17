@@ -143,7 +143,7 @@ This integration is now deprecated. Please use the <b>Devo v2</b> integration in
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46580548-ac6e8d00-ca2f-11e8-81d7-7b90c48c2fbc.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46580548-ac6e8d00-ca2f-11e8-81d7-7b90c48c2fbc.png" alt="image" width="751" height="118"></a></p>
+<p><a href="../../doc_files/46580548-ac6e8d00-ca2f-11e8-81d7-7b90c48c2fbc.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46580548-ac6e8d00-ca2f-11e8-81d7-7b90c48c2fbc.png" alt="image" width="751" height="118"></a></p>
 <p> </p>
 <h2>Additional Information</h2>
 <hr>
@@ -152,7 +152,7 @@ This integration is now deprecated. Please use the <b>Devo v2</b> integration in
 <li>Access your Devo environment.</li>
 <li>Navigate to the <strong>gear icon</strong> &gt; <strong>Query Info</strong> &gt; <strong>Get Id</strong>.</li>
 </ol>
-<p><img src="https://user-images.githubusercontent.com/35098543/47137984-cbd3a880-d2c0-11e8-9d1c-082313f15d1a.png" alt="image" width="748" height="699"></p>
+<p><img src="../../doc_files/47137984-cbd3a880-d2c0-11e8-9d1c-082313f15d1a.png" alt="image" width="748" height="699"></p>
 <h2>Troubleshooting</h2>
 <hr>
 <p>If you receive HTTP Error <code>401 (Unauthorized</code>), the API key or API secret might be incorrect.</p>
