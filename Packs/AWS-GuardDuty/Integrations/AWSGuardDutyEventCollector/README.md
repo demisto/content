@@ -4,7 +4,7 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure AWS - GuardDuty Event Collector on Cortex XSIAM
 
-1. Navigate to **Settings** > **Configurations** > **Data Collection** > **Automation and Feed Integrations**.
+1. Navigate to **Settings** > **Data Sources** > **Add Data Source** > **Search**.
 2. Search for AWS - GuardDuty Event Collector.
 3. Click **Add instance** to create and configure a new integration instance.
 
