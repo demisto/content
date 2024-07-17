@@ -501,11 +501,11 @@ def get_whois_verdict(domains: list[dict]) -> list:
 
 
 def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout):
-    
+
     domains = list(map(extract_domainv2, urls))
 
     rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
-    
+
     if not rasterize_outputs:
         return None
 
