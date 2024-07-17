@@ -3,7 +3,7 @@
 <p>AutoFocus contextual threat intelligence brings speed, consistency and precision to threat investigation.</p>
 </div>
 <div class="cl-preview-section">
-<h2 id="configure-autofocus-on-demisto">Configure Autofocus on Cortex XSOAR</h2>
+<h2 id="configure-autofocus-on-demisto">Configure Autofocus on Cortex</h2>
 </div>
 <div class="cl-preview-section">
 <ol>

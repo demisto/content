@@ -6,7 +6,7 @@ ANY.RUN is a cloud-based sanbox with interactive access.
 3. View history of analysis tasks.
 
 
-## Configure ANYRUN on Cortex XSOAR
+## Configure ANYRUN on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

@@ -65,7 +65,7 @@ To configure a Microsoft integration that uses this authorization flow with a se
 ### Testing authentication and connectivity
 If you are using Device Code Flow or Authorization Code Flow, for testing your authentication and connectivity to the AzureWAF service run the ***!azure-waf-auth-test*** command. 
 
-## Configure AzureWAF on Cortex XSOAR
+## Configure AzureWAF on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.

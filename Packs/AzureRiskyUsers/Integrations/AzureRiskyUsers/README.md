@@ -52,7 +52,7 @@ In order to connect to the Azure Risky Users using the Cortex XSOAR Azure App wi
 At end of the process you'll see a message that you've logged in successfully.
 
 
-## Configure AzureRiskyUsers on Cortex XSOAR
+## Configure AzureRiskyUsers on Cortex
 
 1. * For XSOAR 6.x users: Navigate to **Settings** > **Integrations** > **Instances**.
    * For XSOAR 8.x users: Navigate to **Settings & Info** > **Settings** > **Integrations** > **Instances**.
