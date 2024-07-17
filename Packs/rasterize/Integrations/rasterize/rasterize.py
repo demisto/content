@@ -49,7 +49,7 @@ CHROME_OPTIONS = ["--headless",
                   ]
 
 WITH_ERRORS = demisto.params().get('with_error', True)
-IS_HTTP = demisto.params().get('is_https', False)
+IS_HTTP = argToBoolean(demisto.params().get('is_https', False))
 
 # The default wait time before taking a screenshot
 DEFAULT_WAIT_TIME = max(int(demisto.params().get('wait_time', 0)), 0)
