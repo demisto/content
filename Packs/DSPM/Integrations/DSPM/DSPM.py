@@ -14,7 +14,8 @@ urllib3.disable_warnings()
 
 
 ''' CONSTANTS '''
-RISK_FINDINGS = []
+# RISK_FINDINGS = []
+MAX_PAGE_SIZE: int = 50
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
 GET_RISK_FINDINGS_ENDPINT = '/v1/risk-findings'
 GET_ASSET_LISTS = "/v1/assets"
@@ -255,29 +256,21 @@ def test_module(client: Client) -> str:
             return "Error"
 
 
-def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_risk_findings_command(client: Client, args: dict[str, Any], page: int) -> List[dict]:
     # Validate and process cloudProvider parameters
     cloudProviderIn = args.get('cloudProviderIn', '')
     cloudProviderEqual = args.get('cloudProviderEqual', '')
     validate_parameter_list_and_equal("cloudProvider", cloudProviderIn, cloudProviderEqual, SUPPORTED_CLOUD_PROVIDERS)
 
-    # check supported affects
+    # Check supported affects
     affectsIn = args.get('affectsIn', '')
     affectsEqual = args.get('affectsEqual', '')
     validate_parameter_list_and_equal("affects", affectsIn, affectsEqual, SUPPORTED_AFFECTS)
 
-    # check supported Status
+    # Check supported Status
     statusIn = args.get('statusIn', '')
     statusEqual = args.get('statusEqual', '')
     validate_parameter_list_and_equal("status", statusIn, statusEqual, SUPPORTED_STATUS)
-
-    page = int(args.get('page', 0))
-    if page < 0:
-        raise ValueError('Page parameter value should be greature than 0.')
-
-    size = int(args.get('size', 50))
-    if size < 0 or size > 50:
-        raise ValueError('size parameter value should be greature than 0 and less than 50.')
 
     params = {
         "ruleName.in": args.get('ruleNameIn'),
@@ -294,27 +287,19 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
         "affects.equals": args.get('affectsEqual'),
         "status.in": args.get('statusIn'),
         "status.equals": args.get('statusEqual'),
-        "page": args.get('page'),
         "sort": args.get('sort'),
-        "size": args.get('size')
+        "page": page,
+        "size": MAX_PAGE_SIZE
     }
     # Remove None values from params
     params = {k: v for k, v in params.items() if v is not None}
     demisto.debug(f"params : {params}")
-    all_findings: List[dict] = []
 
-    while True:
-        # Fetch data from client
-        findings = client.fetch_risk_findings(params)
+    # Fetch data from client
+    findings = client.fetch_risk_findings(params)
 
-        if not findings:
-            break  # No more findings to fetch
-
-        all_findings.extend(findings)
-
-        # Increment page number for the next iteration
-        page += 1
-        params['page'] = page
+    if not findings:
+        return []  # No more findings to fetch
 
     parsed_findings = [
         {
@@ -330,14 +315,9 @@ def get_risk_findings_command(client: Client, args: dict[str, Any]) -> CommandRe
             'First Discovered': finding.get('firstDiscovered', ''),
             'Compliance Standards': finding.get('complianceStandards', {})
         }
-        for finding in all_findings
+        for finding in findings
     ]
-
-    return CommandResults(
-        outputs_prefix='DSPM.RiskFindings',
-        outputs_key_field='id',
-        outputs=parsed_findings
-    )
+    return parsed_findings
 
 
 def get_risk_finding_by_id_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -374,7 +354,7 @@ def get_risk_finding_by_id_command(client: Client, args: dict[str, Any]) -> Comm
     )
 
 
-def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_list_of_assets(client: Client, args: dict[str, Any], page: int) -> List[dict]:
     # Validate and process cloudProvider parameters
     cloudProviderIn = args.get('cloudProviderIn', '')
     cloudProviderEqual = args.get('cloudProviderEqual', '')
@@ -390,18 +370,10 @@ def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
     lifecycle_Equal = args.get('lifecycleEqual', '')
     validate_parameter_list_and_equal("lifecycle", lifecycle_In, lifecycle_Equal, SUPPORTED_LIFECYCLE)
 
-    # check supported sorting order
+    # Check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
-        raise ValueError(f'This "{sort_order}" sorting order does not supported')
-
-    page = int(args.get('page', 0))
-    if page < 0:
-        raise ValueError('Page parameter value should be greature than 0.')
-
-    size = int(args.get('size', 50))
-    if size < 0 or size > 50:
-        raise ValueError('size parameter value should be greature than 0 and less than 50.')
+        raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
         "region.in": args.get('regionIn'),
@@ -415,28 +387,19 @@ def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
         "lifecycle.in": args.get('lifecycleIn'),
         "lifecycle.equals": args.get('lifecycleEqual'),
         "sort": args.get('sort'),
-        "page": args.get('page'),
-        "size": args.get('size')
+        "page": page,
+        "size": MAX_PAGE_SIZE
     }
     # Remove None values from params
     params = {k: v for k, v in params.items() if v is not None}
 
-    all_assets: List[dict] = []
+    # Fetch data from client
+    response = client.get_asset_lists(params)
 
-    while True:
-        # Fetch data from client
-        response = client.get_asset_lists(params)
+    assets = response.get('assets', []) if isinstance(response, dict) else response
 
-        assets = response.get('assets', []) if isinstance(response, dict) else response
-
-        if not assets:
-            break  # No more assets to fetch
-
-        all_assets.extend(assets)
-
-        # Increment page number for the next iteration
-        page += 1
-        params['page'] = page
+    if not assets:
+        return []  # No more assets to fetch
 
     parsed_assets = [
         {
@@ -455,14 +418,9 @@ def get_list_of_assets(client: Client, args: dict[str, Any]) -> CommandResults:
             'Tags': asset.get('tags', {}),
             'Asset Dig Tags': asset.get('assetDigTags', [])
         }
-        for asset in all_assets
+        for asset in assets
     ]
-
-    return CommandResults(
-        outputs_prefix='DSPM.Assets',
-        outputs_key_field='id',
-        outputs=parsed_assets
-    )
+    return parsed_assets
 
 
 def get_asset_details_command(client: Client, args: dict[str, Any]) -> CommandResults:
@@ -485,34 +443,34 @@ def get_asset_files_by_id(client: Client, args: dict[str, Any]) -> CommandResult
     if not asset_id:
         raise ValueError("Asset ID not specified")
 
-    pageNumber = args.get('page', 0)
-    if pageNumber < 0:
-        raise ValueError('Page parameter value should be greature than 0.')
+    pageNumber = 0
+    # if pageNumber < 0:
+    #     raise ValueError('Page parameter value should be greature than 0.')
 
-    pageSize = args.get('size', 50)
-    if pageSize < 0:
-        raise ValueError('Size parameter value should be greature than 0.')
+    pageSize = MAX_PAGE_SIZE
+    # if pageSize < 0:
+    #     raise ValueError('Size parameter value should be greature than 0.')
 
-    args.get('types', [])
-    params = {
-        "id": asset_id,
-        "page": pageNumber,
-        "size": pageSize
-    }
-
-    response = client.get_asset_files(params)
-
-    files = response.get('files', [])
-    files_count = response.get('filesCount', 0)
-
-    return CommandResults(
-        outputs_prefix='DSPM.AssetFiles',
-        outputs_key_field='filename',
-        outputs={
-            'files': files,
-            'filesCount': files_count
+    while True:
+        params = {
+            "id": asset_id,
+            "page": pageNumber,
+            "size": pageSize
         }
-    )
+
+        response = client.get_asset_files(params)
+
+        files = response.get('files', [])
+        files_count = response.get('filesCount', 0)
+
+        return_results(CommandResults(
+            outputs_prefix='DSPM.AssetFiles',
+            outputs_key_field='filename',
+            outputs={
+                'files': files,
+                'filesCount': files_count
+            }
+        ))
 
 
 def get_data_types_command(client: Client) -> CommandResults:
@@ -544,8 +502,8 @@ def get_data_types_command(client: Client) -> CommandResults:
     )
 
 
-def get_data_type_findings_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    """Command to fetch data types and format them for the XSOAR command results."""
+def get_data_type_findings(client: Client, args: dict[str, Any], page: int) -> List[dict]:
+    """Fetch data type findings for a specific page."""
     # check supported cloud providers
     cloudProviderIn = args.get('cloudProviderIn', '')
     cloudProviderEqual = args.get('cloudProviderEqual', '')
@@ -564,15 +522,7 @@ def get_data_type_findings_command(client: Client, args: dict[str, Any]) -> Comm
     # check supported sorting order
     sort_order = args.get('sort')
     if sort_order and sort_order.upper() not in SORTING_ORDER:
-        raise ValueError(f'This "{sort_order}" sorting order does not supported')
-
-    page = int(args.get('page', 0))
-    if page < 0:
-        raise ValueError('Page parameter value should be greature than 0.')
-
-    size = int(args.get('size', 50))
-    if size < 0 or size > 50:
-        raise ValueError('size parameter value should be greature than 0 and less than 50.')
+        raise ValueError(f'This "{sort_order}" sorting order is not supported')
 
     params = {
         "region.in": args.get('regionIn'),
@@ -585,46 +535,13 @@ def get_data_type_findings_command(client: Client, args: dict[str, Any]) -> Comm
         "serviceType.equals": args.get('serviceTypeEqual'),
         "lifecycle.in": args.get('lifecycleIn'),
         "lifecycle.equals": args.get('lifecycleEqual'),
-        "page": args.get('page'),
         "sort": args.get('sort'),
-        "size": args.get('size')
+        "page": page,
+        "size": MAX_PAGE_SIZE
     }
+
     data_type_findings = client.get_data_type_findings(params)
-
-    if not data_type_findings:  # Check if the list is empty
-        readable_output = (
-            "### Data Types\n"
-            "| No | Key |\n"
-            "|----|-----|\n"
-            "**No entries.**\n"
-        )
-        return CommandResults(
-            outputs_prefix='DSPM.DataTypesFindings',
-            outputs_key_field='Key',
-            outputs=[],
-            readable_output=readable_output
-        )
-
-    if isinstance(data_type_findings[0], str):  # Handle case where the data is a list of strings
-        data_type_findings_formatted = [{'No': index + 1, 'Key': dt} for index, dt in enumerate(data_type_findings)]
-    else:  # Handle case where the data is a list of dictionaries
-        data_type_findings_formatted = [{'No': index + 1, 'Key': dt['dataTypeName']}
-                                        for index, dt in enumerate(data_type_findings)]
-
-    readable_output = (
-        "### Data Types\n"
-        "| No | Key  |\n"
-        "|----|------|\n"
-    )
-    for item in data_type_findings_formatted:
-        readable_output += f"| {item['No']}  | {item['Key']} |\n"
-
-    return CommandResults(
-        outputs_prefix='DSPM.DataTypesFindings',
-        outputs_key_field='Key',
-        outputs=data_type_findings_formatted,
-        readable_output=readable_output
-    )
+    return data_type_findings
 
 
 def update_risk_finding_status_command(client, args):
@@ -688,7 +605,7 @@ def fetch_incidents(client: Client, mirror_direction):
     findings = []
 
     while True:
-        response = client.fetch_risk_findings({'page': page, 'size': size, 'ruleName.equals': 'Sensitive asset open to world'})
+        response = client.fetch_risk_findings({'page': page, 'size': size, 'status.equals': 'OPEN'})
         new_findings = response
         if not new_findings:
             break
@@ -715,11 +632,11 @@ def fetch_incidents(client: Client, mirror_direction):
                 # Define custom fields for the incident
                 custom_fields = {
                     "assetdetails": asset_details,
-                    "remediatestep": REMEDIATE_STEPS.get(finding.get('ruleName'), 'N/A')
+                    "remediatestep": REMEDIATE_STEPS.get(finding.get('ruleName'), 'N/A'),
+                    "riskFindingId": finding.get('id')
                 }
                 incident = {
                     'name': finding.get('ruleName'),
-                    'dbotMirrorId': finding.get('id'),
                     "type": "DSPM Risk Findings",
                     'occurred': occurred_time,
                     'details': finding.get('asset', {}).get('name', ''),
@@ -729,18 +646,19 @@ def fetch_incidents(client: Client, mirror_direction):
                     "CustomFields": custom_fields,
                     'rawJSON': json.dumps(finding)
                 }
-                RISK_FINDINGS.append(
-                    {
-                        'risk_id': finding.get('id'),
-                        'ruleName': finding.get('ruleName'),
-                        'asset_id': finding.get('asset', {}).get('assetId', ''),
-                        'asset_name': finding.get('asset', {}).get('name', ''),
-                        'status': finding.get('status'),
-                        'remediation_status': 'N/A',
-                        'remediation_step': REMEDIATE_STEPS.get(finding.get('ruleName'), 'N/A'),
-                        'cloudProvider': finding.get('cloudProvider')
-                    }
-                )
+                demisto.debug(f"incident details : {incident}")
+                # RISK_FINDINGS.append(
+                #     {
+                #         'risk_id': finding.get('id'),
+                #         'ruleName': finding.get('ruleName'),
+                #         'asset_id': finding.get('asset', {}).get('assetId', ''),
+                #         'asset_name': finding.get('asset', {}).get('name', ''),
+                #         'status': finding.get('status'),
+                #         'remediation_status': 'N/A',
+                #         'remediation_step': REMEDIATE_STEPS.get(finding.get('ruleName'), 'N/A'),
+                #         'cloudProvider': finding.get('cloudProvider')
+                #     }
+                # )
                 incidents.append(incident)
             processed_ids.append(finding_id)  # type: ignore
 
@@ -1029,14 +947,34 @@ def main() -> None:
         elif demisto.command() == 'fetch-incidents':
             fetch_incidents(client, mirror_direction)
         elif demisto.command() == 'dspm-get-risk-findings':
-            page_size: int = int(demisto.args().get('size', 50))
-            if page_size <= 0:
-                raise ValueError("items_per_page should be a positive non-zero value.")
-            return_results(get_risk_findings_command(client, demisto.args()))
+            # get_risk_findings_command(client, demisto.args())
+            page = 0
+            while True:
+                findings = get_risk_findings_command(client, demisto.args(), page)
+                if not findings:
+                    break  # No more findings to fetch
+
+                return_results(CommandResults(
+                    outputs_prefix='DSPM.RiskFindings',
+                    outputs_key_field='id',
+                    outputs=findings
+                ))
+                page += 1
         elif demisto.command() == 'dspm-get-risk-finding-by-id':
             return_results(get_risk_finding_by_id_command(client, demisto.args()))
         elif demisto.command() == 'dspm-get-list-of-assets':
-            return_results(get_list_of_assets(client, demisto.args()))
+            page = 0
+            while True:
+                assets = get_list_of_assets(client, demisto.args(), page)
+                if not assets:
+                    break  # No more assets to fetch
+
+                return_results(CommandResults(
+                    outputs_prefix='DSPM.Assets',
+                    outputs_key_field='id',
+                    outputs=assets
+                ))
+                page += 1
         elif demisto.command() == 'dspm-get-asset-details':
             return_results(get_asset_details_command(client, demisto.args()))
         elif demisto.command() == 'dspm-get-asset-files-by-id':
@@ -1044,7 +982,48 @@ def main() -> None:
         elif demisto.command() == 'dspm-get-data-types':
             return_results(get_data_types_command(client))
         elif demisto.command() == 'dspm-get-data-types-findings':
-            return_results(get_data_type_findings_command(client, demisto.args()))
+            page = 0
+            all_data_type_findings = []
+
+            while True:
+                data_type_findings = get_data_type_findings(client, demisto.args(), page)
+                if not data_type_findings:
+                    if page == 0:
+                        readable_output = (
+                            "### Data Types\n"
+                            "| No | Key |\n"
+                            "|----|-----|\n"
+                            "**No entries.**\n"
+                        )
+                        return_results(CommandResults(
+                            outputs_prefix='DSPM.DataTypesFindings',
+                            outputs_key_field='Key',
+                            outputs=[],
+                            readable_output=readable_output
+                        ))
+                    break
+
+                all_data_type_findings.extend(data_type_findings)
+
+                data_type_findings_formatted = [{'No': index + 1 + (page * MAX_PAGE_SIZE), 'Key': dt['dataTypeName']}
+                                                for index, dt in enumerate(data_type_findings)]
+
+                readable_output = (
+                    "### Data Types\n"
+                    "| No | Key  |\n"
+                    "|----|------|\n"
+                )
+                for item in data_type_findings_formatted:
+                    readable_output += f"| {item['No']}  | {item['Key']} |\n"
+
+                return_results(CommandResults(
+                    outputs_prefix='DSPM.DataTypesFindings',
+                    outputs_key_field='Key',
+                    outputs=data_type_findings_formatted,
+                    readable_output=readable_output
+                ))
+
+                page += 1
         elif demisto.command() == 'dspm-update-risk-finding-status':
             return_results(update_risk_finding_status_command(client, demisto.args()))
         # elif demisto.command() == 'get-modified-remote-data':
