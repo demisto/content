@@ -27,7 +27,7 @@ To configure the ePO server, you need to upload the public key.
     ![export Broker list](../../doc_files/export_Brocker_list.png)
 5. Click **Import** and select the **client.crt** file.
     ![click import](../../doc_files/click_import.png)
-    ![select client.crt file](../../doc_files/select_client.crt_file.png)
+    ![select client.crt file](../../doc_files/select_client_crt_file.png)
     ![click ok](../../doc_files/click_ok.png)
 6. Click **Save**.
     ![click save](../../doc_files/click_save.png)
