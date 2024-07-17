@@ -1,0 +1,93 @@
+name: Mandiant
+display: Mandiant Enrich
+description: 'Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.'
+category: Data Enrichment & Threat Intelligence
+commonfields:
+  id: Mandiant
+  version: -1
+configuration:
+- additionalinfo: Your API Key from Mandiant Advantage Threat Intelligence
+  display: API Key
+  name: api_key
+  required: true
+  type: 0
+- additionalinfo: Your Secret Key from Mandiant Advantage Threat Intelligence
+  display: Secret Key
+  name: secret_key
+  required: true
+  type: 4
+- additionalinfo: API calls timeout.
+  defaultvalue: '60'
+  display: Timeout
+  name: timeout
+  type: 0
+  required: false
+- additionalinfo: Reliability of the source providing the intelligence data.
+  defaultvalue: A - Completely reliable
+  display: Source Reliability
+  name: reliability
+  options:
+  - A+ - 3rd party enrichment
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  required: true
+  type: 15
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators enriched.
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  defaultvalue: RED
+  required: false
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: tags
+  type: 0
+  required: false
+script:
+  commands:
+  - name: file
+    arguments:
+    - name: file
+      default: true
+      description: List of files.
+      isArray: true
+  - name: ip
+    arguments:
+    - name: ip
+      default: true
+      description: List of IPs.
+      isArray: true
+  - name: url
+    arguments:
+    - name: url
+      default: true
+      description: List of URLs.
+      isArray: true
+  - name: domain
+    arguments:
+    - name: domain
+      default: true
+      description: List of domains.
+      isArray: true
+  - name: cve
+    arguments:
+    - name: cve
+      default: true
+      description: List of CVEs.
+      isArray: true
+  dockerimage: demisto/python3:3.10.13.84405
+  feed: false
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+fromversion: 6.6.0

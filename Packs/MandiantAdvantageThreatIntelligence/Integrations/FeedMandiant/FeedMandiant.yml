@@ -1,6 +1,6 @@
 name: FeedMandiant
 display: Mandiant Feed
-description: 'Enrich Indicators of Compromise, and fetch information about Actors, Malware Families, and Campaigns from Mandiant Advantage.'
+description: 'Collect a feed of Indicators from Mandiant Advantage.'
 category: Data Enrichment & Threat Intelligence
 commonfields:
   id: FeedMandiant

@@ -327,8 +327,7 @@ def test_get_entitlements(client, mock_http_request):
 
     response = client.get_entitlements()
     assert response == mock_response
-
-    mock_http_request.call_count == 1
+    assert mock_http_request.call_count == 1
 
 
 # def test_yield_indicators(client, mock_http_request):
