@@ -3823,10 +3823,9 @@ def get_updated_remote_data(client: JiraBaseClient, issue: Dict[str, Any], updat
                 if (
                     COMMENT_MIRRORED_FROM_XSOAR not in comment_body
                     and incident_modified_date
-                    and comment_updated_date >= incident_modified_date
+                    and comment_updated_date > incident_modified_date
                 ):
-                    # We should only add comments as a Note Entry if the comment's modified date is the same as
-                    # or newer than the incident's modified date.
+                    # We only want to add comments as a Note Entry if it is newer than the incident's modified date.
                     parsed_entries.append({
                         'Type': EntryType.NOTE,
                         'Contents': f'{comment_body}\nJira Author: {comment_entry.get("UpdateUser")}',
