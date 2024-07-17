@@ -463,6 +463,25 @@ class Client(BaseClient):
         return self._http_request('GET', suffix_url)
 
 
+
+def check_getLastRun(last_run) -> dict:
+    """Checks if the last_run is in the same pattern as the the last run in the most updated version,
+        if it is not the func will return an updated last_run.
+        (version 1.1.34 vs 1.1.35 and later).
+
+    Args:
+        last_run (dict)
+        
+    Returns:
+        An updated last_run that is appropriate to the latest version.
+    """
+    if 'last_fetched_alert_id' not in last_run.keys():
+        return last_run
+    last_run['last_fetched_alerts_ids'] = [last_run['last_fetched_alert_id']]
+    del last_run['last_fetched_alert_id']
+    return last_run
+
+
 def test_module(client):
     """
     Returning 'ok' indicates that the integration works like it is supposed to. Connection to the service is successful.
@@ -1324,13 +1343,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     demisto.debug(f'{LOG_INIT} got {len(alerts)} alerts from server')
 
     if alerts:
-        # Alerts may be created with the same backend_timestamp.
-        # Therefore, we deduplicate alerts that have the same backend_timestamp as the last alert we saved in the previous run.
-        alert_ids_grouped_by_backend_timestamp = map_reduce(response['results'], lambda x: x['backend_timestamp'])
-        last_fetched_alert_timestamp = response['results'][-1]['backend_timestamp']
-        # All IDs of alerts that share the same timestamp as the last one.
-        alerts_ids_to_save = [alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_fetched_alert_timestamp]]
-
         for alert in alerts:
             alert_id = alert.get('id')
 
@@ -1348,8 +1360,15 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             incidents.append(incident)
             parsed_date = dateparser.parse(alert_create_date)
             assert parsed_date is not None, f'failed parsing {alert_create_date}'
+            
+        # Alerts may be created with the same backend_timestamp.
+        # Therefore, we deduplicate alerts that have the same backend_timestamp as the last alert we saved in the previous run.
+        alert_ids_grouped_by_backend_timestamp = map_reduce(alerts, lambda x: x['backend_timestamp'])
+        last_fetched_alert_create_time = alerts[-1]['backend_timestamp']
+        # All IDs of alerts that share the same timestamp as the last one.
+        last_fetched_alerts_ids = [alert['id'] for alert in alert_ids_grouped_by_backend_timestamp[last_fetched_alert_create_time]]
 
-        last_run = {'last_fetched_alert_create_time': alert_create_date, 'last_fetched_alerts_ids': alerts_ids_to_save}
+    last_run = {'last_fetched_alert_create_time': last_fetched_alert_create_time, 'last_fetched_alerts_ids': last_fetched_alerts_ids}
 
     demisto.debug(f'{LOG_INIT} sending {len(incidents)} incidents')
 
@@ -1632,7 +1651,8 @@ def main():
             fetch_time = demisto.params().get('fetch_time', '3 days')
             fetch_limit = demisto.params().get('fetch_limit', '50')
             # Set and define the fetch incidents command to run after activated via integration settings.
-            incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit, last_run=demisto.getLastRun())
+            incidents, last_run = fetch_incidents(client, fetch_time, fetch_limit,
+                                                  last_run=check_getLastRun(demisto.getLastRun()))
             demisto.incidents(incidents)
             demisto.setLastRun(last_run)
 
