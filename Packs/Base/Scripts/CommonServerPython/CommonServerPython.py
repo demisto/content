@@ -7,6 +7,7 @@ Note that adding code to CommonServerUserPython can override functions in Common
 from __future__ import print_function
 
 import base64
+import resource
 import gc
 import json
 import logging
@@ -25,7 +26,7 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
-from distutils.version import LooseVersion
+# from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
 from inspect import currentframe
@@ -41,7 +42,7 @@ def __line__():
 
 # 43 - The line offset from the beginning of the file.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 44, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -201,7 +202,7 @@ try:
     import requests
     from requests.adapters import HTTPAdapter
     from urllib3.util import Retry
-    from typing import Optional, Dict, List, Any, Union, Set, cast
+    from typing import Optional, Dict, List, Any, Union, Set, cast, TypeVar, Callable
 
     from urllib3 import disable_warnings
     disable_warnings()
@@ -807,10 +808,10 @@ def auto_detect_indicator_type(indicator_value):
 
     try:
         tldextract_version = tldextract.__version__
-        if LooseVersion(tldextract_version) < '3.0.0':
-            no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
-        else:
-            no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
+        # if LooseVersion(tldextract_version) < '3.0.0':
+        #     no_cache_extract = tldextract.TLDExtract(cache_file=False, suffix_list_urls=None)
+        # else:
+        no_cache_extract = tldextract.TLDExtract(cache_dir=False, suffix_list_urls=None)
 
         if no_cache_extract(indicator_value).suffix:
             if '*' in indicator_value:
@@ -12050,6 +12051,62 @@ def get_server_config():
     body = parse_json_string(response.get('body'))
     server_config = body.get('sysConf', {})
     return server_config
+
+
+# Type variable to indicate that the decorated function can be any callable
+FuncType = TypeVar('FuncType', bound=Callable[..., Any])
+
+
+def debugger(func: FuncType) -> FuncType:
+    """
+    Decorator to log the function name, arguments, keyword arguments, timestamp, runtime, memory usage,
+    and execution context to server logs.
+    Also handles and logs any exceptions raised during execution.
+
+    Args:
+        func (Callable[..., Any]): The function to be decorated.
+
+    Returns:
+        Callable[..., Any]: The decorated function with logging functionality.
+    """
+    @wraps(func)
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        # Log the timestamp and function details
+        function_name = func.__name__
+        demisto.debug(f"Calling function: {function_name}")
+        demisto.debug(f"Arguments: {args}")
+        demisto.debug(f"Keyword arguments: {kwargs}")
+
+        # Capture the start time and memory usage
+        start_time = time.time()
+        start_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+
+        try:
+            # Execute the function and capture the result
+            result = func(*args, **kwargs)
+        except Exception as e:
+            # Log any exceptions raised
+            demisto.error(f"Exception in {function_name}: {e}")
+            raise
+
+        # Capture the end time and calculate runtime
+        end_time = time.time()
+        runtime = end_time - start_time
+
+        # Capture end memory usage
+        end_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        memory_used = end_memory - start_memory
+
+        # Log runtime and memory usage
+        demisto.debug(f"Function {function_name} completed in {runtime:.4f} seconds")
+        demisto.debug(f"Memory used by {function_name}: {memory_used / 1024:.2f} KB")
+
+        # Log the result
+        demisto.debug(f"Function {function_name} result: {result}")
+
+        return result
+
+    return wrapper  # type: ignore
 
 from DemistoClassApiModule import *     # type:ignore [no-redef]  # noqa:E402
 
