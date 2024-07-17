@@ -45,7 +45,7 @@ from exchangelib.errors import (
     ResponseMessageError,
 )
 from exchangelib.items import Contact, Item, Message
-from exchangelib.protocol import BaseProtocol, NoVerifyHTTPAdapter
+from exchangelib.protocol import BaseProtocol
 from exchangelib.services.common import EWSAccountService, EWSService
 from exchangelib.util import MNS, TNS, add_xml_child, create_element
 from exchangelib.version import EXCHANGE_O365
@@ -136,11 +136,21 @@ class ProxyAdapter(requests.adapters.HTTPAdapter):
         return super().send(*args, **kwargs)
 
 
-class InsecureProxyAdapter(NoVerifyHTTPAdapter):
+class InsecureProxyAdapter(SSLAdapter):
     """
     Insecure Proxy Adapter used to add PROXY and INSECURE to requests
     NoVerifyHTTPAdapter is a built-in insecure HTTPAdapter class
     """
+
+    def __init__(self, *args, **kwargs):
+        # Processing before init call
+        kwargs.pop('verify', None)
+        super().__init__(verify=False, **kwargs)
+
+    def cert_verify(self, conn, url, verify, cert):
+        # We're overriding a method, so we have to keep the signature, although verify is unused
+        del verify
+        super().cert_verify(conn=conn, url=url, verify=False, cert=cert)
 
     def send(self, *args, **kwargs):
         kwargs['proxies'] = handle_proxy()
@@ -367,7 +377,7 @@ class EWSClient:
             raise Exception(item_to_reply_to)
 
         subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else None, []  # type: ignore
+        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
         message_body = HTMLBody(htmlBody) if htmlBody else body
         reply = item_to_reply_to.create_reply(subject='Re: ' + subject, body=message_body, to_recipients=to,
                                               cc_recipients=cc,
@@ -1086,7 +1096,7 @@ def fetch_attachments_for_message(
                     entries.append(
                         fileResult(
                             get_attachment_name(attachment_name=attachment.name, eml_extension=True,
-                                                content_id=attachment.attachment.content_id,
+                                                content_id=attachment.content_id,
                                                 attachment_id=attachment.attachment_id.id),
                             attachment.item.mime_content,
                         )
@@ -1924,8 +1934,13 @@ def add_additional_headers(additional_headers):
         try:
             Message.register(header_name, TempClass)
             headers[header_name] = header_value
-        except ValueError as e:
-            demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
+        except ValueError:
+            Message.deregister(header_name)
+            try:
+                Message.register(header_name, TempClass)
+                headers[header_name] = header_value
+            except ValueError as e:
+                demisto.debug('EWSO365 - Header ' + header_name + ' could not be registered. ' + str(e))
 
     return headers
 

@@ -821,7 +821,7 @@ def test_generate_login_url(mocker):
     # assert
     expected_url = f'[login URL](https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/authorize?' \
                    'response_type=code' \
-                   '&scope=offline_access%20499b84ac-1321-427f-aa17-267ca6975798/user_impersonation%20offline_access' \
+                   '&scope=offline_access%20499b84ac-1321-427f-aa17-267ca6975798/.default' \
                    f'&client_id={client_id}&redirect_uri={redirect_uri})'
     res = AzureDevOps.return_results.call_args[0][0].readable_output
     assert expected_url in res
