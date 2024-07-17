@@ -477,6 +477,7 @@ def check_getLastRun(last_run) -> dict:
     """
     if 'last_fetched_alert_id' not in last_run.keys():
         return last_run
+    demisto.info("Changing last_run format to the most updated version.")
     last_run['last_fetched_alerts_ids'] = [last_run['last_fetched_alert_id']]
     del last_run['last_fetched_alert_id']
     return last_run
