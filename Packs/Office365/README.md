@@ -14,8 +14,8 @@ To access the Office 365 XDRC on your XSIAM tenant:
 
 **Pay Attention:**
 Timestamp ingestion for Office 365 logs is currently available for the following datasets:
-* General &rarr; msft_o365_general_raw
-* Exchange Online &rarr; msft_o365_exchange_online_raw
-* SharePoint Online &rarr; msft_o365_sharepoint_online_raw
-* DLP &rarr; msft_o365_dlp_raw
+* General &rarr; `msft_o365_general_raw`
+* Exchange Online &rarr; `msft_o365_exchange_online_raw`
+* SharePoint Online &rarr; `msft_o365_sharepoint_online_raw`
+* DLP &rarr; `msft_o365_dlp_raw`
 </~XSIAM>
