@@ -130,8 +130,7 @@ call o365_common_fields
 	xdm.email.data = to_string(OperationProperties),
 	xdm.source.process.executable.extension = arraystring(regextract(ClientProcessName, "^\S+\.(\S+)"), "");
 
-
-
+	
 [MODEL: dataset="msft_o365_sharepoint_online_raw"]
 call o365_common_fields
 | alter
