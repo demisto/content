@@ -1,24 +1,20 @@
 id: playbook-FeedAutofocus_test
 version: -1
 fromversion: 5.5.0
-contentitemexportablefields:
-  contentitemfields:
-    propagationLabels:
-    - all
 name: playbook-FeedAutofocus_test
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 15ae4517-3f52-4ed4-a903-deec4860cd4f
+    taskid: 6a738fba-c9c5-4a7c-8b6f-128363a59410
     type: start
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-a903-deec4860cd4f
+      id: 6a738fba-c9c5-4a7c-8b6f-128363a59410
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      description: ''
     nexttasks:
       '#none#':
       - "1"
@@ -26,7 +22,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
+          "x": 265,
           "y": 50
         }
       }
@@ -35,13 +31,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 15ae4517-3f52-4ed4-8a03-deec4860dc4f
+    taskid: 4087e7b1-92c6-4e6e-8988-97ebc851acab
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a03-deec4860dc4f
+      id: 4087e7b1-92c6-4e6e-8988-97ebc851acab
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -55,16 +53,12 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 230
+          "x": 265,
+          "y": 195
         }
       }
     note: false
@@ -72,13 +66,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 15ae4517-3f52-4ed4-8a03-deec4860cd4f
+    taskid: 2c8cb909-d9f0-4743-8c00-306e89673e4d
     type: regular
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a03-deec4860cd4f
+      id: 2c8cb909-d9f0-4743-8c00-306e89673e4d
       version: -1
       name: autofocus-get-indicators
       description: Gets the indicators from AutoFocus.
@@ -88,19 +84,18 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "5"
     scriptarguments:
       extend-context:
         simple: Indicator=.[0]
       limit:
         simple: "10"
-      offset: {}
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 410
+          "x": 265,
+          "y": 370
         }
       }
     note: false
@@ -108,13 +103,15 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 15ae4517-3f52-4ed4-8a03-deec4860cdf4
+    taskid: d076bbe2-1a0c-4a47-86ba-c0fd74f50b2a
     type: condition
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a03-deec4860cdf4
+      id: d076bbe2-1a0c-4a47-86ba-c0fd74f50b2a
       version: -1
       name: Verify Outputs
       type: condition
@@ -145,8 +142,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 590
+          "x": 50,
+          "y": 720
         }
       }
     note: false
@@ -154,24 +151,27 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 15ae4517-3f52-4ed4-8a02-deec4860cd4f
+    taskid: 19f10f14-6abf-429c-8410-fca497e2808a
     type: title
     task:
-      elasticcommonfields: {}
-      id: 15ae4517-3f52-4ed4-8a02-deec4860cd4f
+      id: 19f10f14-6abf-429c-8410-fca497e2808a
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
+      description: ''
     separatecontext: false
     view: |-
       {
         "position": {
-          "x": 450,
-          "y": 810
+          "x": 50,
+          "y": 895
         }
       }
     note: false
@@ -179,17 +179,89 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    continueonerrortype: ""
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 2bfc5918-b218-4994-85f1-a04b30797250
+    type: condition
+    task:
+      id: 2bfc5918-b218-4994-85f1-a04b30797250
+      version: -1
+      name: Check if we received indicator from the feed
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "6"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Indicator
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: e11da335-eaea-47fa-8abf-a2a638c7d9ee
+    type: title
+    task:
+      id: e11da335-eaea-47fa-8abf-a2a638c7d9ee
+      version: -1
+      name: No indicator fetched
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 480,
+          "y": 735
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 825,
-        "width": 380,
-        "x": 450,
+        "height": 910,
+        "width": 810,
+        "x": 50,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
+description: ''
