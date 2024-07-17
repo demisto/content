@@ -1,8 +1,5 @@
-[file:CoreIOCs.yml]
-ignore=IN124
-
 [file:CortexCoreIR.yml]
-ignore=IN124,IN139
+ignore=IN139
 
 [file:README.md]
 ignore=RM104
