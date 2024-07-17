@@ -20,7 +20,6 @@ MINOR_DEFAULT_VERSION = 0
 
 KEY_IMAGE_RASTERIZE = "image_b64"
 KEY_IMAGE_HTML = "html"
-KEY_CURRENT_URL_RASTERIZE = 'current_url'
 
 MSG_SOMETHING_WRONG_IN_RASTERIZE = "Something went wrong with rasterize"
 MSG_ENABLE_WHOIS = "Please enable whois integration for more accurate prediction"
@@ -35,7 +34,6 @@ MSG_UPDATE_LOGO = "Update demisto model from docker model version {}.{} and tran
 MSG_WRONG_CONFIG_MODEL = 'Wrong configuration of the model'
 MSG_NO_ACTION_ON_MODEL = "Use current model"
 MSG_WHITE_LIST = "White List"
-MSG_REDIRECT = 'Prediction will be made on the last URL'
 MSG_NEED_TO_UPDATE_RASTERIZE = "Please install and/or update rasterize pack"
 URL_PHISHING_MODEL_NAME = "url_phishing_model"
 OUT_OF_THE_BOX_MODEL_PATH = '/model/model_docker.pkl'
@@ -61,8 +59,6 @@ MAPPING_VERDICT_COLOR = {MALICIOUS_VERDICT: VERDICT_MALICIOUS_COLOR, BENIGN_VERD
                          SUSPICIOUS_VERDICT: VERDICT_SUSPICIOUS_COLOR, BENIGN_VERDICT_WHITELIST: VERDICT_BENIGN_COLOR}
 
 SCORE_THRESHOLD = 0.6  # type: float
-
-STATUS_CODE_VALID = 200
 
 MODEL_KEY_URL_SCORE = 'url_score'
 MODEL_KEY_LOGO_FOUND = 'logo_found'
@@ -113,11 +109,8 @@ VERDICT_TO_INT = {
     SUSPICIOUS_VERDICT: 2
 }
 
-TIMEOUT_REQUESTS = 5
 WAIT_TIME_RASTERIZE = 5
 TIMEOUT_RASTERIZE = 120
-
-DOMAIN_CHECK_RASTERIZE = 'google.com'
 
 
 def get_model_data(model_name: str):
@@ -126,16 +119,12 @@ def get_model_data(model_name: str):
     :param model_name: name of the model to load from demisto
     :return: str, str
     """
-    res_model: dict = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]  # type: ignore
+    res_model: dict = demisto.executeCommand("getMLModel", {"modelName": model_name})[0]['Contents']  # type: ignore
     if is_error(res_model):
         raise DemistoException(f"Error reading model {model_name} from Demisto")
-    else:
-        model_data = res_model['Contents']['modelData']
-        try:
-            model_type = res_model['Contents']['model']['type']['type']
-            return model_data, model_type
-        except Exception:
-            return model_data, UNKNOWN_MODEL_TYPE
+    model_data = res_model['modelData']
+    model_type = dict_safe_get(res_model, ['model', 'type', 'type'], UNKNOWN_MODEL_TYPE)
+    return model_data, model_type
 
 
 def decode_model_data(model_data: str):
@@ -418,18 +407,16 @@ def get_verdict(pred_json: dict, is_white_listed: bool) -> tuple[float, str]:
     score = get_score(pred_json)
     if pred_json[MODEL_KEY_LOGO_FOUND]:
         return score, MALICIOUS_VERDICT
-    else:
-        if score < BENIGN_THRESHOLD:
-            return score, BENIGN_VERDICT
-        elif score < SUSPICIOUS_THRESHOLD:
-            return score, SUSPICIOUS_VERDICT
-        else:
-            return score, MALICIOUS_VERDICT
+    if score < BENIGN_THRESHOLD:
+        return score, BENIGN_VERDICT
+    if score < SUSPICIOUS_THRESHOLD:
+        return score, SUSPICIOUS_VERDICT
+    return score, MALICIOUS_VERDICT
 
 
-def create_dict_context(url, last_url, verdict, pred_json, score, is_white_listed, output_rasterize):
+def create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize):
     return {
-        'url_redirect': url, 'url': last_url, 'verdict': verdict, 'pred_json': pred_json,
+        'url_redirect': url, 'url': url, 'verdict': verdict, 'pred_json': pred_json,
         'score': score, 'is_white_listed': is_white_listed, 'output_rasterize': output_rasterize
     }
 
@@ -488,6 +475,7 @@ def rasterize_command(urls: Union[list[str], str], rasterize_timeout: int) -> li
 
 
 def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
+    urls = [url.removeprefix('http://') for url in urls]
     res_rasterize = rasterize_command(urls, rasterize_timeout)
     if len(res_rasterize) < len(urls):  # check for errors in the response
         demisto.info(f'Rasterize response is too short, running command for each URL\n{res_rasterize=}\n{urls=}')
@@ -498,7 +486,7 @@ def rasterize_urls(urls: list[str], rasterize_timeout: int) -> list[dict]:
 
 
 def get_whois_verdict(domains: list[dict]) -> list:
-
+    '''Check domain age from WHOIS command'''
     default = [None] * len(domains)
     if isCommandAvailable('whois'):
         try:
@@ -512,33 +500,33 @@ def get_whois_verdict(domains: list[dict]) -> list:
     return default
 
 
-def get_predictions_for_urls(model, urls, force_model, debug, rasterize_outputs):
+def get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout):
+    
+    domains = list(map(extract_domainv2, urls))
 
-    # Get final url and redirection
-    final_urls = [res[KEY_CURRENT_URL_RASTERIZE] for res in rasterize_outputs]
-
-    # Check domain age from WHOIS command
-    domains = list(map(extract_domainv2, final_urls))
+    rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
+    
+    if not rasterize_outputs:
+        return None
 
     whois_results = get_whois_verdict(domains)
 
     results = []
-    for url, final_url, res_whois, output_rasterize in zip(urls, final_urls, whois_results, rasterize_outputs):
-        url_redirect = f'{url} -> {final_url}   ({MSG_REDIRECT})' if final_url != url else final_url
+    for url, res_whois, output_rasterize in zip(urls, whois_results, rasterize_outputs):
 
         # Check is domain in white list -  If yes we don't run the model
-        if in_white_list(model, final_url):
+        if in_white_list(model, url):
             is_white_listed = True
             if not force_model:
                 results.append(create_dict_context(
-                    url_redirect, final_url, BENIGN_VERDICT_WHITELIST,
+                    url, BENIGN_VERDICT_WHITELIST,
                     {}, SCORE_BENIGN, is_white_listed, {}
                 ))
                 continue
         else:
             is_white_listed = False
 
-        x_pred = create_x_pred(output_rasterize, final_url)
+        x_pred = create_x_pred(output_rasterize, url)
 
         pred_json = model.predict(x_pred)
         if debug:
@@ -550,7 +538,7 @@ def get_predictions_for_urls(model, urls, force_model, debug, rasterize_outputs)
         pred_json[DOMAIN_AGE_KEY] = extract_created_date(res_whois)
 
         score, verdict = get_verdict(pred_json, is_white_listed)
-        results.append(create_dict_context(url_redirect, final_url, verdict, pred_json, score, is_white_listed, output_rasterize))
+        results.append(create_dict_context(url, verdict, pred_json, score, is_white_listed, output_rasterize))
     return results
 
 
@@ -750,19 +738,15 @@ def main():
         urls, msg_list = get_urls_to_run(email_body, email_html, urls_argument, max_urls, model, msg_list, debug)
 
         if urls:
-            rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
-
-            if rasterize_outputs:
-                # Run the model and get predictions
-                results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_outputs)
-                # Return outputs
+            # Run the model and get predictions
+            results = get_predictions_for_urls(model, urls, force_model, debug, rasterize_timeout)
+            if results:
                 general_summary = return_general_summary(results)
                 detailed_summary = return_detailed_summary(results, reliability)
                 if debug:
                     return_results(msg_list)
                 return general_summary, detailed_summary, msg_list
-            else:
-                return_results('All URLs failed to be rasterized. Skipping prediction.')
+            return_results('All URLs failed to be rasterized. Skipping prediction.')
     except Exception as e:
         return_error(f'Failed to execute URL Phishing script. Error: {e}')
 
