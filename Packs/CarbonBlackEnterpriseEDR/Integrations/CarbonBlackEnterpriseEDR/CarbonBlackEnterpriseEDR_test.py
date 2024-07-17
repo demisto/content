@@ -517,5 +517,52 @@ def test_fetch_incidents__no_alerts(mocker):
     """
     from CarbonBlackEnterpriseEDR import fetch_incidents
     mocker.patch.object(CLIENT, 'search_alerts_request', return_value={})
-    _, res = fetch_incidents(CLIENT, fetch_time='3 days', fetch_limit='50', last_run={'bla': 'bla'})
-    assert res == {'bla': 'bla'}
+    _, res = fetch_incidents(CLIENT, fetch_time='3 days', fetch_limit='50', last_run={
+                             'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alerts_ids': ["123"]})
+    assert res == {'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alerts_ids': ["123"]}
+
+
+def test_fetch_incidents__one_alert_in_response(mocker):
+    """
+    Given:
+        - All arguments needed.
+    When:
+        - Running 'fetch-incidents' command and there is only one alert retrieved (and it will be deduped).
+    Then:
+        - The fetch_incidents func doesn't fail and the last run doesn't change.
+    """
+    from CarbonBlackEnterpriseEDR import fetch_incidents
+    mocker.patch.object(CLIENT, 'search_alerts_request', return_value={'results': [
+        {'id': '123', 'backend_timestamp': '2000-07-16T05:26:05.491Z', 'first_event_timestamp': '2000-04-12T08:14:51.779Z'}
+    ]})
+    _, res = fetch_incidents(CLIENT, fetch_time='3 days', fetch_limit='50', last_run={
+                             'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alerts_ids': ["123"]})
+    assert res == {'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alerts_ids': ["123"]}
+
+
+check_getLastRun_data = [
+    # case most updated version.
+    ({'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alerts_ids': ["123"]},
+     # expected last_run to stay the same.
+     {'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alerts_ids': ["123"]}),
+    # case not most updated version.
+    ({'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alert_id': "123"},
+     # expected last_run to change
+     {'last_fetched_alert_create_time': "2000-07-16T05:26:05.491Z", 'last_fetched_alerts_ids': ["123"]})
+]
+
+
+@pytest.mark.parametrize('last_run, expected_last_run', check_getLastRun_data)
+def test_check_getLastRun(last_run, expected_last_run):
+    """
+    Given:
+        - A last_run.
+    When:
+        - Running check_gatLastRun.
+    Then:
+        - The func returns a last run that is in the same pattern as the most updated version.
+    """
+    from CarbonBlackEnterpriseEDR import check_get_last_run
+
+    updated_last_run = check_get_last_run(last_run)
+    assert updated_last_run == expected_last_run
