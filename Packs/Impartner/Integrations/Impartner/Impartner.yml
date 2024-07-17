@@ -71,7 +71,7 @@ script:
   - arguments:
     - description: 'id of Impartner account'
       name: id
-      required: false
+      required: true
     - description: 'Comma separated list of fields to retrieve'
       name: fields
       required: false
@@ -952,6 +952,6 @@ script:
   type: python
   subtype: python3
   dockerimage: demisto/python3:3.11.9.103066
-fromversion: 6.9.0
+fromversion: 6.10.0
 tests:
 - No tests (auto formatted)

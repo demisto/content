@@ -8,10 +8,6 @@ from typing import Dict, Any
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
-
 ''' CLIENT CLASS '''
 
 
@@ -39,8 +35,6 @@ class Client(BaseClient):
         result = self._http_request(method="GET", url_suffix=f"/account/{id}", params=params,  headers=self._headers)
         return result
 
-
-''' HELPER FUNCTIONS '''
 
 ''' COMMAND FUNCTIONS '''
 
@@ -77,33 +71,33 @@ def impartner_get_account_list_command(client: Client, args: Dict[str, Any]) -> 
     orderby = args.get('orderby', None)
     skip = args.get('skip', None)
     take = args.get('take', None)
-    all_fields = args.get('all_fields', None)
-    if all_fields == "TRUE":
+    all_fields = argToBoolean(args.get('all_fields', ""))
+    if all_fields:
         fields = ""
     params = assign_params(q=query, fields=fields, filter=filter, orderby=orderby, skip=skip, take=take)
 
     # Call the Client function and get the raw response
     result = client.get_accounts_list(params)
-    parsed_result = result.get('data', '')
+    parsed_result = result.get('data', {})
     readable_output = tableToMarkdown('List of account ID\'s', parsed_result.get('results'))
     return CommandResults(
         outputs_prefix='Impartner.Accounts.List',
         readable_output=readable_output,
-        outputs_key_field='Impartner.Accounts.list.results.id',
+        outputs_key_field='id',
         outputs=parsed_result)
 
 
 def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> CommandResults:
 
-    id = args.get('id', None)
+    id = args.get('id')
     fields = args.get('fields', None)
-    all_fields = args.get('all_fields', None)
-    if all_fields == "true":
+    all_fields = argToBoolean(args.get('all_fields', ""))
+    if all_fields:
         fields = ""
     params = assign_params(fields=fields)
     # Call the Client function and get the raw response
     result = client.get_accounts_id(id, params)
-    parsed_result = result.get('data', '')
+    parsed_result = result.get('data', {})
     readable_list = {'name': parsed_result['name'], 'ID': parsed_result['id'], 'link': parsed_result['recordLink'],
                      'PST Engineer': parsed_result['tech_BD_Assigned_for_XSOAR__cf']}
     readable_output = tableToMarkdown('Account Details', readable_list,
@@ -113,7 +107,7 @@ def impartner_get_account_id_command(client: Client, args: Dict[str, Any]) -> Co
     return CommandResults(
         outputs_prefix='Impartner.Account',
         readable_output=readable_output,
-        outputs_key_field='Impartner.Account.id',
+        outputs_key_field='id',
         outputs=parsed_result,
     )
 
