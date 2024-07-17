@@ -89,7 +89,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
   - [Cortex ASM - Certificate Enrichment](#cortex-asm---certificate-enrichment)
   - [Cortex ASM - Cortex Endpoint Enrichment](#cortex-asm---cortex-endpoint-enrichment)
   - [Cortex ASM - Cortex Endpoint Remediation](#cortex-asm---cortex-endpoint-remediation)
-  - [Cortex ASM - CSC Domain Enrichment](#cortex-asm---csc-domain-enrichment)
+  - [Cortex ASM - Domain Enrichment](#cortex-asm---domain-enrichment)
   - [Cortex ASM - Detect Service](#cortex-asm---detect-service)
   - [Cortex ASM - Email Notification](#cortex-asm---email-notification)
   - [Cortex ASM - Enrichment](#cortex-asm---enrichment)
@@ -166,11 +166,11 @@ This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XD
 
 ![Cortex ASM - Cortex Endpoint Remediation](https://github.com/demisto/content/raw/master/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
 
-#### Cortex ASM - CSC Domain Enrichment
+#### Cortex ASM - Domain Enrichment
 
-This playbook is used for enriching domain information using CSC Domain Manager integration.
+This playbook is used for enriching domain information.
 
-![Cortex ASM - CSC Domain Enrichment](https://raw.githubusercontent.com/demisto/content/2788e682627305ebde0e63cab15512e74c39cb70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_CSC_Domain_Enrichment.png)
+![Cortex ASM - Domain Enrichment](https://raw.githubusercontent.com/demisto/content/2788e682627305ebde0e63cab15512e74c39cb70/Packs/CortexAttackSurfaceManagement/doc_files/Cortex_ASM_-_Domain_Enrichment.png)
 
 #### Cortex ASM - Detect Service
 

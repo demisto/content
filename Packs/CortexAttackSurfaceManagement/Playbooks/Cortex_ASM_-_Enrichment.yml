@@ -1799,13 +1799,13 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 611de972-95af-4f2a-8e1b-9d2df7fa8c7c
+      id: 003409a9-5504-43a2-8e72-373ea387fdc9
       iscommand: false
-      name: CSC Domain Enrichment
+      name: Domain Enrichment
       type: title
       version: -1
       description: ''
-    taskid: 611de972-95af-4f2a-8e1b-9d2df7fa8c7c
+    taskid: 003409a9-5504-43a2-8e72-373ea387fdc9
     timertriggers: []
     type: title
     view: |-
@@ -1830,14 +1830,14 @@ tasks:
     skipunavailable: false
     task:
       brand: ""
-      id: 6c9c80e0-56ac-47d6-81ad-171ae12be90f
+      id: 35f31fb1-881d-4894-883e-521a4d38b016
       iscommand: false
-      name: 'Cortex ASM - CSC Domain Enrichment'
-      playbookId: 'Cortex ASM - CSC Domain Enrichment'
+      name: 'Cortex ASM - Domain Enrichment'
+      playbookId: 'Cortex ASM - Domain Enrichment'
       type: playbook
       version: -1
       description: ''
-    taskid: 6c9c80e0-56ac-47d6-81ad-171ae12be90f
+    taskid: 35f31fb1-881d-4894-883e-521a4d38b016
     timertriggers: []
     type: playbook
     view: |-

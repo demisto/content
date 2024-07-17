@@ -1,18 +1,18 @@
-description: Playbook to enrich CSC Domain information.
-id: 'Cortex ASM - CSC Domain Enrichment'
+description: Playbook to enrich Domain information.
+id: 'Cortex ASM - Domain Enrichment'
 inputSections:
 - description: Generic group for inputs
   inputs:
   - Hostname
   name: General (Inputs group)
 inputs:
-- description: Input for CSC enrichment.
+- description: Input for domain enrichment.
   key: Hostname
   playbookInputQuery:
   required: false
   value:
     simple: ${alert.hostname}
-name: Cortex ASM - CSC Domain Enrichment
+name: Cortex ASM - Domain Enrichment
 outputSections:
 - description: Generic group for outputs
   name: General (Outputs group)
@@ -28,7 +28,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - "1"
+      - "20"
     note: false
     quietmode: 0
     separatecontext: false
@@ -47,7 +47,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -70
         }
       }
   "1":
@@ -345,7 +345,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: asm_fields_set_for_csc
+        simple: asm_fields_set_for_domain
       value:
         simple: "true"
     separatecontext: false
@@ -353,13 +353,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 6724170c-7fb3-48b8-830b-f6b9bcc12492
+      id: 701804f9-b1b3-42c6-8d9e-c257df8a4b29
       iscommand: false
       name: Set true flag for completed enrichment
       script: Set
       type: regular
       version: -1
-    taskid: 6724170c-7fb3-48b8-830b-f6b9bcc12492
+    taskid: 701804f9-b1b3-42c6-8d9e-c257df8a4b29
     timertriggers: []
     type: regular
     view: |-
@@ -442,7 +442,7 @@ tasks:
       keys:
         simple: source,record_exists,timestamp
       val1:
-        simple: CSC
+        simple: Domain
       val2:
         simple: "true"
       val3:
@@ -454,13 +454,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      id: ce0b8709-3d61-472f-88ab-759f41c44eea
+      id: 735ba84f-d6af-47b6-8bd9-bca969b250a4
       iscommand: false
       name: Set ASM enrichment status to true
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: ce0b8709-3d61-472f-88ab-759f41c44eea
+    taskid: 735ba84f-d6af-47b6-8bd9-bca969b250a4
     timertriggers: []
     type: regular
     view: |-
@@ -487,7 +487,7 @@ tasks:
       keys:
         simple: source,record_exists,timestamp
       val1:
-        simple: CSC
+        simple: Domain
       val2:
         simple: "false"
       val3:
@@ -499,13 +499,13 @@ tasks:
       description: |-
         Automation used to more easily populate a grid field. This is necessary when you want to assign certain values as static or if you have context paths that you will assign to different values as well.  Instead of a value you can enter `TIMESTAMP` to get the current timestamp in ISO format. For example:
         `!GridFieldSetup keys=ip,src,timestamp val1=${AWS.EC2.Instances.NetworkInterfaces.PrivateIpAddress} val2="AWS" val3="TIMESTAMP" gridfiled="gridfield"`
-      id: a347722e-add5-4769-8cea-2b87f9227c73
+      id: 730080ea-0041-4fa3-8369-6e08e1bb7470
       iscommand: false
       name: Set ASM enrichment status to false
       script: GridFieldSetup
       type: regular
       version: -1
-    taskid: a347722e-add5-4769-8cea-2b87f9227c73
+    taskid: 730080ea-0041-4fa3-8369-6e08e1bb7470
     timertriggers: []
     type: regular
     view: |-
@@ -552,7 +552,7 @@ tasks:
       - - left:
             iscontext: true
             value:
-              simple: asm_fields_set_for_csc
+              simple: asm_fields_set_for_domain
           operator: isTrue
           right:
             value: {}
@@ -574,12 +574,12 @@ tasks:
     task:
       brand: ""
       description: Check if enrichment is performed.
-      id: 54a92bda-6f4a-48d1-824b-ac21185d48ce
+      id: bd167f83-de0b-46f8-8233-4003cbc73dcf
       iscommand: false
       name: Was enrichment performed?
       type: condition
       version: -1
-    taskid: 54a92bda-6f4a-48d1-824b-ac21185d48ce
+    taskid: bd167f83-de0b-46f8-8233-4003cbc73dcf
     timertriggers: []
     type: condition
     view: |-
@@ -723,7 +723,7 @@ tasks:
       append:
         simple: "true"
       key:
-        simple: asm_fields_set_for_csc
+        simple: asm_fields_set_for_domain
       value:
         simple: "true"
     separatecontext: false
@@ -731,13 +731,13 @@ tasks:
     task:
       brand: ""
       description: Set a value in context under the key you entered.
-      id: 7f65f2d6-43e0-4c62-8d0b-21969852c4df
+      id: db971b0d-e158-446a-86b4-26aabceac352
       iscommand: false
       name: Set true flag for completed enrichment
       script: Set
       type: regular
       version: -1
-    taskid: 7f65f2d6-43e0-4c62-8d0b-21969852c4df
+    taskid: db971b0d-e158-446a-86b4-26aabceac352
     timertriggers: []
     type: regular
     view: |-
@@ -747,16 +747,47 @@ tasks:
           "y": 1570
         }
       }
+  "20":
+    continueonerrortype: ""
+    id: "20"
+    ignoreworker: false
+    isautoswitchedtoquietmode: false
+    isoversize: false
+    nexttasks:
+      '#none#':
+      - "1"
+    note: false
+    quietmode: 0
+    separatecontext: false
+    skipunavailable: false
+    task:
+      brand: ""
+      id: e6ee1596-34cc-40aa-89e6-77a9d4287486
+      iscommand: false
+      name: CSC Domain Manager
+      type: title
+      version: -1
+      description: ''
+    taskid: e6ee1596-34cc-40aa-89e6-77a9d4287486
+    timertriggers: []
+    type: title
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 80
+        }
+      }
 version: -1
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2345,
+        "height": 2465,
         "width": 2070,
         "x": -830,
-        "y": 50
+        "y": -70
       }
     }
   }

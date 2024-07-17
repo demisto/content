@@ -1,4 +1,4 @@
-Playbook to enrich CSC Domain information.
+Playbook to enrich Domain information.
 
 ## Dependencies
 
@@ -27,7 +27,7 @@ This playbook does not use any sub-playbooks.
 
 | **Name** | **Description** | **Default Value** | **Required** |
 | --- | --- | --- | --- |
-| Hostname | Input for CSC enrichment. | ${alert.hostname} | Optional |
+| Hostname | Input for domain enrichment. | ${alert.hostname} | Optional |
 
 ## Playbook Outputs
 
@@ -38,4 +38,4 @@ There are no outputs for this playbook.
 
 ---
 
-![Cortex ASM - CSC Domain Enrichment](../doc_files/Cortex_ASM_-_CSC_Domain_Enrichment.png)
+![Cortex ASM - Domain Enrichment](../doc_files/Cortex_ASM_-_Domain_Enrichment.png)
