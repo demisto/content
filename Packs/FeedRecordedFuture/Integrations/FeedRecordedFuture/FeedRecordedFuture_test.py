@@ -312,7 +312,7 @@ def test_fetch_indicators_command(mocker):
     client_outputs = []
     for output in fetch_indicators_command(client, indicator_type):
         client_outputs.extend(output)
-    assert {'fields': {'recordedfutureevidencedetails': [], 'tags': []},
+    assert {'fields': {'recordedfutureevidencedetails': [], 'recordedfutureriskscore': 80, 'tags': []},
             'rawJSON': {'Name': '192.168.0.1',
                         'a': '3',
                         'type': 'IP',
