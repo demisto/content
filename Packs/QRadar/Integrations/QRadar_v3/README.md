@@ -65,7 +65,7 @@ The *Pull from instance* option to create a new mapper is not supported in Corte
 ## Creating a Classifier Using the *Pull from instance* Parameter
 QRadar fetches incidents using a long-running execution, not in real time. Therefore, *Pull from instance* pulls incidents from the QRadar service to create a classifier using samples, not real time data. This results in seeing the latest sample stored, and not the latest offense that was fetched.  
 
-# System Integration Setup (Device side steps)
+# Set up the integrated system
 
 
 # Permissions
@@ -79,7 +79,7 @@ QRadar fetches incidents using a long-running execution, not in real time. There
 | References (Create/Update) | Admin |
 | References (Read) | View Reference Data |
 
-# Configure Integration on XSOAR (Parameters)
+# Configure Integration on Cortex XSOAR
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
 2. Search for IBM QRadar v3.
 3. Click **Add instance** to create and configure a new integration instance.
