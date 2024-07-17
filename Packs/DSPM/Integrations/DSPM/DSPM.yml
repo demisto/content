@@ -164,17 +164,17 @@ script:
       name: sort
       required: false
       secret: false
-    - description: Page
-      isArray: false
-      isOptional: true
-      name: page
-      required: false
-    - description: 'Page size'
-      isArray: false
-      isOptional: true
-      name: size
-      required: false
-      secret: false
+    # - description: Page
+    #   isArray: false
+    #   isOptional: true
+    #   name: page
+    #   required: false
+    # - description: 'Page size'
+    #   isArray: false
+    #   isOptional: true
+    #   name: size
+    #   required: false
+    #   secret: false
     description: Retrieves risk findings matching the input criteria.
     name: dspm-get-risk-findings
     outputs:
@@ -249,18 +249,18 @@ script:
       name: sort
       required: false
       secret: false
-    - description: Page
-      isArray: false
-      isOptional: true
-      name: page
-      required: false
-      secret: false
-    - description: Page size
-      isArray: false
-      isOptional: true
-      name: size
-      required: false
-      secret: false
+    # - description: Page
+    #   isArray: false
+    #   isOptional: true
+    #   name: page
+    #   required: false
+    #   secret: false
+    # - description: Page size
+    #   isArray: false
+    #   isOptional: true
+    #   name: size
+    #   required: false
+    #   secret: false
     description: for retrieve list of assets for company.
     name: dspm-get-list-of-assets
     outputs:
@@ -281,16 +281,16 @@ script:
     - description: ID of the asset to retrieve details for.
       name: asset_id
       required: true
-    - description: Page
-      isArray: false
-      isOptional: true
-      name: page
-      required: false
-    - description: size
-      isArray: false
-      isOptional: true
-      name: size
-      required: false
+    # - description: Page
+    #   isArray: false
+    #   isOptional: true
+    #   name: page
+    #   required: false
+    # - description: size
+    #   isArray: false
+    #   isOptional: true
+    #   name: size
+    #   required: false
     description: Retrieves asset file details for the provided asset ID.
     name: dspm-get-asset-files-by-id
     outputs:
@@ -372,18 +372,18 @@ script:
       name: sort
       required: false
       secret: false
-    - description: Page
-      isArray: false
-      isOptional: true
-      name: page
-      required: false
-      secret: false
-    - description: Page size
-      isArray: false
-      isOptional: true
-      name: size
-      required: false
-      secret: false
+    # - description: Page
+    #   isArray: false
+    #   isOptional: true
+    #   name: page
+    #   required: false
+    #   secret: false
+    # - description: Page size
+    #   isArray: false
+    #   isOptional: true
+    #   name: size
+    #   required: false
+    #   secret: false
     description: for retrieve list of data type findings for company.
     name: dspm-get-data-types-findings
     outputs:
