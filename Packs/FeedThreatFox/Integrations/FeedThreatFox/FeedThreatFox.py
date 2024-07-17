@@ -38,8 +38,15 @@ class Client(BaseClient):
         body = query
         return self._http_request('POST', url_suffix=url_suffix, json_data=body)
         
-def check_params(args: dict):
-        
+def check_params_for_query(args: dict):
+    """Checks that there are no extra params and no missing ones for the query.
+    Args:
+        args: dict
+    Returns:
+        Boolean: True if params are good and False otherwise.
+        Str: The query type (one of these: 'search_term', 'id', 'hash', 'tag', 'malware', 'days').
+            If args are not good than it will be None.
+    """
     args_lst = list({ele for ele in args if args[ele]})
     if 'limit' in args_lst:
         args_lst.remove('limit')
@@ -51,10 +58,14 @@ def check_params(args: dict):
 
 def create_query(query_arg, id: int | None = None, search_term: str | None = None, hash: str | None = None, tag: str | None = None,
                  malware: str | None = None, days: str | None = None, limit: int | None = None):
-    
-    
-    ###need to duplicate ' those
-    
+    """Creates the query to send to the API.
+
+    Args:
+        query_arg (str): the query type (should be one of those: 'search_term', 'id', 'hash', 'tag', 'malware', 'days').
+
+    Returns:
+        Str: The query to send to the API.
+    """
     
     query_dict = {'search_term': 'search_ioc', 'id': 'ioc', 'hash': 'search_hash',
             'tag': 'taginfo', 'malware': 'malwareinfo', 'days': 'get_iocs'}
@@ -77,7 +88,6 @@ def create_query(query_arg, id: int | None = None, search_term: str | None = Non
     if query_arg != 'tag' and query_arg != 'malware':
        del query['limit']
     
-    #string_query = str(query).replace("'", '"')
     return query
 
 def test_module(client: Client) -> str:
@@ -162,9 +172,7 @@ def main() -> None:
             verify=verify_certificate,
             headers=headers,
             proxy=proxy)
-        #is_okay, query_type  = check_params({'days': 7, 'limit': 10})
-        #query = create_query(query_type, days=7)
-        create_query('days', days = 1)
+
         if demisto.command() == 'test-module':
             # This is the call made when pressing the integration Test button.
             result = test_module(client)

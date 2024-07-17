@@ -54,8 +54,8 @@ def test_check_params_good_arguments(query_args, expected_result):
     Then:
         - The function returns (True, {the argument's name}).
     """
-    from FeedThreatFox import check_params
-    is_valid, query_arg = check_params(query_args)
+    from FeedThreatFox import check_params_for_query
+    is_valid, query_arg = check_params_for_query(query_args)
     assert (is_valid, query_arg) == expected_result
     
     
@@ -77,8 +77,8 @@ def test_check_params_bad_arguments(query_args, expected_result):
     Then:
         - The function returns (False, None).
     """
-    from FeedThreatFox import check_params
-    is_valid, query_arg = check_params(query_args)
+    from FeedThreatFox import check_params_for_query
+    is_valid, query_arg = check_params_for_query(query_args)
     assert (is_valid, query_arg) == expected_result
     
 
