@@ -14,13 +14,14 @@ from SecurityScorecard import \
     company_services_get_command
 
 import json
+import io
 import pytest
 
 
 """ TEST CONSTANTS """
 
 
-USERNAME = "user@domain.com"  # type: ignore
+USERNAME = "user@domain.com"
 PORTFOLIO_ID = "1"
 PORTFOLIO_ID_NE = "2"
 DOMAIN = "domain1.com"
@@ -31,7 +32,7 @@ DOMAIN_NE = "domain2.com"
 
 
 def load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with io.open(path, mode='r', encoding='utf-8') as f:
         return json.load(f)
 
 

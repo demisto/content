@@ -1,10 +1,9 @@
-# type: ignore
 import demistomock as demisto
 from CommonServerPython import *
 
 import requests
 import traceback
-from typing import Any
+from typing import Dict, Any
 import urllib3
 
 # Disable insecure warnings
@@ -46,7 +45,7 @@ class SecurityScorecardClient(BaseClient):
         self.api_key = api_key
         self.max_fetch = max_fetch
 
-    def get_portfolios(self) -> dict[str, Any]:
+    def get_portfolios(self) -> Dict[str, Any]:
         return self.http_request_wrapper(
             method='GET',
             url_suffix='portfolios'
@@ -60,9 +59,9 @@ class SecurityScorecardClient(BaseClient):
         vulnerability: Optional[str],
         issue_type: Optional[str],
         had_breach_within_last_days: Optional[int]
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
 
-        request_params: dict[str, Any] = assign_params(
+        request_params: Dict[str, Any] = assign_params(
             grade=grade,
             industry=industry,
             vulnerability=vulnerability,
@@ -76,16 +75,16 @@ class SecurityScorecardClient(BaseClient):
             params=request_params
         )
 
-    def get_company_score(self, domain: str) -> dict[str, Any]:
+    def get_company_score(self, domain: str) -> Dict[str, Any]:
 
         return self.http_request_wrapper(
             method='GET',
             url_suffix=f'companies/{domain}'
         )
 
-    def get_company_factor_score(self, domain: str, severity_in: Optional[List[str]]) -> dict[str, Any]:
+    def get_company_factor_score(self, domain: str, severity_in: Optional[List[str]]) -> Dict[str, Any]:
 
-        request_params: Optional[dict[str, Any]] = {
+        request_params: Optional[Dict[str, Any]] = {
             "severity_in": severity_in
         } if severity_in else None
 
@@ -95,9 +94,9 @@ class SecurityScorecardClient(BaseClient):
             params=request_params
         )
 
-    def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> dict[str, Any]:
+    def get_company_historical_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
-        request_params: dict[str, Any] = assign_params(
+        request_params: Dict[str, Any] = assign_params(
             to=to,
             timing=timing,
             domain=domain
@@ -112,9 +111,9 @@ class SecurityScorecardClient(BaseClient):
             url_suffix=f'companies/{domain}/history/score',
             params=request_params)
 
-    def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> dict[str, Any]:
+    def get_company_historical_factor_scores(self, domain: str, _from: str, to: str, timing: str) -> Dict[str, Any]:
 
-        request_params: dict[str, Any] = assign_params(
+        request_params: Dict[str, Any] = assign_params(
             to=to,
             timing=timing
         )
@@ -135,9 +134,9 @@ class SecurityScorecardClient(BaseClient):
         change_direction: str,
         score_types: List[str],
         target: List[str]
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
 
-        payload: dict[str, Any] = assign_params(
+        payload: Dict[str, Any] = assign_params(
             change_direction=change_direction,
             score_types=score_types,
             target=target
@@ -155,9 +154,9 @@ class SecurityScorecardClient(BaseClient):
         threshold: int,
         score_types: List[str],
         target: List[str]
-    ) -> dict[str, Any]:
+    ) -> Dict[str, Any]:
 
-        payload: dict[str, Any] = assign_params(
+        payload: Dict[str, Any] = assign_params(
             change_direction=change_direction,
             threshold=arg_to_number(arg=threshold, arg_name='threshold', required=True),
             score_types=score_types,
@@ -178,9 +177,9 @@ class SecurityScorecardClient(BaseClient):
             return_empty_response=True
         )
 
-    def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> dict[str, Any]:
+    def get_alerts_last_week(self, email: str, portfolio_id: Optional[str]) -> Dict[str, Any]:
 
-        query_params: dict[str, Any] = assign_params(
+        query_params: Dict[str, Any] = assign_params(
             portfolio=portfolio_id
         )
 
@@ -190,16 +189,16 @@ class SecurityScorecardClient(BaseClient):
             params=query_params
         )
 
-    def get_domain_services(self, domain: str) -> dict[str, Any]:
+    def get_domain_services(self, domain: str) -> Dict[str, Any]:
 
         return self.http_request_wrapper(
             method='GET',
             url_suffix=f"companies/{domain}/services"
         )
 
-    def fetch_alerts(self, page_size: int, page: int) -> dict[str, Any]:
+    def fetch_alerts(self, page_size: int, page: int) -> Dict[str, Any]:
 
-        query_params: dict[str, Any] = assign_params(
+        query_params: Dict[str, Any] = assign_params(
             username=self.username,
             page_size=page_size,
             sort="date",
@@ -297,7 +296,7 @@ def get_last_run(
         return fetch_days_ago.replace(tzinfo=None)  # type: ignore
 
 
-def incidents_to_import(alerts: List[dict[str, Any]], last_run: datetime = get_last_run()) -> List[dict[str, Any]]:
+def incidents_to_import(alerts: List[Dict[str, Any]], last_run: datetime = get_last_run()) -> List[Dict[str, Any]]:
     """
     Helper function to filter events that need to be imported.
     It filters the events based on the `created_at` timestamp.
@@ -309,7 +308,7 @@ def incidents_to_import(alerts: List[dict[str, Any]], last_run: datetime = get_l
         ``List[Dict[str, Any]]``: Alerts to import
     """
 
-    incidents: List[dict[str, Any]] = []
+    incidents: List[Dict[str, Any]] = []
 
     # Check if there are more than 0 alerts
     if alerts:
@@ -402,7 +401,7 @@ def test_module(
 # ---------------
 
 
-def portfolios_list_command(client: SecurityScorecardClient, args: dict[str, str]) -> CommandResults:
+def portfolios_list_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """List all Portfolios you have access to.
 
     See https://securityscorecard.readme.io/reference#get_portfolios
@@ -463,7 +462,7 @@ def portfolios_list_command(client: SecurityScorecardClient, args: dict[str, str
 
 def portfolio_list_companies_command(
     client: SecurityScorecardClient,
-    args: dict[str, Any]
+    args: Dict[str, Any]
 ) -> CommandResults:
     """Retrieve all companies in portfolio.
 
@@ -535,7 +534,7 @@ def portfolio_list_companies_command(
     return results
 
 
-def company_score_get_command(client: SecurityScorecardClient, args: dict[str, str]) -> CommandResults:
+def company_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """Retrieve company overall score.
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-factors
@@ -571,7 +570,7 @@ def company_score_get_command(client: SecurityScorecardClient, args: dict[str, s
 
 def company_factor_score_get_command(
     client: SecurityScorecardClient,
-    args: dict[str, Any]
+    args: Dict[str, Any]
 ) -> CommandResults:
     """Retrieve company factor score and scores
 
@@ -621,7 +620,7 @@ def company_factor_score_get_command(
     return results
 
 
-def company_history_score_get_command(client: SecurityScorecardClient, args: dict[str, str]) -> CommandResults:
+def company_history_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """Retrieve company historical scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-score
@@ -661,7 +660,7 @@ def company_history_score_get_command(client: SecurityScorecardClient, args: dic
     return results
 
 
-def company_history_factor_score_get_command(client: SecurityScorecardClient, args: dict[str, str]) -> CommandResults:
+def company_history_factor_score_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """Retrieve company historical factor scores
 
     See https://securityscorecard.readme.io/reference#get_companies-scorecard-identifier-history-factors-score
@@ -715,7 +714,7 @@ def company_history_factor_score_get_command(client: SecurityScorecardClient, ar
     return results
 
 
-def alert_grade_change_create_command(client: SecurityScorecardClient, args: dict[str, str]) -> CommandResults:
+def alert_grade_change_create_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """Create alert based on grade change
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-grade
@@ -765,7 +764,7 @@ def alert_grade_change_create_command(client: SecurityScorecardClient, args: dic
     return results
 
 
-def alert_score_threshold_create_command(client: SecurityScorecardClient, args: dict[str, Any]) -> CommandResults:
+def alert_score_threshold_create_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Create alert based score threshold met
 
     See https://securityscorecard.readme.io/reference#post_users-by-username-username-alerts-score
@@ -817,7 +816,7 @@ def alert_score_threshold_create_command(client: SecurityScorecardClient, args: 
     return results
 
 
-def alert_delete_command(client: SecurityScorecardClient, args: dict[str, Any]) -> CommandResults:
+def alert_delete_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Delete an alert
 
     See https://securityscorecard.readme.io/reference#delete_users-by-username-username-alerts-grade-alert
@@ -846,7 +845,7 @@ def alert_delete_command(client: SecurityScorecardClient, args: dict[str, Any]) 
     return results
 
 
-def alerts_list_command(client: SecurityScorecardClient, args: dict[str, Any]) -> CommandResults:
+def alerts_list_command(client: SecurityScorecardClient, args: Dict[str, Any]) -> CommandResults:
     """Retrieve alerts triggered in the last week
 
     See https://securityscorecard.readme.io/reference#get_users-by-username-username-notifications-recent
@@ -869,10 +868,10 @@ def alerts_list_command(client: SecurityScorecardClient, args: dict[str, Any]) -
 
     entries = response.get("entries")  # type: ignore
 
-    alerts: List[dict[str, str]] = []
+    alerts: List[Dict[str, str]] = []
 
     for entry in entries:  # type: ignore
-        content: dict[str, str] = {
+        content: Dict[str, str] = {
             "Alert ID": entry.get("id"),
             "Company": entry.get("company_name"),
             "Domain": entry.get("domain"),
@@ -912,7 +911,7 @@ def alerts_list_command(client: SecurityScorecardClient, args: dict[str, Any]) -
     return results
 
 
-def company_services_get_command(client: SecurityScorecardClient, args: dict[str, str]) -> CommandResults:
+def company_services_get_command(client: SecurityScorecardClient, args: Dict[str, str]) -> CommandResults:
     """Retrieve the service providers of a domain
 
     See https://securityscorecard.readme.io/reference#get_companies-domain-services
@@ -1082,12 +1081,12 @@ def main() -> None:
     max_fetch = params.get("max_fetch")
     incident_fetch_interval = params.get("incidentFetchInterval")
 
-    args: dict[str, str] = demisto.args()
+    args: Dict[str, str] = demisto.args()
 
     demisto.debug(f'Command being called is {demisto.command()}')
     try:
 
-        headers: dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR"}
+        headers: Dict = {"Authorization": f"Token {api_key}", "X-SSC-Application-Name": "Cortex XSOAR"}
 
         client = SecurityScorecardClient(
             base_url=base_url,
