@@ -115,9 +115,14 @@ script:
     description: Query for incidents
     arguments:
     - name: page
+      defaultValue: 0
       description: Indicates the starting point for the first record in the dataset. Starting from 1.
     - name: page_size
+      defaultValue: 0
       description: The maximum number of records to return in the response. Null or less than 1 to return all records, up to the server-configured maximum limit. When greater than 0. An error will be thrown if the length is greater than the server-configured maximum limit.
+    - name: limit
+      defaultValue: 1000
+      description: Maximum number of incidents to retrieve.
     - name: severity
       description: Comma-separated list of incident severity, e.g., Low,Medium,High.
     - name: date-created-before

@@ -369,10 +369,13 @@ def search_incidents(client, args):
     # Pagination mechanism.
     page = int(args.get('page'))
     page_size = int(args.get('page_size'))
+    limit = int(args.get('limit'))
+    data['length'] = limit
+    # 'limit' parameter is redundant in case proper 'page' and 'page_size' were provided.
     if page_size > 0 and page > 0:
         data['start'] = page_size * (page - 1)
         data['length'] = page_size
-    else:
+    elif page < 0 or page_size < 0:
         raise DemistoException('Invalid page number or page size. Page number and page sizes must be positive integers.')
 
     search_incidents_endpoint = '/incidents/query_paged'
