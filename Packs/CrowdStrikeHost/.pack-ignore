@@ -5,7 +5,8 @@ ignore=BA101
 ignore=BA101
 
 [file:README.md]
-ignore=RM104
+ignore=RM104,RM112
 
 [file:FalconHost_image.png]
 ignore=IM111
+

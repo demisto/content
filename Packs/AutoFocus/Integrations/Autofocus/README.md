@@ -219,7 +219,7 @@
 <h5 id="human-readable-output">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/54493457-f8740680-48d8-11e9-83ad-0143b5163cb1.png" alt="autof_search_samples"></p>
+<p><img src="../../doc_files/54493457-f8740680-48d8-11e9-83ad-0143b5163cb1.png" alt="autof_search_samples"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="search-for-sessions">2. Search for sessions</h3>
@@ -362,7 +362,7 @@
 <h5 id="human-readable-output-1">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/54493477-2d805900-48d9-11e9-8fbc-251cc7e1ba4f.png" alt="autof_search_sessios"></p>
+<p><img src="../../doc_files/54493477-2d805900-48d9-11e9-8fbc-251cc7e1ba4f.png" alt="autof_search_sessios"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-details-of-a-session">3. Get details of a session</h3>
@@ -523,7 +523,7 @@
 <h5 id="human-readable-output-2">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/54493481-3ffa9280-48d9-11e9-9427-2463431fa703.png" alt="autof_sample_analysis"></p>
+<p><img src="../../doc_files/54493481-3ffa9280-48d9-11e9-9427-2463431fa703.png" alt="autof_sample_analysis"></p>
 </div>
 <div class="cl-preview-section">
 <h3 id="get-the-reputation-of-a-file">5. Get the reputation of a file</h3>
@@ -641,5 +641,5 @@
 <h5 id="human-readable-output-3">Human Readable Output</h5>
 </div>
 <div class="cl-preview-section">
-<p><img src="https://user-images.githubusercontent.com/37335599/54493492-57d21680-48d9-11e9-8fc7-eca5cb37ae8e.png" alt="autof_file"></p>
+<p><img src="../../doc_files/54493492-57d21680-48d9-11e9-8fc7-eca5cb37ae8e.png" alt="autof_file"></p>
 </div>

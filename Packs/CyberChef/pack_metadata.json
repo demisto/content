@@ -2,7 +2,7 @@
     "name": "CyberChef",
     "description": "Integration with your CyberChef server or https://prod.apifor.io service for CyberChef.",
     "support": "community",
-    "currentVersion": "1.0.5",
+    "currentVersion": "1.0.6",
     "author": "Harri Ruuttila",
     "url": "",
     "email": "",

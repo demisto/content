@@ -37,7 +37,7 @@ This integration analyzes suspicious hashes, URLs, domains, and IP addresses.
 ### Acquiring your API key
 
 Your API key can be found in your GoogleThreatIntelligence account user menu, clicking on your avatar:
-![How to get api key in GoogleThreatIntelligence](https://files.readme.io/ddeb298-Screen_Shot_2019-10-17_at_3.17.04_PM.png)
+![How to get api key in GoogleThreatIntelligence](../../doc_files/ddeb298-Screen_Shot_2019-10-17_at_3_17_04_PM.png)
 Your API key carries all your privileges, so keep it secure and don't share it with anyone.
 
 ## DBot Score / Reputation scores
