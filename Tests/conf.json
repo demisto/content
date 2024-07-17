@@ -177,10 +177,6 @@
             "instance_names": "Twitter v2"
         },
         {
-            "playbookID": "IndicatorFormatterFilterTest",
-            "timeout": 1200
-        },
-        {
             "integrations": "FeedURLhaus",
             "playbookID": "playbook-urlhaus-feed_Test"
         },
