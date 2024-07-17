@@ -18,6 +18,7 @@
     "group": 2,
     "hidden": false,
     "openEnded": false,
+    "associatedToAll": false,
     "associatedTypes": [
         "Domain",
         "IPv6CIDR",

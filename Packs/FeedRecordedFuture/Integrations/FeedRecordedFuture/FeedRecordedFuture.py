@@ -36,7 +36,6 @@ RF_INDICATOR_TYPES = {
     'hash': 'hash'
 }
 
-RF_RISK_SCORE_TYPE_TO_FIELD = {}
 
 class Client(BaseClient):
     """
@@ -415,6 +414,7 @@ def calculate_recorded_future_criticality_label(risk_from_feed):
     else:
         return 'No current evidence of risk'
 
+
 def format_risk_string(risk_string):
     """Formats the risk string returned from the feed
     Args:
@@ -507,8 +507,9 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                 indicators.append(indicator_obj)
 
             yield indicators
-    
+
     demisto.debug('RF: finished getting indicators')
+
 
 def get_indicators_command(client, args) -> tuple[str, dict[Any, Any], list[dict]]:  # pragma: no cover
     """Retrieves indicators from the Recorded Future feed to the war-room.
